@@ -1,0 +1,7 @@
+.git
+.idea
+out
+*.iml
+.classpath
+.project
+*~

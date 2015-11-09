@@ -1,0 +1,155 @@
+Country,Food Trade Penalty Function
+Afghanistan,0.003348908
+Albania,-0.1772446
+Algeria,0.086011824
+Angola,0.002395609
+Argentina,0.001032167
+Armenia,0.002719989
+Australia,-0.017394535
+Austria,-0.307358497
+Azerbaijan,0.021054996
+Bahamas,0.000136812
+Bangladesh,0.010171964
+Barbados,0.001129129
+Belarus,-0.024472416
+Belize,0.000153623
+Benin,0.000753508
+Bolivia (Plurinational State of),0.000758768
+Botswana,0.000256153
+Brazil,0.146527324
+Brunei Darussalam,0.000494161
+Bulgaria,-0.035354987
+Burkina Faso,0.000398226
+Burundi,1.76E-05
+Cambodia,0.000125004
+Cameroon,0.00214388
+Canada,-0.101447151
+Cape Verde,0.000182841
+Central African Republic,6.54E-05
+Chad,0.000106809
+Chile,0.01786243
+China,0.228678705
+Colombia,0.014063156
+Comoros,1.11E-05
+Congo,0.000340937
+"Congo, Dem. Rep.",0.000518332
+Costa Rica,0.009514936
+Cote d'Ivoire,0.002315915
+Cuba,0.036806977
+Cyprus,-0.393771703
+Denmark,-0.225971637
+Dominican Republic,0.003892059
+Ecuador,0.003702625
+Egypt,0.350155777
+El Salvador,0.003496317
+Estonia,-0.122996524
+Ethiopia,0.001793011
+Fiji,0.001125176
+Finland,-0.048301972
+France,-0.079987462
+Gabon,0.001514938
+Gambia,0.000497433
+Georgia,0.002941905
+Germany,-0.194505571
+Ghana,0.004876188
+Greece,-0.212534513
+Guatemala,0.004657458
+Guinea,0.000375884
+Guinea-Bissau,5.89E-05
+Guyana,0.000303489
+Haiti,0.000149133
+Honduras,0.00242679
+Hungary,-0.060446865
+Iceland,-0.30340364
+India,0.0001025
+Indonesia,0.041791859
+Iran (Islamic Republic of),0.033101643
+Iraq,0.006106759
+Ireland,-0.28609382
+Israel,-0.611699251
+Italy,-0.258593865
+Jamaica,0.002636642
+Japan,-0.26865418
+Jordan,0.042586467
+Kazakhstan,0.002505797
+Kenya,0.003635924
+"Korea, Dem. Rep.",0.000437962
+Kuwait,0.015329605
+Kyrgyzstan,0.002613881
+Lao People's Democratic Republic,3.50E-05
+Latvia,-0.14545824
+Lebanon,0.009580458
+Lesotho,0.001514223
+Liberia,0.000134173
+Libyan Arab Jamahiriya,0.003772296
+Lithuania,-0.09774671
+Madagascar,0.000342148
+Malawi,0.000321479
+Malaysia,0.067478188
+Maldives,0.000186676
+Mali,0.002107032
+Malta,-0.351674782
+Mauritania,0.0022243
+Mauritius,0.002177581
+Mexico,0.181718444
+Mongolia,0.000169296
+Morocco,0.039208482
+Mozambique,0.000868455
+Myanmar,0.000402138
+Namibia,7.88E-05
+Nepal,0.001363487
+Netherlands,-1
+New Zealand,-0.111677067
+Nicaragua,0.000744412
+Niger,0.000620925
+Nigeria,0.041371546
+Norway,-0.316326726
+Pakistan,0.000147181
+Panama,0.001647744
+Paraguay,0.000345766
+Peru,0.013537288
+Philippines,0.011684932
+Poland,-0.059096158
+Portugal,-0.49437062
+Republic of Korea,0.471347363
+Republic of Moldova,-0.049342844
+Romania,-0.079520587
+Russian Federation,-0.016558921
+Rwanda,0.000199511
+Sao Tome and Principe,7.06E-05
+Saudi Arabia,0.088771304
+Senegal,0.002742318
+Sierra Leone,0.000151536
+Singapore,-0.120558766
+Slovenia,-0.630755894
+Solomon Islands,0.000123179
+Somalia,0.000226265
+South Africa,0.027306414
+Spain,-0.39215598
+Sri Lanka,0.001743817
+Sudan,0.00273662
+Suriname,0.000262405
+Swaziland,0.000320198
+Sweden,-0.080705195
+Switzerland,-0.15441551
+Syrian Arab Republic,0.042174272
+Tajikistan,0.000937515
+Thailand,0.019469216
+Togo,0.00025009
+Trinidad and Tobago,0.000866901
+Tunisia,0.150538097
+Turkey,1
+Turkmenistan,0.001636772
+Uganda,0.000838733
+Ukraine,-0.004340389
+United Arab Emirates,0.015919441
+United Kingdom,-0.090626241
+United Republic of Tanzania,0.001269017
+United States of America,-0.022747903
+Uruguay,0.001163552
+Uzbekistan,0.009109863
+Venezuela (Bolivarian Republic of),0.064639334
+Viet Nam,0.011495819
+Yemen,0.005379332
+Zambia,2.20E-05
+Zimbabwe,0.001244222

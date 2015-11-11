@@ -166,4 +166,26 @@ public enum EnumRegion
    * @return true if and only of the region is a player region of the United States of America.
    */
   public abstract boolean isUS();
+
+  /**
+   * For US regions, returns an int with one bit set corresponding to the region's
+   * ordinal (0 through 6) for the 7 US regions. If not a US region, returns 0.
+   * @return bit
+   */
+  public int getBit()
+  {
+    if (isUS())  return 1 << ordinal();
+    else return 0;
+  }
+
+  public int allUSRegionBits()
+  {
+    return CALIFORNIA.getBit() |
+      HEARTLAND.getBit() |
+      NORTHERN_PLAINS.getBit() |
+      SOUTHEAST.getBit() |
+      NORTHERN_CRESCENT.getBit() |
+      SOUTHERN_PLAINS.getBit() |
+      MOUNTAIN.getBit();
+  }
 }

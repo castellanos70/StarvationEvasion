@@ -1,4 +1,4 @@
-package starvationevasion.simulator;
+package starvationevasion.sim;
 
 /**
  * Created by Joel on 11/5/2015.<br>
@@ -20,10 +20,10 @@ package starvationevasion.simulator;
  * For future values of MSL, For future years, projected values reported
  * by the Intergovernmental Panel on Climate Change (IPCC) are given
  * in ranges with increased variance for years more distant in the
- * future. At the start of each game the simulator selects a random
+ * future. At the start of each game the sim selects a random
  * 2050 sea level (=h2050), with a Gaussian distribution about the
  * IPCC projected mean. During that game, for all years after 2014,
- * the simulator must report the sea level as the value given by
+ * the sim must report the sea level as the value given by
  * the quadratic equation passing through (h1980=0, 0), (h2014,29)
  * and (h2050,65).
  */

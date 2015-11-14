@@ -46,9 +46,12 @@ public enum EnumPolicy
    * Eligible Regions: All U.S.<br><br>
    *
    * Model Effects: Commodity food is distributed to relief world hunger
-   * in the most efficient manor discovered by the simulator where
-   * efficiency calculation is based on the type of commodity, each
-   * country's nutritional need and each country's import penalty function. <br><br>
+   * in the most efficient manor discovered by the sim where
+   * efficiency calculation is based on the type of commodity
+   * available in each participating region, each
+   * country's nutritional need and each country's import penalty function.
+   * Note: depending on yields, different regions may contribute different
+   *    mixes of commodities.<br><br>
    *
    * 10% bonus to effectiveness of total dollars spent per participating region.<br><br>
    *
@@ -75,7 +78,7 @@ public enum EnumPolicy
    *
    * Votes Required: Automatic<br>
    *
-   * Model Effects: The simulator estimates the number and location of farms within
+   * Model Effects: The sim estimates the number and location of farms within
    * the region and the amount spent by those farms on improved irrigation. The
    * model will need a current distribution of irrigation efficiency levels, the
    * four control points of an ease-in-out cubic Bezier function giving efficiency
@@ -87,7 +90,7 @@ public enum EnumPolicy
    * efficiency also reduces pesticides, fertilizer, and turbidity levels in
    * outflowing rivers.<br><br>
    *
-   * X% of the money that the simulator estimates is spent for improved irrigation
+   * X% of the money that the sim estimates is spent for improved irrigation
    * is deducted from the region’s tax revenue at the start of the next turn.
    */
 
@@ -169,7 +172,7 @@ public enum EnumPolicy
    *
    * Votes Required: Automatic<br><br>
    *
-   * Model Effects: The simulator estimates the number and location of farms
+   * Model Effects: The sim estimates the number and location of farms
    * within the region and the amount spent by those farms on improved irrigation.
    * The model will need a current amount of pesticides and fertilizers in use
    * per square km, the current percentage that goes into rivers, and, the four
@@ -315,4 +318,7 @@ public enum EnumPolicy
    * the required number of votes have been reached.
    */
   public abstract boolean voteWaitForAll();
+
+
+  public static final int SIZE = values().length;
 }

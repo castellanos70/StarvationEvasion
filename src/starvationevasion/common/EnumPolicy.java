@@ -1,6 +1,8 @@
 package starvationevasion.common;
 
-
+/**
+ * Policy Cards game text, draft affects, votes required and model effects.
+ */
 public enum EnumPolicy
 {
   /**

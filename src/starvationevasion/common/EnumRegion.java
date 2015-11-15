@@ -2,7 +2,8 @@ package starvationevasion.common;
 
 /**
  * Enumerates each of the geographic regions used in the game: both Player
- * and non-Player regions.
+ * and non-Player regions.<br><br>
+ * The ordinal of US regions are continuous and less than all non-Player world regions.
  */
 
 public enum EnumRegion
@@ -178,7 +179,7 @@ public enum EnumRegion
     else return 0;
   }
 
-  public int allUSRegionBits()
+  public static int allUSRegionBits()
   {
     return CALIFORNIA.getBit() |
       HEARTLAND.getBit() |

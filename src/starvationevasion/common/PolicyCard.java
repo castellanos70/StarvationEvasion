@@ -16,16 +16,54 @@ package starvationevasion.common;
  */
 public class PolicyCard
 {
+  public static final int MIN_PERCENT = 1;
+  public static final int MAX_PERCENT = 100;
+  public static final int MIN_MILLION_DOLLARS = 1;
+  public static final int MAX_MILLION_DOLLARS = 1000;
+
+  /**
+   * Every policy card must have an owner. This is the player region from who's deck the
+   * card was drawn. Note all automatic policy cards are enacted by the owner and only
+   * the owner (enactingRegionBits is ignored).
+   */
+  private final EnumRegion owner;
+
+
   private final EnumPolicy policy;
+
+
+
 
   /**
    * A policy card can be enacted by just one player region or by as many as all 7
    * player regions. This is a bitwise int with a 1 in the position corresponding to
-   * each region that has enacted the policy (EnumRegion.getBit()).
+   * each region that has enacted the policy (EnumRegion.getBit()).<br>
+   * Note: This field is ignored for all automatic policy cards.<br>
+   * Note: The player who owns a policy is automatically added to the enacting list.
    */
-  private int enactingRegionBits = 0;
+  private int enactingRegionBits;
+
+
+  /**
+   * This field is ignored if this policy does not require a target food.
+   */
   private EnumFood targetFood;
+
+
+
+  /**
+   * Some cards require the target region to be a US player region. Other cards require
+   * the target region to be a non-player world region.
+   * This field is ignored if this policy does not require a target region.
+   */
   private EnumRegion targetRegion;
+
+
+  /**
+   * Some policy cards require quantity X, Y and/or Z.
+   * The units of these values are depend on the particular policy.
+   * The field is ignored if this policy does not require that field.
+   */
   private int varX, varY, varZ;
 
 
@@ -36,9 +74,16 @@ public class PolicyCard
    *
    * @param policy
    */
-  public PolicyCard(EnumPolicy policy)
+  public PolicyCard(EnumRegion owner, EnumPolicy policy)
   {
+    if (!owner.isUS())
+    {
+      throw new IllegalArgumentException("addEnactingRegion(EnumRegion="+owner+
+        ") Policy owner must be a US region.");
+    }
+    this.owner  = owner;
     this.policy = policy;
+    enactingRegionBits = owner.getBit();
   }
 
   public String getTitle()    {return policy.title;}
@@ -52,47 +97,35 @@ public class PolicyCard
 
 
   /**
-   * Some policy cards require quantity X. Depending on the Policy Card,
-   * X might be in millions of dallars or an integer percentage.
    * @return the value of quantity X.
    */
   public int getX() {return varX;}
 
   /**
-   * Some policy cards require quantity Y. Depending on the Policy Card,
-   * Y might be in millions of dallars or an integer percentage.
    * @return the value of quantity Y.
    */
   public int getY() {return varY;}
 
 
   /**
-   * Some policy cards require quantity Z. Depending on the Policy Card,
-   * Z might be in millions of dallars or an integer percentage.
    * @return the value of quantity Z.
    */
   public int getZ() {return varZ;}
 
 
   /**
-   * Some policy cards require quantity X. Depending on the Policy Card,
-   * X might be in millions of dallars or an integer percentage.
    * @param x value to be set to quantity X.
    */
   public void setX(int x) {varX = x;}
 
 
   /**
-   * Some policy cards require quantity Y. Depending on the Policy Card,
-   * Y might be in millions of dallars or an integer percentage.
    * @param y value to be set to quantity Y.
    */
   public void setY(int y) {varY = y;}
 
 
   /**
-   * Some policy cards require quantity Z. Depending on the Policy Card,
-   * Z might be in millions of dallars or an integer percentage.
    * @param z value to be set to quantity Z.
    */
   public void setZ(int z) {varZ = z;}
@@ -168,48 +201,127 @@ public class PolicyCard
 
 
   /**
-   * Different policy cards require different data to be valid.
-   * This validate() method should be called before sending a card to the simulator since
-   * the simulator will reject any cards that are not valid.
+   * @returns Number of US regions enacting this policy.
+   */
+  public int getEnactingRegionCount()
+  {
+    int count = 0;
+    for (EnumRegion region :EnumRegion.values())
+    {
+      if (!region.isUS()) break;  //assumes all us regions are before all world regions.
+      if (isEnactingRegion(region)) count++;
+    }
+    return count;
+  }
+
+  /**
+   * @param n a policy percentage amount.
+   * @return null iff the amount is within range. Otherwise returns an error message.
+   */
+  public String validatePercentValue(int n)
+  {
+    if (n < MIN_PERCENT || n > MAX_PERCENT)
+    {
+      return "[" + n + "]: must be between " + MIN_PERCENT + " and " + MAX_PERCENT + " percent.";
+    }
+    return null;
+  }
+
+
+
+  /**
+   * @param n a policy amount in millions of dollars.
+   * @return null iff the amount is within range. Otherwise returns an error message.
+   */
+  public String validateDollarValue(int n)
+  {
+    if (n < MIN_MILLION_DOLLARS || n > MAX_MILLION_DOLLARS)
+    {
+      return "[" + n + "]: must be between " + MIN_MILLION_DOLLARS + " and " +
+        MAX_MILLION_DOLLARS + " million dollars.";
+    }
+    return null;
+  }
+
+
+
+  /**
+   * Different policy cards require different data to be valid.<br>
+   * The simulator uses this method to validate enacted policy cards.<br>
+   * Note: The client should never send the server invalid cards. If
+   * the simulator does find an error then either there is a bug in the client or
+   * the client has been hacked.
    * @return null if the policy is valid. Otherwise, returns an error message.
    */
   public String validate()
   {
-    if (enactingRegionBits == 0)
+    String msg;
+
+    switch(policy)
     {
-      return "All enacted policy cards must have at least one US enacting region.";
-    }
-
-    if (policy == EnumPolicy.GMO_Seed_Insect_Resistance_Research)
-    {
-      if ((targetFood == null) || (!targetFood.isCrop()))
-      {
-        return policy + ": must have a target food that is a crop.";
-      }
-      if (varX < 1 || varX > 1000)
-      {
-        return policy + ": X must be between 1 and 1000 million dollars.";
-      }
-    }
+      case GMO_Seed_Insect_Resistance_Research:
+        if ((targetFood == null) || (!targetFood.isCrop()))
+        {
+          return policy + ": must have a target food that is a crop (not livestock).";
+        }
+        msg = validateDollarValue(varX);
+        if (msg != null) return policy + msg;
+        break;
 
 
 
 
-    if (policy == EnumPolicy.International_Food_Releif_Program)
-    {
-      if ((targetFood == null) || (!targetFood.isCrop()))
-      {
-        return policy + ": must have a target food that is a crop.";
-      }
-      if (varX < 1 || varX > 1000)
-      {
-        return policy + ": X must be between 1 and 1000 million dollars.";
-      }
-    }
+      case International_Food_Releif_Program:
+        if ((targetFood == null) || (!targetFood.isCrop()))
+        {
+          return policy + ": must have a target food that is a crop.";
+        }
+        msg = validateDollarValue(varX);
+        if (msg != null) return policy + msg;
+        break;
 
-    return "policy not recognized";
+
+
+
+      case Efficient_Irrigation_Incentive:
+        if (getEnactingRegionCount() != 1)
+        {
+          return policy + ": This is an automatic policy. Only region may enact.";
+        }
+        msg = validatePercentValue(varX);
+        if (msg != null) return policy + msg;
+        break;
+
+
+      case Foreign_Aid_for_Farm_Infrastructure:
+        if (enactingRegionBits != EnumRegion.allUSRegionBits())
+        {
+          return policy + ": Must be enacted by all US regions.";
+        }
+        msg = validateDollarValue(varX);
+        if (msg != null) return policy + msg;
+
+        if (targetRegion == null || targetRegion.isUS())
+        {
+          return policy + "["+targetRegion +"]: Must have target world region";
+        }
+
+        break;
+
+      case Covert_Intelligence:
+        if (enactingRegionBits != EnumRegion.allUSRegionBits())
+        {
+          return policy + ": Must be enacted by all US regions.";
+        }
+        msg = validateDollarValue(varX);
+        if (msg != null) return policy + msg;
+        break;
+
+     default:
+        return "policy not recognized";
+   }
+   return "UNKNOWN ERROR";
   }
-
 
 
   /**
@@ -217,7 +329,8 @@ public class PolicyCard
    */
   public static void main(String[] args)
   {
-    PolicyCard myCard = new PolicyCard(EnumPolicy.GMO_Seed_Insect_Resistance_Research);
+    PolicyCard myCard = new PolicyCard(EnumRegion.MOUNTAIN,
+      EnumPolicy.GMO_Seed_Insect_Resistance_Research);
     System.out.println(myCard.getTitle());
     System.out.println(myCard.getGameText());
   }

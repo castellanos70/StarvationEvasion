@@ -1,9 +1,7 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.Constant;
-import starvationevasion.common.PolicyCard;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.EnumFood;
+import starvationevasion.common.*;
+
 import java.util.ArrayList;
 
 /**
@@ -20,6 +18,9 @@ public class Simulator
 
   /**
    * This constructor should be called once at the start of each game by the Server.
+   * Initializes the model
+   * Generates a random 80 card deck for each player (both
+   * human and AI players)
    */
   public Simulator(int startYear)
   {
@@ -34,7 +35,18 @@ public class Simulator
     year = startYear;
   }
 
-
+  /**
+   * The server must call this for each playerRegion before the first turn
+   * and during each turn's draw phase. This method will return the proper number of
+   * cards from the top of the given playerRegion's deck taking into account cards played
+   * and discarded by that player.
+   * @param playerRegion
+   * @return list of cards.
+   */
+  public ArrayList<EnumPolicy> drawCards(EnumRegion playerRegion)
+  {
+    return null;
+  }
 
   /**
    * The server should call nextTurn(cards) when it is ready to advance the simulator

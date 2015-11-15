@@ -42,16 +42,12 @@ public class SeaLevel
   /**
    * TODO: set the values of this array to the MSL above ZERO_YEAR in cm for each year through the most recent.
    */
-  private static final int[] annualMeanSeaLevel= {0};
+  private static final int[] annualMeanSeaLevel = {0};
 
    /**
    * Last year of historical data.
    */
-   public int lastYearOfHistoricalData = annualMeanSeaLevel.length -1 + ZERO_YEAR;
-
-
-
-
+   public int lastYearOfHistoricalData = annualMeanSeaLevel.length - 1 + ZERO_YEAR;
 
   /** fields a, b and c are used to store
    * the coefficients of the quadratic equation y = ax<sup>2</sup> + bx + c
@@ -76,6 +72,7 @@ public class SeaLevel
    */
   public double getSeaLevel(int year)
   {
-    return 0;
+    int x = year - ZERO_YEAR;
+    return a*x*x + b*x + c;
   }
 }

@@ -56,7 +56,6 @@ public class State
     landCategoryPercentages     = new float[Constant.TOTAL_AGRO_CATEGORIES];
 
     /*
-
     String[] stateData = data.split(",");
     int numDataFields = stateData.length;
     System.out.println("NUM DATA FIELDS "+numDataFields);

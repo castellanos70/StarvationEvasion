@@ -263,7 +263,7 @@ public enum EnumPolicy
    */
 
   Fertilizer_Subsidy(
-    "Fertilizer Subsidy",
+    "Fertilizer or Feed Subsidy",
     "This policy offers a subsidy of X% rebate to farmers in your region purchasing " +
       "commercial fertilizer for target crop or feed supplements for target live stock."
   )

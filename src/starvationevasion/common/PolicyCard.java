@@ -33,15 +33,14 @@ public class PolicyCard
 
 
 
-
   /**
-   * A policy card can be enacted by just one player region or by as many as all 7
-   * player regions. This is a bitwise int with a 1 in the position corresponding to
-   * each region that has enacted the policy (EnumRegion.getBit()).<br>
+   * This is a bitwise int with a 1 in the position corresponding to
+   * each region that has approved the policy (EnumRegion.getBit()).<br>
    * Note: This field is ignored for all automatic policy cards.<br>
-   * Note: The player who owns a policy is automatically added to the enacting list.
+   * Note: The player who owns a policy always has an automatic approve vote.
+   * and does not actually get to submit a vote.<br>
    */
-  private int enactingRegionBits;
+  private int approvedRegionBits = 0;
 
 
   /**
@@ -83,16 +82,28 @@ public class PolicyCard
     }
     this.owner  = owner;
     this.policy = policy;
-    enactingRegionBits = owner.getBit();
   }
 
   public String getTitle()    {return policy.title;}
   public String getGameText() {return policy.gameText;}
 
   /**
+   * @return 0 if the policy is automatic. Otherwise, returns the number of
+   * votes required for the policy to be enacted.
+   */
+  public final int votesRequired() {return policy.votesRequired();}
+
+  /**
+   * @return true if voting should continue until all eligible players
+   * have voted on this policy. Return false if voting should stop as soon as
+   * the required number of votes have been reached.
+   */
+  public final boolean voteWaitForAll() {return policy.voteWaitForAll();}
+
+  /**
    * @return policy
    */
-  public EnumPolicy getPolicy() {return policy;}
+  public final EnumPolicy getPolicy() {return policy;}
 
 
 
@@ -165,20 +176,36 @@ public class PolicyCard
    */
   public EnumFood getTargetFood() {return targetFood;}
 
-  public void clearEnactingRegions()
+
+  /**
+   * Clears all enacting regions.
+   */
+  public void clearVotes()
   {
-    enactingRegionBits = 0;
+    approvedRegionBits = 0;
   }
 
 
+
+
+
+
+
   /**
+   * The Server is responsible for verifying and setting each
+   * enacting region of
+   * all policy cards requiring a vote (votesRequired() &gt; 0).<br><br>
+   *
    * Each policy sent to the simulator must be enacted by at least one
-   * US region. <br>
+   * US region. <br><br>
+   *
    * Automatic policies are always and only enacted by the region who played the
-   * policy card. <br>
-   * Policy cards that require voting may be enacted by more than one region. In some cases,
-   * only the regions that voted for the policy are enacting regions. In other cases
-   * (generally for international policies) all US regions enact the policy.
+   * policy card. <br><br>
+   *
+   * Some policy cards that require voting may be enacted by more than one region.
+   * In some cases,
+   * only the regions that voted for the policy enact it. In other cases
+   * (generally for international policies) either all US regions enact the policy or none do.
    * @param region a United States region that will be enacting the policy.
    */
   public void addEnactingRegion(EnumRegion region)
@@ -188,20 +215,20 @@ public class PolicyCard
       throw new IllegalArgumentException("addEnactingRegion(EnumRegion="+region+
         ") Only US regions may enact policies.");
     }
-    enactingRegionBits |= region.getBit();
+    approvedRegionBits |= region.getBit();
   }
 
   /**
    * @param region a United States region.
-   * @returns true iff the given region is one of the enacting regions.
+   * @return true iff the given region voted to approve the policy.
    */
-  public boolean isEnactingRegion(EnumRegion region)
-  { return (enactingRegionBits | region.getBit()) != 0;
+  public boolean didVoteYes(EnumRegion region)
+  { return (approvedRegionBits | region.getBit()) != 0;
   }
 
 
   /**
-   * @returns Number of US regions enacting this policy.
+   * @return Number of US regions who voted yes for this policy.
    */
   public int getEnactingRegionCount()
   {
@@ -209,7 +236,7 @@ public class PolicyCard
     for (EnumRegion region :EnumRegion.values())
     {
       if (!region.isUS()) break;  //assumes all us regions are before all world regions.
-      if (isEnactingRegion(region)) count++;
+      if (didVoteYes(region)) count++;
     }
     return count;
   }
@@ -284,19 +311,16 @@ public class PolicyCard
 
 
       case Efficient_Irrigation_Incentive:
-        if (getEnactingRegionCount() != 1)
-        {
-          return policy + ": This is an automatic policy. Only region may enact.";
-        }
         msg = validatePercentValue(varX);
         if (msg != null) return policy + msg;
         break;
 
 
+
       case Foreign_Aid_for_Farm_Infrastructure:
-        if (enactingRegionBits != EnumRegion.allUSRegionBits())
+        if (getEnactingRegionCount() < votesRequired())
         {
-          return policy + ": Must be enacted by all US regions.";
+          return policy + ": does not have required votes.";
         }
         msg = validateDollarValue(varX);
         if (msg != null) return policy + msg;
@@ -308,14 +332,64 @@ public class PolicyCard
 
         break;
 
+
+
       case Covert_Intelligence:
-        if (enactingRegionBits != EnumRegion.allUSRegionBits())
+        if (varX != 2 && varX != 7)
         {
-          return policy + ": Must be enacted by all US regions.";
+          return policy + "["+varX +"]: Cards revealed must be 2 or 7.";
         }
+        break;
+
+
+      case Clean_River_Incentive:
+        msg = validatePercentValue(varX);
+        if (msg != null) return policy + msg;
+
+        msg = validatePercentValue(varY);
+        if (msg != null) return policy + msg;
+        break;
+
+
+
+      case MyPlate_Promotion_Campaign:
         msg = validateDollarValue(varX);
         if (msg != null) return policy + msg;
         break;
+
+
+      case Ethanol_Production_Tax_Credit_Change:
+        msg = validatePercentValue(varY);
+        if (msg != null) return policy + msg;
+        break;
+
+
+      case Fertilizer_Subsidy:
+        msg = validatePercentValue(varX);
+        if (msg != null) return policy + msg;
+        if (targetFood == null)
+        {
+          return policy + "["+targetFood +"]: Must have target Food";
+        }
+        break;
+
+
+
+      case Educate_the_Woman_Campaign:
+        if (getEnactingRegionCount() < votesRequired())
+        {
+          return policy + ": does not have required votes.";
+        }
+        msg = validateDollarValue(varX);
+        if (msg != null) return policy + msg;
+
+        if (targetRegion == null || targetRegion.isUS())
+        {
+          return policy + "["+targetRegion +"]: Must have target world region";
+        }
+
+        break;
+
 
      default:
         return "policy not recognized";

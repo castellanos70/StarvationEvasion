@@ -194,7 +194,7 @@ public class PolicyCard
   /**
    * The Server is responsible for verifying and setting each
    * enacting region of
-   * all policy cards requiring a vote (votesRequired() > 0).<br><br>
+   * all policy cards requiring a vote (votesRequired() &gt; 0).<br><br>
    *
    * Each policy sent to the simulator must be enacted by at least one
    * US region. <br><br>
@@ -220,7 +220,7 @@ public class PolicyCard
 
   /**
    * @param region a United States region.
-   * @returns true iff the given region voted to approve the policy.
+   * @return true iff the given region voted to approve the policy.
    */
   public boolean didVoteYes(EnumRegion region)
   { return (approvedRegionBits | region.getBit()) != 0;
@@ -228,7 +228,7 @@ public class PolicyCard
 
 
   /**
-   * @returns Number of US regions who voted yes for this policy.
+   * @return Number of US regions who voted yes for this policy.
    */
   public int getEnactingRegionCount()
   {

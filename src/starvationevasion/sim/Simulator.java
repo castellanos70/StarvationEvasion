@@ -21,6 +21,7 @@ public class Simulator
    * Initializes the model
    * Generates a random 80 card deck for each player (both
    * human and AI players)
+   * @param startYear The year this game will begin.
    */
   public Simulator(int startYear)
   {
@@ -73,8 +74,9 @@ public class Simulator
    *
    * Throws an illegal Argument Exception if given region is not a player region or
    * if the player has no cards to discard.
-   * @param playerRegion
-   * @param discardList
+   * @param playerRegion Any US player region.
+   * @param discardList List of cards the given player will discard. Note: since discarded
+   *                    cards have no attached data, only the EnumPolicy is needed.
    */
   public void discard(EnumRegion playerRegion, ArrayList<EnumPolicy> discardList)
   {
@@ -114,9 +116,9 @@ public class Simulator
    */
   public int nextTurn(ArrayList<PolicyCard> cards)
   {
-    nextYear();
-    nextYear();
-    nextYear();
+    for (int i=0; i< Constant.YEARS_PER_TURN; i++)
+    { nextYear();
+    }
 
     return year;
   }
@@ -136,11 +138,57 @@ public class Simulator
 
 
   /**
+   * Assumes the current simulation year.
    * @param region Any US or world region.
    * @param food Any food catagory.
    * @return Number of square km used for farming of the given food in the given region.
    */
   public int getLandUsed(EnumRegion region, EnumFood food)
+  {
+    return 0;
+  }
+
+
+  /**
+   * Assumes the current simulation year.
+   * @param region Any US player region.
+   * @return The region's Dept of Agriculture current total revenue in millions of dollars.
+   */
+  public int getRevenue(EnumRegion region)
+  {
+    return 0;
+  }
+
+
+  /**
+   * Assumes the current simulation year.
+   * @param region Any US or world region.
+   * @param food Any food category.
+   * @return the net income of the given food in the given region in millions of dollars.
+   */
+  public int getFarmProductIncome(EnumRegion region, EnumFood food)
+  {
+    return 0;
+  }
+
+
+  /**
+   * Assumes the current simulation year.
+   * @param food Any food category.
+   * @return the price in the current world market of the given food category in
+   * dollars per metric ton.
+   */
+  public int getFarmProductPrice(EnumFood food)
+  {
+    return 0;
+  }
+
+
+  /**
+   * Assumes the current simulation year.
+   * @return Average global sea level over the current year.
+   */
+  public int seaLevel()
   {
     return 0;
   }

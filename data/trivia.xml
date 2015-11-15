@@ -41,4 +41,20 @@
 		<category>Vegetables</category>
 	</question>
 
+
+
+	<question>There are a number of vegan foods that are complete proteins.
+		  (foods that contain an
+		  adequate proportion of all nine of the essential amino acids
+		  necessary for the dietary needs of humans). Which of the 
+		  following is NOT a complete protein:
+	        <answer>Rice</answer>
+		<wrong>Quinoa</wrong>
+		<wrong>Chickpeas</wrong>
+		<wrong>Turnip Greens</wrong>
+		<wrong>Cashews</wrong>
+		<category>Grains</category>
+		<category>Vegetables</category>
+	</question>
+
 </foodtrivia>

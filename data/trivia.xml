@@ -26,4 +26,19 @@
 		<category>Grains</category>
 	</question>
 
+
+	<question>Which is true about celery?
+
+		<answer>Celery requires more calories to eat and digest
+		  than it contains.</answer>
+		<wrong>Celery is actually a fruit.</wrong>
+		<wrong>Celery contains more sugar than strawberries</wrong>
+		<wrong>Celery was originally purple in color, changing in 
+		  the 17th Ventury to green with newer varieties.</wrong>
+        	<wrong>Celery is a complete protein as it contains an
+		  adequate proportion of all nine of the essential amino acids
+	          necessary for the dietary needs of humans.</wrong>
+		<category>Vegetables</category>
+	</question>
+
 </foodtrivia>

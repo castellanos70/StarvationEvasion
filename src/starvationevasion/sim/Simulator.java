@@ -1,8 +1,12 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.*;
-
+import starvationevasion.sim.datamodels.State;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This is the main API point of the Starvation Evasion Simulator.
@@ -13,8 +17,8 @@ public class Simulator
   private final int startYear;
   private int year;
 
-
-
+  //private final String stateDataPath = System.getenv("PWD")+"/data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv";
+  private BufferedReader reader;
 
   /**
    * This constructor should be called once at the start of each game by the Server.
@@ -33,6 +37,33 @@ public class Simulator
 
     this.startYear = startYear;
     year = startYear;
+    String stateDataPath = "/Users/miggens/Developer/StarvationEvasion/data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv";
+    System.out.println("DATA PATH " + stateDataPath);
+
+    //read in data
+    //for each line pass to create a new state.
+    Pattern stateDataPattern = Pattern.compile("^\\w+,\"");
+    try
+    {
+      reader = new BufferedReader(new FileReader(stateDataPath));
+      String line = null;
+      while ((line = reader.readLine()) != null)
+      {
+        Matcher stateDataMatcher = stateDataPattern.matcher(line);
+        if (stateDataMatcher.find())
+        {
+          System.out.println(line);
+          State s = new State(line);
+          System.exit(2);
+        }
+
+      }
+    }
+    catch (Throwable t)
+    {
+      System.err.println("File Reader Exception: "+ t);
+    }
+
   }
 
   /**
@@ -80,5 +111,11 @@ public class Simulator
   public int getLandUsed(EnumRegion region, EnumFood food)
   {
     return 0;
+  }
+
+  //Temporary main for testing & debugging Simulator and State Objs.
+  public static void main(String[] args)
+  {
+    new Simulator(Constant.FIRST_YEAR);
   }
 }

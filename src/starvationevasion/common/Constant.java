@@ -22,4 +22,11 @@ public class Constant
    * Each game turn advances the simulator by YEARS_PER_TURN years.
    */
   public static final int YEARS_PER_TURN = 3;
+
+
+  /**
+   * At the start of the game and during each player's draw phase,
+   * each player draws cards until he or she has HAND_SIZE cards.
+   */
+  public static final int HAND_SIZE = 7;
 }

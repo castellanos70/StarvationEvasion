@@ -1,0 +1,29 @@
+<foodtrivia>
+	<question>Often when people talk about taste, they are actually 
+		referring to a combined sensation of taste, smell, touch.
+		If a person's nose is pinched so that he or she cannot smell, 
+		and the food is mashed,
+		which three foods will most people say have the same taste?
+
+		<answer> Apples, Onions, and Potatoes </answer>
+		<wrong> Lemon, Figs, and Ginger </wrong>
+		<wrong> Pineapple, Mango, and Cocoa </wrong>
+		<wrong> Lime, Peas, and Grapefruit </wrong>
+		<wrong> Plum, Pear, and Brussels Sprouts </wrong>
+		<category>Citrus Fruits</category>
+		<category>Non-Citrus Fruits</category>
+		<category>Vegetables</category>
+	</question>
+
+	<question>In most common brands of corn flakes, what percent, 
+		by weight, is the corn?
+
+		<answer>8%</answer>
+		<wrong>0%</wrong>
+		<wrong>50%</wrong>
+		<wrong>75%</wrong>
+		<wrong>100%</wrong>
+		<category>Grains</category>
+	</question>
+
+</foodtrivia>

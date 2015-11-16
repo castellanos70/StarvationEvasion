@@ -1,12 +1,7 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.*;
-import starvationevasion.sim.datamodels.State;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * This is the main API point of the Starvation Evasion Simulator.
@@ -16,9 +11,6 @@ public class Simulator
 {
   private final int startYear;
   private int year;
-
-  //private final String stateDataPath = System.getenv("PWD")+"/data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv";
-  private BufferedReader reader;
 
   /**
    * This constructor should be called once at the start of each game by the Server.
@@ -38,6 +30,8 @@ public class Simulator
     this.startYear = startYear;
     year = startYear;
 
+    ArrayList<String> stateData = DataReader.retrieveStateData("data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv");
+    instantiateRegions(stateData);
   }
 
   /**
@@ -85,6 +79,51 @@ public class Simulator
   public int getLandUsed(EnumRegion region, EnumFood food)
   {
     return 0;
+  }
+
+  /**
+   * This method is used to create State objects along with <br></>
+   * the Region data structure
+   *
+   * @param data
+   */
+  private void instantiateRegions(ArrayList<String> data)
+  {
+    if (data.size() == 0) return;
+
+    ArrayList<State> states = new ArrayList<>();
+
+    float[] avgConversionFactors = new float[Constant.TOTAL_AGRO_CATEGORIES];
+    for (String state : data)
+    {
+      State currentState = new State(state);
+      states.add(currentState);
+      float[] currentStatePercentages = currentState.getPercentages();
+
+      for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
+      {
+        avgConversionFactors[i] += currentStatePercentages[i];
+      }
+    }
+
+    float sum = 0.f;
+    for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
+    {
+      avgConversionFactors[i] /= 50.f;
+      sum += avgConversionFactors[i];
+      //System.out.println("AVG CATEGORY "+avgConversionFactors[i]);
+    }
+
+    float averageConversionFactor = sum/Constant.TOTAL_AGRO_CATEGORIES;
+
+    for (State state : states)
+    {
+      state.setAverageConversionFactor(averageConversionFactor);
+    }
+
+    //Still need to reorganize and create a mechanism to set
+    //the region field of each state and which data structure
+    //to use for the regions.
   }
 
   //Temporary main for testing & debugging Simulator and State Objs.

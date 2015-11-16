@@ -1,7 +1,11 @@
 package starvationevasion.sim;
 
+
 import starvationevasion.common.*;
+
 import java.util.ArrayList;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * This is the main API point of the Starvation Evasion Simulator.
@@ -9,6 +13,8 @@ import java.util.ArrayList;
  */
 public class Simulator
 {
+  private final static Logger LOGGER = Logger.getLogger(Simulator.class.getName());
+
   private final int startYear;
   private int year;
 
@@ -20,18 +26,24 @@ public class Simulator
    */
   public Simulator(int startYear)
   {
+    LOGGER.setLevel(Level.ALL);
+
     if (startYear < Constant.FIRST_YEAR || startYear > Constant.LAST_YEAR)
     {
-      throw new IllegalArgumentException("Simulator(startYear="+startYear+
-        ") start year must be between [" +
-        Constant.FIRST_YEAR + ", " + Constant.LAST_YEAR+"].");
+      String errMsg = "Simulator(startYear=" + startYear +
+                      ") start year must be between [" +
+                      Constant.FIRST_YEAR + ", " + Constant.LAST_YEAR + "].";
+      LOGGER.severe(errMsg);
+      throw new IllegalArgumentException(errMsg);
     }
 
     this.startYear = startYear;
     year = startYear;
 
+
     ArrayList<String> stateData = DataReader.retrieveStateData("data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv");
     instantiateRegions(stateData);
+    LOGGER.info("Starting Simulation at year " + startYear);
   }
 
   /**
@@ -55,21 +67,13 @@ public class Simulator
    */
   public int nextTurn(ArrayList<PolicyCard> cards)
   {
+    LOGGER.info("Advancing Turn...");
     nextYear();
     nextYear();
     nextYear();
-
+    LOGGER.info("Turn complete, year is now " + year);
     return year;
   }
-
-
-
-  private int nextYear()
-  {
-    year++;
-    return year;
-  }
-
 
   /**
    * @param region Any US or world region.
@@ -78,7 +82,17 @@ public class Simulator
    */
   public int getLandUsed(EnumRegion region, EnumFood food)
   {
-    return 0;
+    int landUsed = 0;
+    LOGGER.info("Land used for food " + food + " in region " + region + " = "
+                + landUsed + " km^2");
+    return landUsed;
+  }
+
+  private int nextYear()
+  {
+    year++;
+    LOGGER.info("Advancing year to " + year);
+    return year;
   }
 
   /**

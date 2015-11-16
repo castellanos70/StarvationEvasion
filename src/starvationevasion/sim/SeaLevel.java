@@ -1,5 +1,6 @@
 package starvationevasion.sim;
 
+
 /**
  * Created by Joel on 11/5/2015.<br>
  * In the Starvation Evasion game, sea level refers to the mean sea level (MSL),
@@ -32,7 +33,7 @@ public class SeaLevel
   /**
    * First year of historical data
    */
-   public static final int ZERO_YEAR = 1980;
+  public static final int ZERO_YEAR = 1980;
 
   /**
    * Final future year this class will be used to estimate the MSL relitive to ZERO_YRAR.
@@ -44,10 +45,10 @@ public class SeaLevel
    */
   private static final int[] annualMeanSeaLevel = {0};
 
-   /**
+  /**
    * Last year of historical data.
    */
-   public int lastYearOfHistoricalData = annualMeanSeaLevel.length - 1 + ZERO_YEAR;
+  public int lastYearOfHistoricalData = annualMeanSeaLevel.length - 1 + ZERO_YEAR;
 
   /** fields a, b and c are used to store
    * the coefficients of the quadratic equation y = ax<sup>2</sup> + bx + c
@@ -73,6 +74,7 @@ public class SeaLevel
   public double getSeaLevel(int year)
   {
     int x = year - ZERO_YEAR;
-    return a*x*x + b*x + c;
+    double seaLevel = a*x*x + b*x + c;
+    return seaLevel;
   }
 }

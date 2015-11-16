@@ -1,11 +1,12 @@
 package starvationevasion.sim;
 
+
 import starvationevasion.common.*;
-import starvationevasion.sim.io.LogLevel;
-import starvationevasion.sim.io.Logger;
 
 import java.io.BufferedReader;
 import java.util.ArrayList;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * This is the main API point of the Starvation Evasion Simulator.
@@ -13,6 +14,8 @@ import java.util.ArrayList;
  */
 public class Simulator
 {
+  private final static Logger LOGGER = Logger.getLogger(Simulator.class.getName());
+
   private final int startYear;
   private int year;
 
@@ -27,20 +30,20 @@ public class Simulator
    */
   public Simulator(int startYear)
   {
-    Logger.setLogLevel(LogLevel.ALL);
+    LOGGER.setLevel(Level.ALL);
 
     if (startYear < Constant.FIRST_YEAR || startYear > Constant.LAST_YEAR)
     {
       String errMsg = "Simulator(startYear=" + startYear +
                       ") start year must be between [" +
                       Constant.FIRST_YEAR + ", " + Constant.LAST_YEAR + "].";
-      Logger.log(LogLevel.ERROR, errMsg);
+      LOGGER.severe(errMsg);
       throw new IllegalArgumentException(errMsg);
     }
 
     this.startYear = startYear;
     year = startYear;
-    Logger.log(LogLevel.INFO, "Starting Simulation at year " + startYear);
+    LOGGER.info("Starting Simulation at year " + startYear);
   }
 
   /**
@@ -53,7 +56,6 @@ public class Simulator
    */
   public ArrayList<EnumPolicy> drawCards(EnumRegion playerRegion)
   {
-    Logger.log(LogLevel.INFO, "Cards drawn");
     return null;
   }
 
@@ -65,11 +67,11 @@ public class Simulator
    */
   public int nextTurn(ArrayList<PolicyCard> cards)
   {
-    Logger.log(LogLevel.INFO, "Advancing Turn...");
+    LOGGER.info("Advancing Turn...");
     nextYear();
     nextYear();
     nextYear();
-    Logger.log(LogLevel.INFO, "Turn complete, year is now " + year);
+    LOGGER.info("Turn complete, year is now " + year);
     return year;
   }
 
@@ -81,15 +83,15 @@ public class Simulator
   public int getLandUsed(EnumRegion region, EnumFood food)
   {
     int landUsed = 0;
-    Logger.log(LogLevel.DEBUG, "Land used for food " + food + " in region "
-                               + region + " = " + landUsed + " km^2");
+    LOGGER.info("Land used for food " + food + " in region " + region + " = "
+                + landUsed + " km^2");
     return landUsed;
   }
 
   private int nextYear()
   {
     year++;
-    Logger.log(LogLevel.DEBUG, "Advancing year to " + year);
+    LOGGER.info("Advancing year to " + year);
     return year;
   }
 

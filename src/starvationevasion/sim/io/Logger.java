@@ -2,8 +2,7 @@ package starvationevasion.sim.io;
 
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-
+import java.util.Date;
 
 /**
  * Class for logging messages to console. This can be changed to log to a file,
@@ -39,7 +38,7 @@ public class Logger
   private static void print(LogLevel level, String msg)
   {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ");
-    String outMsg = sdf.format(LocalDateTime.now());
+    String outMsg = sdf.format(new Date());
     if (level == LogLevel.DEBUG)
     {
       outMsg += "***DEBUG***:  " + msg;

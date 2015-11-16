@@ -37,32 +37,6 @@ public class Simulator
 
     this.startYear = startYear;
     year = startYear;
-    String stateDataPath = "/Users/miggens/Developer/StarvationEvasion/data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv";
-    System.out.println("DATA PATH " + stateDataPath);
-
-    //read in data
-    //for each line pass to create a new state.
-    Pattern stateDataPattern = Pattern.compile("^\\w+,\"");
-    try
-    {
-      reader = new BufferedReader(new FileReader(stateDataPath));
-      String line = null;
-      while ((line = reader.readLine()) != null)
-      {
-        Matcher stateDataMatcher = stateDataPattern.matcher(line);
-        if (stateDataMatcher.find())
-        {
-          System.out.println(line);
-          State s = new State(line);
-          System.exit(2);
-        }
-
-      }
-    }
-    catch (Throwable t)
-    {
-      System.err.println("File Reader Exception: "+ t);
-    }
 
   }
 

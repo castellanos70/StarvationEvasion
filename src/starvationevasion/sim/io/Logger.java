@@ -1,6 +1,10 @@
 package starvationevasion.sim.io;
 
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+
+
 /**
  * Class for logging messages to console. This can be changed to log to a file,
  * but currently just logs to the console.
@@ -34,7 +38,8 @@ public class Logger
 
   private static void print(LogLevel level, String msg)
   {
-    String outMsg = "";
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss ");
+    String outMsg = sdf.format(LocalDateTime.now());
     if (level == LogLevel.DEBUG)
     {
       outMsg += "***DEBUG***:  " + msg;

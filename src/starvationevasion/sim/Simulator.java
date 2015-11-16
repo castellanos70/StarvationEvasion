@@ -31,15 +31,16 @@ public class Simulator
 
     if (startYear < Constant.FIRST_YEAR || startYear > Constant.LAST_YEAR)
     {
-      Logger.log(LogLevel.ERROR, "Invalid start year " + startYear);
-      throw new IllegalArgumentException("Simulator(startYear="+startYear+
-        ") start year must be between [" +
-        Constant.FIRST_YEAR + ", " + Constant.LAST_YEAR+"].");
+      String errMsg = "Simulator(startYear=" + startYear +
+                      ") start year must be between [" +
+                      Constant.FIRST_YEAR + ", " + Constant.LAST_YEAR + "].";
+      Logger.log(LogLevel.ERROR, errMsg);
+      throw new IllegalArgumentException(errMsg);
     }
 
     this.startYear = startYear;
     year = startYear;
-    Logger.log(LogLevel.INFO, "Starting Simulation at year " + year);
+    Logger.log(LogLevel.INFO, "Starting Simulation at year " + startYear);
   }
 
   /**
@@ -52,6 +53,7 @@ public class Simulator
    */
   public ArrayList<EnumPolicy> drawCards(EnumRegion playerRegion)
   {
+    Logger.log(LogLevel.INFO, "Cards drawn");
     return null;
   }
 
@@ -63,10 +65,11 @@ public class Simulator
    */
   public int nextTurn(ArrayList<PolicyCard> cards)
   {
+    Logger.log(LogLevel.INFO, "Advancing Turn...");
     nextYear();
     nextYear();
     nextYear();
-
+    Logger.log(LogLevel.INFO, "Turn complete, year is now " + year);
     return year;
   }
 
@@ -77,13 +80,16 @@ public class Simulator
    */
   public int getLandUsed(EnumRegion region, EnumFood food)
   {
-    return 0;
+    int landUsed = 0;
+    Logger.log(LogLevel.DEBUG, "Land used for food " + food + " in region "
+                               + region + " = " + landUsed + " km^2");
+    return landUsed;
   }
 
   private int nextYear()
   {
     year++;
-    Logger.log(LogLevel.INFO, "Starting year " + year);
+    Logger.log(LogLevel.DEBUG, "Advancing year to " + year);
     return year;
   }
 

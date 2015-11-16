@@ -1,5 +1,10 @@
 package starvationevasion.sim;
 
+
+import starvationevasion.sim.io.LogLevel;
+import starvationevasion.sim.io.Logger;
+
+
 /**
  * Created by Joel on 11/5/2015.<br>
  * In the Starvation Evasion game, sea level refers to the mean sea level (MSL),
@@ -73,6 +78,8 @@ public class SeaLevel
   public double getSeaLevel(int year)
   {
     int x = year - ZERO_YEAR;
-    return a*x*x + b*x + c;
+    double seaLevel = a*x*x + b*x + c;
+    Logger.log(LogLevel.DEBUG, "MSL for year " + year + " = " + seaLevel);
+    return seaLevel;
   }
 }

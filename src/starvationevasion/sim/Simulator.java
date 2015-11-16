@@ -2,6 +2,9 @@ package starvationevasion.sim;
 
 import starvationevasion.common.*;
 import starvationevasion.sim.datamodels.State;
+import starvationevasion.sim.io.LogLevel;
+import starvationevasion.sim.io.Logger;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -28,6 +31,9 @@ public class Simulator
    */
   public Simulator(int startYear)
   {
+    Logger.setLogLevel(LogLevel.ALL);
+    Logger.log(LogLevel.INFO, "Starting Simulation");
+
     if (startYear < Constant.FIRST_YEAR || startYear > Constant.LAST_YEAR)
     {
       throw new IllegalArgumentException("Simulator(startYear="+startYear+
@@ -38,7 +44,8 @@ public class Simulator
     this.startYear = startYear;
     year = startYear;
     String stateDataPath = "/Users/miggens/Developer/StarvationEvasion/data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv";
-    System.out.println("DATA PATH " + stateDataPath);
+    //System.out.println("DATA PATH " + stateDataPath);
+    Logger.log(LogLevel.DEBUG, "DATA PATH " + stateDataPath);
 
     //read in data
     //for each line pass to create a new state.
@@ -52,7 +59,8 @@ public class Simulator
         Matcher stateDataMatcher = stateDataPattern.matcher(line);
         if (stateDataMatcher.find())
         {
-          System.out.println(line);
+          //System.out.println(line);
+          Logger.log(LogLevel.DEBUG, line);
           State s = new State(line);
           System.exit(2);
         }
@@ -61,7 +69,8 @@ public class Simulator
     }
     catch (Throwable t)
     {
-      System.err.println("File Reader Exception: "+ t);
+      //System.err.println("File Reader Exception: "+ t);
+      Logger.log(LogLevel.ERROR, "File Reader Exception: " + t);
     }
 
   }
@@ -94,15 +103,6 @@ public class Simulator
     return year;
   }
 
-
-
-  private int nextYear()
-  {
-    year++;
-    return year;
-  }
-
-
   /**
    * @param region Any US or world region.
    * @param food Any food catagory.
@@ -111,6 +111,13 @@ public class Simulator
   public int getLandUsed(EnumRegion region, EnumFood food)
   {
     return 0;
+  }
+
+  private int nextYear()
+  {
+    year++;
+    Logger.log(LogLevel.INFO, "Starting year " + year);
+    return year;
   }
 
   //Temporary main for testing & debugging Simulator and State Objs.

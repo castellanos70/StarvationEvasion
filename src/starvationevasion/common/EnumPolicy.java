@@ -1,5 +1,7 @@
 package starvationevasion.common;
 
+import java.util.ResourceBundle;
+
 /**
  * Policy Cards game text, draft affects, votes required and model effects.
  */
@@ -25,11 +27,7 @@ public enum EnumPolicy
    * dollars spent and target crop.
    */
 
-  GMO_Seed_Insect_Resistance_Research(
-    "GMO Seed Insect Resistance Research",
-    "Each participating region spends X million dollars to fund GMO seed research " +
-      "for increasing insect resistance of target crop."
-  )
+  GMO_Seed_Insect_Resistance_Research()
     { public int votesRequired() {return 1;}
       public boolean voteWaitForAll() {return true;}
   },
@@ -60,11 +58,7 @@ public enum EnumPolicy
    * relief is delivered are presumed to lack the resources to have been part of the demand).
    */
 
-  International_Food_Releif_Program(
-    "International Food Releif Program",
-    "Each participating region spends X million dollars to purchase " +
-        "their own regions commodity food for relief of world hunger."
-  )
+  International_Food_Releif_Program()
     { public int votesRequired() {return 1;}
       public boolean voteWaitForAll() {return true;}
     },
@@ -94,11 +88,7 @@ public enum EnumPolicy
    * is deducted from the regions tax revenue at the start of the next turn.
    */
 
-  Efficient_Irrigation_Incentive(
-    "Efficient Irrigation Incentive",
-    "From now through the start of the next turn, X% of money spent by farmers " +
-      "in players region for improved irrigation efficiency is tax deductible."
-  )
+  Efficient_Irrigation_Incentive()
     { public int votesRequired() {return 0;}
       public boolean voteWaitForAll() {return false;}
     }
@@ -122,11 +112,7 @@ public enum EnumPolicy
    <br><br>
    */
 
-  Foreign_Aid_for_Farm_Infrastructure(
-    "Foreign Aid for Farm Infrastructure",
-    "The US sends 7X million dollars in foreign aid for capital development " +
-      "of farming infrastructure of target world region."
-  )
+  Foreign_Aid_for_Farm_Infrastructure()
     { public int votesRequired() {return 4;}
       public boolean voteWaitForAll() {return false;}
     }  ,
@@ -151,15 +137,7 @@ public enum EnumPolicy
    * time.<br><br>
    */
 
-  Covert_Intelligence(
-    "Covert Intelligence",
-    "You get to covertly examine target player's hand and the top two cards " +
-      "of that player's deck. You may target yourself. " +
-      "During the voting phase, other players will see that you have " +
-      "played this card, but not know its target. Bonus: If you can " +
-      "correctly answer a hidden research question, you examine the top seven " +
-      "cards of the target player's deck."
-  )
+  Covert_Intelligence()
     { public int votesRequired() {return 0;}
       public boolean voteWaitForAll() {return false;}
     } ,
@@ -187,11 +165,7 @@ public enum EnumPolicy
    <br><br>
    */
 
-  Clean_River_Incentive(
-    "Clean River Incentive",
-    "X% tax break for farmers in my region who reduce by Y% the outflow of "+
-      "pesticides and fertilizers from their farms into the rivers."
-  )
+  Clean_River_Incentive()
     { public int votesRequired() {return 0;}
       public boolean voteWaitForAll() {return false;}
     }  ,
@@ -213,11 +187,7 @@ public enum EnumPolicy
    * effected food categories.<br><br>
    */
 
-  MyPlate_Promotion_Campaign(
-    "MyPlate Promotion Campaign",
-    "You spend X million dollars on an advertising campaign within your region promoting " +
-      "public awareness of the United States Department of Agricultures MyPlate nutrition guide."
-  )
+  MyPlate_Promotion_Campaign()
     { public int votesRequired() {return 0;}
       public boolean voteWaitForAll() {return false;}
     }  ,
@@ -236,12 +206,7 @@ public enum EnumPolicy
    * Model Effects: <br><br>
    */
 
-  Ethanol_Production_Tax_Credit_Change(
-    "Ethanol Production Tax Credit Change",
-    "Currently an ethanol producer located in my region is entitled " +
-      "to a credit of $X per gallon of ethanol produced, including " +
-      "cellulosic ethanol. This policy changes that to $Y per gallon."
-  )
+  Ethanol_Production_Tax_Credit_Change()
     { public int votesRequired() {return 0;}
       public boolean voteWaitForAll() {return false;}
     }  ,
@@ -262,11 +227,7 @@ public enum EnumPolicy
    * fertilizer run off.<br><br>
    */
 
-  Fertilizer_Subsidy(
-    "Fertilizer or Feed Subsidy",
-    "This policy offers a subsidy of X% rebate to farmers in your region purchasing " +
-      "commercial fertilizer for target crop or feed supplements for target live stock."
-  )
+  Fertilizer_Subsidy()
     { public int votesRequired() {return 0;}
       public boolean voteWaitForAll() {return false;}
     }  ,
@@ -288,25 +249,21 @@ public enum EnumPolicy
    * If approved, each US region must pay X million.
    */
 
-  Educate_the_Woman_Campaign(
-    "Educate the Woman Campaign",
-    "The US sends 7X million dollars to educate woman of the target world " +
-      "region in reading, basic business and farming techniques."
-  )
+  Educate_the_Woman_Campaign()
     { public int votesRequired() {return 4;}
       public boolean voteWaitForAll() {return false;}
     };
 
-
-
+  /** Resources for the default locale */
+  private final ResourceBundle res = ResourceBundle.getBundle("starvationevasion.common.locales.strings");
 
   public final String title;
   public final String gameText;
 
-  private EnumPolicy(String title, String gameText)
+  EnumPolicy()
   {
-    this.title = title;
-    this.gameText = gameText;
+    this.title = res.getString("EnumPolicy." + name() + ".title");
+    this.gameText = res.getString("EnumPolicy." + name() + ".gameText");
   }
 
   /**

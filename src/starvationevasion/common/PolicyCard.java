@@ -67,11 +67,12 @@ public class PolicyCard
 
 
   /**
-   *  Constructs a policy card of the given policy.
+   *  Constructs a policy card owned by the given owner of the given policy.
    *  Many properties of the policy may be set and changed, but the
-   *  given EnumPolicy policy is immutable.
+   *  owner and policy are immutable.
    *
-   * @param policy
+   * @param owner US player region controlled by the player who drafts this policy.
+   * @param policy the policy
    */
   public PolicyCard(EnumRegion owner, EnumPolicy policy)
   {
@@ -164,7 +165,7 @@ public class PolicyCard
 
   /**
    * Some policy cards require a target food (crop or livestock).
-   * @param targetFood
+   * @param targetFood sets the targetFood. Ignored of this policy does not use a target food.
    */
   public void setTargetFood(EnumFood targetFood) {this.targetFood = targetFood;}
 
@@ -400,9 +401,11 @@ public class PolicyCard
 
   /**
    * Used only for testing this class.
+   * @param args Not used.
    */
   public static void main(String[] args)
   {
+
     PolicyCard myCard = new PolicyCard(EnumRegion.MOUNTAIN,
       EnumPolicy.GMO_Seed_Insect_Resistance_Research);
     System.out.println(myCard.getTitle());

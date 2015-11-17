@@ -51,7 +51,7 @@ public class Simulator
    * and during each turn's draw phase. This method will return the proper number of
    * cards from the top of the given playerRegion's deck taking into account cards played
    * and discarded by that player.
-   * @param playerRegion
+   * @param playerRegion region of player who id given the drawn cards.
    * @return list of cards.
    */
   public ArrayList<EnumPolicy> drawCards(EnumRegion playerRegion)
@@ -96,7 +96,7 @@ public class Simulator
   }
 
   /**
-   * This method is used to create State objects along with <br></>
+   * This method is used to create State objects along with 
    * the Region data structure
    *
    * @param data

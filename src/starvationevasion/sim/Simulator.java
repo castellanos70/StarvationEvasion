@@ -23,6 +23,8 @@ public class Simulator
    * Initializes the model
    * Generates a random 80 card deck for each player (both
    * human and AI players)
+   *
+   * @param startYear year the game is starting. Generally this will be Constant.FIRST_YEAR.
    */
   public Simulator(int startYear)
   {
@@ -51,7 +53,7 @@ public class Simulator
    * and during each turn's draw phase. This method will return the proper number of
    * cards from the top of the given playerRegion's deck taking into account cards played
    * and discarded by that player.
-   * @param playerRegion
+   * @param playerRegion region of player who id given the drawn cards.
    * @return list of cards.
    */
   public ArrayList<EnumPolicy> drawCards(EnumRegion playerRegion)
@@ -88,6 +90,10 @@ public class Simulator
     return landUsed;
   }
 
+  /**
+   *
+   * @return the simulation year that has just finished.
+   */
   private int nextYear()
   {
     year++;
@@ -96,7 +102,7 @@ public class Simulator
   }
 
   /**
-   * This method is used to create State objects along with <br></>
+   * This method is used to create State objects along with 
    * the Region data structure
    *
    * @param data

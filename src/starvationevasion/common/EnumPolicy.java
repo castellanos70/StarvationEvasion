@@ -1,4 +1,5 @@
 package starvationevasion.common;
+import java.util.ResourceBundle;
 
 /**
  * Policy Cards game text, draft affects, votes required and model effects.
@@ -6,8 +7,8 @@ package starvationevasion.common;
 public enum EnumPolicy
 {
   /**
-   * Game Text: Each participating region spends X million dollars to fund GMO seed research
-   * for increasing insect resistance of target crop.<br><br>
+   * Title: {@value #TITLE_GMO_Seed_Insect_Resistance_Research}<br><br>
+   * Game Text: {@value #TEXT_GMO_Seed_Insect_Resistance_Research}<br><br>
    *
    * Draft Affects: When drafting this policy, player selects a crop and an
    * amount X to be paid by EACH player who approves the policy. <br><br>
@@ -25,19 +26,17 @@ public enum EnumPolicy
    * dollars spent and target crop.
    */
 
-  GMO_Seed_Insect_Resistance_Research(
-    "GMO Seed Insect Resistance Research",
-    "Each participating region spends X million dollars to fund GMO seed research " +
-      "for increasing insect resistance of target crop."
-  )
+  GMO_Seed_Insect_Resistance_Research
     { public int votesRequired() {return 1;}
       public boolean voteWaitForAll() {return true;}
+      public String getTitle(){ return TITLE_GMO_Seed_Insect_Resistance_Research;}
+      public String getGameText(){ return TEXT_GMO_Seed_Insect_Resistance_Research;}
   },
 
 
   /**
-   * Game Text: Each participating region spends X million dollars to
-   * purchase their own regions commodity food for relief of world hunger.<br><br>
+   * Title: {@value #TITLE_International_Food_Relief_Program}<br><br>
+   * Game Text: {@value #TEXT_International_Food_Relief_Program}<br><br>
    *
    * Draft Affects: When drafting this policy, player
    * selects an amount X to be paid by EACH player who approves the policy. <br><br>
@@ -60,19 +59,17 @@ public enum EnumPolicy
    * relief is delivered are presumed to lack the resources to have been part of the demand).
    */
 
-  International_Food_Releif_Program(
-    "International Food Releif Program",
-    "Each participating region spends X million dollars to purchase " +
-        "their own regions commodity food for relief of world hunger."
-  )
+  International_Food_Relief_Program
     { public int votesRequired() {return 1;}
       public boolean voteWaitForAll() {return true;}
+      public String getTitle(){ return TITLE_International_Food_Relief_Program;}
+      public String getGameText(){ return TEXT_International_Food_Relief_Program;}
     },
 
 
   /**
-   * Game Text: From now through the start of the next turn, X% of money
-   * spent by farmers in players region for improved irrigation efficiency is tax deductible.<br><br>
+   * Title: {@value #TITLE_Efficient_Irrigation_Incentive}<br><br>
+   * Game Text: {@value #TEXT_Efficient_Irrigation_Incentive}<br><br>
    *
    * Draft Affects: When drafting this policy, player selects a percentage X [1% through 100%].<br><br>
    *
@@ -94,20 +91,18 @@ public enum EnumPolicy
    * is deducted from the regions tax revenue at the start of the next turn.
    */
 
-  Efficient_Irrigation_Incentive(
-    "Efficient Irrigation Incentive",
-    "From now through the start of the next turn, X% of money spent by farmers " +
-      "in players region for improved irrigation efficiency is tax deductible."
-  )
+  Efficient_Irrigation_Incentive
     { public int votesRequired() {return 0;}
       public boolean voteWaitForAll() {return false;}
+      public String getTitle(){ return TITLE_Efficient_Irrigation_Incentive;}
+      public String getGameText(){ return TEXT_Efficient_Irrigation_Incentive;}
     }
   ,
 
 
   /**
-   * Game Text: The US sends 7X million dollars in foreign aid for
-   * capital development of farming infrastructure of target world region. <br><br>
+   * Title: {@value #TITLE_Foreign_Aid_for_Farm_Infrastructure}<br><br>
+   * Game Text: {@value #TEXT_Foreign_Aid_for_Farm_Infrastructure}<br><br>
    *
    * Draft Affects: When drafting this policy, player selects target world
    * region and X million dollars.<br><br>
@@ -122,27 +117,17 @@ public enum EnumPolicy
    <br><br>
    */
 
-  Foreign_Aid_for_Farm_Infrastructure(
-    "Foreign Aid for Farm Infrastructure",
-    "The US sends 7X million dollars in foreign aid for capital development " +
-      "of farming infrastructure of target world region."
-  )
+  Foreign_Aid_for_Farm_Infrastructure()
     { public int votesRequired() {return 4;}
       public boolean voteWaitForAll() {return false;}
+      public String getTitle(){ return TITLE_Foreign_Aid_for_Farm_Infrastructure;}
+      public String getGameText(){ return TEXT_Foreign_Aid_for_Farm_Infrastructure;}
     }  ,
 
 
   /**
-   * Game Text: You get to covertly examine target player's hand
-   * and the top two cards of that player's deck. You may target yourself.
-   * During the voting phase, other players will see that you have
-   * played this card, but not know its target. Bonus: If you can
-   * correctly answer a hidden research question, you examine the top seven
-   * cards of the target player's deck.
-   * <br><br>
-   *
-   * Draft Affects: When drafting this policy, if the player correctly answers a
-   * random, but topical, trivia question, then X=7, otherwise X=2.<br><br>
+   * Title: {@value #TITLE_Covert_Intelligence}<br><br>
+   * Game Text: {@value #TEXT_Covert_Intelligence}<br><br>
    *
    * Votes Required: Automatic<br><br>
    *
@@ -151,24 +136,17 @@ public enum EnumPolicy
    * time.<br><br>
    */
 
-  Covert_Intelligence(
-    "Covert Intelligence",
-    "You get to covertly examine target player's hand and the top two cards " +
-      "of that player's deck. You may target yourself. " +
-      "During the voting phase, other players will see that you have " +
-      "played this card, but not know its target. Bonus: If you can " +
-      "correctly answer a hidden research question, you examine the top seven " +
-      "cards of the target player's deck."
-  )
+  Covert_Intelligence
     { public int votesRequired() {return 0;}
       public boolean voteWaitForAll() {return false;}
+      public String getTitle(){ return TITLE_Covert_Intelligence;}
+      public String getGameText(){ return TEXT_Covert_Intelligence;}
     } ,
 
 
   /**
-   * Game Text: X% tax break for farmers in my region who reduce by Y%
-   * the outflow of pesticides and fertilizers from their farms
-   * into the rivers.<br><br>
+   * Title: {@value #TITLE_Clean_River_Incentive}<br><br>
+   * Game Text: {@value #TEXT_Clean_River_Incentive}<br><br>
    *
    * Draft Affects: When drafting this policy, player selects a percentage Y
    * [1% through 100%] and Z% [1% through 100%].<br><br>
@@ -187,20 +165,17 @@ public enum EnumPolicy
    <br><br>
    */
 
-  Clean_River_Incentive(
-    "Clean River Incentive",
-    "X% tax break for farmers in my region who reduce by Y% the outflow of "+
-      "pesticides and fertilizers from their farms into the rivers."
-  )
+  Clean_River_Incentive
     { public int votesRequired() {return 0;}
       public boolean voteWaitForAll() {return false;}
+      public String getTitle(){ return TITLE_Clean_River_Incentive;}
+      public String getGameText(){ return TEXT_Clean_River_Incentive;}
     }  ,
 
 
   /**
-   * Game Text: You spend X million dollars on an advertising campaign within
-   * your region promoting public awareness of the United States Department of
-   * Agricultures MyPlate nutrition guide.<br><br>
+   * Title: {@value #TITLE_MyPlate_Promotion_Campaign}<br><br>
+   * Game Text: {@value #TEXT_MyPlate_Promotion_Campaign}<br><br>
    *
    * Draft Affects: When drafting this policy, player selects X million dollars.<br><br>
    *
@@ -213,20 +188,17 @@ public enum EnumPolicy
    * effected food categories.<br><br>
    */
 
-  MyPlate_Promotion_Campaign(
-    "MyPlate Promotion Campaign",
-    "You spend X million dollars on an advertising campaign within your region promoting " +
-      "public awareness of the United States Department of Agricultures MyPlate nutrition guide."
-  )
+  MyPlate_Promotion_Campaign
     { public int votesRequired() {return 0;}
       public boolean voteWaitForAll() {return false;}
+      public String getTitle(){ return TITLE_MyPlate_Promotion_Campaign;}
+      public String getGameText(){ return TEXT_MyPlate_Promotion_Campaign;}
     }  ,
 
 
   /**
-   * Game Text: Currently an ethanol producer located in my region is entitled
-   * to a credit of $X per gallon of ethanol produced, including cellulosic
-   * ethanol. This policy changes that to $Y per gallon.<br><br>
+   * Title: {@value #TITLE_Ethanol_Production_Tax_Credit_Change}<br><br>
+   * Game Text: {@value #TEXT_Ethanol_Production_Tax_Credit_Change}<br><br>
    *
    * Draft Affects: When drafting this policy, the model must inform
    * the player of X and require the player selects Y.<br><br>
@@ -236,21 +208,17 @@ public enum EnumPolicy
    * Model Effects: <br><br>
    */
 
-  Ethanol_Production_Tax_Credit_Change(
-    "Ethanol Production Tax Credit Change",
-    "Currently an ethanol producer located in my region is entitled " +
-      "to a credit of $X per gallon of ethanol produced, including " +
-      "cellulosic ethanol. This policy changes that to $Y per gallon."
-  )
+  Ethanol_Production_Tax_Credit_Change
     { public int votesRequired() {return 0;}
       public boolean voteWaitForAll() {return false;}
+      public String getTitle(){ return TITLE_Ethanol_Production_Tax_Credit_Change;}
+      public String getGameText(){ return TEXT_Ethanol_Production_Tax_Credit_Change;}
     }  ,
 
 
   /**
-   * Game Text: This policy offers a subsidy of X% rebate to farmers
-   * in your region purchasing commercial fertilizer for target crop or
-   * feed supplements for target live stock.<br><br>
+   * Title: {@value #TITLE_Fertilizer_Subsidy}<br><br>
+   * Game Text: {@value #TEXT_Fertilizer_Subsidy}<br><br>
    *
    * Draft Affects: When drafting this policy, player selects target food product and percentage Y.<br><br>
    *
@@ -262,19 +230,17 @@ public enum EnumPolicy
    * fertilizer run off.<br><br>
    */
 
-  Fertilizer_Subsidy(
-    "Fertilizer or Feed Subsidy",
-    "This policy offers a subsidy of X% rebate to farmers in your region purchasing " +
-      "commercial fertilizer for target crop or feed supplements for target live stock."
-  )
+  Fertilizer_Subsidy
     { public int votesRequired() {return 0;}
       public boolean voteWaitForAll() {return false;}
+      public String getTitle(){ return TITLE_Fertilizer_Subsidy;}
+      public String getGameText(){ return TEXT_Fertilizer_Subsidy;}
     }  ,
 
 
   /**
-   * Game Text: The US sends 7X million dollars to educate woman of the target
-   * world region in reading, basic business and farming techniques.<br><br>
+   * Title: {@value #TITLE_Educate_the_Women_Campaign}<br><br>
+   * Game Text: {@value #TEXT_Educate_the_Women_Campaign}<br><br>
    *
    * Draft Affects: When drafting this policy, player selects target world
    * region and X million dollars.<br><br>
@@ -288,26 +254,18 @@ public enum EnumPolicy
    * If approved, each US region must pay X million.
    */
 
-  Educate_the_Woman_Campaign(
-    "Educate the Woman Campaign",
-    "The US sends 7X million dollars to educate woman of the target world " +
-      "region in reading, basic business and farming techniques."
-  )
+  Educate_the_Women_Campaign
     { public int votesRequired() {return 4;}
       public boolean voteWaitForAll() {return false;}
+      public String getTitle(){ return TITLE_Educate_the_Women_Campaign;}
+      public String getGameText(){ return TEXT_Educate_the_Women_Campaign;}
     };
 
+  /** Resources for the default locale */
+  private final ResourceBundle res = ResourceBundle.getBundle("starvationevasion.common.locales.strings");
 
-
-
-  public final String title;
-  public final String gameText;
-
-  private EnumPolicy(String title, String gameText)
-  {
-    this.title = title;
-    this.gameText = gameText;
-  }
+  //public final String title;
+  //public final String gameText;
 
   /**
    * @return 0 if the policy is automatic. Otherwise, returns the number of
@@ -324,4 +282,74 @@ public enum EnumPolicy
 
 
   public static final int SIZE = values().length;
+
+  private static final String TITLE_GMO_Seed_Insect_Resistance_Research =
+     "GMO Seed Insect Resistance Research";
+  private static final String TEXT_GMO_Seed_Insect_Resistance_Research =
+    "Each participating region spends X million dollars to fund GMO seed research " +
+        "for increasing insect resistance of target crop.";
+
+  private static final String TITLE_International_Food_Relief_Program =
+    "International Food Relief Program";
+  private static final String TEXT_International_Food_Relief_Program =
+        "Each participating region spends X million dollars to purchase " +
+        "their own regions commodity food for relief of world hunger.";
+
+  private static final String TITLE_Efficient_Irrigation_Incentive =
+      "Efficient Irrigation Incentive";
+  private static final String TEXT_Efficient_Irrigation_Incentive =
+        "From now through the start of the next turn, X% of money spent by farmers " +
+          "in players region for improved irrigation efficiency is tax deductible.";
+
+  private static final String TITLE_Foreign_Aid_for_Farm_Infrastructure =
+      "Foreign Aid for Farm Infrastructure";
+  private static final String TEXT_Foreign_Aid_for_Farm_Infrastructure =
+        "The US sends 7X million dollars in foreign aid for capital development " +
+        "of farming infrastructure of target world region.";
+
+  private static final String TITLE_Covert_Intelligence =
+      "Covert Intelligence";
+  private static final String TEXT_Covert_Intelligence =
+      "You get to covertly examine target player's hand and the top two cards " +
+        "of that player's deck. You may target yourself. " +
+        "During the voting phase, other players will see that you have " +
+        "played this card, but not know its target. Bonus: If you can " +
+        "correctly answer a hidden research question, you examine the top seven " +
+        "cards of the target player's deck.";
+
+  private static final String TITLE_Clean_River_Incentive =
+      "Clean River Incentive";
+  private static final String TEXT_Clean_River_Incentive =
+        "X% tax break for farmers in my region who reduce by Y% the outflow of "+
+        "pesticides and fertilizers from their farms into the rivers.";
+
+  private static final String TITLE_MyPlate_Promotion_Campaign =
+      "MyPlate Promotion Campaign";
+  private static final String TEXT_MyPlate_Promotion_Campaign =
+        "You spend X million dollars on an advertising campaign within your region promoting " +
+        "public awareness of the United States Department of Agricultures MyPlate nutrition guide.";
+
+  private static final String TITLE_Ethanol_Production_Tax_Credit_Change =
+      "Ethanol Production Tax Credit Change";
+  private static final String TEXT_Ethanol_Production_Tax_Credit_Change =
+        "Currently an ethanol producer located in my region is entitled " +
+          "to a credit of $X per gallon of ethanol produced, including " +
+          "cellulosic ethanol. This policy changes that to $Y per gallon.";
+
+  private static final String TITLE_Fertilizer_Subsidy =
+      "Fertilizer or Feed Subsidy";
+  private static final String TEXT_Fertilizer_Subsidy =
+        "This policy offers a subsidy of X% rebate to farmers in your region purchasing " +
+          "commercial fertilizer for target crop or feed supplements for target live stock.";
+
+  private static final String TITLE_Educate_the_Women_Campaign =
+      "Educate the Women Campaign";
+  private static final String TEXT_Educate_the_Women_Campaign =
+        "The US sends 7X million dollars to educate woman of the target world " +
+          "region in reading, basic business and farming techniques.";
+
+
+
+  public abstract String getTitle();
+  public abstract String getGameText();
 }

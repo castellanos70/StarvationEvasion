@@ -58,7 +58,7 @@ public enum EnumPolicy
    * relief is delivered are presumed to lack the resources to have been part of the demand).
    */
 
-  International_Food_Releif_Program()
+  International_Food_Relief_Program()
     { public int votesRequired() {return 1;}
       public boolean voteWaitForAll() {return true;}
     },

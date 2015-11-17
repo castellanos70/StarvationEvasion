@@ -23,6 +23,8 @@ public class Simulator
    * Initializes the model
    * Generates a random 80 card deck for each player (both
    * human and AI players)
+   *
+   * @param startYear year the game is starting. Generally this will be Constant.FIRST_YEAR.
    */
   public Simulator(int startYear)
   {
@@ -88,6 +90,10 @@ public class Simulator
     return landUsed;
   }
 
+  /**
+   *
+   * @return the simulation year that has just finished.
+   */
   private int nextYear()
   {
     year++;

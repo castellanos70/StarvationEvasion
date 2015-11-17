@@ -1,4 +1,5 @@
 package starvationevasion.common;
+import java.util.ResourceBundle;
 
 /**
  * Policy Cards game text, draft affects, votes required and model effects.
@@ -116,7 +117,7 @@ public enum EnumPolicy
    <br><br>
    */
 
-  Foreign_Aid_for_Farm_Infrastructure
+  Foreign_Aid_for_Farm_Infrastructure()
     { public int votesRequired() {return 4;}
       public boolean voteWaitForAll() {return false;}
       public String getTitle(){ return TITLE_Foreign_Aid_for_Farm_Infrastructure;}
@@ -260,17 +261,11 @@ public enum EnumPolicy
       public String getGameText(){ return TEXT_Educate_the_Women_Campaign;}
     };
 
-
-
+  /** Resources for the default locale */
+  private final ResourceBundle res = ResourceBundle.getBundle("starvationevasion.common.locales.strings");
 
   //public final String title;
   //public final String gameText;
-
-  //private EnumPolicy(String title)
-  //{
-  //  this.title = title;
-  //  this.gameText = gameText;
-  //}
 
   /**
    * @return 0 if the policy is automatic. Otherwise, returns the number of

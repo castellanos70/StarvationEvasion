@@ -1,5 +1,6 @@
 package starvationevasion.common;
 
+
 /**
  * This class contains all constant values used throughout the Starvation Evasion game.
  */

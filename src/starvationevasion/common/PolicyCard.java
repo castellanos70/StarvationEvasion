@@ -84,8 +84,8 @@ public class PolicyCard
     this.policy = policy;
   }
 
-  public String getTitle()    {return policy.title;}
-  public String getGameText() {return policy.gameText;}
+  public String getTitle()    {return policy.getTitle();}
+  public String getGameText() {return policy.getGameText();}
 
   /**
    * @return 0 if the policy is automatic. Otherwise, returns the number of
@@ -298,7 +298,7 @@ public class PolicyCard
 
 
 
-      case International_Food_Releif_Program:
+      case International_Food_Relief_Program:
         if ((targetFood == null) || (!targetFood.isCrop()))
         {
           return policy + ": must have a target food that is a crop.";
@@ -375,7 +375,7 @@ public class PolicyCard
 
 
 
-      case Educate_the_Woman_Campaign:
+      case Educate_the_Women_Campaign:
         if (getEnactingRegionCount() < votesRequired())
         {
           return policy + ": does not have required votes.";

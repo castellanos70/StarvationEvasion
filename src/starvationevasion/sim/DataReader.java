@@ -1,5 +1,6 @@
 package starvationevasion.sim;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.regex.*;
 import java.io.FileReader;
@@ -17,30 +18,8 @@ public class DataReader
    * @param path
    * @return
    */
-  public static ArrayList<String> retrieveStateData(String path)
+  public static FileObject retrieveStateData(String path)
   {
-    String file = System.getenv("PWD")+"/"+path;
-    ArrayList<String> fileContents = new ArrayList<>();
-    //read in data
-
-    Pattern stateDataPattern = Pattern.compile("^\\w+,\\d+");
-    try
-    {
-      BufferedReader reader = new BufferedReader(new FileReader(file));
-      String line = null;
-      while ((line = reader.readLine()) != null)
-      {
-        Matcher stateDataMatcher = stateDataPattern.matcher(line);
-        if (stateDataMatcher.find())
-        {
-          fileContents.add(line);
-        }
-      }
-    }
-    catch (Throwable t)
-    {
-      System.err.println("File Reader Exception: "+ t);
-    }
-    return fileContents;
+    return new FileObject(path);
   }
 }

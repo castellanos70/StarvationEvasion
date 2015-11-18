@@ -1,5 +1,6 @@
 package starvationevasion.sim;
 
+import starvationevasion.common.Constant;
 
 /**
  * Created by Joel on 11/5/2015.<br>
@@ -31,16 +32,6 @@ package starvationevasion.sim;
 public class SeaLevel
 {
   /**
-   * First year of historical data
-   */
-  public static final int ZERO_YEAR = 1980;
-
-  /**
-   * Final future year this class will be used to estimate the MSL relitive to ZERO_YRAR.
-   */
-  public static final int LAST_PREDICTED_YEAR = 2050;
-
-  /**
    * TODO: set the values of this array to the MSL above ZERO_YEAR in cm for each year through the most recent.
    */
   private static final int[] annualMeanSeaLevel = {0};
@@ -48,7 +39,7 @@ public class SeaLevel
   /**
    * Last year of historical data.
    */
-  public int lastYearOfHistoricalData = annualMeanSeaLevel.length - 1 + ZERO_YEAR;
+  public int lastYearOfHistoricalData = annualMeanSeaLevel.length - 1 + Constant.FIRST_YEAR;
 
   /** fields a, b and c are used to store
    * the coefficients of the quadratic equation y = ax<sup>2</sup> + bx + c
@@ -68,12 +59,14 @@ public class SeaLevel
   }
 
 
-  /** TODO: implement
-   *
+  /**
+   * TODO: implement
+   * @param year any year between Constant.FIRST_YEAR and Constant.LAST_PREDICTED_YEAR.
+   * @return mean sea level in cm above/below (+/-) the mean sea level at ZERO_YEAR.
    */
   public double getSeaLevel(int year)
   {
-    int x = year - ZERO_YEAR;
+    int x = year - Constant.FIRST_YEAR;
     double seaLevel = a*x*x + b*x + c;
     return seaLevel;
   }

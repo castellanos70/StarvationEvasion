@@ -67,11 +67,12 @@ public class PolicyCard
 
 
   /**
-   *  Constructs a policy card of the given policy.
+   *  Constructs a policy card owned by the given owner of the given policy.
    *  Many properties of the policy may be set and changed, but the
-   *  given EnumPolicy policy is immutable.
+   *  owner and policy are immutable.
    *
-   * @param policy
+   * @param owner US player region controlled by the player who drafts this policy.
+   * @param policy the policy
    */
   public PolicyCard(EnumRegion owner, EnumPolicy policy)
   {
@@ -84,8 +85,8 @@ public class PolicyCard
     this.policy = policy;
   }
 
-  public String getTitle()    {return policy.title;}
-  public String getGameText() {return policy.gameText;}
+  public String getTitle()    {return policy.getTitle();}
+  public String getGameText() {return policy.getGameText();}
 
   /**
    * @return 0 if the policy is automatic. Otherwise, returns the number of
@@ -164,7 +165,7 @@ public class PolicyCard
 
   /**
    * Some policy cards require a target food (crop or livestock).
-   * @param targetFood
+   * @param targetFood sets the targetFood. Ignored of this policy does not use a target food.
    */
   public void setTargetFood(EnumFood targetFood) {this.targetFood = targetFood;}
 
@@ -298,7 +299,7 @@ public class PolicyCard
 
 
 
-      case International_Food_Releif_Program:
+      case International_Food_Relief_Program:
         if ((targetFood == null) || (!targetFood.isCrop()))
         {
           return policy + ": must have a target food that is a crop.";
@@ -375,7 +376,7 @@ public class PolicyCard
 
 
 
-      case Educate_the_Woman_Campaign:
+      case Educate_the_Women_Campaign:
         if (getEnactingRegionCount() < votesRequired())
         {
           return policy + ": does not have required votes.";
@@ -400,9 +401,11 @@ public class PolicyCard
 
   /**
    * Used only for testing this class.
+   * @param args Not used.
    */
   public static void main(String[] args)
   {
+
     PolicyCard myCard = new PolicyCard(EnumRegion.MOUNTAIN,
       EnumPolicy.GMO_Seed_Insect_Resistance_Research);
     System.out.println(myCard.getTitle());

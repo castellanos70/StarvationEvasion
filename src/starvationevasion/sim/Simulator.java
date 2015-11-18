@@ -14,6 +14,7 @@ import java.util.logging.Level;
 public class Simulator
 {
   private final static Logger LOGGER = Logger.getLogger(Simulator.class.getName());
+  private FileObject stateData;
 
   private final int startYear;
   private int year;
@@ -23,6 +24,8 @@ public class Simulator
    * Initializes the model
    * Generates a random 80 card deck for each player (both
    * human and AI players)
+   *
+   * @param startYear year the game is starting. Generally this will be Constant.FIRST_YEAR.
    */
   public Simulator(int startYear)
   {
@@ -40,9 +43,8 @@ public class Simulator
     this.startYear = startYear;
     year = startYear;
 
-
-    ArrayList<String> stateData = DataReader.retrieveStateData("data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv");
-    instantiateRegions(stateData);
+    stateData = DataReader.retrieveStateData("data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv");
+    instantiateRegions(stateData.getRawData());
     LOGGER.info("Starting Simulation at year " + startYear);
   }
 
@@ -51,7 +53,7 @@ public class Simulator
    * and during each turn's draw phase. This method will return the proper number of
    * cards from the top of the given playerRegion's deck taking into account cards played
    * and discarded by that player.
-   * @param playerRegion
+   * @param playerRegion region of player who id given the drawn cards.
    * @return list of cards.
    */
   public ArrayList<EnumPolicy> drawCards(EnumRegion playerRegion)
@@ -88,6 +90,10 @@ public class Simulator
     return landUsed;
   }
 
+  /**
+   *
+   * @return the simulation year that has just finished.
+   */
   private int nextYear()
   {
     year++;
@@ -96,7 +102,7 @@ public class Simulator
   }
 
   /**
-   * This method is used to create State objects along with <br></>
+   * This method is used to create State objects along with 
    * the Region data structure
    *
    * @param data
@@ -123,6 +129,7 @@ public class Simulator
     float sum = 0.f;
     for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
     {
+      //divide ny num records
       avgConversionFactors[i] /= 50.f;
       sum += avgConversionFactors[i];
       //System.out.println("AVG CATEGORY "+avgConversionFactors[i]);

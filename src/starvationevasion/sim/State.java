@@ -25,18 +25,34 @@ public class State
    */
   private EnumRegion region;
 
+  /**
+   * The states total income.
+   */
   private int totalIncome = 0;
 
+  /**
+   * The states total farmland.
+   */
   private int totalFarmLand = 0;
 
+  /**
+   * Average conversion factor, this is set by the Simulator.
+   */
   private float averageConversionFactor;
 
+  /**
+   * Amount of fertilizer in Kg the states uses in a year.
+   */
+  private float kgPerAcreFertilizer;
 
   /**
    * The states income as it corresponds to category.
    */
   private int[]   incomePerCategory;
 
+  /**
+   * The states adjustment factors, twelve in total, one per category
+   */
   private float[] adjustmentFactors;
 
   /**
@@ -85,8 +101,6 @@ public class State
       incomeToCategoryPercentages[i] = (float) incomePerCategory[i] / (float) totalIncome;
       landPerCategory[i]             = incomeToCategoryPercentages[i] * (float)totalFarmLand;
     }
-
-    //4. set Adjustment factor to Category Income % - NonLocal Conversion Factor
   }
 
   /**
@@ -105,12 +119,10 @@ public class State
   public void setAverageConversionFactor(float acf)
   {
     averageConversionFactor = acf;
-
     for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
     {
-      adjustmentFactors[i] = incomeToCategoryPercentages[i] - acf;
-      System.out.println("AF: "+adjustmentFactors[i]);
+      adjustmentFactors[i] = incomeToCategoryPercentages[i] - averageConversionFactor;
+      System.out.println(name + " Adj Factors "+adjustmentFactors[i]);
     }
-
   }
 }

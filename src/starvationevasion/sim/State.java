@@ -119,11 +119,10 @@ public class State
   public void setAverageConversionFactor(float acf)
   {
     averageConversionFactor = acf;
-
     for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
     {
-      adjustmentFactors[i] = incomeToCategoryPercentages[i] - acf;
+      adjustmentFactors[i] = incomeToCategoryPercentages[i] - averageConversionFactor;
+      System.out.println(name + " Adj Factors "+adjustmentFactors[i]);
     }
-
   }
 }

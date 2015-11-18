@@ -14,6 +14,7 @@ import java.util.logging.Level;
 public class Simulator
 {
   private final static Logger LOGGER = Logger.getLogger(Simulator.class.getName());
+  private FileObject stateData;
 
   private final int startYear;
   private int year;
@@ -42,9 +43,8 @@ public class Simulator
     this.startYear = startYear;
     year = startYear;
 
-
-    ArrayList<String> stateData = DataReader.retrieveStateData("data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv");
-    instantiateRegions(stateData);
+    stateData = DataReader.retrieveStateData("data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv");
+    instantiateRegions(stateData.getRawData());
     LOGGER.info("Starting Simulation at year " + startYear);
   }
 
@@ -129,6 +129,7 @@ public class Simulator
     float sum = 0.f;
     for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
     {
+      //divide ny num records
       avgConversionFactors[i] /= 50.f;
       sum += avgConversionFactors[i];
       //System.out.println("AVG CATEGORY "+avgConversionFactors[i]);

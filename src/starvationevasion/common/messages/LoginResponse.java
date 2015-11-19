@@ -15,6 +15,10 @@ public class LoginResponse
      */
     ACCESS_DENIED,
     /**
+     * Another connection already exists for this user.
+     */
+    DUPLICATE,
+    /**
      * You have been assigned a specific region.
      */
     ASSIGNED_REGION,

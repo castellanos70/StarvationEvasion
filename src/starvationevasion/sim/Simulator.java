@@ -102,7 +102,7 @@ public class Simulator
   }
 
   /**
-   * This method is used to create State objects along with 
+   * This method is used to create State objects along with
    * the Region data structure
    *
    * @param data

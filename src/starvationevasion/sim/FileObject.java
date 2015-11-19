@@ -11,11 +11,9 @@ import java.util.regex.Pattern;
 /**
  * Created by Alfred on 11/17/15.
  *
- * FileObject class is meant to represent a CSV file, which can <br></>
+ * FileObject class is meant to represent a CSV file, which can
  * can be queried.
- *
  */
-
 public class FileObject
 {
 
@@ -23,7 +21,7 @@ public class FileObject
   private HashMap<String, int[]> fileFields;
 
   /**
-   * Class constructor returns a new FileObject that <br></>
+   * Class constructor returns a new FileObject that
    * represents path
    *
    * @param path
@@ -83,7 +81,7 @@ public class FileObject
   }
 
   /**
-   * Method returns the original file contents as an ArrayList <br></>
+   * Method returns the original file contents as an ArrayList
    * of Strings.
    *
    * @return
@@ -94,7 +92,7 @@ public class FileObject
   }
 
   /**
-   * Method provides a "record," given the proper key, else <br></>
+   * Method provides a "record," given the proper key, else
    * returns null.
    *
    * @param key
@@ -106,7 +104,7 @@ public class FileObject
   }
 
   /**
-   * Method returns a Set of Strings which are iterable <br></>
+   * Method returns a Set of Strings which are iterable
    * over the entire data set.
    *
    * @return

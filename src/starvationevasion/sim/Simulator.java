@@ -91,6 +91,14 @@ public class Simulator
   }
 
   /**
+   * @return the simulation year that has finished or that is in simulation.
+   */
+  public int getYear()
+  {
+    return year;
+  }
+
+  /**
    *
    * @return the simulation year that has just finished.
    */

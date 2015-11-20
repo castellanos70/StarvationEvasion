@@ -1,636 +1,457 @@
 package starvationevasion.sim;
 
+import starvationevasion.common.EnumFood;
+import starvationevasion.model.CropClimateData;
+import worldfoodgame.common.CropZoneData.EnumCropZone;
+import worldfoodgame.model.MapPoint;
 
-import worldfoodgame.common.AbstractClimateData;
-import worldfoodgame.model.LandTile;
-import worldfoodgame.model.geography.World;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.*;
-
-import static worldfoodgame.common.AbstractScenario.END_YEAR;
+import java.nio.ByteBuffer;
 
 /**
- @author: david
- cs351
- WorldFoodGame project
- 
- description:
- 
- TileManager wraps the collection of LandTiles and encapsulates the
- equal area projection used to define the tile space.
- It provides an interface for mutating the climate data in the tiles by year and
- obtaining various useful subsets of tiles and/or individual tiles and data by
- coordinates.
+ @author david
+ created: 2015-03-21
+ modified: 2015-11-19 by Miri Ryu
+
+ description: 
+ LandTile class describes a single section of the equal area projection of the
+ world map.  It holds elevation, climate and climate projection data found
+ at www.worldclim.org.  The class also describes a ByteBuffer format for a
+ custom binary file.  This allows the data from the raw sets to be parsed, projected
+ and averaged across equal-area sections of the globe once.  This data can then
+ simply be loaded in at the program start. (see CropZoneDataIO class)
  */
 
-public class ClimateTile extends AbstractClimateData
+public class ClimateTile
 {
-  /*
-    Tiles represent 100 sq. km areas on the globe, defined by the
-    Lambert Equal Area Projection.
-    Their dimensions are defined as rectangles within the
-    projection, with the following base assumptions:
-    Earth Surface Area : 600,000,000 sq. km
-    Earth Circumference: 40,000 km
 
-    This implies there must be 6 million tiles.
-    Since the projection is cylindrical and linear in X, it is simple to divide
-    the rectangular map it produces into 4000 columns, which implies 1500 rows
-    to achieve 6 million total tiles.  Since the aspect ratio of the map is PI,
-    these tiles are not too far from square.
-   */
+  private float elevation = 0;     /* in meters above sea level */
+  private float maxAnnualTemp = 0; /* in degrees Celsius. */
+  private float minAnnualTemp = 0; /* in degrees Celsius. */
+  private float avgDayTemp = 0;    /* in degrees Celsius. */
+  private float avgNightTemp = 0;  /* in degrees Celsius. */
+  private float rainfall = 0;      /* in cm */
+  private float proj_maxAnnualTemp = 0; /* in degrees Celsius. */
+  private float proj_minAnnualTemp = 0; /* in degrees Celsius. */
+  private float proj_avgDayTemp = 0;    /* in degrees Celsius. */
+  private float proj_avgNightTemp = 0;  /* in degrees Celsius. */
+  private float proj_rainfall = 0;      /* in cm */
 
-  public static final worldfoodgame.model.LandTile NO_DATA = new worldfoodgame.model.LandTile(-180,0); /* in pacific */
+  private int avgFrostFreeNight = 0;
+  private int projAvgFrostFreeNight = 0;
 
-  public static final int ROWS = 1500;
-  public static final int COLS = 4000;
-  public static final double EARTH_CIRCUMFERENCE = 4e4; /* approximate, in km */
-
-  public static final double MIN_LAT = -90;
-  public static final double MAX_LAT = 90;
-  public static final double MIN_LON = -180;
-  public static final double MAX_LON = 180;
-  public static final double LAT_RANGE = MAX_LAT - MIN_LAT;
-  public static final double LON_RANGE = MAX_LON - MIN_LON;
-
-  public static final double DLON = LON_RANGE/COLS;
-  public static final double DLAT = LAT_RANGE/ROWS;
-
-  /* these are fairly rough estimates for the distance between two tiles on the
-   X and Y axes.  Should be acceptable for our purposes */
-  public static final double DX_KM = EARTH_CIRCUMFERENCE / COLS;
-  public static final double DY_KM = EARTH_CIRCUMFERENCE / ROWS * 0.5;
-
-  /* max radius from selected tiles to add noise to each year */
-  public static final double NOISE_RADIUS = 100; /* in km */
-
-  private static final Random RNG = new Random();
-  private Simulator simulator;
-
-  private worldfoodgame.model.LandTile[][] tiles = new worldfoodgame.model.LandTile[COLS][ROWS];
-
-
-  private List<worldfoodgame.model.LandTile> countryTiles = new ArrayList<>();
-  private List<worldfoodgame.model.LandTile> allTiles;
-  private List<worldfoodgame.model.LandTile> dataTiles;
-
-  public ClimateTile(Simulator simulator)
-  {
-    this.simulator = simulator;
-    for(worldfoodgame.model.LandTile[] arr : tiles) Arrays.fill(arr, NO_DATA);
-  }
-
-
-  public ClimateTile()
-  {this(null);}
+  private MapPoint center;
+  private EnumFood currCrop;
 
   /**
-   Get the max temperature at a location, given a year.  If the year is the
-   current year in the World, the temperature is the actual model temperature at
-   that location.  Otherwise it is an interpolated estimate that will NOT include
-   the noise due to randomization in the year-stepping model.
-
-   @param lat [-90.0 to 90.0], South latitudes are < 0.
-   @param lon [-180.0 to 180.0], West longitudes are < 0.
-   @param year between current year and AbstractScenario.END_YEAR
-   @return  the max temperature at the coordinates, either estimated or exact,
-            depending on the year
+   Constructor used for initial creation of data set
+   @param lon
+   longitude of this LandTile
+   @param lat
+   latitude of this LandTile
    */
-  @Override
-  public float getTemperatureMax(float lat, float lon, int year)
+  public ClimateTile(double lon, double lat)
   {
-    if(year < simulator.getYear())
-    {
-      throw new IllegalArgumentException("year argument must be current year or later");
-    }
-    worldfoodgame.model.LandTile tile = getTile(lon, lat);
-    if(tile == NO_DATA)
-    {
-      throw new NoDataException(
-        String.format("No data for longitude: %f, latitude: %f)", lon, lat));
-    }
-    if (year == simulator.getYear()) return tile.getMaxAnnualTemp();
-
-    float cur = tile.getMaxAnnualTemp();
-    float proj = tile.getProj_maxAnnualTemp();
-    int slices = END_YEAR - simulator.getYear();
-    int sliceNum = year - simulator.getYear();
-    return worldfoodgame.model.LandTile.interpolate(cur, proj, slices, sliceNum);
+    center = new MapPoint(lon, lat);
   }
 
   /**
-   Get the min temperature at a location, given a year.  If the year is the
-   current year in the World, the temperature is the actual model temperature at
-   that location.  Otherwise it is an interpolated estimate that will NOT include
-   the noise due to randomization in the year-stepping model.
-
-   @param lat [-90.0 to 90.0], South latitudes are < 0.
-   @param lon [-180.0 to 180.0], West longitudes are < 0.
-   @param year between current year and AbstractScenario.END_YEAR
-   @return  the min temperature at the coordinates, either estimated or exact,
-   depending on the year
+   * Constructor using custom binary file
+   * @param buf   custom binary file
    */
-  @Override
-  public float getTemperatureMin(float lat, float lon, int year)
+  public ClimateTile(ByteBuffer buf)
   {
-    if(year < simulator.getYear())
-    {
-      throw new IllegalArgumentException("year argument must be current year or later");
-    }
-    worldfoodgame.model.LandTile tile = getTile(lon, lat);
-    if(tile == NO_DATA)
-    {
-      throw new NoDataException(
-        String.format("No data for longitude: %f, latitude: %f)", lon, lat));
-    }
-    if (year == simulator.getYear()) return tile.getMinAnnualTemp();
-
-    float cur = tile.getMinAnnualTemp();
-    float proj = tile.getProj_minAnnualTemp();
-    int slices = END_YEAR - simulator.getYear();
-    int sliceNum = year - simulator.getYear();
-    return worldfoodgame.model.LandTile.interpolate(cur, proj, slices, sliceNum);
-  }
-
-  /**
-   Get the average daytime temperature at a location, given a year.  If the year
-   is the current year in the World, the temperature is the actual model
-   temperature at that location.  Otherwise it is an interpolated estimate that
-   will NOT include the noise due to randomization in the year-stepping model.
-
-   @param lat [-90.0 to 90.0], South latitudes are < 0.
-   @param lon [-180.0 to 180.0], West longitudes are < 0.
-   @param year between current year and AbstractScenario.END_YEAR
-   @return  the average daytime temperature at the coordinates, either estimated
-   or exact, depending on the year
-   */
-  @Override
-  public float getTemperatureDay(float lat, float lon, int year)
-  {
-    if(year < simulator.getYear())
-    {
-      throw new IllegalArgumentException("year argument must be current year or later");
-    }
-    worldfoodgame.model.LandTile tile = getTile(lon, lat);
-    if(tile == NO_DATA)
-    {
-      throw new NoDataException(
-        String.format("No data for longitude: %f, latitude: %f)", lon, lat));
-    }
-    if (year == simulator.getYear()) return tile.getAvgDayTemp();
-
-    float cur = tile.getAvgDayTemp();
-    float proj = tile.getProj_avgDayTemp();
-    int slices = END_YEAR - simulator.getYear();
-    int sliceNum = year - simulator.getYear();
-    return worldfoodgame.model.LandTile.interpolate(cur, proj, slices, sliceNum);
-  }
-
-  /**
-   Get the average nighttime temperature at a location, given a year.  If the year
-   is the current year in the World, the temperature is the actual model
-   temperature at that location.  Otherwise it is an interpolated estimate that
-   will NOT include the noise due to randomization in the year-stepping model.
-
-   @param lat [-90.0 to 90.0], South latitudes are < 0.
-   @param lon [-180.0 to 180.0], West longitudes are < 0.
-   @param year between current year and AbstractScenario.END_YEAR
-   @return  the average night temperature at the coordinates, either estimated
-   or exact, depending on the year
-   */
-  @Override
-  public float getTemperatureNight(float lat, float lon, int year)
-  {
-    if(year < simulator.getYear())
-    {
-      throw new IllegalArgumentException("year argument must be current year or later");
-    }
-    worldfoodgame.model.LandTile tile = getTile(lon, lat);
-    if(tile == NO_DATA)
-    {
-      throw new NoDataException(
-        String.format("No data for longitude: %f, latitude: %f)", lon, lat));
-    }
-    if (year == simulator.getYear()) return tile.getAvgNightTemp();
-
-    float cur = tile.getAvgNightTemp();
-    float proj = tile.getProj_avgNightTemp();
-    int slices = END_YEAR - simulator.getYear();
-    int sliceNum = year - simulator.getYear();
-    return worldfoodgame.model.LandTile.interpolate(cur, proj, slices, sliceNum);
-  }
-
-  /**
-   Get the annual rainfall at a location, given a year.  If the year is the
-   current year in the World, the rainfall is the actual model rainfall at
-   that location.  Otherwise it is an interpolated estimate that will NOT include
-   the noise due to randomization in the year-stepping model.
-
-   @param lat [-90.0 to 90.0], South latitudes are < 0.
-   @param lon [-180.0 to 180.0], West longitudes are < 0.
-   @param year between current year and AbstractScenario.END_YEAR
-   @return  the annual rainfall at the coordinates, either estimated or exact,
-   depending on the year
-   */
-  @Override
-  public float getRainfall(float lat, float lon, int year)
-  {
-    if(year < simulator.getYear())
-    {
-      throw new IllegalArgumentException("year argument must be current year or later");
-    }
-    worldfoodgame.model.LandTile tile = getTile(lon, lat);
-    if(tile == NO_DATA)
-    {
-      throw new NoDataException(
-        String.format("No data for longitude: %f, latitude: %f)", lon, lat));
-    }
-    if (year == simulator.getYear()) return tile.getRainfall();
-
-    float cur = tile.getRainfall();
-    float proj = tile.getProj_rainfall();
-    int slices = END_YEAR - simulator.getYear();
-    int sliceNum = year - simulator.getYear();
-    return worldfoodgame.model.LandTile.interpolate(cur, proj, slices, sliceNum);
-  }
-
-
-  /**
-   Mutates all the tile data based on projections maintained within each tile
-   and noise added randomly.
-   */
-  public void stepTileData()
-  {
-    List<worldfoodgame.model.LandTile> tiles = dataTiles();
-    for(worldfoodgame.model.LandTile tile : tiles) tile.stepTile(END_YEAR - simulator.getYear());
-
-    /* shuffle tiles before adding noise */
-    Collections.shuffle(tiles);
-
-    /* take ten percent of tiles, add noise */
-    for(worldfoodgame.model.LandTile tile : tiles.subList(0,tiles.size()/10))
-    {
-      addNoiseByTile(tile);
-    }
-  }
-
-  /* adds noise to the parameters of all the tiles within the NOISE_RADIUS of
-    a given tile */
-  private void addNoiseByTile(worldfoodgame.model.LandTile tile)
-  {
-    int centerRow = latToRow(tile.getLat());
-    int centerCol = lonToCol(tile.getLon());
-
-    /* calculate min and max row and column based on radius of noise addition and
-      the current tile's location in the data */
-    int minRow = centerRow - (int) (NOISE_RADIUS / DY_KM);
-    int maxRow = centerRow + (int) (NOISE_RADIUS / DY_KM);
-    int minCol = centerCol - (int) (NOISE_RADIUS / DX_KM);
-    int maxCol = centerCol + (int) (NOISE_RADIUS / DX_KM);
-
-    /* get the source tile's data.
-      All noise is added as a function of these values */
-    float minTemp = tile.getMinAnnualTemp();
-    float maxTemp = tile.getMaxAnnualTemp();
-    float pmTemp = tile.getAvgNightTemp();
-    float amTemp = tile.getAvgDayTemp();
-    float rain = tile.getRainfall();
-
-    /* noise is also a function of two random numbers in range [0,1]
-    (generated once per source?) */
-    double r1 = RNG.nextDouble();
-    double r2 = RNG.nextDouble();
-
-    float dMaxMinTemp = calcTileDelta(minTemp, maxTemp, r1, r2);
-    float dAMPMTemp = calcTileDelta(pmTemp, amTemp, r1, r2);
-    float dRainfall = calcTileDelta(0, rain, r1, r2);
-
-    worldfoodgame.model.LandTile neighbor;
-
-    for (int r = minRow; r < maxRow; r++)
-    {
-      for (int c = minCol; c < maxCol; c++)
-      {
-        /* allow overlap in data to account for the sphere */
-        int colIndex = c < 0 ? COLS + c : c%COLS;
-        int rowIndex = r < 0 ? ROWS + r : r%ROWS;
-        if (colIndex < 0 || rowIndex < 0)
-        {
-          System.out.printf("c: %d, colIndex: %d, r: %d, rowIndex: %d", c, colIndex, r, rowIndex);
-        }
-        if(tiles[colIndex][rowIndex] == NO_DATA) continue;
-
-        neighbor = tiles[colIndex][rowIndex];
-
-        double xDist = DX_KM * (centerCol - c);
-        double yDist = DY_KM * (centerRow - r);
-
-        double dist = Math.sqrt(xDist * xDist + yDist * yDist);
-
-        if(dist < NOISE_RADIUS)
-        {
-
-          double r3 = RNG.nextDouble()*2;
-
-          float toAddMaxMin = scaleDeltaByDistance(dMaxMinTemp, dist, r3);
-          float toAddAMPM = scaleDeltaByDistance(dAMPMTemp, dist, r3);
-          float toAddRain = scaleDeltaByDistance(dRainfall, dist, r3);
-
-          neighbor.setMaxAnnualTemp(neighbor.getMaxAnnualTemp() + toAddMaxMin);
-          neighbor.setMinAnnualTemp(neighbor.getMinAnnualTemp() + toAddMaxMin);
-          neighbor.setAvgDayTemp(neighbor.getAvgDayTemp() + toAddAMPM);
-          neighbor.setAvgNightTemp(neighbor.getAvgNightTemp() + toAddAMPM);
-          neighbor.setRainfall(neighbor.getRainfall() + toAddRain);
-        }
-      }
-    }
-  }
-
-  /**
-   Calculates the delta value used to add noise to tiles, given a maximum and
-   minimum value for the parameter, and two random numbers in range [0,1]
-   To use this for the annual rainfall delta, use 0 as the minimum.
-
-   @param min   minimum value in the range of the data
-   @param max   maximum value in the range of the data
-   @param r1    first random number between 0 and 1
-   @param r2    second random number between 0 and 1
-   @return      the delta value used to randomize climate data
-   */
-  public float calcTileDelta(double min, double max, double r1, double r2)
-  {
-    //return (float)(0.1 * (max - min) * simulator.getRandomizationPercentage() * (r1 - r2));
-    return (float)(0.1 * (max - min) * (r1 - r2));
-  }
-
-
-  /**
-   Calculates the actual amount to add to a given parameter in a LandTile, given
-   the delta value, the distance between the tile from which noise is being added
-   and a random number in range [0,2]
-
-   @param delta calculated delta value
-   @param distance
-   @param r3
-   @return
-   */
-  public float scaleDeltaByDistance(double delta, double distance, double r3)
-  {
-    return (float)(delta/(Math.log(Math.E + distance * r3)));
-  }
-
-
-  /**
-   Get a tile by longitude and latitude
-
-   @param lon degrees longitude
-   @param lat degrees latitude
-   @return the tile into which the specified longitude and latitude coordinates
-   fall.  If no tile exists at that point, NO_DATA is returned
-   */
-  public worldfoodgame.model.LandTile getTile (double lon, double lat)
-  {
-    if(!coordsInBounds(lon, lat))
+    int len = buf.array().length;
+    if (len != BYTE_DEF.SIZE_IN_BYTES)
     {
       throw new IllegalArgumentException(
-        String.format("coordinates out of bounds. lon: %.3f, lat: %.3f", lon, lat)
-      );
+                                        String.format("ByteBuffer of incorrect size%n" +
+                                                      "Expected: %d%n" +
+                                                      "Received: %d%n", BYTE_DEF.SIZE_IN_BYTES, len));
     }
 
-    /* equal area projection is encapsulated here */
-    int col = lonToCol(lon);
-    int row = latToRow(lat);
-    worldfoodgame.model.LandTile tile = tiles[col][row];
-    return tile == null? NO_DATA : tile;
+    float lon = buf.getFloat(BYTE_DEF.LONGITUDE.index());
+    float lat = buf.getFloat(BYTE_DEF.LATITUDE.index());
+    elevation = buf.getFloat(BYTE_DEF.ELEVATION.index());
+
+    maxAnnualTemp = buf.getFloat(BYTE_DEF.MAX_ANNUAL_TEMP.index());
+    minAnnualTemp = buf.getFloat(BYTE_DEF.MIN_ANNUAL_TEMP.index());
+    avgDayTemp = buf.getFloat(BYTE_DEF.AVG_DAY_TEMP.index());
+    avgNightTemp = buf.getFloat(BYTE_DEF.AVG_NIGHT_TEMP.index());
+    rainfall = buf.getFloat(BYTE_DEF.RAINFALL.index());
+
+    proj_maxAnnualTemp = buf.getFloat(BYTE_DEF.PROJ_MAX_ANNUAL_TEMP.index());
+    proj_minAnnualTemp = buf.getFloat(BYTE_DEF.PROJ_MIN_ANNUAL_TEMP.index());
+    proj_avgDayTemp = buf.getFloat(BYTE_DEF.PROJ_AVG_DAY_TEMP.index());
+    proj_avgNightTemp = buf.getFloat(BYTE_DEF.PROJ_AVG_NIGHT_TEMP.index());
+    proj_rainfall = buf.getFloat(BYTE_DEF.PROJ_RAINFALL.index());
+
+    center = new MapPoint(lon, lat);
+  }
+
+  /**
+   Find an interpolated value given extremes of the range across which to
+   interpolate, the number of steps to divide that range into and the step of
+   the range to find.
+
+   @param start   beginning (min) of the range
+   @param end     end (max) of the range
+   @param slices  slices to divide range into
+   @param n       slice desired from interpolation
+   @return        interpolated value
+   */
+  public static float interpolate(float start, float end, float slices, float n)
+  {
+    if (slices < 0) return end;
+    float stepSize = (end - start) / slices;
+    return n * stepSize + start;
   }
 
 
   /**
-   Add a given tile to the data set.
-   This should really only be used when reading in a new set of tiles from
-   a file.
-
-   @param tile  LandTile to add
+   * @param elev  tile's elevation
    */
-  public void putTile(worldfoodgame.model.LandTile tile)
+  public void setElev(float elev)
   {
-    double lon = tile.getLon();
-    double lat = tile.getLat();
-    tiles[lonToCol(lon)][latToRow(lat)] = tile;
-  }
-
-
-  /**
-   Registers a tile as having been associated with a country.  Due to gaps in the
-   country data, if a set of tiles covering all the land is desired, use dataTiles()
-   @param tile  tile to register
-   */
-  public void registerCountryTile(worldfoodgame.model.LandTile tile)
-  {
-    countryTiles.add(tile);
-  }
-
-
-  /**
-   Returns a Collection of tiles that have been registered with a country.
-   This is dependent on the usage of registerCountryTile() at initial data
-   creation. (Also maybe should be refactored to another location?)
-
-   @return Collection of those LandTiles that have been registered with a AgriculturalUnit
-   */
-  public List<worldfoodgame.model.LandTile> countryTiles()
-  {
-    return countryTiles;
+    elevation = elev;
   }
 
   /**
-   Returns a Collection of the tiles held by this TileManager that actually
-   contain data.  This, in effect, excludes tiles that would be over ocean and
-   those at the extremes of latitude.  For all tiles, use allTiles();
-
-   @return  a Collection holding only those tiles for which there exists raster
-            data.
+   * @return  tool tip text when cursor over tile
    */
-  public List<worldfoodgame.model.LandTile> dataTiles()
+  public String toolTipText()
   {
-    if(null == dataTiles)
+    return String.format("<html>(lon:%.2f, lat:%.2f)<br>" +
+                         "rainfall:%.6fcm<br>" +
+                         "daily temp range: (%.2f C, %.2f C)<br>" +
+                         "yearly temp range: (%.2f C, %.2f C)<br>" +
+                         "crop: %s</html>",
+                        center.getLon(), center.getLat(), rainfall,
+                        avgNightTemp, avgDayTemp, minAnnualTemp, maxAnnualTemp, currCrop);
+  }
+
+  public ByteBuffer toByteBuffer()
+  {
+    ByteBuffer buf = ByteBuffer.allocate(BYTE_DEF.SIZE_IN_BYTES);
+
+    buf.putFloat(BYTE_DEF.LONGITUDE.index(), (float) center.getLon());
+    buf.putFloat(BYTE_DEF.LATITUDE.index(), (float) center.getLat());
+    buf.putFloat(BYTE_DEF.ELEVATION.index(), elevation);
+
+    buf.putFloat(BYTE_DEF.MAX_ANNUAL_TEMP.index(), maxAnnualTemp);
+    buf.putFloat(BYTE_DEF.MIN_ANNUAL_TEMP.index(), minAnnualTemp);
+    buf.putFloat(BYTE_DEF.AVG_DAY_TEMP.index(), avgDayTemp);
+    buf.putFloat(BYTE_DEF.AVG_NIGHT_TEMP.index(), avgNightTemp);
+    buf.putFloat(BYTE_DEF.RAINFALL.index(), rainfall);
+
+    buf.putFloat(BYTE_DEF.PROJ_MAX_ANNUAL_TEMP.index(), proj_maxAnnualTemp);
+    buf.putFloat(BYTE_DEF.PROJ_MIN_ANNUAL_TEMP.index(), proj_minAnnualTemp);
+    buf.putFloat(BYTE_DEF.PROJ_AVG_DAY_TEMP.index(), proj_avgDayTemp);
+    buf.putFloat(BYTE_DEF.PROJ_AVG_NIGHT_TEMP.index(), proj_avgNightTemp);
+    buf.putFloat(BYTE_DEF.PROJ_RAINFALL.index(), proj_rainfall);
+
+    return buf;
+  }
+
+  public double getLon()
+  {
+    return center.getLon();
+  }
+
+  public double getLat()
+  {
+    return center.getLat();
+  }
+
+  public MapPoint getCenter()
+  {
+    return center;
+  }
+
+  /**
+   * Mutates tile's values when year changes
+   * @param yearsRemaining  years remaining in game
+   */
+  public void stepTile(int yearsRemaining)
+  {
+    maxAnnualTemp = interpolate(maxAnnualTemp, proj_maxAnnualTemp, yearsRemaining,1);
+    minAnnualTemp = interpolate(minAnnualTemp, proj_minAnnualTemp, yearsRemaining,1);
+    avgDayTemp = interpolate(avgDayTemp, proj_avgDayTemp, yearsRemaining,1);
+    avgNightTemp = interpolate(avgNightTemp, proj_avgNightTemp, yearsRemaining,1);
+    rainfall = interpolate(rainfall, proj_rainfall, yearsRemaining,1);
+  }
+
+  public float getElevation()
+  {
+    return elevation;
+  }
+
+  public float getMaxAnnualTemp()
+  {
+    return maxAnnualTemp;
+  }
+
+  public void setMaxAnnualTemp(float maxAnnualTemp)
+  {
+    this.maxAnnualTemp = maxAnnualTemp;
+  }
+
+  public float getMinAnnualTemp()
+  {
+    return minAnnualTemp;
+  }
+
+  public void setMinAnnualTemp(float minAnnualTemp)
+  {
+    this.minAnnualTemp = minAnnualTemp;
+  }
+
+  public float getAvgDayTemp()
+  {
+    return avgDayTemp;
+  }
+
+  public void setAvgDayTemp(float avgDayTemp)
+  {
+    this.avgDayTemp = avgDayTemp;
+  }
+
+  public float getAvgNightTemp()
+  {
+    return avgNightTemp;
+  }
+
+  public void setAvgNightTemp(float avgNightTemp)
+  {
+    this.avgNightTemp = avgNightTemp;
+  }
+
+  public float getRainfall()
+  {
+    return rainfall;
+  }
+
+  public void setRainfall(float rainfall)
+  {
+    this.rainfall = Math.max(0, rainfall);
+  }
+
+  public float getProj_maxAnnualTemp()
+  {
+    return proj_maxAnnualTemp;
+  }
+
+  public void setProj_maxAnnualTemp(float proj_maxAnnualTemp)
+  {
+    this.proj_maxAnnualTemp = proj_maxAnnualTemp;
+  }
+
+  public float getProj_minAnnualTemp()
+  {
+    return proj_minAnnualTemp;
+  }
+
+  public void setProj_minAnnualTemp(float proj_minAnnualTemp)
+  {
+    this.proj_minAnnualTemp = proj_minAnnualTemp;
+  }
+
+  public float getProj_avgDayTemp()
+  {
+    return proj_avgDayTemp;
+  }
+
+  public void setProj_avgDayTemp(float proj_avgDayTemp)
+  {
+    this.proj_avgDayTemp = proj_avgDayTemp;
+  }
+
+  public float getProj_avgNightTemp()
+  {
+    return proj_avgNightTemp;
+  }
+
+  public void setProj_avgNightTemp(float proj_avgNightTemp)
+  {
+    this.proj_avgNightTemp = proj_avgNightTemp;
+  }
+
+  public float getProj_rainfall()
+  {
+    return proj_rainfall;
+  }
+
+  public void setProj_rainfall(float proj_rainfall)
+  {
+    this.proj_rainfall = proj_rainfall;
+  }
+
+  public void setCurrCrop(EnumFood crop)
+  {
+    currCrop = crop;
+  }
+
+  /**
+   * Rates tile's suitability for a particular crop. 
+   * @param crop  crop for which we want rating (wheat, corn, rice, or soy)
+   * @return EnumCropZone (IDEAL, ACCEPTABLE, or POOR)
+   * @throws NullPointerException if called with argument EnumFood.OTHER_CROPS, will throw an
+   * exception because OTHER_CROPS required climate varies by country;
+   * rating cannot be calculated using crop alone.
+   */
+  public EnumCropZone rateTileForCrop(EnumFood crop) throws NullPointerException
+  {
+    CropClimateData data = CropClimateData.mapFood(crop);
+
+    int cropDayT = data.dayTemp;
+    int cropNightT = data.nightTemp;
+    int cropMaxT = data.maxTemp;
+    int cropMinT = data.minTemp;
+    int cropMaxR = data.maxRain;
+    int cropMinR = data.minRain;
+
+    double tRange = cropDayT - cropNightT;                               // tempRange is crop's optimum day-night temp range
+    double rRange = cropMaxR - cropMinR;                                 // rainRange is crop's optimum rainfall range
+    if (isBetween(avgDayTemp, cropNightT, cropDayT) &&
+        isBetween(avgNightTemp, cropNightT, cropDayT) &&
+        isBetween(rainfall, cropMinR, cropMaxR) &&
+        maxAnnualTemp <= cropMaxT && minAnnualTemp >= cropMinT)
     {
-      dataTiles = new ArrayList<>();
-      for(worldfoodgame.model.LandTile t : allTiles())
-      {
-        if(NO_DATA != t) dataTiles.add(t);
-      }
+      return EnumCropZone.IDEAL;
     }
-    return dataTiles;
-  }
-
-  /**
-   @return  all the tiles in this manager in a List
-   */
-  public List<worldfoodgame.model.LandTile> allTiles()
-  {
-    if(allTiles == null)
+    else if (isBetween(avgDayTemp, cropNightT - 0.3 * tRange, cropDayT + 0.3 * tRange) &&
+             isBetween(avgNightTemp, cropNightT - 0.3 * tRange, cropDayT + 0.3 * tRange) &&
+             isBetween(rainfall, cropMinR - 0.3 * rRange, cropMaxR + 0.3 * rRange) &&
+             maxAnnualTemp <= cropMaxT && minAnnualTemp >= cropMinT)
     {
-      allTiles = new ArrayList<>();
-      for(worldfoodgame.model.LandTile[] arr : tiles) allTiles.addAll(Arrays.asList(arr));
+      return EnumCropZone.ACCEPTABLE;
     }
-    return allTiles;
-  }
-
-
-  /**
-   remove a given tile from the underlying set of tiles.  This has the effect
-   of placing a NO_DATA tile at the location of the given tile in the full
-   projection (assuming the given tile was found)
-   @param tile tile to remove
-   @return  true if the tile was found and removed
-   */
-  public boolean removeTile(worldfoodgame.model.LandTile tile)
-  {
-    int col = lonToCol(tile.getLon());
-    int row = latToRow(tile.getLat());
-
-    /* check if tile is in the right position */
-    boolean ret = tiles[col][row] == tile;
-
-    if(!ret) /* only search if the tile is not in its proper place */
+    else
     {
-      loop:
-      for (int i = 0; i < tiles.length; i++)
-      {
-        for (int j = 0; j < tiles[i].length; j++)
-        {
-          if(ret = (tiles[i][j] == tile))
-          {
-            /* "remove" first instance of tile from underlying array */
-            tiles[i][j] = NO_DATA;
-            break loop;
-          }
-        }
-      }
-    }
-    /* tile is in the right place, remove it */
-    else tiles[col][row] = NO_DATA;
-
-    /* pull all tiles from method ref, to guarantee the list exists */
-    ret = ret || allTiles().remove(tile);
-    ret = ret || countryTiles.remove(tile);
-
-    /* ret is true iff the tile was a member of one of the underlying structures */
-    return ret;
-  }
-
-
-  /**
-   set the World for this TileManager.  TileManager needs access to World-specific
-   data for current year and randomization percentages
-   @param simulator   simulator to set for the manager
-   */
-  public void setSimulator(Simulator simulator)
-  {
-    this.simulator = simulator;
-  }
-
-  /* check given row and column indices for validity */
-  private boolean indicesInBounds(int row, int col)
-  {
-    return col >= 0 && col < COLS && row >= 0 && row < ROWS;
-  }
-
-  /* check given longitude and latitude coordinates for validity */
-  private boolean coordsInBounds(double lon, double lat)
-  {
-    return lon >= MIN_LON && lon <= MAX_LON && lat >= MIN_LAT && lat <= MAX_LAT;
-  }
-
-  /* given a longitude line, return the column index corresponding to tiles
-    containing that line */
-  private static int latToRow(double lat)
-  {
-    /* sine of latitude, shifted into [0,2] */
-    double sinShift = Math.sin(Math.toRadians(lat)) + 1;
-    double row = ROWS * sinShift / 2;
-
-    /* take minimum of row and max row value, for the outlier lat = 90 */
-    return (int)Math.min(row, ROWS - 1);
-  }
-
-
-  /* given a longitude line, return the column index corresponding to tiles
-    containing that line */
-  private static int lonToCol(double lon)
-  {
-    return (int)Math.min((COLS * (lon + MAX_LON) / LON_RANGE), COLS - 1);
-  }
-
-  /* return the theoretical center latitude line of tiles in a given row */
-  public static double rowToLat(int row)
-  {
-    /* bring the row index into floating point range [-1,1] */
-    double measure = (row * 2d / ROWS) - 1;
-
-    /* arcsin brings measure into spherical space.  Convert to degrees, and shift
-      by half of DLAT (~latitude lines covered per tile)  */
-    return Math.toDegrees(Math.asin(measure)) + 0.5 * DLAT;
-  }
-
-
-  /* return the theoretical center longitude line of tiles in a given column */
-  public static double colToLon(int col)
-  {
-    return LON_RANGE * ((double)col) / COLS - MAX_LON + 0.5*DLON;
-  }
-
-  /* initialize a new tile set with proper latitude and longitude center points.
-    This is really only used for making tiles for a new data set*/
-  private static void initTiles(worldfoodgame.model.LandTile[][] tileset)
-  {
-    for (int col = 0; col < COLS; col++)
-    {
-      for (int row = 0; row < ROWS; row++)
-      {
-        double lon = colToLon(col);
-        double lat = rowToLat(row);
-        tileset[col][row] = new worldfoodgame.model.LandTile(lon, lat);
-      }
-    }
-  }
-
-  /* Used to create and write a new tile set.
-     Be careful using this with the current data's filepath.  If a backup is not
-     made, that data will be overwritten and must be re-generated from the raw
-     data from www.worldclim.org (See BioClimDataParser)
-   */
-  private static void writeNewTileSet(String filePath)
-  {
-    ClimateTile data = new ClimateTile();
-    initTiles(data.tiles);
-
-    try(FileOutputStream out = new FileOutputStream(filePath))
-    {
-      for(LandTile t : data.allTiles())
-      {
-        byte[] array = t.toByteBuffer().array();
-        out.write(array);
-      }
-    } catch (IOException e)
-    {
-      e.printStackTrace();
+      return EnumCropZone.POOR;                                               // otherwise tile is POOR for crop
     }
   }
 
   /**
-   Exception used if accessors from the AbstractClimateData class are given
-   invalid coordinates
+   * Rate tile's suitability for a particular country's  other crops.
+   * @param otherCropsData  a country's otherCropsData object
+   * @return EnumCropZone (IDEAL, ACCEPTABLE, or POOR)
    */
-  static class NoDataException extends IllegalArgumentException
+  public EnumCropZone rateTileForOtherCrops(CropClimateData otherCropsData)
   {
-
-    public NoDataException(String msg)
+    float cropDayT = otherCropsData.dayTemp;
+    float cropNightT = otherCropsData.nightTemp;
+    float cropMaxT = otherCropsData.maxTemp;
+    float cropMinT = otherCropsData.minTemp;
+    float cropMaxR = otherCropsData.maxRain;
+    float cropMinR = otherCropsData.minRain;
+    float tRange = cropDayT - cropNightT;                               // tempRange is crop's optimum day-night temp range
+    float rRange = cropMaxR - cropMinR;                                 // rainRange is crop's optimum rainfall range
+    if (isBetween(avgDayTemp, cropNightT, cropDayT) &&
+        isBetween(avgNightTemp, cropNightT, cropDayT) &&
+        isBetween(rainfall, cropMinR, cropMaxR) &&
+        minAnnualTemp >= cropMinT && maxAnnualTemp <= cropMaxT)
     {
-      super(msg);
+      return EnumCropZone.IDEAL;
+    }
+    else if (isBetween(avgDayTemp, cropNightT - 0.3 * tRange, cropDayT + 0.3 * tRange) &&
+             isBetween(avgNightTemp, cropNightT - 0.3 * tRange, cropDayT + 0.3 * tRange) &&
+             isBetween(rainfall, cropMinR - 0.3 * rRange, cropMaxR + 0.3 * rRange) &&
+             minAnnualTemp >= cropMinT && maxAnnualTemp <= cropMaxT)
+    {
+      return EnumCropZone.ACCEPTABLE;
+    }
+    else
+    {
+      return EnumCropZone.POOR;                                               // otherwise tile is POOR for crop
     }
   }
+
+  /**
+   * Get percent of country's yield for crop tile will yield, base on its zone rating and
+   * current use
+   * @param crop    crop in question
+   * @param zone    tile's zone for that crop
+   * @return        percent of country's yield tile can yield
+   */
+  public double getTileYieldPercent(EnumFood crop, EnumCropZone zone)
+  {
+    double zonePercent = 0;
+    double usePercent;
+    switch (zone)
+    {
+      case IDEAL:
+        zonePercent = 1;
+        break;
+      case ACCEPTABLE:
+        zonePercent = 0.6;
+        break;
+      case POOR:
+        zonePercent = 0.25;
+        break;
+    }
+    if (currCrop == crop) usePercent = 1;
+    else if (currCrop == null) usePercent = 0.1;
+    else usePercent = 0.5;
+    return zonePercent * usePercent;
+  }
+
+  private boolean isBetween(Number numToTest, Number lowVal, Number highVal)
+  {
+    if (numToTest.doubleValue() >= lowVal.doubleValue() && numToTest.doubleValue() <= highVal.doubleValue())
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  /**
+   * Retuns the crop currently planted on this tile.
+   * @return planted crop
+   */
+  public EnumFood getCurrentCrop()
+  {
+    return currCrop;
+  }
+
+  /**
+   BYTE_DEF enum generalizes the binary format the LandTiles can be stored in
+   */
+  public enum BYTE_DEF
+  {
+    LONGITUDE, LATITUDE, ELEVATION,
+    MAX_ANNUAL_TEMP, MIN_ANNUAL_TEMP,
+    AVG_DAY_TEMP, AVG_NIGHT_TEMP,
+    RAINFALL,
+    PROJ_MAX_ANNUAL_TEMP, PROJ_MIN_ANNUAL_TEMP,
+    PROJ_AVG_DAY_TEMP, PROJ_AVG_NIGHT_TEMP,
+    PROJ_RAINFALL;
+
+    public static final int SIZE = values().length;
+
+    public static final int SIZE_IN_BYTES = SIZE * Float.SIZE / Byte.SIZE;
+    int index()
+    {
+      return ordinal() * Float.SIZE / Byte.SIZE;
+    }
+
+  }
+
+  @Override
+  public String toString()
+  {
+    return "LandTile{" +
+           "rainfall=" + rainfall +
+           ", avgNightTemp=" + avgNightTemp +
+           ", avgDayTemp=" + avgDayTemp +
+           ", minAnnualTemp=" + minAnnualTemp +
+           ", maxAnnualTemp=" + maxAnnualTemp +
+           ", elevation=" + elevation +
+           ", center=" + center +
+           '}';
+  }
+
+
 }

@@ -1,5 +1,14 @@
 starvationevasion.common
 starvationevasion.common.messages
+starvationevasion.common.policies
+starvationevasion.model
 starvationevasion.server
 starvationevasion.sim
 starvationevasion.testing
+worldfoodgame.common
+worldfoodgame.io
+worldfoodgame.io.CSVhelpers
+worldfoodgame.io.XMLparsers
+worldfoodgame.model
+worldfoodgame.model.geography
+worldfoodgame.util

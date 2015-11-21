@@ -75,6 +75,8 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
       }
     }
 
+    if (largest == null) throw new IllegalStateException("Internal error computing largest region");
+
     int x = (int) largest.getBounds().getCenterX();
     int y = (int) largest.getBounds().getCenterY();
 
@@ -309,7 +311,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
   /**
    * Update % undernourished using formula in spec.
    *
-   * @param year
+   * @param year       year to update
    */
   final public void updateUndernourished(int year)
   {
@@ -402,7 +404,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
   }
 
   /**
-   * @param year
+   * @param year       year to set
    * @param kilomsq total land area
    */
   final public void setLandTotal(int year, double kilomsq)
@@ -421,7 +423,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
   }
 
   /**
-   * @param year
+   * @param year       year to set
    * @param kilomsq area of arable land
    */
   final public void setArableLand(int year, double kilomsq)

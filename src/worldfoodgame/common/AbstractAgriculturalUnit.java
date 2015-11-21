@@ -124,7 +124,7 @@ public abstract class AbstractAgriculturalUnit
   }
 
   /**
-   * @param year
+   * @param year year in question
    * @return % undernourished
    */
   final public double getUndernourished(int year)
@@ -168,7 +168,7 @@ public abstract class AbstractAgriculturalUnit
   }
 
   /**
-   * @param year
+   * @param year year in question
    * @return area of arable land
    */
   final public double getArableLand(int year)
@@ -236,7 +236,7 @@ public abstract class AbstractAgriculturalUnit
    * Calculates number of unhappy people in country for a given year based on formula in specifications.
    * For START_YEAR, returns undernourished population to avoid null pointer.
    *
-   * @param year
+   * @param year year in question
    * @return number of unhappy people for that year
    */
   final public double getUnhappyPeople(int year)

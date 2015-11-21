@@ -4,6 +4,7 @@ package starvationevasion.sim;
 import starvationevasion.common.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -54,9 +55,9 @@ public class Simulator
    * cards from the top of the given playerRegion's deck taking into account cards played
    * and discarded by that player.
    * @param playerRegion region of player who id given the drawn cards.
-   * @return list of cards.
+   * @return collection of cards.
    */
-  public ArrayList<EnumPolicy> drawCards(EnumRegion playerRegion)
+  public Collection<Integer> drawCards(EnumRegion playerRegion)
   {
     return null;
   }
@@ -67,7 +68,7 @@ public class Simulator
    * @param cards List of PolicyCards played this turn.
    * @return the simulation year after nextTurn() has finished.
    */
-  public int nextTurn(ArrayList<PolicyCard> cards)
+  public int nextTurn(ArrayList<Policy> cards)
   {
     LOGGER.info("Advancing Turn...");
     nextYear();

@@ -1,5 +1,5 @@
 <state>
-  <name>South Carolina</name>
+  <name>SouthCarolina</name>
   <area>
     <vertex lat="-81.7595932725" lon="33.1953813584"/>
     <vertex lat="-81.7698782725" lon="33.2138813584"/>
@@ -244,6 +244,8 @@
     <vertex lat="-81.7403742725" lon="33.1446973583"/>
     <vertex lat="-81.7634082725" lon="33.1698353584"/>
     <vertex lat="-81.7595932725" lon="33.1953813584"/>
+  </area>
+  <area>
     <vertex lat="-80.7678052716" lon="32.2586483575"/>
     <vertex lat="-80.7190832716" lon="32.2722043575"/>
     <vertex lat="-80.6666162715" lon="32.2201133575"/>

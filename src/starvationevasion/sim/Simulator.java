@@ -4,6 +4,7 @@ package starvationevasion.sim;
 import starvationevasion.common.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -14,6 +15,7 @@ import java.util.logging.Level;
 public class Simulator
 {
   private final static Logger LOGGER = Logger.getLogger(Simulator.class.getName());
+  private FileObject stateData;
 
   private final int startYear;
   private int year;
@@ -42,9 +44,8 @@ public class Simulator
     this.startYear = startYear;
     year = startYear;
 
-
-    ArrayList<String> stateData = DataReader.retrieveStateData("data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv");
-    instantiateRegions(stateData);
+    stateData = DataReader.retrieveStateData("data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv");
+    instantiateRegions(stateData.getRawData());
     LOGGER.info("Starting Simulation at year " + startYear);
   }
 
@@ -54,9 +55,9 @@ public class Simulator
    * cards from the top of the given playerRegion's deck taking into account cards played
    * and discarded by that player.
    * @param playerRegion region of player who id given the drawn cards.
-   * @return list of cards.
+   * @return collection of cards.
    */
-  public ArrayList<EnumPolicy> drawCards(EnumRegion playerRegion)
+  public Collection<Integer> drawCards(EnumRegion playerRegion)
   {
     return null;
   }
@@ -67,7 +68,7 @@ public class Simulator
    * @param cards List of PolicyCards played this turn.
    * @return the simulation year after nextTurn() has finished.
    */
-  public int nextTurn(ArrayList<PolicyCard> cards)
+  public int nextTurn(ArrayList<Policy> cards)
   {
     LOGGER.info("Advancing Turn...");
     nextYear();
@@ -102,7 +103,7 @@ public class Simulator
   }
 
   /**
-   * This method is used to create State objects along with 
+   * This method is used to create State objects along with
    * the Region data structure
    *
    * @param data
@@ -129,6 +130,7 @@ public class Simulator
     float sum = 0.f;
     for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
     {
+      //divide ny num records
       avgConversionFactors[i] /= 50.f;
       sum += avgConversionFactors[i];
       //System.out.println("AVG CATEGORY "+avgConversionFactors[i]);

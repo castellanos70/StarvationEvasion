@@ -1,0 +1,39 @@
+<country>
+<name>Qatar</name>
+<area>
+<vertex lat="24.607232" lon="51.268013"/>
+<vertex lat="24.586742" lon="51.177993"/>
+<vertex lat="24.564651" lon="51.093347"/>
+<vertex lat="24.565245" lon="51.022757"/>
+<vertex lat="24.573953" lon="50.966068"/>
+<vertex lat="24.595140" lon="50.928292"/>
+<vertex lat="24.679631" lon="50.855635"/>
+<vertex lat="24.789262" lon="50.804372"/>
+<vertex lat="24.850370" lon="50.835895"/>
+<vertex lat="24.888559" lon="50.846747"/>
+<vertex lat="25.177430" lon="50.777294"/>
+<vertex lat="25.399277" lon="50.754556"/>
+<vertex lat="25.444752" lon="50.762928"/>
+<vertex lat="25.497049" lon="50.802615"/>
+<vertex lat="25.612675" lon="50.868658"/>
+<vertex lat="25.724063" lon="50.903798"/>
+<vertex lat="25.981464" lon="51.003120"/>
+<vertex lat="26.080579" lon="51.108126"/>
+<vertex lat="26.153288" lon="51.262329"/>
+<vertex lat="26.011126" lon="51.389039"/>
+<vertex lat="25.902399" lon="51.543035"/>
+<vertex lat="25.781011" lon="51.572284"/>
+<vertex lat="25.682102" lon="51.526912"/>
+<vertex lat="25.524696" lon="51.485364"/>
+<vertex lat="25.452349" lon="51.510272"/>
+<vertex lat="25.389743" lon="51.519574"/>
+<vertex lat="25.284452" lon="51.561432"/>
+<vertex lat="25.147923" lon="51.601946"/>
+<vertex lat="25.052890" lon="51.608871"/>
+<vertex lat="24.964833" lon="51.586960"/>
+<vertex lat="24.890884" lon="51.533423"/>
+<vertex lat="24.668262" lon="51.427900"/>
+<vertex lat="24.645137" lon="51.396481"/>
+<vertex lat="24.607232" lon="51.268013"/>
+</area>
+</country>

@@ -1,0 +1,28 @@
+<country>
+<name>Palau</name>
+<area>
+<vertex lat="3.026224" lon="131.172387"/>
+<vertex lat="3.021883" lon="131.149649"/>
+<vertex lat="3.025242" lon="131.134921"/>
+<vertex lat="3.039427" lon="131.136730"/>
+<vertex lat="3.054077" lon="131.151613"/>
+<vertex lat="3.060589" lon="131.172387"/>
+<vertex lat="3.055628" lon="131.187941"/>
+<vertex lat="3.042114" lon="131.186339"/>
+<vertex lat="3.026224" lon="131.172387"/>
+</area>
+<area>
+<vertex lat="7.382030" lon="134.595433"/>
+<vertex lat="7.360636" lon="134.534662"/>
+<vertex lat="7.437117" lon="134.506240"/>
+<vertex lat="7.525794" lon="134.515748"/>
+<vertex lat="7.593955" lon="134.555953"/>
+<vertex lat="7.615763" lon="134.599671"/>
+<vertex lat="7.623566" lon="134.608663"/>
+<vertex lat="7.712088" lon="134.651141"/>
+<vertex lat="7.663305" lon="134.659616"/>
+<vertex lat="7.501300" lon="134.632744"/>
+<vertex lat="7.438306" lon="134.598224"/>
+<vertex lat="7.382030" lon="134.595433"/>
+</area>
+</country>

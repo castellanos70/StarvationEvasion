@@ -1,0 +1,58 @@
+<country>
+<name>Saint Vincent and the Grenadines</name>
+<area>
+<vertex lat="12.695220" lon="-61.334390"/>
+<vertex lat="12.694703" lon="-61.344545"/>
+<vertex lat="12.698140" lon="-61.353536"/>
+<vertex lat="12.701189" lon="-61.351108"/>
+<vertex lat="12.703592" lon="-61.339739"/>
+<vertex lat="12.710206" lon="-61.334416"/>
+<vertex lat="12.719017" lon="-61.336328"/>
+<vertex lat="12.728784" lon="-61.335863"/>
+<vertex lat="12.734804" lon="-61.326820"/>
+<vertex lat="12.735425" lon="-61.319869"/>
+<vertex lat="12.731678" lon="-61.316820"/>
+<vertex lat="12.722531" lon="-61.314831"/>
+<vertex lat="12.715529" lon="-61.320128"/>
+<vertex lat="12.709845" lon="-61.325941"/>
+<vertex lat="12.701111" lon="-61.328835"/>
+<vertex lat="12.695220" lon="-61.334390"/>
+</area>
+<area>
+<vertex lat="12.994608" lon="-61.226206"/>
+<vertex lat="12.983678" lon="-61.242225"/>
+<vertex lat="12.983678" lon="-61.234732"/>
+<vertex lat="12.976263" lon="-61.242225"/>
+<vertex lat="12.983626" lon="-61.247264"/>
+<vertex lat="12.988174" lon="-61.255222"/>
+<vertex lat="12.990189" lon="-61.265351"/>
+<vertex lat="12.989879" lon="-61.276952"/>
+<vertex lat="12.997347" lon="-61.276952"/>
+<vertex lat="12.992773" lon="-61.262043"/>
+<vertex lat="12.997243" lon="-61.239331"/>
+<vertex lat="13.005356" lon="-61.239280"/>
+<vertex lat="13.012669" lon="-61.245946"/>
+<vertex lat="13.017836" lon="-61.249021"/>
+<vertex lat="13.025717" lon="-61.240649"/>
+<vertex lat="13.043235" lon="-61.212847"/>
+<vertex lat="13.052563" lon="-61.201194"/>
+<vertex lat="13.048713" lon="-61.199799"/>
+<vertex lat="13.045121" lon="-61.199308"/>
+<vertex lat="13.041711" lon="-61.197964"/>
+<vertex lat="13.038300" lon="-61.193753"/>
+<vertex lat="13.024683" lon="-61.208041"/>
+<vertex lat="12.994608" lon="-61.226206"/>
+</area>
+<area>
+<vertex lat="13.158112" lon="-61.174503"/>
+<vertex lat="13.142299" lon="-61.203907"/>
+<vertex lat="13.209582" lon="-61.277288"/>
+<vertex lat="13.287716" lon="-61.268451"/>
+<vertex lat="13.330659" lon="-61.224061"/>
+<vertex lat="13.355981" lon="-61.182100"/>
+<vertex lat="13.358720" lon="-61.138976"/>
+<vertex lat="13.294021" lon="-61.124015"/>
+<vertex lat="13.202864" lon="-61.134532"/>
+<vertex lat="13.158112" lon="-61.174503"/>
+</area>
+</country>

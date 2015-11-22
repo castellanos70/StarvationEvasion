@@ -43,13 +43,13 @@ public interface PolicyCard
   public boolean voteWaitForAll();
 
   /**
-   * @return A collection of applicable regions if this card requires a target region,
+   * @return A collection of applicable target regions if this card requires a target region,
    * or null if no regions apply.
    */
-  public Collection<EnumRegion> targetRegions();
+  public Collection<EnumRegion> validTargetRegions();
 
   /**
    * @return The target food types required by this card, or null if no types apply.
    */
-  public Collection<EnumFood> targetFoods();
+  public Collection<EnumFood> validTargetFoods();
 }

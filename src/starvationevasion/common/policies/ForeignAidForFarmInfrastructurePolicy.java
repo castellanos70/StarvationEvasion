@@ -3,6 +3,7 @@ package starvationevasion.common.policies;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Policy;
+import starvationevasion.common.PolicyCard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +28,8 @@ import java.util.Collection;
 
 public class ForeignAidForFarmInfrastructurePolicy extends Policy
 {
+  public static PolicyCard CARD = Fall2015PolicyProvider.EnumPolicy.Foreign_Aid_for_Farm_Infrastructure;
+
   public static final String TITLE =
       "Foreign Aid for Farm Infrastructure";
 
@@ -88,6 +91,12 @@ public class ForeignAidForFarmInfrastructurePolicy extends Policy
   */
   @Override
   public String getGameText() { return TEXT;}
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public PolicyCard getCardType() { return CARD; }
 
   /**
    * {@inheritDoc}

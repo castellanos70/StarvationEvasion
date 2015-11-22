@@ -4,6 +4,7 @@ package starvationevasion.common.policies;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Policy;
+import starvationevasion.common.PolicyCard;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +30,8 @@ import java.util.Collection;
 */
 public class GMOSeedInsectResistanceResearchPolicy extends Policy
 {
+  public static PolicyCard CARD = Fall2015PolicyProvider.EnumPolicy.GMO_Seed_Insect_Resistance_Research;
+
   public static final String TITLE =
      "GMO Seed Insect Resistance Research";
 
@@ -93,6 +96,12 @@ public class GMOSeedInsectResistanceResearchPolicy extends Policy
   */
   @Override
   public String getGameText(){ return TEXT;}
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public PolicyCard getCardType() { return CARD; }
 
   /**
    * {@inheritDoc}

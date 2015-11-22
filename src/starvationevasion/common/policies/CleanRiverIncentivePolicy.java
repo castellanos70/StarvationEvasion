@@ -4,6 +4,7 @@ package starvationevasion.common.policies;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Policy;
+import starvationevasion.common.PolicyCard;
 
 import java.util.Collection;
 
@@ -29,6 +30,8 @@ import java.util.Collection;
 */
 public class CleanRiverIncentivePolicy extends Policy
 {
+  public static PolicyCard CARD = Fall2015PolicyProvider.EnumPolicy.Clean_River_Incentive;
+
   public static final String TITLE =
       "Clean River Incentive";
 
@@ -93,6 +96,12 @@ public class CleanRiverIncentivePolicy extends Policy
 
    return null;
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public PolicyCard getCardType() { return CARD; }
 
   /**
    * Used only for testing this class.

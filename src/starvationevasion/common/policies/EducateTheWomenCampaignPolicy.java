@@ -3,6 +3,7 @@ package starvationevasion.common.policies;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Policy;
+import starvationevasion.common.PolicyCard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +27,8 @@ import java.util.Collection;
 */
 public class EducateTheWomenCampaignPolicy extends Policy
 {
+  public static PolicyCard CARD = Fall2015PolicyProvider.EnumPolicy.Educate_the_Women_Campaign;
+
   public static final String TITLE =
       "Educate the Women Campaign";
 
@@ -60,7 +63,7 @@ public class EducateTheWomenCampaignPolicy extends Policy
   }
   
   public EducateTheWomenCampaignPolicy(EnumRegion region)
-  { 
+  {
     super(region);
   }
 
@@ -87,6 +90,12 @@ public class EducateTheWomenCampaignPolicy extends Policy
   */
   @Override
   public String getGameText(){ return TEXT;}
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public PolicyCard getCardType() { return CARD; }
 
   /**
    * {@inheritDoc}

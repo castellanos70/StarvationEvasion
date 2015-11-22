@@ -1,20 +1,38 @@
 package starvationevasion.common;
 
+import java.io.Serializable;
 
 /**
- * Policy is the structure that the Server uses to tell the Simulator which
- * policies have been enacted on the current game turn.<br><br>
- *
- * The game client's might want to extend this class adding,
- * for example, an image, a status (in deck, in hand, proposed, voting, enacted, rejected)
- * and other data. <br>
- * If the client does extend this class, be sure to downcast to Policy before sending
- * across the network to the server.<br><br>
+ * A Policy is an implementation of a PolicyCard. Subclasses provide implementation details
+ * for each type of Policy.  This structure (subclassed) is also used by the Server to tell the
+ * Simulator which policies have been enacted by players during the current game turn.<br><br>
+ * This class is abstract and can not be instantiated directly. Policies are created by
+ * the policy manager.  To get an instance of a policy manager :
+ * <pre>
+ * <code>
+ * PolicyManager pm = null;
+ * try
+ * { pm = PolicyManager.getPolicyManager();
+ * }
+ * catch (ServiceConfigurationError | DuplicatePolicyException ex)
+ * { ... This exception should never occur, but must be caught ...
+ * }
+ * </code>
+ * </pre>
+ * The policy manager creates a Policy from either a PolicyCard or from an identifier provided by the server :
+ * <pre>
+ * <code>
+ * Policy policy = pm.createPolicy(identifier, region);
+ * </code>
+ * </pre>
+ * The game clients might want to wrap this class in a data object, adding
+ * for example an image, status data (in deck, in hand, proposed, voting, enacted, rejected)
+ * and other data. <br><br>
  *
  * Use the validate() method to verify all needed parameters of the policy are defined and
  * in range.
  */
-public abstract class Policy
+public abstract class Policy implements Serializable
 {
   public static final int MIN_PERCENT = 1;
   public static final int MAX_PERCENT = 100;
@@ -27,7 +45,6 @@ public abstract class Policy
    * the owner (enactingRegionBits is ignored).
    */
   private final EnumRegion owner;
-
 
   /**
    * This is a bitwise int with a 1 in the position corresponding to
@@ -51,7 +68,6 @@ public abstract class Policy
    */
   protected EnumRegion targetRegion;
 
-
   /**
    * Some policy cards require quantity X, Y and/or Z.
    * The units of these values are depend on the particular policy.
@@ -66,17 +82,25 @@ public abstract class Policy
    *
    * @param owner US player region controlled by the player who drafts this policy.
    */
-  public Policy(EnumRegion owner)
+  protected Policy(final EnumRegion owner)
   {
     if (!owner.isUS())
     {
       throw new IllegalArgumentException("addEnactingRegion(EnumRegion="+owner+
         ") Policy owner must be a US region.");
     }
+
     this.owner  = owner;
   }
 
+  /**
+   * @return The title text for this policy.
+   */
   public abstract String getTitle();
+
+  /**
+   * @return The game text for this policy.
+   */
   public abstract String getGameText();
 
   /**
@@ -91,6 +115,11 @@ public abstract class Policy
    * the required number of votes have been reached.
    */
   public abstract boolean voteWaitForAll();
+
+  /**
+   * @return The policy card type for this policy.
+   */
+  public abstract PolicyCard getCardType();
 
   /**
    * @return the value of quantity X.
@@ -205,6 +234,14 @@ public abstract class Policy
   { return (approvedRegionBits | region.getBit()) != 0;
   }
 
+  public boolean isEligibleToVote(EnumRegion region)
+  {
+    if (votesRequired() == 0) return region.equals(owner);
+
+    // By default, everyone is eligible to vote
+    //
+    return true;
+  }
 
   /**
    * @return Number of US regions who voted yes for this policy.

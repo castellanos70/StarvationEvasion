@@ -3,6 +3,7 @@ package starvationevasion.common.policies;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Policy;
+import starvationevasion.common.PolicyCard;
 
 import java.util.Collection;
 
@@ -18,6 +19,8 @@ import java.util.Collection;
 */
 public class CovertIntelligencePolicy extends Policy
 {
+  public static PolicyCard CARD = Fall2015PolicyProvider.EnumPolicy.Covert_Intelligence;
+
   public static final String TITLE =
       "Covert Intelligence";
 
@@ -74,6 +77,12 @@ public class CovertIntelligencePolicy extends Policy
   */
   @Override
   public String getGameText(){ return TEXT;}
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public PolicyCard getCardType() { return CARD; }
 
   /**
    * {@inheritDoc}

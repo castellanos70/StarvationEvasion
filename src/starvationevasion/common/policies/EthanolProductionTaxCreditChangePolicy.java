@@ -3,6 +3,7 @@ package starvationevasion.common.policies;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Policy;
+import starvationevasion.common.PolicyCard;
 
 import java.util.Collection;
 
@@ -19,8 +20,11 @@ import java.util.Collection;
  */
 public class EthanolProductionTaxCreditChangePolicy extends Policy
 {
+  public static PolicyCard CARD = Fall2015PolicyProvider.EnumPolicy.Ethanol_Production_Tax_Credit_Change;
+
   public static final String TITLE =
       "Ethanol Production Tax Credit Change";
+
   public static final String TEXT =
       "Currently an ethanol producer located in my region is entitled " +
       "to a credit of $X per gallon of ethanol produced, including " +
@@ -72,6 +76,12 @@ public class EthanolProductionTaxCreditChangePolicy extends Policy
   @Override
   public String getGameText(){ return TEXT;}
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public PolicyCard getCardType() { return CARD; }
+
   public String validate()
   {
      // case EthanolProductionTaxCreditChangePolicy:
@@ -80,7 +90,6 @@ public class EthanolProductionTaxCreditChangePolicy extends Policy
 
     return null;
   }
-
 
   /**
    * Used only for testing this class.

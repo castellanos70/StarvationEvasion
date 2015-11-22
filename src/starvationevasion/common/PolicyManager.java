@@ -1,6 +1,8 @@
 package starvationevasion.common;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The PolicyManager class is a service provider that aggregates and provides all of the
@@ -85,9 +87,13 @@ public class PolicyManager
    * @throws ServiceConfigurationError, DuplicatePolicyException
    * @return The singleton instance of the policy manager.
    */
-  public static synchronized PolicyManager getInstance() throws ServiceConfigurationError, DuplicatePolicyException
+  public static synchronized PolicyManager getPolicyManager()
   {
-    if (service == null) service = new PolicyManager();
+    if (service == null) try {
+      service = new PolicyManager();
+    } catch (DuplicatePolicyException e) {
+      Logger.getGlobal().log(Level.SEVERE, "There are duplicate policies in the policy configuration.", e);
+    }
 
     return service;
   }
@@ -95,7 +101,7 @@ public class PolicyManager
   /**
    * @return The total number of policies in the game.
    */
-  public int getPolicyCount()
+  public int getPolicyCardCount()
   {
     return policyCount;
   }
@@ -103,7 +109,7 @@ public class PolicyManager
   /**
    * @return The policies
    */
-  public Collection<PolicyCard> getCards()
+  public Collection<PolicyCard> getCardTypes()
   {
     return cards;
   }
@@ -120,7 +126,7 @@ public class PolicyManager
   }
 
   /**
-   * @param policyName A policy's master sequence number
+   * @param policyName A policy's name.
    * @return The playing card for the policy.
    */
   public PolicyCard getCard(String policyName)
@@ -131,7 +137,7 @@ public class PolicyManager
   }
 
   /**
-   * Creates a new policy card instance for the policy number and region.
+   * Creates a new policy instance for the policy card and region.
    * @param card The policy card.
    * @param region The region playing the card.
    * @return A policy card object.
@@ -190,7 +196,7 @@ public class PolicyManager
    *
    * Some policy cards require quantity X, Y and/or Z. The units of these
    * values depend on the particular policy. The respective field is ignored
-   * if the named policy does not require that field. 
+   * if the named policy does not require that field.
    *
    * The targetFood field is ignored if the named policy does not require
    * a target food.  Some cards require the target region to be a US player
@@ -227,7 +233,7 @@ public class PolicyManager
    *
    * Some policy cards require quantity X, Y and/or Z. The units of these
    * values depend on the particular policy. The respective field is ignored
-   * if the named policy does not require that field. 
+   * if the named policy does not require that field.
    *
    * The targetFood field is ignored if the named policy does not require
    * a target food.  Some cards require the target region to be a US player
@@ -255,7 +261,7 @@ public class PolicyManager
   ) {
     PolicyData data = policyMap.get(policyName);
     if (data == null) throw new IllegalArgumentException("Unknown policy " + policyName);
-    
+
     return validate(data, region, x, y, z, targetFood, targetRegion);
   }
 
@@ -304,28 +310,20 @@ public class PolicyManager
       super(policyName);
     }
   }
-  
+
   /**
    * @param args Not used.
    * Used only for testing this class.
    */
   public static void main(String[] args)
   {
-    PolicyManager pm = null;
-    try
-    { pm = PolicyManager.getInstance();
-    }
-    catch (ServiceConfigurationError | DuplicatePolicyException ex)
-    {
-      ex.printStackTrace();
-      System.exit(1);
-    }
+    PolicyManager pm = PolicyManager.getPolicyManager();
 
     // We could simply iterate over the collection of cards, but at some point
     // in the future we may simply want to reference cards by number to simplify
     // data passing.
     //
-    int count = pm.getPolicyCount();
+    int count = pm.getPolicyCardCount();
     for (int i = 0 ; i < count ; i += 1)
     {
       PolicyCard playing = pm.getCard(i);

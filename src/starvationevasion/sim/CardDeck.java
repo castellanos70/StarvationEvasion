@@ -1,4 +1,9 @@
-package starvationevasion.common;
+package starvationevasion.sim;
+
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.Policy;
+import starvationevasion.common.PolicyCard;
+import starvationevasion.common.PolicyManager;
 
 import java.util.*;
 
@@ -97,17 +102,8 @@ public class CardDeck
    */
   public static void main(String[] args)
   {
-    PolicyManager pm = null;
-    try
-    { pm = PolicyManager.getInstance();
-    }
-    catch (ServiceConfigurationError | PolicyManager.DuplicatePolicyException ex)
-    {
-      ex.printStackTrace();
-      System.exit(1);
-    }
-
-    Collection<PolicyCard> cards = pm.getCards();
+    PolicyManager pm = PolicyManager.getPolicyManager();
+    Collection<PolicyCard> cards = pm.getCardTypes();
     CardDeck deck = new CardDeck();
 
     for (PolicyCard c : cards)

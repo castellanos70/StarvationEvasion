@@ -179,13 +179,13 @@ public class Fall2015PolicyProvider implements PolicyProvider
      * {@inheritDoc}
     */
     @Override
-    public Collection<EnumRegion> targetRegions() { return targetRegions; }
+    public Collection<EnumRegion> validTargetRegions() { return targetRegions; }
 
     /**
      * {@inheritDoc}
     */
     @Override
-    public Collection<EnumFood> targetFoods() { return targetFoods; }
+    public Collection<EnumFood> validTargetFoods() { return targetFoods; }
 
     /**
      * Creates a policy card for this card.

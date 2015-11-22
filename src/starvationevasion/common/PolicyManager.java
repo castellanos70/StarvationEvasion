@@ -6,7 +6,21 @@ import java.util.logging.Logger;
 
 /**
  * The PolicyManager class is a service provider that aggregates and provides all of the
- * available policy cards found in the VM's classpath.
+ * available policy cards found in the VM's classpath. The Policy class is abstract and
+ * can not be instantiated directly. Policy objects are created from Policy cards by
+ * the policy manager.  To get an instance of a policy manager :
+ * <pre>
+ * <code>
+ * PolicyManager pm = PolicyManager.getPolicyManager();
+ * </code>
+ * </pre>
+ * The policy manager creates a Policy from either a PolicyCard or from an identifier provided by the server :
+ * <pre>
+ * <code>
+ * Policy policy = pm.createPolicy(identifier, region);
+ * </code>
+ * </pre>
+
  *
  * Created by peter on 11/17/2015.
  */
@@ -84,7 +98,6 @@ public class PolicyManager
   }
 
   /**
-   * @throws ServiceConfigurationError, DuplicatePolicyException
    * @return The singleton instance of the policy manager.
    */
   public static synchronized PolicyManager getPolicyManager()

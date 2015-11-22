@@ -10,13 +10,7 @@ import java.io.Serializable;
  * the policy manager.  To get an instance of a policy manager :
  * <pre>
  * <code>
- * PolicyManager pm = null;
- * try
- * { pm = PolicyManager.getPolicyManager();
- * }
- * catch (ServiceConfigurationError | DuplicatePolicyException ex)
- * { ... This exception should never occur, but must be caught ...
- * }
+ * PolicyManager pm = PolicyManager.getPolicyManager();
  * </code>
  * </pre>
  * The policy manager creates a Policy from either a PolicyCard or from an identifier provided by the server :

@@ -1,7 +1,11 @@
 package starvationevasion.common.policies;
 
+import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Policy;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -33,6 +37,23 @@ public class FertilizerSubsidyPolicy extends Policy
   /* Combined with 0 required votes, this Indicates that this policy is automatic.
   */
   public final static boolean VOTE_WAIT_FOR_ALL = false;
+
+  /* The crop types applicable to this policy.
+  */
+  public final static Collection<EnumFood> TARGET_FOOD;
+
+  /* The target regions applicable to this policy.
+  */
+  public final static Collection<EnumRegion> TARGET_REGIONS = null;
+
+  static 
+  {
+    TARGET_FOOD = new ArrayList<>();
+	for (EnumFood food : EnumFood.values())
+	{
+	  TARGET_FOOD.add(food);
+	}
+  }
 
   public FertilizerSubsidyPolicy (EnumRegion region)
   {
@@ -79,7 +100,6 @@ public class FertilizerSubsidyPolicy extends Policy
 
     return null;
   }
-
 
   /**
    * Used only for testing this class.

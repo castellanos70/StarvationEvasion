@@ -20,6 +20,8 @@ public class Fall2015PolicyProvider implements PolicyProvider
         GMOSeedInsectResistanceResearchPolicy.class,
         GMOSeedInsectResistanceResearchPolicy.TITLE,
         GMOSeedInsectResistanceResearchPolicy.TEXT,
+        GMOSeedInsectResistanceResearchPolicy.TARGET_FOOD,
+        GMOSeedInsectResistanceResearchPolicy.TARGET_REGIONS,
         GMOSeedInsectResistanceResearchPolicy.VOTES_REQUIRED,
         GMOSeedInsectResistanceResearchPolicy.VOTE_WAIT_FOR_ALL
     ),
@@ -27,6 +29,8 @@ public class Fall2015PolicyProvider implements PolicyProvider
         InternationalFoodReliefProgramPolicy.class,
         InternationalFoodReliefProgramPolicy.TITLE,
         InternationalFoodReliefProgramPolicy.TEXT,
+        InternationalFoodReliefProgramPolicy.TARGET_FOOD,
+        InternationalFoodReliefProgramPolicy.TARGET_REGIONS,
         InternationalFoodReliefProgramPolicy.VOTES_REQUIRED,
         InternationalFoodReliefProgramPolicy.VOTE_WAIT_FOR_ALL
     ),
@@ -34,6 +38,8 @@ public class Fall2015PolicyProvider implements PolicyProvider
         EfficientIrrigationIncentivePolicy.class,
         EfficientIrrigationIncentivePolicy.TITLE,
         EfficientIrrigationIncentivePolicy.TEXT,
+        EfficientIrrigationIncentivePolicy.TARGET_FOOD,
+        EfficientIrrigationIncentivePolicy.TARGET_REGIONS,
         EfficientIrrigationIncentivePolicy.VOTES_REQUIRED,
         EfficientIrrigationIncentivePolicy.VOTE_WAIT_FOR_ALL
     ),
@@ -41,6 +47,8 @@ public class Fall2015PolicyProvider implements PolicyProvider
         ForeignAidForFarmInfrastructurePolicy.class,
         ForeignAidForFarmInfrastructurePolicy.TITLE,
         ForeignAidForFarmInfrastructurePolicy.TEXT,
+        ForeignAidForFarmInfrastructurePolicy.TARGET_FOOD,
+        ForeignAidForFarmInfrastructurePolicy.TARGET_REGIONS,
         ForeignAidForFarmInfrastructurePolicy.VOTES_REQUIRED,
         ForeignAidForFarmInfrastructurePolicy.VOTE_WAIT_FOR_ALL
     ),
@@ -48,6 +56,8 @@ public class Fall2015PolicyProvider implements PolicyProvider
         CovertIntelligencePolicy.class,
         CovertIntelligencePolicy.TITLE,
         CovertIntelligencePolicy.TEXT,
+        CovertIntelligencePolicy.TARGET_FOOD,
+        CovertIntelligencePolicy.TARGET_REGIONS,
         CovertIntelligencePolicy.VOTES_REQUIRED,
         CovertIntelligencePolicy.VOTE_WAIT_FOR_ALL
     ),
@@ -55,6 +65,8 @@ public class Fall2015PolicyProvider implements PolicyProvider
         CleanRiverIncentivePolicy.class,
         CleanRiverIncentivePolicy.TITLE,
         CleanRiverIncentivePolicy.TEXT,
+        CleanRiverIncentivePolicy.TARGET_FOOD,
+        CleanRiverIncentivePolicy.TARGET_REGIONS,
         CleanRiverIncentivePolicy.VOTES_REQUIRED,
         CleanRiverIncentivePolicy.VOTE_WAIT_FOR_ALL
     ),
@@ -62,6 +74,8 @@ public class Fall2015PolicyProvider implements PolicyProvider
         MyPlatePromotionCampaignPolicy.class,
         MyPlatePromotionCampaignPolicy.TITLE,
         MyPlatePromotionCampaignPolicy.TEXT,
+        MyPlatePromotionCampaignPolicy.TARGET_FOOD,
+        MyPlatePromotionCampaignPolicy.TARGET_REGIONS,
         MyPlatePromotionCampaignPolicy.VOTES_REQUIRED,
         MyPlatePromotionCampaignPolicy.VOTE_WAIT_FOR_ALL
     ),
@@ -69,6 +83,8 @@ public class Fall2015PolicyProvider implements PolicyProvider
         EthanolProductionTaxCreditChangePolicy.class,
         EthanolProductionTaxCreditChangePolicy.TITLE,
         EthanolProductionTaxCreditChangePolicy.TEXT,
+        EthanolProductionTaxCreditChangePolicy.TARGET_FOOD,
+        EthanolProductionTaxCreditChangePolicy.TARGET_REGIONS,
         EthanolProductionTaxCreditChangePolicy.VOTES_REQUIRED,
         EthanolProductionTaxCreditChangePolicy.VOTE_WAIT_FOR_ALL
     ),
@@ -76,6 +92,8 @@ public class Fall2015PolicyProvider implements PolicyProvider
         FertilizerSubsidyPolicy.class,
         FertilizerSubsidyPolicy.TITLE,
         FertilizerSubsidyPolicy.TEXT,
+        FertilizerSubsidyPolicy.TARGET_FOOD,
+        FertilizerSubsidyPolicy.TARGET_REGIONS,
         FertilizerSubsidyPolicy.VOTES_REQUIRED,
         FertilizerSubsidyPolicy.VOTE_WAIT_FOR_ALL
     ),
@@ -83,6 +101,8 @@ public class Fall2015PolicyProvider implements PolicyProvider
         EducateTheWomenCampaignPolicy.class,
         EducateTheWomenCampaignPolicy.TITLE,
         EducateTheWomenCampaignPolicy.TEXT,
+        EducateTheWomenCampaignPolicy.TARGET_FOOD,
+        EducateTheWomenCampaignPolicy.TARGET_REGIONS,
         EducateTheWomenCampaignPolicy.VOTES_REQUIRED,
         EducateTheWomenCampaignPolicy.VOTE_WAIT_FOR_ALL
     );
@@ -107,11 +127,26 @@ public class Fall2015PolicyProvider implements PolicyProvider
     //
     private final boolean voteWaitForAll;
 
-    EnumPolicy(final Class clazz, final String title, final String gameText, final int votes, final boolean voteWait)
-    {
+    // The target regions for this card, if any.
+	//
+    private final Collection<EnumRegion> targetRegions;
+
+    // The target foods for this card, if any.
+	//
+    private final Collection<EnumFood> targetFoods;
+
+    EnumPolicy(
+	    final Class clazz, final String title, final String gameText,
+        final Collection<EnumFood> targetFoods, final Collection<EnumRegion> targetRegions,
+		final int votes, final boolean voteWait
+    ) {
       this.policyClass = clazz;
       this.title = title;
       this.gameText = gameText;
+
+      this.targetRegions = targetRegions;
+      this.targetFoods = targetFoods;
+
       this.votesRequired = votes;
       this.voteWaitForAll = voteWait;
     }
@@ -141,10 +176,22 @@ public class Fall2015PolicyProvider implements PolicyProvider
     public boolean voteWaitForAll() { return voteWaitForAll; }
 
     /**
-	 * Creates a policy card for this card.
-	*/
+     * {@inheritDoc}
+    */
+    @Override
+    public Collection<EnumRegion> targetRegions() { return targetRegions; }
+
+    /**
+     * {@inheritDoc}
+    */
+    @Override
+    public Collection<EnumFood> targetFoods() { return targetFoods; }
+
+    /**
+     * Creates a policy card for this card.
+    */
     protected Policy createPolicy(EnumRegion region)
-	{
+    {
       Policy policy = null;
       try {
           policy = (Policy) policyClass.getConstructor(EnumRegion.class).newInstance(region);

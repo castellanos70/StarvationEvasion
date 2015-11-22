@@ -1,7 +1,13 @@
 package starvationevasion.common.policies;
 
+import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Policy;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -38,6 +44,20 @@ public class EducateTheWomenCampaignPolicy extends Policy
    * stop as soon as the required number of votes have been reached.
    */
   public final static boolean VOTE_WAIT_FOR_ALL = false;
+
+  /* The crop types applicable to this policy.
+  */
+  public final static Collection<EnumFood> TARGET_FOOD = null;
+
+  /* The target regions applicable to this policy. A v
+  */
+  public final static Collection<EnumRegion> TARGET_REGIONS;
+
+  static 
+  {
+    TARGET_REGIONS = new ArrayList<>();
+    TARGET_REGIONS.addAll(Arrays.asList(EnumRegion.WORLD_REGIONS));
+  }
   
   public EducateTheWomenCampaignPolicy(EnumRegion region)
   { 

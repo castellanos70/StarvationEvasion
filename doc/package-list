@@ -8,7 +8,7 @@ spring2015code.util
 starvationevasion.common
 starvationevasion.common.messages
 starvationevasion.common.policies
-starvationevasion.model
+starvationevasion.io
 starvationevasion.server
 starvationevasion.sim
 starvationevasion.testing

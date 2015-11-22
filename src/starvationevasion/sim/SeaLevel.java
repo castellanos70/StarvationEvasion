@@ -3,7 +3,6 @@ package starvationevasion.sim;
 import starvationevasion.common.Constant;
 
 /**
- * Created by Joel on 11/5/2015.<br>
  * In the Starvation Evasion game, sea level refers to the mean sea level (MSL),
  * averaged over many different times AND in many different locations during the
  * current year.<br><br>

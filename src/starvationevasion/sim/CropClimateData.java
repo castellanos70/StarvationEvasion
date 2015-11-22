@@ -1,4 +1,4 @@
-package starvationevasion.model;
+package starvationevasion.sim;
 
 import starvationevasion.common.EnumFood;
 

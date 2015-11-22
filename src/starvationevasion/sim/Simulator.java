@@ -15,10 +15,7 @@ import java.util.logging.Level;
 public class Simulator
 {
   private final static Logger LOGGER = Logger.getLogger(Simulator.class.getName());
-  private FileObject stateData;
-
-  private final int startYear;
-  private int year;
+  private Model model;
 
   /**
    * This constructor should be called once at the start of each game by the Server.
@@ -41,11 +38,8 @@ public class Simulator
       throw new IllegalArgumentException(errMsg);
     }
 
-    this.startYear = startYear;
-    year = startYear;
+    model = new Model(startYear);
 
-    stateData = DataReader.retrieveStateData("data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv");
-    instantiateRegions(stateData.getRawData());
     LOGGER.info("Starting Simulation at year " + startYear);
   }
 
@@ -71,11 +65,11 @@ public class Simulator
   public int nextTurn(ArrayList<Policy> cards)
   {
     LOGGER.info("Advancing Turn...");
-    nextYear();
-    nextYear();
-    nextYear();
-    LOGGER.info("Turn complete, year is now " + year);
-    return year;
+    model.nextYear(cards);
+    model.nextYear(cards);
+    model.nextYear(cards);
+    LOGGER.info("Turn complete, year is now " + model.getCurrentYear());
+    return model.getCurrentYear();
   }
 
   /**
@@ -89,63 +83,6 @@ public class Simulator
     LOGGER.info("Land used for food " + food + " in region " + region + " = "
                 + landUsed + " km^2");
     return landUsed;
-  }
-
-  /**
-   *
-   * @return the simulation year that has just finished.
-   */
-  private int nextYear()
-  {
-    year++;
-    LOGGER.info("Advancing year to " + year);
-    return year;
-  }
-
-  /**
-   * This method is used to create State objects along with
-   * the Region data structure
-   *
-   * @param data
-   */
-  private void instantiateRegions(ArrayList<String> data)
-  {
-    if (data.size() == 0) return;
-
-    ArrayList<State> states = new ArrayList<>();
-
-    float[] avgConversionFactors = new float[Constant.TOTAL_AGRO_CATEGORIES];
-    for (String state : data)
-    {
-      State currentState = new State(state);
-      states.add(currentState);
-      float[] currentStatePercentages = currentState.getPercentages();
-
-      for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
-      {
-        avgConversionFactors[i] += currentStatePercentages[i];
-      }
-    }
-
-    float sum = 0.f;
-    for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
-    {
-      //divide ny num records
-      avgConversionFactors[i] /= 50.f;
-      sum += avgConversionFactors[i];
-      //System.out.println("AVG CATEGORY "+avgConversionFactors[i]);
-    }
-
-    float averageConversionFactor = sum/Constant.TOTAL_AGRO_CATEGORIES;
-
-    for (State state : states)
-    {
-      state.setAverageConversionFactor(averageConversionFactor);
-    }
-
-    //Still need to reorganize and create a mechanism to set
-    //the region field of each state and which data structure
-    //to use for the regions.
   }
 
   //Temporary main for testing & debugging Simulator and State Objs.

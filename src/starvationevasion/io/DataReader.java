@@ -1,5 +1,7 @@
-package starvationevasion.sim;
+package starvationevasion.io;
 
+
+import starvationevasion.io.FileObject;
 
 /**
  * The class DataReader provides static methods to retrieve data.

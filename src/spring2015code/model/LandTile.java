@@ -1,7 +1,7 @@
 package spring2015code.model;
 
 import starvationevasion.common.EnumFood;
-import starvationevasion.model.CropClimateData;
+import starvationevasion.sim.CropClimateData;
 import spring2015code.common.CropZoneData.EnumCropZone;
 
 import java.nio.ByteBuffer;

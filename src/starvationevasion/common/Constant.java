@@ -26,9 +26,12 @@ public class Constant
   public static final int YEARS_PER_TURN = 3;
 
   /**
-   * Constant value of total Crops + Livestock
+   * Maximum number of cards that a player may have in his, her or its hand.
    */
-  public static final int TOTAL_AGRO_CATEGORIES = 12;
+  public static final int MAX_HAND_SIZE = 7;
+
+  //EnumFood.SIZE is what should be used for TOTAL_AGRO_CATEGORIES
+  //public static final int TOTAL_AGRO_CATEGORIES = 12;
 
   /**
    * Constant indices of State data represented in CSV file

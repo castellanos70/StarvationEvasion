@@ -1,59 +1,83 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.Policy;
-import starvationevasion.common.PolicyCard;
-import starvationevasion.common.PolicyManager;
+import starvationevasion.common.*;
 
 import java.util.*;
 
-/** The CardDeck class
+/**
+ * Each player region as a unique collection of 80 policy cards that make up that player's
+ * deck.<br><br>
+ * Each player's deck is shuffled at the start of the simulation. The deck is an <b>ordered</b>
+ * collection. <br><br>
+ *
+ * There is no add() method because a card can never be added to a deck.
+ *
 */
 public class CardDeck
 {
-  /* The master collection of cards.  This can be thought of as the cards in a new deck.
-  */
-  private Collection<PolicyCard> cards = new ArrayList<>();
-
-  /* The shuffled cards from which cards are drawn.
-  */
-  private final Queue<ShuffledCard> shuffled = new PriorityQueue<>(new OrderComparator());
 
   /**
-   * Adds a card to the deck.
+   * Each player starts with a unique deck of cards. A deck will, in general, contain
+   * duplicate cards. If the player needs to draw a card and his, her or its deck is empty
+   * then the player's discard is shuffeled back into the deck.
+   */
+  public static final int CARDS_IN_PLAYER_DECK = 80;
+  /**
+   *  Must be an ordered set of cards.
   */
-  public void add(PolicyCard card)
+  private ArrayList<PolicyCard> drawPile = new ArrayList<>(CARDS_IN_PLAYER_DECK);
+
+  /**
+   *  Must be an ordered set of cards.
+  */
+  private ArrayList<PolicyCard> discardPile = new ArrayList<>(CARDS_IN_PLAYER_DECK);
+
+  /**
+   * read from .cvs file: playerRegion(String), card(String), count(int)
+   */
+  public CardDeck(EnumRegion playerRegion)
   {
-    cards.add(card);
+
+  }
+
+
+  /**
+   * Shuffles the deck of cards.
+  */
+  public void shuffle()
+  {
+    Collections.shuffle(drawPile, Util.rand);
   }
 
   /**
-   * Shuffles the deck of cards using the provided random number generator.
-   * @param rnd The random number generator.
-  */
-  public void shuffle(Random rnd)
-  {
-    shuffled.clear();
-    for (PolicyCard card : cards)
-    { shuffled.add(new ShuffledCard(card, rnd.nextInt(10000)));
-    }
-  }
-
-  /**
-   * Returns a collection of cards from the shuffled deck.  If there are insufficient cards remaining,
-   * then the count is adjusted.
+   * Returns an array of the top count cards from the players, draw pile.
+   * If there are insufficient cards remaining, then the player's discard
+   * pile is shuffled back into the deck.
    *
    * @param count The number of cards requested.
    * @return The cards drawn from the deck.
    */
-  public Collection<PolicyCard> deal(int count)
+  public PolicyCard[] deal(int count)
   {
-    if (shuffled.size() == 0) throw new IllegalArgumentException("The deck is empty.");
+    if (count < 1 || count > Constant.MAX_HAND_SIZE)
+    {
+      throw new IllegalArgumentException("deal(count="+count+") count must be " +
+        "a positive integer no larger than " + Constant.MAX_HAND_SIZE);
+    }
+    PolicyCard[] cards = new PolicyCard[count];
+    for (int i = 0 ; i < count ; i++)
+    {
+      if (drawPile.size() == 0)
+      {
+        ArrayList<PolicyCard> tmp = drawPile;
+        drawPile = discardPile;
+        discardPile = tmp;
+        shuffle();
+      }
 
-    if (shuffled.size() < count) count = shuffled.size();
-    Collection<PolicyCard> cards = new ArrayList<>();
-    for (int i = 0 ; i < count ; i += 1) cards.add(shuffled.remove().card);
-
+      cards[i] = drawPile.get(drawPile.size()-1);
+      drawPile.remove(drawPile.size()-1);
+    }
     return cards;
   }
 
@@ -62,7 +86,7 @@ public class CardDeck
    */
   public int remaining()
   {
-    return shuffled.size();
+    return drawPile.size();
   }
 
   /* The queue element adapter for the PriorityQueue.
@@ -96,22 +120,15 @@ public class CardDeck
     }
   }
 
-  /**
-   * @param args Not used.
-   * Used only for testing this class.
-   */
+  /*
   public static void main(String[] args)
   {
+
     PolicyManager pm = PolicyManager.getPolicyManager();
     Collection<PolicyCard> cards = pm.getCardTypes();
     CardDeck deck = new CardDeck();
 
-    for (PolicyCard c : cards)
-    {
-      // TODO : PAB : How many of each card should go into the deck?
-      //
-      for (int i = 0 ; i < 4 ; i += 1) deck.add(c);
-    }
+
 
     // Shuffle the deck.
     //
@@ -123,7 +140,7 @@ public class CardDeck
     int count = cards.size();
     for (int i = 0 ; i < count ; i += 1)
     {
-      Collection<PolicyCard> draw = deck.deal(4);
+      ArrayList<PolicyCard> draw = deck.deal(4);
       System.out.println("Drew 4 " + deck.remaining() + " remaining");
       for (PolicyCard card : draw)
       { String name = card.name();
@@ -133,5 +150,6 @@ public class CardDeck
       }
     }
   }
+  */
 }
 

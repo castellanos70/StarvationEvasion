@@ -9,8 +9,9 @@ public class Constant
 
   /**
    * This is the first year for which simulation data has been gathered.
+   * Note: (LAST_YEAR - FIRST_YEAR) % 3 must equal zero.
    */
-  public static final int FIRST_YEAR = 1980;
+  public static final int FIRST_YEAR = 1981;
 
 
   /**

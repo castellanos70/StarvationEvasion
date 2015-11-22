@@ -29,11 +29,12 @@ public class Simulator
   {
     LOGGER.setLevel(Level.ALL);
 
-    if (startYear < Constant.FIRST_YEAR || startYear > Constant.LAST_YEAR)
+    if ((startYear < Constant.FIRST_YEAR || startYear > Constant.LAST_YEAR) ||
+      ((Constant.LAST_YEAR - startYear) % 3 != 0))
     {
       String errMsg = "Simulator(startYear=" + startYear +
-                      ") start year must be between [" +
-                      Constant.FIRST_YEAR + ", " + Constant.LAST_YEAR + "].";
+                      ") start year must be less than " + Constant.LAST_YEAR +
+        " and must be a nonnegative integer multiple of 3 years after " + Constant.FIRST_YEAR;
       LOGGER.severe(errMsg);
       throw new IllegalArgumentException(errMsg);
     }

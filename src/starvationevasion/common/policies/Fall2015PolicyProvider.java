@@ -205,7 +205,7 @@ public class Fall2015PolicyProvider implements PolicyProvider
 
   public final static int POLICY_COUNT = EnumPolicy.values().length;
 
-  private final Collection<PolicyCard> cards = new ArrayList<>(Arrays.asList(EnumPolicy.values()));
+  private final Collection<PolicyCard> cards = new ArrayList<PolicyCard>(Arrays.asList(EnumPolicy.values()));
 
   /**
    * {@inheritDoc}

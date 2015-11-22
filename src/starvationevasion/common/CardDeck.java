@@ -114,27 +114,28 @@ public class CardDeck
     {
       // TODO : PAB : How many of each card should go into the deck?
       //
-	  for (int i = 0 ; i < 4 ; i += 1) deck.add(c);
+      for (int i = 0 ; i < 4 ; i += 1) deck.add(c);
     }
 
     // Shuffle the deck.
-	//
+    //
     Random rnd = new Random();
     deck.shuffle(rnd);
 
     // Draw cards, instantiating each.
-	//
+    //
     int count = cards.size();
-	for (int i = 0 ; i < count ; i += 1)
-	{
-	  Collection<PolicyCard> draw = deck.deal(4);
+    for (int i = 0 ; i < count ; i += 1)
+    {
+      Collection<PolicyCard> draw = deck.deal(4);
       System.out.println("Drew 4 " + deck.remaining() + " remaining");
-	  for (PolicyCard card : draw)
-	  { String name = card.name();
+      for (PolicyCard card : draw)
+      { String name = card.name();
 
         Policy policy = pm.createPolicy(name, EnumRegion.MOUNTAIN);
         System.out.println("Policy " + i + " (" + name + ") : " + policy.getTitle() + " / " + policy.getGameText());
-	  }
-	}
+      }
+    }
   }
 }
+

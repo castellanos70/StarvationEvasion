@@ -17,17 +17,25 @@ import java.util.*;
  */
 public interface PolicyCard
 {
-  /** @return the policy card name.
+  /**
+   * @return the policy card name.
   */
   public String name();
 
-  /** @return the policy card title text.
+  /**
+   * @return the policy card title text.
   */
   public String title();
 
-  /** @return the policy card game text.
+  /**
+   * @return the policy card game text.
   */
   public String gameText();
+
+  /**
+   * @return an id number unique to each card type.
+   */
+  public int cardTypeId();
 
   /**
    * @return 0 if the policy is automatic. Otherwise, returns the number of

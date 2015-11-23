@@ -187,6 +187,8 @@ public class Fall2015PolicyProvider implements PolicyProvider
     @Override
     public Collection<EnumFood> validTargetFoods() { return targetFoods; }
 
+    public int cardTypeId() {return ordinal();}
+
     /**
      * Creates a policy card for this card.
     */

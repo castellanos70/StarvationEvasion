@@ -19,7 +19,7 @@ public class CardDeck
   /**
    * Each player starts with a unique deck of cards. A deck will, in general, contain
    * duplicate cards. If the player needs to draw a card and his, her or its deck is empty
-   * then the player's discard is shuffeled back into the deck.
+   * then the player's discard is shuffled back into the deck.
    */
   public static final int CARDS_IN_PLAYER_DECK = 80;
   /**
@@ -33,18 +33,43 @@ public class CardDeck
   private ArrayList<PolicyCard> discardPile = new ArrayList<>(CARDS_IN_PLAYER_DECK);
 
   /**
-   * read from .cvs file: playerRegion(String), card(String), count(int)
+   * Each player region has a unique deck to be read from
+   * .cvs file: playerRegion(String), card(String), count(int).<br><br>
+   *   In future versions, players will be able to produce and save
+   *   custom decks.<br><br>
+   *
+   * In this pre-test version, cards are just randomly picked with no difference
+   * for different player regions.
+   *
    */
   public CardDeck(EnumRegion playerRegion)
   {
+    if (!playerRegion.isUS())
+    {
+      throw new IllegalArgumentException("CardDeck(="+playerRegion+" must be " +
+        "a player region.");
+    }
 
+    PolicyManager policyManager = PolicyManager.getPolicyManager();
+    Collection<PolicyCard> cardTypes = policyManager.getCardTypes();
+
+    while (drawPile.size() < CARDS_IN_PLAYER_DECK)
+    {
+      for (PolicyCard card : cardTypes)
+      {
+        drawPile.add(card);
+        if (drawPile.size() >= CARDS_IN_PLAYER_DECK) break;
+      }
+    }
+
+    shuffle();
   }
 
 
   /**
    * Shuffles the deck of cards.
   */
-  public void shuffle()
+  private void shuffle()
   {
     Collections.shuffle(drawPile, Util.rand);
   }
@@ -57,7 +82,7 @@ public class CardDeck
    * @param count The number of cards requested.
    * @return The cards drawn from the deck.
    */
-  public PolicyCard[] deal(int count)
+  public PolicyCard[] drawCards(int count)
   {
     if (count < 1 || count > Constant.MAX_HAND_SIZE)
     {
@@ -82,74 +107,31 @@ public class CardDeck
   }
 
   /**
-   * @return The number of cards remaining in the shuffled deck.
+   * @return The number of cards remaining in the draw pile.
    */
-  public int remaining()
+  public int cardsRemainingInDrawPile()
   {
     return drawPile.size();
   }
 
-  /* The queue element adapter for the PriorityQueue.
-  */
-  private static class ShuffledCard
-  { final PolicyCard card;
-    final int order;
 
-    /**
-     * Creates a new shuffleable card for insertion into the shuffled queue.
-     *
-     * @param card The card being shuffled into the deck.
-     * @param order The relative position of the card in the deck.
-     */
-    public ShuffledCard(PolicyCard card, int order)
-    { this.card = card;
-      this.order = order;
-    }
 
-    public int compareTo(ShuffledCard other)
-    { return order - other.order;
-    }
-  }
-
-  /* The comparator adapter for the PriorityQueue.
-  */
-  private static class OrderComparator implements Comparator<ShuffledCard>
-  { @Override
-    public int compare(ShuffledCard o1, ShuffledCard o2)
-    { return o1.compareTo(o2);
-    }
-  }
-
-  /*
   public static void main(String[] args)
   {
+    CardDeck deck = new CardDeck(EnumRegion.CALIFORNIA);
 
-    PolicyManager pm = PolicyManager.getPolicyManager();
-    Collection<PolicyCard> cards = pm.getCardTypes();
-    CardDeck deck = new CardDeck();
-
-
-
-    // Shuffle the deck.
-    //
-    Random rnd = new Random();
-    deck.shuffle(rnd);
-
+    PolicyManager policyManager = PolicyManager.getPolicyManager();
     // Draw cards, instantiating each.
     //
-    int count = cards.size();
-    for (int i = 0 ; i < count ; i += 1)
+    PolicyCard[] hand = deck.drawCards(7);
+    System.out.println("Drew 7 " + deck.cardsRemainingInDrawPile() + " remaining in draw pile.");
+    for (PolicyCard card : hand)
     {
-      ArrayList<PolicyCard> draw = deck.deal(4);
-      System.out.println("Drew 4 " + deck.remaining() + " remaining");
-      for (PolicyCard card : draw)
-      { String name = card.name();
+      String name = card.name();
 
-        Policy policy = pm.createPolicy(name, EnumRegion.MOUNTAIN);
-        System.out.println("Policy " + i + " (" + name + ") : " + policy.getTitle() + " / " + policy.getGameText());
-      }
+      Policy policy = policyManager.createPolicy(name, EnumRegion.CALIFORNIA);
+      System.out.println("Policy (" + name + ",typeId="+card.cardTypeId()+") : " + policy.getTitle() + " / " + policy.getGameText());
     }
   }
-  */
 }
 

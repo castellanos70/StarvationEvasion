@@ -1,10 +1,8 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.EnumFood;
-import starvationevasion.common.Policy;
+import starvationevasion.common.*;
 import starvationevasion.io.DataReader;
 import starvationevasion.io.FileObject;
-import starvationevasion.common.Constant;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -82,6 +80,8 @@ public class Model
   private int year;
 
 
+
+
   public Model(int startYear)
   {
 
@@ -155,7 +155,7 @@ public class Model
     updatePopulation();
     updateClimate();
     generateSpecialEvents();
-    updateFarmProductYeild();
+    updateFarmProductYield();
     updateFarmProductNeed();
     updateFarmProductMarket();
     updateFoodDistribution();
@@ -172,7 +172,7 @@ public class Model
   private void updatePopulation(){}
   private void updateClimate(){}
   private void generateSpecialEvents(){}
-  private void updateFarmProductYeild(){}
+  private void updateFarmProductYield(){}
   private void updateFarmProductNeed(){}
   private void updateFarmProductMarket(){}
   private void updateFoodDistribution(){}

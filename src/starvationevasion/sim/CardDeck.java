@@ -33,6 +33,18 @@ public class CardDeck
   private ArrayList<PolicyCard> discardPile = new ArrayList<>(CARDS_IN_PLAYER_DECK);
 
   /**
+   *  Cards that are currently in play (drafted or enacted) this turn or on a past turn but
+   *  still active.
+   */
+  private ArrayList<PolicyCard> cardsInPlay = new ArrayList<>();
+
+  /**
+   *  Cards that are currently in play (drafted or enacted) this turn or on a past turn but
+   *  still active.
+   */
+  private ArrayList<PolicyCard> cardsInHand = new ArrayList<>(Constant.MAX_HAND_SIZE);
+
+  /**
    * Each player region has a unique deck to be read from
    * .cvs file: playerRegion(String), card(String), count(int).<br><br>
    *   In future versions, players will be able to produce and save
@@ -46,7 +58,7 @@ public class CardDeck
   {
     if (!playerRegion.isUS())
     {
-      throw new IllegalArgumentException("CardDeck(="+playerRegion+" must be " +
+      throw new IllegalArgumentException("CardDeck(="+playerRegion+") must be " +
         "a player region.");
     }
 
@@ -75,20 +87,20 @@ public class CardDeck
   }
 
   /**
-   * Returns an array of the top count cards from the players, draw pile.
+   * Returns an array of cards drawn from the top of the deck so that
+   * the player who own's this deck has a total of 7 cards in hand.<br><br>
+   *
    * If there are insufficient cards remaining, then the player's discard
    * pile is shuffled back into the deck.
    *
-   * @param count The number of cards requested.
-   * @return The cards drawn from the deck.
+   * @return The cards drawn from the deck. Returns null if the player already
+   * has a max hand size.
    */
-  public PolicyCard[] drawCards(int count)
+  public PolicyCard[] drawCards()
   {
-    if (count < 1 || count > Constant.MAX_HAND_SIZE)
-    {
-      throw new IllegalArgumentException("deal(count="+count+") count must be " +
-        "a positive integer no larger than " + Constant.MAX_HAND_SIZE);
-    }
+    int count = Constant.MAX_HAND_SIZE - cardsInHand.size();
+    if (count <=0) return null;
+
     PolicyCard[] cards = new PolicyCard[count];
     for (int i = 0 ; i < count ; i++)
     {
@@ -101,10 +113,37 @@ public class CardDeck
       }
 
       cards[i] = drawPile.get(drawPile.size()-1);
-      drawPile.remove(drawPile.size()-1);
+      cardsInHand.add(cards[i]);
+      drawPile.remove(drawPile.size() - 1);
     }
     return cards;
   }
+
+
+
+  public void discard(ArrayList<PolicyCard> discardList)
+  {
+    for (PolicyCard discard : discardList)
+    {
+      //It is faster to remove from the end of an array list
+      for (int i = cardsInHand.size() ; i>=0; i--)
+      {
+        PolicyCard handCard = cardsInHand.get(i);
+        if (discard.cardTypeId() == handCard.cardTypeId())
+        {
+          //Note: it is important that a pointer to the local card is added to the discard
+          //      pile and NOT a pointer to the card in the argument list.
+          drawPile.add(handCard);
+          cardsInHand.remove(i);
+        }
+      }
+
+      throw new IllegalArgumentException("discard(card="+discard+") is not in " +
+        "this player's deck.");
+
+    }
+  }
+
 
   /**
    * @return The number of cards remaining in the draw pile.
@@ -115,7 +154,12 @@ public class CardDeck
   }
 
 
-
+  /**
+   * This entry point is for testing only. <br><br>
+   *
+   * This test shows how to create playerDeck and draw the first hand.
+   * @param args ignored.
+   */
   public static void main(String[] args)
   {
     CardDeck deck = new CardDeck(EnumRegion.CALIFORNIA);
@@ -123,8 +167,8 @@ public class CardDeck
     PolicyManager policyManager = PolicyManager.getPolicyManager();
     // Draw cards, instantiating each.
     //
-    PolicyCard[] hand = deck.drawCards(7);
-    System.out.println("Drew 7 " + deck.cardsRemainingInDrawPile() + " remaining in draw pile.");
+    PolicyCard[] hand = deck.drawCards();
+    System.out.println("Drew " + hand.length + " cards" + deck.cardsRemainingInDrawPile() + " remaining in draw pile.");
     for (PolicyCard card : hand)
     {
       String name = card.name();

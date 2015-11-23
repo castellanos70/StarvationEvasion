@@ -15,6 +15,7 @@ import java.util.logging.Level;
 public class Simulator
 {
   private final static Logger LOGGER = Logger.getLogger(Simulator.class.getName());
+  private CardDeck[] playerDeck = new CardDeck[EnumRegion.US_REGIONS.length];
   private Model model;
 
   /**
@@ -39,6 +40,11 @@ public class Simulator
       throw new IllegalArgumentException(errMsg);
     }
 
+    for (EnumRegion playerRegion : EnumRegion.US_REGIONS)
+    {
+      playerDeck[playerRegion.ordinal()] = new CardDeck(playerRegion);
+    }
+
     model = new Model(startYear);
 
     LOGGER.info("Starting Simulation at year " + startYear);
@@ -52,9 +58,21 @@ public class Simulator
    * @param playerRegion region of player who id given the drawn cards.
    * @return collection of cards.
    */
-  public Collection<Integer> drawCards(EnumRegion playerRegion)
+  public PolicyCard[]  drawCards(EnumRegion playerRegion)
   {
-    return null;
+    return playerDeck[playerRegion.ordinal()].drawCards();
+  }
+
+  public void discard(EnumRegion playerRegion, ArrayList<PolicyCard> cards)
+  {
+    if (!playerRegion.isUS())
+    {
+      throw new IllegalArgumentException("discard(="+playerRegion+", cards) must be " +
+        "a player region.");
+    }
+
+    CardDeck deck = playerDeck[playerRegion.ordinal()];
+    deck.discard(cards);
   }
 
   /**
@@ -86,9 +104,27 @@ public class Simulator
     return landUsed;
   }
 
-  //Temporary main for testing & debugging Simulator and State Objs.
+  /**
+   * This entry point is for testing only. <br><br>
+   *
+   * This test shows how to instanciate the simulator and how to tell it
+   * to deal each player a hand of cards.
+   * @param args ignored.
+   */
   public static void main(String[] args)
   {
-    new Simulator(Constant.FIRST_YEAR);
+    Simulator sim = new Simulator(Constant.FIRST_YEAR);
+    String msg = "Starting Hands: \n";
+    for (EnumRegion playerRegion : EnumRegion.US_REGIONS)
+    {
+      PolicyCard[]  hand = sim.drawCards(playerRegion);
+      msg += playerRegion+": ";
+      for (PolicyCard  card : hand)
+      {
+        msg += card +", ";
+      }
+      msg+='\n';
+    }
+    LOGGER.info(msg);
   }
 }

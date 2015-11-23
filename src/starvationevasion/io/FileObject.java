@@ -28,13 +28,13 @@ public class FileObject
    */
   public FileObject(String path)
   {
-    String file = System.getenv("PWD")+"/"+path;
+    //String file = System.getenv("PWD")+"/"+path;
     rawData = new ArrayList<>();
     //read in data
     Pattern stateDataPattern = Pattern.compile("^\\w+,\\d+");
     try
     {
-      BufferedReader reader = new BufferedReader(new FileReader(file));
+      BufferedReader reader = new BufferedReader(new FileReader(path));
       String line = null;
       while ((line = reader.readLine()) != null)
       {
@@ -48,6 +48,7 @@ public class FileObject
     catch (Throwable t)
     {
       System.err.println("File Reader Exception: "+ t);
+      throw new IllegalArgumentException("File Reader Exception: "+ t);
     }
 
     fileFields = new HashMap<>();

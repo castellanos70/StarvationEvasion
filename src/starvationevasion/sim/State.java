@@ -123,7 +123,7 @@ public class State
     for (int i = 0; i < EnumFood.SIZE; i++)
     {
       adjustmentFactors[i] = incomeToCategoryPercentages[i] - averageConversionFactor;
-      System.out.println(name + " Adj Factors "+adjustmentFactors[i]);
+      //System.out.println(name + " Adj Factors "+adjustmentFactors[i]);
     }
   }
 }

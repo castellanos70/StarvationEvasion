@@ -4,6 +4,7 @@ package starvationevasion.sim;
 import starvationevasion.common.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -14,10 +15,8 @@ import java.util.logging.Level;
 public class Simulator
 {
   private final static Logger LOGGER = Logger.getLogger(Simulator.class.getName());
-  private FileObject stateData;
-
-  private final int startYear;
-  private int year;
+  private CardDeck[] playerDeck = new CardDeck[EnumRegion.US_REGIONS.length];
+  private Model model;
 
   /**
    * This constructor should be called once at the start of each game by the Server.
@@ -31,20 +30,23 @@ public class Simulator
   {
     LOGGER.setLevel(Level.ALL);
 
-    if (startYear < Constant.FIRST_YEAR || startYear > Constant.LAST_YEAR)
+    if ((startYear < Constant.FIRST_YEAR || startYear > Constant.LAST_YEAR) ||
+      ((Constant.LAST_YEAR - startYear) % 3 != 0))
     {
       String errMsg = "Simulator(startYear=" + startYear +
-                      ") start year must be between [" +
-                      Constant.FIRST_YEAR + ", " + Constant.LAST_YEAR + "].";
+                      ") start year must be less than " + Constant.LAST_YEAR +
+        " and must be a nonnegative integer multiple of 3 years after " + Constant.FIRST_YEAR;
       LOGGER.severe(errMsg);
       throw new IllegalArgumentException(errMsg);
     }
 
-    this.startYear = startYear;
-    year = startYear;
+    for (EnumRegion playerRegion : EnumRegion.US_REGIONS)
+    {
+      playerDeck[playerRegion.ordinal()] = new CardDeck(playerRegion);
+    }
 
-    stateData = DataReader.retrieveStateData("data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv");
-    instantiateRegions(stateData.getRawData());
+    model = new Model(startYear);
+
     LOGGER.info("Starting Simulation at year " + startYear);
   }
 
@@ -54,11 +56,23 @@ public class Simulator
    * cards from the top of the given playerRegion's deck taking into account cards played
    * and discarded by that player.
    * @param playerRegion region of player who id given the drawn cards.
-   * @return list of cards.
+   * @return collection of cards.
    */
-  public ArrayList<EnumPolicy> drawCards(EnumRegion playerRegion)
+  public PolicyCard[]  drawCards(EnumRegion playerRegion)
   {
-    return null;
+    return playerDeck[playerRegion.ordinal()].drawCards();
+  }
+
+  public void discard(EnumRegion playerRegion, ArrayList<PolicyCard> cards)
+  {
+    if (!playerRegion.isUS())
+    {
+      throw new IllegalArgumentException("discard(="+playerRegion+", cards) must be " +
+        "a player region.");
+    }
+
+    CardDeck deck = playerDeck[playerRegion.ordinal()];
+    deck.discard(cards);
   }
 
   /**
@@ -67,14 +81,14 @@ public class Simulator
    * @param cards List of PolicyCards played this turn.
    * @return the simulation year after nextTurn() has finished.
    */
-  public int nextTurn(ArrayList<PolicyCard> cards)
+  public int nextTurn(ArrayList<Policy> cards)
   {
     LOGGER.info("Advancing Turn...");
-    nextYear();
-    nextYear();
-    nextYear();
-    LOGGER.info("Turn complete, year is now " + year);
-    return year;
+    model.nextYear(cards);
+    model.nextYear(cards);
+    model.nextYear(cards);
+    LOGGER.info("Turn complete, year is now " + model.getCurrentYear());
+    return model.getCurrentYear();
   }
 
   /**
@@ -91,65 +105,26 @@ public class Simulator
   }
 
   /**
+   * This entry point is for testing only. <br><br>
    *
-   * @return the simulation year that has just finished.
+   * This test shows how to instanciate the simulator and how to tell it
+   * to deal each player a hand of cards.
+   * @param args ignored.
    */
-  private int nextYear()
-  {
-    year++;
-    LOGGER.info("Advancing year to " + year);
-    return year;
-  }
-
-  /**
-   * This method is used to create State objects along with 
-   * the Region data structure
-   *
-   * @param data
-   */
-  private void instantiateRegions(ArrayList<String> data)
-  {
-    if (data.size() == 0) return;
-
-    ArrayList<State> states = new ArrayList<>();
-
-    float[] avgConversionFactors = new float[Constant.TOTAL_AGRO_CATEGORIES];
-    for (String state : data)
-    {
-      State currentState = new State(state);
-      states.add(currentState);
-      float[] currentStatePercentages = currentState.getPercentages();
-
-      for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
-      {
-        avgConversionFactors[i] += currentStatePercentages[i];
-      }
-    }
-
-    float sum = 0.f;
-    for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
-    {
-      //divide ny num records
-      avgConversionFactors[i] /= 50.f;
-      sum += avgConversionFactors[i];
-      //System.out.println("AVG CATEGORY "+avgConversionFactors[i]);
-    }
-
-    float averageConversionFactor = sum/Constant.TOTAL_AGRO_CATEGORIES;
-
-    for (State state : states)
-    {
-      state.setAverageConversionFactor(averageConversionFactor);
-    }
-
-    //Still need to reorganize and create a mechanism to set
-    //the region field of each state and which data structure
-    //to use for the regions.
-  }
-
-  //Temporary main for testing & debugging Simulator and State Objs.
   public static void main(String[] args)
   {
-    new Simulator(Constant.FIRST_YEAR);
+    Simulator sim = new Simulator(Constant.FIRST_YEAR);
+    String msg = "Starting Hands: \n";
+    for (EnumRegion playerRegion : EnumRegion.US_REGIONS)
+    {
+      PolicyCard[]  hand = sim.drawCards(playerRegion);
+      msg += playerRegion+": ";
+      for (PolicyCard  card : hand)
+      {
+        msg += card +", ";
+      }
+      msg+='\n';
+    }
+    LOGGER.info(msg);
   }
 }

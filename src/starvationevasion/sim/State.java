@@ -1,16 +1,16 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.Constant;
+import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 
 /**
  * Created by Alfred on 11/15/15.
  *
- * The State class describes a state in the United States. <br></>
- * Each is classified by region, total land, total farm land, and <br></>
- * components to calculate how much land is dedicated to a specific <br></>
+ * The State class describes a state in the United States.
+ * Each is classified by region, total land, total farm land, and
+ * components to calculate how much land is dedicated to a specific
  * piece of agriculture.
- *
  */
 
 public class State
@@ -66,20 +66,20 @@ public class State
   private float[] landPerCategory;
 
   /**
-   * Class constructor creates a new State Object with <br></>
-   * a data string of comma separated values, which indicate <br></>
-   * the income from a category of Crop. These values will <br></>
-   * help to determine how much land will be dedicated to a <br></>
+   * Class constructor creates a new State Object with
+   * a data string of comma separated values, which indicate
+   * the income from a category of Crop. These values will
+   * help to determine how much land will be dedicated to a
    * certain Crop.
    *
    * @param data
    */
   public State(String data)
   {
-    incomePerCategory           = new int[Constant.TOTAL_AGRO_CATEGORIES];
-    incomeToCategoryPercentages = new float[Constant.TOTAL_AGRO_CATEGORIES];
-    landPerCategory             = new float[Constant.TOTAL_AGRO_CATEGORIES];
-    adjustmentFactors           = new float[Constant.TOTAL_AGRO_CATEGORIES];
+    incomePerCategory           = new int[EnumFood.SIZE];
+    incomeToCategoryPercentages = new float[EnumFood.SIZE];
+    landPerCategory             = new float[EnumFood.SIZE];
+    adjustmentFactors           = new float[EnumFood.SIZE];
 
     String[] stateData = data.split(",");
     int numDataFields = stateData.length;
@@ -95,7 +95,7 @@ public class State
       totalIncome += Integer.parseInt(stateData[i]);
     }
 
-    for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
+    for (int i = 0; i < EnumFood.SIZE; i++)
     {
       incomePerCategory[i]           = Integer.parseInt(stateData[i+3]);
       incomeToCategoryPercentages[i] = (float) incomePerCategory[i] / (float) totalIncome;
@@ -112,17 +112,18 @@ public class State
   }
 
   /**
-   * This Method calculates the initial category adjustment factors <br></>
+   * This Method calculates the initial category adjustment factors
    * along with setting the average conversion factor.
+   *
    * @param acf
    */
   public void setAverageConversionFactor(float acf)
   {
     averageConversionFactor = acf;
-    for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
+    for (int i = 0; i < EnumFood.SIZE; i++)
     {
       adjustmentFactors[i] = incomeToCategoryPercentages[i] - averageConversionFactor;
-      System.out.println(name + " Adj Factors "+adjustmentFactors[i]);
+      //System.out.println(name + " Adj Factors "+adjustmentFactors[i]);
     }
   }
 }

@@ -1,0 +1,74 @@
+<country>
+<name>Belize</name>
+<area>
+<vertex lat="17.422839" lon="-87.852952"/>
+<vertex lat="17.283028" lon="-87.929976"/>
+<vertex lat="17.322922" lon="-87.934885"/>
+<vertex lat="17.426482" lon="-87.902820"/>
+<vertex lat="17.462810" lon="-87.859412"/>
+<vertex lat="17.501051" lon="-87.832514"/>
+<vertex lat="17.546268" lon="-87.826417"/>
+<vertex lat="17.524202" lon="-87.788615"/>
+<vertex lat="17.479605" lon="-87.798150"/>
+<vertex lat="17.422839" lon="-87.852952"/>
+</area>
+<area>
+<vertex lat="17.924953" lon="-87.950595"/>
+<vertex lat="17.906349" lon="-87.998112"/>
+<vertex lat="17.963994" lon="-87.959018"/>
+<vertex lat="18.001072" lon="-87.953334"/>
+<vertex lat="18.154913" lon="-87.898350"/>
+<vertex lat="18.154034" lon="-87.858921"/>
+<vertex lat="18.140392" lon="-87.848534"/>
+<vertex lat="17.924953" lon="-87.950595"/>
+</area>
+<area>
+<vertex lat="18.358828" lon="-88.349253"/>
+<vertex lat="18.344074" lon="-88.295664"/>
+<vertex lat="18.354694" lon="-88.247269"/>
+<vertex lat="18.350715" lon="-88.130248"/>
+<vertex lat="18.226123" lon="-88.085238"/>
+<vertex lat="18.121633" lon="-88.097201"/>
+<vertex lat="17.846094" lon="-88.207479"/>
+<vertex lat="17.751372" lon="-88.221431"/>
+<vertex lat="17.609882" lon="-88.271712"/>
+<vertex lat="17.516606" lon="-88.203448"/>
+<vertex lat="17.392582" lon="-88.267165"/>
+<vertex lat="17.312690" lon="-88.288817"/>
+<vertex lat="17.192129" lon="-88.293985"/>
+<vertex lat="16.963048" lon="-88.261816"/>
+<vertex lat="16.632784" lon="-88.313415"/>
+<vertex lat="16.488606" lon="-88.404547"/>
+<vertex lat="16.433803" lon="-88.461158"/>
+<vertex lat="16.290453" lon="-88.562315"/>
+<vertex lat="16.247639" lon="-88.695149"/>
+<vertex lat="16.016645" lon="-88.879117"/>
+<vertex lat="15.956003" lon="-88.911699"/>
+<vertex lat="15.890607" lon="-88.894052"/>
+<vertex lat="15.889831" lon="-88.937176"/>
+<vertex lat="15.900658" lon="-89.113599"/>
+<vertex lat="15.888695" lon="-89.232817"/>
+<vertex lat="15.894431" lon="-89.237493"/>
+<vertex lat="16.142839" lon="-89.227649"/>
+<vertex lat="16.527131" lon="-89.212430"/>
+<vertex lat="16.809000" lon="-89.201268"/>
+<vertex lat="17.084694" lon="-89.190364"/>
+<vertex lat="17.291193" lon="-89.182174"/>
+<vertex lat="17.572287" lon="-89.171089"/>
+<vertex lat="17.814830" lon="-89.161477"/>
+<vertex lat="17.901957" lon="-89.162356"/>
+<vertex lat="17.970790" lon="-89.133546"/>
+<vertex lat="17.999729" lon="-89.050425"/>
+<vertex lat="17.939629" lon="-88.942628"/>
+<vertex lat="17.914540" lon="-88.897824"/>
+<vertex lat="17.928828" lon="-88.857387"/>
+<vertex lat="17.965519" lon="-88.806331"/>
+<vertex lat="18.071636" lon="-88.743596"/>
+<vertex lat="18.290512" lon="-88.586189"/>
+<vertex lat="18.445903" lon="-88.522989"/>
+<vertex lat="18.476779" lon="-88.461262"/>
+<vertex lat="18.482309" lon="-88.372430"/>
+<vertex lat="18.472413" lon="-88.295664"/>
+<vertex lat="18.358828" lon="-88.349253"/>
+</area>
+</country>

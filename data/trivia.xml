@@ -57,4 +57,31 @@
 		<category>Vegetables</category>
 	</question>
 
+
+
+
+
+
+	<question>Approximately what percent of the world food supply comes 
+		from crops that rely on rain to grow? 
+	     <answer>60%</answer>
+	     <wrong>90%</wrong>
+	     <wrong>40%</wrong>
+	     <wrong>20%</wrong>
+	     <wrong>10%</wrong>
+	     <category>All</category>
+     </question>
+
+
+     <question>On farms averaged across the world, approximately what percent 
+	     of water used in irrigation of crops is lost to evaporation?
+	     <answer>50%</answer>
+	     <wrong>90%</wrong>
+	     <wrong>75%</wrong>
+	     <wrong>25%</wrong>
+	     <wrong>10%</wrong>
+	     <category>All</category>
+    </question>
+	
+
 </foodtrivia>

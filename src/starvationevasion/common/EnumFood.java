@@ -12,8 +12,6 @@ public enum EnumFood
 {
   CITRUS
   {
-    // public String toString() { return res.getString(name() + ".shortName"); } // "Citrus Fruits"
-    // public String toLongString() { return res.getString(name() + ".longName");}  // "Grapefruit, Lemons, Oranges, Tangerines, ...)"
     public boolean isCrop() {return true;}
   },
 
@@ -72,6 +70,22 @@ public enum EnumFood
     public boolean isCrop() {return false;}
   };
 
+  /**
+   * Array of all crop foods used in the game.
+   */
+  public static final EnumFood[] CROP_FOODS =
+  { CITRUS, FRUIT, NUT, GRAIN, OIL, VEGGIES, SPECIAL, FEED
+  };
+
+  /**
+   * Array of all non-crop foods used in game.
+   */
+  public static final EnumFood[] NON_CROP_FOODS =
+  { FISH, MEAT, POULTRY, DAIRY,
+  };
+
+
+
   /** Resources for the default locale */
   private final ResourceBundle res = ResourceBundle.getBundle("starvationevasion.common.locales.strings");
   private final String shortName = res.getString("EnumFood." + name() + ".shortName"); // E.g. "Citrus Fruits"
@@ -87,4 +101,5 @@ public enum EnumFood
    * @return true if the food is a crop.
    */
   public abstract boolean isCrop();
+
 }

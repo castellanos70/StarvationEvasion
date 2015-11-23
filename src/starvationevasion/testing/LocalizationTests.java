@@ -1,7 +1,6 @@
 package starvationevasion.testing;
 
 import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 
 
@@ -16,10 +15,6 @@ public class LocalizationTests {
         for (EnumFood food : EnumFood.values())
         {
             System.out.println(food.toString() + " : " + food.toLongString());
-        }
-        for (EnumPolicy policy : EnumPolicy.values())
-        {
-            //System.out.println(policy.toString() + " : " + policy.title + " : " + policy.gameText);
         }
 
         for (EnumRegion region : EnumRegion.values())

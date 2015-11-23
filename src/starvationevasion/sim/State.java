@@ -1,6 +1,7 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.Constant;
+import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 
 /**
@@ -75,10 +76,10 @@ public class State
    */
   public State(String data)
   {
-    incomePerCategory           = new int[Constant.TOTAL_AGRO_CATEGORIES];
-    incomeToCategoryPercentages = new float[Constant.TOTAL_AGRO_CATEGORIES];
-    landPerCategory             = new float[Constant.TOTAL_AGRO_CATEGORIES];
-    adjustmentFactors           = new float[Constant.TOTAL_AGRO_CATEGORIES];
+    incomePerCategory           = new int[EnumFood.SIZE];
+    incomeToCategoryPercentages = new float[EnumFood.SIZE];
+    landPerCategory             = new float[EnumFood.SIZE];
+    adjustmentFactors           = new float[EnumFood.SIZE];
 
     String[] stateData = data.split(",");
     int numDataFields = stateData.length;
@@ -94,7 +95,7 @@ public class State
       totalIncome += Integer.parseInt(stateData[i]);
     }
 
-    for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
+    for (int i = 0; i < EnumFood.SIZE; i++)
     {
       incomePerCategory[i]           = Integer.parseInt(stateData[i+3]);
       incomeToCategoryPercentages[i] = (float) incomePerCategory[i] / (float) totalIncome;
@@ -119,10 +120,10 @@ public class State
   public void setAverageConversionFactor(float acf)
   {
     averageConversionFactor = acf;
-    for (int i = 0; i < Constant.TOTAL_AGRO_CATEGORIES; i++)
+    for (int i = 0; i < EnumFood.SIZE; i++)
     {
       adjustmentFactors[i] = incomeToCategoryPercentages[i] - averageConversionFactor;
-      System.out.println(name + " Adj Factors "+adjustmentFactors[i]);
+      //System.out.println(name + " Adj Factors "+adjustmentFactors[i]);
     }
   }
 }

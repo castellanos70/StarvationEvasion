@@ -1,0 +1,63 @@
+<country>
+<name>Brunei Darussalam</name>
+<area>
+<vertex lat="4.899727" lon="115.026809"/>
+<vertex lat="4.899753" lon="115.139980"/>
+<vertex lat="4.866706" lon="115.168454"/>
+<vertex lat="4.750563" lon="115.227933"/>
+<vertex lat="4.633981" lon="115.266691"/>
+<vertex lat="4.456369" lon="115.279300"/>
+<vertex lat="4.380767" lon="115.326739"/>
+<vertex lat="4.365289" lon="115.319246"/>
+<vertex lat="4.352603" lon="115.290617"/>
+<vertex lat="4.347229" lon="115.246692"/>
+<vertex lat="4.364204" lon="115.170573"/>
+<vertex lat="4.390430" lon="115.107011"/>
+<vertex lat="4.582666" lon="115.051562"/>
+<vertex lat="4.691368" lon="115.026757"/>
+<vertex lat="4.821127" lon="115.028824"/>
+<vertex lat="4.899727" lon="115.026809"/>
+</area>
+<area>
+<vertex lat="4.899727" lon="115.026809"/>
+<vertex lat="4.856241" lon="114.944747"/>
+<vertex lat="4.801774" lon="114.864545"/>
+<vertex lat="4.754826" lon="114.784240"/>
+<vertex lat="4.718084" lon="114.746722"/>
+<vertex lat="4.666486" lon="114.759900"/>
+<vertex lat="4.553004" lon="114.779279"/>
+<vertex lat="4.463914" lon="114.790131"/>
+<vertex lat="4.428774" lon="114.818294"/>
+<vertex lat="4.393221" lon="114.840257"/>
+<vertex lat="4.354515" lon="114.831110"/>
+<vertex lat="4.280747" lon="114.783516"/>
+<vertex lat="4.266510" lon="114.810439"/>
+<vertex lat="4.168816" lon="114.776178"/>
+<vertex lat="4.096546" lon="114.725018"/>
+<vertex lat="4.037661" lon="114.654067"/>
+<vertex lat="4.023992" lon="114.608333"/>
+<vertex lat="4.049055" lon="114.571746"/>
+<vertex lat="4.113548" lon="114.512215"/>
+<vertex lat="4.203568" lon="114.447102"/>
+<vertex lat="4.255839" lon="114.416562"/>
+<vertex lat="4.262815" lon="114.322976"/>
+<vertex lat="4.304182" lon="114.289593"/>
+<vertex lat="4.354747" lon="114.287629"/>
+<vertex lat="4.414253" lon="114.261016"/>
+<vertex lat="4.477867" lon="114.224119"/>
+<vertex lat="4.526933" lon="114.168825"/>
+<vertex lat="4.565251" lon="114.095134"/>
+<vertex lat="4.592692" lon="114.063818"/>
+<vertex lat="4.590960" lon="114.177972"/>
+<vertex lat="4.607161" lon="114.299411"/>
+<vertex lat="4.660388" lon="114.424365"/>
+<vertex lat="4.724570" lon="114.544668"/>
+<vertex lat="4.798131" lon="114.645953"/>
+<vertex lat="4.880994" lon="114.740831"/>
+<vertex lat="4.946365" lon="114.840670"/>
+<vertex lat="5.022381" lon="114.995389"/>
+<vertex lat="5.016361" lon="115.047686"/>
+<vertex lat="4.962436" lon="115.047066"/>
+<vertex lat="4.899727" lon="115.026809"/>
+</area>
+</country>

@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 /**
  @author david
  created: 2015-03-21
- modified: 2015-11-19 by Miri Ryu
+ modified: 2015-11-19  by Miri Ryu
 
  description: 
  LandTile class describes a single section of the equal area projection of the
@@ -209,6 +209,11 @@ public class Tile
   public int getAvgFrostFreeNight() { return avgFrostFreeNight; }
 
   public void setAvgFrostFreeNight(int n) { this.avgFrostFreeNight = n; }
+
+  public int getProjAvgFrostFreeNight() { return projAvgFrostFreeNight; }
+
+  public void setProjAvgFrostFreeNight(int n) { this.projAvgFrostFreeNight = n; }
+
 
   /** Annual precipitation */
   public float getRainfall() { return rainfall; }

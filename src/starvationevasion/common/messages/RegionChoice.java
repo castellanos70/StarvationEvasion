@@ -2,6 +2,8 @@ package starvationevasion.common.messages;
 
 import starvationevasion.common.EnumRegion;
 
+import java.io.Serializable;
+
 /**
  * Shea Polansky
  * A class representing a player's region choice.
@@ -13,7 +15,7 @@ import starvationevasion.common.EnumRegion;
  * A region choice of 'null' will unassign a client from any region.
  * Be wary of race conditions in cases when two clients both try to claim the same region.
  */
-public class RegionChoice
+public class RegionChoice implements Serializable
 {
   /**
    * The chosen region, or null if no region is chosen.

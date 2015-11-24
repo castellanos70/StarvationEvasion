@@ -2,11 +2,13 @@ package starvationevasion.common.messages;
 
 import starvationevasion.common.EnumRegion;
 
+import java.io.Serializable;
+
 /**
  * Shea Polansky
  * A response to a login attempt.
  */
-public class LoginResponse
+public class LoginResponse implements Serializable
 {
   public enum ResponseType
   {

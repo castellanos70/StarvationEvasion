@@ -2,6 +2,7 @@ package starvationevasion.common.messages;
 
 import starvationevasion.common.EnumRegion;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -12,7 +13,7 @@ import java.util.Set;
  * An instance of this message will be transmitted at least, but possibly more than,
  * once every time a player changes their chosen region.
  */
-public class AvailableRegions
+public class AvailableRegions implements Serializable
 {
   /**
    * An *unmodifiable* (as in, will throw if modified) Map mapping taken regions

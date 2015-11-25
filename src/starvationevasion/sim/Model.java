@@ -84,14 +84,11 @@ public class Model
 
   public Model(int startYear)
   {
-
     this.startYear = startYear;
     year = startYear;
 
     stateData = DataReader.retrieveStateData("data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv");
     instantiateRegions(stateData.getRawData());
-
-
   }
 
 

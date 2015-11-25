@@ -9,7 +9,7 @@ public class Util
 {
   /**
    * There need only be one instance of a random number generator used
-   * by all the parts of the program. Let this is it.
+   * by all the parts of the program. Let this be it.
    */
   public static Random rand = new Random();
 }

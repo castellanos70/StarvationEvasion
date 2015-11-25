@@ -161,7 +161,7 @@ public class Server
     {
       client.setRegion(regionChoice);
     }
-    client.send(getAvailableRegions());
+    broadcast(getAvailableRegions());
   }
 
   private void handleLogin(ServerWorker client, Login message)
@@ -192,10 +192,7 @@ public class Server
       client.setUserName(message.username);
       client.send(new LoginResponse(client.getRegion() != null ?
           LoginResponse.ResponseType.ASSIGNED_REGION : LoginResponse.ResponseType.CHOOSE_REGION, client.getRegion()));
-      if (client.getRegion() == null) //regions are user-chosen
-      {
-        client.send(getAvailableRegions());
-      }
+      broadcast(getAvailableRegions());
     }
   }
 

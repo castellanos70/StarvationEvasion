@@ -34,8 +34,8 @@ import java.lang.Double;
  */
 public class CountryCSVLoader
 {
-  private static final String DATA_DIR_PATH = "resources/data/";
-  private static final String DATA_FILE = "countryData.csv";
+  private static final String DATA_DIR_PATH = "/sim/WorldData/"; // "resources/data/";
+  private static final String DATA_FILE = "CountryFarmAreaAndIncome-2014.csv"; // "countryData.csv";
   private static final int START_YEAR = AbstractScenario.START_YEAR;
   
   
@@ -359,9 +359,11 @@ public class CountryCSVLoader
   {
     try
     {
-      csvFile = new File(DATA_DIR_PATH + DATA_FILE);
+      String csvPath = DATA_DIR_PATH + DATA_FILE;
       CSVReader reader = new CSVReader();
-      reader.read(new FileInputStream(csvFile));
+      reader.read(this.getClass().getResourceAsStream(csvPath));
+      // csvFile = new File(DATA_DIR_PATH + DATA_FILE);
+      // reader.read(new FileInputStream(csvFile));
       // CSVFormat format;
       // CSVParser parser;
       // format = CSVFormat.DEFAULT.withHeader();

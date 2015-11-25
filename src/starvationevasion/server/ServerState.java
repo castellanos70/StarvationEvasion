@@ -6,5 +6,6 @@ package starvationevasion.server;
  */
 public enum ServerState
 {
-  LOGIN
+  LOGIN,
+  END
 }

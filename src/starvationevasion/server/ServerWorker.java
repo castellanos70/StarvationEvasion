@@ -1,6 +1,7 @@
 package starvationevasion.server;
 
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.messages.Response;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -43,7 +44,17 @@ public class ServerWorker extends Thread
   @Override
   public void run()
   {
-
+    while (!Thread.interrupted())
+    {
+      try
+      {
+        server.acceptMessage((Serializable)receiveStream.readObject(), this);
+      }
+      catch (IOException | ClassNotFoundException | ClassCastException e)
+      {
+        send(Response.BAD_MESSAGE);
+      }
+    }
   }
 
   public void send(Serializable message)

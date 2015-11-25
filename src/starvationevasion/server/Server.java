@@ -202,8 +202,8 @@ public class Server
   {
     Map<EnumRegion, String> takenRegions = connectedClients.stream().filter(c -> c.getRegion() != null)
         .collect(Collectors.toMap(ServerWorker::getRegion, ServerWorker::getUserName));
-    Set<EnumRegion> availableRegions =
-        Arrays.stream(EnumRegion.US_REGIONS).filter(r -> !takenRegions.keySet().contains(r)).collect(Collectors.toSet());
+    Set<EnumRegion> availableRegions = Arrays.stream(EnumRegion.US_REGIONS)
+        .filter(r -> !takenRegions.keySet().contains(r)).collect(Collectors.toSet());
     return new AvailableRegions(takenRegions, availableRegions);
   }
 

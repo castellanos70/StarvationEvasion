@@ -1,4 +1,5 @@
 package starvationevasion.common.messages;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -7,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
  * Shea Polansky
  * Message sent from client to server attempting to login.
  */
-public class Login
+public class Login implements Serializable
 {
   public final String username, hashedPassword;
 

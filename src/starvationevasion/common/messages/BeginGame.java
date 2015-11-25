@@ -2,6 +2,7 @@ package starvationevasion.common.messages;
 
 import starvationevasion.common.EnumRegion;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ import java.util.Map;
  * Shea Polansky
  * A message indicating the game is beginning and teams are finalized.
  */
-public class BeginGame
+public class BeginGame implements Serializable
 {
   /**
    * An unmodifiable (i.e. will throw if modified) Map mapping regions to player names

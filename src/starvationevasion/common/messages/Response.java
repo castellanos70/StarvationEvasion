@@ -1,5 +1,7 @@
 package starvationevasion.common.messages;
 
+import java.io.Serializable;
+
 /**
  * Shea Polansky
  * Possible server responses to client messages.
@@ -12,7 +14,7 @@ package starvationevasion.common.messages;
  * but correctly transmitted. In this case, a message of Response.OK
  * will be transmitted to the client, followed by a more specific rejection message.
  */
-public enum Response
+public enum Response implements Serializable
 {
   /**
    * Message was corrupt, could not be deserialized to a known class, etc.

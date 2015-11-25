@@ -1,9 +1,11 @@
 package spring2015code.io;
 
 
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVFormat;
+// import org.apache.commons.csv.CSVRecord;
+// import org.apache.commons.csv.CSVParser;
+// import org.apache.commons.csv.CSVFormat;
+
+import spring2015code.io.CSVReader.CSVRecord;
 import starvationevasion.common.EnumFood;
 import spring2015code.model.geography.AgriculturalUnit;
 import spring2015code.io.CSVhelpers.CSVParsingException;
@@ -12,7 +14,9 @@ import spring2015code.common.EnumGrowMethod;
 import spring2015code.common.AbstractScenario;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -30,8 +34,8 @@ import java.lang.Double;
  */
 public class CountryCSVLoader
 {
-  private static final String DATA_DIR_PATH = "resources/data/";
-  private static final String DATA_FILE = "countryData.csv";
+  private static final String DATA_DIR_PATH = "/sim/WorldData/"; // "resources/data/";
+  private static final String DATA_FILE = "CountryFarmAreaAndIncome-2014.csv"; // "countryData.csv";
   private static final int START_YEAR = AbstractScenario.START_YEAR;
   
   
@@ -353,17 +357,20 @@ public class CountryCSVLoader
    */
   private void getRecords()
   {
-    records = new ArrayList<CSVRecord>();
     try
     {
-      csvFile = new File(DATA_DIR_PATH+DATA_FILE);
-      CSVFormat format;
-      CSVParser parser;
-      format = CSVFormat.DEFAULT.withHeader();
-      parser = CSVParser.parse(csvFile, StandardCharsets.US_ASCII, format);
-      headers = parser.getHeaderMap().keySet().toArray(new String[0]);
-      records = parser.getRecords();
-      parser.close();
+      String csvPath = DATA_DIR_PATH + DATA_FILE;
+      CSVReader reader = new CSVReader();
+      reader.read(this.getClass().getResourceAsStream(csvPath));
+      // csvFile = new File(DATA_DIR_PATH + DATA_FILE);
+      // reader.read(new FileInputStream(csvFile));
+      // CSVFormat format;
+      // CSVParser parser;
+      // format = CSVFormat.DEFAULT.withHeader();
+      // parser = CSVParser.parse(csvFile, StandardCharsets.US_ASCII, format);
+      headers = reader.getHeaders();
+      records = reader.getRecords();
+      reader.close();
     }
     catch (IOException e)
     {
@@ -424,10 +431,13 @@ public class CountryCSVLoader
   }
   
   
-  
-  /* for testing
   public static void main(String[] args)
-  { 
+  {
+    // First make sure that the data file can be seen from the class loader.
+    //
+    InputStream in = CountryCSVLoader.class.getResourceAsStream("/SomeTextFile.txt");
+
+
     ArrayList<AgriculturalUnit> fakeXmlList = new ArrayList<AgriculturalUnit>();
     fakeXmlList.add(new AgriculturalUnit("Afghanistan"));
     //fakeXmlList.add(new AgriculturalUnit("Albania"));
@@ -444,7 +454,5 @@ public class CountryCSVLoader
       //System.out.println(ctry.getName()+" "+ctry.getPopulation(START_YEAR));
       //System.out.println(ctry.getName()+" "+ctry.getCropProduction(START_YEAR,EnumFood.GRAIN));
     }
-  }*/
-  
-  
+  }
 }

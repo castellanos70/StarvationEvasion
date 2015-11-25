@@ -2,11 +2,13 @@ package starvationevasion.common.messages;
 
 import starvationevasion.common.EnumRegion;
 
+import java.io.Serializable;
+
 /**
  * Shea Polansky
  * A response to a login attempt.
  */
-public class LoginResponse
+public class LoginResponse implements Serializable
 {
   public enum ResponseType
   {
@@ -14,6 +16,10 @@ public class LoginResponse
      * Unknown user/bad password/etc.
      */
     ACCESS_DENIED,
+    /**
+     * Another connection already exists for this user.
+     */
+    DUPLICATE,
     /**
      * You have been assigned a specific region.
      */

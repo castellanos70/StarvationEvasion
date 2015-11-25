@@ -1,11 +1,20 @@
 package starvationevasion.common.messages;
 
+import starvationevasion.common.Util;
+
+import java.io.Serializable;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * Shea Polansky
  * "Hello" message sent to the client by the server on connection
  */
-public class Hello
+public class Hello implements Serializable
 {
+  private static final String[] nonceAlphabet =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split(".");
+  public static final int NONCE_SIZE = 32;
   /**
    * Nonce used for a login hash salt.
    * Will be a 32 character string matching the regex "^[A-Za-z1-9]{32}$"
@@ -20,5 +29,12 @@ public class Hello
   {
     this.loginNonce = loginNonce;
     this.serverVersion = serverVersion;
+  }
+
+  public static String generateRandomLoginNonce()
+  {
+    return Stream.generate(() ->
+        nonceAlphabet[Util.rand.nextInt(nonceAlphabet.length)])
+        .limit(NONCE_SIZE).collect(Collectors.joining());
   }
 }

@@ -212,7 +212,7 @@ public class Server
     connectedClients.remove(client);
     if (disconnectMessage != null)
     {
-      //send a disconnect message
+      client.send(new Goodbye(disconnectMessage));
     }
   }
 }

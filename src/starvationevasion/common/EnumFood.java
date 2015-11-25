@@ -92,8 +92,27 @@ public enum EnumFood
   private final String longName = res.getString("EnumFood." + name() + ".longName"); // E.g. "Grapefruit, Lemons, Oranges, Tangerines, ...)"
 
   public static final int SIZE = values().length;
+
+  /**
+   * @return test name of food type.
+   */
   public String toString() { return shortName; }
+
+  /**
+   *
+   * @return text name of food type with example foods of type.
+   */
   public String toLongString() { return longName; }
+
+  /**
+   * @return file path of small icon.
+   */
+  public String getIconPath64() { return "assets/farmProductIcons"+name()+"_64x64.png"; }
+
+  /**
+   * @return file path of large icon.
+   */
+  public String getIconPath265() { return "assets/farmProductIcons"+name()+"_256x256.png";}
 
   /**
    * Use when need to distinguish between crop and non-crop foods.

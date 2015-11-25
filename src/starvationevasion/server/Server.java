@@ -189,6 +189,7 @@ public class Server
         passwordFile.credentialMap.get(message.username)).equals(message.hashedPassword))
     {
       client.setRegion(passwordFile.regionMap.get(message.username));
+      client.setUserName(message.username);
       client.send(new LoginResponse(client.getRegion() != null ?
           LoginResponse.ResponseType.ASSIGNED_REGION : LoginResponse.ResponseType.CHOOSE_REGION, client.getRegion()));
       if (client.getRegion() == null) //regions are user-chosen

@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 public class Hello implements Serializable
 {
   private static final String[] nonceAlphabet =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split(".");
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split("(?!^)");
   public static final int NONCE_SIZE = 32;
   /**
    * Nonce used for a login hash salt.

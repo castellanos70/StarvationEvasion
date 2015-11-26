@@ -57,6 +57,7 @@ public class Server
 
   private void waitForConnections()
   {
+    System.out.println("Waiting for clients to connect...");
     String host = "";
     try
     {

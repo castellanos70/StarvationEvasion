@@ -2,8 +2,6 @@ package spring2015code.io.CSVhelpers;
 
 import java.io.File;
 
-import org.apache.commons.csv.*;
-
 /**
  * Exception class for errors when parsing CSV file.
  * @author  jessica
@@ -12,7 +10,7 @@ import org.apache.commons.csv.*;
 public class CSVParsingException extends RuntimeException
 {
   public String field;
-  public CSVRecord record;
+  public Object record;
   public File csvFile;
   
   /**
@@ -20,7 +18,7 @@ public class CSVParsingException extends RuntimeException
    * @param record    CSVRecord causing error
    * @param csvFile   File containing record
    */
-  public CSVParsingException(String field, CSVRecord record, File csvFile)
+  public CSVParsingException(String field, Object record, File csvFile)
   {
     super();
     this.field = field;

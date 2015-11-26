@@ -43,6 +43,7 @@ public class Server
     }
   }
 
+  //Usage: java starvationevasion.server.Server PasswordFilePath
   public static void main(String[] args)
   {
     new Server(args[0]).start();

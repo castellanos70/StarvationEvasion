@@ -3,17 +3,17 @@ package starvationevasion.server;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.messages.*;
 import starvationevasion.common.Tuple;
+import starvationevasion.server.testing.ServerConstants;
 
-import javax.swing.plaf.synth.Region;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -22,21 +22,20 @@ import java.util.stream.Collectors;
  */
 public class Server
 {
-  private static final int DEFAULT_PORT = 27015;
-  public static final String SERVER_VERSION = "M1";
   private final Object stateSynchronizationObject = new Object();
   private volatile ServerState currentState = ServerState.LOGIN;
   private ServerSocket serverSocket;
   private final List<ServerWorker> connectedClients = new ArrayList<>();
   private ConcurrentLinkedQueue<Tuple<Serializable, ServerWorker>> messageQueue = new ConcurrentLinkedQueue<>();
   private PasswordFile passwordFile;
+  private Thread gameStartThread;
 
   public Server(String loginFilePath)
   {
     try
     {
       passwordFile = PasswordFile.loadFromFile(loginFilePath);
-      serverSocket = new ServerSocket(DEFAULT_PORT);
+      serverSocket = new ServerSocket(ServerConstants.DEFAULT_PORT);
     }
     catch (IOException e)
     {
@@ -79,7 +78,7 @@ public class Server
         connectedClients.add(worker);
         String nonce = Hello.generateRandomLoginNonce();
         worker.setLoginNonce(nonce);
-        worker.send(new Hello(nonce, SERVER_VERSION));
+        worker.send(new Hello(nonce, ServerConstants.SERVER_VERSION));
       }
       catch (IOException e)
       {
@@ -163,7 +162,40 @@ public class Server
     {
       client.setRegion(regionChoice);
     }
-    broadcast(getAvailableRegions());
+    final AvailableRegions availableRegions = getAvailableRegions();
+    broadcast(availableRegions);
+    if (getCurrentState() == ServerState.LOGIN && availableRegions.availableRegions.size() == 0)
+    {
+      beginToStartGame();
+    }
+    else if (getCurrentState() == ServerState.BEGINNING && availableRegions.availableRegions.size() != 0)
+    {
+      broadcastCancelGameBeginning();
+    }
+  }
+
+  private void broadcastCancelGameBeginning()
+  {
+    if (getCurrentState() == ServerState.DRAFTING) return; //already started, too late, oh well
+    if (getCurrentState() != ServerState.BEGINNING) throw new IllegalStateException();
+    if (gameStartThread.isAlive()) gameStartThread.interrupt();
+    setServerState(ServerState.LOGIN);
+    broadcast(new ReadyToBegin(false, 0, 0));
+  }
+
+  private void startGame()
+  {
+    try
+    {
+      Thread.sleep(ServerConstants.GAME_START_WAIT_TIME);
+    }
+    catch (InterruptedException ignored)
+    {
+      return;
+      //game start cancelled, do nothing
+    }
+    setServerState(ServerState.DRAFTING);
+    broadcast(new BeginGame(getTakenRegions()));
   }
 
   private void handleLogin(ServerWorker client, Login message)
@@ -194,17 +226,38 @@ public class Server
       client.setUserName(message.username);
       client.send(new LoginResponse(client.getRegion() != null ?
           LoginResponse.ResponseType.ASSIGNED_REGION : LoginResponse.ResponseType.CHOOSE_REGION, client.getRegion()));
-      broadcast(getAvailableRegions());
+      final AvailableRegions availableRegions = getAvailableRegions();
+      broadcast(availableRegions);
+      if (getCurrentState() == ServerState.LOGIN && availableRegions.availableRegions.size() == 0)
+      {
+        beginToStartGame();
+      }
     }
+  }
+
+  private void beginToStartGame()
+  {
+    if (getCurrentState() != ServerState.LOGIN) throw new IllegalStateException();
+    final Instant now = Instant.now();
+    broadcast(new ReadyToBegin(true,
+        now.getEpochSecond(), now.plusMillis(ServerConstants.GAME_START_WAIT_TIME).getEpochSecond()));
+    setServerState(ServerState.BEGINNING);
+    gameStartThread = new Thread(this::startGame);
+    gameStartThread.start();
   }
 
   private AvailableRegions getAvailableRegions()
   {
-    Map<EnumRegion, String> takenRegions = connectedClients.stream().filter(c -> c.getRegion() != null)
-        .collect(Collectors.toMap(ServerWorker::getRegion, ServerWorker::getUserName));
+    Map<EnumRegion, String> takenRegions = getTakenRegions();
     Set<EnumRegion> availableRegions = Arrays.stream(EnumRegion.US_REGIONS)
         .filter(r -> !takenRegions.keySet().contains(r)).collect(Collectors.toSet());
     return new AvailableRegions(takenRegions, availableRegions);
+  }
+
+  private Map<EnumRegion, String> getTakenRegions()
+  {
+    return connectedClients.stream().filter(c -> c.getRegion() != null)
+          .collect(Collectors.toMap(ServerWorker::getRegion, ServerWorker::getUserName));
   }
 
   public void disconnectClient(ServerWorker client, String disconnectMessage)
@@ -214,5 +267,10 @@ public class Server
     {
       client.send(new Goodbye(disconnectMessage));
     }
+    if (getCurrentState() == ServerState.LOGIN || getCurrentState() == ServerState.BEGINNING)
+    {
+      broadcast(getAvailableRegions());
+    }
+    if (getCurrentState() == ServerState.BEGINNING) broadcastCancelGameBeginning();
   }
 }

@@ -95,8 +95,17 @@ public class Simulator
   }
 
   /**
-   * The server should call nextTurn(cards) when it is ready to advance the simulator
-   * a turn (Constant.YEARS_PER_TURN years)
+   * The Server should call nextTurn(cards) when it is ready to advance the simulator
+   * a turn (Constant.YEARS_PER_TURN years).<br><br>
+   * Before calling nextTurn, the Server must:
+   * <ol>
+   * <li>Verify all policy cards drafted by the clients during the draft phase.</li>
+   * <li>Verify that any cards discarded by a player could be discarded.</li>
+   * <li>Call discard on each card discarded by a player.</li>
+   * <li>End the voting phase and decide the results.</li>
+   * <li>Call discard on each card that did not receive enough votes.</li>
+   * <li>Call drawCards for each player and send them their new cards.</li>
+   * </ol>
    * @param cards List of PolicyCards enacted this turn. Note: cards played but not
    *              enacted (did not get required votes) must NOT be in this list.
    *              Such cards must be discarded
@@ -131,7 +140,7 @@ public class Simulator
   /**
    * This entry point is for testing only. <br><br>
    *
-   * This test shows how to instanciate the simulator and how to tell it
+   * This test shows how to instantiate the simulator and how to tell it
    * to deal each player a hand of cards.
    * @param args ignored.
    */

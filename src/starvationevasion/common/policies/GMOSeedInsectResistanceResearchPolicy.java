@@ -3,11 +3,9 @@ package starvationevasion.common.policies;
 
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.Policy;
 import starvationevasion.common.PolicyCard;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.io.Serializable;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -16,8 +14,7 @@ import java.util.Collection;
  * Draft Affects: When drafting this policy, player selects a crop and an
  * amount X to be paid by EACH player who approves the policy. <br><br>
  *
- * Votes Required: {@value #VOTES_REQUIRED} through all<br>
- * Eligible Regions: All U.S.<br><br>
+ * Votes Required: {@value #VOTES_REQUIRED}<br><br>
  *
  * Model Effects: 5% bonus to effectiveness of total dollars spent per
  * participating region.<br><br>
@@ -28,9 +25,8 @@ import java.util.Collection;
  * Benefit yield is an ease-in-out cubic bezier function of effective
  * dollars spent and target crop.
 */
-public class GMOSeedInsectResistanceResearchPolicy extends Policy
+public class GMOSeedInsectResistanceResearchPolicy extends PolicyCard implements Serializable
 {
-  public static PolicyCard CARD = Fall2015PolicyProvider.EnumPolicy.GMO_Seed_Insect_Resistance_Research;
 
   public static final String TITLE =
      "GMO Seed Insect Resistance Research";
@@ -39,39 +35,13 @@ public class GMOSeedInsectResistanceResearchPolicy extends Policy
     "Each participating region spends X million dollars to fund GMO seed research " +
     "for increasing insect resistance of target crop.";
 
-  /* The number of votes required for this policy.  A value of 1 means that
+  /**
+   * The number of votes required for this policy.  A value of 1 means that
    * only one player must vote to enact this policy.
   */
   public final static int VOTES_REQUIRED = 1;
 
-  /**
-   * Indicates if voting voting should continue until all eligible players
-   * have voted on this policy. A value of true indicates that voting should
-   * continue until all players have voted.
-   */
-  public final static boolean VOTE_WAIT_FOR_ALL = true;
 
-  /* The crop types applicable to this policy.
-  */
-  public final static Collection<EnumFood> TARGET_FOOD;
-
-  /* The target regions applicable to this policy.
-  */
-  public final static Collection<EnumRegion> TARGET_REGIONS = null;
-
-  static 
-  {
-    TARGET_FOOD = new ArrayList<>();
-	for (EnumFood food : EnumFood.values())
-	{
-	  if (food.isCrop()) TARGET_FOOD.add(food);
-	}
-  }
-
-  public GMOSeedInsectResistanceResearchPolicy(EnumRegion owner)
-  {
-    super(owner);
-  }
 
   /**
    * {@inheritDoc}
@@ -83,7 +53,7 @@ public class GMOSeedInsectResistanceResearchPolicy extends Policy
    * {@inheritDoc}
   */
   @Override
-  public boolean voteWaitForAll() {return VOTE_WAIT_FOR_ALL;}
+  public boolean voteWaitForAll() {return true;}
 
   /**
    * {@inheritDoc}
@@ -97,38 +67,22 @@ public class GMOSeedInsectResistanceResearchPolicy extends Policy
   @Override
   public String getGameText(){ return TEXT;}
 
+
   /**
    * {@inheritDoc}
    */
   @Override
-  public PolicyCard getCardType() { return CARD; }
-
-  /**
-   * {@inheritDoc}
-  */
-  @Override
-  public String validate()
-  {
-    // case GMOSeedInsectResistanceResearchPolicy:
-    if ((targetFood == null) || (!targetFood.isCrop()))
-    {
-      return getPolicyName() + ": must have a target food that is a crop (not livestock).";
-    }
-    String msg = validateDollarValue(varX);
-    if (msg != null) return getPolicyName() + msg;
-
-    return null;
+  public EnumFood[] getValidTargetFoods()
+  { return EnumFood.CROP_FOODS;
   }
 
-
   /**
-   * Used only for testing this class.
-   * @param args Not used.
+   * {@inheritDoc}
    */
-  public static void main(String[] args)
+  @Override
+  public EnumVariableUnit getRequiredVariables(EnumVariable variable)
   {
-    Policy myCard = new GMOSeedInsectResistanceResearchPolicy(EnumRegion.MOUNTAIN);
-    System.out.println(myCard.getTitle());
-    System.out.println(myCard.getGameText());
+    if (variable == EnumVariable.X) return EnumVariableUnit.MILLION_DOLLAR;
+    return null;
   }
 }

@@ -142,7 +142,7 @@ public class Model
    *
    * @return the simulation year that has just finished.
    */
-  protected int nextYear(ArrayList<Policy> cards)
+  protected int nextYear(ArrayList<PolicyCard> cards)
   {
     year++;
     LOGGER.info("Advancing year to " + year);

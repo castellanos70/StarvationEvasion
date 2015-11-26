@@ -1,12 +1,9 @@
 package starvationevasion.common.policies;
 
-import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.Policy;
 import starvationevasion.common.PolicyCard;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.io.Serializable;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -32,9 +29,8 @@ import java.util.Collection;
  * direct reduction of supply without effect on demand (since those to whom the
  * relief is delivered are presumed to lack the resources to have been part of the demand).
 */
-public class InternationalFoodReliefProgramPolicy extends Policy
+public class InternationalFoodReliefProgramPolicy extends PolicyCard implements Serializable
 {
-  public static PolicyCard CARD = Fall2015PolicyProvider.EnumPolicy.International_Food_Relief_Program;
 
   public static final String TITLE =
     "International Food Relief Program";
@@ -49,35 +45,6 @@ public class InternationalFoodReliefProgramPolicy extends Policy
   public final static int VOTES_REQUIRED = 1;
 
   /**
-   * Indicates if voting voting should continue until all eligible players
-   * have voted on this policy. A value of true indicates that voting should
-   * continue until all players have voted.
-   */
-  public final static boolean VOTE_WAIT_FOR_ALL = true;
-
-  /* The crop types applicable to this policy.
-  */
-  public final static Collection<EnumFood> TARGET_FOOD;
-
-  /* The target regions applicable to this policy.
-  */
-  public final static Collection<EnumRegion> TARGET_REGIONS = null;
-
-  static 
-  {
-    TARGET_FOOD = new ArrayList<>();
-	for (EnumFood food : EnumFood.values())
-	{
-	  if (food.isCrop()) TARGET_FOOD.add(food);
-	}
-  }
-
-  public InternationalFoodReliefProgramPolicy(EnumRegion region)
-  { 
-    super(region);
-  }
-
-  /**
    *  {@inheritDoc}
   */
   @Override
@@ -87,7 +54,7 @@ public class InternationalFoodReliefProgramPolicy extends Policy
    *  {@inheritDoc}
   */
   @Override
-  public boolean voteWaitForAll() {return VOTE_WAIT_FOR_ALL;}
+  public boolean voteWaitForAll() {return true;}
 
   /**
    *  {@inheritDoc}
@@ -101,39 +68,14 @@ public class InternationalFoodReliefProgramPolicy extends Policy
   @Override
   public String getGameText(){ return TEXT;}
 
+
   /**
    * {@inheritDoc}
    */
   @Override
-  public PolicyCard getCardType() { return CARD; }
-
-  /**
-   *  {@inheritDoc}
-  */
-  @Override
-  public String validate()
+  public EnumVariableUnit getRequiredVariables(EnumVariable variable)
   {
-    // case InternationalFoodReliefProgramPolicy:
-    if ((targetFood == null) || (!targetFood.isCrop()))
-    {
-      return getPolicyName() + ": must have a target food that is a crop.";
-    }
-
-    String msg = validateDollarValue(varX);
-    if (msg != null) return getPolicyName() + msg;
-
+    if (variable == EnumVariable.X) return EnumVariableUnit.MILLION_DOLLAR;
     return null;
-  }
-
-  /**
-   * Used only for testing this class.
-   * @param args Not used.
-   */
-  public static void main(String[] args)
-  {
-
-    Policy myCard = new EducateTheWomenCampaignPolicy(EnumRegion.MOUNTAIN);
-    System.out.println(myCard.getTitle());
-    System.out.println(myCard.getGameText());
   }
 }

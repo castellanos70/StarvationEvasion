@@ -2,11 +2,9 @@ package starvationevasion.common.policies;
 
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.Policy;
 import starvationevasion.common.PolicyCard;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.io.Serializable;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -19,11 +17,10 @@ import java.util.Collection;
  * Model Effects: This policy makes conventional farming of target crop more
  * economic and therefore shifts farmer plantings. It also affects the use of
  * the fertilizer on existing crops causing a change in yield and a change in
- * fertilizer run off.<br><br>
+ * fertilizer run off.
 */
-public class FertilizerSubsidyPolicy extends Policy
+public class FertilizerSubsidyPolicy extends PolicyCard implements Serializable
 {
-  public static PolicyCard CARD = Fall2015PolicyProvider.EnumPolicy.Fertilizer_Subsidy;
 
   public static final String TITLE =
       "Fertilizer or Feed Subsidy";
@@ -32,48 +29,6 @@ public class FertilizerSubsidyPolicy extends Policy
       "This policy offers a subsidy of X% rebate to farmers in your region purchasing " +
       "commercial fertilizer for target crop or feed supplements for target live stock.";
 
-  /* The number of votes required for this policy.  A value of 0 means that
-   * the policy is automatic.
-  */
-  public final static int VOTES_REQUIRED = 0;
-
-  /* Combined with 0 required votes, this Indicates that this policy is automatic.
-  */
-  public final static boolean VOTE_WAIT_FOR_ALL = false;
-
-  /* The crop types applicable to this policy.
-  */
-  public final static Collection<EnumFood> TARGET_FOOD;
-
-  /* The target regions applicable to this policy.
-  */
-  public final static Collection<EnumRegion> TARGET_REGIONS = null;
-
-  static 
-  {
-    TARGET_FOOD = new ArrayList<>();
-	for (EnumFood food : EnumFood.values())
-	{
-	  TARGET_FOOD.add(food);
-	}
-  }
-
-  public FertilizerSubsidyPolicy (EnumRegion region)
-  {
-    super(region);
-  }
-  
-  /**
-   * {@inheritDoc}
-  */
-  @Override
-  public int votesRequired() {return VOTES_REQUIRED;}
-
-  /**
-   * {@inheritDoc}
-  */
-  @Override
-  public boolean voteWaitForAll() {return false;}
 
   /**
    * {@inheritDoc}
@@ -87,37 +42,22 @@ public class FertilizerSubsidyPolicy extends Policy
   @Override
   public String getGameText(){ return TEXT;}
 
+
   /**
    * {@inheritDoc}
    */
   @Override
-  public PolicyCard getCardType() { return CARD; }
-
-  /**
-   * {@inheritDoc}
-  */
-  @Override
-  public String validate()
-  {
-    // case FertilizerSubsidyPolicy:
-    String msg = validatePercentValue(varX);
-    if (msg != null) return getPolicyName() + msg;
-    if (targetFood == null)
-    {
-      return getPolicyName() + "Must have target Food";
-    }
-
-    return null;
+  public EnumFood[] getValidTargetFoods()
+  { return EnumFood.values();
   }
 
   /**
-   * Used only for testing this class.
-   * @param args Not used.
+   * {@inheritDoc}
    */
-  public static void main(String[] args)
+  @Override
+  public EnumVariableUnit getRequiredVariables(EnumVariable variable)
   {
-    Policy myCard = new FertilizerSubsidyPolicy(EnumRegion.MOUNTAIN);
-    System.out.println(myCard.getTitle());
-    System.out.println(myCard.getGameText());
+    if (variable == EnumVariable.X) return EnumVariableUnit.MILLION_DOLLAR;
+    return null;
   }
 }

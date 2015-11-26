@@ -1,4 +1,4 @@
-package starvationevasion.server.testing;
+package starvationevasion.server;
 
 /**
  * Shea Polansky

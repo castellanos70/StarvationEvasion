@@ -3,7 +3,6 @@ package starvationevasion.server;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.messages.*;
 import starvationevasion.common.Tuple;
-import starvationevasion.server.testing.ServerConstants;
 
 import java.io.IOException;
 import java.io.Serializable;

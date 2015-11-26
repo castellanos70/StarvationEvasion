@@ -1,13 +1,9 @@
 package starvationevasion.common.policies;
 
-import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.Policy;
 import starvationevasion.common.PolicyCard;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.io.Serializable;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -16,19 +12,17 @@ import java.util.Collection;
  * Draft Affects: When drafting this policy, player selects target world
  * region and X million dollars.<br><br>
  *
- * Votes Required: {@value #VOTES_REQUIRED}<br>
+ * Votes Required: {@value #VOTES_REQUIRED}<br><br>
  * Eligible Regions: All US<br><br>
  *
  * Model Effects: model needs four control points of each ease-in-out cubic Bezier
  * function giving investment verses food trade penalty function reduction. This one
  * time spending permanently reduces the regions penalty function.
  * If approved, each US region must pay X million.
- <br><br>
 */
 
-public class ForeignAidForFarmInfrastructurePolicy extends Policy
+public class ForeignAidForFarmInfrastructurePolicy extends PolicyCard implements Serializable
 {
-  public static PolicyCard CARD = Fall2015PolicyProvider.EnumPolicy.Foreign_Aid_for_Farm_Infrastructure;
 
   public static final String TITLE =
       "Foreign Aid for Farm Infrastructure";
@@ -37,48 +31,11 @@ public class ForeignAidForFarmInfrastructurePolicy extends Policy
       "The US sends 7X million dollars in foreign aid for capital development " +
       "of farming infrastructure of target world region.";
 
-  /* The number of votes required for this policy.  A value of 4 means that
-   * 4 players must vote to enact this policy.
-  */
+  /**
+   * The number of votes required for this policy to be enacted.
+   */
   public final static int VOTES_REQUIRED = 4;
 
-  /**
-   * Indicates if voting voting should continue until all eligible players
-   * have voted on this policy. A value of false indicates that voting should
-   * stop as soon as the required number of votes have been reached.
-   */
-  public final static boolean VOTE_WAIT_FOR_ALL = false;
-
-  /* The crop types applicable to this policy.
-  */
-  public final static Collection<EnumFood> TARGET_FOOD = null;
-
-  /* The target regions applicable to this policy.
-  */
-  public final static Collection<EnumRegion> TARGET_REGIONS;
-
-  static 
-  {
-    TARGET_REGIONS = new ArrayList<>();
-    TARGET_REGIONS.addAll(Arrays.asList(EnumRegion.WORLD_REGIONS));
-  }
-
-  public ForeignAidForFarmInfrastructurePolicy(EnumRegion region)
-  {
-    super(region);
-  }
-
-  /**
-   * {@inheritDoc}
-  */
-  @Override
-  public int votesRequired() { return VOTES_REQUIRED; }
-
-  /**
-   * {@inheritDoc}
-  */
-  @Override
-  public boolean voteWaitForAll() { return VOTE_WAIT_FOR_ALL; }
 
   /**
    * {@inheritDoc}
@@ -96,39 +53,17 @@ public class ForeignAidForFarmInfrastructurePolicy extends Policy
    * {@inheritDoc}
    */
   @Override
-  public PolicyCard getCardType() { return CARD; }
-
-  /**
-   * {@inheritDoc}
-  */
-  @Override
-  public String validate()
-  {
-    // case ForeignAidForFarmInfrastructurePolicy:
-    if (getEnactingRegionCount() < votesRequired())
-    {
-      return getPolicyName() + ": does not have required votes.";
-    }
-
-    String msg = validateDollarValue(varX);
-    if (msg != null) return getPolicyName() + msg;
-
-    if (targetRegion == null || targetRegion.isUS())
-    {
-      return getPolicyName() + "["+targetRegion +"]: Must have target world region";
-    }
-
-    return null;
+  public EnumRegion[] getValidTargetRegions()
+  { return EnumRegion.WORLD_REGIONS;
   }
 
   /**
-   * Used only for testing this class.
-   * @param args Not used.
+   * {@inheritDoc}
    */
-  public static void main(String[] args)
+  @Override
+  public EnumVariableUnit getRequiredVariables(EnumVariable variable)
   {
-    Policy myCard = new ForeignAidForFarmInfrastructurePolicy(EnumRegion.MOUNTAIN);
-    System.out.println(myCard.getTitle());
-    System.out.println(myCard.getGameText());
+    if (variable == EnumVariable.X) return EnumVariableUnit.MILLION_DOLLAR;
+    return null;
   }
 }

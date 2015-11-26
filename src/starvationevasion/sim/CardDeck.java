@@ -25,24 +25,24 @@ public class CardDeck
   /**
    *  Must be an ordered set of cards.
   */
-  private ArrayList<PolicyCard> drawPile = new ArrayList<>(CARDS_IN_PLAYER_DECK);
+  private ArrayList<EnumPolicy> drawPile = new ArrayList<>(CARDS_IN_PLAYER_DECK);
 
   /**
    *  Must be an ordered set of cards.
   */
-  private ArrayList<PolicyCard> discardPile = new ArrayList<>(CARDS_IN_PLAYER_DECK);
+  private ArrayList<EnumPolicy> discardPile = new ArrayList<>(CARDS_IN_PLAYER_DECK);
 
   /**
    *  Cards that are currently in play (drafted or enacted) this turn or on a past turn but
    *  still active.
    */
-  private ArrayList<PolicyCard> cardsInPlay = new ArrayList<>();
+  private ArrayList<EnumPolicy> cardsInPlay = new ArrayList<>();
 
   /**
    *  Cards that are currently in play (drafted or enacted) this turn or on a past turn but
    *  still active.
    */
-  private ArrayList<PolicyCard> cardsInHand = new ArrayList<>(Constant.MAX_HAND_SIZE);
+  private ArrayList<EnumPolicy> cardsInHand = new ArrayList<>(Constant.MAX_HAND_SIZE);
 
   /**
    * Each player region has a unique deck to be read from
@@ -62,14 +62,11 @@ public class CardDeck
         "a player region.");
     }
 
-    PolicyManager policyManager = PolicyManager.getPolicyManager();
-    Collection<PolicyCard> cardTypes = policyManager.getCardTypes();
-
     while (drawPile.size() < CARDS_IN_PLAYER_DECK)
     {
-      for (PolicyCard card : cardTypes)
+      for (EnumPolicy cardType : EnumPolicy.values())
       {
-        drawPile.add(card);
+        drawPile.add(cardType);
         if (drawPile.size() >= CARDS_IN_PLAYER_DECK) break;
       }
     }
@@ -96,17 +93,17 @@ public class CardDeck
    * @return The cards drawn from the deck. Returns null if the player already
    * has a max hand size.
    */
-  public PolicyCard[] drawCards()
+  public EnumPolicy[] drawCards()
   {
     int count = Constant.MAX_HAND_SIZE - cardsInHand.size();
     if (count <=0) return null;
 
-    PolicyCard[] cards = new PolicyCard[count];
+    EnumPolicy[] cards = new EnumPolicy[count];
     for (int i = 0 ; i < count ; i++)
     {
       if (drawPile.size() == 0)
       {
-        ArrayList<PolicyCard> tmp = drawPile;
+        ArrayList<EnumPolicy> tmp = drawPile;
         drawPile = discardPile;
         discardPile = tmp;
         shuffle();
@@ -121,24 +118,21 @@ public class CardDeck
 
 
 
-  public void discard(ArrayList<PolicyCard> discardList)
+  public void discard(EnumPolicy card)
   {
-    for (PolicyCard discard : discardList)
+    //It is faster to remove from the end of an array list
+    for (int i = cardsInHand.size() ; i>=0; i--)
     {
-      //It is faster to remove from the end of an array list
-      for (int i = cardsInHand.size() ; i>=0; i--)
+      EnumPolicy handCard = cardsInHand.get(i);
+      if (card == handCard)
       {
-        PolicyCard handCard = cardsInHand.get(i);
-        if (discard.cardTypeId() == handCard.cardTypeId())
-        {
-          //Note: it is important that a pointer to the local card is added to the discard
-          //      pile and NOT a pointer to the card in the argument list.
-          drawPile.add(handCard);
-          cardsInHand.remove(i);
-        }
+        //Note: it is important that a pointer to the local card is added to the discard
+        //      pile and NOT a pointer to the card in the argument list.
+        drawPile.add(handCard);
+        cardsInHand.remove(i);
       }
 
-      throw new IllegalArgumentException("discard(card="+discard+") is not in " +
+      throw new IllegalArgumentException("discard(card="+card+") is not in " +
         "this player's deck.");
 
     }
@@ -164,17 +158,16 @@ public class CardDeck
   {
     CardDeck deck = new CardDeck(EnumRegion.CALIFORNIA);
 
-    PolicyManager policyManager = PolicyManager.getPolicyManager();
     // Draw cards, instantiating each.
     //
-    PolicyCard[] hand = deck.drawCards();
+    EnumPolicy[] hand = deck.drawCards();
     System.out.println("Drew " + hand.length + " cards" + deck.cardsRemainingInDrawPile() + " remaining in draw pile.");
-    for (PolicyCard card : hand)
+    for (EnumPolicy card : hand)
     {
       String name = card.name();
 
-      Policy policy = policyManager.createPolicy(name, EnumRegion.CALIFORNIA);
-      System.out.println("Policy (" + name + ",typeId="+card.cardTypeId()+") : " + policy.getTitle() + " / " + policy.getGameText());
+      PolicyCard policy = PolicyCard.create(EnumRegion.CALIFORNIA, card);
+      System.out.println("Policy: " + policy);
     }
   }
 }

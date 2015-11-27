@@ -77,7 +77,7 @@ public class Model
 
   private final int startYear;
   private int year;
-  private RegionData[] regionData = new RegionData[EnumRegion.SIZE];
+  private Region[] regionData = new Region[EnumRegion.SIZE];
 
 
 
@@ -92,10 +92,10 @@ public class Model
     {
       if (region.isUS())
       {
-        PlayerData playerData = new PlayerData(region);
+        Player playerData = new Player(region);
         regionData[region.ordinal()] = playerData;
       }
-      else regionData[region.ordinal()] = new RegionData(region);
+      else regionData[region.ordinal()] = new Region(region);
     }
 
 
@@ -116,7 +116,7 @@ public class Model
 
     for (EnumRegion region : EnumRegion.US_REGIONS)
     {
-      PlayerData playerData = (PlayerData)regionData[region.ordinal()];
+      Player playerData = (Player)regionData[region.ordinal()];
       playerData.setData(data.get(region.ordinal()));
 
       float[] currentStatePercentages = playerData.getPercentages();
@@ -140,7 +140,7 @@ public class Model
 
     for (EnumRegion region : EnumRegion.US_REGIONS)
     {
-      PlayerData playerData = (PlayerData)regionData[region.ordinal()];
+      Player playerData = (Player)regionData[region.ordinal()];
       playerData.setAverageConversionFactor(averageConversionFactor);
     }
 

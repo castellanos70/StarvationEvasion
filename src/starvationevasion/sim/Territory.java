@@ -6,7 +6,7 @@ package starvationevasion.sim;
  * Each Player region is a group of state territories.<br>
  * Each Non-Player region is a group of countries (and/or Alaska and Hawaii).
  */
-public class TerritoryData
+public class Territory
 {
 
 

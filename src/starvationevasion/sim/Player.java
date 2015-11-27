@@ -7,12 +7,9 @@ import starvationevasion.common.EnumRegion;
 
 
 /**
- * PlayerData is maintained by the simulator. A copy of this data can be requested by
- * the Server using Simulator.getPlayerData().<br><br>
- * This structure contains the player's current revenue, crop income, crop production,
- * crop land allocations, cards in deck, discard and hand, and other player information.
+
  */
-public class PlayerData extends RegionData
+public class Player extends Region
 {
   /**
    * Total player revenue in millions of dollars for the current simulation year.
@@ -76,7 +73,7 @@ public class PlayerData extends RegionData
    *
    * @param playerRegion the player's region.
    */
-  public PlayerData(EnumRegion playerRegion)
+  public Player(EnumRegion playerRegion)
   {
     super(playerRegion);
     deck = new CardDeck(playerRegion);

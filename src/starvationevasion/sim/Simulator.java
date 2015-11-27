@@ -123,16 +123,21 @@ public class Simulator
   }
 
   /**
-   * @param region Any US or world region.
-   * @param food Any food catagory.
-   * @return Number of square km used for farming of the given food in the given region.
+   * This method creates a new array and populates it with the current year's
+   * data form the simulator.
+   * @return an array of of RegionData for the current simulation year.
+   * indexed by EnumRegion.ordinal().
    */
-  public int getLandUsed(EnumRegion region, EnumFood food)
+  public RegionData[] getRegionData()
   {
-    int landUsed = 0;
-    LOGGER.info("Land used for food " + food + " in region " + region + " = "
-                + landUsed + " km^2");
-    return landUsed;
+    RegionData[] regionDataList = new RegionData[EnumRegion.SIZE];
+    for (EnumRegion region : EnumRegion.values())
+    {
+      RegionData data = new RegionData(region);
+      model.populateRegionData(data);
+      regionDataList[region.ordinal()] = data;
+    }
+    return regionDataList;
   }
 
   /**

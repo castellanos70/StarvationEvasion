@@ -149,8 +149,14 @@ public class Model
     //to use for the regions.
   }
 
+  /**
+   * Copy simulator data into the given data structure to be passed to the Server.
+   * @param data
+   */
+  protected void populateRegionData(RegionData data)
+  {
 
-
+  }
 
   /**
    *

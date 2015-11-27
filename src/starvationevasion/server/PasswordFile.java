@@ -47,7 +47,9 @@ public class PasswordFile
       for (String line : content)
       {
         Matcher m = assignedCountriesPattern.matcher(line);
-        m.matches();
+        //noinspection ResultOfMethodCallIgnored
+        m.matches(); //necessary for Java to actually look for matches, because
+                     //calling .matcher() doesn't automatically for some reason(!!!!)
         tempCredentialMap.put(m.group("username"), m.group("password"));
         tempRegionMap.put(m.group("username"), EnumRegion.valueOf(m.group("region")));
       }

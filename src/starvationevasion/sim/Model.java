@@ -73,12 +73,11 @@ import java.util.logging.Logger;
 
 public class Model
 {
-  private final static Logger LOGGER = Logger.getLogger(Simulator.class.getName());
-  private FileObject stateData;
+  private final static Logger LOGGER = Logger.getLogger(Model.class.getName());
 
   private final int startYear;
   private int year;
-
+  private RegionData[] regionData = new RegionData[EnumRegion.SIZE];
 
 
 
@@ -87,8 +86,19 @@ public class Model
     this.startYear = startYear;
     year = startYear;
 
-    stateData = DataReader.retrieveStateData("data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv");
-    instantiateRegions(stateData.getRawData());
+    FileObject stateData = DataReader.retrieveStateData("data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv");
+
+    for (EnumRegion region : EnumRegion.values())
+    {
+      if (region.isUS())
+      {
+        PlayerData playerData = new PlayerData(region);
+        regionData[region.ordinal()] = playerData;
+      }
+      else regionData[region.ordinal()] = new RegionData(region);
+    }
+
+
   }
 
 
@@ -98,18 +108,18 @@ public class Model
    *
    * @param data
    */
-  private void instantiateRegions(ArrayList<String> data)
+  private void instantiateRegions(ArrayList<String> data, int b)
   {
     if (data.size() == 0) return;
 
-    ArrayList<PlayerData> states = new ArrayList<>();
-
     float[] avgConversionFactors = new float[EnumFood.SIZE];
-    for (String state : data)
+
+    for (EnumRegion region : EnumRegion.US_REGIONS)
     {
-      PlayerData currentState = new PlayerData(state);
-      states.add(currentState);
-      float[] currentStatePercentages = currentState.getPercentages();
+      PlayerData playerData = (PlayerData)regionData[region.ordinal()];
+      playerData.setData(data.get(region.ordinal()));
+
+      float[] currentStatePercentages = playerData.getPercentages();
 
       for (int i = 0; i < EnumFood.SIZE; i++)
       {
@@ -128,15 +138,19 @@ public class Model
 
     float averageConversionFactor = sum/EnumFood.SIZE;
 
-    for (PlayerData state : states)
+    for (EnumRegion region : EnumRegion.US_REGIONS)
     {
-      state.setAverageConversionFactor(averageConversionFactor);
+      PlayerData playerData = (PlayerData)regionData[region.ordinal()];
+      playerData.setAverageConversionFactor(averageConversionFactor);
     }
 
     //Still need to reorganize and create a mechanism to set
     //the region field of each state and which data structure
     //to use for the regions.
   }
+
+
+
 
   /**
    *

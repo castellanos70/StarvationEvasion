@@ -12,7 +12,7 @@ import starvationevasion.common.EnumRegion;
  * This structure contains the player's current revenue, crop income, crop production,
  * crop land allocations, cards in deck, discard and hand, and other player information.
  */
-public class PlayerData extends TerritoryData
+public class PlayerData extends RegionData
 {
   /**
    * Total player revenue in millions of dollars for the current simulation year.
@@ -72,15 +72,26 @@ public class PlayerData extends TerritoryData
   private float[] landPerCategory;
 
   /**
-   * Class constructor creates a new State Object with
-   * a data string of comma separated values, which indicate
+   * Class constructor
+   *
+   * @param playerRegion the player's region.
+   */
+  public PlayerData(EnumRegion playerRegion)
+  {
+    super(playerRegion);
+    deck = new CardDeck(playerRegion);
+  }
+
+
+  /**
+   * Data string of comma separated values, which indicate
    * the income from a category of Crop. These values will
    * help to determine how much land will be dedicated to a
    * certain Crop.
    *
-   * @param data
+   * @param data crop data.
    */
-  public PlayerData(String data)
+  public void setData(String data)
   {
     incomePerCategory = new int[EnumFood.SIZE];
     incomeToCategoryPercentages = new float[EnumFood.SIZE];

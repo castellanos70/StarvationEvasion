@@ -102,12 +102,12 @@ public class Model
   {
     if (data.size() == 0) return;
 
-    ArrayList<State> states = new ArrayList<>();
+    ArrayList<PlayerData> states = new ArrayList<>();
 
     float[] avgConversionFactors = new float[EnumFood.SIZE];
     for (String state : data)
     {
-      State currentState = new State(state);
+      PlayerData currentState = new PlayerData(state);
       states.add(currentState);
       float[] currentStatePercentages = currentState.getPercentages();
 
@@ -128,7 +128,7 @@ public class Model
 
     float averageConversionFactor = sum/EnumFood.SIZE;
 
-    for (State state : states)
+    for (PlayerData state : states)
     {
       state.setAverageConversionFactor(averageConversionFactor);
     }

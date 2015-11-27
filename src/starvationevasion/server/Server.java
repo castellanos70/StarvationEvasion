@@ -263,6 +263,7 @@ public class Server
   public void disconnectClient(ServerWorker client, String disconnectMessage)
   {
     connectedClients.remove(client);
+    client.closeSocket();
     if (disconnectMessage != null)
     {
       client.send(new Goodbye(disconnectMessage));

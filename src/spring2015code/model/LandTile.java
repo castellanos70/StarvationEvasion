@@ -5,6 +5,8 @@ import starvationevasion.sim.CropClimateData;
 import spring2015code.common.CropZoneData.EnumCropZone;
 
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  @author david
@@ -295,6 +297,11 @@ public class LandTile
   public EnumCropZone rateTileForCrop(EnumFood crop) throws NullPointerException
   {
     CropClimateData data = CropClimateData.mapFood(crop);
+    if (data == null)
+    {
+      //Logger.getGlobal().log(Level.SEVERE, "Couldn't find crop climate data for " + crop + ". Defaulting to POOR.");
+      return EnumCropZone.POOR;
+    }
 
     int cropDayT = data.dayTemp;
     int cropNightT = data.nightTemp;
@@ -437,7 +444,8 @@ public class LandTile
   public String toString()
   {
     return "LandTile{" +
-      "rainfall=" + rainfall +
+      "center=" + center +
+      ", rainfall=" + rainfall +
       ", avgNightTemp=" + avgNightTemp +
       ", avgDayTemp=" + avgDayTemp +
       ", minAnnualTemp=" + minAnnualTemp +

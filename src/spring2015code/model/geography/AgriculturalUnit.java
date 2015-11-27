@@ -35,6 +35,8 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
   private final Collection<GeographicArea> regions = new ArrayList<>();
   private Collection<LandTile> landTiles;
 
+  private String gameRegion;
+
   /**
    * AgriculturalUnit constructor
    *
@@ -52,6 +54,22 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
   final public Area getArea()
   {
     return area;
+  }
+
+  /**
+   * Sets the game region for this unit.
+   */
+  public void setGameRegion(String region)
+  {
+    this.gameRegion = region;
+  }
+
+  /**
+   * @return Sets the game region for this unit.
+   */
+  public String getGameRegion()
+  {
+    return gameRegion;
   }
 
   // generate the capital by finding the center of the largest landmass.
@@ -570,5 +588,10 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     if (dist < 0) dist = dist + Math.PI;
     dist = dist * 6371.2;
     return dist;
+  }
+
+  public String toString()
+  {
+    return getClass().getSimpleName() + " " + name;
   }
 }

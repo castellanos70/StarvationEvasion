@@ -4,6 +4,7 @@ import spring2015code.model.TileManager;
 import spring2015code.model.LandTile;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -55,14 +56,18 @@ public class BioClimDataParser
   }
 
   private final String root;
-  private final TileManager dataSet =
-    CropZoneDataIO.parseFile("resources/data/tiledata.bil", null);
+  private TileManager dataSet;
   private final Map<LandTile, AgrPoint> map = new HashMap<>();
 
 
   public BioClimDataParser(String fileRoot)
   {
     root = fileRoot;
+    try {
+      dataSet = CropZoneDataIO.parseFile("resources/data/tiledata.bil", null);
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
   }
 
   private static int twoByteToSignedInt(byte first, byte second)

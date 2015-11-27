@@ -23,6 +23,7 @@ public class GeographicArea
   private AgriculturalUnit agriculturalUnit;
   private List<MapPoint> perimeter;
   private String name;
+  private String type;
 
   private Polygon mapSpacePoly;
 
@@ -45,7 +46,6 @@ public class GeographicArea
     return mapSpacePoly.contains(point);
   }
 
-
   public String getName()
   {
     return name;
@@ -57,12 +57,20 @@ public class GeographicArea
     this.name = name;
   }
 
+  public String getType()
+  {
+    return type;
+  }
+
+  public void setType(String type)
+  {
+    this.type = type;
+  }
 
   public List<MapPoint> getPerimeter()
   {
     return perimeter;
   }
-
 
   public void setPerimeter(List<MapPoint> perimeter)
   {

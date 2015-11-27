@@ -1,5 +1,6 @@
 package spring2015code.io;
 
+import spring2015code.io.XMLparsers.KMLParser;
 import spring2015code.model.geography.AgriculturalUnit;
 import spring2015code.model.TileManager;
 import spring2015code.model.LandTile;
@@ -13,13 +14,12 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author david
@@ -29,16 +29,20 @@ import java.util.List;
  */
 public class CropZoneDataIO
 {
-  public static final String DEFAULT_FILE = "resources/data/tiledata.bil";
+  public static final String DEFAULT_FILE = "/sim/geography/tiledata.bil";
 
-  public static TileManager parseFile(String filename, Collection<AgriculturalUnit> countries)
+  public static TileManager parseFile(String resourcePath, Collection<AgriculturalUnit> countries) throws FileNotFoundException
   {
     TileManager dataSet = new TileManager(null);
 
+    InputStream resourceStream = KMLParser.class.getResourceAsStream(resourcePath);
+    if (resourceStream == null) throw new FileNotFoundException(resourcePath);
 
-    try (FileInputStream in = new FileInputStream(filename))
+    BufferedInputStream inputStream = new BufferedInputStream(resourceStream);
+
+    try
     {
-      AgriculturalUnit lastCountry = null;
+      AgriculturalUnit lastUnit = null;
 
       //System.out.println("starting tiledata loading");
       byte bytes[] = new byte[LandTile.BYTE_DEF.SIZE_IN_BYTES];
@@ -46,7 +50,7 @@ public class CropZoneDataIO
       LandTile tile;
       int tiles = 0;
       long start = System.currentTimeMillis();
-      while (in.read(bytes) != -1)
+      while (inputStream.read(bytes) != -1)
       {
         tiles++;
         buf.clear();
@@ -54,9 +58,9 @@ public class CropZoneDataIO
         tile = new LandTile(buf);
         dataSet.putTile(tile);
 
-        if (lastCountry != null && lastCountry.containsMapPoint(tile.getCenter()))
+        if (lastUnit != null && lastUnit.containsMapPoint(tile.getCenter()))
         {
-          lastCountry.addLandTile(tile);
+          lastUnit.addLandTile(tile);
           dataSet.registerCountryTile(tile);
           continue;
         }
@@ -67,19 +71,16 @@ public class CropZoneDataIO
           {
             agriculturalUnit.addLandTile(tile);
             dataSet.registerCountryTile(tile);
-            lastCountry = agriculturalUnit;
+            lastUnit = agriculturalUnit;
           }
         }
 
       }
       //System.out.printf("read %d tiles in %dms%n", tiles, System.currentTimeMillis() - start);
     }
-    catch (FileNotFoundException e)
-    {
-      e.printStackTrace();
-    }
     catch (IOException e)
     {
+      Logger.getGlobal().log(Level.SEVERE, "Error parsing tile data", e);
       e.printStackTrace();
     }
     return dataSet;
@@ -108,8 +109,15 @@ public class CropZoneDataIO
 
   private static void loadAndCheckTiles()
   {
-    TileManager data = parseFile(DEFAULT_FILE, null);
-
+    TileManager data;
+    try {
+      data = parseFile(DEFAULT_FILE, null);
+    }
+    catch (FileNotFoundException ex)
+    {
+      Logger.getGlobal().log(Level.SEVERE, "Error parsing tile data", ex);
+      return;
+    }
 
     int noTiles = 0;
     int realTiles = 0;
@@ -155,31 +163,9 @@ public class CropZoneDataIO
 
   public static void main(String[] args)
   {
-    loadAndViewTiles();
+    loadAndCheckTiles();
   }
 
-  public static void loadAndViewTiles()
-  {
-    final TileManager data = parseFile(DEFAULT_FILE, null);
-    final JFrame win = new JFrame();
-    win.setSize(1080, 600);
-    win.setResizable(false);
-    final DataPanel contentPane = new DataPanel(data.allTiles());
-    contentPane.init();
-    win.setContentPane(contentPane);
-    win.setVisible(true);
-    win.pack();
-    win.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    new Timer(50, new ActionListener()
-    {
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        contentPane.repaint();
-      }
-    }).start();
-
-  }
 
   private static class DataPanel extends JPanel
   {

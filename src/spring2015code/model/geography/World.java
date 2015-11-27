@@ -57,6 +57,9 @@ public class World extends AbstractScenario
       new RuntimeException("Make World can only be called once!");
     }
 
+    // TODO : The tile optimization function will only work if we have the
+    // CropClimateData structure correctly populated for each of the crops.
+    //
     // calculate OTHER_CROPS temp & rain requirements for each country
     for (AgriculturalUnit state : entities)
     {

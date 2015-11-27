@@ -46,8 +46,9 @@ public class CSVReader
       else
       { Map<String, String> tokenMap = new HashMap<>();
         for (int i = 0 ; i < columns.length ; i += 1)
-        {
-           tokenMap.put(columns[i], tokens[i]);
+        { String tok = "";
+          if (i < tokens.length) tok = tokens[i];
+          tokenMap.put(columns[i], tok);
         }
 
         records.add(new CSVRecord(lineNo, tokenMap));

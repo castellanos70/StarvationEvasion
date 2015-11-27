@@ -3,6 +3,7 @@ package spring2015code.model;
 
 import starvationevasion.common.EnumFood;
 import spring2015code.model.geography.AgriculturalUnit;
+import starvationevasion.geography.MapPoint;
 
 import java.util.*;
 

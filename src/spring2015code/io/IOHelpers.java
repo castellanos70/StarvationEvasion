@@ -1,8 +1,11 @@
 package spring2015code.io;
 
-import java.io.File;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by winston on 1/22/15.
@@ -45,6 +48,34 @@ public class IOHelpers
     {
       if (!f.isHidden()) files.add(f.getPath());
     }
+    return files;
+  }
+
+  public static List<String> readIndex(String indexPath) throws FileNotFoundException, IOException
+  {
+    InputStream resourceStream = IOHelpers.class.getResourceAsStream(indexPath);
+    if (resourceStream == null) throw new FileNotFoundException(indexPath);
+
+    BufferedReader reader = new BufferedReader(new InputStreamReader(resourceStream));
+
+    List<String> files = new ArrayList<>();
+
+    try
+    {
+      String entry;
+      while ((entry = reader.readLine()) != null)
+      {
+        files.add(entry);
+      }
+    } catch (IOException ex)
+    {
+      Logger.getGlobal().log(Level.SEVERE, "Error parsing geography index", ex);
+      ex.printStackTrace();
+    }
+
+    reader.close();
+    resourceStream.close();
+
     return files;
   }
 }

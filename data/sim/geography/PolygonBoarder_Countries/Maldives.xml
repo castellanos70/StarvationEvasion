@@ -1,0 +1,29 @@
+<country>
+<name>Maldives</name>
+<area>
+<vertex lat="3.231224" lon="73.416584"/>
+<vertex lat="3.229416" lon="73.395293"/>
+<vertex lat="3.246495" lon="73.382064"/>
+<vertex lat="3.271403" lon="73.384906"/>
+<vertex lat="3.288792" lon="73.401546"/>
+<vertex lat="3.289825" lon="73.427746"/>
+<vertex lat="3.274297" lon="73.442732"/>
+<vertex lat="3.250164" lon="73.434981"/>
+<vertex lat="3.231224" lon="73.416584"/>
+</area>
+<area>
+<vertex lat="4.164526" lon="73.512237"/>
+<vertex lat="4.155199" lon="73.494822"/>
+<vertex lat="4.158920" lon="73.478647"/>
+<vertex lat="4.170728" lon="73.473066"/>
+<vertex lat="4.188117" lon="73.481128"/>
+<vertex lat="4.210441" lon="73.494770"/>
+<vertex lat="4.234626" lon="73.504124"/>
+<vertex lat="4.247648" lon="73.517818"/>
+<vertex lat="4.243307" lon="73.528360"/>
+<vertex lat="4.229665" lon="73.527120"/>
+<vertex lat="4.211061" lon="73.522159"/>
+<vertex lat="4.186877" lon="73.519058"/>
+<vertex lat="4.164526" lon="73.512237"/>
+</area>
+</country>

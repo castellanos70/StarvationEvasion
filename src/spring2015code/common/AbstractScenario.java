@@ -2,7 +2,8 @@ package spring2015code.common;
 
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
-import spring2015code.model.TileManager;
+import starvationevasion.geography.CropZoneData;
+import starvationevasion.geography.TileManager;
 
 public abstract class AbstractScenario
 {
@@ -27,7 +28,7 @@ public abstract class AbstractScenario
   protected AbstractClimateData climateData;
   
   
-  public abstract EnumCropZone classifyZone(EnumFood crop, 
+  public abstract CropZoneData.EnumCropZone classifyZone(EnumFood crop,
       double minTemp, double maxTemp, double dayTemp, double nightTemp, double rain);
 
   /**

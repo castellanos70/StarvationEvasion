@@ -5,7 +5,7 @@ import starvationevasion.common.EnumFood;
 import spring2015code.common.AbstractAgriculturalUnit;
 import spring2015code.common.EnumGrowMethod;
 import spring2015code.model.CropOptimizer;
-import spring2015code.model.MapPoint;
+import starvationevasion.geography.MapPoint;
 
 import java.awt.*;
 import java.awt.geom.Area;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * AgriculturalUnit class extends AbstractAgriculturalUnit, includes methods for accessing its
+ * Region class extends AbstractAgriculturalUnit, includes methods for accessing its
  * fields.
  */
 public class Region extends AbstractAgriculturalUnit

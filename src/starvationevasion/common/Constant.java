@@ -34,7 +34,7 @@ public class Constant
   //public static final int TOTAL_AGRO_CATEGORIES = 12;
 
   /**
-   * Constant indices of State data represented in CSV file
+   * Constant indices of USState data represented in CSV file
    */
   public static final int STATE_NAME_IDX            = 0;
   public static final int STATE_TOTAL_LAND_IDX      = 1;

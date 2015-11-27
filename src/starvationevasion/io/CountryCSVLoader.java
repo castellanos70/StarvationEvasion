@@ -5,10 +5,11 @@ package starvationevasion.io;
 // import org.apache.commons.csv.CSVParser;
 // import org.apache.commons.csv.CSVFormat;
 
+import spring2015code.model.geography.Territory;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.io.CSVReader.CSVRecord;
 import spring2015code.model.geography.Region;
 import starvationevasion.common.EnumFood;
-import spring2015code.model.geography.AgriculturalUnit;
 import starvationevasion.io.CSVhelpers.CSVParsingException;
 import starvationevasion.io.CSVhelpers.CountryCSVDataGenerator;
 import spring2015code.common.EnumGrowMethod;
@@ -34,8 +35,8 @@ public class CountryCSVLoader
   private static final int START_YEAR = AbstractScenario.START_YEAR;
 
   private Map<String, Region> regions;        // Regions discovered parsing csv
-  private Collection<AgriculturalUnit> countries;        // collection populated by parsing csv
-  private Collection<AgriculturalUnit> masterUnits; // collection passed in (i.e., after parsing xml)
+  private Collection<Territory> countries;        // collection populated by parsing csv
+  private Collection<Territory> masterUnits; // collection passed in (i.e., after parsing xml)
   private File csvFile;
   private List<CSVRecord> records;
   private String[] headers;
@@ -43,10 +44,10 @@ public class CountryCSVLoader
   /**
    * Constructor takes list of country objects that need data from csv file (previously created from xml file)
    */
-  public CountryCSVLoader(Collection<AgriculturalUnit> countriesToMerge)
+  public CountryCSVLoader(Collection<Territory> countriesToMerge)
   {
     this.masterUnits = countriesToMerge;
-    countries = new ArrayList<AgriculturalUnit>();
+    countries = new ArrayList<Territory>();
     regions = new HashMap<String, Region>();
   }
 
@@ -61,14 +62,14 @@ public class CountryCSVLoader
     // create collection of countries from CSV
     while (parsedOk == false) parsedOk = parseCountries();
     // merge those countries with the ones passed in
-    for (AgriculturalUnit xmlCountry: masterUnits)
+    for (Territory xmlCountry: masterUnits)
     {
       String xmlCountryName = xmlCountry.getName();
       boolean countryFound = false;
-      Iterator<AgriculturalUnit> csvItr = countries.iterator();
+      Iterator<Territory> csvItr = countries.iterator();
       while (csvItr.hasNext())
       {
-        AgriculturalUnit csvCountry = csvItr.next();
+        Territory csvCountry = csvItr.next();
         if (xmlCountryName.equals(csvCountry.getName()))
         {
           // copy data from csv country object into xml country object
@@ -78,7 +79,7 @@ public class CountryCSVLoader
 
           // The XML object is considered the final object.  Map it to the region.
           //
-          String region = csvCountry.getGameRegion();
+          String region = csvCountry.getGameRegion().name();
           Region r = regions.get(region);
           if (r == null)
           {
@@ -95,7 +96,7 @@ public class CountryCSVLoader
 
       if (countryFound == false)
       {
-        //todo add method (String nameOf AgriculturalUnit) -> offending xml file, -> load in XML editor.
+        //todo add method (String nameOf Territory) -> offending xml file, -> load in XML editor.
         System.err.print("CSV data not found for country " + xmlCountryName + "\n");
       }
     }
@@ -103,7 +104,7 @@ public class CountryCSVLoader
     // if not all csv data copied, print message
     if (countries.isEmpty() == false)
     {
-      for (AgriculturalUnit country:countries)
+      for (Territory country:countries)
       {
         System.err.print("XML data not found for country "+country.getName()+"\n");
       }
@@ -118,12 +119,12 @@ public class CountryCSVLoader
   private boolean parseCountries() throws FileNotFoundException
   {
     boolean parsedOk = false;
-    ArrayList<AgriculturalUnit> tempCountryList = new ArrayList<AgriculturalUnit>();
+    ArrayList<Territory> tempCountryList = new ArrayList<Territory>();
     getRecords();
 
     for (CSVRecord record:records)
     {
-      AgriculturalUnit unit;
+      Territory unit;
 
       // The spring 2015 data file has a line immediately following the header that
       // indicates the data type of each column.  This line has been removed from
@@ -135,21 +136,25 @@ public class CountryCSVLoader
       if (record.getRecordNumber() == 1) continue; // skip line
 
       // if name in file, make country
-      try
-      {
+      try {
         String name = record.get("country");
-        if (name != null && name.isEmpty() == false)
-        { // We use the generic AgUnit here.
+        if (name != null && name.isEmpty() == false) { // We use the generic AgUnit here.
           //
-          unit = new AgriculturalUnit(name);
-        }
-        else throw new CSVParsingException("country", record, this.csvFile);
+          unit = new Territory(name);
+        } else throw new CSVParsingException("country", record, this.csvFile);
 
         // The Fall 2015 data adds regions.
         //
-        String region = record.get("region");
-        if (region == null || region.isEmpty()) region = "Not assigned";
-        unit.setGameRegion(region);
+        String regionName = record.get("region");
+        if (regionName != null && regionName.isEmpty() == false)
+        {
+          EnumRegion region = EnumRegion.valueOf(regionName);
+          if (region != null) unit.setGameRegion(region);
+          else Logger.getGlobal().log(Level.SEVERE, "CSV record " + name + " undefined region " + regionName);
+        }
+        else
+        { Logger.getGlobal().log(Level.SEVERE, "CSV record " + name + " is missing region");
+        }
 
         setEssentialFields(unit, record);
         setNonessentialFields(unit,record);
@@ -175,7 +180,7 @@ public class CountryCSVLoader
    * @param country   country object
    * @param record    country's CSVRecord
    */
-  private void setEssentialFields(AgriculturalUnit country, CSVRecord record)
+  private void setEssentialFields(Territory country, CSVRecord record)
   {
     // The Spring 2015 data file has the field 'population'.  This has been
     // removed from the Fall data file.
@@ -213,7 +218,7 @@ public class CountryCSVLoader
    * @param country   country object
    * @param record    country's CSVRecord
    */
-  private void setNonessentialFields(AgriculturalUnit country, CSVRecord record)
+  private void setNonessentialFields(Territory country, CSVRecord record)
   {
     Map<String,String> recordMap = record.toMap();
     setDemographicData(country,recordMap);    
@@ -229,7 +234,7 @@ public class CountryCSVLoader
    * @param recordMap   map of strings (key=field name, value=field value) generated from
    *                    country's CSVRecord
    */
-  private void setDemographicData(AgriculturalUnit country, Map<String,String> recordMap)
+  private void setDemographicData(Territory country, Map<String,String> recordMap)
   {
     String[] demographicFields = {"averageAge", "birthRate", "mortality", "migration", "undernourish",
                                   "arableOpen"};
@@ -298,7 +303,7 @@ public class CountryCSVLoader
    * @param recordMap   map of strings (key=field name, value=field value) generated from
    *                    country's CSVRecord
    */
-  private void setCropData(AgriculturalUnit country, Map<String,String> recordMap)
+  private void setCropData(Territory country, Map<String,String> recordMap)
   {
     boolean hasError = false;
     String[] cropFields = {"Production", "Exports", "Imports", "Land"};
@@ -394,7 +399,7 @@ public class CountryCSVLoader
    * @param recordMap   map of strings (key=field name, value=field value) generated from
    *                    agriculturalUnit's CSVRecord
    */
-  private void setGrowMethodData(AgriculturalUnit agriculturalUnit, Map<String,String> recordMap)
+  private void setGrowMethodData(Territory agriculturalUnit, Map<String,String> recordMap)
   {
     double sum = 0;
     for (EnumGrowMethod method : EnumGrowMethod.values()) 
@@ -446,11 +451,11 @@ public class CountryCSVLoader
     }
     catch (IOException e)
     {
-      System.err.println("AgriculturalUnit data file not found");
+      System.err.println("Territory data file not found");
     }
   }
   
-  private AgriculturalUnit copyCountryData(AgriculturalUnit countryFinal, AgriculturalUnit countryTemp)
+  private Territory copyCountryData(Territory countryFinal, Territory countryTemp)
   {
     //countryTemp values
      int population = countryTemp.getPopulation(START_YEAR);
@@ -483,7 +488,7 @@ public class CountryCSVLoader
      return countryFinal;
   }
   
-  private void copyCropValues(AgriculturalUnit countryFinal, AgriculturalUnit agriculturalUnitTemp)
+  private void copyCropValues(Territory countryFinal, Territory agriculturalUnitTemp)
   {
     for (EnumFood crop:EnumFood.values())
     {
@@ -511,14 +516,14 @@ public class CountryCSVLoader
     InputStream in = CountryCSVLoader.class.getResourceAsStream("/SomeTextFile.txt");
 
 
-    ArrayList<AgriculturalUnit> fakeXmlList = new ArrayList<AgriculturalUnit>();
-    fakeXmlList.add(new AgriculturalUnit("Afghanistan"));
-    //fakeXmlList.add(new AgriculturalUnit("Albania"));
-    fakeXmlList.add(new AgriculturalUnit("Algeria"));
-    fakeXmlList.add(new AgriculturalUnit("Vatican City"));
+    ArrayList<Territory> fakeXmlList = new ArrayList<Territory>();
+    fakeXmlList.add(new Territory("Afghanistan"));
+    //fakeXmlList.add(new Territory("Albania"));
+    fakeXmlList.add(new Territory("Algeria"));
+    fakeXmlList.add(new Territory("Vatican City"));
     CountryCSVLoader testLoader = new CountryCSVLoader(fakeXmlList);
-    Collection<AgriculturalUnit> countryList;
-    //List<AgriculturalUnit> countryList = new ArrayList<AgriculturalUnit>();
+    Collection<Territory> countryList;
+    //List<Territory> countryList = new ArrayList<Territory>();
 
     ParsedData data;
     try {
@@ -531,7 +536,7 @@ public class CountryCSVLoader
     countryList = data.territories;
 
     System.out.println("Testing - main method in CountryCSVLoader");
-    for (AgriculturalUnit ctry:countryList)
+    for (Territory ctry:countryList)
     {
       System.out.println(ctry.getName()+" "+ctry.getMethodPercentage(START_YEAR,EnumGrowMethod.ORGANIC));
       //System.out.println(ctry.getName()+" "+ctry.getPopulation(START_YEAR));
@@ -541,10 +546,10 @@ public class CountryCSVLoader
 
   public static class ParsedData
   {
-    final public Collection<AgriculturalUnit> territories;
+    final public Collection<Territory> territories;
     final public Collection<Region> regions;
 
-    protected ParsedData(final Collection<AgriculturalUnit> territories, final Collection<Region> regions)
+    protected ParsedData(final Collection<Territory> territories, final Collection<Region> regions)
     {
       this.territories = territories;
       this.regions = regions;

@@ -4,6 +4,7 @@ import starvationevasion.common.EnumFood;
 import spring2015code.common.AbstractAgriculturalUnit;
 import spring2015code.common.AbstractScenario;
 import spring2015code.common.EnumGrowMethod;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.geography.GeographicArea;
 import starvationevasion.geography.LandTile;
 import starvationevasion.geography.MapPoint;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * AgriculturalUnit is the former Country class, and extends AbstractAgriculturalUnit.
+ * Territory is the former Country class, and extends AbstractAgriculturalUnit.
  * This class is an abstraction subclassed by the USState and Country classes, but is
  * also directly instantiated by the CSV parser as a data structure used to store
  * temporary data.
@@ -26,8 +27,10 @@ import java.util.Collection;
  *
  * @version 22-Mar-2015
  */
-public class AgriculturalUnit extends AbstractAgriculturalUnit
+public class Territory extends AbstractAgriculturalUnit
 {
+  // Spring 2015 data items.
+  //
   private static final boolean VERBOSE = false;
   final public static MapConverter converter = new EquirectangularConverter();
 
@@ -39,17 +42,92 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
   private final Collection<GeographicArea> regions = new ArrayList<>();
   private Collection<LandTile> landTiles;
 
-  private String gameRegion;
+  // Fall 2015 data items.
+  //
 
   /**
-   * AgriculturalUnit constructor
+   * The states region.
+   */
+  private EnumRegion region;
+
+  /**
+   * The states total income.
+   */
+  private int totalIncome = 0;
+
+  /**
+   * The states total farmland.
+   */
+  private int totalFarmLand = 0;
+
+  /**
+   * Average conversion factor, this is set by the Simulator.
+   */
+  private float averageConversionFactor;
+
+  /**
+   * Amount of fertilizer in Kg the states uses in a year.
+   */
+  private float kgPerAcreFertilizer;
+
+  /**
+   * The states income as it corresponds to category.
+   */
+  private int[]   incomePerCategory;
+
+  /**
+   * The states adjustment factors, twelve in total, one per category
+   */
+  private float[] adjustmentFactors;
+
+  /**
+   * The states ratios of it's category income to total income.
+   */
+  private float[] incomeToCategoryPercentages;
+
+  /**
+   * The states percentages of land dedicated to each category
+   */
+  private float[] landPerCategory;
+
+  /**
+   * Territory constructor
    *
    * @param name country name
    */
-  public AgriculturalUnit(String name)
+  public Territory(String name)
   {
     super(name);
-    this.landTiles = new ArrayList<>();
+
+    landTiles = new ArrayList<>();
+
+    incomePerCategory           = new int[EnumFood.SIZE];
+    incomeToCategoryPercentages = new float[EnumFood.SIZE];
+    landPerCategory             = new float[EnumFood.SIZE];
+    adjustmentFactors           = new float[EnumFood.SIZE];
+  }
+  /**
+   * Getter
+   */
+  public float[] getPercentages()
+  {
+    return incomeToCategoryPercentages;
+  }
+
+  /**
+   * This Method calculates the initial category adjustment factors
+   * along with setting the average conversion factor.
+   *
+   * @param acf
+   */
+  public void setAverageConversionFactor(float acf)
+  {
+    averageConversionFactor = acf;
+    for (int i = 0; i < EnumFood.SIZE; i++)
+    {
+      adjustmentFactors[i] = incomeToCategoryPercentages[i] - averageConversionFactor;
+      //System.out.println(name + " Adj Factors "+adjustmentFactors[i]);
+    }
   }
 
   /**
@@ -63,21 +141,21 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
   /**
    * Sets the game region for this unit.
    */
-  public void setGameRegion(String region)
+  public void setGameRegion(EnumRegion region)
   {
-    this.gameRegion = region;
+    this.region = region;
   }
 
   /**
    * @return Sets the game region for this unit.
    */
-  public String getGameRegion()
+  public EnumRegion getGameRegion()
   {
-    return gameRegion;
+    return region;
   }
 
   // generate the capital by finding the center of the largest landmass.
-  // this method can only be called after the AgriculturalUnit's regions have been set.
+  // this method can only be called after the Territory's regions have been set.
   private MapPoint calCapitolLocation()
   {
     if (regions == null) throw new RuntimeException("(!) regions not set!");
@@ -102,16 +180,16 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     int x = (int) largest.getBounds().getCenterX();
     int y = (int) largest.getBounds().getCenterY();
 
-    return AgriculturalUnit.converter.pointToMapPoint(new Point(x, y));
+    return Territory.converter.pointToMapPoint(new Point(x, y));
   }
 
   /**
    * returns the point representing the shipping location of that country.
    * <p/>
-   * (!) note: this method can only be called after the AgriculturalUnit's regions have
+   * (!) note: this method can only be called after the Territory's regions have
    * been set.
    *
-   * @return map point representing the lat and lon location of the AgriculturalUnit's
+   * @return map point representing the lat and lon location of the Territory's
    * capitol.
    */
   public MapPoint getCapitolLocation()
@@ -189,7 +267,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for AgriculturalUnit.setPopulation method");
+        System.err.println("Invalid argument for Territory.setPopulation method");
       }
     }
   }
@@ -225,7 +303,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for AgriculturalUnit.setMedianAge method");
+        System.err.println("Invalid argument for Territory.setMedianAge method");
       }
     }
   }
@@ -245,7 +323,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for AgriculturalUnit.setBirthRate method");
+        System.err.println("Invalid argument for Territory.setBirthRate method");
       }
     }
   }
@@ -260,7 +338,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for AgriculturalUnit.setMortalityRate method");
+        System.err.println("Invalid argument for Territory.setMortalityRate method");
       }
     }
   }
@@ -304,7 +382,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for AgriculturalUnit.setMigrationRate method");
+        System.err.println("Invalid argument for Territory.setMigrationRate method");
       }
     }
   }
@@ -325,7 +403,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for AgriculturalUnit.setUndernourished method");
+        System.err.println("Invalid argument for Territory.setUndernourished method");
       }
     }
   }
@@ -380,7 +458,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for AgriculturalUnit.setCropProduction method");
+        System.err.println("Invalid argument for Territory.setCropProduction method");
       }
     }
   }
@@ -400,7 +478,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for AgriculturalUnit.setCropExport method");
+        System.err.println("Invalid argument for Territory.setCropExport method");
       }
     }
   }
@@ -420,7 +498,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for AgriculturalUnit.setCropImport method");
+        System.err.println("Invalid argument for Territory.setCropImport method");
       }
     }
   }
@@ -439,7 +517,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for AgriculturalUnit.setLandTotal method");
+        System.err.println("Invalid argument for Territory.setLandTotal method");
       }
     }
   }
@@ -458,7 +536,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for AgriculturalUnit.setArableLand method for country " + getName());
+        System.err.println("Invalid argument for Territory.setArableLand method for country " + getName());
       }
     }
   }
@@ -481,7 +559,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for AgriculturalUnit.setCropLand method for country " + getName() + " crop " + crop);
+        System.err.println("Invalid argument for Territory.setCropLand method for country " + getName() + " crop " + crop);
       }
     }
   }
@@ -534,7 +612,7 @@ public class AgriculturalUnit extends AbstractAgriculturalUnit
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for AgriculturalUnit.setMethodPercentage method");
+        System.err.println("Invalid argument for Territory.setMethodPercentage method");
       }
     }
   }

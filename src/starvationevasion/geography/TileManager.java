@@ -436,7 +436,7 @@ public class TileManager extends AbstractClimateData
    This is dependent on the usage of registerCountryTile() at initial data
    creation. (Also maybe should be refactored to another location?)
    
-   @return Collection of those LandTiles that have been registered with a AgriculturalUnit
+   @return Collection of those LandTiles that have been registered with a Territory
    */
   public List<LandTile> countryTiles()
   {

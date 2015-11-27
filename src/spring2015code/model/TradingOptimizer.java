@@ -2,7 +2,7 @@ package spring2015code.model;
 
 
 import starvationevasion.common.EnumFood;
-import spring2015code.model.geography.AgriculturalUnit;
+import spring2015code.model.geography.Territory;
 import starvationevasion.geography.MapPoint;
 
 import java.util.*;
@@ -31,7 +31,7 @@ import java.util.*;
 public class TradingOptimizer
 {
   private final int year;
-  private final Collection<AgriculturalUnit> countries;
+  private final Collection<Territory> countries;
   private static final boolean DEBUG = false;
   private final List<TradePair>[] allTrades = new ArrayList[]{
     new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList()
@@ -47,7 +47,7 @@ public class TradingOptimizer
    @param year
    year to calculate trades for
    */
-  public TradingOptimizer(Collection<AgriculturalUnit> countries, int year)
+  public TradingOptimizer(Collection<Territory> countries, int year)
   {
     this.year = year;
     this.countries = countries;
@@ -80,18 +80,18 @@ public class TradingOptimizer
    TradePair class represents a potential pairing between an importer and
    exporter
    Very little is saved in each object, save the relatively expensive efficiency
-   calculation and the AgriculturalUnit references.  They may be instantiated from an
+   calculation and the Territory references.  They may be instantiated from an
    existing TradePair to mitigate computational complexity.
    */
   public static class TradePair implements Comparable<TradePair>
   {
-    public final AgriculturalUnit importer;
-    public final AgriculturalUnit exporter;
+    public final Territory importer;
+    public final Territory exporter;
     public final double efficiency;
     private double amount = 0;
 
 
-    private TradePair(AgriculturalUnit exporter, AgriculturalUnit importer)
+    private TradePair(Territory exporter, Territory importer)
     {
       this.exporter = exporter;
       this.importer = importer;
@@ -106,10 +106,10 @@ public class TradingOptimizer
     }
 
     /* Calculates the efficiency between two countries based on the Great Circle
-      Distance between them, as implemented in the AgriculturalUnit class, and half
+      Distance between them, as implemented in the Territory class, and half
       the radius of the Earth (theoretical maximum distance between the two
       countries) ~20,000km */
-    private static double calcEfficiency(AgriculturalUnit c1, AgriculturalUnit c2)
+    private static double calcEfficiency(Territory c1, Territory c2)
     {
       return 1 - c1.getShippingDistance(c2.getCapitolLocation()) / 20_000d;
     }
@@ -174,13 +174,13 @@ public class TradingOptimizer
     private SingleCropTrader(EnumFood crop)
     {
       this.crop = crop;
-      List<AgriculturalUnit> importers = new ArrayList<>();
-      List<AgriculturalUnit> exporters = new ArrayList<>();
+      List<Territory> importers = new ArrayList<>();
+      List<Territory> exporters = new ArrayList<>();
       double net = 0;
 
       /* Divide the countries in the parent class into importers and exporters
       based on the crop surplus for each country */
-      for(AgriculturalUnit c : countries)
+      for(Territory c : countries)
       {
         double surplus = c.getSurplus(year, crop);
         net += surplus;
@@ -189,9 +189,9 @@ public class TradingOptimizer
       }
 
       /* create the TradePairs between importer and exporter */
-      for(AgriculturalUnit i : importers)
+      for(Territory i : importers)
       {
-        for(AgriculturalUnit e : exporters)
+        for(Territory e : exporters)
         {
           pairs.add(new TradePair(e, i));
         }
@@ -278,10 +278,10 @@ public class TradingOptimizer
 
     /* maintain the state of the need/surplus for each importer/exporter here.
       Values are adjusted with each theoretical trade in getTradeResult() */
-    private Map<AgriculturalUnit, Double> exporterMap = new HashMap<>();
-    private Map<AgriculturalUnit, Double> importerMap = new HashMap<>();
+    private Map<Territory, Double> exporterMap = new HashMap<>();
+    private Map<Territory, Double> importerMap = new HashMap<>();
 
-    private TradePairList(Collection<TradePair> pairs, Collection<AgriculturalUnit> all, EnumFood crop, int year)
+    private TradePairList(Collection<TradePair> pairs, Collection<Territory> all, EnumFood crop, int year)
     {
       super(pairs);
       this.crop = crop;
@@ -301,9 +301,9 @@ public class TradingOptimizer
       exporterMap = new HashMap<>(list.exporterMap);
     }
 
-    private void createMaps(Collection<AgriculturalUnit> countries)
+    private void createMaps(Collection<Territory> countries)
     {
-      for (AgriculturalUnit c : countries)
+      for (Territory c : countries)
       {
         double surplus = c.getSurplus(year, crop);
         if (surplus > 0)
@@ -362,12 +362,12 @@ public class TradingOptimizer
          achieved a "balance" of the given crop, and do not contribute to the
          sum.
        */
-      for(AgriculturalUnit ex : exporterMap.keySet())
+      for(Territory ex : exporterMap.keySet())
       {
         /* values in export map are surpluses */
         result += exporterMap.get(ex);
       }
-      for(AgriculturalUnit im : importerMap.keySet())
+      for(Territory im : importerMap.keySet())
       {
         /* values in import map are deficits (as postive numbers) */
         result -= importerMap.get(im);

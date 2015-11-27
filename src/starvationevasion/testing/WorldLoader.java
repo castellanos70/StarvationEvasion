@@ -1,6 +1,6 @@
 package starvationevasion.testing;
 
-import spring2015code.model.geography.AgriculturalUnit;
+import spring2015code.model.geography.Territory;
 import spring2015code.model.geography.Region;
 import spring2015code.model.geography.World;
 import starvationevasion.io.CountryCSVLoader;
@@ -32,7 +32,7 @@ public class WorldLoader
   public static final String MODEL_DATA_PATH = "/sim/geography/ne_10m_admin_1_states_provinces.kml";
   public static final String BG_DATA_PATH = "/sim/geography/ne_50m_land.kml";
 
-  public Collection<AgriculturalUnit> territories;
+  public Collection<Territory> territories;
   public Collection<Region> regions;
 
   /**
@@ -48,7 +48,7 @@ public class WorldLoader
   {
     Collection<GeographicArea> background;
     Collection<GeographicArea> modelGeography;
-    Collection<AgriculturalUnit> agricultureUnits;
+    Collection<Territory> agricultureUnits;
     TileManager tileManager;
 
     try {
@@ -97,7 +97,7 @@ public class WorldLoader
     for (Region region : regions)
     {
       System.out.println("Region : " + region.getName());
-      for (AgriculturalUnit unit : region.getAgriculturalUnits())
+      for (Territory unit : region.getAgriculturalUnits())
       {
         System.out.println("\t" + unit.toString());
 		if (verbose == false) continue;

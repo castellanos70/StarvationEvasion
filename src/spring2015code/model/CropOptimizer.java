@@ -7,7 +7,7 @@ import java.util.Comparator;
 import starvationevasion.common.EnumFood;
 import starvationevasion.geography.CropZoneData.EnumCropZone;
 import spring2015code.common.AbstractScenario;
-import spring2015code.model.geography.AgriculturalUnit;
+import spring2015code.model.geography.Territory;
 import starvationevasion.geography.LandTile;
 
 /**
@@ -28,7 +28,7 @@ public class CropOptimizer
   private static final int NUM_CROPS = EnumFood.SIZE;
   private int year;
   private int START_YEAR = AbstractScenario.START_YEAR;
-  private AgriculturalUnit agriculturalUnit;
+  private Territory agriculturalUnit;
   private ArrayList<CropBin> cropBins;
   private ArrayList<TileYield> tileYields;
   private double[] ctryYields;
@@ -37,7 +37,7 @@ public class CropOptimizer
    * @param year      year of planting
    * @param agriculturalUnit   agriculturalUnit to plant
    */
-  public CropOptimizer(int year, AgriculturalUnit agriculturalUnit)
+  public CropOptimizer(int year, Territory agriculturalUnit)
   {
     this.year = year;
     this.agriculturalUnit = agriculturalUnit;
@@ -145,7 +145,7 @@ public class CropOptimizer
     private LandTile tile;
     private double[] yields;
     
-    private TileYield(LandTile tile, AgriculturalUnit agriculturalUnit)
+    private TileYield(LandTile tile, Territory agriculturalUnit)
     {
       this.tile = tile;
       yields = new double[NUM_CROPS];

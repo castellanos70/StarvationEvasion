@@ -2,7 +2,7 @@ package starvationevasion.geography;
 
 
 import spring2015code.common.AbstractAgriculturalUnit;
-import spring2015code.model.geography.AgriculturalUnit;
+import spring2015code.model.geography.Territory;
 import starvationevasion.util.EquirectangularConverter;
 import starvationevasion.util.MapConverter;
 
@@ -20,7 +20,7 @@ public class GeographicArea
 {
   //todo someday make the mapconverter a singleton class.
   public final static MapConverter mapConverter = new EquirectangularConverter();
-  private AgriculturalUnit agriculturalUnit;
+  private Territory agriculturalUnit;
   private List<MapPoint> perimeter;
   private String name;
   private String type;
@@ -32,7 +32,7 @@ public class GeographicArea
     return agriculturalUnit;
   }
 
-  public void setAgriculturalUnit(AgriculturalUnit agriculturalUnit)
+  public void setAgriculturalUnit(Territory agriculturalUnit)
   {
     this.agriculturalUnit = agriculturalUnit;
     agriculturalUnit.addRegion(this);

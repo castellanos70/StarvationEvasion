@@ -1,7 +1,7 @@
 package spring2015code.io;
 
+import spring2015code.model.geography.Territory;
 import starvationevasion.io.XMLparsers.KMLParser;
-import spring2015code.model.geography.AgriculturalUnit;
 import starvationevasion.geography.TileManager;
 import starvationevasion.geography.LandTile;
 
@@ -29,7 +29,7 @@ public class CropZoneDataIO
 {
   public static final String DEFAULT_FILE = "/sim/geography/tiledata.bil";
 
-  public static TileManager parseFile(String resourcePath, Collection<AgriculturalUnit> countries) throws FileNotFoundException
+  public static TileManager parseFile(String resourcePath, Collection<Territory> countries) throws FileNotFoundException
   {
     TileManager dataSet = new TileManager(null);
 
@@ -40,7 +40,7 @@ public class CropZoneDataIO
 
     try
     {
-      AgriculturalUnit lastUnit = null;
+      Territory lastUnit = null;
 
       //System.out.println("starting tiledata loading");
       byte bytes[] = new byte[LandTile.BYTE_DEF.SIZE_IN_BYTES];
@@ -63,7 +63,7 @@ public class CropZoneDataIO
           continue;
         }
 
-        for (AgriculturalUnit agriculturalUnit : countries)
+        for (Territory agriculturalUnit : countries)
         {
           if (agriculturalUnit.containsMapPoint(tile.getCenter()))
           {

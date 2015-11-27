@@ -28,7 +28,7 @@ public class Simulator
    */
   public Simulator(int startYear)
   {
-    LOGGER.setLevel(Level.ALL);
+    LOGGER.info("Starting Simulator: year="+startYear);
 
     if ((startYear < Constant.FIRST_YEAR || startYear > Constant.LAST_YEAR) ||
       ((Constant.LAST_YEAR - startYear) % 3 != 0))
@@ -46,8 +46,6 @@ public class Simulator
     }
 
     model = new Model(startYear);
-
-    LOGGER.info("Starting Simulation at year " + startYear);
   }
 
   /**
@@ -146,6 +144,7 @@ public class Simulator
    */
   public static void main(String[] args)
   {
+    LOGGER.setLevel(Level.ALL);
     Simulator sim = new Simulator(Constant.FIRST_YEAR);
     String msg = "Starting Hands: \n";
     for (EnumRegion playerRegion : EnumRegion.US_REGIONS)
@@ -159,5 +158,7 @@ public class Simulator
       msg+='\n';
     }
     LOGGER.info(msg);
+
+
   }
 }

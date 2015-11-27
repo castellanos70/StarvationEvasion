@@ -2,7 +2,7 @@ package spring2015code.common;
 
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
-import spring2015code.model.geography.GeographicArea;
+import starvationevasion.geography.GeographicArea;
 
 import java.awt.image.BufferedImage;
 

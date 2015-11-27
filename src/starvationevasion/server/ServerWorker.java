@@ -99,4 +99,24 @@ public class ServerWorker extends Thread
   {
     this.userName = userName;
   }
+
+  public void closeSocket()
+  {
+    try
+    {
+      receiveStream.close();
+    }
+    catch (IOException e)
+    {
+      System.out.println("Error closing receiveStream in client: " + this);
+    }
+    try
+    {
+      sendStream.close();
+    }
+    catch (IOException e)
+    {
+      System.out.print("Error closing sendStream in client: " + this);
+    }
+  }
 }

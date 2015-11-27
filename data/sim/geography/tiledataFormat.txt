@@ -1,0 +1,28 @@
+Tile Format Spec v0.1 - 2015.3.29
+
+tile data is stored in sets of 4-byte little-endian floats
+longitude and latitude pairs are stored in addition to the elevation and climate
+data, to allow for the exclusion of tiles for which no data was easily found
+(ocean and polar regions).  That is, the data is not necessarily stored in a flattened grid of
+data to represent location. All values were obtained from datasets from http://worldclim.org/
+with 2.5 arc-minute precision.  All projections are 2050 estimates taken from the CCSM4.0
+datasets of the same precision.
+
+fields are ordered as follows:
+Longitude
+Latitude
+Elevation
+Max Annual Temp
+Min Annual Temp
+Average Day Temp
+Average Night Temp
+Rainfall
+Projected Max Annual Temp
+Projected Min Annual Temp
+Projected Average Day Temp
+Projected Average Night Temp
+Projected Rainfall
+
+If parsing without the predefined helpers from the LandTile class,
+the use of Java's ByteBuffer is strongly recommended for help with
+parsing the float values from bytes;

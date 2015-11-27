@@ -1,0 +1,20 @@
+<country>
+<name>Liechtenstein</name>
+<area>
+<vertex lat="47.057386" lon="9.580222"/>
+<vertex lat="47.062735" lon="9.502294"/>
+<vertex lat="47.062244" lon="9.487721"/>
+<vertex lat="47.097513" lon="9.479453"/>
+<vertex lat="47.172677" lon="9.484310"/>
+<vertex lat="47.270758" lon="9.527512"/>
+<vertex lat="47.254635" lon="9.536814"/>
+<vertex lat="47.234146" lon="9.542136"/>
+<vertex lat="47.212235" lon="9.551076"/>
+<vertex lat="47.185492" lon="9.555779"/>
+<vertex lat="47.157923" lon="9.571850"/>
+<vertex lat="47.132059" lon="9.601202"/>
+<vertex lat="47.107151" lon="9.610504"/>
+<vertex lat="47.075835" lon="9.595725"/>
+<vertex lat="47.057386" lon="9.580222"/>
+</area>
+</country>

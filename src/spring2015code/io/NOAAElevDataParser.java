@@ -1,7 +1,7 @@
 package spring2015code.io;
 
-import spring2015code.model.TileManager;
-import spring2015code.model.LandTile;
+import starvationevasion.geography.TileManager;
+import starvationevasion.geography.LandTile;
 
 import java.io.*;
 import java.util.HashMap;
@@ -87,7 +87,7 @@ public class NOAAElevDataParser
 
   String root;
   Map<LandTile, ElevPoint> map = new HashMap<>();
-  TileManager dataSet = CropZoneDataIO.parseFile("resources/data/tiledata", null);
+  TileManager dataSet;
 
   /**
    @param rootPath
@@ -96,6 +96,11 @@ public class NOAAElevDataParser
   public NOAAElevDataParser(String rootPath)
   {
     root = rootPath;
+  try {
+      dataSet = CropZoneDataIO.parseFile("resources/data/tiledata.bil", null);
+  } catch (FileNotFoundException e) {
+      e.printStackTrace();
+  }
   }
 
   /*

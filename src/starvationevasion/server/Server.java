@@ -57,6 +57,7 @@ public class Server
 
   private void waitForConnections()
   {
+    System.out.println("Waiting for clients to connect...");
     String host = "";
     try
     {
@@ -262,6 +263,7 @@ public class Server
   public void disconnectClient(ServerWorker client, String disconnectMessage)
   {
     connectedClients.remove(client);
+    client.closeSocket();
     if (disconnectMessage != null)
     {
       client.send(new Goodbye(disconnectMessage));

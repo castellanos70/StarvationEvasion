@@ -2,6 +2,8 @@ package starvationevasion.sim;
 
 import starvationevasion.common.Constant;
 
+import java.util.Random;
+
 /**
  * In the Starvation Evasion game, sea level refers to the mean sea level (MSL),
  * averaged over many different times AND in many different locations during the
@@ -44,17 +46,32 @@ public class SeaLevel
    * the coefficients of the quadratic equation y = ax<sup>2</sup> + bx + c
    * which for x=year, gives y=Mean Annual Sea Level in cm above the ZERO_YEAR level.
    */
-  private final double a, b, c;
+  private final double a, b, c, y0, y1, y2;
+  private final int year0, year1, year2, x1, x2;
 
+  private final Random random;
 
   /** TODO: implement
    *
    */
   public SeaLevel()
   {
-    a = 0;
-    b = 0;
-    c = 0;
+    random = new Random();
+
+    year0 = 1980;
+    year1 = 2014;
+    year2 = 2050;
+
+    x1 = year1 - year0;
+    x2 = year2 - year0;
+
+    y0 = random.nextGaussian() * 1.5;
+    y1 = 29 + random.nextGaussian() * 3.5;
+    y2 = 65 + random.nextGaussian() * 5;
+
+    c = y0;
+    a = getA();
+    b = getB();
   }
 
 
@@ -65,8 +82,44 @@ public class SeaLevel
    */
   public double getSeaLevel(int year)
   {
-    int x = year - Constant.FIRST_YEAR;
-    double seaLevel = a*x*x + b*x + c;
-    return seaLevel;
+    //if(year < Constant.FIRST_YEAR || year > Constant.LAST_YEAR) return 0;
+
+    int x = year - year0;
+    return a * x * x + b * x + c;
   }
+
+  /**
+   * y0 = c
+   * y1 - c = ax1^2 + bx1
+   *
+   * y2 * x1 - c * x1 = a * x2 * x2 * x1 + y1 - a * x1 * x1 - c
+   *
+   * y2 * x1 - c * x1 - y1 + c = (x2 * x2 * x1 - x1 * x1) * a
+   *
+   * a = (y2 * x1 - c * x1 - y1 + c) / (x2 * x2 * x1 - x1 * x1)
+   *
+   * @return
+   */
+  private double getA() { return (y2 * x1 - c * x1 - y1 + c) / (x2 * x2 * x1 - x1 * x1); }
+
+  /**
+   * b = (y1 - a * x1 * x1 - c) / x1
+   *
+   * @return
+   */
+  private double getB() { return (y1 - a * x1 * x1 - c) / x1; }
+
+  public void print()
+  {
+    System.out.println(year0 + " = " + y0 + ": " + getSeaLevel(year0));
+    System.out.println(year1 + " = " + y1 + ": " + getSeaLevel(year1));
+    System.out.println(year2 + " = " + y2 + ": " + getSeaLevel(year2));
+    System.out.println("a = " + a + ", b = " + b + ", c = " + c);
+  }
+
+//  public static void main(String[] args)
+//  {
+//    SeaLevel seaLevel = new SeaLevel();
+//    //seaLevel.print();
+//  }
 }

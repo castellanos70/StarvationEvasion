@@ -7,7 +7,7 @@ import starvationevasion.common.EnumRegion;
 /**
  * Created by Alfred on 11/15/15.
  *
- * The State class describes a state in the United States.
+ * The USState class describes a state in the United States.
  * Each is classified by region, total land, total farm land, and
  * components to calculate how much land is dedicated to a specific
  * piece of agriculture.
@@ -66,7 +66,7 @@ public class State
   private float[] landPerCategory;
 
   /**
-   * Class constructor creates a new State Object with
+   * Class constructor creates a new USState Object with
    * a data string of comma separated values, which indicate
    * the income from a category of Crop. These values will
    * help to determine how much land will be dedicated to a

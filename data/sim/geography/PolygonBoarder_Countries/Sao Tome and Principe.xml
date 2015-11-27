@@ -1,0 +1,29 @@
+<country>
+<name>Sao Tome and Principe</name>
+<area>
+<vertex lat="0.120665" lon="6.659987"/>
+<vertex lat="0.047388" lon="6.556840"/>
+<vertex lat="0.066301" lon="6.519737"/>
+<vertex lat="0.117357" lon="6.496999"/>
+<vertex lat="0.227325" lon="6.468164"/>
+<vertex lat="0.280138" lon="6.477569"/>
+<vertex lat="0.340290" lon="6.524284"/>
+<vertex lat="0.400234" lon="6.625880"/>
+<vertex lat="0.404368" lon="6.686962"/>
+<vertex lat="0.325614" lon="6.749800"/>
+<vertex lat="0.243448" lon="6.750007"/>
+<vertex lat="0.120665" lon="6.659987"/>
+</area>
+<area>
+<vertex lat="1.567708" lon="7.423868"/>
+<vertex lat="1.541560" lon="7.386661"/>
+<vertex lat="1.563574" lon="7.342426"/>
+<vertex lat="1.603365" lon="7.330643"/>
+<vertex lat="1.680156" lon="7.387591"/>
+<vertex lat="1.699121" lon="7.414463"/>
+<vertex lat="1.683050" lon="7.436993"/>
+<vertex lat="1.661966" lon="7.450429"/>
+<vertex lat="1.631115" lon="7.452290"/>
+<vertex lat="1.567708" lon="7.423868"/>
+</area>
+</country>

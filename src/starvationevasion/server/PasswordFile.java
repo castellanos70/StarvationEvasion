@@ -23,9 +23,9 @@ import java.util.regex.Pattern;
 public class PasswordFile
 {
   private static Pattern assignedCountriesPattern =
-      Pattern.compile("(?<username>[^\t]+)\t+(?<password>[^\t]+)\t+(?<region>\\w+)");
+      Pattern.compile("^(?<username>[^\t]+)\t+(?<password>[^\t]+)\t+(?<region>\\w+)$");
   private static Pattern userChosenCountriesPattern =
-      Pattern.compile("(?<username>[^\t]+)\t+(?<password>[^\t]+)\t+(?<region>\\w+)");
+      Pattern.compile("^(?<username>[^\t]+)\t+(?<password>[^\t]+)\t+(?<region>\\w+)$");
 
   /**
    * A Map mapping (case-sensitive) usernames to (case-sensitive) passwords.
@@ -47,6 +47,7 @@ public class PasswordFile
       for (String line : content)
       {
         Matcher m = assignedCountriesPattern.matcher(line);
+        m.matches();
         tempCredentialMap.put(m.group("username"), m.group("password"));
         tempRegionMap.put(m.group("username"), EnumRegion.valueOf(m.group("region")));
       }

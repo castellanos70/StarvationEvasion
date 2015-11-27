@@ -1,11 +1,13 @@
 package spring2015code.model.geography;
 
+import starvationevasion.geography.CropZoneData;
 import starvationevasion.common.EnumFood;
+import starvationevasion.geography.GeographicArea;
+import starvationevasion.geography.LandTile;
+import starvationevasion.geography.TileManager;
+
 import spring2015code.common.AbstractScenario;
-import spring2015code.common.EnumCropZone;
 import spring2015code.model.CropOptimizer;
-import spring2015code.model.LandTile;
-import spring2015code.model.TileManager;
 import spring2015code.model.TradingOptimizer;
 
 import java.util.*;
@@ -339,7 +341,7 @@ public class World extends AbstractScenario
 
   @Deprecated
   @Override
-  public EnumCropZone classifyZone(EnumFood crop, double minTemp, double maxTemp, double dayTemp, double nightTemp, double rain)
+  public CropZoneData.EnumCropZone classifyZone(EnumFood crop, double minTemp, double maxTemp, double dayTemp, double nightTemp, double rain)
   {
     throw new UnsupportedOperationException("Call down to LandTile.rateTileForCrop");
     /* Impossible to implement without a AgriculturalUnit parameter because the temp and rain values for EnumFood.OTHER_CROPS vary

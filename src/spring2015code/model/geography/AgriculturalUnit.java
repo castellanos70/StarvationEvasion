@@ -4,10 +4,11 @@ import starvationevasion.common.EnumFood;
 import spring2015code.common.AbstractAgriculturalUnit;
 import spring2015code.common.AbstractScenario;
 import spring2015code.common.EnumGrowMethod;
-import spring2015code.model.LandTile;
-import spring2015code.model.MapPoint;
-import spring2015code.util.EquirectangularConverter;
-import spring2015code.util.MapConverter;
+import starvationevasion.geography.GeographicArea;
+import starvationevasion.geography.LandTile;
+import starvationevasion.geography.MapPoint;
+import starvationevasion.util.EquirectangularConverter;
+import starvationevasion.util.MapConverter;
 
 import java.awt.*;
 import java.awt.geom.Area;
@@ -15,10 +16,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * AgriculturalUnit is basically the former Country class, and extends AbstractAgriculturalUnit.
- * It includes methods for accessing its fields.
+ * AgriculturalUnit is the former Country class, and extends AbstractAgriculturalUnit.
+ * This class is an abstraction subclassed by the USState and Country classes, but is
+ * also directly instantiated by the CSV parser as a data structure used to store
+ * temporary data.
  * Created by winston on 3/9/15.
  * Edited by Jessica on 3/14/15: getName, setLandTotal, methodPercentage methods
+ * Edited by Peter November 2015 to make the class more abstract.
  *
  * @version 22-Mar-2015
  */

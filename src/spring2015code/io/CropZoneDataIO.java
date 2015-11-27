@@ -1,14 +1,12 @@
 package spring2015code.io;
 
-import spring2015code.io.XMLparsers.KMLParser;
+import starvationevasion.io.XMLparsers.KMLParser;
 import spring2015code.model.geography.AgriculturalUnit;
-import spring2015code.model.TileManager;
-import spring2015code.model.LandTile;
+import starvationevasion.geography.TileManager;
+import starvationevasion.geography.LandTile;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;

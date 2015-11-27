@@ -1,10 +1,10 @@
 spring2015code.common
 spring2015code.io
-spring2015code.io.CSVhelpers
-spring2015code.io.XMLparsers
+starvationevasion.io.CSVhelpers
+starvationevasion.io.XMLparsers
 spring2015code.model
 spring2015code.model.geography
-spring2015code.util
+starvationevasion.util
 starvationevasion.common
 starvationevasion.common.messages
 starvationevasion.common.policies

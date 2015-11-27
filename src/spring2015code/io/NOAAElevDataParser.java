@@ -1,7 +1,7 @@
 package spring2015code.io;
 
-import spring2015code.model.TileManager;
-import spring2015code.model.LandTile;
+import starvationevasion.geography.TileManager;
+import starvationevasion.geography.LandTile;
 
 import java.io.*;
 import java.util.HashMap;

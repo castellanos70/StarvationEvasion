@@ -25,7 +25,7 @@ public class PasswordFile
   private static Pattern assignedCountriesPattern =
       Pattern.compile("^(?<username>[^\t]+)\t+(?<password>[^\t]+)\t+(?<region>\\w+)$");
   private static Pattern userChosenCountriesPattern =
-      Pattern.compile("^(?<username>[^\t]+)\t+(?<password>\\w+)$");
+      Pattern.compile("^(?<username>[^\t]+)\t+(?<password>.+)$");
 
   /**
    * A Map mapping (case-sensitive) usernames to (case-sensitive) passwords.
@@ -61,7 +61,8 @@ public class PasswordFile
       Map<String, String> tempCredentialMap = new HashMap<>();
       for (String line : content)
       {
-        Matcher m = assignedCountriesPattern.matcher(line);
+        Matcher m = userChosenCountriesPattern.matcher(line);
+        m.matches();
         tempCredentialMap.put(m.group("username"), m.group("password"));
       }
       credentialMap = Collections.unmodifiableMap(tempCredentialMap);

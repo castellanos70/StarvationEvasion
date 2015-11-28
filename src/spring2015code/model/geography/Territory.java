@@ -15,6 +15,8 @@ import java.awt.*;
 import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Territory is the former Country class, and extends AbstractAgriculturalUnit.
@@ -81,6 +83,72 @@ public class Territory extends AbstractAgriculturalUnit
   {
     return region;
   }
+
+  /**
+   * Estimates the initial land used per food type, and the yield.
+   */
+  public void estimateInitialYield()
+  {
+    double income = 0.;
+    double production = 0.;
+    double land = 0.;
+    for (EnumFood crop : EnumFood.values())
+    {
+      land += landCrop[crop.ordinal()][0];
+      production += cropProduction[crop.ordinal()][0];
+      income += cropIncome[crop.ordinal()][0];
+    }
+
+    // If the total land is > 0 then this function has already been called.
+    //
+    if (land == 0.)
+    {
+      if (income == 0. && production == 0.)
+      { Logger.getGlobal().log(Level.INFO,
+              "Territory {0} has no production or income. Faking it.", getName());
+
+        // Assume they're getting $100 per acre.  Terrible guess, but it's just a
+        // default for empty rows.
+        //
+        income = landTotal[0] / 10.; // $100 per acre / 1000.;
+        double p = 1. / EnumFood.SIZE;
+        for (int i = 0 ; i < EnumFood.SIZE ; i += 1) cropIncome[i][0] = income * p;
+      }
+
+      for (EnumFood crop : EnumFood.values())
+      {
+        double p;
+        if (production == 0.)
+        {
+          // The current version of the CSV file doesn't have any production values.
+          // Use the income values (if available) to estimate land per crop.
+          //
+          cropYield[crop.ordinal()] = cropIncome[crop.ordinal()][0] / income;
+          p = cropIncome[crop.ordinal()][0] / income;
+
+          // Estimate production from the yield.
+          //
+          cropProduction[crop.ordinal()][0] = cropYield[crop.ordinal()] * landTotal[0];
+        }
+        else
+        {
+          cropYield[crop.ordinal()] = cropProduction[crop.ordinal()][0] / landTotal[0];
+
+          // Use the crop production to estimate land per crop.
+          //
+          p = cropProduction[crop.ordinal()][0] / production;
+        }
+
+        // This is an initial naive estimate.  Per Joel there will eventually be a multiplier
+        // applied that gives a more realistic estimate.
+        //
+        landCrop[crop.ordinal()][0] = landTotal[0] * p /* * multiplier[food] */;
+
+        land += landCrop[crop.ordinal()][0];
+      }
+    }
+  }
+
   /**
    * The loader loads 2014 data.  This function scales the data for 1981 given the scale factor.
    * @param factor The scaling factor.

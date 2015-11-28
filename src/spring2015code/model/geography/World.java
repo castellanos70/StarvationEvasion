@@ -1,5 +1,6 @@
 package spring2015code.model.geography;
 
+import starvationevasion.common.Constant;
 import starvationevasion.geography.CropZoneData;
 import starvationevasion.common.EnumFood;
 import starvationevasion.geography.GeographicArea;
@@ -46,11 +47,11 @@ public class World extends AbstractScenario
    * singleton class, there is one and only one world.
    *
    * @param world    the list of geographic areas that make up the world.
-   * @param entities the political entities in the world
+   * @param territories the political entities in the world
    * @param cal      the starting date of the world.
    */
   public static void makeWorld(Collection<GeographicArea> world,
-                               Collection<Territory> entities,
+                               Collection<Territory> territories,
                                TileManager allTheLand,
                                Calendar cal)
   {
@@ -63,13 +64,18 @@ public class World extends AbstractScenario
     // CropClimateData structure correctly populated for each of the crops.
     //
     // calculate OTHER_CROPS temp & rain requirements for each country
-    for (Territory state : entities)
+    for (Territory state : territories)
     {
+      // The loader loads 2014 data.  We need to adjust the data for 1981.  Joel's first estimate is
+      // to simply multiply all of the territorial data by 50%
+      //
+      state.estimateInitialYield();
+      state.scaleInitialStatistics(.50);
       CropOptimizer optimizer = new CropOptimizer(AbstractScenario.START_YEAR, state);
       optimizer.optimizeCrops();
     }
 
-    theOneWorld = new World(world, entities, cal);
+    theOneWorld = new World(world, territories, cal);
     theOneWorld.tileManager = allTheLand;
   }
 

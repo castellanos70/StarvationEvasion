@@ -118,10 +118,8 @@ public class Model
       //
       regionData[r.getRegion().ordinal()] = r;
 
-      // The loader loads 2014 data.  We need to adjust the data for 1981.  Joel's first estimate is
-      // to simply multiply all of the territorial data by 50%
+      // Aggregate the statistics from all territories.
       //
-      r.scaleInitialStatistics(.50);
       r.updateStatistics(Constant.FIRST_YEAR);
 
       if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(r, Constant.FIRST_YEAR);
@@ -177,10 +175,17 @@ public class Model
   public static void printRegion(Region region, int year)
   {
     System.out.println("Region : " + region.getName());
-    printData(region, year, "");
+    System.out.print("\tTerritories : ");
     for (Territory territory : region.getAgriculturalUnits())
     {
-      System.out.println("\tTerritory " + territory.getName());
+      System.out.print("\t" + territory.getName());
+    }
+    System.out.println();
+
+    printData(region, year, "");
+
+    for (Territory territory : region.getAgriculturalUnits())
+    {
       if (debugLevel.intValue() <= Level.FINER.intValue()) printData(territory, year, "\t");
       if (debugLevel.intValue() <= Level.FINEST.intValue())
       {
@@ -195,14 +200,17 @@ public class Model
   public static void printData(AbstractAgriculturalUnit unit, int year, String prefix)
   {
     System.out.println(prefix + "Data for " + unit.getName() + " in year " + year);
-    System.out.println(prefix + "\tpopulation : " + unit.getPopulation(year));
-    System.out.println(prefix + "\tmedianAge : " + unit.getMedianAge(year));
-    System.out.println(prefix + "\tbirths : " + unit.getBirths(year));
-    System.out.println(prefix + "\tmortality : " + unit.getMortality(year));
-    System.out.println(prefix + "\tmigration : " + unit.getMigration(year));
-    System.out.println(prefix + "\tundernourished : " + unit.getUndernourished(year));
-    System.out.println(prefix + "\tlandTotal : " + unit.getLandTotal(year));
-    System.out.println(prefix + "\tlandArable : " + unit.getLandArable(year));
+    System.out.print(prefix + prefix + "\t");    
+    if (unit instanceof Region) System.out.print("sum ");
+    System.out.print("population : " + unit.getPopulation(year));
+    System.out.print(", medianAge : " + unit.getMedianAge(year));
+    System.out.print(", births : " + unit.getBirths(year));
+    System.out.print(", mortality : " + unit.getMortality(year));
+    System.out.print(", migration : " + unit.getMigration(year));
+    System.out.print(", undernourished : " + unit.getUndernourished(year));
+    System.out.print(", landTotal : " + unit.getLandTotal(year));
+    System.out.print(", landArable : " + unit.getLandArable(year));
+    System.out.println();
 
     System.out.print(prefix + "\t            ");
     for (EnumFood food : EnumFood.values()) System.out.print("\t" + food);

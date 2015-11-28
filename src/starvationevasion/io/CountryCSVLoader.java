@@ -235,6 +235,10 @@ public class CountryCSVLoader
       String field = demographicFields[i];
       String value = recordMap.get(field);
 
+      // Per Joel : Don't complain if the value is missing. We can see missing value in Excel.
+      //
+      if (value == null || value.isEmpty()) continue;
+
       try
       {
         switch (field)
@@ -283,10 +287,11 @@ public class CountryCSVLoader
 
         CountryCSVDataGenerator.fixDemographic(country, field);
       }
-      catch (IllegalArgumentException | NullPointerException e)
+      catch (IllegalArgumentException e)
       {
         // need to assign default value
-        Logger.getGlobal().log(Level.INFO, "CSVLoader: " + country.getName() + " No value for " + field);
+        Logger.getGlobal().log(Level.INFO, "CSVLoader: {0} bad value for {1} {2}",
+                new Object[] {country.getName(), field, value});
         CountryCSVDataGenerator.fixDemographic(country, field);
       }
     }
@@ -341,34 +346,13 @@ public class CountryCSVLoader
     income[EnumFood.DAIRY.ordinal()] = (int) getValue(recordMap, "incomeDairy");
     production[EnumFood.DAIRY.ordinal()] = (int) getValue(recordMap, "productionDairy");
 
-    double totalIncome = 0., totalProduction = 0.;
-
-    // 1. Tally total income & production totals.
-    //
-    for (int i = 0; i < EnumFood.SIZE; i++)
-    { totalIncome += income[i];
-      totalProduction += production[i];
-    }
-
-    double[] incomeToCategoryPercentages = new double[EnumFood.SIZE];
-    double[] adjustmentFactors = new double[EnumFood.SIZE];
+    // double[] incomeToCategoryPercentages = new double[EnumFood.SIZE];
+    // double[] adjustmentFactors = new double[EnumFood.SIZE];
     for (int i = 0; i < EnumFood.SIZE; i++)
     { EnumFood food = EnumFood.values()[i];
-      incomeToCategoryPercentages[i] = (double) income[i] / (double) totalIncome;
 
-      double p = 0.;
-      if (totalProduction != 0.) p = (double) production[i] / totalProduction;
-
-      // This is an initial naive estimate.  Per Joel there will eventually be a multiplier
-      // applied that gives a more realistic estimate.
-      //
-      double land = p * totalFarmLand /* * multiplier[food] */;
       country.setCropIncome(START_YEAR, food, income[i]);
       country.setCropProduction(START_YEAR, food, production[i]);
-      country.setCropLand(START_YEAR, food, land);
-
-      double yield = production[i] / land;
-      country.setCropYield(START_YEAR, food, yield);
     }
 
 

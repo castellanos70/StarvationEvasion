@@ -1,8 +1,8 @@
 package spring2015code.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import starvationevasion.common.EnumFood;
 import starvationevasion.geography.CropZoneData.EnumCropZone;
@@ -26,34 +26,48 @@ import starvationevasion.geography.LandTile;
 public class CropOptimizer
 {
   private static final int NUM_CROPS = EnumFood.SIZE;
-  private int year;
-  private int START_YEAR = AbstractScenario.START_YEAR;
-  private Territory agriculturalUnit;
-  private ArrayList<CropBin> cropBins;
-  private ArrayList<TileYield> tileYields;
-  private double[] ctryYields;
+  private final int year;
+  private final int START_YEAR = AbstractScenario.START_YEAR;
+  private final Territory territory;
+  private final List<CropBin> cropBins;
+  private final List<TileYield> tileYields;
+  private final double[] cropYields;
   
   /**
    * @param year      year of planting
-   * @param agriculturalUnit   agriculturalUnit to plant
+   * @param territory   territory to plant
    */
-  public CropOptimizer(int year, Territory agriculturalUnit)
+  public CropOptimizer(int year, Territory territory)
   {
     this.year = year;
-    this.agriculturalUnit = agriculturalUnit;
+    this.territory = territory;
     cropBins = new ArrayList<CropBin>();
     tileYields = new ArrayList<TileYield>();
-    ctryYields = new double[EnumFood.SIZE];
-    
+    cropYields = new double[EnumFood.SIZE];
+
+    int zeros = 0;
     for (EnumFood crop:EnumFood.values())
     {
       int index = crop.ordinal();
-      double yield = agriculturalUnit.getCropYield(START_YEAR, crop);
-      ctryYields[index] = yield;
+      double yield = territory.getCropYield(START_YEAR, crop);
+      if (Double.isFinite(yield)) cropYields[index] = yield;
+      else cropYields[index] = 0.;
+
+      if (cropYields[index] == 0.) zeros += 1;
+
       /*if (agriculturalUnit.getName().equals("Brazil"))
       {
         System.out.println("Brazil yield for "+crop+" is "+yield);
       }*/
+    }
+
+    // The only time we see all zero crop yields is when the crop data is
+    // incomplete in the configuration files. Log it and set a uniform
+    // distribution.
+    //
+    if (zeros == EnumFood.SIZE)
+    {
+      Logger.getGlobal().log(Level.SEVERE, "Territory {0} has nil crop yields.",  territory.getName());
     }
   }
   
@@ -79,15 +93,15 @@ public class CropOptimizer
     // figure out how many tiles needed for each crop
     for (EnumFood crop:EnumFood.values())
     {
-      double cropLand = agriculturalUnit.getCropLand(year, crop);
+      double cropLand = territory.getCropLand(year, crop);
       CropBin bin = new CropBin(crop, (int) cropLand/100);
       cropBins.add(bin);
     }
     
     // calculate yield for each tile for each crop
-    for (LandTile tile: agriculturalUnit.getLandTiles())
+    for (LandTile tile: territory.getLandTiles())
     {
-      TileYield tYield = new TileYield(tile, agriculturalUnit);
+      TileYield tYield = new TileYield(tile, territory);
       tileYields.add(tYield);
     }
     
@@ -118,7 +132,7 @@ public class CropOptimizer
     // after getting all the tiles we need, set total production for year
     if (year != AbstractScenario.START_YEAR)
     {
-        agriculturalUnit.setCropProduction(year, crop, production);
+      territory.setCropProduction(year, crop, production);
     }
   }
   
@@ -152,7 +166,7 @@ public class CropOptimizer
       for (EnumFood crop:EnumFood.values())
       {
         EnumCropZone zone;
-        double ctryYield = ctryYields[crop.ordinal()];
+        double ctryYield = cropYields[crop.ordinal()];
 
         // PAB : The Phase 2 code had a special type for 'other' that is no longer supported.
         //

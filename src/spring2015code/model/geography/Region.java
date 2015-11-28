@@ -60,16 +60,6 @@ public class Region extends AbstractAgriculturalUnit
     area.add(tile.getArea());
   }
 
-  public void initialize(int year)
-  { // Add the values from each territory.
-    //
-    for (Territory t : territories)
-    {
-      CropOptimizer optimizer = new CropOptimizer(year, t);
-      optimizer.optimizeCrops();
-    }
-  }
-
   public void optimizeCrops(int year)
   {
     for (Territory t : territories) {
@@ -186,6 +176,14 @@ public class Region extends AbstractAgriculturalUnit
         System.err.println("Invalid argument for Territory.setPopulation method");
       }
     }
+  }
+
+  /**
+   * Estimates the initial yield of all territories in the region.
+   */
+  public void estimateInitialYield()
+  {
+    for (Territory t : territories) t.estimateInitialYield();
   }
 
   /**

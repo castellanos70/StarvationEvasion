@@ -141,6 +141,7 @@ public class Simulator
       model.populateRegionData(data);
       regionDataList[region.ordinal()] = data;
     }
+
     return regionDataList;
   }
 

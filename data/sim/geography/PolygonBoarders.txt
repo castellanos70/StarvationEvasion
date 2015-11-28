@@ -198,7 +198,6 @@ PolygonBoarder_UnitedStates/California.xml
 PolygonBoarder_UnitedStates/Colorado.xml
 PolygonBoarder_UnitedStates/Connecticut.xml
 PolygonBoarder_UnitedStates/Delaware.xml
-PolygonBoarder_UnitedStates/DistrictofColumbia.xml
 PolygonBoarder_UnitedStates/Florida.xml
 PolygonBoarder_UnitedStates/Georgia.xml
 PolygonBoarder_UnitedStates/Hawaii.xml

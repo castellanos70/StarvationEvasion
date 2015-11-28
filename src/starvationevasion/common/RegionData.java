@@ -12,8 +12,10 @@ public class RegionData
   /**
    * This field is zero for non-player regions.
    * Total player revenue in millions of dollars for the current simulation year.
+   * This is the past year's revenue balance plus new taxes earned during the
+   * current turn of three years, minus expenses during the current turn of three years.
    */
-  public int revenue;
+  public int revenueBalance;
 
   /**
    * This region's production (in kg) of each foodType during the current simulation year.

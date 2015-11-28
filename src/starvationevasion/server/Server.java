@@ -51,7 +51,7 @@ public class Server
 
   private void start()
   {
-    new Thread(this::processMessages);
+    new Thread(this::processMessages).start();
     waitForConnections();
   }
 

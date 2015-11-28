@@ -237,7 +237,7 @@ public class World extends AbstractScenario
     int year = getCurrentYear();
     for (Territory state : politicalWorld)
     {
-      state.updateMortalityRate(year);
+      state.updateMortality(year);
       state.updatePopulation(year);
     }
   }

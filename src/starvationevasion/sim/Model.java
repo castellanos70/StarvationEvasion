@@ -1,5 +1,6 @@
 package starvationevasion.sim;
 
+import spring2015code.common.EnumGrowMethod;
 import spring2015code.model.geography.Region;
 import starvationevasion.common.*;
 import starvationevasion.io.DataReader;
@@ -102,11 +103,19 @@ public class Model
 
     float[] avgConversionFactors = new float[EnumFood.SIZE];
 
-    // The loader builds regions in the order that it finds them in the data file.  We need to
-    // put them in ordinal order.
-    //
     for (Region r : loader.getRegions())
-    { regionData[r.getRegion().ordinal()] = r;
+    { // The loader builds regions in the order that it finds them in the data file.  We need to
+      // put them in ordinal order.
+      //
+      regionData[r.getRegion().ordinal()] = r;
+
+      // The loader loads 2014 data.  We need to adjust the data for 1981.  Joel's first estimate is
+      // to simply multiply all of the territorial data by 50%
+      //
+      r.scaleInitialStatistics(.50);
+      r.updateStatistics(Constant.FIRST_YEAR);
+
+      printRegionData(r, Constant.FIRST_YEAR);
     }
   }
 
@@ -156,4 +165,29 @@ public class Model
   private void updatePlayerRegionRevenue(){}
   private void updateHumanDevelopmentIndex(){}
 
+  public static void printRegionData(Region region, int year)
+  {
+    System.out.println("Data for region " + region.getName() + " in year " + year);
+    System.out.println("\tpopulation : " + region.getPopulation(year));
+    System.out.println("\tmedianAge : " + region.getMedianAge(year));
+    System.out.println("\tbirths : " + region.getBirths(year));
+    System.out.println("\tmortality : " + region.getMortality(year));
+    System.out.println("\tmigration : " + region.getMigration(year));
+    System.out.println("\tundernourished : " + region.getUndernourished(year));
+    System.out.println("\tlandTotal : " + region.getLandTotal(year));
+    System.out.println("\tlandArable : " + region.getLandArable(year));
+
+    for (EnumFood food : EnumFood.values())
+    {
+      System.out.println("\tcropYield[" + food + "] : " + region.getCropYield(year, food));
+      System.out.println("\tcropNeedPerCapita[" + food + "] : " + region.getCropNeedPerCapita(food));
+      System.out.println("\tcropProduction[" + food + "] : " + region.getCropProduction(year, food));
+      System.out.println("\tlandCrop[" + food + "] : " + region.getCropLand(year, food)); // Yes, they named it backwards.
+    }
+
+    for (EnumGrowMethod method : EnumGrowMethod.values())
+    {
+      System.out.println("\tcultivationMethod[" + method + "] : " + region.getMethodPercentage(year, method));
+    }
+  }
 }

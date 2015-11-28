@@ -25,7 +25,7 @@ public class Region extends AbstractAgriculturalUnit
   private EnumRegion region;
   private MapPoint capitolLocation;
   private final Area area = new Area();
-  private final Collection<Territory> entities = new ArrayList<>();
+  private final Collection<Territory> territories = new ArrayList<>();
 
   /**
    * Territory constructor
@@ -48,7 +48,7 @@ public class Region extends AbstractAgriculturalUnit
    */
   public Collection<Territory> getAgriculturalUnits()
   {
-    return entities;
+    return territories;
   }
 
   /**
@@ -56,24 +56,24 @@ public class Region extends AbstractAgriculturalUnit
    */
   public void addAgriculturalUnit(Territory tile)
   {
-    entities.add(tile);
+    territories.add(tile);
     area.add(tile.getArea());
   }
 
   public void initialize(int year)
   { // Add the values from each territory.
     //
-    for (Territory unit : entities)
+    for (Territory t : territories)
     {
-      CropOptimizer optimizer = new CropOptimizer(year, unit);
+      CropOptimizer optimizer = new CropOptimizer(year, t);
       optimizer.optimizeCrops();
     }
   }
 
   public void optimizeCrops(int year)
   {
-    for (Territory unit : entities) {
-      CropOptimizer optimizer = new CropOptimizer(year, unit);
+    for (Territory t : territories) {
+      CropOptimizer optimizer = new CropOptimizer(year, t);
       optimizer.optimizeCrops();
     }
   }
@@ -104,14 +104,14 @@ public class Region extends AbstractAgriculturalUnit
    */
   public boolean containsMapPoint(MapPoint mapPoint)
   {
-    if (entities == null)
+    if (territories == null)
     {
       throw new RuntimeException("(!)REGIONS NOT SET YET");
     }
 
-    for (Territory unit : entities)
+    for (Territory t : territories)
     {
-      if (unit.containsMapPoint(mapPoint)) return true;
+      if (t.containsMapPoint(mapPoint)) return true;
     }
     return false;
   }
@@ -120,15 +120,15 @@ public class Region extends AbstractAgriculturalUnit
   // this method can only be called after the Territory's regions have been set.
   private MapPoint calCapitolLocation()
   {
-    if (entities == null) throw new RuntimeException("(!) regions not set!");
-    if (entities.isEmpty()) throw new RuntimeException("(!) no regions !");
+    if (territories == null) throw new RuntimeException("(!) regions not set!");
+    if (territories.isEmpty()) throw new RuntimeException("(!) no regions !");
 
     int maxArea = 0;
     Area largest = null;
 
-    for (Territory region : entities)
+    for (Territory t : territories)
     {
-      Area poly = region.getArea();
+      Area poly = t.getArea();
       int area = (int) (poly.getBounds().getWidth() * poly.getBounds().getHeight());
       if (area >= maxArea)
       {
@@ -148,15 +148,15 @@ public class Region extends AbstractAgriculturalUnit
    */
   public void addRegion(Territory region)
   {
-    entities.add(region);
+    territories.add(region);
   }
 
   /**
    * @return regions
    */
-  public Collection<Territory> getRegions()
+  public Collection<Territory> getTerritories()
   {
-    return entities;
+    return territories;
   }
 
   /**
@@ -169,9 +169,9 @@ public class Region extends AbstractAgriculturalUnit
     {
       // Divide it up amongst the units.
       //
-      int perUnit = n / entities.size();
-      int remainder = n % (entities.size() * perUnit);
-      for (Territory unit : entities)
+      int perUnit = n / territories.size();
+      int remainder = n % (territories.size() * perUnit);
+      for (Territory unit : territories)
       {
         unit.setPopulation(year, perUnit + remainder);
         remainder = 0;
@@ -194,30 +194,7 @@ public class Region extends AbstractAgriculturalUnit
    */
   public void scaleInitialStatistics(double factor)
   {
-    int index = 0; // The 0th index is the start year.
-
-    population[index] *= factor;
-    medianAge[index] *= factor;
-    births[index] *= factor;
-    mortality[index] *= factor;
-    migration[index] *= factor;
-    undernourished[index] *= factor;
-
-    landTotal[index] *= factor;
-    landArable[index] *= factor;
-
-    for (int i = 0 ; i < EnumFood.values().length ; i += 1)
-    {
-      cropYield[i] *= factor;
-      cropNeedPerCapita[i] *= factor;
-      cropProduction[i][index] *= factor;
-      landCrop[i][index] *= factor;
-    }
-
-    for (int i = 0 ; i < EnumGrowMethod.values().length ; i += 1)
-    {
-      cultivationMethod[i][index] *= factor;
-    }
+    for (Territory t : territories) t.scaleInitialStatistics(factor);
   }
 
   /**
@@ -257,36 +234,36 @@ public class Region extends AbstractAgriculturalUnit
 
     // Sum.
 	//
-    for (Territory unit : entities)
+    for (Territory t : territories)
     {
-      population[index] += unit.getPopulation(year);
-      medianAge[index] += unit.getMedianAge(year);
-      births[index] += unit.getBirths(year);
-      mortality[index] += unit.getMortality(year);
-      migration[index] += unit.getMigration(year);
-      undernourished[index] += unit.getUndernourished(year);
+      population[index] += t.getPopulation(year);
+      medianAge[index] += t.getMedianAge(year);
+      births[index] += t.getBirths(year);
+      mortality[index] += t.getMortality(year);
+      migration[index] += t.getMigration(year);
+      undernourished[index] += t.getUndernourished(year);
 
-      landTotal[index] += unit.getLandTotal(year);
-      landArable[index] += unit.getLandArable(year);
+      landTotal[index] += t.getLandTotal(year);
+      landArable[index] += t.getLandArable(year);
 
       for (EnumFood food : EnumFood.values())
       {
-        cropYield[food.ordinal()] += unit.getCropYield(year, food);
-        cropNeedPerCapita[food.ordinal()] += unit.getCropNeedPerCapita(food);
-        cropIncome[food.ordinal()][index] += unit.getCropIncome(year, food);
-        cropProduction[food.ordinal()][index] += unit.getCropProduction(year, food);
-        landCrop[food.ordinal()][index] += unit.getCropLand(year, food); // Yes, they named it backwards.
+        cropYield[food.ordinal()] += t.getCropYield(year, food);
+        cropNeedPerCapita[food.ordinal()] += t.getCropNeedPerCapita(food);
+        cropIncome[food.ordinal()][index] += t.getCropIncome(year, food);
+        cropProduction[food.ordinal()][index] += t.getCropProduction(year, food);
+        landCrop[food.ordinal()][index] += t.getCropLand(year, food); // Yes, they named it backwards.
       }
 
       for (EnumGrowMethod method : EnumGrowMethod.values())
       {
-        cultivationMethod[method.ordinal()][index] += unit.getMethodPercentage(year, method);
+        cultivationMethod[method.ordinal()][index] += t.getMethodPercentage(year, method);
       }
     }
 
     // Update average values.
 	//
-    medianAge[index] /= entities.size();
+    medianAge[index] /= territories.size();
   }
 
   /**
@@ -300,11 +277,11 @@ public class Region extends AbstractAgriculturalUnit
     {
       // Divide it up amongst the units.
       //
-      double perUnit = metTons / entities.size();
-      double remainder = metTons % (entities.size() * perUnit);
-      for (Territory unit : entities)
+      double perUnit = metTons / territories.size();
+      double remainder = metTons % (territories.size() * perUnit);
+      for (Territory t : territories)
       {
-        unit.setCropProduction(year, crop, perUnit + remainder);
+        t.setCropProduction(year, crop, perUnit + remainder);
         remainder = 0;
       }
 
@@ -318,66 +295,6 @@ public class Region extends AbstractAgriculturalUnit
       }
     }
   }
-
-//  /**
-//   * @param year  year in question
-//   * @param crop  crop in question
-//   * @param metTons tons exported
-//   */
-//  public void setCropExport(int year, EnumFood crop, double metTons)
-//  {
-//    if (metTons >= 0)
-//    {
-//      // Divide it up amongst the units.
-//      //
-//      double perUnit = metTons / entities.size();
-//      double remainder = metTons % (entities.size() * perUnit);
-//      for (Territory unit : entities)
-//      {
-//        unit.setCropExport(year, crop, perUnit + remainder);
-//        remainder = 0;
-//      }
-//
-//      cropExport[crop.ordinal()][year - START_YEAR] = metTons;
-//    }
-//    else
-//    {
-//      if (VERBOSE)
-//     {
-//        System.err.println("Invalid argument for Territory.setCropExport method");
-//      }
-//    }
-//  }
-//
-//  /**
-//   * @param year  year in question
-//   * @param crop  crop in question
-//   * @param metTons tons imported
-//   */
-//  public void setCropImport(int year, EnumFood crop, double metTons)
-//  {
-//    if (metTons >= 0)
-//    {
-//      // Divide it up amongst the units.
-//      //
-//      double perUnit = metTons / entities.size();
-//      double remainder = metTons % (entities.size() * perUnit);
-//      for (Territory unit : entities)
-//      {
-//        unit.setCropImport(year, crop, perUnit + remainder);
-//        remainder = 0;
-//      }
-//
-//      cropImport[crop.ordinal()][year - START_YEAR] = metTons;
-//    }
-//    else
-//    {
-//      if (VERBOSE)
-//      {
-//        System.err.println("Invalid argument for Territory.setCropImport method");
-//      }
-//    }
-//  }
 
   /**
    * @param year
@@ -454,7 +371,7 @@ public class Region extends AbstractAgriculturalUnit
   {
     double cropLand = 0.;
 
-    for (Territory unit : entities)
+    for (Territory unit : territories)
     {
       unit.updateCropLand(year, crop, kilomsq);
       cropLand += unit.getCropLand(year, crop);
@@ -472,7 +389,7 @@ public class Region extends AbstractAgriculturalUnit
   {
     if (percentage >= 0)
     {
-      for (Territory unit : entities)
+      for (Territory unit : territories)
       {
         unit.setMethodPercentage(year, method, percentage);
       }
@@ -497,9 +414,9 @@ public class Region extends AbstractAgriculturalUnit
   {
     // Divide it up amongst the units.
     //
-    double perUnit = tonPerSqKilom / entities.size();
-    double remainder = tonPerSqKilom % (entities.size() * perUnit);
-    for (Territory unit : entities)
+    double perUnit = tonPerSqKilom / territories.size();
+    double remainder = tonPerSqKilom % (territories.size() * perUnit);
+    for (Territory unit : territories)
     {
       unit.setCropYield(year, crop, perUnit + remainder);
       remainder = 0;
@@ -517,7 +434,7 @@ public class Region extends AbstractAgriculturalUnit
    */
   final public void setCropNeedPerCapita(EnumFood crop, double tonsConsumed, double percentUndernourished)
   {
-    for (Territory unit : entities)
+    for (Territory unit : territories)
     {
       unit.setCropNeedPerCapita(crop, tonsConsumed, percentUndernourished);
     }
@@ -537,9 +454,9 @@ public class Region extends AbstractAgriculturalUnit
   {
     // Divide it up amongst the units.
     //
-    double perUnit = tonPerPerson / entities.size();
-    double remainder = tonPerPerson % (entities.size() * perUnit);
-    for (Territory unit : entities)
+    double perUnit = tonPerPerson / territories.size();
+    double remainder = tonPerPerson % (territories.size() * perUnit);
+    for (Territory unit : territories)
     {
       unit.setCropNeedPerCapita(crop, perUnit + remainder);
       remainder = 0;

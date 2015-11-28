@@ -2,7 +2,6 @@ package spring2015code.common;
 
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumRegion;
 import starvationevasion.geography.GeographicArea;
 
 import java.awt.image.BufferedImage;
@@ -41,17 +40,17 @@ public abstract class AbstractAgriculturalUnit
   //      values may be adjusted from year-to-year by continuous functions, it
   //      is useful to maintain their internal representations as doubles.
 
-  //Note: As the start of milestone II, birthRate and migrationRate are assumed constant
+  //Note: As the start of milestone II, births and migration are assumed constant
   //      for each year of the model and medianAge is not used at all.
   //      However, it might be that before the end of milestone II, we are given simple functions
   //      for these quantities: such as a constant rate of change of birth rate replacing the
   //      constant birth rate or a data lookup table that has predefined values for each year.
   //      The development team should expect and plan for such mid-milestone updates.
-  protected int[] population = new int[YEARS_OF_SIM];       //in people
-  protected double[] medianAge = new double[YEARS_OF_SIM];  //in years
-  protected double[] birthRate = new double[YEARS_OF_SIM];  //number of live births per 1,000 individuals per year.
-  protected double[] mortalityRate = new double[YEARS_OF_SIM];   //number of deaths per 1,000 individuals per year.
-  protected double[] migrationRate = new double[YEARS_OF_SIM];   //immigration - emigration per 1,000 individuals.
+  protected int[] population = new int[YEARS_OF_SIM];       // in people
+  protected double[] medianAge = new double[YEARS_OF_SIM];  // in years
+  protected double[] births = new double[YEARS_OF_SIM];  // number of live births x 1,000 per year.
+  protected double[] mortality = new double[YEARS_OF_SIM];   // number of deaths x 1,000 per year.
+  protected double[] migration = new double[YEARS_OF_SIM];   // immigration - emigration x 1,000 individuals.
   protected double[] undernourished = new double[YEARS_OF_SIM];  // percentage of population. 0.50 is 50%.
 
   protected double[][] cropProduction = new double[EnumFood.SIZE][YEARS_OF_SIM]; //in metric tons.
@@ -155,20 +154,19 @@ public abstract class AbstractAgriculturalUnit
    * @param year year in question
    * @return birth rate
    */
-  final public double getBirthRate(int year)
+  final public double getBirths(int year)
   {
-    return birthRate[year - START_YEAR];
+    return births[year - START_YEAR];
   }
 
-  final public double getMortalityRate(int year)
+  final public double getMortality(int year)
   {
-    return mortalityRate[year - START_YEAR];
+    return mortality[year - START_YEAR];
   }
 
-
-  final public double getMigrationRate(int year)
+  final public double getMigration(int year)
   {
-    return migrationRate[year - START_YEAR];
+    return migration[year - START_YEAR];
   }
 
   /**
@@ -212,6 +210,11 @@ public abstract class AbstractAgriculturalUnit
   {
     // return cropImport[crop.ordinal()][year - START_YEAR];
     throw new UnsupportedOperationException("Fall 2015 doesn't used crop import or export values.");
+  }
+
+  final public double getLandArable(int year)
+  {
+    return landArable[year - START_YEAR];
   }
 
   final public double getLandTotal(int year)
@@ -302,9 +305,9 @@ public abstract class AbstractAgriculturalUnit
     else
     {
       double numUndernourish = getUndernourished(year) * currentPop;
-      double numDeaths = getMortalityRate(year) / 1000 * currentPop;    // mortality is per 1000, so divide to get %
+      double numDeaths = getMortality(year) / 1000 * currentPop;    // mortality is per 1000, so divide to get %
       double changeUndernourish = numUndernourish - (getPopulation(year - 1) * getUndernourished(year - 1));
-      double changeDeaths = numDeaths - (getPopulation(year - 1) * getMortalityRate(year - 1) / 1000);
+      double changeDeaths = numDeaths - (getPopulation(year - 1) * getMortality(year - 1) / 1000);
       formulaResult = 5 * numUndernourish + 2 * changeUndernourish + 10 * numDeaths + 5 * changeDeaths;
     }
 

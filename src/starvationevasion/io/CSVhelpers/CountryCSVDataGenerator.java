@@ -29,14 +29,14 @@ public final class CountryCSVDataGenerator implements CountryCSVDefaultData
       case "averageAge":
         country.setMedianAge(WORLD_AVG_AGE);
         break;
-      case "birthRate":
-        country.setBirthRate(WORLD_BIRTH_RATE);
+      case "births":
+        country.setBirths(WORLD_BIRTH_RATE);
         break;
       case "mortality":
-        country.setMortalityRate(START_YEAR, WORLD_MORTALITY);
+        country.setMortality(START_YEAR, WORLD_MORTALITY);
         break;
       case "migration":
-        country.setMigrationRate(WORLD_MIGRATION);
+        country.setMigration(WORLD_MIGRATION);
         break;
       case "undernourish":
         country.setUndernourished(START_YEAR, WORLD_UNDERNOURISH/100); //divide int by 100

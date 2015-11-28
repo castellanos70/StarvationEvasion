@@ -212,7 +212,7 @@ public class Territory extends AbstractAgriculturalUnit
     population[year - START_YEAR] = 0;
 
     int priorPop = population[year - START_YEAR - 1];
-    double changePer1K = birthRate[year - START_YEAR] + migrationRate[year - START_YEAR] - mortalityRate[year - START_YEAR];
+    double changePer1K = births[year - START_YEAR] + migration[year - START_YEAR] - mortality[year - START_YEAR];
     Double popNow = priorPop + changePer1K * priorPop / 1000;
     int popInt = popNow.intValue();
     population[year - START_YEAR] = popInt;
@@ -239,36 +239,36 @@ public class Territory extends AbstractAgriculturalUnit
   }
 
   /**
-   * Populate birthRate array with given rate; assumes rate remains constant.
+   * Populate births array with given rate; assumes rate remains constant.
    *
    * @param permille births/1000 people
    */
-  final public void setBirthRate(double permille)
+  final public void setBirths(double permille)
   {
     if (permille >= 0 && permille <= 1000)
     {
-      for (int i = 0; i < birthRate.length; i++) birthRate[i] = permille;
+      for (int i = 0; i < births.length; i++) births[i] = permille;
     }
     else
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for Territory.setBirthRate method");
+        System.err.println("Invalid argument for Territory.setBirths method");
       }
     }
   }
 
-  final public void setMortalityRate(int year, double permille)
+  final public void setMortality(int year, double permille)
   {
     if (permille >= 0 && permille <= 1000)
     {
-      mortalityRate[year - START_YEAR] = permille;
+      mortality[year - START_YEAR] = permille;
     }
     else
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for Territory.setMortalityRate method");
+        System.err.println("Invalid argument for Territory.setMortality method");
       }
     }
   }
@@ -278,11 +278,11 @@ public class Territory extends AbstractAgriculturalUnit
    *
    * @param year year for which we are updating mortality rate
    */
-  final public void updateMortalityRate(int year)
+  final public void updateMortality(int year)
   {
     double mortalityNow;
     double hungryStart = undernourished[0] * population[0];
-    double mortalityStart = mortalityRate[0];
+    double mortalityStart = mortality[0];
     int popNow = population[year - START_YEAR - 1];
     double hungryNow = popNow * undernourished[year - START_YEAR - 1];
     if (hungryNow <= hungryStart)
@@ -294,25 +294,25 @@ public class Territory extends AbstractAgriculturalUnit
       double hungryChange = hungryNow - hungryStart;
       mortalityNow = (mortalityStart + 0.2 * hungryChange) / (popNow / 1000);
     }
-    setMortalityRate(year, mortalityNow);
+    setMortality(year, mortalityNow);
   }
 
   /**
-   * Populate migrationRate array with given rate; assumes rate remains constant.
+   * Populate migration array with given rate; assumes rate remains constant.
    *
    * @param permille migration/1000 people
    */
-  final public void setMigrationRate(double permille)
+  final public void setMigration(double permille)
   {
     if (permille >= -1000 && permille <= 1000)
     {
-      for (int i = 0; i < migrationRate.length; i++) migrationRate[i] = permille;
+      for (int i = 0; i < migration.length; i++) migration[i] = permille;
     }
     else
     {
       if (VERBOSE)
       {
-        System.err.println("Invalid argument for Territory.setMigrationRate method");
+        System.err.println("Invalid argument for Territory.setMigration method");
       }
     }
   }

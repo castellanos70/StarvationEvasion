@@ -30,7 +30,7 @@ public class Region extends AbstractAgriculturalUnit
   /**
    * Territory constructor
    *
-   * @param EnumRegion region
+   * @param region
    */
   public Region(EnumRegion region)
   {
@@ -58,6 +58,16 @@ public class Region extends AbstractAgriculturalUnit
   {
     entities.add(tile);
     area.add(tile.getArea());
+  }
+
+  public void initialize(int year)
+  { // Add the values from each territory.
+    //
+    for (Territory unit : entities)
+    {
+      CropOptimizer optimizer = new CropOptimizer(year, unit);
+      optimizer.optimizeCrops();
+    }
   }
 
   public void optimizeCrops(int year)
@@ -179,177 +189,102 @@ public class Region extends AbstractAgriculturalUnit
   }
 
   /**
+   * The loader loads 2014 data.  This function scales the data for 1981 given the scale factor.
+   * @param factor The scaling factor.
+   */
+  public void scaleInitialStatistics(double factor)
+  {
+    int index = 0; // The 0th index is the start year.
+
+    population[index] *= factor;
+    medianAge[index] *= factor;
+    births[index] *= factor;
+    mortality[index] *= factor;
+    migration[index] *= factor;
+    undernourished[index] *= factor;
+
+    landTotal[index] *= factor;
+    landArable[index] *= factor;
+
+    for (int i = 0 ; i < EnumFood.values().length ; i += 1)
+    {
+      cropYield[i] *= factor;
+      cropNeedPerCapita[i] *= factor;
+      cropProduction[i][index] *= factor;
+      landCrop[i][index] *= factor;
+    }
+
+    for (int i = 0 ; i < EnumGrowMethod.values().length ; i += 1)
+    {
+      cultivationMethod[i][index] *= factor;
+    }
+  }
+
+  /**
    * Updates population for given year based on formula in spec
    *
-   * @param year year for which to calculate population
+   * @param year Year index for which to calculate population (e.g.2014)
    */
-  public void updatePopulation(int year)
+  public void updateStatistics(int year)
   {
-    population[year - START_YEAR] = 0;
+    int index = year - START_YEAR;
 
+    // Re-initialize to zero.
+	//
+    population[index] = 0;
+    medianAge[index] = 0;
+    births[index] = 0;
+    mortality[index] = 0;
+    migration[index] = 0;
+    undernourished[index] = 0;
+
+    landTotal[index] = 0;
+    landArable[index] = 0;
+
+    for (int i = 0 ; i < EnumFood.values().length ; i += 1)
+    {
+      cropYield[i] = 0;
+      cropNeedPerCapita[i] = 0;
+      cropProduction[i][index] = 0;
+      landCrop[i][index] = 0;
+    }
+
+    for (int i = 0 ; i < EnumGrowMethod.values().length ; i += 1)
+    {
+      cultivationMethod[i][index] = 0;
+    }
+
+    // Sum.
+	//
     for (Territory unit : entities)
     {
-      unit.updatePopulation(year);
-      population[year - START_YEAR] += unit.getPopulation(year);
-    }
-  }
+      population[index] += unit.getPopulation(year);
+      medianAge[index] += unit.getMedianAge(year);
+      births[index] += unit.getBirths(year);
+      mortality[index] += unit.getMortality(year);
+      migration[index] += unit.getMigration(year);
+      undernourished[index] += unit.getUndernourished(year);
 
-  /**
-   * Populate medianAge array with given age; assumes median age remains constant.
-   *
-   * @param years median age
-   */
-  public void setMedianAge(double years)
-  {
-    if (years >= 0)
-    {
-      for (int i = 0; i < medianAge.length; i++) medianAge[i] = years;
-      for (Territory unit : entities)
-      {
-        unit.setMedianAge(years);
-      }
-    }
-    else
-    {
-      if (VERBOSE)
-      {
-        System.err.println("Invalid argument for Territory.setMedianAge method");
-      }
-    }
-  }
+      landTotal[index] += unit.getLandTotal(year);
+      landArable[index] += unit.getLandArable(year);
 
-  /**
-   * Populate birthRate array with given rate; assumes rate remains constant.
-   *
-   * @param permille births/1000 people
-   */
-  public void setBirthRate(double permille)
-  {
-    if (permille >= 0 && permille <= 1000)
-    {
-      for (int i = 0; i < birthRate.length; i++) birthRate[i] = permille;
-      for (Territory unit : entities)
+      for (EnumFood food : EnumFood.values())
       {
-        unit.setBirthRate(permille);
+        cropYield[food.ordinal()] += unit.getCropYield(year, food);
+        cropNeedPerCapita[food.ordinal()] += unit.getCropNeedPerCapita(food);
+        cropProduction[food.ordinal()][index] += unit.getCropProduction(year, food);
+        landCrop[food.ordinal()][index] += unit.getCropLand(year, food); // Yes, they named it backwards.
       }
-    }
-    else
-    {
-      if (VERBOSE)
-      {
-        System.err.println("Invalid argument for Territory.setBirthRate method");
-      }
-    }
-  }
 
-  public void setMortalityRate(int year, double permille)
-  {
-    if (permille >= 0 && permille <= 1000)
-    {
-      mortalityRate[year - START_YEAR] = permille;
-      for (Territory unit : entities)
+      for (EnumGrowMethod method : EnumGrowMethod.values())
       {
-        unit.setMortalityRate(year, permille);
-      }
-    }
-    else
-    {
-      if (VERBOSE)
-      {
-        System.err.println("Invalid argument for Territory.setMortalityRate method");
-      }
-    }
-  }
-
-  /**
-   * Updates mortality rate for given year based on formula given in spec.
-   *
-   * @param year year for which we are updating mortality rate
-   */
-  public void updateMortalityRate(int year)
-  {
-    double mortalityNow = 0.;
-
-    for (Territory unit : entities)
-    {
-      unit.updateMortalityRate(year);
-      mortalityNow += unit.getMortalityRate(year);
-    }
-
-    mortalityNow /= entities.size();
-    setMortalityRate(year, mortalityNow);
-  }
-
-  /**
-   * Populate migrationRate array with given rate; assumes rate remains constant.
-   *
-   * @param permille migration/1000 people
-   */
-  public void setMigrationRate(double permille)
-  {
-    if (permille >= -1000 && permille <= 1000)
-    {
-      for (int i = 0; i < migrationRate.length; i++) migrationRate[i] = permille;
-      for (Territory unit : entities)
-      {
-        unit.setMigrationRate(permille);
-      }
-    }
-    else
-    {
-      if (VERBOSE)
-      {
-        System.err.println("Invalid argument for Territory.setMigrationRate method");
-      }
-    }
-  }
-
-  /**
-   * Sets undernourished percentage; see updateUndernourished method for calculating percentage.
-   *
-   * @param year     year to set
-   * @param percentage percentage to set
-   */
-  public void setUndernourished(int year, double percentage)
-  {
-    if (percentage >= 0 && percentage <= 1)
-    {
-      undernourished[year - START_YEAR] = percentage;
-      for (Territory unit : entities)
-      {
-        unit.setUndernourished(year, percentage);
-      }
-    }
-    else
-    {
-      if (VERBOSE)
-      {
-        System.err.println("Invalid argument for Territory.setUndernourished method");
+        cultivationMethod[method.ordinal()][index] += unit.getMethodPercentage(year, method);
       }
     }
 
-  }
-
-  /**
-   * Update % undernourished using formula in spec.
-   *
-   * @param year
-   */
-  public void updateUndernourished(int year)
-  {
-    // TODO : PAB : This is not right.  We need to aggrgegate the new rates from all of the
-    // contained regions.
-    //
-    double undernourished = 0.;
-
-    for (Territory unit : entities)
-    {
-      unit.updateUndernourished(year);
-      undernourished += unit.getUndernourished(year);
-    }
-
-    undernourished /= entities.size();
-    setMortalityRate(year, undernourished);
+    // Update average values.
+	//
+    medianAge[index] /= entities.size();
   }
 
   /**

@@ -1,8 +1,10 @@
 package starvationevasion.testing;
 
+import spring2015code.common.EnumGrowMethod;
 import spring2015code.model.geography.Territory;
 import spring2015code.model.geography.Region;
 import spring2015code.model.geography.World;
+import starvationevasion.common.EnumFood;
 import starvationevasion.io.CountryCSVLoader;
 import spring2015code.io.CropZoneDataIO;
 import starvationevasion.io.XMLparsers.GeographyXMLparser;
@@ -89,7 +91,7 @@ public class WorldLoader
 
     territories = data.territories;
     regions = data.regions;
-    print(regions, false);
+    printRegions(regions, false);
 
     Calendar startingDate = Calendar.getInstance();
     startingDate.set(Calendar.YEAR,  2014);
@@ -102,7 +104,8 @@ public class WorldLoader
     tileManager.setWorld(world);
   }
 
-  public static void print(Collection<Region> regions, boolean verbose)
+
+  public static void printRegions(Collection<Region> regions, boolean verbose)
   {
     for (Region region : regions)
     {

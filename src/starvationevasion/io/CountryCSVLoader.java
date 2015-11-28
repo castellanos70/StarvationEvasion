@@ -221,14 +221,14 @@ public class CountryCSVLoader
   }
   
   /**
-   * Set averageAge, birthRate, mortality, migration, undernourish, and arableOpen fields.
+   * Set averageAge, births, mortality, migration, undernourish, and arableOpen fields.
    * @param country     country object
    * @param recordMap   map of strings (key=field name, value=field value) generated from
    *                    country's CSVRecord
    */
   private void setDemographicData(Territory country, Map<String,String> recordMap)
   {
-    String[] demographicFields = {"averageAge", "birthRate", "mortality", "migration", "undernourish", "arableOpen"};
+    String[] demographicFields = {"averageAge", "births", "mortality", "migration", "undernourish", "arableOpen"};
     
     for (int i = 0; i < demographicFields.length; i++)
     {
@@ -243,21 +243,21 @@ public class CountryCSVLoader
             country.setMedianAge(Integer.parseInt(value));
             break;
 
-          case "birthRate":
+          case "births":
             double numValue = Double.parseDouble(value);
-            if (numValue >= 0 && numValue < 2000) country.setBirthRate(numValue);
+            if (numValue >= 0 && numValue < 2000) country.setBirths(numValue);
             else throw new IllegalArgumentException();
             break;
 
           case "mortality":
             numValue = Double.parseDouble(value);
-            if (numValue >= 0 && numValue <= 1000) country.setMortalityRate(START_YEAR, numValue);
+            if (numValue >= 0 && numValue <= 1000) country.setMortality(START_YEAR, numValue);
             else throw new IllegalArgumentException();
             break;
 
           case "migration":
             numValue = Double.parseDouble(value);
-            if (numValue >= -1000 && numValue <= 1000) country.setMigrationRate(numValue);
+            if (numValue >= -1000 && numValue <= 1000) country.setMigration(numValue);
             else throw new IllegalArgumentException();
             break;
 
@@ -450,9 +450,9 @@ public class CountryCSVLoader
     //countryTemp values
      int population = countryTemp.getPopulation(START_YEAR);
      double medianAge = countryTemp.getMedianAge(START_YEAR);
-     double birthRate = countryTemp.getBirthRate(START_YEAR);
-     double mortalityRate = countryTemp.getMortalityRate(START_YEAR);
-     double migrationRate = countryTemp.getMigrationRate(START_YEAR);
+     double birthRate = countryTemp.getBirths(START_YEAR);
+     double mortalityRate = countryTemp.getMortality(START_YEAR);
+     double migrationRate = countryTemp.getMigration(START_YEAR);
      double undernourished = countryTemp.getUndernourished(START_YEAR);
      double landTotal = countryTemp.getLandTotal(START_YEAR);
      double landArable = countryTemp.getArableLand(START_YEAR);
@@ -460,9 +460,9 @@ public class CountryCSVLoader
      // copy everything
      countryFinal.setPopulation(START_YEAR, population);
      countryFinal.setMedianAge(medianAge);
-     countryFinal.setBirthRate(birthRate);
-     countryFinal.setMortalityRate(START_YEAR, mortalityRate);
-     countryFinal.setMigrationRate(migrationRate);
+     countryFinal.setBirths(birthRate);
+     countryFinal.setMortality(START_YEAR, mortalityRate);
+     countryFinal.setMigration(migrationRate);
      countryFinal.setUndernourished(START_YEAR, undernourished);
      countryFinal.setLandTotal(START_YEAR, landTotal);
      countryFinal.setArableLand(START_YEAR, landArable);

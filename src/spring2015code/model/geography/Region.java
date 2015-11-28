@@ -54,10 +54,15 @@ public class Region extends AbstractAgriculturalUnit
   /**
    * @param tile Territory to add to country
    */
-  public void addAgriculturalUnit(Territory tile)
+  public void addTerritory(Territory tile)
   {
     territories.add(tile);
     area.add(tile.getArea());
+
+    for (int i = Constant.FIRST_YEAR ; i < Constant.LAST_YEAR ; i += 1)
+      {
+        population[i - Constant.FIRST_YEAR] += tile.getPopulation(i);
+    }
   }
 
   public void optimizeCrops(int year)
@@ -131,14 +136,6 @@ public class Region extends AbstractAgriculturalUnit
     int y = (int) largest.getBounds().getCenterY();
 
     return Territory.converter.pointToMapPoint(new Point(x, y));
-  }
-
-  /**
-   * @param region region (i.e., area contained in vertices) to add to country
-   */
-  public void addRegion(Territory region)
-  {
-    territories.add(region);
   }
 
   /**

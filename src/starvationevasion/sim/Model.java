@@ -200,9 +200,21 @@ public class Model
   public static void printData(AbstractAgriculturalUnit unit, int year, String prefix)
   {
     System.out.println(prefix + "Data for " + unit.getName() + " in year " + year);
-    System.out.print(prefix + prefix + "\t");    
+    System.out.print(prefix + prefix + "\t");
     if (unit instanceof Region) System.out.print("sum ");
-    System.out.print("population : " + unit.getPopulation(year));
+
+    if (year == Constant.FIRST_YEAR)
+    {
+      System.out.print(" population : ");
+      for (int y = Constant.FIRST_YEAR ; y < Constant.LAST_YEAR ; y += 1)
+        System.out.print(" " + unit.getPopulation(y));
+      System.out.println();
+
+      System.out.print(prefix + prefix + "\t");
+      if (unit instanceof Region) System.out.print("sum ");
+    }
+    else System.out.print(" population : " + unit.getPopulation(year));
+
     System.out.print(", medianAge : " + unit.getMedianAge(year));
     System.out.print(", births : " + unit.getBirths(year));
     System.out.print(", mortality : " + unit.getMortality(year));

@@ -73,7 +73,7 @@ public class CountryCSVLoader
         if (xmlCountryName.equals(csvCountry.getName()))
         {
           // copy data from csv country object into xml country object
-          xmlCountry.copyValuesFrom(csvCountry, START_YEAR);
+          xmlCountry.copyInitialValuesFrom(csvCountry);
           // remove country from csv list after copying it
           csvItr.remove();
 
@@ -88,7 +88,7 @@ public class CountryCSVLoader
             regions.put(region, r);
           }
 
-          r.addRegion(xmlCountry);
+          r.addTerritory(xmlCountry);
 
           countryFound = true;
           break;
@@ -219,16 +219,33 @@ public class CountryCSVLoader
     // grow method percentages
     setGrowMethodData(country, recordMap);
   }
-  
+
+  /** Linear interpolate population.
+  */
+  private void interpolatePopulation(Territory territory, int firstYear, int lastYear, int year0, int year1)
+  {
+    int y0 = territory.getPopulation(year0);
+    int y1 = territory.getPopulation(year1);
+
+    for (int i = firstYear ; i <= lastYear ; i += 1)
+    {
+      double y = y0 + (y1 - y0) * (((double) i - year0) / (year1 - year0));
+      territory.setPopulation(i, (int) y);
+    }
+  }
+
   /**
    * Set averageAge, births, mortality, migration, undernourish fields.
-   * @param country     country object
+   * @param territory     country object
    * @param recordMap   map of strings (key=field name, value=field value) generated from
    *                    country's CSVRecord
    */
-  private void setDemographicData(Territory country, Map<String,String> recordMap)
+  private void setDemographicData(Territory territory, Map<String,String> recordMap)
   {
-    String[] demographicFields = {"averageAge", "births", "mortality", "migration", "undernourish" };
+    String[] demographicFields = {
+            "population1990", "population2000", "population2010", "population2014", "population2025", "population2050",
+            "averageAge", "births", "mortality", "migration", "undernourish"
+    };
     
     for (int i = 0; i < demographicFields.length; i++)
     {
@@ -243,37 +260,57 @@ public class CountryCSVLoader
       {
         switch (field)
         {
+          case "population1990":
+            territory.setPopulation(1990, Integer.parseInt(value));
+            break;
+
+          case "population2000":
+            territory.setPopulation(2000, Integer.parseInt(value));
+            break;
+
+          case "population2010":
+            territory.setPopulation(2010, Integer.parseInt(value));
+            break;
+
+          case "population2014":
+            territory.setPopulation(2014, Integer.parseInt(value));
+            break;
+
+          case "population2050":
+            territory.setPopulation(2050, Integer.parseInt(value));
+            break;
+
           case "averageAge":
-            country.setMedianAge(Integer.parseInt(value));
+            territory.setMedianAge(Integer.parseInt(value));
             break;
 
           case "births":
             double numValue = Double.parseDouble(value);
-            if (numValue >= 0 && numValue < 2000) country.setBirths(numValue);
+            if (numValue >= 0 && numValue < 2000) territory.setBirths(numValue);
             else throw new IllegalArgumentException();
             break;
 
           case "mortality":
             numValue = Double.parseDouble(value);
-            if (numValue >= 0 && numValue <= 1000) country.setMortality(START_YEAR, numValue);
+            if (numValue >= 0 && numValue <= 1000) territory.setMortality(START_YEAR, numValue);
             else throw new IllegalArgumentException();
             break;
 
           case "migration":
             numValue = Double.parseDouble(value);
-            if (numValue >= -1000 && numValue <= 1000) country.setMigration(numValue);
+            if (numValue >= -1000 && numValue <= 1000) territory.setMigration(numValue);
             else throw new IllegalArgumentException();
             break;
 
           case "undernourish":
             numValue = Double.parseDouble(value);
-            if (numValue >= 0 && numValue <= 100) country.setUndernourished(START_YEAR, numValue / 100); // Convert to percent.
+            if (numValue >= 0 && numValue <= 100) territory.setUndernourished(START_YEAR, numValue / 100); // Convert to percent.
             else throw new IllegalArgumentException();
             break;
 
           case "arableOpen":
             numValue = Double.parseDouble(value);
-            if (numValue >= 0 && numValue <= country.getLandTotal(START_YEAR)) country.setArableLand(START_YEAR, numValue);
+            if (numValue >= 0 && numValue <= territory.getLandTotal(START_YEAR)) territory.setArableLand(START_YEAR, numValue);
             else throw new IllegalArgumentException();
             break;
 
@@ -283,18 +320,26 @@ public class CountryCSVLoader
       catch (NumberFormatException e)
       {
         Logger.getGlobal().log(Level.SEVERE,
-                "CSVLoader: " + country.getName() + " Illegal value " + field + " = " + value);
+                "CSVLoader: " + territory.getName() + " Illegal value " + field + " = " + value);
 
-        CountryCSVDataGenerator.fixDemographic(country, field);
+        CountryCSVDataGenerator.fixDemographic(territory, field);
       }
       catch (IllegalArgumentException e)
       {
         // need to assign default value
         Logger.getGlobal().log(Level.INFO, "CSVLoader: {0} bad value for {1} {2}",
-                new Object[] {country.getName(), field, value});
-        CountryCSVDataGenerator.fixDemographic(country, field);
+                new Object[] {territory.getName(), field, value});
+        CountryCSVDataGenerator.fixDemographic(territory, field);
       }
     }
+
+    // Linear interpolate population.
+    //
+    interpolatePopulation(territory, START_YEAR, 1989, 1990, 2000);
+    interpolatePopulation(territory, 1991, 1999, 1990, 2000);
+    interpolatePopulation(territory, 2001, 2009, 2000, 2010);
+    interpolatePopulation(territory, 2011, 2013, 2010, 2014);
+    interpolatePopulation(territory, 2015, 2049, 2014, 2050);
   }
   
   /**

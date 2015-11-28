@@ -1,5 +1,6 @@
 package spring2015code.model.geography;
 
+import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import spring2015code.common.AbstractAgriculturalUnit;
 import spring2015code.common.AbstractScenario;
@@ -186,13 +187,10 @@ public class Territory extends AbstractAgriculturalUnit
    * done when unifying XML and CSV data.
    *
    * @param fromTerritory The territory from which to copy data.
-   * @param year The year to copy.
    */
-  public void copyValuesFrom(final Territory fromTerritory, final int year)
+  public void copyInitialValuesFrom(final Territory fromTerritory)
   {
-    int index = year - START_YEAR;
-
-    population[index] = fromTerritory.population[index];
+    int index = 0;
     medianAge[index] = fromTerritory.medianAge[index];
     births[index] = fromTerritory.births[index];
     mortality[index] = fromTerritory.mortality[index];
@@ -214,6 +212,12 @@ public class Territory extends AbstractAgriculturalUnit
     for (EnumGrowMethod method : EnumGrowMethod.values())
     {
       cultivationMethod[method.ordinal()][index] = fromTerritory.cultivationMethod[method.ordinal()][index];
+    }
+
+    while (index < Constant.LAST_YEAR - Constant.FIRST_YEAR)
+    {
+      population[index] = fromTerritory.population[index];
+      index += 1;
     }
   }
 

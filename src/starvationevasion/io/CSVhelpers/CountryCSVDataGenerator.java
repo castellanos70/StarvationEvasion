@@ -73,8 +73,8 @@ public final class CountryCSVDataGenerator implements CountryCSVDefaultData
     
     // set agriculturalUnit's need to world per capita media need * population; assume all imported
     agriculturalUnit.setCropProduction(START_YEAR, crop, 0);
-    agriculturalUnit.setCropExport(START_YEAR, crop, 0);
-    agriculturalUnit.setCropImport(START_YEAR, crop, countryNeed);
+    // agriculturalUnit.setCropExport(START_YEAR, crop, 0);
+    // agriculturalUnit.setCropImport(START_YEAR, crop, countryNeed);
     agriculturalUnit.setCropLand(START_YEAR, crop, 0);
     agriculturalUnit.setCropYield(START_YEAR, crop, 0);
     agriculturalUnit.setCropNeedPerCapita(crop, worldPerCap);

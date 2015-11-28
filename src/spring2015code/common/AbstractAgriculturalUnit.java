@@ -2,6 +2,7 @@ package spring2015code.common;
 
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.geography.GeographicArea;
 
 import java.awt.image.BufferedImage;
@@ -54,8 +55,11 @@ public abstract class AbstractAgriculturalUnit
   protected double[] undernourished = new double[YEARS_OF_SIM];  // percentage of population. 0.50 is 50%.
 
   protected double[][] cropProduction = new double[EnumFood.SIZE][YEARS_OF_SIM]; //in metric tons.
-  protected double[][] cropExport     = new double[EnumFood.SIZE][YEARS_OF_SIM]; //in metric tons.
-  protected double[][] cropImport     = new double[EnumFood.SIZE][YEARS_OF_SIM]; //in metric tons.
+
+  // PAB : Not used...
+  //
+  // protected double[][] cropExport     = new double[EnumFood.SIZE][YEARS_OF_SIM]; //in metric tons.
+  // protected double[][] cropImport     = new double[EnumFood.SIZE][YEARS_OF_SIM]; //in metric tons.
   
   protected double[] landTotal  = new double[YEARS_OF_SIM];  //in square kilometers
   protected double[] landArable = new double[YEARS_OF_SIM];  //in square kilometers
@@ -70,6 +74,51 @@ public abstract class AbstractAgriculturalUnit
   //    the model's calculations.
   protected double[] cropYield = new double[EnumFood.SIZE]; //metric tons per square kilometer
   protected double[] cropNeedPerCapita = new double[EnumFood.SIZE]; //metric tons per person per year.
+
+
+  // Fall 2015 data items.
+  //
+  /**
+   * The states total income.
+   */
+  private int totalIncome = 0;
+
+  /**
+   * The states total farmland.
+   */
+  private int totalFarmLand = 0;
+
+  /**
+   * Average conversion factor, this is set by the Simulator.
+   */
+  private float averageConversionFactor;
+
+  /**
+   * Amount of fertilizer in Kg the states uses in a year.
+   */
+  private float kgPerAcreFertilizer;
+
+  /**
+   * The states income as it corresponds to category.
+   */
+  private int[]   incomePerCategory;
+
+  /**
+   * The states adjustment factors, twelve in total, one per category
+   */
+  private float[] adjustmentFactors;
+
+  /**
+   * The states ratios of it's category income to total income.
+   */
+  private float[] incomeToCategoryPercentages;
+
+  /**
+   * The states percentages of land dedicated to each category
+   */
+  private float[] landPerCategory;
+
+
 
   protected AbstractAgriculturalUnit(String name)
   {
@@ -146,9 +195,11 @@ public abstract class AbstractAgriculturalUnit
    * @param crop crop in question
    * @return tons exported
    */
+  @Deprecated
   final public double getCropExport(int year, EnumFood crop)
   {
-    return cropExport[crop.ordinal()][year - START_YEAR];
+    // return cropExport[crop.ordinal()][year - START_YEAR];
+    throw new UnsupportedOperationException("Fall 2015 doesn't used crop import or export values.");
   }
 
   /**
@@ -156,9 +207,11 @@ public abstract class AbstractAgriculturalUnit
    * @param crop crop in question
    * @return tons imported
    */
+  @Deprecated
   final public double getCropImport(int year, EnumFood crop)
   {
-    return cropImport[crop.ordinal()][year - START_YEAR];
+    // return cropImport[crop.ordinal()][year - START_YEAR];
+    throw new UnsupportedOperationException("Fall 2015 doesn't used crop import or export values.");
   }
 
   final public double getLandTotal(int year)
@@ -298,5 +351,21 @@ public abstract class AbstractAgriculturalUnit
   {
     double available = getCropProduction(year, crop) + getCropImport(year, crop) - getCropExport(year, crop);
     return available;
+  }
+
+  /**
+   * This Method calculates the initial category adjustment factors
+   * along with setting the average conversion factor.
+   *
+   * @param acf
+   */
+  public void setAverageConversionFactor(float acf)
+  {
+    averageConversionFactor = acf;
+    for (int i = 0; i < EnumFood.SIZE; i++)
+    {
+      adjustmentFactors[i] = incomeToCategoryPercentages[i] - averageConversionFactor;
+      //System.out.println(name + " Adj Factors "+adjustmentFactors[i]);
+    }
   }
 }

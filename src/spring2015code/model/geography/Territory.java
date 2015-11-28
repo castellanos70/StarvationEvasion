@@ -42,53 +42,9 @@ public class Territory extends AbstractAgriculturalUnit
   private final Collection<GeographicArea> regions = new ArrayList<>();
   private Collection<LandTile> landTiles;
 
-  // Fall 2015 data items.
-  //
-
-  /**
-   * The states region.
+  /* The region to which this country belongs.
    */
   private EnumRegion region;
-
-  /**
-   * The states total income.
-   */
-  private int totalIncome = 0;
-
-  /**
-   * The states total farmland.
-   */
-  private int totalFarmLand = 0;
-
-  /**
-   * Average conversion factor, this is set by the Simulator.
-   */
-  private float averageConversionFactor;
-
-  /**
-   * Amount of fertilizer in Kg the states uses in a year.
-   */
-  private float kgPerAcreFertilizer;
-
-  /**
-   * The states income as it corresponds to category.
-   */
-  private int[]   incomePerCategory;
-
-  /**
-   * The states adjustment factors, twelve in total, one per category
-   */
-  private float[] adjustmentFactors;
-
-  /**
-   * The states ratios of it's category income to total income.
-   */
-  private float[] incomeToCategoryPercentages;
-
-  /**
-   * The states percentages of land dedicated to each category
-   */
-  private float[] landPerCategory;
 
   /**
    * Territory constructor
@@ -100,35 +56,9 @@ public class Territory extends AbstractAgriculturalUnit
     super(name);
 
     landTiles = new ArrayList<>();
-
-    incomePerCategory           = new int[EnumFood.SIZE];
-    incomeToCategoryPercentages = new float[EnumFood.SIZE];
-    landPerCategory             = new float[EnumFood.SIZE];
-    adjustmentFactors           = new float[EnumFood.SIZE];
-  }
-  /**
-   * Getter
-   */
-  public float[] getPercentages()
-  {
-    return incomeToCategoryPercentages;
   }
 
-  /**
-   * This Method calculates the initial category adjustment factors
-   * along with setting the average conversion factor.
-   *
-   * @param acf
-   */
-  public void setAverageConversionFactor(float acf)
-  {
-    averageConversionFactor = acf;
-    for (int i = 0; i < EnumFood.SIZE; i++)
-    {
-      adjustmentFactors[i] = incomeToCategoryPercentages[i] - averageConversionFactor;
-      //System.out.println(name + " Adj Factors "+adjustmentFactors[i]);
-    }
-  }
+
 
   /**
    * @return country's collection of 100km2 tiles
@@ -468,11 +398,13 @@ public class Territory extends AbstractAgriculturalUnit
    * @param crop    crop in question
    * @param metTons tons exported
    */
-  final public void setCropExport(int year, EnumFood crop, double metTons)
+  @Deprecated
+  final private void setCropExport(int year, EnumFood crop, double metTons)
   {
     if (metTons >= 0)
     {
-      cropExport[crop.ordinal()][year - START_YEAR] = metTons;
+      throw new UnsupportedOperationException("Fall 2015 doesn't used crop import or export values.");
+      // cropExport[crop.ordinal()][year - START_YEAR] = metTons;
     }
     else
     {
@@ -488,11 +420,13 @@ public class Territory extends AbstractAgriculturalUnit
    * @param crop    crop in question
    * @param metTons tons imported
    */
-  final public void setCropImport(int year, EnumFood crop, double metTons)
+  @Deprecated
+  final private void setCropImport(int year, EnumFood crop, double metTons)
   {
     if (metTons >= 0)
     {
-      cropImport[crop.ordinal()][year - START_YEAR] = metTons;
+      throw new UnsupportedOperationException("Fall 2015 doesn't used crop import or export values.");
+      // cropImport[crop.ordinal()][year - START_YEAR] = metTons;
     }
     else
     {

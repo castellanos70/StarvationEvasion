@@ -1,10 +1,13 @@
 package starvationevasion.sim;
 
+import spring2015code.model.geography.Region;
 import starvationevasion.common.*;
 import starvationevasion.io.DataReader;
 import starvationevasion.io.FileObject;
+import starvationevasion.testing.WorldLoader;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 /**
@@ -77,73 +80,33 @@ public class Model
 
   private final int startYear;
   private int year;
-  private RegionData[] regionData = new RegionData[EnumRegion.SIZE];
-
-
+  private Region[] regionData = new Region[EnumRegion.SIZE];
 
   public Model(int startYear)
   {
     this.startYear = startYear;
     year = startYear;
-
-    FileObject stateData = DataReader.retrieveStateData("data/sim/UnitedStatesData/UnitedStatesFarmAreaAndIncome.csv");
-
-    for (EnumRegion region : EnumRegion.values())
-    {
-      if (region.isUS())
-      {
-        PlayerData playerData = new PlayerData(region);
-        regionData[region.ordinal()] = playerData;
-      }
-      else regionData[region.ordinal()] = new RegionData(region);
-    }
-
-
   }
 
-
   /**
-   * This method is used to create USState objects along with
-   * the Region data structure
+   * This method is used to build the world.
    *
-   * @param data
    */
-  private void instantiateRegions(ArrayList<String> data, int b)
+  protected void instantiateRegions()
   {
-    if (data.size() == 0) return;
+    // The load() operation is very time consuming.
+    //
+    WorldLoader loader = new WorldLoader();
+    loader.load();
 
-    float[] avgConversionFactors = new float[EnumFood.SIZE];
-
-    for (EnumRegion region : EnumRegion.US_REGIONS)
+    // The loader builds regions in the order that it finds them in the data file.  We need to
+    // put them in ordinal order.
+    //
+    Collection<Region> worldRegions = loader.getRegions();
+    for (Region r : worldRegions)
     {
-      PlayerData playerData = (PlayerData)regionData[region.ordinal()];
-      playerData.setData(data.get(region.ordinal()));
-
-      float[] currentStatePercentages = playerData.getPercentages();
-
-      for (int i = 0; i < EnumFood.SIZE; i++)
-      {
-        avgConversionFactors[i] += currentStatePercentages[i];
-      }
+      regionData[r.getRegion().ordinal()] = r;
     }
-
-    float sum = 0.f;
-    for (int i = 0; i < EnumFood.SIZE; i++)
-    {
-      //divide ny num records
-      avgConversionFactors[i] /= 50.f;
-      sum += avgConversionFactors[i];
-      //System.out.println("AVG CATEGORY "+avgConversionFactors[i]);
-    }
-
-    float averageConversionFactor = sum/EnumFood.SIZE;
-
-    for (EnumRegion region : EnumRegion.US_REGIONS)
-    {
-      PlayerData playerData = (PlayerData)regionData[region.ordinal()];
-      playerData.setAverageConversionFactor(averageConversionFactor);
-    }
-
     //Still need to reorganize and create a mechanism to set
     //the region field of each state and which data structure
     //to use for the regions.

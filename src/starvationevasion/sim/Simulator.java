@@ -45,7 +45,10 @@ public class Simulator
       playerDeck[playerRegion.ordinal()] = new CardDeck(playerRegion);
     }
 
+    // Model instantiation parses all of the XML and CSV.
+    //
     model = new Model(startYear);
+    model.instantiateRegions();
   }
 
   /**
@@ -142,8 +145,7 @@ public class Simulator
    * to deal each player a hand of cards.
    * @param args ignored.
    */
-  public static void main(String[] args)
-  {
+  public static void main(String[] args) {
     LOGGER.setLevel(Level.ALL);
     Simulator sim = new Simulator(Constant.FIRST_YEAR);
     String msg = "Starting Hands: \n";

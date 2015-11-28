@@ -121,7 +121,10 @@ public class TradingOptimizer
       respectively.  Returns true if a trade is made, false otherwise.
      */
     private boolean implementTrade(EnumFood crop, int year)
-    {
+    { // Not supported yet.
+      //
+      if (true) throw new UnsupportedOperationException("Fall 2015 doesn't used crop import or export values.");
+
       double need = -(importer.getNetCropAvailable(year, crop) - importer.getTotalCropNeed(year, crop));
       double supply = exporter.getNetCropAvailable(year, crop) - exporter.getTotalCropNeed(year, crop);
 
@@ -134,8 +137,9 @@ public class TradingOptimizer
         double toReceive = toGive * efficiency;
 
         amount = toReceive;
-        exporter.setCropExport(year, crop, toGive + curExport);
-        importer.setCropImport(year, crop, toReceive + curImport);
+
+        // exporter.setCropExport(year, crop, toGive + curExport);
+        // importer.setCropImport(year, crop, toReceive + curImport);
         
         return true;
       }

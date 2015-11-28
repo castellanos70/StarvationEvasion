@@ -5,6 +5,7 @@ import starvationevasion.common.EnumFood;
 import spring2015code.common.AbstractAgriculturalUnit;
 import spring2015code.common.EnumGrowMethod;
 import spring2015code.model.CropOptimizer;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.geography.MapPoint;
 
 import java.awt.*;
@@ -21,6 +22,7 @@ public class Region extends AbstractAgriculturalUnit
   private static final int START_YEAR = Constant.FIRST_YEAR;
   private static final boolean VERBOSE = false;
 
+  private EnumRegion region;
   private MapPoint capitolLocation;
   private final Area area = new Area();
   private final Collection<Territory> entities = new ArrayList<>();
@@ -28,11 +30,17 @@ public class Region extends AbstractAgriculturalUnit
   /**
    * Territory constructor
    *
-   * @param name country name
+   * @param EnumRegion region
    */
-  public Region(String name)
+  public Region(EnumRegion region)
   {
-    super(name);
+    super(region.name());
+    this.region = region;
+  }
+
+  public EnumRegion getRegion()
+  {
+    return region;
   }
 
   /**
@@ -374,65 +382,65 @@ public class Region extends AbstractAgriculturalUnit
     }
   }
 
-  /**
-   * @param year  year in question
-   * @param crop  crop in question
-   * @param metTons tons exported
-   */
-  public void setCropExport(int year, EnumFood crop, double metTons)
-  {
-    if (metTons >= 0)
-    {
-      // Divide it up amongst the units.
-      //
-      double perUnit = metTons / entities.size();
-      double remainder = metTons % (entities.size() * perUnit);
-      for (Territory unit : entities)
-      {
-        unit.setCropExport(year, crop, perUnit + remainder);
-        remainder = 0;
-      }
-
-      cropExport[crop.ordinal()][year - START_YEAR] = metTons;
-    }
-    else
-    {
-      if (VERBOSE)
-      {
-        System.err.println("Invalid argument for Territory.setCropExport method");
-      }
-    }
-  }
-
-  /**
-   * @param year  year in question
-   * @param crop  crop in question
-   * @param metTons tons imported
-   */
-  public void setCropImport(int year, EnumFood crop, double metTons)
-  {
-    if (metTons >= 0)
-    {
-      // Divide it up amongst the units.
-      //
-      double perUnit = metTons / entities.size();
-      double remainder = metTons % (entities.size() * perUnit);
-      for (Territory unit : entities)
-      {
-        unit.setCropImport(year, crop, perUnit + remainder);
-        remainder = 0;
-      }
-
-      cropImport[crop.ordinal()][year - START_YEAR] = metTons;
-    }
-    else
-    {
-      if (VERBOSE)
-      {
-        System.err.println("Invalid argument for Territory.setCropImport method");
-      }
-    }
-  }
+//  /**
+//   * @param year  year in question
+//   * @param crop  crop in question
+//   * @param metTons tons exported
+//   */
+//  public void setCropExport(int year, EnumFood crop, double metTons)
+//  {
+//    if (metTons >= 0)
+//    {
+//      // Divide it up amongst the units.
+//      //
+//      double perUnit = metTons / entities.size();
+//      double remainder = metTons % (entities.size() * perUnit);
+//      for (Territory unit : entities)
+//      {
+//        unit.setCropExport(year, crop, perUnit + remainder);
+//        remainder = 0;
+//      }
+//
+//      cropExport[crop.ordinal()][year - START_YEAR] = metTons;
+//    }
+//    else
+//    {
+//      if (VERBOSE)
+//     {
+//        System.err.println("Invalid argument for Territory.setCropExport method");
+//      }
+//    }
+//  }
+//
+//  /**
+//   * @param year  year in question
+//   * @param crop  crop in question
+//   * @param metTons tons imported
+//   */
+//  public void setCropImport(int year, EnumFood crop, double metTons)
+//  {
+//    if (metTons >= 0)
+//    {
+//      // Divide it up amongst the units.
+//      //
+//      double perUnit = metTons / entities.size();
+//      double remainder = metTons % (entities.size() * perUnit);
+//      for (Territory unit : entities)
+//      {
+//        unit.setCropImport(year, crop, perUnit + remainder);
+//        remainder = 0;
+//      }
+//
+//      cropImport[crop.ordinal()][year - START_YEAR] = metTons;
+//    }
+//    else
+//    {
+//      if (VERBOSE)
+//      {
+//        System.err.println("Invalid argument for Territory.setCropImport method");
+//      }
+//    }
+//  }
 
   /**
    * @param year

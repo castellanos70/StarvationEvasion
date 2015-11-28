@@ -138,11 +138,11 @@ public class CountryCSVLoader
 
       // if name in file, make country
       try {
-        String name = record.get("country");
+        String name = record.get("territory");
         if (name != null && name.isEmpty() == false) { // We use the generic AgUnit here.
           //
           unit = new Territory(name);
-        } else throw new CSVParsingException("country", record, this.csvFile);
+        } else throw new CSVParsingException("territory", record, this.csvFile);
 
         // The Fall 2015 data adds regions.
         //

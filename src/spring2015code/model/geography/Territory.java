@@ -115,29 +115,29 @@ public class Territory extends AbstractAgriculturalUnit
         for (int i = 0 ; i < EnumFood.SIZE ; i += 1) cropIncome[i][0] = income * p;
       }
 
+      if (production == 0.)
+      {
+        for (EnumFood crop : EnumFood.values()) {
+          if (production == 0.) {
+            // The current version of the CSV file doesn't have any production values.
+            // Use the income values (if available) to estimate land per crop.
+            //
+
+            // Estimate production from the yield.
+            //
+            cropProduction[crop.ordinal()][0] = (cropIncome[crop.ordinal()][0] / income) * landTotal[0];
+            production += cropProduction[crop.ordinal()][0];
+          }
+        }
+      }
+
       for (EnumFood crop : EnumFood.values())
       {
-        double p;
-        if (production == 0.)
-        {
-          // The current version of the CSV file doesn't have any production values.
-          // Use the income values (if available) to estimate land per crop.
-          //
-          cropYield[crop.ordinal()] = cropIncome[crop.ordinal()][0] / income;
-          p = cropIncome[crop.ordinal()][0] / income;
+        cropYield[crop.ordinal()] = cropProduction[crop.ordinal()][0] / landTotal[0];
 
-          // Estimate production from the yield.
-          //
-          cropProduction[crop.ordinal()][0] = cropYield[crop.ordinal()] * landTotal[0];
-        }
-        else
-        {
-          cropYield[crop.ordinal()] = cropProduction[crop.ordinal()][0] / landTotal[0];
-
-          // Use the crop production to estimate land per crop.
-          //
-          p = cropProduction[crop.ordinal()][0] / production;
-        }
+        // Use the crop production to estimate land per crop.
+        //
+        double p = cropProduction[crop.ordinal()][0] / production;
 
         // This is an initial naive estimate.  Per Joel there will eventually be a multiplier
         // applied that gives a more realistic estimate.

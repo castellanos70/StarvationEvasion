@@ -53,6 +53,7 @@ public abstract class AbstractAgriculturalUnit
   protected double[] migration = new double[YEARS_OF_SIM];   // immigration - emigration x 1,000 individuals.
   protected double[] undernourished = new double[YEARS_OF_SIM];  // percentage of population. 0.50 is 50%.
 
+  protected double[][] cropIncome = new double[EnumFood.SIZE][YEARS_OF_SIM]; // x $1000
   protected double[][] cropProduction = new double[EnumFood.SIZE][YEARS_OF_SIM]; //in metric tons.
 
   // PAB : Not used...
@@ -186,6 +187,16 @@ public abstract class AbstractAgriculturalUnit
   final public double getCropProduction(int year, EnumFood crop)
   {
     return cropProduction[crop.ordinal()][year - START_YEAR];
+  }
+
+  /**
+   * @param year year in question
+   * @param crop crop in question
+   * @return tons produced
+   */
+  final public double getCropIncome(int year, EnumFood crop)
+  {
+    return cropIncome[crop.ordinal()][year - START_YEAR];
   }
 
   /**

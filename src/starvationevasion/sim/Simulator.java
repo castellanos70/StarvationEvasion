@@ -28,6 +28,12 @@ public class Simulator
    */
   public Simulator(int startYear)
   {
+    // Model instantiation parses all of the XML and CSV.
+    //
+    LOGGER.info("Loading and initializing model");
+    model = new Model(startYear);
+    model.instantiateRegions();
+
     LOGGER.info("Starting Simulator: year="+startYear);
 
     if ((startYear < Constant.FIRST_YEAR || startYear > Constant.LAST_YEAR) ||
@@ -44,11 +50,6 @@ public class Simulator
     {
       playerDeck[playerRegion.ordinal()] = new CardDeck(playerRegion);
     }
-
-    // Model instantiation parses all of the XML and CSV.
-    //
-    model = new Model(startYear);
-    model.instantiateRegions();
   }
 
   /**

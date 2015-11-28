@@ -221,14 +221,14 @@ public class CountryCSVLoader
   }
   
   /**
-   * Set averageAge, births, mortality, migration, undernourish, and arableOpen fields.
+   * Set averageAge, births, mortality, migration, undernourish fields.
    * @param country     country object
    * @param recordMap   map of strings (key=field name, value=field value) generated from
    *                    country's CSVRecord
    */
   private void setDemographicData(Territory country, Map<String,String> recordMap)
   {
-    String[] demographicFields = {"averageAge", "births", "mortality", "migration", "undernourish", "arableOpen"};
+    String[] demographicFields = {"averageAge", "births", "mortality", "migration", "undernourish" };
     
     for (int i = 0; i < demographicFields.length; i++)
     {
@@ -300,72 +300,74 @@ public class CountryCSVLoader
    */
   private void setCropData(Territory country, Map<String,String> recordMap)
   {
-    int[] incomePerCategory = new int[EnumFood.SIZE];
-    int[] productionPerCategory = new int[EnumFood.SIZE];
-    double[] incomeToCategoryPercentages = new double[EnumFood.SIZE];
-    double[] adjustmentFactors = new double[EnumFood.SIZE];
+    int[] income = new int[EnumFood.SIZE];
+    int[] production = new int[EnumFood.SIZE];
 
     int totalFarmLand = (int) getValue(recordMap, "farmLand");
 
-    incomePerCategory[EnumFood.CITRUS.ordinal()] = (int) getValue(recordMap, "incomeCitrusFruits");
-    productionPerCategory[EnumFood.CITRUS.ordinal()] = (int) getValue(recordMap, "productionCitrusFruits");
+    income[EnumFood.CITRUS.ordinal()] = (int) getValue(recordMap, "incomeCitrusFruits");
+    production[EnumFood.CITRUS.ordinal()] = (int) getValue(recordMap, "productionCitrusFruits");
 
-    incomePerCategory[EnumFood.FRUIT.ordinal()] = (int) getValue(recordMap, "incomeNonCitrusFruits");
-    productionPerCategory[EnumFood.FRUIT.ordinal()] = (int) getValue(recordMap, "productionNonCitrusFruits");
+    income[EnumFood.FRUIT.ordinal()] = (int) getValue(recordMap, "incomeNonCitrusFruits");
+    production[EnumFood.FRUIT.ordinal()] = (int) getValue(recordMap, "productionNonCitrusFruits");
 
-    incomePerCategory[EnumFood.NUT.ordinal()] = (int) getValue(recordMap, "incomeNuts");
-    productionPerCategory[EnumFood.NUT.ordinal()] = (int) getValue(recordMap, "productionNuts");
+    income[EnumFood.NUT.ordinal()] = (int) getValue(recordMap, "incomeNuts");
+    production[EnumFood.NUT.ordinal()] = (int) getValue(recordMap, "productionNuts");
 
-    incomePerCategory[EnumFood.GRAIN.ordinal()] = (int) getValue(recordMap, "incomeGrains");
-    productionPerCategory[EnumFood.GRAIN.ordinal()] = (int) getValue(recordMap, "productionGrains");
+    income[EnumFood.GRAIN.ordinal()] = (int) getValue(recordMap, "incomeGrains");
+    production[EnumFood.GRAIN.ordinal()] = (int) getValue(recordMap, "productionGrains");
 
-    incomePerCategory[EnumFood.OIL.ordinal()] = (int) getValue(recordMap, "incomeOilCrops");
-    productionPerCategory[EnumFood.OIL.ordinal()] = (int) getValue(recordMap, "productionOilCrops");
+    income[EnumFood.OIL.ordinal()] = (int) getValue(recordMap, "incomeOilCrops");
+    production[EnumFood.OIL.ordinal()] = (int) getValue(recordMap, "productionOilCrops");
 
-    incomePerCategory[EnumFood.VEGGIES.ordinal()] = (int) getValue(recordMap, "incomeVegetables");
-    productionPerCategory[EnumFood.VEGGIES.ordinal()] = (int) getValue(recordMap, "productionVegetables");
+    income[EnumFood.VEGGIES.ordinal()] = (int) getValue(recordMap, "incomeVegetables");
+    production[EnumFood.VEGGIES.ordinal()] = (int) getValue(recordMap, "productionVegetables");
 
-    incomePerCategory[EnumFood.SPECIAL.ordinal()] = (int) getValue(recordMap, "incomeSpecialtyCrops");
-    productionPerCategory[EnumFood.SPECIAL.ordinal()] = (int) getValue(recordMap, "productionSpecialtyCrops");
+    income[EnumFood.SPECIAL.ordinal()] = (int) getValue(recordMap, "incomeSpecialtyCrops");
+    production[EnumFood.SPECIAL.ordinal()] = (int) getValue(recordMap, "productionSpecialtyCrops");
 
-    incomePerCategory[EnumFood.FEED.ordinal()] = (int) getValue(recordMap, "incomeFeedCrops");
-    productionPerCategory[EnumFood.FEED.ordinal()] = (int) getValue(recordMap, "productionFeedCrops");
+    income[EnumFood.FEED.ordinal()] = (int) getValue(recordMap, "incomeFeedCrops");
+    production[EnumFood.FEED.ordinal()] = (int) getValue(recordMap, "productionFeedCrops");
 
-    incomePerCategory[EnumFood.FISH.ordinal()] = (int) getValue(recordMap, "incomeFish");
-    productionPerCategory[EnumFood.FISH.ordinal()] = (int) getValue(recordMap, "productionFish");
+    income[EnumFood.FISH.ordinal()] = (int) getValue(recordMap, "incomeFish");
+    production[EnumFood.FISH.ordinal()] = (int) getValue(recordMap, "productionFish");
 
-    incomePerCategory[EnumFood.MEAT.ordinal()] = (int) getValue(recordMap, "incomeMeatAnimales");
-    productionPerCategory[EnumFood.MEAT.ordinal()] = (int) getValue(recordMap, "productionMeatAnimales");
+    income[EnumFood.MEAT.ordinal()] = (int) getValue(recordMap, "incomeMeatAnimals");
+    production[EnumFood.MEAT.ordinal()] = (int) getValue(recordMap, "productionMeatAnimals");
 
-    incomePerCategory[EnumFood.POULTRY.ordinal()] = (int) getValue(recordMap, "incomePoultryAndEggs");
-    productionPerCategory[EnumFood.POULTRY.ordinal()] = (int) getValue(recordMap, "productionPoultryAndEggs");
+    income[EnumFood.POULTRY.ordinal()] = (int) getValue(recordMap, "incomePoultryAndEggs");
+    production[EnumFood.POULTRY.ordinal()] = (int) getValue(recordMap, "productionPoultryAndEggs");
 
-    incomePerCategory[EnumFood.DAIRY.ordinal()] = (int) getValue(recordMap, "incomeDairy");
-    productionPerCategory[EnumFood.DAIRY.ordinal()] = (int) getValue(recordMap, "productionDairy");
+    income[EnumFood.DAIRY.ordinal()] = (int) getValue(recordMap, "incomeDairy");
+    production[EnumFood.DAIRY.ordinal()] = (int) getValue(recordMap, "productionDairy");
 
     double totalIncome = 0., totalProduction = 0.;
 
-    // 1. Tally total income
+    // 1. Tally total income & production totals.
+    //
     for (int i = 0; i < EnumFood.SIZE; i++)
-    { totalIncome += incomePerCategory[i];
-      totalProduction += productionPerCategory[i];
+    { totalIncome += income[i];
+      totalProduction += production[i];
     }
 
+    double[] incomeToCategoryPercentages = new double[EnumFood.SIZE];
+    double[] adjustmentFactors = new double[EnumFood.SIZE];
     for (int i = 0; i < EnumFood.SIZE; i++)
     { EnumFood food = EnumFood.values()[i];
-      incomeToCategoryPercentages[i] = (double) incomePerCategory[i] / (double) totalIncome;
+      incomeToCategoryPercentages[i] = (double) income[i] / (double) totalIncome;
 
       double p = 0.;
-      if (totalProduction != 0.) p = (double) productionPerCategory[i] / totalProduction;
+      if (totalProduction != 0.) p = (double) production[i] / totalProduction;
 
       // This is an initial naive estimate.  Per Joel there will eventually be a multiplier
       // applied that gives a more realistic estimate.
       //
       double land = p * totalFarmLand /* * multiplier[food] */;
-      country.setCropProduction(START_YEAR, food, productionPerCategory[i]);
+      country.setCropIncome(START_YEAR, food, income[i]);
+      country.setCropProduction(START_YEAR, food, production[i]);
       country.setCropLand(START_YEAR, food, land);
 
-      double yield = productionPerCategory[i] / land;
+      double yield = production[i] / land;
       country.setCropYield(START_YEAR, food, yield);
     }
 

@@ -1,21 +1,50 @@
-s/California/CALIFORNIA/
-s/Heartland/HEARTLAND/
-s/Northern Plains/NORTHERN_PLAINS/
-s/Northern Crescent/NORTHERN_CRESCENT/
-s/Southern Plains and Delta States/SOUTHERN_PLAINS/
-s/Southern Plains/SOUTHERN_PLAINS/
-s/Pacific Northwest and Mountain States/MOUNTAIN/
-s/Arctic America/ARCTIC_AMERICA/
-s/Middle America/MIDDLE_AMERICA/
-s/South America/SOUTH_AMERICA/
-s/Europe/EUROPE/
-s/Middle East/MIDDLE_EAST/
-s/Sub-Saharan Africa/SUB_SAHARAN/
-s/Sub Saharan/SUB_SAHARAN/
-s/Russia and Caucasus/RUSSIA/
-s/Central Asia/CENTRAL_ASIA/
-s/South Asia/SOUTH_ASIA/
-s/East Asia/EAST_ASIA/
-s/Southeast Asia/SOUTHEAST_ASIA/
-s/Oceania/OCEANIA/
-s/Southeast/SOUTHEAST/
+s/Alabama/US-Alabama/
+s/Alaska/US-Alaska/
+s/Arizona/US-Arizona/
+s/Arkansas/US-Arkansas/
+s/California/US-California/
+s/Colorado/US-Colorado/
+s/Connecticut/US-Connecticut/
+s/Delaware/US-Delaware/
+s/Florida/US-Florida/
+s/Georgia/US-Georgia/
+s/Hawaii/US-Hawaii/
+s/Idaho/US-Idaho/
+s/Illinois/US-Illinois/
+s/Indiana/US-Indiana/
+s/Iowa/US-Iowa/
+s/Kansas/US-Kansas/
+s/Kentucky/US-Kentucky/
+s/Louisiana/US-Louisiana/
+s/Maine/US-Maine/
+s/Maryland/US-Maryland/
+s/Massachusetts/US-Massachusetts/
+s/Michigan/US-Michigan/
+s/Minnesota/US-Minnesota/
+s/Mississippi/US-Mississippi/
+s/Missouri/US-Missouri/
+s/Montana/US-Montana/
+s/Nebraska/US-Nebraska/
+s/Nevada/US-Nevada/
+s/NewHampshire/US-NewHampshire/
+s/NewJersey/US-NewJersey/
+s/NewMexico/US-NewMexico/
+s/NewYork/US-NewYork/
+s/NorthCarolina/US-NorthCarolina/
+s/NorthDakota/US-NorthDakota/
+s/Ohio/US-Ohio/
+s/Oklahoma/US-Oklahoma/
+s/Oregon/US-Oregon/
+s/Pennsylvania/US-Pennsylvania/
+s/RhodeIsland/US-RhodeIsland/
+s/SouthCarolina/US-SouthCarolina/
+s/SouthDakota/US-SouthDakota/
+s/Tennessee/US-Tennessee/
+s/Texas/US-Texas/
+s/Utah/US-Utah/
+s/Vermont/US-Vermont/
+s/Virginia/US-Virginia/
+s/Washington/US-Washington/
+s/WestVirginia/US-WestVirginia/
+s/Wisconsin/US-Wisconsin/
+s/Wyoming/US-Wyoming/

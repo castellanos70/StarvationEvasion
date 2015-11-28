@@ -396,6 +396,26 @@ public class Territory extends AbstractAgriculturalUnit
   /**
    * @param year    year in question
    * @param crop    crop in question
+   * @param value Income in $1,000
+   */
+  final public void setCropIncome(int year, EnumFood crop, double value)
+  {
+    if (value >= 0)
+    {
+      cropIncome[crop.ordinal()][year - START_YEAR] = value;
+    }
+    else
+    {
+      if (VERBOSE)
+      {
+        System.err.println("Invalid argument for Territory.setCropIncome method");
+      }
+    }
+  }
+
+  /**
+   * @param year    year in question
+   * @param crop    crop in question
    * @param metTons tons exported
    */
   @Deprecated

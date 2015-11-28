@@ -25,7 +25,7 @@ public class PasswordFile
   private static Pattern assignedCountriesPattern =
       Pattern.compile("^(?<username>[^\t]+)\t+(?<password>[^\t]+)\t+(?<region>\\w+)$");
   private static Pattern userChosenCountriesPattern =
-      Pattern.compile("^(?<username>[^\t]+)\t+(?<password>[^\t]+)\t+(?<region>\\w+)$");
+      Pattern.compile("^(?<username>[^\t]+)\t+(?<password>\\w+)$");
 
   /**
    * A Map mapping (case-sensitive) usernames to (case-sensitive) passwords.

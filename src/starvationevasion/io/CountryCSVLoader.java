@@ -222,12 +222,12 @@ public class CountryCSVLoader
 
   /** Linear interpolate population.
   */
-  private void interpolatePopulation(Territory territory, int firstYear, int lastYear, int year0, int year1)
+  private void interpolatePopulation(Territory territory, int year0, int year1)
   {
     int y0 = territory.getPopulation(year0);
     int y1 = territory.getPopulation(year1);
 
-    for (int i = firstYear ; i <= lastYear ; i += 1)
+    for (int i = year0 + 1 ; i < year1 ; i += 1)
     {
       double y = y0 + (y1 - y0) * (((double) i - year0) / (year1 - year0));
       territory.setPopulation(i, (int) y);
@@ -243,7 +243,7 @@ public class CountryCSVLoader
   private void setDemographicData(Territory territory, Map<String,String> recordMap)
   {
     String[] demographicFields = {
-            "population1990", "population2000", "population2010", "population2014", "population2025", "population2050",
+            "population1981", "population1990", "population2000", "population2010", "population2014", "population2025", "population2050",
             "averageAge", "births", "mortality", "migration", "undernourish"
     };
     
@@ -260,6 +260,10 @@ public class CountryCSVLoader
       {
         switch (field)
         {
+          case "population1981":
+            territory.setPopulation(1981, Integer.parseInt(value));
+            break;
+
           case "population1990":
             territory.setPopulation(1990, Integer.parseInt(value));
             break;
@@ -335,11 +339,11 @@ public class CountryCSVLoader
 
     // Linear interpolate population.
     //
-    interpolatePopulation(territory, START_YEAR, 1989, 1990, 2000);
-    interpolatePopulation(territory, 1991, 1999, 1990, 2000);
-    interpolatePopulation(territory, 2001, 2009, 2000, 2010);
-    interpolatePopulation(territory, 2011, 2013, 2010, 2014);
-    interpolatePopulation(territory, 2015, 2049, 2014, 2050);
+    interpolatePopulation(territory, 1981, 1990);
+    interpolatePopulation(territory, 1990, 2000);
+    interpolatePopulation(territory, 2000, 2010);
+    interpolatePopulation(territory, 2010, 2014);
+    interpolatePopulation(territory, 2014, 2050);
   }
   
   /**

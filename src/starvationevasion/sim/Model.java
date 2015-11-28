@@ -7,7 +7,6 @@ import starvationevasion.io.FileObject;
 import starvationevasion.testing.WorldLoader;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.logging.Logger;
 
 /**
@@ -82,15 +81,17 @@ public class Model
   private int year;
   private Region[] regionData = new Region[EnumRegion.SIZE];
 
+
   public Model(int startYear)
   {
     this.startYear = startYear;
     year = startYear;
   }
 
+
   /**
-   * This method is used to build the world.
-   *
+   * This method is used to create USState objects along with
+   * the Region data structure
    */
   protected void instantiateRegions()
   {
@@ -99,21 +100,23 @@ public class Model
     WorldLoader loader = new WorldLoader();
     loader.load();
 
+    float[] avgConversionFactors = new float[EnumFood.SIZE];
+
     // The loader builds regions in the order that it finds them in the data file.  We need to
     // put them in ordinal order.
     //
-    Collection<Region> worldRegions = loader.getRegions();
-    for (Region r : worldRegions)
-    {
-      regionData[r.getRegion().ordinal()] = r;
+    for (Region r : loader.getRegions())
+    { regionData[r.getRegion().ordinal()] = r;
     }
-    //Still need to reorganize and create a mechanism to set
-    //the region field of each state and which data structure
-    //to use for the regions.
   }
 
-
-
+  /**
+   * Copy simulator data into the given data structure to be passed to the Server.
+   * @param data
+   */
+  protected void populateRegionData(RegionData data)
+  {
+  }
 
   /**
    *

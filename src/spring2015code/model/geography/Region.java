@@ -203,7 +203,6 @@ public class Region extends AbstractAgriculturalUnit
 
     // Re-initialize to zero.
 	//
-    population[index] = 0;
     medianAge[index] = 0;
     births[index] = 0;
     mortality[index] = 0;
@@ -231,7 +230,6 @@ public class Region extends AbstractAgriculturalUnit
 	//
     for (Territory t : territories)
     {
-      population[index] += t.getPopulation(year);
       medianAge[index] += t.getMedianAge(year);
       births[index] += t.getBirths(year);
       mortality[index] += t.getMortality(year);

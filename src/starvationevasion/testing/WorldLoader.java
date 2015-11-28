@@ -32,8 +32,8 @@ public class WorldLoader
   public static final String MODEL_DATA_PATH = "/sim/geography/ne_10m_admin_1_states_provinces.kml";
   public static final String BG_DATA_PATH = "/sim/geography/ne_50m_land.kml";
 
-  public Collection<Territory> territories;
-  public Collection<Region> regions;
+  private Collection<Territory> territories;
+  private Collection<Region> regions;
 
   /**
    * Constructor for game, handles all init logic.
@@ -41,10 +41,20 @@ public class WorldLoader
   public WorldLoader() {
   }
 
+  public Collection<Territory> getTerritories()
+  {
+    return territories;
+  }
+
+  public Collection<Region> getRegions()
+  {
+    return regions;
+  }
+
   /**
    * set it ALL up.
    */
-  private void load()
+  public void load()
   {
     Collection<GeographicArea> background;
     Collection<GeographicArea> modelGeography;

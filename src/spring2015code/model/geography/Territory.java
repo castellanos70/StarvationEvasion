@@ -58,8 +58,6 @@ public class Territory extends AbstractAgriculturalUnit
     landTiles = new ArrayList<>();
   }
 
-
-
   /**
    * @return country's collection of 100km2 tiles
    */
@@ -82,6 +80,42 @@ public class Territory extends AbstractAgriculturalUnit
   public EnumRegion getGameRegion()
   {
     return region;
+  }
+
+  /**
+   * Copies initial data from another territory to this territory.  This is primarily only
+   * done when unifying XML and CSV data.
+   *
+   * @param fromTerritory The territory from which to copy data.
+   * @param year The year to copy.
+   */
+  public void copyValuesFrom(final Territory fromTerritory, final int year)
+  {
+    int index = year - START_YEAR;
+
+    population[index] = fromTerritory.population[index];
+    medianAge[index] = fromTerritory.medianAge[index];
+    births[index] = fromTerritory.births[index];
+    mortality[index] = fromTerritory.mortality[index];
+    migration[index] = fromTerritory.migration[index];
+    undernourished[index] = fromTerritory.undernourished[index];
+
+    landTotal[index] = fromTerritory.landTotal[index];
+    landArable[index] = fromTerritory.landArable[index];
+
+    for (EnumFood food : EnumFood.values())
+    {
+      cropYield[food.ordinal()] = fromTerritory.cropYield[food.ordinal()];
+      cropNeedPerCapita[food.ordinal()] = fromTerritory.cropNeedPerCapita[food.ordinal()];
+      cropIncome[food.ordinal()][index] = fromTerritory.cropIncome[food.ordinal()][index];
+      cropProduction[food.ordinal()][index] = fromTerritory.cropProduction[food.ordinal()][index];
+      landCrop[food.ordinal()][index] = fromTerritory.landCrop[food.ordinal()][index];
+    }
+
+    for (EnumGrowMethod method : EnumGrowMethod.values())
+    {
+      cultivationMethod[method.ordinal()][index] = fromTerritory.cultivationMethod[method.ordinal()][index];
+    }
   }
 
   // generate the capital by finding the center of the largest landmass.
@@ -183,6 +217,7 @@ public class Territory extends AbstractAgriculturalUnit
   {
     return regions;
   }
+
   /**
    * @param year year in question
    * @param n    population in that year
@@ -239,6 +274,26 @@ public class Territory extends AbstractAgriculturalUnit
   }
 
   /**
+   * Populate medianAge array with given age; assumes median age remains constant.
+   *
+   * @param years median age
+   */
+  final public void setMedianAge(int year, double years)
+  {
+    if (years >= 0)
+    {
+      medianAge[year - START_YEAR] = years;
+    }
+    else
+    {
+      if (VERBOSE)
+      {
+        System.err.println("Invalid argument for Territory.setMedianAge method");
+      }
+    }
+  }
+
+  /**
    * Populate births array with given rate; assumes rate remains constant.
    *
    * @param permille births/1000 people
@@ -248,6 +303,25 @@ public class Territory extends AbstractAgriculturalUnit
     if (permille >= 0 && permille <= 1000)
     {
       for (int i = 0; i < births.length; i++) births[i] = permille;
+    }
+    else
+    {
+      if (VERBOSE)
+      {
+        System.err.println("Invalid argument for Territory.setBirths method");
+      }
+    }
+  }
+  /**
+   * Populate births array with given rate; assumes rate remains constant.
+   *
+   * @param permille births/1000 people
+   */
+  final public void setBirths(int year, double permille)
+  {
+    if (permille >= 0 && permille <= 1000)
+    {
+      births[year - START_YEAR] = permille;
     }
     else
     {
@@ -307,6 +381,26 @@ public class Territory extends AbstractAgriculturalUnit
     if (permille >= -1000 && permille <= 1000)
     {
       for (int i = 0; i < migration.length; i++) migration[i] = permille;
+    }
+    else
+    {
+      if (VERBOSE)
+      {
+        System.err.println("Invalid argument for Territory.setMigration method");
+      }
+    }
+  }
+
+  /**
+   * Populate migration array with given rate; assumes rate remains constant.
+   *
+   * @param permille migration/1000 people
+   */
+  final public void setMigration(int year, double permille)
+  {
+    if (permille >= -1000 && permille <= 1000)
+    {
+      migration[year - START_YEAR] = permille;
     }
     else
     {

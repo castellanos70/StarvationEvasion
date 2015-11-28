@@ -1,13 +1,18 @@
 package starvationevasion.sim;
 
+import spring2015code.common.AbstractAgriculturalUnit;
 import spring2015code.common.EnumGrowMethod;
 import spring2015code.model.geography.Region;
+import spring2015code.model.geography.Territory;
 import starvationevasion.common.*;
+import starvationevasion.geography.LandTile;
 import starvationevasion.io.DataReader;
 import starvationevasion.io.FileObject;
 import starvationevasion.testing.WorldLoader;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -78,6 +83,10 @@ public class Model
 {
   private final static Logger LOGGER = Logger.getLogger(Model.class.getName());
 
+  // Verbosity of debug information during startup
+  //
+  private final static Level debugLevel = Level.FINE;
+
   private final int startYear;
   private int year;
   private Region[] regionData = new Region[EnumRegion.SIZE];
@@ -115,7 +124,7 @@ public class Model
       r.scaleInitialStatistics(.50);
       r.updateStatistics(Constant.FIRST_YEAR);
 
-      printRegionData(r, Constant.FIRST_YEAR);
+      if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(r, Constant.FIRST_YEAR);
     }
   }
 
@@ -164,30 +173,66 @@ public class Model
   private void updateFoodDistribution(){}
   private void updatePlayerRegionRevenue(){}
   private void updateHumanDevelopmentIndex(){}
-
-  public static void printRegionData(Region region, int year)
+  
+  public static void printRegion(Region region, int year)
   {
-    System.out.println("Data for region " + region.getName() + " in year " + year);
-    System.out.println("\tpopulation : " + region.getPopulation(year));
-    System.out.println("\tmedianAge : " + region.getMedianAge(year));
-    System.out.println("\tbirths : " + region.getBirths(year));
-    System.out.println("\tmortality : " + region.getMortality(year));
-    System.out.println("\tmigration : " + region.getMigration(year));
-    System.out.println("\tundernourished : " + region.getUndernourished(year));
-    System.out.println("\tlandTotal : " + region.getLandTotal(year));
-    System.out.println("\tlandArable : " + region.getLandArable(year));
-
-    for (EnumFood food : EnumFood.values())
+    System.out.println("Region : " + region.getName());
+    printData(region, year, "");
+    for (Territory territory : region.getAgriculturalUnits())
     {
-      System.out.println("\tcropYield[" + food + "] : " + region.getCropYield(year, food));
-      System.out.println("\tcropNeedPerCapita[" + food + "] : " + region.getCropNeedPerCapita(food));
-      System.out.println("\tcropProduction[" + food + "] : " + region.getCropProduction(year, food));
-      System.out.println("\tlandCrop[" + food + "] : " + region.getCropLand(year, food)); // Yes, they named it backwards.
+      System.out.println("\tTerritory " + territory.getName());
+      if (debugLevel.intValue() <= Level.FINER.intValue()) printData(territory, year, "\t");
+      if (debugLevel.intValue() <= Level.FINEST.intValue())
+      {
+        for (LandTile tile : territory.getLandTiles())
+        {
+          System.out.println("\t\t" + tile.toString());
+        }
+      }
     }
+  }
+  
+  public static void printData(AbstractAgriculturalUnit unit, int year, String prefix)
+  {
+    System.out.println(prefix + "Data for " + unit.getName() + " in year " + year);
+    System.out.println(prefix + "\tpopulation : " + unit.getPopulation(year));
+    System.out.println(prefix + "\tmedianAge : " + unit.getMedianAge(year));
+    System.out.println(prefix + "\tbirths : " + unit.getBirths(year));
+    System.out.println(prefix + "\tmortality : " + unit.getMortality(year));
+    System.out.println(prefix + "\tmigration : " + unit.getMigration(year));
+    System.out.println(prefix + "\tundernourished : " + unit.getUndernourished(year));
+    System.out.println(prefix + "\tlandTotal : " + unit.getLandTotal(year));
+    System.out.println(prefix + "\tlandArable : " + unit.getLandArable(year));
 
-    for (EnumGrowMethod method : EnumGrowMethod.values())
-    {
-      System.out.println("\tcultivationMethod[" + method + "] : " + region.getMethodPercentage(year, method));
-    }
+    System.out.print(prefix + "\t            ");
+    for (EnumFood food : EnumFood.values()) System.out.print("\t" + food);
+    System.out.println();
+
+    System.out.print(prefix + "\tcropYield : ");
+    for (EnumFood food : EnumFood.values()) System.out.print("\t" + unit.getCropYield(year, food));
+    System.out.println();
+
+    System.out.print(prefix + "\tcropNeedPerCapita : ");
+    for (EnumFood food : EnumFood.values()) System.out.print("\t" + unit.getCropNeedPerCapita(food));
+    System.out.println();
+
+    System.out.print(prefix + "\tcropProduction : ");
+    for (EnumFood food : EnumFood.values()) System.out.print("\t" + unit.getCropProduction(year, food));
+    System.out.println();
+
+    System.out.print(prefix + "\tcropIncome : ");
+    for (EnumFood food : EnumFood.values()) System.out.print("\t" + unit.getCropIncome(year, food));
+    System.out.println();
+
+    System.out.print(prefix + "\tlandCrop : ");
+    for (EnumFood food : EnumFood.values()) System.out.print("\t" + unit.getCropLand(year, food)); // Yes, they named it backwards.
+    System.out.println();
+
+    System.out.print(prefix + "\t            ");
+    for (EnumGrowMethod method : EnumGrowMethod.values()) System.out.print("\t" + method);
+    System.out.println();
+    System.out.print(prefix + "\tcultivationMethod : ");
+    for (EnumGrowMethod method : EnumGrowMethod.values()) System.out.print("\t" + unit.getMethodPercentage(year, method));
+    System.out.println();
   }
 }

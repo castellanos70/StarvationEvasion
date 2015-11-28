@@ -245,6 +245,7 @@ public class Region extends AbstractAgriculturalUnit
     {
       cropYield[i] = 0;
       cropNeedPerCapita[i] = 0;
+      cropIncome[i][index] = 0;
       cropProduction[i][index] = 0;
       landCrop[i][index] = 0;
     }
@@ -272,6 +273,7 @@ public class Region extends AbstractAgriculturalUnit
       {
         cropYield[food.ordinal()] += unit.getCropYield(year, food);
         cropNeedPerCapita[food.ordinal()] += unit.getCropNeedPerCapita(food);
+        cropIncome[food.ordinal()][index] += unit.getCropIncome(year, food);
         cropProduction[food.ordinal()][index] += unit.getCropProduction(year, food);
         landCrop[food.ordinal()][index] += unit.getCropLand(year, food); // Yes, they named it backwards.
       }

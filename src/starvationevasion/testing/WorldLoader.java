@@ -91,7 +91,7 @@ public class WorldLoader
 
     territories = data.territories;
     regions = data.regions;
-    printRegions(regions, false);
+    // printRegions(regions, false);
 
     Calendar startingDate = Calendar.getInstance();
     startingDate.set(Calendar.YEAR,  2014);
@@ -103,7 +103,6 @@ public class WorldLoader
 
     tileManager.setWorld(world);
   }
-
 
   public static void printRegions(Collection<Region> regions, boolean verbose)
   {

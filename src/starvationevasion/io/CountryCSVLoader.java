@@ -73,7 +73,7 @@ public class CountryCSVLoader
         if (xmlCountryName.equals(csvCountry.getName()))
         {
           // copy data from csv country object into xml country object
-          xmlCountry = copyCountryData(xmlCountry, csvCountry);
+          xmlCountry.copyValuesFrom(csvCountry, START_YEAR);
           // remove country from csv list after copying it
           csvItr.remove();
 
@@ -445,39 +445,6 @@ public class CountryCSVLoader
     {
       System.err.println("Territory data file not found");
     }
-  }
-  
-  private Territory copyCountryData(Territory countryFinal, Territory countryTemp)
-  {
-    //countryTemp values
-     int population = countryTemp.getPopulation(START_YEAR);
-     double medianAge = countryTemp.getMedianAge(START_YEAR);
-     double birthRate = countryTemp.getBirths(START_YEAR);
-     double mortalityRate = countryTemp.getMortality(START_YEAR);
-     double migrationRate = countryTemp.getMigration(START_YEAR);
-     double undernourished = countryTemp.getUndernourished(START_YEAR);
-     double landTotal = countryTemp.getLandTotal(START_YEAR);
-     double landArable = countryTemp.getArableLand(START_YEAR);
-     
-     // copy everything
-     countryFinal.setPopulation(START_YEAR, population);
-     countryFinal.setMedianAge(medianAge);
-     countryFinal.setBirths(birthRate);
-     countryFinal.setMortality(START_YEAR, mortalityRate);
-     countryFinal.setMigration(migrationRate);
-     countryFinal.setUndernourished(START_YEAR, undernourished);
-     countryFinal.setLandTotal(START_YEAR, landTotal);
-     countryFinal.setArableLand(START_YEAR, landArable);
-     
-     copyCropValues(countryFinal, countryTemp);
-    
-     for (EnumGrowMethod method:EnumGrowMethod.values())
-     {
-       double percentage = countryTemp.getMethodPercentage(START_YEAR,method);
-       countryFinal.setMethodPercentage(START_YEAR, method, percentage);
-     }
-
-     return countryFinal;
   }
   
   private void copyCropValues(Territory countryFinal, Territory agriculturalUnitTemp)

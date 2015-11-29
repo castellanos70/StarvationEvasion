@@ -15,6 +15,7 @@ public class CSVParsingException extends RuntimeException
   
   /**
    * Constructor takes info about the file and the particular record (i.e. row) causing error.
+   * @param field    exact string used in file header.
    * @param record    CSVRecord causing error
    * @param csvFile   File containing record
    */

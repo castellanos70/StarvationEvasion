@@ -19,12 +19,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * @author david
- *         created: 2015-03-21
- *         <p/>
- *         description:
- */
 public class CropZoneDataIO
 {
   public static final String DEFAULT_FILE = "/sim/geography/tiledata.bil";

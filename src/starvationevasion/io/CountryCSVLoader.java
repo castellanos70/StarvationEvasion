@@ -290,26 +290,22 @@ public class CountryCSVLoader
 
           case "births":
             double numValue = Double.parseDouble(value);
-            if (numValue >= 0 && numValue < 2000) territory.setBirths(numValue);
-            else throw new IllegalArgumentException();
+            territory.setBirths(numValue);
             break;
 
           case "mortality":
             numValue = Double.parseDouble(value);
-            if (numValue >= 0 && numValue <= 1000) territory.setMortality(START_YEAR, numValue);
-            else throw new IllegalArgumentException();
+            territory.setMortality(START_YEAR, numValue);
             break;
 
           case "migration":
             numValue = Double.parseDouble(value);
-            if (numValue >= -1000 && numValue <= 1000) territory.setMigration(numValue);
-            else throw new IllegalArgumentException();
+            territory.setMigration(numValue);
             break;
 
           case "undernourish":
             numValue = Double.parseDouble(value);
-            if (numValue >= 0 && numValue <= 100) territory.setUndernourished(START_YEAR, numValue / 100); // Convert to percent.
-            else throw new IllegalArgumentException();
+            territory.setUndernourished(START_YEAR, numValue / 100); // Convert to percent.
             break;
 
           case "arableOpen":

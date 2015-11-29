@@ -441,16 +441,19 @@ public class LandTile
   @Override
   public String toString()
   {
-    return "LandTile{" +
-      "center=" + center +
-      ", rainfall=" + rainfall +
-      ", avgNightTemp=" + avgNightTemp +
-      ", avgDayTemp=" + avgDayTemp +
-      ", minAnnualTemp=" + minAnnualTemp +
-      ", maxAnnualTemp=" + maxAnnualTemp +
-      ", elevation=" + elevation +
-      ", center=" + center +
-      '}';
+    return "LandTile{" + center +
+            ", current crop =" + currCrop +
+            '}';
+
+//    return "LandTile{" +
+//      "center=" + center +
+//      ", rainfall=" + rainfall +
+//      ", avgNightTemp=" + avgNightTemp +
+//      ", avgDayTemp=" + avgDayTemp +
+//      ", minAnnualTemp=" + minAnnualTemp +
+//      ", maxAnnualTemp=" + maxAnnualTemp +
+//      ", elevation=" + elevation +
+//      '}';
   }
 
 

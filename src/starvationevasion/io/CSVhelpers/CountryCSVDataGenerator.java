@@ -9,8 +9,6 @@ import spring2015code.common.EnumGrowMethod;
 /**
  * Class with static methods for filling in country data omitted
  * from CSV file.
- * @author jessica
- * @verion 21-Mar-2015
  */
 public final class CountryCSVDataGenerator implements CountryCSVDefaultData
 {

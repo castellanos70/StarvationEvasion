@@ -4,7 +4,6 @@ package starvationevasion.sim;
 import starvationevasion.common.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -52,6 +51,57 @@ public class Simulator
     }
   }
 
+
+
+  /**
+   * The Server should call init() at the start of the game before dealing cards to
+   * players.
+   *
+   * @return data structure populated with all game state data needed by the client
+   * except high resolution data that might be needed by the visualizer.
+   */
+  public WorldData init()
+  {
+    return model.getWorldData();
+  }
+
+
+
+
+  /**
+   * The Server should call nextTurn(cards) when it is ready to advance the simulator
+   * a turn (Constant.YEARS_PER_TURN years).<br><br>
+   * Before calling nextTurn, the Server must:
+   * <ol>
+   * <li>Verify all policy cards drafted by the clients during the draft phase.</li>
+   * <li>Verify that any cards discarded by a player could be discarded.</li>
+   * <li>Call discard on each card discarded by a player.</li>
+   * <li>End the voting phase and decide the results.</li>
+   * <li>Call discard on each card that did not receive enough votes.</li>
+   * <li>Call drawCards for each player and send them their new cards.</li>
+   * </ol>
+   * @param cards List of PolicyCards enacted this turn. Note: cards played but not
+   *              enacted (did not get required votes) must NOT be in this list.
+   *              Such cards must be discarded
+   *              (call discard(EnumRegion playerRegion, PolicyCard card))
+   *              <b>before</b> calling this method.
+   *
+   * @return data structure populated with all game state data needed by the client
+   * except high resolution data that might be needed by the visualizer.
+   */
+  public WorldData nextTurn(ArrayList<PolicyCard> cards)
+  {
+    LOGGER.info("Advancing Turn...");
+    model.nextYear(cards);
+    model.nextYear(cards);
+    model.nextYear(cards);
+    LOGGER.info("Turn complete, year is now " + model.getCurrentYear());
+    return model.getWorldData();
+  }
+
+
+
+
   /**
    * The server must call this for each playerRegion before the first turn
    * and during each turn's draw phase. This method will return the proper number of
@@ -96,54 +146,8 @@ public class Simulator
     deck.discard(card);
   }
 
-  /**
-   * The Server should call nextTurn(cards) when it is ready to advance the simulator
-   * a turn (Constant.YEARS_PER_TURN years).<br><br>
-   * Before calling nextTurn, the Server must:
-   * <ol>
-   * <li>Verify all policy cards drafted by the clients during the draft phase.</li>
-   * <li>Verify that any cards discarded by a player could be discarded.</li>
-   * <li>Call discard on each card discarded by a player.</li>
-   * <li>End the voting phase and decide the results.</li>
-   * <li>Call discard on each card that did not receive enough votes.</li>
-   * <li>Call drawCards for each player and send them their new cards.</li>
-   * </ol>
-   * @param cards List of PolicyCards enacted this turn. Note: cards played but not
-   *              enacted (did not get required votes) must NOT be in this list.
-   *              Such cards must be discarded
-   *              (call discard(EnumRegion playerRegion, PolicyCard card))
-   *              <b>before</b> calling this method.
-   *
-   * @return the simulation year after nextTurn() has finished.
-   */
-  public int nextTurn(ArrayList<PolicyCard> cards)
-  {
-    LOGGER.info("Advancing Turn...");
-    model.nextYear(cards);
-    model.nextYear(cards);
-    model.nextYear(cards);
-    LOGGER.info("Turn complete, year is now " + model.getCurrentYear());
-    return model.getCurrentYear();
-  }
 
-  /**
-   * This method creates a new array and populates it with the current year's
-   * data form the simulator.
-   * @return an array of of RegionData for the current simulation year.
-   * indexed by EnumRegion.ordinal().
-   */
-  public RegionData[] getRegionData()
-  {
-    RegionData[] regionDataList = new RegionData[EnumRegion.SIZE];
-    for (EnumRegion region : EnumRegion.values())
-    {
-      RegionData data = new RegionData(region);
-      model.populateRegionData(data);
-      regionDataList[region.ordinal()] = data;
-    }
 
-    return regionDataList;
-  }
 
   /**
    * This entry point is for testing only. <br><br>
@@ -167,7 +171,5 @@ public class Simulator
       msg+='\n';
     }
     LOGGER.info(msg);
-
-
   }
 }

@@ -1,11 +1,13 @@
 package starvationevasion.common;
 
+import java.io.Serializable;
+
 /**
  * This structure contains all data of a particular region that the simulator shares with
  * each client via the Server.
  */
 
-public class RegionData
+public class RegionData implements Serializable
 {
   public final EnumRegion region;
 

@@ -21,11 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Main entry point for the 'game'. Handles loading data and all configurations.
- * @author david winston
- *         created: 2015-02-04
- *         <p/>
- *         description:
+ * Handles loading data and all configurations.
  */
 public class WorldLoader
 {

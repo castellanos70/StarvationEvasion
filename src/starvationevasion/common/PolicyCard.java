@@ -83,7 +83,7 @@ public abstract class PolicyCard  implements Serializable
    * Some policy cards require quantity X, Y and/or Z.
    * The units of these values are depend on the particular policy.
    * Use {@link #getValidTargetRegions() validTargetRegions()} method to
-   * get the valid target regions of this policy card.<br><br.
+   * get the valid target regions of this policy card.<br><br>.
    * This field is ignored if not require by this policy.
    */
   protected int varX, varY, varZ;
@@ -98,6 +98,7 @@ public abstract class PolicyCard  implements Serializable
    *
    * @param owner US player region controlled by the player who drafts this policy.
    * @param type The policy card type to be constructed.
+   * @return new instance of a policy card.
    */
   public static PolicyCard create(EnumRegion owner, EnumPolicy type)
   {

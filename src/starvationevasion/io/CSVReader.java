@@ -82,7 +82,7 @@ public class CSVReader
   }
 
   /**
-   * @return Closes the reader.
+   * Closes the reader.
   */
   public void close() throws IOException
   {
@@ -112,8 +112,8 @@ public class CSVReader
     }
 
     /**
-	 * @param the key to lookup.
-	 * @return the value stored under the key.
+	 * @param key to lookup.
+	 * @return value stored under the key.
 	 */
     public String get(String key)
     { return tokens.get(key);

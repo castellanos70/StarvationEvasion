@@ -138,8 +138,32 @@ public class Server
         handleRegionChoice(client, (RegionChoice) message);
         continue;
       }
-
+      if (message instanceof ClientChatMessage)
+      {
+        handleChatMessage(client, (ClientChatMessage) message);
+        continue;
+      }
       client.send(Response.INAPPROPRIATE);
+    }
+  }
+
+  private void handleChatMessage(ServerWorker client, ClientChatMessage message)
+  {
+    if (client.getRegion() == null)
+    {
+      client.send(Response.INAPPROPRIATE); //if you haven't been assigned a region, no reason to be able to send messages
+      return;
+    }
+    client.send(Response.OK);
+    Set<EnumRegion> recipientSet = new HashSet<>(Arrays.asList(message.messageRecipients));
+    ServerChatMessage serverChatMessage = ServerChatMessage.constructFromClientMessage(message, client.getRegion());
+    for (ServerWorker connectedClient : connectedClients)
+    {
+      if (connectedClient.getRegion() != null &&
+          recipientSet.contains(connectedClient.getRegion()))
+      {
+        connectedClient.send(serverChatMessage);
+      }
     }
   }
 

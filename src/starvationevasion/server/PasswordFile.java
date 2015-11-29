@@ -62,7 +62,8 @@ public class PasswordFile
       for (String line : content)
       {
         Matcher m = userChosenCountriesPattern.matcher(line);
-        m.matches();
+        //noinspection ResultOfMethodCallIgnored
+        m.matches(); //see above comment
         tempCredentialMap.put(m.group("username"), m.group("password"));
       }
       credentialMap = Collections.unmodifiableMap(tempCredentialMap);

@@ -224,6 +224,10 @@ public class Server
         beginToStartGame();
       }
     }
+    else
+    {
+      client.send(new LoginResponse(LoginResponse.ResponseType.ACCESS_DENIED, null));
+    }
   }
 
   private void beginToStartGame()

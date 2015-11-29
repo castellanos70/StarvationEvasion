@@ -127,11 +127,14 @@ public class Model
   }
 
   /**
-   * Copy simulator data into the given data structure to be passed to the Server.
-   * @param data
+   * Create and populate end-of-turn data for the simulator to return to the client the Server.
+   * @return a reference to a new WorldData structure that is never reused by the simulator.
    */
-  protected void populateRegionData(RegionData data)
+  protected WorldData getWorldData()
   {
+    WorldData worldData = new WorldData();
+
+    return worldData;
   }
 
   /**

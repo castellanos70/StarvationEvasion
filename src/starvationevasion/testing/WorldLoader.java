@@ -21,17 +21,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Main entry point for the 'game'. Handles loading data and all configurations.
- * @author david winston
- *         created: 2015-02-04
- *         <p/>
- *         description:
+ * Handles loading data and all configurations.
  */
 public class WorldLoader
 {
   private static boolean DEBUG = false;
 
-  public static final String MODEL_DATA_PATH = "/sim/geography/ne_10m_admin_1_states_provinces.kml";
   public static final String BG_DATA_PATH = "/sim/geography/ne_50m_land.kml";
 
   private Collection<Territory> territories;

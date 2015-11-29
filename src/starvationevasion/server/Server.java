@@ -2,20 +2,17 @@ package starvationevasion.server;
 
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.locales.TimerTaskAdapter;
 import starvationevasion.common.messages.*;
 import starvationevasion.common.Tuple;
 import starvationevasion.sim.Simulator;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -30,7 +27,8 @@ public class Server
   private final List<ServerWorker> connectedClients = new ArrayList<>();
   private ConcurrentLinkedQueue<Tuple<Serializable, ServerWorker>> messageQueue = new ConcurrentLinkedQueue<>();
   private PasswordFile passwordFile;
-  private Timer gameStartTimer = new Timer();
+  private ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+  private ScheduledFuture<?> gameStartFuture;
   private Simulator simulator;
 
   public Server(String loginFilePath)
@@ -173,7 +171,7 @@ public class Server
   {
     if (getCurrentState() == ServerState.DRAFTING) return; //already started, too late, oh well
     if (getCurrentState() != ServerState.BEGINNING) throw new IllegalStateException();
-    gameStartTimer.cancel();
+    if (!gameStartFuture.cancel(false)) return; //already started, too late
     setServerState(ServerState.LOGIN);
     broadcast(new ReadyToBegin(false, 0, 0));
   }
@@ -183,7 +181,6 @@ public class Server
     setServerState(ServerState.DRAFTING);
     broadcast(new BeginGame(getTakenRegions()));
     simulator = new Simulator(Constant.FIRST_YEAR);
-
   }
 
   private void handleLogin(ServerWorker client, Login message)
@@ -234,7 +231,8 @@ public class Server
     broadcast(new ReadyToBegin(true,
         now.getEpochSecond(), now.plusMillis(ServerConstants.GAME_START_WAIT_TIME).getEpochSecond()));
     setServerState(ServerState.BEGINNING);
-    gameStartTimer.schedule(new TimerTaskAdapter(this::beginToStartGame), ServerConstants.GAME_START_WAIT_TIME);
+    gameStartFuture = scheduledExecutorService.schedule(
+        this::startGame, ServerConstants.GAME_START_WAIT_TIME, TimeUnit.MILLISECONDS);
   }
 
   private AvailableRegions getAvailableRegions()

@@ -1,8 +1,11 @@
 package starvationevasion.server;
 
+import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.locales.TimerTaskAdapter;
 import starvationevasion.common.messages.*;
 import starvationevasion.common.Tuple;
+import starvationevasion.sim.Simulator;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -27,7 +30,8 @@ public class Server
   private final List<ServerWorker> connectedClients = new ArrayList<>();
   private ConcurrentLinkedQueue<Tuple<Serializable, ServerWorker>> messageQueue = new ConcurrentLinkedQueue<>();
   private PasswordFile passwordFile;
-  private Thread gameStartThread;
+  private Timer gameStartTimer = new Timer();
+  private Simulator simulator;
 
   public Server(String loginFilePath)
   {
@@ -169,24 +173,17 @@ public class Server
   {
     if (getCurrentState() == ServerState.DRAFTING) return; //already started, too late, oh well
     if (getCurrentState() != ServerState.BEGINNING) throw new IllegalStateException();
-    if (gameStartThread.isAlive()) gameStartThread.interrupt();
+    gameStartTimer.cancel();
     setServerState(ServerState.LOGIN);
     broadcast(new ReadyToBegin(false, 0, 0));
   }
 
   private void startGame()
   {
-    try
-    {
-      Thread.sleep(ServerConstants.GAME_START_WAIT_TIME);
-    }
-    catch (InterruptedException ignored)
-    {
-      return;
-      //game start cancelled, do nothing
-    }
     setServerState(ServerState.DRAFTING);
     broadcast(new BeginGame(getTakenRegions()));
+    simulator = new Simulator(Constant.FIRST_YEAR);
+
   }
 
   private void handleLogin(ServerWorker client, Login message)
@@ -237,8 +234,7 @@ public class Server
     broadcast(new ReadyToBegin(true,
         now.getEpochSecond(), now.plusMillis(ServerConstants.GAME_START_WAIT_TIME).getEpochSecond()));
     setServerState(ServerState.BEGINNING);
-    gameStartThread = new Thread(this::startGame);
-    gameStartThread.start();
+    gameStartTimer.schedule(new TimerTaskAdapter(this::beginToStartGame), ServerConstants.GAME_START_WAIT_TIME);
   }
 
   private AvailableRegions getAvailableRegions()

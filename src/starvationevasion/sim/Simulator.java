@@ -167,7 +167,5 @@ public class Simulator
       msg+='\n';
     }
     LOGGER.info(msg);
-
-
   }
 }

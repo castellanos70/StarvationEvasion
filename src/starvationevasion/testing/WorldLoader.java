@@ -31,7 +31,6 @@ public class WorldLoader
 {
   private static boolean DEBUG = false;
 
-  public static final String MODEL_DATA_PATH = "/sim/geography/ne_10m_admin_1_states_provinces.kml";
   public static final String BG_DATA_PATH = "/sim/geography/ne_50m_land.kml";
 
   private Collection<Territory> territories;

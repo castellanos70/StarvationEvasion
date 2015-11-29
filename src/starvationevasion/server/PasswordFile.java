@@ -14,7 +14,8 @@ import java.util.regex.Pattern;
  * Loads a password file. A password file is a tab-delimited file
  * where rows are delimited by either "\n" OR "\r\n".
  * Each row is of the form USER_NAME\tPASSWORD\tREGION, where no fields contain tab
- * characters, and REGION is a (case-sensitive) value from EnumRegions.
+ * characters, and REGION is a value from EnumRegions.
+ * All fields are case-sensitive.
  * The region may be omitted from ALL records; if this is the case, the server
  * will instead allow each player to choose their own region.
  * An example password file can be found in the 'data/config' directory.

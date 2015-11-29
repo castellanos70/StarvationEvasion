@@ -58,15 +58,6 @@ public class Server
   private void waitForConnections()
   {
     System.out.println("Waiting for clients to connect...");
-    String host = "";
-    try
-    {
-      host = InetAddress.getLocalHost().getHostName();
-    }
-    catch (UnknownHostException e)
-    {
-      e.printStackTrace();
-    }
     while (true)
     {
       //System.out.println("ServerMaster("+host+"): waiting for Connection on port: "+port);

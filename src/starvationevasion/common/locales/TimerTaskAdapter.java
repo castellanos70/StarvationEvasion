@@ -4,7 +4,8 @@ import java.util.TimerTask;
 
 /**
  * Shea Polansky
- * Class name and description goes here
+ * Creates a TimerTask that runs a given Runnable.
+ * This is for adapting lambdas/method references for use as TimerTasks.
  */
 public class TimerTaskAdapter extends TimerTask
 {

@@ -119,16 +119,14 @@ public class Territory extends AbstractAgriculturalUnit
       if (production == 0.)
       {
         for (EnumFood crop : EnumFood.values()) {
-          if (production == 0.) {
-            // The current version of the CSV file doesn't have any production values.
-            // Use the income values (if available) to estimate land per crop.
-            //
+          // The current version of the CSV file doesn't have any production values.
+          // Use the income values (if available) to estimate land per crop.
+          //
 
-            // Estimate production from the yield.
-            //
-            cropProduction[crop.ordinal()][0] = (cropIncome[crop.ordinal()][0] / income) * landTotal[0];
-            production += cropProduction[crop.ordinal()][0];
-          }
+          // Estimate production from the yield.
+          //
+          cropProduction[crop.ordinal()][0] = (cropIncome[crop.ordinal()][0] / income) * landTotal[0];
+          production += cropProduction[crop.ordinal()][0];
         }
       }
 

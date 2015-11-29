@@ -129,6 +129,7 @@ public class CropOptimizer
       tileYields.remove(tYield);                      // remove tile's tYield object because tile now NA
       tilesToPlant--;
     }
+
     // after getting all the tiles we need, set total production for year
     if (year != AbstractScenario.START_YEAR)
     {

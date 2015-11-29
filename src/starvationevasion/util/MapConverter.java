@@ -13,7 +13,7 @@ import java.awt.geom.Point2D;
  * Phase_01
  *
  * class is used to convert between the spring2015code.model and the GUI
- * for converting between lat lon =>  x, y and back.
+ * for converting between lat lon to   x, y and back.
  */
 public abstract class MapConverter
 {

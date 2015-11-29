@@ -55,8 +55,8 @@ public abstract class AbstractClimateData
    * Gets the average annual daytime temperature in the specified location during
    * the specified year.
    *
-   * @param latitude [-90.0 to 90.0], South latitudes are < 0.
-   * @param longitude [-180.0 to 180.0], West longitudes are < 0.
+   * @param latitude [-90.0 to 90.0], South latitudes are less than 0.
+   * @param longitude [-180.0 to 180.0], West longitudes are less than 0.
    * @param year between AbstractScenario.START_YEAR and AbstractScenario.END_YEAR
    * @return temperature in degrees Celsius.
    */
@@ -66,8 +66,8 @@ public abstract class AbstractClimateData
    * Gets the average annual nighttime temperature in the specified location during
    * the specified year.
    *
-   * @param latitude [-90.0 to 90.0], South latitudes are < 0.
-   * @param longitude [-180.0 to 180.0], West longitudes are < 0.
+   * @param latitude [-90.0 to 90.0], South latitudes are less than 0.
+   * @param longitude [-180.0 to 180.0], West longitudes are less than 0.
    * @param year between AbstractScenario.START_YEAR and AbstractScenario.END_YEAR
    * @return temperature in degrees Celsius.
    */
@@ -77,8 +77,8 @@ public abstract class AbstractClimateData
    * Gets the total precipitation in the specified location during
    * the specified year.
    *
-   * @param latitude [-90.0 to 90.0], South latitudes are < 0.
-   * @param longitude [-180.0 to 180.0], West longitudes are < 0.
+   * @param latitude [-90.0 to 90.0], South latitudes are less than 0.
+   * @param longitude [-180.0 to 180.0] West longitudes are less than 0.
    * @param year between AbstractScenario.START_YEAR and AbstractScenario.END_YEAR
    * @return rainfall in centimeters.
    */

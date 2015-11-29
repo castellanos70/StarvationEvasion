@@ -74,8 +74,7 @@ public class Region extends AbstractAgriculturalUnit
   }
 
   /**
-   * returns the point representing the shipping location of that country.
-   * <p/>
+   * returns the point representing the shipping location of that country.<br>
    * (!) note: this method can only be called after the Territory's regions have
    * been set.
    *
@@ -423,7 +422,7 @@ public class Region extends AbstractAgriculturalUnit
    *
    * @param crop          EnumFood
    * @param tonsConsumed      2014 production + imports - exports
-   * @param percentUndernourished 2014 % of population undernourished
+   * @param percentUndernourished 2014 percent of population undernourished
    */
   final public void setCropNeedPerCapita(EnumFood crop, double tonsConsumed, double percentUndernourished)
   {

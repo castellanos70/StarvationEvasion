@@ -4,7 +4,6 @@ package starvationevasion.sim;
 import starvationevasion.common.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -116,34 +115,16 @@ public class Simulator
    *
    * @return the simulation year after nextTurn() has finished.
    */
-  public int nextTurn(ArrayList<PolicyCard> cards)
+  public WorldData nextTurn(ArrayList<PolicyCard> cards)
   {
     LOGGER.info("Advancing Turn...");
     model.nextYear(cards);
     model.nextYear(cards);
     model.nextYear(cards);
     LOGGER.info("Turn complete, year is now " + model.getCurrentYear());
-    return model.getCurrentYear();
+    return model.getWorldData();
   }
 
-  /**
-   * This method creates a new array and populates it with the current year's
-   * data form the simulator.
-   * @return an array of of RegionData for the current simulation year.
-   * indexed by EnumRegion.ordinal().
-   */
-  public RegionData[] getRegionData()
-  {
-    RegionData[] regionDataList = new RegionData[EnumRegion.SIZE];
-    for (EnumRegion region : EnumRegion.values())
-    {
-      RegionData data = new RegionData(region);
-      model.populateRegionData(data);
-      regionDataList[region.ordinal()] = data;
-    }
-
-    return regionDataList;
-  }
 
   /**
    * This entry point is for testing only. <br><br>

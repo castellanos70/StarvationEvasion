@@ -1,0 +1,17 @@
+package starvationevasion.common;
+import java.util.ArrayList;
+
+
+public class WorldEventData
+{
+
+  public enum EnumWorldEvent
+  {
+    BLIGHT, DROUGHT, FIRE, FLOOD, HURRICANE, WAR
+  }
+
+  public EnumWorldEvent type;
+  public int year;
+  public EnumRegion region;
+  public ArrayList<Location> locationList = new ArrayList<>();
+}

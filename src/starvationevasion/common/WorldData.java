@@ -1,4 +1,5 @@
 package starvationevasion.common;
+import java.io.Serializable;
 import java.util.ArrayList;
 /**
  * This structure is populated and returned by the
@@ -6,7 +7,7 @@ import java.util.ArrayList;
  * It contains all world and region data to be returned to the client after each turn.
  * It does not contain high resolution location data possibly needed by the visualizer.
  */
-public class WorldData
+public class WorldData implements Serializable
 {
   public int year;
   public double seaLevel;

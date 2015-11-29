@@ -1,8 +1,9 @@
 package starvationevasion.common;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
-public class WorldEventData
+public class WorldEventData implements Serializable
 {
 
   public enum EnumWorldEvent

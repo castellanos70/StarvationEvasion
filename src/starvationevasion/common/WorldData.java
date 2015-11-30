@@ -47,4 +47,31 @@ public class WorldData implements Serializable
       regionData[i] = new RegionData(EnumRegion.values()[i]);
     }
   }
+
+
+
+
+  /**
+   * @return Data stored in this structure as a formatted String.
+   */
+  public String toString()
+  {
+    String msg = "WorldData[" + year + "] =====================================\n     Price: [";
+    for (EnumFood food :EnumFood.values())
+    {
+      msg += String.format("%s:%f.0", food, price[food.ordinal()]);
+      if (food != EnumFood.DAIRY) msg += ", "; else msg += "]\n";
+    }
+
+    for (RegionData region : regionData)
+    {
+      msg += "     " + region + "\n";
+    }
+
+    for (SpecialEventData event : eventList)
+    {
+      msg += "     " + event + "\n";
+    }
+    return msg;
+  }
 }

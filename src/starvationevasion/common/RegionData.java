@@ -19,25 +19,6 @@ public class RegionData implements Serializable
    */
   public int revenueBalance;
 
-  /**
-   * This region's production (in kg) of each foodType during the current simulation year.
-   * Index by EnumFood.ordinal()
-   */
-  public int[] production = new int[EnumFood.SIZE];
-
-
-  /**
-   * This region's food imports (in kg) of each foodType during the current simulation year.
-   * Index by EnumFood.ordinal()
-   */
-  public int[] foodImports = new int[EnumFood.SIZE];
-
-
-  /**
-   * This region's food consumption (in kg) of each foodType during the current simulation year.
-   * Index by EnumFood.ordinal()
-   */
-  public int[] consumption = new int[EnumFood.SIZE];
 
 
   /**
@@ -58,13 +39,52 @@ public class RegionData implements Serializable
   public double humanDevelopmentIndex;
 
   /**
-   * This region's land area (in square kilometers)
-   * being used for farm production at the end of the current year.
+   * This region's production (in metric tons) of each foodType during the past turn (3 years).
+   * Index by EnumFood.ordinal()
    */
-  public int farmArea;
+  public int[] foodProduced = new int[EnumFood.SIZE];
+
+
+  /**
+   * This region's food exported (in metric tons) of each foodType during the past turn
+   * (3 years) Index by EnumFood.ordinal(). Positive indicates export, negative indicates
+   * import.<br><br>
+   *
+   * The region's consumption of for each foodType is:<br>
+   * {@link #foodProduced}[i]-{@link #foodExported}[i]
+   */
+  public int[] foodExported = new int[EnumFood.SIZE];
+
+
+
+  /**
+   * This region's land area (in square kilometers)
+   * being used for farm production of each crop type at the end of the current year.
+   */
+  public int[] farmArea = new int[EnumFood.SIZE];
 
   public RegionData(EnumRegion region)
   {
     this.region = region;
+  }
+
+  /**
+   * @return Data stored in this structure as a formatted String.
+   */
+  public String toString()
+  {
+    String msg = region.toString();
+    if (region.isUS()) msg += "[$"+revenueBalance + "]";
+
+    msg += String.format(": pop=%d(%.1f), HDI=%.2f [",population, undernourished, humanDevelopmentIndex);
+
+    for (EnumFood food :EnumFood.values())
+    {
+      msg += String.format("%s:%d+%d",
+        food, foodProduced[food.ordinal()], foodExported[food.ordinal()]);
+      if (food != EnumFood.DAIRY) msg += ", "; else msg += "]";
+    }
+
+    return msg;
   }
 }

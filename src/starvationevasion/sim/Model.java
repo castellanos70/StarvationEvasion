@@ -5,13 +5,10 @@ import spring2015code.common.EnumGrowMethod;
 import spring2015code.model.geography.Region;
 import spring2015code.model.geography.Territory;
 import starvationevasion.common.*;
-import starvationevasion.geography.LandTile;
-import starvationevasion.io.DataReader;
-import starvationevasion.io.FileObject;
-import starvationevasion.testing.WorldLoader;
+import starvationevasion.sim.geography.LandTile;
+import starvationevasion.sim.testing.WorldLoader;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

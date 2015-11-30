@@ -1,10 +1,10 @@
 package starvationevasion.io;
 
 import org.xml.sax.SAXException;
-import starvationevasion.geography.GeographicArea;
-import starvationevasion.util.EquirectangularConverter;
-import starvationevasion.util.MapConverter;
-import starvationevasion.geography.MapPoint;
+import starvationevasion.sim.geography.GeographicArea;
+import starvationevasion.sim.util.EquirectangularConverter;
+import starvationevasion.sim.util.MapConverter;
+import starvationevasion.sim.geography.MapPoint;
 
 import java.awt.geom.Area;
 

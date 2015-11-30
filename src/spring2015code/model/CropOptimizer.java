@@ -5,10 +5,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import starvationevasion.common.EnumFood;
-import starvationevasion.geography.CropZoneData.EnumCropZone;
+import starvationevasion.sim.geography.CropZoneData.EnumCropZone;
 import spring2015code.common.AbstractScenario;
 import spring2015code.model.geography.Territory;
-import starvationevasion.geography.LandTile;
+import starvationevasion.sim.geography.LandTile;
 
 /**
  * CropOptimizer plants all crops for a given agriculturalUnit in a given year in an
@@ -86,7 +86,7 @@ public class CropOptimizer
   }
 
   /**
-   Do calculations & sorting needed for planting.
+   Do calculations and sorting needed for planting.
    */
   private void plantingSetup()
   {

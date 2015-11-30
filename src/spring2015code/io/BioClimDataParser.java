@@ -1,7 +1,7 @@
 package spring2015code.io;
 
-import starvationevasion.geography.TileManager;
-import starvationevasion.geography.LandTile;
+import starvationevasion.sim.geography.TileManager;
+import starvationevasion.sim.geography.LandTile;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

@@ -4,8 +4,8 @@ import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 import spring2015code.model.geography.Territory;
 import starvationevasion.io.GeographyValidator;
-import starvationevasion.geography.GeographicArea;
-import starvationevasion.geography.MapPoint;
+import starvationevasion.sim.geography.GeographicArea;
+import starvationevasion.sim.geography.MapPoint;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;

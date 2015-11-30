@@ -6,7 +6,7 @@ import spring2015code.common.AbstractAgriculturalUnit;
 import spring2015code.common.EnumGrowMethod;
 import spring2015code.model.CropOptimizer;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.geography.MapPoint;
+import starvationevasion.sim.geography.MapPoint;
 
 import java.awt.*;
 import java.awt.geom.Area;
@@ -418,7 +418,7 @@ public class Region extends AbstractAgriculturalUnit
   }
 
   /**
-   * Method for calculating & setting crop need
+   * Method for calculating and setting crop need
    *
    * @param crop          EnumFood
    * @param tonsConsumed      2014 production + imports - exports

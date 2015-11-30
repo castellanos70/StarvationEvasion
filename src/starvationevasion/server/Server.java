@@ -30,6 +30,7 @@ public class Server
   private Simulator simulator;
   private Map<EnumRegion, List<EnumPolicy>> playerHands = new HashMap<>();
   private Map<EnumRegion, RegionData> regionData = new HashMap<>();
+  private Map<EnumRegion, Integer> regionActionsRemaining = new HashMap<>();
 
   public Server(String loginFilePath)
   {
@@ -170,7 +171,7 @@ public class Server
   private void handleRegionChoice(ServerWorker client, RegionChoice message)
   {
     if ((getCurrentState() != ServerState.LOGIN && getCurrentState() != ServerState.BEGINNING) ||
-        passwordFile.regionMap.get(client.getUserName()) != null)
+        passwordFile.regionMap != null)
     {
       client.send(Response.INAPPROPRIATE);
       return;
@@ -211,6 +212,27 @@ public class Server
     {
       playerHands.put(region, Arrays.asList(simulator.drawCards(region)));
     }
+    broadcast(PhaseStart.constructPhaseStart(ServerState.DRAWING, -1));
+    broadcastSimulatorState(simulator.init());
+    enterDraftingPhase();
+  }
+
+  private void enterDraftingPhase()
+  {
+    setServerState(ServerState.DRAFTING);
+    broadcast(PhaseStart.constructPhaseStart(ServerState.DRAFTING, ServerConstants.DRAFTING_PHASE_TIME));
+    for (EnumRegion region : EnumRegion.US_REGIONS)
+    {
+      regionActionsRemaining.put(region, ServerConstants.ACTIONS_PER_DRAFT_PHASE);
+    }
+    scheduledExecutorService.schedule(this::enterVotingPhase, ServerConstants.DRAFTING_PHASE_TIME, TimeUnit.MILLISECONDS);
+  }
+
+  private void enterVotingPhase()
+  {
+    setServerState(ServerState.VOTING);
+    broadcast(PhaseStart.constructPhaseStart(ServerState.VOTING, ServerConstants.VOTING_PHASE_TIME));
+
   }
 
   private void broadcastSimulatorState(WorldData worldData)

@@ -1,11 +1,10 @@
 package spring2015code.model.geography;
 
-import starvationevasion.common.Constant;
-import starvationevasion.geography.CropZoneData;
+import starvationevasion.sim.geography.CropZoneData;
 import starvationevasion.common.EnumFood;
-import starvationevasion.geography.GeographicArea;
-import starvationevasion.geography.LandTile;
-import starvationevasion.geography.TileManager;
+import starvationevasion.sim.geography.GeographicArea;
+import starvationevasion.sim.geography.LandTile;
+import starvationevasion.sim.geography.TileManager;
 
 import spring2015code.common.AbstractScenario;
 import spring2015code.model.CropOptimizer;
@@ -16,12 +15,10 @@ import java.util.*;
 /**
  * Created by winston on 1/23/15.
  * Phase_01
- * CS 351 spring 2015
- * <p/>
+ * CS 351 spring 2015<br>
  * The world is everything that is the case.
  * The world is the totality of facts, not of things.
- * The facts in logical space are the world.
- * <p/>
+ * The facts in logical space are the world.<BR>
  * - L. W.
  */
 public class World extends AbstractScenario
@@ -80,7 +77,7 @@ public class World extends AbstractScenario
   }
 
   /**
-   * used to return the world => singleton design pattern.
+   * used to return the world to singleton design pattern.
    * @return  the world
    */
   public static World getWorld()
@@ -174,34 +171,6 @@ public class World extends AbstractScenario
     return percentHappy;
   }
 
-  /**
-   * Returns projected sea level increase during given year
-   *
-   * @param year
-   * @return rise in cm
-   */
-  @Deprecated
-  public double getBaseSeaLevelRise(int year)
-  {
-    double rise;
-    if (year >= 2015 && year < 2020)
-    {
-      rise = 0.32;
-    }
-    else if (year >= 2020 && year < 2040)
-    {
-      rise = 0.3;
-    }
-    else if (year >= 2040 && year <= 2050)
-    {
-      rise = 0.4;
-    }
-    else
-    {
-      rise = 0;
-    }
-    return rise;
-  }
 
 
   /**
@@ -355,12 +324,6 @@ public class World extends AbstractScenario
      */
   }
 
-  @Deprecated
-  @Override
-  public double calculateSeaLevelRise(int year)
-  {
-    return getBaseSeaLevelRise(year);
-  }
 
 
   public List<TradingOptimizer.TradePair>[] getTrades()

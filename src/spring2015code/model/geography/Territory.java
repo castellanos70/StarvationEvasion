@@ -6,11 +6,11 @@ import spring2015code.common.AbstractAgriculturalUnit;
 import spring2015code.common.AbstractScenario;
 import spring2015code.common.EnumGrowMethod;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.geography.GeographicArea;
-import starvationevasion.geography.LandTile;
-import starvationevasion.geography.MapPoint;
-import starvationevasion.util.EquirectangularConverter;
-import starvationevasion.util.MapConverter;
+import starvationevasion.sim.geography.GeographicArea;
+import starvationevasion.sim.geography.LandTile;
+import starvationevasion.sim.geography.MapPoint;
+import starvationevasion.sim.util.EquirectangularConverter;
+import starvationevasion.sim.util.MapConverter;
 
 import java.awt.*;
 import java.awt.geom.Area;
@@ -249,8 +249,7 @@ public class Territory extends AbstractAgriculturalUnit
   }
 
   /**
-   * returns the point representing the shipping location of that country.
-   * <p/>
+   * returns the point representing the shipping location of that country.<br>
    * (!) note: this method can only be called after the Territory's regions have
    * been set.
    *
@@ -766,7 +765,7 @@ public class Territory extends AbstractAgriculturalUnit
     }
   }
   /**
-   * Method for calculating & setting crop need
+   * Method for calculating and setting crop need
    *
    * @param crop                  EnumFood
    * @param tonsConsumed          2014 production + imports - exports

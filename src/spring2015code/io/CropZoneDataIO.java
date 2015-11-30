@@ -2,8 +2,8 @@ package spring2015code.io;
 
 import spring2015code.model.geography.Territory;
 import starvationevasion.io.XMLparsers.KMLParser;
-import starvationevasion.geography.TileManager;
-import starvationevasion.geography.LandTile;
+import starvationevasion.sim.geography.TileManager;
+import starvationevasion.sim.geography.LandTile;
 
 import javax.swing.*;
 import java.awt.*;

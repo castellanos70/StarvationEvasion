@@ -15,7 +15,6 @@ import java.util.*;
 */
 public class CardDeck
 {
-
   /**
    * Each player starts with a unique deck of cards. A deck will, in general, contain
    * duplicate cards. If the player needs to draw a card and his, her or its deck is empty

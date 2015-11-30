@@ -2,10 +2,10 @@ package starvationevasion.io.XMLparsers;
 
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
-import spring2015code.model.geography.Territory;
+import starvationevasion.sim.Territory;
 import starvationevasion.io.GeographyValidator;
-import starvationevasion.sim.geography.GeographicArea;
-import starvationevasion.sim.geography.MapPoint;
+import starvationevasion.sim.GeographicArea;
+import starvationevasion.sim.MapPoint;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static spring2015code.io.IOHelpers.readIndex;
+import static starvationevasion.io.IOHelpers.readIndex;
 
 /**
  * Created by winston on 3/21/15.

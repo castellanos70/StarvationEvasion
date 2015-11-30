@@ -1,11 +1,6 @@
 package starvationevasion.sim;
 
-import spring2015code.common.AbstractAgriculturalUnit;
-import spring2015code.common.EnumGrowMethod;
-import spring2015code.model.geography.Region;
-import spring2015code.model.geography.Territory;
 import starvationevasion.common.*;
-import starvationevasion.sim.geography.LandTile;
 import starvationevasion.sim.testing.WorldLoader;
 
 import java.util.ArrayList;

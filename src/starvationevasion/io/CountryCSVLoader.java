@@ -5,15 +5,15 @@ package starvationevasion.io;
 // import org.apache.commons.csv.CSVParser;
 // import org.apache.commons.csv.CSVFormat;
 
-import spring2015code.model.geography.Territory;
+import starvationevasion.sim.Territory;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.io.CSVReader.CSVRecord;
-import spring2015code.model.geography.Region;
+import starvationevasion.sim.Region;
 import starvationevasion.common.EnumFood;
 import starvationevasion.io.CSVhelpers.CSVParsingException;
 import starvationevasion.io.CSVhelpers.CountryCSVDataGenerator;
-import spring2015code.common.EnumGrowMethod;
-import spring2015code.common.AbstractScenario;
+import starvationevasion.sim.EnumGrowMethod;
+import starvationevasion.sim.AbstractScenario;
 
 import java.io.*;
 import java.util.*;

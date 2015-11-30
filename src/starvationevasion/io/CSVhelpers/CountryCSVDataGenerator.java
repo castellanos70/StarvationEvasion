@@ -1,9 +1,9 @@
 package starvationevasion.io.CSVhelpers;
 
-import spring2015code.model.geography.Territory;
+import starvationevasion.sim.Territory;
 import starvationevasion.common.EnumFood;
-import spring2015code.common.AbstractScenario;
-import spring2015code.common.EnumGrowMethod;
+import starvationevasion.sim.AbstractScenario;
+import starvationevasion.sim.EnumGrowMethod;
 
 //TODO: comments, demographic & crop methods
 /**

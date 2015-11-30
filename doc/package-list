@@ -1,7 +1,3 @@
-spring2015code.common
-spring2015code.io
-spring2015code.model
-spring2015code.model.geography
 starvationevasion.common
 starvationevasion.common.messages
 starvationevasion.common.policies
@@ -10,6 +6,9 @@ starvationevasion.io.CSVhelpers
 starvationevasion.io.XMLparsers
 starvationevasion.server
 starvationevasion.sim
-starvationevasion.sim.geography
 starvationevasion.sim.testing
 starvationevasion.sim.util
+starvationevasion.vis.ClientTest
+starvationevasion.vis.controller
+starvationevasion.vis.model
+starvationevasion.vis.visuals

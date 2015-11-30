@@ -1,15 +1,15 @@
 package starvationevasion.sim.testing;
 
-import spring2015code.model.geography.Territory;
-import spring2015code.model.geography.Region;
-import spring2015code.model.geography.World;
+import starvationevasion.sim.Territory;
+import starvationevasion.sim.Region;
+import starvationevasion.sim.World;
 import starvationevasion.io.CountryCSVLoader;
-import spring2015code.io.CropZoneDataIO;
+import starvationevasion.sim.CropZoneDataIO;
 import starvationevasion.io.XMLparsers.GeographyXMLparser;
 import starvationevasion.io.XMLparsers.KMLParser;
-import starvationevasion.sim.geography.GeographicArea;
-import starvationevasion.sim.geography.LandTile;
-import starvationevasion.sim.geography.TileManager;
+import starvationevasion.sim.GeographicArea;
+import starvationevasion.sim.LandTile;
+import starvationevasion.sim.TileManager;
 import starvationevasion.sim.util.EquirectangularConverter;
 import starvationevasion.sim.util.MapConverter;
 

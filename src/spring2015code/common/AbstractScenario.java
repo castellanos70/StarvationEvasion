@@ -31,19 +31,7 @@ public abstract class AbstractScenario
   public abstract CropZoneData.EnumCropZone classifyZone(EnumFood crop,
       double minTemp, double maxTemp, double dayTemp, double nightTemp, double rain);
 
-  /**
-   * 1) Calculate sea level rise for the given year.
-   * 2) Set the element of seaLevelByYear[] corresponding to the given year.
-   * 
-   * This method assumes that:
-   * 1) randomizationPercentage has already been set.
-   * 2) baseSeaLevelRisePerYear has already been set.
-   * 3) year = START_YEAR OR seaLevelByYear[year-1] has already been set.
-   *
-   * @param year the year from START_YEAR through END_YEAR.
-   * @return the calculated value of seaLevelByYear[year].
-   */
-  public abstract double calculateSeaLevelRise(int year);
+
   
   public int indexToYear(int i)
   {

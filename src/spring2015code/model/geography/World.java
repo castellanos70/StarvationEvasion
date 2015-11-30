@@ -171,34 +171,6 @@ public class World extends AbstractScenario
     return percentHappy;
   }
 
-  /**
-   * Returns projected sea level increase during given year
-   *
-   * @param year
-   * @return rise in cm
-   */
-  @Deprecated
-  public double getBaseSeaLevelRise(int year)
-  {
-    double rise;
-    if (year >= 2015 && year < 2020)
-    {
-      rise = 0.32;
-    }
-    else if (year >= 2020 && year < 2040)
-    {
-      rise = 0.3;
-    }
-    else if (year >= 2040 && year <= 2050)
-    {
-      rise = 0.4;
-    }
-    else
-    {
-      rise = 0;
-    }
-    return rise;
-  }
 
 
   /**
@@ -352,12 +324,6 @@ public class World extends AbstractScenario
      */
   }
 
-  @Deprecated
-  @Override
-  public double calculateSeaLevelRise(int year)
-  {
-    return getBaseSeaLevelRise(year);
-  }
 
 
   public List<TradingOptimizer.TradePair>[] getTrades()

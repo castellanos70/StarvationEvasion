@@ -14,11 +14,12 @@ Simulator, Sever and Visualizer packages for Starvation Evasion.
 ## Usage
 
 Search path must have the following roots:
-src: Source
-data: Resources
-assets: Resources
-doc: Documentation
-
+<ul>
+<li>src: Source</li>
+<li>data: Resources</li>
+<li>assets: Resources</li>
+<li>doc: Documentation</li>
+</ul>
 
 ## Contributors
 

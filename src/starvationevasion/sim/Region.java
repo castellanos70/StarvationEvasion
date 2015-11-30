@@ -16,12 +16,15 @@ import java.util.Collection;
 public class Region extends AbstractAgriculturalUnit
 {
   private static final int START_YEAR = Constant.FIRST_YEAR;
+  private static final int PLAYER_START_REVENUE = 50; //million dollars
   private static final boolean VERBOSE = false;
 
   private EnumRegion region;
   private MapPoint capitolLocation;
   private final Area area = new Area();
   private final Collection<Territory> territories = new ArrayList<>();
+
+  private int revenue;
 
   /**
    * Territory constructor
@@ -32,12 +35,17 @@ public class Region extends AbstractAgriculturalUnit
   {
     super(region.name());
     this.region = region;
+    if (region.isUS())
+    { revenue = PLAYER_START_REVENUE;
+    }
   }
 
-  public EnumRegion getRegion()
+  public EnumRegion getRegionEnum()
   {
     return region;
   }
+
+  public int getRevenue() {return revenue;}
 
   /**
    * @return country's collection of agricultural units.

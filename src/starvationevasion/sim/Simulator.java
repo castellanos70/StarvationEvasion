@@ -71,9 +71,6 @@ public class Simulator
     return startWorldData;
   }
 
-
-
-
   /**
    * The Server should call nextTurn(cards) when it is ready to advance the simulator
    * a turn (Constant.YEARS_PER_TURN years).<br><br>
@@ -166,9 +163,10 @@ public class Simulator
    */
   public static void main(String[] args)
   {
-    LOGGER.setLevel(Level.ALL);
+    LOGGER.setLevel(Level.FINE);
     Simulator sim = new Simulator(Constant.FIRST_YEAR);
     String msg = "Starting Hands: \n";
+
     for (EnumRegion playerRegion : EnumRegion.US_REGIONS)
     {
       EnumPolicy[]  hand = sim.drawCards(playerRegion);

@@ -34,7 +34,6 @@ public class CountryCSVLoader
   private static final String DATA_FILE = "TerritoryFarmAreaAndIncome-2014.csv";
   private static final int START_YEAR = AbstractScenario.START_YEAR;
 
-  private Map<String, Region> regions;        // Regions discovered parsing csv
   private Collection<Territory> countries;        // collection populated by parsing csv
   private Collection<Territory> masterUnits; // collection passed in (i.e., after parsing xml)
   private File csvFile;
@@ -48,7 +47,6 @@ public class CountryCSVLoader
   {
     this.masterUnits = countriesToMerge;
     countries = new ArrayList<Territory>();
-    regions = new HashMap<String, Region>();
   }
 
   /**
@@ -56,7 +54,7 @@ public class CountryCSVLoader
    * country objects passed in constructor.
    * @return  same country objects passed in, with fields populated from csv data (if possible)
    */
-  public ParsedData getCountriesFromCSV() throws FileNotFoundException
+  public ParsedData getCountriesFromCSV(Region[] regionList) throws FileNotFoundException
   {
     boolean parsedOk = false;
     // create collection of countries from CSV
@@ -79,16 +77,9 @@ public class CountryCSVLoader
 
           // The XML object is considered the final object.  Map it to the region.
           //
-          String region = csvCountry.getGameRegion().name();
-          EnumRegion enumRegion = EnumRegion.valueOf(region);
-          Region r = regions.get(region);
-          if (r == null)
-          {
-            r = new Region(enumRegion);
-            regions.put(region, r);
-          }
-
-          r.addTerritory(xmlCountry);
+          String regionStr = csvCountry.getGameRegion().name();
+          EnumRegion enumRegion = EnumRegion.valueOf(regionStr);
+          regionList[enumRegion.ordinal()].addTerritory(xmlCountry);
 
           countryFound = true;
           break;
@@ -111,7 +102,7 @@ public class CountryCSVLoader
       }
     }
 
-    return new ParsedData(masterUnits, regions.values());
+    return new ParsedData(masterUnits, regionList);
   }
 
   /**
@@ -333,7 +324,8 @@ public class CountryCSVLoader
       }
     }
 
-    // Linear interpolate population.
+    // Linear interpolate population. Do this as needed rather than
+    // generating a big data structure;
     //
     interpolatePopulation(territory, 1981, 1990);
     interpolatePopulation(territory, 1990, 2000);
@@ -496,51 +488,17 @@ public class CountryCSVLoader
     }
   }
   
-  
-  public static void main(String[] args)
-  {
-    // First make sure that the data file can be seen from the class loader.
-    //
-    InputStream in = CountryCSVLoader.class.getResourceAsStream("/SomeTextFile.txt");
 
-
-    ArrayList<Territory> fakeXmlList = new ArrayList<Territory>();
-    fakeXmlList.add(new Territory("Afghanistan"));
-    //fakeXmlList.add(new Territory("Albania"));
-    fakeXmlList.add(new Territory("Algeria"));
-    fakeXmlList.add(new Territory("Vatican City"));
-    CountryCSVLoader testLoader = new CountryCSVLoader(fakeXmlList);
-    Collection<Territory> countryList;
-    //List<Territory> countryList = new ArrayList<Territory>();
-
-    ParsedData data;
-    try {
-      data = testLoader.getCountriesFromCSV();
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-      return;
-    }
-
-    countryList = data.territories;
-
-    System.out.println("Testing - main method in CountryCSVLoader");
-    for (Territory ctry:countryList)
-    {
-      System.out.println(ctry.getName()+" "+ctry.getMethodPercentage(START_YEAR,EnumGrowMethod.ORGANIC));
-      //System.out.println(ctry.getName()+" "+ctry.getPopulation(START_YEAR));
-      //System.out.println(ctry.getName()+" "+ctry.getCropProduction(START_YEAR,EnumFood.GRAIN));
-    }
-  }
 
   public static class ParsedData
   {
     final public Collection<Territory> territories;
-    final public Collection<Region> regions;
+    final public Region[] regionList;
 
-    protected ParsedData(final Collection<Territory> territories, final Collection<Region> regions)
+    protected ParsedData(final Collection<Territory> territories, Region[] regionList)
     {
       this.territories = territories;
-      this.regions = regions;
+      this.regionList = regionList;
     }
   }
 }

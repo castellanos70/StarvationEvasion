@@ -1,9 +1,8 @@
-package starvationevasion.sim.testing;
+package starvationevasion.io;
 
 import starvationevasion.sim.Territory;
 import starvationevasion.sim.Region;
 import starvationevasion.sim.World;
-import starvationevasion.io.CountryCSVLoader;
 import starvationevasion.sim.CropZoneDataIO;
 import starvationevasion.io.XMLparsers.GeographyXMLparser;
 import starvationevasion.io.XMLparsers.KMLParser;
@@ -28,36 +27,17 @@ public class WorldLoader
   public static final String BG_DATA_PATH = "/sim/geography/ne_50m_land.kml";
 
   private Collection<Territory> territories;
-  private Collection<Region> regions;
 
   /**
    * Constructor for game, handles all init logic.
    */
-  public WorldLoader() {
-  }
-
-  public Collection<Territory> getTerritories()
+  public WorldLoader(Region[] regionList)
   {
-    return territories;
-  }
-
-  public Collection<Region> getRegions()
-  {
-    return regions;
-  }
-
-  /**
-   * set it ALL up.
-   */
-  public void load()
-  {
-    Collection<GeographicArea> background;
     Collection<GeographicArea> modelGeography;
     Collection<Territory> agricultureUnits;
     TileManager tileManager;
 
     try {
-      background = KMLParser.getRegionsFromFile(BG_DATA_PATH);
       modelGeography = new GeographyXMLparser().getGeography();
       agricultureUnits = GeographyXMLparser.geograpyToAgriculture(modelGeography);
       tileManager = CropZoneDataIO.parseFile(CropZoneDataIO.DEFAULT_FILE, agricultureUnits);
@@ -73,7 +53,7 @@ public class WorldLoader
     CountryCSVLoader csvLoader = new CountryCSVLoader(agricultureUnits);
     CountryCSVLoader.ParsedData data;
     try {
-      data = csvLoader.getCountriesFromCSV();
+      data = csvLoader.getCountriesFromCSV(regionList);
     } catch (Exception ex)
     {
       // TODO : Throw some kind of error for the calling object.
@@ -83,8 +63,6 @@ public class WorldLoader
     }
 
     territories = data.territories;
-    regions = data.regions;
-    // printRegions(regions, false);
 
     Calendar startingDate = Calendar.getInstance();
     startingDate.set(Calendar.YEAR,  2014);
@@ -92,12 +70,16 @@ public class WorldLoader
     World.makeWorld(modelGeography, agricultureUnits, tileManager, startingDate);
 
     World world = World.getWorld();
-    MapConverter converter = new EquirectangularConverter();
 
     tileManager.setWorld(world);
   }
 
-  public static void printRegions(Collection<Region> regions, boolean verbose)
+  public Collection<Territory> getTerritories()
+  {
+    return territories;
+  }
+
+  public static void printRegions(Region[] regions, boolean verbose)
   {
     for (Region region : regions)
     {
@@ -113,13 +95,5 @@ public class WorldLoader
         }
       }
     }
-  }
-
-  //*******
-  // MAIN *
-  //*******
-  public static void main(String[] args)
-  {
-    new WorldLoader().load();
   }
 }

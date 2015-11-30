@@ -1,7 +1,7 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.*;
-import starvationevasion.sim.testing.WorldLoader;
+import starvationevasion.io.WorldLoader;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -81,7 +81,7 @@ public class Model
 
   private final int startYear;
   private int year;
-  private Region[] region = new Region[EnumRegion.SIZE];
+  private Region[] regionList = new Region[EnumRegion.SIZE];
 
   private double[] foodPrice = new double[EnumFood.SIZE];
 
@@ -103,22 +103,26 @@ public class Model
   {
     // The load() operation is very time consuming.
     //
-    WorldLoader loader = new WorldLoader();
-    loader.load();
+    for (int i=0; i<EnumRegion.SIZE; i++)
+    {
+      regionList[i] = new Region(EnumRegion.values()[i]);
+    }
+
+    WorldLoader loader = new WorldLoader(regionList);
 
     float[] avgConversionFactors = new float[EnumFood.SIZE];
 
-    for (Region r : loader.getRegions())
+
+    for (Region region : regionList)
     { // The loader builds regions in the order that it finds them in the data file.  We need to
       // put them in ordinal order.
       //
-      region[r.getRegion().ordinal()] = r;
 
       // Aggregate the statistics from all territories.
       //
-      r.updateStatistics(Constant.FIRST_YEAR);
+      region.updateStatistics(Constant.FIRST_YEAR);
 
-      if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(r, Constant.FIRST_YEAR);
+      if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(region, Constant.FIRST_YEAR);
     }
   }
 
@@ -150,8 +154,11 @@ public class Model
 
   protected void appendWorldData(WorldData threeYearData)
   {
-     threeYearData.year = year;
-
+    threeYearData.year = year;
+    for (int i=0; i<EnumRegion.SIZE; i++)
+    {
+      threeYearData.regionData[i].revenueBalance = regionList[i].getRevenue();
+    }
   }
 
 

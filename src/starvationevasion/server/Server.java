@@ -247,7 +247,10 @@ public class Server
     if (Login.generateHashedPassword(client.getLoginNonce(),
         passwordFile.credentialMap.get(message.username)).equals(message.hashedPassword))
     {
-      client.setRegion(passwordFile.regionMap.get(message.username));
+      if (passwordFile.regionMap != null)
+      {
+        client.setRegion(passwordFile.regionMap.get(message.username));
+      }
       client.setUserName(message.username);
       client.send(new LoginResponse(client.getRegion() != null ?
           LoginResponse.ResponseType.ASSIGNED_REGION : LoginResponse.ResponseType.CHOOSE_REGION, client.getRegion()));

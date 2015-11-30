@@ -171,7 +171,7 @@ public class Server
   private void handleRegionChoice(ServerWorker client, RegionChoice message)
   {
     if ((getCurrentState() != ServerState.LOGIN && getCurrentState() != ServerState.BEGINNING) ||
-        passwordFile.regionMap.get(client.getUserName()) != null)
+        passwordFile.regionMap != null)
     {
       client.send(Response.INAPPROPRIATE);
       return;

@@ -55,9 +55,9 @@ public class SeaLevel
 
   public SeaLevel()
   {
-    year0 = 1980;
+    year0 = Constant.FIRST_YEAR;
     year1 = 2014;
-    year2 = 2050;
+    year2 = Constant.LAST_YEAR;
 
     x1 = year1 - year0;
     x2 = year2 - year0;
@@ -111,5 +111,15 @@ public class SeaLevel
     System.out.println(year1 + " = " + y1 + ": " + getSeaLevel(year1));
     System.out.println(year2 + " = " + y2 + ": " + getSeaLevel(year2));
     System.out.println("a = " + a + ", b = " + b + ", c = " + c);
+  }
+
+  public static void main(String[] args)
+  {
+
+    SeaLevel seaLevel = new SeaLevel();
+     for (int i=Constant.FIRST_YEAR; i<=Constant.LAST_YEAR; i=i+5)
+     {
+       System.out.println("Sea Level in " + i + " = " + seaLevel.getSeaLevel(i));
+     }
   }
 }

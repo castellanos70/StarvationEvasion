@@ -2,8 +2,8 @@ package spring2015code.common;
 
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
-import starvationevasion.geography.CropZoneData;
-import starvationevasion.geography.TileManager;
+import starvationevasion.sim.geography.CropZoneData;
+import starvationevasion.sim.geography.TileManager;
 
 public abstract class AbstractScenario
 {

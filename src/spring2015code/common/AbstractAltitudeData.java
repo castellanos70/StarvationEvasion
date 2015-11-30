@@ -22,8 +22,8 @@ public abstract class AbstractAltitudeData
    *   <li> use higher resolution data to return higher resolution results, or</li> 
    *   <li> use interpolation to return intermediate (smoother looking) results.</li> 
    *</ol>
-   * @param latitude [-90.0 to 90.0], South latitudes are < 0.
-   * @param longitude [-180.0 to 180.0], West longitudes are < 0.
+   * @param latitude [-90.0 to 90.0], South latitudes are less than 0.
+   * @param longitude [-180.0 to 180.0], West longitudes less than 0.
    * @return specified location's meters above 2014 sea level.
    */
   public abstract float getAltitude(float latitude, float longitude);

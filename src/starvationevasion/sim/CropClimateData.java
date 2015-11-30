@@ -38,11 +38,11 @@ public class CropClimateData
   public static CropClimateData mapFood(EnumFood food)
   {
     CropClimateData data = map.get(food);
-    if (data == null)
-    {
-      data = SpringCropClimateData.getDefault(food);
-      map.put(food, data);
-    }
+    //if (data == null)
+    //{
+    //  data = CropClimateData.getDefault(food);
+    //  map.put(food, data);
+    //}
 
     return data;
   }

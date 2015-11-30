@@ -3,6 +3,7 @@ package starvationevasion.geography;
 
 import spring2015code.common.AbstractClimateData;
 import spring2015code.model.geography.World;
+import starvationevasion.common.Util;
 
 import static spring2015code.common.AbstractScenario.*;
 
@@ -64,8 +65,7 @@ public class TileManager extends AbstractClimateData
   
   /* max radius from selected tiles to add noise to each year */
   public static final double NOISE_RADIUS = 100; /* in km */
-  
-  private static final Random RNG = new Random();
+
   private World world;
 
   private LandTile[][] tiles = new LandTile[COLS][ROWS];
@@ -299,8 +299,8 @@ public class TileManager extends AbstractClimateData
     
     /* noise is also a function of two random numbers in range [0,1]
     (generated once per source?) */
-    double r1 = RNG.nextDouble();
-    double r2 = RNG.nextDouble();
+    double r1 = Util.rand.nextDouble();
+    double r2 = Util.rand.nextDouble();
     
     float dMaxMinTemp = calcTileDelta(minTemp, maxTemp, r1, r2);
     float dAMPMTemp = calcTileDelta(pmTemp, amTemp, r1, r2);
@@ -331,7 +331,7 @@ public class TileManager extends AbstractClimateData
         if(dist < NOISE_RADIUS)
         {
           
-          double r3 = RNG.nextDouble()*2;
+          double r3 = Util.rand.nextDouble()*2;
           
           float toAddMaxMin = scaleDeltaByDistance(dMaxMinTemp, dist, r3);
           float toAddAMPM = scaleDeltaByDistance(dAMPMTemp, dist, r3);

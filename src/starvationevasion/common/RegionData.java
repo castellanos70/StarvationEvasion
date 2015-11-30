@@ -41,18 +41,27 @@ public class RegionData implements Serializable
 
 
   /**
-   * This region's population during the current year
+   * This region's population (in thousands of people) during the current year.
    */
   public int population;
 
 
   /**
-   * This region's percent of undernourished people during the current year
+   * This region's percent of undernourished people at start of the current year.
    */
   public double undernourished;
 
 
+  /**
+   * This region's Human Development Index at the start of the current year.
+   */
+  public double humanDevelopmentIndex;
 
+  /**
+   * This region's land area (in square kilometers)
+   * being used for farm production at the end of the current year.
+   */
+  public int farmArea;
 
   public RegionData(EnumRegion region)
   {

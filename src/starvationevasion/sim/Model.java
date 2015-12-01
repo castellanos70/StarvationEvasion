@@ -84,6 +84,7 @@ public class Model
   private Region[] regionList = new Region[EnumRegion.SIZE];
 
   private double[] foodPrice = new double[EnumFood.SIZE];
+  private SeaLevel seaLevel;
 
 
 
@@ -92,6 +93,7 @@ public class Model
   {
     this.startYear = startYear;
     year = startYear;
+    seaLevel = new SeaLevel();
   }
 
 
@@ -155,6 +157,8 @@ public class Model
   protected void appendWorldData(WorldData threeYearData)
   {
     threeYearData.year = year;
+    threeYearData.seaLevel = seaLevel.getSeaLevel(year);
+
     for (int i=0; i<EnumRegion.SIZE; i++)
     {
       threeYearData.regionData[i].revenueBalance = regionList[i].getRevenue();

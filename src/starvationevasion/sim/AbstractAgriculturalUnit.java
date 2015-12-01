@@ -14,12 +14,11 @@ public abstract class AbstractAgriculturalUnit
   protected BufferedImage flag;
   protected double shippingLongitude;
   protected double shippingLatitude;
-  
-  protected static final int YEARS_OF_SIM = AbstractScenario.YEARS_OF_SIM;
+
+  protected static final int YEARS_OF_SIM = Constant.LAST_YEAR - Constant.FIRST_YEAR;
 
   protected GeographicArea border;
-  protected AbstractCropLocations cropLocationsCurrentYear;
-  protected AbstractCropLocations cropLocationsPreviousYear;
+
 
   //Note: Since there are only about 200 countries, it does not take much
   //      space to maintain all annual country data values from the start of the

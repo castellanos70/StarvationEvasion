@@ -31,8 +31,8 @@ public class Territory extends AbstractAgriculturalUnit
   private static final boolean VERBOSE = false;
   final public static MapConverter converter = new EquirectangularConverter();
 
-  private int START_YEAR = AbstractScenario.START_YEAR;
-  private int YEARS_OF_SIM = AbstractScenario.YEARS_OF_SIM;
+  private int START_YEAR = Constant.FIRST_YEAR;
+  private int YEARS_OF_SIM = Constant.LAST_YEAR - Constant.FIRST_YEAR;
 
   private MapPoint capitolLocation;
   private final Area area = new Area();

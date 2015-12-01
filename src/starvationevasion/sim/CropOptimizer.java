@@ -4,11 +4,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import starvationevasion.sim.CropZoneData.EnumCropZone;
-import starvationevasion.sim.AbstractScenario;
-import starvationevasion.sim.Territory;
-import starvationevasion.sim.LandTile;
 
 /**
  * CropOptimizer plants all crops for a given agriculturalUnit in a given year in an
@@ -27,7 +25,6 @@ public class CropOptimizer
 {
   private static final int NUM_CROPS = EnumFood.SIZE;
   private final int year;
-  private final int START_YEAR = AbstractScenario.START_YEAR;
   private final Territory territory;
   private final List<CropBin> cropBins;
   private final List<TileYield> tileYields;
@@ -49,7 +46,7 @@ public class CropOptimizer
     for (EnumFood crop:EnumFood.values())
     {
       int index = crop.ordinal();
-      double yield = territory.getCropYield(START_YEAR, crop);
+      double yield = territory.getCropYield(Constant.FIRST_YEAR, crop);
       if (Double.isFinite(yield)) cropYields[index] = yield;
       else cropYields[index] = 0.;
 
@@ -131,7 +128,7 @@ public class CropOptimizer
     }
 
     // after getting all the tiles we need, set total production for year
-    if (year != AbstractScenario.START_YEAR)
+    if (year !=Constant.FIRST_YEAR)
     {
       territory.setCropProduction(year, crop, production);
     }
@@ -177,7 +174,7 @@ public class CropOptimizer
 
         double percentYield = 1;
         // for years after START, calculate percentage of yield depending on zone & prior crop
-        if (year != START_YEAR)
+        if (year != Constant.FIRST_YEAR)
         {
           percentYield = tile.getTileYieldPercent(crop, zone);
         }

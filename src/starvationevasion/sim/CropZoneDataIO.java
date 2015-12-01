@@ -139,18 +139,18 @@ public class CropZoneDataIO
         System.err.println(t);
       }
     }
-    elev /= realTiles;
-    tmpAM /= realTiles;
-    tmpPM /= realTiles;
-    tmpMax /= realTiles;
-    tmpMin /= realTiles;
-    System.out.printf("tiles: %d, NO_DATA: %d%n" +
-        "avg elev: %f%n" +
-        "avg tmpAM: %f%n" +
-        "avg tmpPM: %f%n" +
-        "avg tmpMax: %f%n" +
-        "avg tmpMin: %f",
-      realTiles, noTiles, elev, tmpAM, tmpPM, tmpMax, tmpMin);
+    //elev /= realTiles;
+    //tmpAM /= realTiles;
+    //tmpPM /= realTiles;
+    //tmpMax /= realTiles;
+    //tmpMin /= realTiles;
+    //System.out.printf("tiles: %d, NO_DATA: %d%n" +
+    //    "avg elev: %f%n" +
+    //    "avg tmpAM: %f%n" +
+    // /   "avg tmpPM: %f%n" +
+    //    "avg tmpMax: %f%n" +
+    //    "avg tmpMin: %f",
+    //  realTiles, noTiles, elev, tmpAM, tmpPM, tmpMax, tmpMin);
   }
 
   public static void main(String[] args)

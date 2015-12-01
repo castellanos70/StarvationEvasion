@@ -5,6 +5,7 @@ package starvationevasion.io;
 // import org.apache.commons.csv.CSVParser;
 // import org.apache.commons.csv.CSVFormat;
 
+import starvationevasion.common.Constant;
 import starvationevasion.sim.Territory;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.io.CSVReader.CSVRecord;
@@ -13,7 +14,6 @@ import starvationevasion.common.EnumFood;
 import starvationevasion.io.CSVhelpers.CSVParsingException;
 import starvationevasion.io.CSVhelpers.CountryCSVDataGenerator;
 import starvationevasion.sim.EnumGrowMethod;
-import starvationevasion.sim.AbstractScenario;
 
 import java.io.*;
 import java.util.*;
@@ -32,7 +32,6 @@ public class CountryCSVLoader
 {
   private static final String DATA_DIR_PATH = "/sim/WorldData/";
   private static final String DATA_FILE = "TerritoryFarmAreaAndIncome-2014.csv";
-  private static final int START_YEAR = AbstractScenario.START_YEAR;
 
   private Collection<Territory> countries;        // collection populated by parsing csv
   private Collection<Territory> masterUnits; // collection passed in (i.e., after parsing xml)
@@ -186,7 +185,7 @@ public class CountryCSVLoader
     String landArea = record.get("landArea");
     try
     {
-      country.setLandTotal(START_YEAR, Double.parseDouble(landArea));
+      country.setLandTotal(Constant.FIRST_YEAR, Double.parseDouble(landArea));
     }
     catch (IllegalArgumentException e)
     {
@@ -286,7 +285,7 @@ public class CountryCSVLoader
 
           case "mortality":
             numValue = Double.parseDouble(value);
-            territory.setMortality(START_YEAR, numValue);
+            territory.setMortality(Constant.FIRST_YEAR, numValue);
             break;
 
           case "migration":
@@ -296,12 +295,12 @@ public class CountryCSVLoader
 
           case "undernourish":
             numValue = Double.parseDouble(value);
-            territory.setUndernourished(START_YEAR, numValue / 100); // Convert to percent.
+            territory.setUndernourished(Constant.FIRST_YEAR, numValue / 100); // Convert to percent.
             break;
 
           case "arableOpen":
             numValue = Double.parseDouble(value);
-            if (numValue >= 0 && numValue <= territory.getLandTotal(START_YEAR)) territory.setArableLand(START_YEAR, numValue);
+            if (numValue >= 0 && numValue <= territory.getLandTotal(Constant.FIRST_YEAR)) territory.setArableLand(Constant.FIRST_YEAR, numValue);
             else throw new IllegalArgumentException();
             break;
 
@@ -388,8 +387,8 @@ public class CountryCSVLoader
     for (int i = 0; i < EnumFood.SIZE; i++)
     { EnumFood food = EnumFood.values()[i];
 
-      country.setCropIncome(START_YEAR, food, income[i]);
-      country.setCropProduction(START_YEAR, food, production[i]);
+      country.setCropIncome(Constant.FIRST_YEAR, food, income[i]);
+      country.setCropProduction(Constant.FIRST_YEAR, food, production[i]);
     }
 
 
@@ -424,7 +423,7 @@ public class CountryCSVLoader
         value = Double.parseDouble(recordMap.get(methodString));
         if (value >= 0 && value <= 1)
         {
-          agriculturalUnit.setMethodPercentage(START_YEAR, method, value);
+          agriculturalUnit.setMethodPercentage(Constant.FIRST_YEAR, method, value);
           sum += value;
         }
         else throw new IllegalArgumentException();
@@ -474,16 +473,16 @@ public class CountryCSVLoader
     {
       // double imports = agriculturalUnitTemp.getCropImport(START_YEAR, crop);
       // double exports = agriculturalUnitTemp.getCropExport(START_YEAR, crop);
-      double production = agriculturalUnitTemp.getCropProduction(START_YEAR, crop);
-      double land = agriculturalUnitTemp.getCropLand(START_YEAR, crop);
-      double yield = agriculturalUnitTemp.getCropYield(START_YEAR, crop);
+      double production = agriculturalUnitTemp.getCropProduction(Constant.FIRST_YEAR, crop);
+      double land = agriculturalUnitTemp.getCropLand(Constant.FIRST_YEAR, crop);
+      double yield = agriculturalUnitTemp.getCropYield(Constant.FIRST_YEAR, crop);
       double need = agriculturalUnitTemp.getCropNeedPerCapita(crop);
 
       // countryFinal.setCropImport(START_YEAR, crop, imports);
       // countryFinal.setCropExport(START_YEAR, crop, exports);
-      countryFinal.setCropProduction(START_YEAR, crop, production);
-      countryFinal.setCropLand(START_YEAR, crop, land);
-      countryFinal.setCropYield(START_YEAR, crop, yield);
+      countryFinal.setCropProduction(Constant.FIRST_YEAR, crop, production);
+      countryFinal.setCropLand(Constant.FIRST_YEAR, crop, land);
+      countryFinal.setCropYield(Constant.FIRST_YEAR, crop, yield);
       countryFinal.setCropNeedPerCapita(crop, need);
     }
   }

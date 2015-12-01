@@ -1,5 +1,6 @@
 package starvationevasion.sim;
 
+import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 
 import java.util.*;
@@ -13,7 +14,7 @@ import java.util.*;
  * The facts in logical space are the world.<BR>
  * - L. W.
  */
-public class World extends AbstractScenario
+public class World
 {
   private static World theOneWorld;
   private Random random = new Random(44);
@@ -23,6 +24,9 @@ public class World extends AbstractScenario
   private Calendar currentDate;
   private List<TradingOptimizer.TradePair>[] lastTrades;
   private boolean DEBUG = false;
+  private TileManager[] idealCropZone = new TileManager[EnumFood.SIZE];
+
+  private AbstractClimateData climateData;
 
   private World(Collection<GeographicArea> world, Collection<Territory> regions, Calendar cal)
   {
@@ -60,7 +64,7 @@ public class World extends AbstractScenario
       //
       state.estimateInitialYield();
       state.scaleInitialStatistics(.50);
-      CropOptimizer optimizer = new CropOptimizer(AbstractScenario.START_YEAR, state);
+      CropOptimizer optimizer = new CropOptimizer(Constant.FIRST_YEAR, state);
       optimizer.optimizeCrops();
     }
 
@@ -121,15 +125,6 @@ public class World extends AbstractScenario
     return politicalWorld;
   }
 
-  /**
-   * Returns the number of year remaining in the model as an int.
-   *
-   * @return
-   */
-  public int yearRemaining()
-  {
-    return AbstractScenario.END_YEAR - getCurrentYear();
-  }
 
   /**
    * @return world population at current world time, in millions as a double.
@@ -287,14 +282,6 @@ public class World extends AbstractScenario
   }
 
   /**
-   * @return  the randomization percentage for the World (inherited from AbstractScenario)
-   */
-  public double getRandomizationPercentage()
-  {
-    return randomizationPercentage;
-  }
-
-  /**
    * Return the LandTile containing given longitude and latitude coordinates.
    * See TileManager.getTile()
    *@param lon longitude of coord
@@ -304,16 +291,6 @@ public class World extends AbstractScenario
   public LandTile getTile(double lon, double lat)
   {
     return tileManager.getTile(lon, lat);
-  }
-
-  @Deprecated
-  @Override
-  public CropZoneData.EnumCropZone classifyZone(EnumFood crop, double minTemp, double maxTemp, double dayTemp, double nightTemp, double rain)
-  {
-    throw new UnsupportedOperationException("Call down to LandTile.rateTileForCrop");
-    /* Impossible to implement without a Territory parameter because the temp and rain values for EnumFood.OTHER_CROPS vary
-     * by country. See rateTileForCrop and rateTileForOtherCrops methods in LandTile class.
-     */
   }
 
 

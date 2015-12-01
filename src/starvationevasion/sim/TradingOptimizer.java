@@ -2,8 +2,7 @@ package starvationevasion.sim;
 
 
 import starvationevasion.common.EnumFood;
-import starvationevasion.sim.Territory;
-import starvationevasion.sim.MapPoint;
+import starvationevasion.common.MapPoint;
 
 import java.util.*;
 
@@ -111,7 +110,7 @@ public class TradingOptimizer
       countries) ~20,000km */
     private static double calcEfficiency(Territory c1, Territory c2)
     {
-      return 1 - c1.getShippingDistance(c2.getCapitolLocation()) / 20_000d;
+      return 1;
     }
 
     /* implement a trade between this pair, given a crop and year to trade in.
@@ -414,8 +413,8 @@ public class TradingOptimizer
             and the randomly selected point */
           else
           {
-            double d1 = pt.distanceSq(o1.importer.getCapitolLocation());
-            double d2 = pt.distanceSq(o2.importer.getCapitolLocation());
+            double d1 = 1;
+            double d2 = 1;
             return d1 > d2 ? 1 : d1 < d2 ? -1 : 0;
           }
         }
@@ -444,8 +443,8 @@ public class TradingOptimizer
             and the randomly selected point */
           else
           {
-            double d1 = pt.distanceSq(o1.exporter.getCapitolLocation());
-            double d2 = pt.distanceSq(o2.exporter.getCapitolLocation());
+            double d1 = 1;
+            double d2 = 1;
             return d1 > d2 ? 1 : d1 < d2 ? -1 : 0;
           }
         }

@@ -1,6 +1,7 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.EnumFood;
+import starvationevasion.common.MapPoint;
 import starvationevasion.sim.CropZoneData.EnumCropZone;
 
 import java.nio.ByteBuffer;
@@ -118,7 +119,7 @@ public class LandTile
         "daily temp range: (%.2f C, %.2f C)<br>" +
         "yearly temp range: (%.2f C, %.2f C)<br>" +
         "crop: %s</html>",
-      center.getLon(), center.getLat(), rainfall,
+      center.longitude, center.latitude, rainfall,
       avgNightTemp, avgDayTemp, minAnnualTemp, maxAnnualTemp, currCrop);
   }
 
@@ -126,8 +127,8 @@ public class LandTile
   {
     ByteBuffer buf = ByteBuffer.allocate(BYTE_DEF.SIZE_IN_BYTES);
 
-    buf.putFloat(BYTE_DEF.LONGITUDE.index(), (float) center.getLon());
-    buf.putFloat(BYTE_DEF.LATITUDE.index(), (float) center.getLat());
+    buf.putFloat(BYTE_DEF.LONGITUDE.index(), (float) center.longitude);
+    buf.putFloat(BYTE_DEF.LATITUDE.index(), (float) center.latitude);
     buf.putFloat(BYTE_DEF.ELEVATION.index(), elevation);
 
     buf.putFloat(BYTE_DEF.MAX_ANNUAL_TEMP.index(), maxAnnualTemp);
@@ -147,12 +148,12 @@ public class LandTile
 
   public double getLon()
   {
-    return center.getLon();
+    return center.longitude;
   }
 
   public double getLat()
   {
-    return center.getLat();
+    return center.latitude;
   }
 
   public MapPoint getCenter()

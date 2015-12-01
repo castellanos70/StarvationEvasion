@@ -3,9 +3,11 @@ package starvationevasion.sim;
 
 import starvationevasion.sim.util.EquirectangularConverter;
 import starvationevasion.sim.util.MapConverter;
+import starvationevasion.common.MapPoint;
 
 import java.awt.*;
 import java.util.List;
+
 
 
 /**

@@ -22,7 +22,7 @@ public class SpecialEventData implements Serializable
   public EnumMonth month;
   public int durationInMonths;
   public EnumRegion region;
-  public ArrayList<Location> locationList = new ArrayList<>();
+  public ArrayList<MapPoint> locationList = new ArrayList<>();
 
 
   /**

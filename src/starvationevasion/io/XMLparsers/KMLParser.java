@@ -1,8 +1,8 @@
 package starvationevasion.io.XMLparsers;
 
-import starvationevasion.sim.MapPoint;
 import org.xml.sax.*;
 import starvationevasion.sim.GeographicArea;
+import starvationevasion.common.MapPoint;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;

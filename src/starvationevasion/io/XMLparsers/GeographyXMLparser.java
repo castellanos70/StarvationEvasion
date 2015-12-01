@@ -5,7 +5,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import starvationevasion.sim.Territory;
 import starvationevasion.io.GeographyValidator;
 import starvationevasion.sim.GeographicArea;
-import starvationevasion.sim.MapPoint;
+import starvationevasion.common.MapPoint;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;

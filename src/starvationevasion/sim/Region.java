@@ -3,8 +3,8 @@ package starvationevasion.sim;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.MapPoint;
 
-import java.awt.*;
 import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +20,6 @@ public class Region extends AbstractAgriculturalUnit
   private static final boolean VERBOSE = false;
 
   private EnumRegion region;
-  private MapPoint capitolLocation;
   private final Area area = new Area();
   private final Collection<Territory> territories = new ArrayList<>();
 
@@ -77,22 +76,7 @@ public class Region extends AbstractAgriculturalUnit
     }
   }
 
-  /**
-   * returns the point representing the shipping location of that country.<br>
-   * (!) note: this method can only be called after the Territory's regions have
-   * been set.
-   *
-   * @return map point representing the lat and lon location of the Territory's
-   * capitol.
-   */
-  public MapPoint getCapitolLocation()
-  {
-    if (capitolLocation == null)
-    {
-      capitolLocation = calCapitolLocation();
-    }
-    return capitolLocation;
-  }
+
 
   /**
    * Used to link land tiles to a country.
@@ -114,32 +98,7 @@ public class Region extends AbstractAgriculturalUnit
     return false;
   }
 
-  // generate the capital by finding the center of the largest landmass.
-  // this method can only be called after the Territory's regions have been set.
-  private MapPoint calCapitolLocation()
-  {
-    if (territories == null) throw new RuntimeException("(!) regions not set!");
-    if (territories.isEmpty()) throw new RuntimeException("(!) no regions !");
 
-    int maxArea = 0;
-    Area largest = null;
-
-    for (Territory t : territories)
-    {
-      Area poly = t.getArea();
-      int area = (int) (poly.getBounds().getWidth() * poly.getBounds().getHeight());
-      if (area >= maxArea)
-      {
-        largest = poly;
-        maxArea = area;
-      }
-    }
-
-    int x = (int) largest.getBounds().getCenterX();
-    int y = (int) largest.getBounds().getCenterY();
-
-    return Territory.converter.pointToMapPoint(new Point(x, y));
-  }
 
   /**
    * @return regions
@@ -459,26 +418,5 @@ public class Region extends AbstractAgriculturalUnit
     }
 
     cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
-  }
-
-  /**
-   * Calculate great circle distance from country's capitolLocation to another MapPoint.
-   * Formula from http://www.gcmap.com/faq/gccalc
-   *
-   * @param otherCapitol
-   * @return great circle distance in km
-   */
-  final public double getShippingDistance(MapPoint otherCapitol)
-  {
-    double radianConversion = (Math.PI) / 180;
-    double lon1 = getCapitolLocation().getLon() * radianConversion;
-    double lat1 = capitolLocation.getLat() * radianConversion;
-    double lon2 = otherCapitol.getLon() * radianConversion;
-    double lat2 = otherCapitol.getLat() * radianConversion;
-    double theta = lon2 - lon1;
-    double dist = Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(theta));
-    if (dist < 0) dist = dist + Math.PI;
-    dist = dist * 6371.2;
-    return dist;
   }
 }

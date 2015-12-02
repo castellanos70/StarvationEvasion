@@ -1,10 +1,10 @@
 package starvationevasion.io;
 
 import org.xml.sax.SAXException;
-import starvationevasion.geography.GeographicArea;
-import starvationevasion.util.EquirectangularConverter;
-import starvationevasion.util.MapConverter;
-import starvationevasion.geography.MapPoint;
+import starvationevasion.sim.GeographicArea;
+import starvationevasion.sim.util.EquirectangularConverter;
+import starvationevasion.sim.util.MapConverter;
+import starvationevasion.common.MapPoint;
 
 import java.awt.geom.Area;
 
@@ -41,8 +41,8 @@ public class GeographyValidator
   private boolean isValidMapPoint(MapPoint mapPoint)
   {
 
-    return Math.abs(mapPoint.getLat()) <= 90.00 &&
-           Math.abs(mapPoint.getLon()) <= 180.00;
+    return Math.abs(mapPoint.latitude) <= 90.00 &&
+           Math.abs(mapPoint.longitude) <= 180.00;
 
   }
 }

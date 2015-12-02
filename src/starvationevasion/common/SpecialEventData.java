@@ -22,5 +22,15 @@ public class SpecialEventData implements Serializable
   public EnumMonth month;
   public int durationInMonths;
   public EnumRegion region;
-  public ArrayList<Location> locationList = new ArrayList<>();
+  public ArrayList<MapPoint> locationList = new ArrayList<>();
+
+
+  /**
+   * @return Data stored in this structure as a formatted String.
+   */
+  public String toString()
+  {
+    String msg = type + "["+year+":"+month+" -> " + durationInMonths + "months]: " + region;
+    return msg;
+  }
 }

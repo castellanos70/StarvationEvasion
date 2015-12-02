@@ -1,0 +1,28 @@
+Sources: United States Department of Agriculture (Economic Research Service)
+www.ers.usda.gov
+
+National Agricultural Statistics Service
+http://www.pestmanagement.info/nass/
+
+Assessment of Fertilizer Use by Crop At Global Level (2010/2011)
+pdf document
+
+IME Food Waste Support Data
+https://docs.google.com/spreadsheets/d/1nzLDn1LbiwVe2TL4y4kiejuUQKpIx4Z3R5GHOguwvmo/edit
+
+United States Department of Agriculture (National Agricultural Statistics Service)
+www.nass.usda.gov
+
+Category,Acres Bearing,Income ($1000),Total Yield (Kg),Yield (Kg per acre),Water (L per acre),Fertilizer (Kg per acre),Pesticide (Kg per acre),
+Citrus,232833,951507,882539683,1473,5528310,0.928,0.821,
+NonCitrus,472663,2349690,4534702948,15271,7971399,0.457,0.463,
+Nuts,460333,3108810,516704459,921,4049950000000,8.55,0.0907,
+Grains,21804333,4550044,22102098866,1205,1028006,0.580,0.201,
+OilCrops ,28210566,13803905,36404634164,1210,7504444,0.0443,0.231,
+Vegetables,1124150,2171607,17409061224,15487,1205194110372,0.254,0.344,
+SpecialtyCrops,,,,,,,,
+FeedCrops,2096333,384000,1758970522,760,2828424598639,0.203,0.231,
+Fish,,,,,,,,
+Meat,,,,,,,,
+PoultryEggs,,,,,,,,
+Dairy,,,,,,,,

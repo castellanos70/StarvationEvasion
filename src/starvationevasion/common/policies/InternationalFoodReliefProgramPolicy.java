@@ -25,7 +25,7 @@ import java.io.Serializable;
  *
  * 10% bonus to effectiveness of total dollars spent per participating region.<br><br>
  *
- * Food purchased for relief inflates the global sell price of the food type by a
+ * Food purchased for relief inflates the global sell foodPrice of the food type by a
  * direct reduction of supply without effect on demand (since those to whom the
  * relief is delivered are presumed to lack the resources to have been part of the demand).
 */

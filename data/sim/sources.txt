@@ -1,0 +1,9 @@
+state average population age - http://www.denverpost.com/datacenter/ci_28937933/chart-compare-average-age-each-u-s-state
+state birth rate - http://www.businessinsider.com/cdc-states-with-highest-birth-rates-2014-5
+state migration data - http://www.governing.com/gov-data/census/2010-census-state-migration-statistics.html
+
+Principal Crops Area Planted and Harvested – States and United States: 2012-2014
+http://www.usda.gov/nass/PUBS/TODAYRPT/cropan15.pdf
+
+Commodity Food production
+http://www.indexmundi.com/agriculture/?commodity=corn&graph=production

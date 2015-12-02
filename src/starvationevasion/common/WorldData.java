@@ -34,10 +34,10 @@ public class WorldData implements Serializable
   public RegionData[] regionData = new RegionData[EnumRegion.SIZE];
 
   /**
-   * Sell price in US Dollars for one metric ton (1000 kg) of each food category on
+   * Sell foodPrice in US Dollars for one metric ton (1000 kg) of each food category on
    * the world market at the start of the current year.
    */
-  public double[] price = new double[EnumFood.SIZE];
+  public double[] foodPrice = new double[EnumFood.SIZE];
 
 
   public WorldData()
@@ -46,5 +46,32 @@ public class WorldData implements Serializable
     {
       regionData[i] = new RegionData(EnumRegion.values()[i]);
     }
+  }
+
+
+
+
+  /**
+   * @return Data stored in this structure as a formatted String.
+   */
+  public String toString()
+  {
+    String msg = "WorldData[" + year + "] =====================================\n     Price: [";
+    for (EnumFood food :EnumFood.values())
+    {
+      msg += String.format("%s:%.0f", food, foodPrice[food.ordinal()]);
+      if (food != EnumFood.DAIRY) msg += ", "; else msg += "]\n";
+    }
+
+    for (RegionData region : regionData)
+    {
+      msg += "     " + region + "\n";
+    }
+
+    for (SpecialEventData event : eventList)
+    {
+      msg += "     " + event + "\n";
+    }
+    return msg;
   }
 }

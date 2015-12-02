@@ -3,26 +3,23 @@
 #### Table of Contents
 
 1. [Overview](#overview)
-2. [Package Description](#package-description)
-3. [Usage and Configurations](#usage)
-4. [Contributors](#development)
+2. [Usage and Configurations](#usage)
+3. [Contributors](#development)
 
 ## Overview
 
 Simulator, Sever and Visualizer packages for Starvation Evasion.
 
-## Package Description
-
-This repository contains the Simulator,
 
 ## Usage
 
 Search path must have the following roots:
-src: Source
-data: Resources
-assets: Resources
-doc: Documentation
-
+<ul>
+<li>src: Source</li>
+<li>data: Resources</li>
+<li>assets: Resources</li>
+<li>doc: Documentation</li>
+</ul>
 
 ## Contributors
 

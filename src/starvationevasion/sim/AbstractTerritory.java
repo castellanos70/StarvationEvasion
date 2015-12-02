@@ -3,7 +3,7 @@ package starvationevasion.sim;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 
-public abstract class AbstractTerritory
+public abstract class AbstractTerritory implements Comparable<Territory>
 {
   protected String name;
 
@@ -449,5 +449,11 @@ public abstract class AbstractTerritory
   public void setPopulation(int year, int n)
   {
     population[year - Constant.FIRST_YEAR] = n;
+  }
+
+
+  public int compareTo(Territory compareTerritory)
+  {
+    return name.compareTo(compareTerritory.name);
   }
 }

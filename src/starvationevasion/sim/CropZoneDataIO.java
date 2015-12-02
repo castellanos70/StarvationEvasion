@@ -13,7 +13,8 @@ public class CropZoneDataIO
 {
   public static final String DEFAULT_FILE = "/sim/geography/tiledata.bil";
 
-  public static TileManager parseFile(String resourcePath, Collection<Territory> countries) throws FileNotFoundException
+  //public static TileManager parseFile(String resourcePath, Collection<Territory> countries) throws FileNotFoundException
+  public static TileManager parseFile(String resourcePath, Territory[] territoryList) throws FileNotFoundException
   {
     TileManager dataSet = new TileManager(null);
 
@@ -44,7 +45,7 @@ public class CropZoneDataIO
           continue;
         }
 
-        for (Territory agriculturalUnit : countries)
+        for (Territory agriculturalUnit : territoryList)
         {
           if (agriculturalUnit.containsMapPoint(tile.getCenter()))
           {

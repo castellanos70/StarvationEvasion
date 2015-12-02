@@ -52,31 +52,39 @@ public class GeographyXMLparser extends DefaultHandler
    * @param regions list to derive countries from
    * @return collection of countries created form the given regions.
    */
-  public static Collection<Territory> geograpyToAgriculture(Collection<GeographicArea> regions)
-  {
-    HashMap<String, Territory> nameToUnit = new HashMap<>();
+  //public static Collection<Territory> geograpyToAgriculture(Collection<GeographicArea> regions)
+  //{
+  //  HashMap<String, Territory> nameToUnit = new HashMap<>();
+  //for (GeographicArea region : regions)
+  //{
+  //  if ( ! nameToUnit.containsKey(region.getName()))
+  //  {
+  //    String name = region.getName();
+  //    Territory unit = new Territory(name);
+  //
+  //    nameToUnit.put(region.getName(), unit);
+  //  }
+  //
+  //  region.setAgriculturalUnit(nameToUnit.get(region.getName()));
+  //}
+  //
+  //return nameToUnit.values();
+  //}
 
+  public static Territory[] geograpyToAgriculture(Collection<GeographicArea> regions)
+  {
+    Territory[] territoryList = new Territory[regions.size()];
+    int i=0;
     for (GeographicArea region : regions)
     {
-      if ( ! nameToUnit.containsKey(region.getName()))
-      {
-		String name = region.getName();
-		String type = region.getType();
-        Territory unit = unit = new Territory(name);
-
-        nameToUnit.put(region.getName(), unit);
-      }
-
-      region.setAgriculturalUnit(nameToUnit.get(region.getName()));
+      territoryList[i] = new Territory(region.getName());
+      i++;
     }
+    Arrays.sort(territoryList);
 
-    return nameToUnit.values();
+    return territoryList;
   }
 
-  public static void main(String[] args)
-  {
-    System.out.println(new GeographyXMLparser().getCountries().size());
-  }
 
   public Locator getLocator()
   {
@@ -245,17 +253,5 @@ public class GeographyXMLparser extends DefaultHandler
         e.printStackTrace();
       }
     }
-  }
-
-  /**
-   * convenience method, simply composes the following two functions:
-   *
-   * geograpyToAgriculture() of getGeography()
-   *
-   * @return
-   */
-  public Collection<Territory> getCountries()
-  {
-    return geograpyToAgriculture(getGeography());
   }
 }

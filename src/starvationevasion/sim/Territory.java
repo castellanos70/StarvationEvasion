@@ -262,11 +262,6 @@ public class Territory extends AbstractTerritory
 
 
 
-
-
-
-
-
   public String toString()
   {
     return getClass().getSimpleName() + " " + name;

@@ -26,11 +26,6 @@ public class CountryCSVLoader
   private final static Logger LOGGER = Logger.getLogger(CountryCSVLoader.class.getName());
   private static final String PATH = "data/sim/WorldData/TerritoryFarmAreaAndIncome-2014.csv";
 
-  private Collection<Territory> countries;        // collection populated by parsing csv
-  private Collection<Territory> masterUnits; // collection passed in (i.e., after parsing xml)
-  private File csvFile;
-  private List<CSVRecord> records;
-
   private enum EnumHeader
   { territory, region, population1981, population1990, population2000,
     population2010, population2014, population2025, population2050,
@@ -50,16 +45,13 @@ public class CountryCSVLoader
   /**
    * Constructor takes list of country objects that need data from csv file (previously created from xml file)
    */
-  public CountryCSVLoader(Collection<Territory> territoryList)
+  //public CountryCSVLoader(Collection<Territory> territoryList)
+  public CountryCSVLoader(Territory[] territoryList)
   {
-    //this.masterUnits = territoryList;
-    countries = new ArrayList<>();
-
-
     CSVReader fileReader = new CSVReader(PATH, 0);
 
     //Check header
-    String field[] = fileReader.readRecord(EnumHeader.SIZE);
+    String[] field = fileReader.readRecord(EnumHeader.SIZE);
     for (EnumHeader header : EnumHeader.values())
     {
       int i = header.ordinal();
@@ -74,6 +66,7 @@ public class CountryCSVLoader
 
     for (Territory territory : territoryList)
     {
+      field = fileReader.readRecord(EnumHeader.SIZE);
       for (EnumHeader header : EnumHeader.values())
       {
         int i = header.ordinal();

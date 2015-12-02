@@ -19,7 +19,8 @@ public class World
   private static World theOneWorld;
   private Random random = new Random(44);
   private Collection<GeographicArea> world;
-  private Collection<Territory> politicalWorld;
+  //private Collection<Territory> politicalWorld;
+  private Territory[] territoryList;
   private TileManager tileManager;
   private Calendar currentDate;
   private List<TradingOptimizer.TradePair>[] lastTrades;
@@ -28,10 +29,11 @@ public class World
 
   private AbstractClimateData climateData;
 
-  private World(Collection<GeographicArea> world, Collection<Territory> regions, Calendar cal)
+  //private World(Collection<GeographicArea> world, Collection<Territory> regions, Calendar cal)
+  private World(Collection<GeographicArea> world, Territory[] territoryList, Calendar cal)
   {
     this.world = world;
-    this.politicalWorld = regions;
+    this.territoryList = territoryList;
     this.currentDate = cal;
   }
 
@@ -43,8 +45,12 @@ public class World
    * @param territories the political entities in the world
    * @param cal      the starting date of the world.
    */
+  //public static void makeWorld(Collection<GeographicArea> world,
+  //                             Collection<Territory> territories,
+  //                             TileManager allTheLand,
+  //                             Calendar cal)
   public static void makeWorld(Collection<GeographicArea> world,
-                               Collection<Territory> territories,
+                               Territory[] territories,
                                TileManager allTheLand,
                                Calendar cal)
   {
@@ -120,9 +126,9 @@ public class World
     return world;
   }
 
-  public Collection<Territory> getCountries()
+  public Territory[] getCountries()
   {
-    return politicalWorld;
+    return territoryList;
   }
 
 
@@ -133,7 +139,7 @@ public class World
   {
     double totalPop = 0;
     int year = getCurrentYear();
-    for (Territory state : politicalWorld)
+    for (Territory state : territoryList)
     {
       totalPop += state.getPopulation(year);
     }
@@ -184,7 +190,7 @@ public class World
     deficits by crop through the TradingOptimizer. */
   private void shipAndReceive()
   {
-    TradingOptimizer optimizer = new TradingOptimizer(politicalWorld, getCurrentYear());
+    TradingOptimizer optimizer = new TradingOptimizer(territoryList, getCurrentYear());
     optimizer.optimizeAndImplementTrades();
     while(!optimizer.doneTrading());
     lastTrades = optimizer.getAllTrades();
@@ -194,7 +200,7 @@ public class World
   private void plantAndHarvestCrops()
   {
     final int year = getCurrentYear();
-    for (final Territory state :politicalWorld)
+    for (final Territory state :territoryList)
     {
       CropOptimizer optimizer = new CropOptimizer(year, state);
       optimizer.optimizeCrops();

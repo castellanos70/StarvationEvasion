@@ -26,7 +26,8 @@ public class WorldLoader
 
   public static final String BG_DATA_PATH = "/sim/geography/ne_50m_land.kml";
 
-  private Collection<Territory> territories;
+  //private Collection<Territory> territoryList;
+  private Territory[] territoryList;
 
   /**
    * Constructor for game, handles all init logic.
@@ -34,13 +35,12 @@ public class WorldLoader
   public WorldLoader(Region[] regionList)
   {
     Collection<GeographicArea> modelGeography;
-    Collection<Territory> agricultureUnits;
     TileManager tileManager;
 
     try {
       modelGeography = new GeographyXMLparser().getGeography();
-      agricultureUnits = GeographyXMLparser.geograpyToAgriculture(modelGeography);
-      tileManager = CropZoneDataIO.parseFile(CropZoneDataIO.DEFAULT_FILE, agricultureUnits);
+      territoryList = GeographyXMLparser.geograpyToAgriculture(modelGeography);
+      tileManager = CropZoneDataIO.parseFile(CropZoneDataIO.DEFAULT_FILE, territoryList);
     } catch (Exception ex)
     {
       // TODO : Throw some kind of error for the calling object.
@@ -50,25 +50,24 @@ public class WorldLoader
     }
 
     // add data from csv to agricultureUnits
-    CountryCSVLoader csvLoader = new CountryCSVLoader(agricultureUnits);
+    CountryCSVLoader csvLoader = new CountryCSVLoader(territoryList);
 
 
-
-    territories = agricultureUnits;
 
     Calendar startingDate = Calendar.getInstance();
     startingDate.set(Calendar.YEAR,  2014);
 
-    World.makeWorld(modelGeography, agricultureUnits, tileManager, startingDate);
+    World.makeWorld(modelGeography, territoryList, tileManager, startingDate);
 
     World world = World.getWorld();
 
     tileManager.setWorld(world);
   }
 
-  public Collection<Territory> getTerritories()
+  //public Collection<Territory> getTerritories()
+  public Territory[] getTerritories()
   {
-    return territories;
+    return territoryList;
   }
 
   public static void printRegions(Region[] regions, boolean verbose)

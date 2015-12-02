@@ -39,10 +39,25 @@ public class RegionData implements Serializable
   public double humanDevelopmentIndex;
 
   /**
-   * This region's production (in metric tons) of each foodType during the past turn (3 years).
+   * This region's production (in metric tons) of each foodType during the past turn (3 years).<br><br>
    * Index by EnumFood.ordinal()
    */
   public int[] foodProduced = new int[EnumFood.SIZE];
+
+  /**
+   * This is the farm income in millions of dollars from to the region's
+   * production of each foodType during the past turn (3 years).<br><br>
+   * This includes farm income for food consumed as well as income from exported
+   * foods.<br><br>
+   * Note: foodProduced*foodPrice for a given food is the gross income. Gross income will
+   * always be greater than this field with is the profet (gross less expenses). Note also
+   * that different regions have different efficiency levels depending on the crop, climate,
+   * infrastructure, tax breaks, and other factors.<br><br>
+   *
+   *
+   * Index by EnumFood.ordinal()
+   */
+  public int[] foodIncome = new int[EnumFood.SIZE];
 
 
   /**

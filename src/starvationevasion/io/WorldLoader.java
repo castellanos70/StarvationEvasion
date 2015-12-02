@@ -34,13 +34,12 @@ public class WorldLoader
   public WorldLoader(Region[] regionList)
   {
     Collection<GeographicArea> modelGeography;
-    Collection<Territory> agricultureUnits;
     TileManager tileManager;
 
     try {
       modelGeography = new GeographyXMLparser().getGeography();
-      agricultureUnits = GeographyXMLparser.geograpyToAgriculture(modelGeography);
-      tileManager = CropZoneDataIO.parseFile(CropZoneDataIO.DEFAULT_FILE, agricultureUnits);
+      territories = GeographyXMLparser.geograpyToAgriculture(modelGeography);
+      tileManager = CropZoneDataIO.parseFile(CropZoneDataIO.DEFAULT_FILE, territories);
     } catch (Exception ex)
     {
       // TODO : Throw some kind of error for the calling object.
@@ -50,24 +49,13 @@ public class WorldLoader
     }
 
     // add data from csv to agricultureUnits
-    CountryCSVLoader csvLoader = new CountryCSVLoader(agricultureUnits);
-    CountryCSVLoader.ParsedData data;
-    try {
-      data = csvLoader.getCountriesFromCSV(regionList);
-    } catch (Exception ex)
-    {
-      // TODO : Throw some kind of error for the calling object.
-      //
-      Logger.getGlobal().log(Level.SEVERE, "Error parsing tile data", ex);
-      return;
-    }
+    CountryCSVLoader csvLoader = new CountryCSVLoader(territories);
 
-    territories = data.territories;
 
     Calendar startingDate = Calendar.getInstance();
     startingDate.set(Calendar.YEAR,  2014);
 
-    World.makeWorld(modelGeography, agricultureUnits, tileManager, startingDate);
+    World.makeWorld(modelGeography, territories, tileManager, startingDate);
 
     World world = World.getWorld();
 

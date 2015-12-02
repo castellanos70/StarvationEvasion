@@ -3,17 +3,9 @@ package starvationevasion.sim;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 
-import java.awt.image.BufferedImage;
-
-public abstract class AbstractAgriculturalUnit
+public abstract class AbstractTerritory
 {
-  private static final boolean VERBOSE = false;
-  private static final int START_YEAR = Constant.FIRST_YEAR;
-
   protected String name;
-  protected BufferedImage flag;
-  protected double shippingLongitude;
-  protected double shippingLatitude;
 
   protected static final int YEARS_OF_SIM = 1+Constant.LAST_YEAR - Constant.FIRST_YEAR;
 
@@ -38,29 +30,46 @@ public abstract class AbstractAgriculturalUnit
   protected int migration;   // immigration - emigration x 1,000 individuals.
   protected int undernourished;  // percentage of population. 0.50 is 50%.
 
-  protected int[] cropIncome = new int[EnumFood.SIZE]; // x $1000
+  /**
+   * The territory's crop income is the gross farm income less
+   * farm expenses. <br><br>
+   *
+   * The Total income includes farm income from food consumed within the
+   * territory as well as food exported. Food imported is not a farm expense.
+   */
+  protected int[] cropIncome = new int[EnumFood.SIZE]; // in $1000s
   protected int[] cropProduction = new int[EnumFood.SIZE]; //in metric tons.
 
   protected int landTotal;  //in square kilometers
+
+  /**
+   * Agricultural land refers to the share of land area that is arable,
+   * under permanent crops, and under permanent pastures. Arable land includes
+   * land defined by the FAO as land under temporary crops (double-cropped
+   * areas are counted once), temporary meadows for mowing or for pasture, land
+   * under market or kitchen gardens, and land temporarily fallow. Land abandoned
+   * as a result of shifting cultivation is excluded. Land under permanent crops
+   * is land cultivated with crops that occupy the land for long periods and need
+   * not be replanted after each harvest, such as cocoa, coffee, and rubber.
+   * This category includes land under flowering shrubs, fruit trees, nut trees,
+   * and vines, but excludes land under trees grown for wood or timber. Permanent
+   * pasture is land used for five or more years for forage, including natural and
+   * cultivated crops.
+   */
+  protected int totalFarmLand;
   protected int[] landCrop = new int[EnumFood.SIZE];  //in square kilometers
   protected int[] cropImport = new int[EnumFood.SIZE];  //in metric tons.
   protected int[] cropExport = new int[EnumFood.SIZE];  //in metric tons.
-  
-  //Note: in milestone II, the model does nothing with the cultivation method.
-  protected double[] cultivationMethod = new double[EnumGrowMethod.SIZE]; //percentage
-  
-  //In Milestone II, crop yield and per capita need are defined in the first year and assumed constant 
+
+  protected int[] cultivationMethod = new int[EnumGrowMethod.SIZE]; //percentage [0,100]
+
+  //In Milestone II, crop yield and per capita need are defined in the first year and assumed constant
   //    throughout each year of the simulation.
   //    This will NOT be changed before the end of milestone II as it would require redefining the core of
   //    the model's calculations.
   protected double[] cropYield = new double[EnumFood.SIZE]; //metric tons per square kilometer
   protected double[] cropNeedPerCapita = new double[EnumFood.SIZE]; //metric tons per person per year.
 
-
-  /**
-   * The states total income.
-   */
-  private int totalIncome = 0;
 
 
   /**
@@ -95,7 +104,7 @@ public abstract class AbstractAgriculturalUnit
 
 
 
-  protected AbstractAgriculturalUnit(String name)
+  protected AbstractTerritory(String name)
   {
     this.name = name;
   }
@@ -114,7 +123,7 @@ public abstract class AbstractAgriculturalUnit
    */
   final public int getPopulation(int year)
   {
-    return population[year - START_YEAR];
+    return population[year - Constant.FIRST_YEAR];
   }
 
   /**
@@ -150,6 +159,152 @@ public abstract class AbstractAgriculturalUnit
   {
     return undernourished;
   }
+
+
+  /**
+   * Populate medianAge array with given age; assumes median age remains constant.
+   *
+   */
+  final public void setMedianAge(int age)
+  {
+    medianAge = age;
+  }
+
+  /**
+   * Populate births array with given rate; assumes rate remains constant.
+   *
+   * @param numberOfBirths in people.
+   */
+  final public void setBirths(int numberOfBirths)
+  {
+    births = numberOfBirths;
+  }
+
+
+
+
+  final public void setMortality(int year, int deaths)
+  {
+    mortality = deaths;
+  }
+
+
+
+  final public void setMigration(int people)
+  {
+    migration = people;
+  }
+
+
+
+
+  final public void setUndernourished(int people)
+  {
+    undernourished = people;
+  }
+
+  final public void setTotalFarmLand(int squareKm) { totalFarmLand = squareKm;}
+
+  /**
+   * @param crop    crop in question
+   * @param metTons tons produced
+   */
+  public void setCropProduction(EnumFood crop, int metTons)
+  {
+    cropProduction[crop.ordinal()] = metTons;
+
+  }
+
+  /**
+   * @param crop    crop in question
+   * @param value Income in $1,000
+   */
+  final public void setCropIncome(EnumFood crop, int value)
+  {
+    cropIncome[crop.ordinal()] = value;
+  }
+
+  /**
+   * @param crop    crop in question
+   * @param metTons tons exported
+   */
+
+  final public void setCropExport(EnumFood crop, int metTons)
+  {
+    cropExport[crop.ordinal()] = metTons;
+  }
+
+  /**
+   * @param crop    crop in question
+   * @param metTons tons imported
+   */
+  final public void setCropImport(EnumFood crop, int metTons)
+  {
+    cropImport[crop.ordinal()] = metTons;
+  }
+
+
+  final public void setLandTotal(int kilomsq)
+  {
+    landTotal = kilomsq;
+  }
+
+
+
+  /**
+   * Set crop land value; use this method when initializing
+   *
+   * @param crop    crop in question
+   * @param kilomsq area to set
+   */
+  final public void setCropLand(EnumFood crop, int kilomsq)
+  {
+    landCrop[crop.ordinal()] = Math.min(kilomsq, getLandTotal());
+  }
+
+
+  /**
+   * @param method     cultivation method (Conventional, Organic or GMO)
+   * @param percentage percentage [0, 100] of land cultivated by the given method.
+   */
+  final public void setMethodPercentage(EnumGrowMethod method, int percentage)
+  {
+    cultivationMethod[method.ordinal()] = percentage;
+  }
+  /**
+   * Method for calculating and setting crop need
+   *
+   * @param crop                  EnumFood
+   * @param tonsConsumed          2014 production + imports - exports
+   * @param percentUndernourished 2014 % of population undernourished
+   */
+  public void setCropNeedPerCapita(EnumFood crop, double tonsConsumed, double percentUndernourished)
+  {
+    double population = getPopulation(Constant.FIRST_YEAR);
+    double tonPerPerson = tonsConsumed / (population - 0.5 * percentUndernourished * population);
+    cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
+  }
+
+  /**
+   * Method for setting crop need when already known (e.g., when copying).
+   *
+   * @param crop         EnumFood
+   * @param tonPerPerson 2014 ton/person
+   */
+  public void setCropNeedPerCapita(EnumFood crop, double tonPerPerson)
+  {
+    cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
+  }
+
+  /**
+   * @param crop
+   * @param tonPerSqKilom yield for crop
+   */
+  final public void setCropYield(EnumFood crop, double tonPerSqKilom)
+  {
+    cropYield[crop.ordinal()] = tonPerSqKilom;
+  }
+
 
   /**
    * @param crop crop in question
@@ -204,10 +359,10 @@ public abstract class AbstractAgriculturalUnit
   }
 
   /**
-   * @param method cultivation method
-   * @return % land cultivated by method
+   * @param method cultivation method (Conventional, Organic or GMO)
+   * @return percentage [0, 100] of land cultivated by the given method.
    */
-  final public double getMethodPercentage(EnumGrowMethod method)
+  final public int getMethodPercentage(EnumGrowMethod method)
   {
     return cultivationMethod[method.ordinal()];
   }
@@ -285,5 +440,14 @@ public abstract class AbstractAgriculturalUnit
       adjustmentFactors[i] = incomeToCategoryPercentages[i] - averageConversionFactor;
       //System.out.println(name + " Adj Factors "+adjustmentFactors[i]);
     }
+  }
+
+  /**
+   * @param year year in question
+   * @param n    population in that year
+   */
+  public void setPopulation(int year, int n)
+  {
+    population[year - Constant.FIRST_YEAR] = n;
   }
 }

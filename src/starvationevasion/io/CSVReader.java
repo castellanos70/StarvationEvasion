@@ -139,6 +139,17 @@ public class CSVReader
 
 
 
+  public void trashRecord()
+  {
+    try
+    {
+      reader.readLine();
+    }
+    catch (IOException e)
+    { LOGGER.severe(e.getMessage());
+      e.printStackTrace();
+    }
+  }
 
 
 

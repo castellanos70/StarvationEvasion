@@ -10,8 +10,6 @@ import starvationevasion.common.MapPoint;
 import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Territory is the former Country class, and extends AbstractAgriculturalUnit.
@@ -24,15 +22,9 @@ import java.util.logging.Logger;
  *
  * @version 22-Mar-2015
  */
-public class Territory extends AbstractAgriculturalUnit
+public class Territory extends AbstractTerritory
 {
-  // Spring 2015 data items.
-  //
-  private static final boolean VERBOSE = false;
   final public static MapConverter converter = new EquirectangularConverter();
-
-  private int START_YEAR = Constant.FIRST_YEAR;
-  private int YEARS_OF_SIM = Constant.LAST_YEAR - Constant.FIRST_YEAR;
 
   private final Area area = new Area();
   private final Collection<GeographicArea> regions = new ArrayList<>();
@@ -267,172 +259,12 @@ public class Territory extends AbstractAgriculturalUnit
     return regions;
   }
 
-  /**
-   * @param year year in question
-   * @param n    population in that year
-   */
-  final public void setPopulation(int year, int n)
-  {
-    if (n >= 0)
-    {
-      population[year - START_YEAR] = n;
-    }
-    else
-    {
-      if (VERBOSE)
-      {
-        System.err.println("Invalid argument for Territory.setPopulation method");
-      }
-    }
-  }
 
 
 
 
 
-  /**
-   * Populate medianAge array with given age; assumes median age remains constant.
-   *
-   */
-  final public void setMedianAge(int age)
-  {
-    medianAge = age;
-  }
 
-  /**
-   * Populate births array with given rate; assumes rate remains constant.
-   *
-   * @param numberOfBirths in people.
-   */
-  final public void setBirths(int numberOfBirths)
-  {
-    births = numberOfBirths;
-  }
-
-
-
-
-  final public void setMortality(int year, int deaths)
-  {
-    mortality = deaths;
-  }
-
-
-
-  final public void setMigration(int people)
-  {
-     migration = people;
-  }
-
-
-
-
-  final public void setUndernourished(int people)
-  {
-    undernourished = people;
-  }
-
-
-
-  /**
-   * @param crop    crop in question
-   * @param metTons tons produced
-   */
-  final public void setCropProduction(EnumFood crop, int metTons)
-  {
-    cropProduction[crop.ordinal()] = metTons;
-
-  }
-
-  /**
-   * @param crop    crop in question
-   * @param value Income in $1,000
-   */
-  final public void setCropIncome(EnumFood crop, int value)
-  {
-    cropIncome[crop.ordinal()] = value;
-  }
-
-  /**
-   * @param crop    crop in question
-   * @param metTons tons exported
-   */
-
-  final public void setCropExport(EnumFood crop, int metTons)
-  {
-    cropExport[crop.ordinal()] = metTons;
-  }
-
-  /**
-   * @param crop    crop in question
-   * @param metTons tons imported
-   */
-  final public void setCropImport(EnumFood crop, int metTons)
-  {
-    cropImport[crop.ordinal()] = metTons;
-  }
-
-
-  final public void setLandTotal(int kilomsq)
-  {
-    landTotal = kilomsq;
-  }
-
-
-
-  /**
-   * Set crop land value; use this method when initializing
-   *
-   * @param crop    crop in question
-   * @param kilomsq area to set
-   */
-  final public void setCropLand(EnumFood crop, int kilomsq)
-  {
-    landCrop[crop.ordinal()] = Math.min(kilomsq, getLandTotal());
-  }
-
-
-  /**
-   * @param method     cultivation method
-   * @param percentage % land cultivated by method
-   */
-  final public void setMethodPercentage(EnumGrowMethod method, double percentage)
-  {
-    cultivationMethod[method.ordinal()] = percentage;
-  }
-  /**
-   * Method for calculating and setting crop need
-   *
-   * @param crop                  EnumFood
-   * @param tonsConsumed          2014 production + imports - exports
-   * @param percentUndernourished 2014 % of population undernourished
-   */
-  final public void setCropNeedPerCapita(EnumFood crop, double tonsConsumed, double percentUndernourished)
-  {
-    double population = getPopulation(START_YEAR);
-    double tonPerPerson = tonsConsumed / (population - 0.5 * percentUndernourished * population);
-    cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
-  }
-
-  /**
-   * Method for setting crop need when already known (e.g., when copying).
-   *
-   * @param crop         EnumFood
-   * @param tonPerPerson 2014 ton/person
-   */
-  final public void setCropNeedPerCapita(EnumFood crop, double tonPerPerson)
-  {
-    cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
-  }
-
-  /**
-   * @param crop
-   * @param tonPerSqKilom yield for crop
-   */
-  final public void setCropYield(EnumFood crop, double tonPerSqKilom)
-  {
-    cropYield[crop.ordinal()] = tonPerSqKilom;
-  }
 
 
   public String toString()

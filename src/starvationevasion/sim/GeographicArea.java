@@ -27,7 +27,7 @@ public class GeographicArea
 
   private Polygon mapSpacePoly;
 
-  public AbstractAgriculturalUnit getAgriculturalUnit()
+  public AbstractTerritory getAgriculturalUnit()
   {
     return agriculturalUnit;
   }

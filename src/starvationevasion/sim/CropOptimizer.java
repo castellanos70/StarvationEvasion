@@ -42,29 +42,25 @@ public class CropOptimizer
     tileYields = new ArrayList<TileYield>();
     cropYields = new double[EnumFood.SIZE];
 
-    int zeros = 0;
+    boolean isAllZero = true;
     for (EnumFood crop:EnumFood.values())
     {
       int index = crop.ordinal();
       double yield = territory.getCropYield(crop);
-      if (Double.isFinite(yield)) cropYields[index] = yield;
-      else cropYields[index] = 0.;
-
-      if (cropYields[index] == 0.) zeros += 1;
-
-      /*if (agriculturalUnit.getName().equals("Brazil"))
-      {
-        System.out.println("Brazil yield for "+crop+" is "+yield);
-      }*/
+      if (yield > 0.0000001)
+      { cropYields[index] = yield;
+        isAllZero = false;
+      }
+      else cropYields[index] = 0.0;
     }
 
     // The only time we see all zero crop yields is when the crop data is
     // incomplete in the configuration files. Log it and set a uniform
     // distribution.
     //
-    if (zeros == EnumFood.SIZE)
+    if (isAllZero)
     {
-      Logger.getGlobal().log(Level.SEVERE, "Territory {0} has nil crop yields.",  territory.getName());
+      Logger.getGlobal().log(Level.FINEST, "Territory {0} has nil crop yields.",  territory.getName());
     }
   }
   

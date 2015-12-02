@@ -2,7 +2,6 @@ package starvationevasion.sim;
 
 import starvationevasion.common.*;
 import starvationevasion.io.WorldLoader;
-import starvationevasion.sim.CropZoneData;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -119,16 +118,11 @@ public class Model
 
     float[] avgConversionFactors = new float[EnumFood.SIZE];
 
-
     for (Region region : regionList)
     { // The loader builds regions in the order that it finds them in the data file.  We need to
       // put them in ordinal order.
-      //
 
-      // Aggregate the statistics from all territories.
-      //
-      region.updateStatistics(Constant.FIRST_YEAR);
-
+      region.aggregateTerritoryFields(Constant.FIRST_YEAR);
       //if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(region, Constant.FIRST_YEAR);
     }
   }
@@ -163,15 +157,32 @@ public class Model
   {
     threeYearData.year = year;
     threeYearData.seaLevel = seaLevel.getSeaLevel(year);
-
-    for (int i=0; i<EnumRegion.SIZE; i++)
-    {
-      threeYearData.regionData[i].revenueBalance = regionList[i].getRevenue();
-    }
-
     for (int i=0; i< EnumFood.SIZE; i++)
     {
       threeYearData.foodPrice[i] = (int)cropData.foodPrice[i];
+    }
+
+
+    //Region Data
+    for (int i=0; i<EnumRegion.SIZE; i++)
+    {
+      RegionData region = threeYearData.regionData[i];
+
+      region.revenueBalance = regionList[i].getRevenue();
+
+      for (EnumFood food : EnumFood.values())
+      {
+        region.foodProduced[food.ordinal()] += regionList[i].getCropProduction(food);
+
+        //Simulator keeps income in $1000s but client is given income in millions of dollars.
+        int thousandsOfDollars = regionList[i].getCropIncome(food);
+
+        //If a very small amount, then make at least 1 million.
+        if ((thousandsOfDollars > 1) && (thousandsOfDollars<500)) thousandsOfDollars+= 500;
+
+        //Round up
+        region.foodIncome[food.ordinal()]   += ( thousandsOfDollars + 600)/1000;
+      }
     }
   }
 
@@ -216,7 +227,7 @@ public class Model
     }
   }
   
-  public static void printData(AbstractAgriculturalUnit unit, int year, String prefix)
+  public static void printData(AbstractTerritory unit, int year, String prefix)
   {
     System.out.println(prefix + "Data for " + unit.getName() + " in year " + year);
     System.out.print(prefix + prefix + "\t");

@@ -26,7 +26,6 @@ public class MapPoint implements Serializable
    */
   public double longitude;
 
-
   public MapPoint(double latitude, double longitude)
   {
     this.latitude = latitude;

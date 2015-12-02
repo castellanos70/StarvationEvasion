@@ -95,7 +95,7 @@ public class KMLParser extends RegionParserHandler
       String nums[] = s.split(",");
       double lon = Double.parseDouble(nums[0]);
       double lat = Double.parseDouble(nums[1]);
-      l.add(new MapPoint(lon, lat));
+      l.add(new MapPoint(lat, lon));
     }
     return l;
   }

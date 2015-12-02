@@ -133,7 +133,7 @@ public class GeographyXMLparser extends DefaultHandler
           System.out.println(locator.getLineNumber());
           fatalError(new SAXParseException("Could not parse lat/lon.", locator));
         }
-        tmpPerimeterSet.add(new MapPoint(lon, lat));
+        tmpPerimeterSet.add(new MapPoint(lat, lon));
         break;
 
       default:

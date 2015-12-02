@@ -45,7 +45,7 @@ public class LandTile
    */
   public LandTile(double lon, double lat)
   {
-    center = new MapPoint(lon, lat);
+    center = new MapPoint(lat, lon);
   }
 
   /**
@@ -79,7 +79,7 @@ public class LandTile
     proj_avgNightTemp = buf.getFloat(BYTE_DEF.PROJ_AVG_NIGHT_TEMP.index());
     proj_rainfall = buf.getFloat(BYTE_DEF.PROJ_RAINFALL.index());
 
-    center = new MapPoint(lon, lat);
+    center = new MapPoint(lat, lon);
   }
 
   /**

@@ -457,7 +457,7 @@ public class TradingOptimizer
     {
       double lat = (Math.random() - 0.5) * 360;
       double lon = (Math.random() - 0.5) * 180;
-      return new MapPoint(lon, lat);
+      return new MapPoint(lat, lon);
     }
   }
 

@@ -1,10 +1,14 @@
 package starvationevasion.sim;
 
 
+import starvationevasion.common.EnumFood;
+import starvationevasion.io.CSVReader;
 
+import java.util.logging.Logger;
 
 public class CropZoneData
 {
+  private final static Logger LOGGER = Logger.getLogger(CropZoneData.class.getName());
   public enum EnumCropZone
   {
     IDEAL
@@ -33,4 +37,5 @@ public class CropZoneData
   public double averageAnnualDayTemperature; // in degrees Celsius.
   public double averageAnnualNightTemperature; // in degrees Celsius.
   public double annualPrecipitation; //in centimeters of rainfall.
+
 }

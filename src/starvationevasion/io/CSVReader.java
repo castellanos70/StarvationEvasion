@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* CSVReader is a quick replacement for the Apache CSV library used by the previous
  * semester's team.  It may not be completely robust.
 */
 public class CSVReader
 {
+
+  private final static Logger LOGGER = Logger.getLogger(CSVReader.class.getName());
   /**
    * Constant indices of USState data represented in CSV file
    */
@@ -34,6 +38,7 @@ public class CSVReader
   private BufferedReader reader;
   private String[] columns;
   private List<CSVRecord> records;
+  private String path;
 
   /** Constructs a new CSVReader
   */
@@ -77,14 +82,73 @@ public class CSVReader
     }
   }
 
-  /** Reads CSV data from an input file, parsing it into a record structure compatible
-  ** with the Apache reader.
-  ** @param file An input file.
-  */
-  public void read(final File file) throws IOException
+
+
+  /**
+   * Opens the given file from the root data path.
+   * Then reads and trashes the first two records of the file.<br>
+   *
+   * @return the number of fields in the third line.
+   */
+  public int openCSVFile(String path)
   {
-    read(new FileInputStream(file));
+    this.path = path;
+    int fieldCount = 0;
+    try
+    {
+      reader = new BufferedReader(new FileReader(path));
+      reader.readLine(); //trash line 1
+      String headers = reader.readLine(); //trash line 2
+      String[] fieldList = headers.split(",");
+
+      fieldCount = fieldList.length;
+    }
+    catch (IOException e)
+    { throw new IllegalArgumentException(e.getMessage());
+    }
+    return fieldCount;
   }
+
+  /**
+   * Reads a record from class field reader<br>
+   * Automatically closes the file if end-of-file or a record is read with
+   * a number of fields not equal to the input fieldCount.
+   * @param fieldCount expected number of fields.
+   * @return String[] of fields of that record or null if end-of-file or error.
+   */
+  public String[] readRecord(int fieldCount)
+  {
+    String str = null;
+    try
+    {
+      str = reader.readLine();
+      //System.out.println(str);
+      if (str == null)
+      { reader.close();
+        return null;
+      }
+    }
+    catch (IOException e)
+    { LOGGER.severe(e.getMessage());
+      e.printStackTrace();
+    }
+
+    String[] fields = str.split(",");
+    if (fields.length != fieldCount)
+    {
+      LOGGER.severe("****ERROR reading "+path + ": Expected " + fieldCount +
+        " fields but read "+ fields.length);
+      return null;
+    }
+    return fields;
+  }
+
+
+
+
+
+
+
 
   /**
    * @return The list of parsed records.

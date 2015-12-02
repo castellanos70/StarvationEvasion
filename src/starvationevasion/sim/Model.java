@@ -2,6 +2,7 @@ package starvationevasion.sim;
 
 import starvationevasion.common.*;
 import starvationevasion.io.WorldLoader;
+import starvationevasion.sim.CropZoneData;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -83,8 +84,9 @@ public class Model
   private int year;
   private Region[] regionList = new Region[EnumRegion.SIZE];
 
-  private double[] foodPrice = new double[EnumFood.SIZE];
+
   private SeaLevel seaLevel;
+  private CropData cropData;
 
 
 
@@ -109,6 +111,9 @@ public class Model
     {
       regionList[i] = new Region(EnumRegion.values()[i]);
     }
+
+    cropData = new CropData();
+
 
     WorldLoader loader = new WorldLoader(regionList);
 
@@ -163,6 +168,11 @@ public class Model
     {
       threeYearData.regionData[i].revenueBalance = regionList[i].getRevenue();
     }
+
+    for (int i=0; i< EnumFood.SIZE; i++)
+    {
+      threeYearData.foodPrice[i] = (int)cropData.foodPrice[i];
+    }
   }
 
 
@@ -177,7 +187,11 @@ public class Model
   private void updateFoodDistribution(){}
   private void updatePlayerRegionRevenue(){}
   private void updateHumanDevelopmentIndex(){}
-  
+
+
+
+
+
   public static void printRegion(Region region, int year)
   {
     System.out.println("Region : " + region.getName());

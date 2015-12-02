@@ -1,14 +1,14 @@
-Category,Land Yeild in 2014 USA (Metric Tons / Square Kilometer),Water used (liters per Square Kilometer,Price per Metric Ton,Fertilizer square kilometer,PesticideLbsPerAcre,Frost Free Days,Temperature Max (Deg C),Temperature Min (Deg C)
-String,int,,,,,,,
-CITRUS,3000,,700,,1.81,,,
-FRUIT,4000,,1060,,1.02,,,
-NUT,340,,1200,,0.2,,,
-GRAIN,900,,200,,0.4425,,,
-OIL,150,,500,,0.51,,,
-VEGGIES,2000,,500,,0.758,,,
-SPECIAL,13,,7000,,,,,
-FEED,2000,,250,,,,,
-FISH,560,,1200,,,,,
-MEAT,8,,4034,,,,,
-POULTRY,25,,2491,,,,,
-DAIRY,40,,3681,,,,,
+Category,Price (Dollars per Metric Ton),Land Yield in 2014 USA (Metric Tons / Square Kilometer),Water used (liters per Square Kilometer,,Fertilizer square kilometer,PesticideLbsPerAcre,Frost Free Days,Temperature Max (Deg C),Temperature Min (Deg C)
+String,int,int,,,,,,,
+CITRUS,700,3000,,,,1.81,,,0
+FRUIT,1060,4000,,,,1.02,,,0
+NUT,1200,340,,,,0.2,,,0
+GRAIN,200,900,,,,0.4425,,,0
+OIL,500,150,,,,0.51,,,0
+VEGGIES,500,2000,,,,0.758,,,0
+SPECIAL,7000,13,,,,,,,0
+FEED,250,2000,,,,,,,0
+FISH,1200,560,,,,,,,0
+MEAT,4034,8,,,,,,,0
+POULTRY,2491,25,,,,,,,0
+DAIRY,3681,40,,,,,,,0

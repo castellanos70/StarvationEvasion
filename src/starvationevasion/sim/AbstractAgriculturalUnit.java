@@ -15,7 +15,7 @@ public abstract class AbstractAgriculturalUnit
   protected double shippingLongitude;
   protected double shippingLatitude;
 
-  protected static final int YEARS_OF_SIM = Constant.LAST_YEAR - Constant.FIRST_YEAR;
+  protected static final int YEARS_OF_SIM = 1+Constant.LAST_YEAR - Constant.FIRST_YEAR;
 
   protected GeographicArea border;
 

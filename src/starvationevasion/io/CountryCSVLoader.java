@@ -1,17 +1,12 @@
 package starvationevasion.io;
 
 
-// import org.apache.commons.csv.CSVRecord;
-// import org.apache.commons.csv.CSVParser;
-// import org.apache.commons.csv.CSVFormat;
-
 import starvationevasion.common.Constant;
 import starvationevasion.sim.Territory;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.io.CSVReader.CSVRecord;
 import starvationevasion.sim.Region;
 import starvationevasion.common.EnumFood;
-import starvationevasion.io.CSVhelpers.CSVParsingException;
 import starvationevasion.io.CSVhelpers.CountryCSVDataGenerator;
 import starvationevasion.sim.EnumGrowMethod;
 
@@ -30,6 +25,7 @@ import java.util.logging.Logger;
  */
 public class CountryCSVLoader
 {
+  private final static Logger LOGGER = Logger.getLogger(CountryCSVLoader.class.getName());
   private static final String DATA_DIR_PATH = "/sim/WorldData/";
   private static final String DATA_FILE = "TerritoryFarmAreaAndIncome-2014.csv";
 
@@ -132,8 +128,12 @@ public class CountryCSVLoader
         if (name != null && name.isEmpty() == false) { // We use the generic AgUnit here.
           //
           unit = new Territory(name);
-        } else throw new CSVParsingException("territory", record, this.csvFile);
-
+        }
+        else
+        {
+          LOGGER.severe("***ERROR*** Reading "+ this.csvFile);
+          return false;
+        }
         // The Fall 2015 data adds regions.
         //
         String regionName = record.get("region");
@@ -153,10 +153,9 @@ public class CountryCSVLoader
         tempCountryList.add(unit);
       }
       // if name or essential fields empty, edit file
-      catch (CSVParsingException exception)
+      catch (Exception exception)
       {
-        // PAB : This used to invoke an error message in the GUI.
-        //
+        LOGGER.severe("***ERROR*** Reading "+ this.csvFile);
         exception.printStackTrace();
         // callEditor(exception);
         return parsedOk;

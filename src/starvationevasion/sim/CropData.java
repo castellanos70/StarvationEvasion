@@ -2,7 +2,6 @@ package starvationevasion.sim;
 
 import starvationevasion.common.EnumFood;
 import starvationevasion.io.CSVReader;
-
 import java.util.logging.Logger;
 
 public class CropData
@@ -36,17 +35,14 @@ public class CropData
   public CropData()
   {
     final String PATH = "data/sim/CropData.csv";
-    CSVReader fileReader = new CSVReader();
-    fileReader.openCSVFile(PATH);
+    CSVReader fileReader = new CSVReader(PATH, 2);
 
     for (int i=0; i< EnumFood.SIZE; i++)
     {
       String fields[] = fileReader.readRecord(10);
       if ((fields==null) || (!fields[0].equals(EnumFood.values()[i].name())))
       {
-        System.out.println("["+fields[0]+"]");
-        System.out.println("["+EnumFood.values()[i].name()+"]");
-          LOGGER.severe("**ERROR** Reading " + PATH);
+        LOGGER.severe("**ERROR** Reading " + PATH);
         return;
       }
       try

@@ -129,7 +129,7 @@ public class Model
       //
       region.updateStatistics(Constant.FIRST_YEAR);
 
-      if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(region, Constant.FIRST_YEAR);
+      //if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(region, Constant.FIRST_YEAR);
     }
   }
 

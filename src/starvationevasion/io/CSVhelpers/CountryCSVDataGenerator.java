@@ -38,9 +38,6 @@ public final class CountryCSVDataGenerator implements CountryCSVDefaultData
       case "undernourish":
         country.setUndernourished(Constant.FIRST_YEAR, WORLD_UNDERNOURISH/100); //divide int by 100
         break;
-      case "arableOpen":
-        country.setArableLand(Constant.FIRST_YEAR, WORLD_PERCENT_ARABLE * country.getLandTotal(Constant.FIRST_YEAR));
-        break;
     }
   }
   

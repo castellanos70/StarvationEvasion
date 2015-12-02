@@ -85,28 +85,22 @@ public class CSVReader
 
 
   /**
-   * Opens the given file from the root data path.
-   * Then reads and trashes the first two records of the file.<br>
-   *
-   * @return the number of fields in the third line.
+   * Opens the given file from the root data path. Sets class state variables.<br>
+   * Then reads and trashes headerLines.<br>
    */
-  public int openCSVFile(String path)
+  public CSVReader(String path, int headerLines)
   {
     this.path = path;
-    int fieldCount = 0;
     try
     {
       reader = new BufferedReader(new FileReader(path));
-      reader.readLine(); //trash line 1
-      String headers = reader.readLine(); //trash line 2
-      String[] fieldList = headers.split(",");
-
-      fieldCount = fieldList.length;
+      for (int i=0; i<headerLines; i++)
+      { reader.readLine(); //trash line i
+      }
     }
     catch (IOException e)
     { throw new IllegalArgumentException(e.getMessage());
     }
-    return fieldCount;
   }
 
   /**

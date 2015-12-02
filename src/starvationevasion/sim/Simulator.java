@@ -163,7 +163,7 @@ public class Simulator
    */
   public static void main(String[] args)
   {
-    LOGGER.setLevel(Level.FINE);
+    LOGGER.setLevel(Level.INFO);
     Simulator sim = new Simulator(Constant.FIRST_YEAR);
     String msg = "Starting Hands: \n";
 

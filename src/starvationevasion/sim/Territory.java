@@ -620,24 +620,7 @@ public class Territory extends AbstractAgriculturalUnit
     }
   }
 
-  /**
-   * @param year       year to set
-   * @param kilomsq area of arable land
-   */
-  final public void setArableLand(int year, double kilomsq)
-  {
-    if (kilomsq >= 0)
-    {
-      for (int i = 0; i < (YEARS_OF_SIM); i++) landArable[i] = kilomsq;
-    }
-    else
-    {
-      if (VERBOSE)
-      {
-        System.err.println("Invalid argument for Territory.setArableLand method for country " + getName());
-      }
-    }
-  }
+
 
   /**
    * Set crop land value; use this method when initializing

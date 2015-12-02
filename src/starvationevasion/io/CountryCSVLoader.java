@@ -297,12 +297,6 @@ public class CountryCSVLoader
             territory.setUndernourished(Constant.FIRST_YEAR, numValue / 100); // Convert to percent.
             break;
 
-          case "arableOpen":
-            numValue = Double.parseDouble(value);
-            if (numValue >= 0 && numValue <= territory.getLandTotal(Constant.FIRST_YEAR)) territory.setArableLand(Constant.FIRST_YEAR, numValue);
-            else throw new IllegalArgumentException();
-            break;
-
           default: ;
         }
       }

@@ -51,49 +51,64 @@ public class CountryCSVLoader
     CSVReader fileReader = new CSVReader(PATH, 0);
 
     //Check header
-    String[] field = fileReader.readRecord(EnumHeader.SIZE);
+    String[] fieldList = fileReader.readRecord(EnumHeader.SIZE);
     for (EnumHeader header : EnumHeader.values())
     {
       int i = header.ordinal();
-      if (!header.name().equals(field[i]))
+      if (!header.name().equals(fieldList[i]))
       {
         LOGGER.severe("**ERROR** Reading " + PATH+
-          "Expected header["+i+"]="+header + ", Found: "+ field[i]);
+          "Expected header["+i+"]="+header + ", Found: "+ fieldList[i]);
         return;
       }
     }
     fileReader.trashRecord();
 
-    for (Territory territory : territoryList)
+    for (int k=0; k<territoryList.length; k++)
     {
-      field = fileReader.readRecord(EnumHeader.SIZE);
+      Territory territory = null;
+      fieldList = fileReader.readRecord(EnumHeader.SIZE);
+      if (fieldList == null) break;
       for (EnumHeader header : EnumHeader.values())
       {
         int i = header.ordinal();
         int value = 0;
-        if (i > 1) value = Integer.parseInt(field[i]);
+        if ((i > 1) && (i < fieldList.length))
+        {
+          try
+          {
+            value = Integer.parseInt(fieldList[i]);
+          }
+          catch (Exception e) {} //Default empty cell, and text to 0
+        }
         switch (header)
         {
           case territory:
-            if (!territory.getName().equals(field[i]))
+            Territory tmp = new Territory(fieldList[i]);
+            int idx = Arrays.binarySearch(territoryList,tmp);
+            if (idx < 0)
             {
               LOGGER.severe("**ERROR** Reading " + PATH+
-                "Expected Territory="+territory.getName() + ", Found: "+ field[i]);
+                  "Territory="+fieldList[i] + ", Not found in territory list.");
               return;
             }
+            territory = territoryList[idx];
             break;
           case region:
             for (EnumRegion enumRegion : EnumRegion.values())
             {
-              if (enumRegion.name().equals(field[i]))
+              if (enumRegion.name().equals(fieldList[i]))
               {
                 territory.setGameRegion(enumRegion);
                 break;
               }
             }
-            LOGGER.severe("**ERROR** Reading " + PATH+
-              "Game Region not recognized: "+ field[i]);
-            return;
+            if (territory.getGameRegion() == null)
+            { LOGGER.severe("**ERROR** Reading " + PATH+
+               "Game Region not recognized: "+ fieldList[i]);
+              return;
+            }
+            break;
 
           case population1981:  case population1990:  case population2000:
           case population2010:  case population2014:  case population2025:

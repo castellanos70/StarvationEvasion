@@ -452,8 +452,15 @@ public abstract class AbstractTerritory implements Comparable<Territory>
   }
 
 
+  @Override
   public int compareTo(Territory compareTerritory)
   {
     return name.compareTo(compareTerritory.name);
+  }
+
+  @Override
+  public boolean equals(Object compareTerritory)
+  {
+    return this.name.equals(((Territory)compareTerritory).name);
   }
 }

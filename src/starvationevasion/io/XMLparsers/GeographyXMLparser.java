@@ -78,6 +78,7 @@ public class GeographyXMLparser extends DefaultHandler
     for (GeographicArea region : regions)
     {
       territoryList[i] = new Territory(region.getName());
+      //System.out.println(territoryList[i].getName());
       i++;
     }
     Arrays.sort(territoryList);

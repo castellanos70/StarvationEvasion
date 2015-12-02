@@ -234,13 +234,12 @@ public class Model
     }
     else System.out.print(" population : " + unit.getPopulation(year));
 
-    System.out.print(", medianAge : " + unit.getMedianAge(year));
-    System.out.print(", births : " + unit.getBirths(year));
-    System.out.print(", mortality : " + unit.getMortality(year));
-    System.out.print(", migration : " + unit.getMigration(year));
-    System.out.print(", undernourished : " + unit.getUndernourished(year));
-    System.out.print(", landTotal : " + unit.getLandTotal(year));
-    System.out.print(", landArable : " + unit.getLandArable(year));
+    System.out.print(", medianAge : " + unit.getMedianAge());
+    System.out.print(", births : " + unit.getBirths());
+    System.out.print(", mortality : " + unit.getMortality());
+    System.out.print(", migration : " + unit.getMigration());
+    System.out.print(", undernourished : " + unit.getUndernourished());
+    System.out.print(", landTotal : " + unit.getLandTotal());
     System.out.println();
 
     System.out.print(prefix + "\t            ");
@@ -248,7 +247,7 @@ public class Model
     System.out.println();
 
     System.out.print(prefix + "\tcropYield : ");
-    for (EnumFood food : EnumFood.values()) System.out.print("\t" + unit.getCropYield(year, food));
+    for (EnumFood food : EnumFood.values()) System.out.print("\t" + unit.getCropYield(food));
     System.out.println();
 
     System.out.print(prefix + "\tcropNeedPerCapita : ");
@@ -256,22 +255,22 @@ public class Model
     System.out.println();
 
     System.out.print(prefix + "\tcropProduction : ");
-    for (EnumFood food : EnumFood.values()) System.out.print("\t" + unit.getCropProduction(year, food));
+    for (EnumFood food : EnumFood.values()) System.out.print("\t" + unit.getCropProduction(food));
     System.out.println();
 
     System.out.print(prefix + "\tcropIncome : ");
-    for (EnumFood food : EnumFood.values()) System.out.print("\t" + unit.getCropIncome(year, food));
+    for (EnumFood food : EnumFood.values()) System.out.print("\t" + unit.getCropIncome(food));
     System.out.println();
 
     System.out.print(prefix + "\tlandCrop : ");
-    for (EnumFood food : EnumFood.values()) System.out.print("\t" + unit.getCropLand(year, food)); // Yes, they named it backwards.
+    for (EnumFood food : EnumFood.values()) System.out.print("\t" + unit.getCropLand(food)); // Yes, they named it backwards.
     System.out.println();
 
     System.out.print(prefix + "\t            ");
     for (EnumGrowMethod method : EnumGrowMethod.values()) System.out.print("\t" + method);
     System.out.println();
     System.out.print(prefix + "\tcultivationMethod : ");
-    for (EnumGrowMethod method : EnumGrowMethod.values()) System.out.print("\t" + unit.getMethodPercentage(year, method));
+    for (EnumGrowMethod method : EnumGrowMethod.values()) System.out.print("\t" + unit.getMethodPercentage(method));
     System.out.println();
   }
 }

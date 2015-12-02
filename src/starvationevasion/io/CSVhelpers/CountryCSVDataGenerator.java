@@ -36,7 +36,7 @@ public final class CountryCSVDataGenerator implements CountryCSVDefaultData
         country.setMigration(WORLD_MIGRATION);
         break;
       case "undernourish":
-        country.setUndernourished(Constant.FIRST_YEAR, WORLD_UNDERNOURISH/100); //divide int by 100
+        country.setUndernourished(WORLD_UNDERNOURISH/100); //divide int by 100
         break;
     }
   }
@@ -66,11 +66,11 @@ public final class CountryCSVDataGenerator implements CountryCSVDefaultData
     double countryNeed = worldPerCap * agriculturalUnit.getPopulation(Constant.FIRST_YEAR);
     
     // set agriculturalUnit's need to world per capita media need * population; assume all imported
-    agriculturalUnit.setCropProduction(Constant.FIRST_YEAR, crop, 0);
+    agriculturalUnit.setCropProduction(crop, 0);
     // agriculturalUnit.setCropExport(START_YEAR, crop, 0);
     // agriculturalUnit.setCropImport(START_YEAR, crop, countryNeed);
-    agriculturalUnit.setCropLand(Constant.FIRST_YEAR, crop, 0);
-    agriculturalUnit.setCropYield(Constant.FIRST_YEAR, crop, 0);
+    agriculturalUnit.setCropLand(crop, 0);
+    agriculturalUnit.setCropYield(crop, 0);
     agriculturalUnit.setCropNeedPerCapita(crop, worldPerCap);
   }
   
@@ -82,9 +82,9 @@ public final class CountryCSVDataGenerator implements CountryCSVDefaultData
   public static void fixGrowMethods(Territory agriculturalUnit)
   {  
       //assign world median values to all methods      
-      agriculturalUnit.setMethodPercentage(Constant.FIRST_YEAR, EnumGrowMethod.ORGANIC, WORLD_ORGANIC);
-      agriculturalUnit.setMethodPercentage(Constant.FIRST_YEAR, EnumGrowMethod.CONVENTIONAL, WORLD_CONVENTIONAL);
-      agriculturalUnit.setMethodPercentage(Constant.FIRST_YEAR, EnumGrowMethod.GMO, WORLD_GMO);
+      agriculturalUnit.setMethodPercentage(EnumGrowMethod.ORGANIC, WORLD_ORGANIC);
+      agriculturalUnit.setMethodPercentage(EnumGrowMethod.CONVENTIONAL, WORLD_CONVENTIONAL);
+      agriculturalUnit.setMethodPercentage(EnumGrowMethod.GMO, WORLD_GMO);
   }
   
  

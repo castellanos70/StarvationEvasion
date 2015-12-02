@@ -20,19 +20,6 @@ public abstract class AbstractAgriculturalUnit
   protected GeographicArea border;
 
 
-  //Note: Since there are only about 200 countries, it does not take much
-  //      space to maintain all annual country data values from the start of the
-  //      model through the current year of the model.
-  //      This information may be useful in milestone III for
-  //      a) displaying graphs
-  //      b) improved prediction algorithms that use multi-year trends.
-
-
-  //Note: This class does not include fields for unused arable land, annual
-  //      crop consumption for each country, annual unhappy people for each
-  //      country and other quantities which can be easily calculated
-  //      on demand form the included fields.
-
   //Note: Values below that are, in the countryData.cvs file, defined as type int
   //      should be displayed to the user as type int. However, as some of these
   //      values may be adjusted from year-to-year by continuous functions, it
@@ -45,26 +32,22 @@ public abstract class AbstractAgriculturalUnit
   //      constant birth rate or a data lookup table that has predefined values for each year.
   //      The development team should expect and plan for such mid-milestone updates.
   protected int[] population = new int[YEARS_OF_SIM];       // in people
-  protected double[] medianAge = new double[YEARS_OF_SIM];  // in years
-  protected double[] births = new double[YEARS_OF_SIM];  // number of live births x 1,000 per year.
-  protected double[] mortality = new double[YEARS_OF_SIM];   // number of deaths x 1,000 per year.
-  protected double[] migration = new double[YEARS_OF_SIM];   // immigration - emigration x 1,000 individuals.
-  protected double[] undernourished = new double[YEARS_OF_SIM];  // percentage of population. 0.50 is 50%.
+  protected int medianAge;  // in years
+  protected int births;  // number of live births x 1,000 per year.
+  protected int mortality;   // number of deaths x 1,000 per year.
+  protected int migration;   // immigration - emigration x 1,000 individuals.
+  protected int undernourished;  // percentage of population. 0.50 is 50%.
 
-  protected double[][] cropIncome = new double[EnumFood.SIZE][YEARS_OF_SIM]; // x $1000
-  protected double[][] cropProduction = new double[EnumFood.SIZE][YEARS_OF_SIM]; //in metric tons.
+  protected int[] cropIncome = new int[EnumFood.SIZE]; // x $1000
+  protected int[] cropProduction = new int[EnumFood.SIZE]; //in metric tons.
 
-  // PAB : Not used...
-  //
-  // protected double[][] cropExport     = new double[EnumFood.SIZE][YEARS_OF_SIM]; //in metric tons.
-  // protected double[][] cropImport     = new double[EnumFood.SIZE][YEARS_OF_SIM]; //in metric tons.
-  
-  protected double[] landTotal  = new double[YEARS_OF_SIM];  //in square kilometers
-  protected double[] landArable = new double[YEARS_OF_SIM];  //in square kilometers
-  protected double[][] landCrop = new double[EnumFood.SIZE][YEARS_OF_SIM];  //in square kilometers
+  protected int landTotal;  //in square kilometers
+  protected int[] landCrop = new int[EnumFood.SIZE];  //in square kilometers
+  protected int[] cropImport = new int[EnumFood.SIZE];  //in metric tons.
+  protected int[] cropExport = new int[EnumFood.SIZE];  //in metric tons.
   
   //Note: in milestone II, the model does nothing with the cultivation method.
-  protected double[][] cultivationMethod = new double[EnumGrowMethod.SIZE][YEARS_OF_SIM]; //percentage
+  protected double[] cultivationMethod = new double[EnumGrowMethod.SIZE]; //percentage
   
   //In Milestone II, crop yield and per capita need are defined in the first year and assumed constant 
   //    throughout each year of the simulation.
@@ -74,17 +57,11 @@ public abstract class AbstractAgriculturalUnit
   protected double[] cropNeedPerCapita = new double[EnumFood.SIZE]; //metric tons per person per year.
 
 
-  // Fall 2015 data items.
-  //
   /**
    * The states total income.
    */
   private int totalIncome = 0;
 
-  /**
-   * The states total farmland.
-   */
-  private int totalFarmLand = 0;
 
   /**
    * Average conversion factor, this is set by the Simulator.
@@ -141,148 +118,105 @@ public abstract class AbstractAgriculturalUnit
   }
 
   /**
-   * @param year year in question
    * @return median age
    */
-  final public double getMedianAge(int year)
+  final public double getMedianAge()
   {
-    return medianAge[year - START_YEAR];
+    return medianAge;
   }
 
   /**
-   * @param year year in question
-   * @return birth rate
+   * @return birth rate at end of the current year of the simulation.
    */
-  final public double getBirths(int year)
+  final public int getBirths()
   {
-    return births[year - START_YEAR];
+    return births;
   }
 
-  final public double getMortality(int year)
+  final public int getMortality()
   {
-    return mortality[year - START_YEAR];
+    return mortality;
   }
 
-  final public double getMigration(int year)
+  final public int getMigration()
   {
-    return migration[year - START_YEAR];
+    return migration;
   }
 
   /**
-   * @param year year in question
-   * @return % undernourished
+   * @return % undernourished at end of the current year of the simulation.
    */
-  final public double getUndernourished(int year)
+  final public int getUndernourished()
   {
-    return undernourished[year - START_YEAR];
+    return undernourished;
   }
 
   /**
-   * @param year year in question
    * @param crop crop in question
-   * @return tons produced
+   * @return tons produced  at end of the current year of the simulation.
    */
-  final public double getCropProduction(int year, EnumFood crop)
+  final public int getCropProduction(EnumFood crop)
   {
-    return cropProduction[crop.ordinal()][year - START_YEAR];
+    return cropProduction[crop.ordinal()];
   }
 
   /**
-   * @param year year in question
    * @param crop crop in question
-   * @return tons produced
+   * @return tons produced at end of the current year of the simulation.
    */
-  final public double getCropIncome(int year, EnumFood crop)
+  final public int getCropIncome(EnumFood crop)
   {
-    return cropIncome[crop.ordinal()][year - START_YEAR];
+    return cropIncome[crop.ordinal()];
   }
 
   /**
-   * @param year year in question
    * @param crop crop in question
    * @return tons exported
    */
-  @Deprecated
-  final public double getCropExport(int year, EnumFood crop)
+  final public int getCropExport(EnumFood crop)
   {
-    // return cropExport[crop.ordinal()][year - START_YEAR];
-    throw new UnsupportedOperationException("Fall 2015 doesn't used crop import or export values.");
+    return cropExport[crop.ordinal()];
   }
 
   /**
-   * @param year year in question
    * @param crop crop in question
    * @return tons imported
    */
-  @Deprecated
-  final public double getCropImport(int year, EnumFood crop)
+  final public int getCropImport(EnumFood crop)
   {
-    // return cropImport[crop.ordinal()][year - START_YEAR];
-    throw new UnsupportedOperationException("Fall 2015 doesn't used crop import or export values.");
+    return cropImport[crop.ordinal()];
   }
 
-  final public double getLandArable(int year)
+
+  final public int getLandTotal()
   {
-    return landArable[year - START_YEAR];
+    return landTotal;
   }
 
-  final public double getLandTotal(int year)
-  {
-    return landTotal[year - START_YEAR];
-  }
 
   /**
-   * @param year year in question
-   * @return area of arable land
-   */
-  final public double getArableLand(int year)
-  {
-    return landArable[year - START_YEAR];
-  }
-
-  /**
-   * Returns area available for planting: arable land - sum(area used for each crop)
-   *
-   * @param year year to check
-   * @return arable area unused
-   */
-  final public double getArableLandUnused(int year)
-  {
-    double used = 0;
-    for (EnumFood crop : EnumFood.values())
-    {
-      used += getCropLand(year, crop);
-    }
-    double unused = getArableLand(year) - used;
-    return unused;
-  }
-
-  /**
-   * @param year year in question
    * @param crop crop in question
    * @return square km planted with crop
    */
-  final public double getCropLand(int year, EnumFood crop)
+  final public int getCropLand(EnumFood crop)
   {
-    return landCrop[crop.ordinal()][year - START_YEAR];
+    return landCrop[crop.ordinal()];
   }
 
   /**
-   * @param year   year in question
    * @param method cultivation method
    * @return % land cultivated by method
    */
-  final public double getMethodPercentage(int year, EnumGrowMethod method)
+  final public double getMethodPercentage(EnumGrowMethod method)
   {
-    return cultivationMethod[method.ordinal()][year - START_YEAR];
+    return cultivationMethod[method.ordinal()];
   }
 
   /**
-   * @param year (passing year might be useful in the next milestone?)
    * @param crop
    * @return yield for crop
    */
-  final public double getCropYield(int year, EnumFood crop)
+  final public double getCropYield(EnumFood crop)
   {
     return cropYield[crop.ordinal()];
   }
@@ -296,33 +230,6 @@ public abstract class AbstractAgriculturalUnit
     return cropNeedPerCapita[crop.ordinal()];
   }
 
-  /**
-   * Calculates number of unhappy people in country for a given year based on formula in specifications.
-   * For START_YEAR, returns undernourished population to avoid null pointer.
-   *
-   * @param year year in question
-   * @return number of unhappy people for that year
-   */
-  final public double getUnhappyPeople(int year)
-  {
-    int currentPop = getPopulation(year);
-    double formulaResult;
-    if (year == START_YEAR)
-    {
-      return currentPop * getUndernourished(year);
-    }
-    else
-    {
-      double numUndernourish = getUndernourished(year) * currentPop;
-      double numDeaths = getMortality(year) / 1000 * currentPop;    // mortality is per 1000, so divide to get %
-      double changeUndernourish = numUndernourish - (getPopulation(year - 1) * getUndernourished(year - 1));
-      double changeDeaths = numDeaths - (getPopulation(year - 1) * getMortality(year - 1) / 1000);
-      formulaResult = 5 * numUndernourish + 2 * changeUndernourish + 10 * numDeaths + 5 * changeDeaths;
-    }
-
-    if (formulaResult < 0) formulaResult = 0;
-    return Math.min(currentPop, formulaResult);
-  }
 
   /**
    * Returns difference between country's production and need for a crop for the specified year.
@@ -335,7 +242,7 @@ public abstract class AbstractAgriculturalUnit
    */
   final public double getSurplus(int year, EnumFood type)
   {
-    return this.getCropProduction(year, type) - getTotalCropNeed(year, type);
+    return this.getCropProduction(type) - getTotalCropNeed(year, type);
   }
 
   /**
@@ -355,13 +262,12 @@ public abstract class AbstractAgriculturalUnit
   /**
    * Calculates net crop available using formula from p. 15 of spec 1.7
    *
-   * @param year year in question
    * @param crop crop in question
-   * @return tons available
+   * @return metric tons available
    */
-  final public double getNetCropAvailable(int year, EnumFood crop)
+  final public double getNetCropAvailable(EnumFood crop)
   {
-    double available = getCropProduction(year, crop) + getCropImport(year, crop) - getCropExport(year, crop);
+    double available = getCropProduction(crop) + getCropImport(crop) - getCropExport(crop);
     return available;
   }
 

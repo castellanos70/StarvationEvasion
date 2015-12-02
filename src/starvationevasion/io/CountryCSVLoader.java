@@ -184,7 +184,7 @@ public class CountryCSVLoader
     String landArea = record.get("landArea");
     try
     {
-      country.setLandTotal(Constant.FIRST_YEAR, Double.parseDouble(landArea));
+      country.setLandTotal(Integer.parseInt(landArea));
     }
     catch (IllegalArgumentException e)
     {
@@ -278,23 +278,23 @@ public class CountryCSVLoader
             break;
 
           case "births":
-            double numValue = Double.parseDouble(value);
+            int numValue = Integer.parseInt(value);
             territory.setBirths(numValue);
             break;
 
           case "mortality":
-            numValue = Double.parseDouble(value);
+            numValue = Integer.parseInt(value);
             territory.setMortality(Constant.FIRST_YEAR, numValue);
             break;
 
           case "migration":
-            numValue = Double.parseDouble(value);
+            numValue = Integer.parseInt(value);
             territory.setMigration(numValue);
             break;
 
           case "undernourish":
-            numValue = Double.parseDouble(value);
-            territory.setUndernourished(Constant.FIRST_YEAR, numValue / 100); // Convert to percent.
+            numValue = Integer.parseInt(value);
+            territory.setUndernourished(numValue / 100); // Convert to percent.
             break;
 
           default: ;
@@ -314,7 +314,7 @@ public class CountryCSVLoader
                 new Object[] {territory.getName(), field, value});
         CountryCSVDataGenerator.fixDemographic(territory, field);
       }
-    }
+
 
     // Linear interpolate population. Do this as needed rather than
     // generating a big data structure;
@@ -324,6 +324,7 @@ public class CountryCSVLoader
     interpolatePopulation(territory, 2000, 2010);
     interpolatePopulation(territory, 2010, 2014);
     interpolatePopulation(territory, 2014, 2050);
+  }
   }
   
   /**
@@ -380,8 +381,8 @@ public class CountryCSVLoader
     for (int i = 0; i < EnumFood.SIZE; i++)
     { EnumFood food = EnumFood.values()[i];
 
-      country.setCropIncome(Constant.FIRST_YEAR, food, income[i]);
-      country.setCropProduction(Constant.FIRST_YEAR, food, production[i]);
+      country.setCropIncome(food, income[i]);
+      country.setCropProduction(food, production[i]);
     }
 
 
@@ -416,7 +417,7 @@ public class CountryCSVLoader
         value = Double.parseDouble(recordMap.get(methodString));
         if (value >= 0 && value <= 1)
         {
-          agriculturalUnit.setMethodPercentage(Constant.FIRST_YEAR, method, value);
+          agriculturalUnit.setMethodPercentage(method, value);
           sum += value;
         }
         else throw new IllegalArgumentException();
@@ -464,18 +465,18 @@ public class CountryCSVLoader
   {
     for (EnumFood crop:EnumFood.values())
     {
-      // double imports = agriculturalUnitTemp.getCropImport(START_YEAR, crop);
-      // double exports = agriculturalUnitTemp.getCropExport(START_YEAR, crop);
-      double production = agriculturalUnitTemp.getCropProduction(Constant.FIRST_YEAR, crop);
-      double land = agriculturalUnitTemp.getCropLand(Constant.FIRST_YEAR, crop);
-      double yield = agriculturalUnitTemp.getCropYield(Constant.FIRST_YEAR, crop);
+      int imports = agriculturalUnitTemp.getCropImport(crop);
+      int exports = agriculturalUnitTemp.getCropExport(crop);
+      int production = agriculturalUnitTemp.getCropProduction(crop);
+      int land = agriculturalUnitTemp.getCropLand(crop);
+      double yield = agriculturalUnitTemp.getCropYield(crop);
       double need = agriculturalUnitTemp.getCropNeedPerCapita(crop);
 
-      // countryFinal.setCropImport(START_YEAR, crop, imports);
-      // countryFinal.setCropExport(START_YEAR, crop, exports);
-      countryFinal.setCropProduction(Constant.FIRST_YEAR, crop, production);
-      countryFinal.setCropLand(Constant.FIRST_YEAR, crop, land);
-      countryFinal.setCropYield(Constant.FIRST_YEAR, crop, yield);
+      countryFinal.setCropImport(crop, imports);
+      countryFinal.setCropExport(crop, exports);
+      countryFinal.setCropProduction(crop, production);
+      countryFinal.setCropLand(crop, land);
+      countryFinal.setCropYield(crop, yield);
       countryFinal.setCropNeedPerCapita(crop, need);
     }
   }

@@ -142,22 +142,6 @@ public class World
   }
 
 
-  /**
-   * @return percent of world's population that is happy at current world time
-   */
-  public double getWorldHappinessPercent()
-  {
-    double unhappyPeople = 0;
-    int year = getCurrentYear();
-    for (Territory country : politicalWorld)
-    {
-      unhappyPeople += country.getUnhappyPeople(year);
-    }
-    double percentUnhappy = unhappyPeople/(getWorldPopulationMil() * 1000000);
-    double percentHappy = 1 - percentUnhappy;
-    return percentHappy;
-  }
-
 
 
   /**
@@ -180,7 +164,6 @@ public class World
     if (DEBUG) System.out.printf("tiles planted in %dms%n", System.currentTimeMillis() - start);
     if (DEBUG) System.out.println("Date is now " + getCurrentYear());
 
-    adjustPopulation(); // need this before shipping
 
     start = System.currentTimeMillis();
     if (DEBUG) System.out.println("Shipping and recieving...");
@@ -189,29 +172,12 @@ public class World
 
     start = System.currentTimeMillis();
     if (DEBUG) System.out.println("Mutating country demographics...");
-    adjustUndernourished();  // implemented
     if (DEBUG) System.out.printf("country demographics mutated in %dms%n", System.currentTimeMillis() - start);
     if (DEBUG) System.out.println("year stepping done");
   }
 
-  private void adjustPopulation()
-  {
-    int year = getCurrentYear();
-    for (Territory state : politicalWorld)
-    {
-      state.updateMortality(year);
-      state.updatePopulation(year);
-    }
-  }
 
-  private void adjustUndernourished()
-  {
-    int year = getCurrentYear();
-    for (Territory state : politicalWorld)
-    {
-      state.updateUndernourished(year);
-    }
-  }
+
 
   /*
     implements the benevolent trading between regions with surpluses and

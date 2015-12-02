@@ -46,7 +46,7 @@ public class CropOptimizer
     for (EnumFood crop:EnumFood.values())
     {
       int index = crop.ordinal();
-      double yield = territory.getCropYield(Constant.FIRST_YEAR, crop);
+      double yield = territory.getCropYield(crop);
       if (Double.isFinite(yield)) cropYields[index] = yield;
       else cropYields[index] = 0.;
 
@@ -90,7 +90,7 @@ public class CropOptimizer
     // figure out how many tiles needed for each crop
     for (EnumFood crop:EnumFood.values())
     {
-      double cropLand = territory.getCropLand(year, crop);
+      double cropLand = territory.getCropLand(crop);
       CropBin bin = new CropBin(crop, (int) cropLand/100);
       cropBins.add(bin);
     }
@@ -114,7 +114,7 @@ public class CropOptimizer
   { 
     EnumFood crop = bin.crop;
     int tilesToPlant = bin.tilesNeeded;
-    double production = 0;
+    int production = 0;
     Comparator reverseComparator = Collections.reverseOrder(new TileYieldComparator(crop)); 
     Collections.sort(tileYields, reverseComparator);                     // sort tiles by descending yield 
     while (tilesToPlant > 0 && tileYields.isEmpty() == false)            // for top n tiles, where n = tilesNeeded for crop
@@ -130,7 +130,7 @@ public class CropOptimizer
     // after getting all the tiles we need, set total production for year
     if (year !=Constant.FIRST_YEAR)
     {
-      territory.setCropProduction(year, crop, production);
+      territory.setCropProduction(crop, production);
     }
   }
   

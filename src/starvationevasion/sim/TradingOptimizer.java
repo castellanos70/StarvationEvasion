@@ -124,13 +124,13 @@ public class TradingOptimizer
       //
       if (true) throw new UnsupportedOperationException("Fall 2015 doesn't used crop import or export values.");
 
-      double need = -(importer.getNetCropAvailable(year, crop) - importer.getTotalCropNeed(year, crop));
-      double supply = exporter.getNetCropAvailable(year, crop) - exporter.getTotalCropNeed(year, crop);
+      double need = -(importer.getNetCropAvailable(crop) - importer.getTotalCropNeed(year, crop));
+      double supply = exporter.getNetCropAvailable(crop) - exporter.getTotalCropNeed(year, crop);
 
       if (need > 0 && supply > 0)
       {
-        double curExport = exporter.getCropExport(year, crop);
-        double curImport = importer.getCropImport(year, crop);
+        double curExport = exporter.getCropExport(crop);
+        double curImport = importer.getCropImport(crop);
 
         double toGive = Math.min(need / efficiency, supply);
         double toReceive = toGive * efficiency;

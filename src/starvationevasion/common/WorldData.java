@@ -59,7 +59,7 @@ public class WorldData implements Serializable
     String msg = "WorldData[" + year + "] =====================================\n     Price: [";
     for (EnumFood food :EnumFood.values())
     {
-      msg += String.format("%s:%f.0", food, foodPrice[food.ordinal()]);
+      msg += String.format("%s:%.0f", food, foodPrice[food.ordinal()]);
       if (food != EnumFood.DAIRY) msg += ", "; else msg += "]\n";
     }
 

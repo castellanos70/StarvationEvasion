@@ -11,6 +11,25 @@ import java.util.Map;
 */
 public class CSVReader
 {
+  /**
+   * Constant indices of USState data represented in CSV file
+   */
+  public static final int STATE_NAME_IDX            = 0;
+  public static final int STATE_TOTAL_LAND_IDX      = 1;
+  public static final int STATE_TOTAL_FARM_LAND_IDX = 2;
+  public static final int STATE_CITRUS_IDX          = 3;
+  public static final int STATE_NON_CITRUS_IDX      = 4;
+  public static final int STATE_NUTS_IDX            = 5;
+  public static final int STATE_GRAIN_IDX           = 6;
+  public static final int STATE_OIL_CROP_IDX        = 7;
+  public static final int STATE_VEGGIE_IDX          = 8;
+  public static final int STATE_SPECIALTY_CROP_IDX  = 9;
+  public static final int STATE_FEED_CROP_IDX       = 10;
+  public static final int STATE_FISH_IDX            = 11;
+  public static final int STATE_MEAT_IDX            = 12;
+  public static final int STATE_POULTRY_EGG_IDX     = 13;
+  public static final int STATE_DAIRY_IDX           = 14;
+
   private InputStream stream;
   private BufferedReader reader;
   private String[] columns;

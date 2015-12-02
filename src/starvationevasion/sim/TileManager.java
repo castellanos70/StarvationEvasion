@@ -43,7 +43,7 @@ public class TileManager extends AbstractClimateData
 
   public static final int ROWS = 1500;
   public static final int COLS = 4000;
-  public static final double EARTH_CIRCUMFERENCE = 4e4; /* approximate, in km */
+
   
   public static final double MIN_LAT = -90;
   public static final double MAX_LAT = 90;
@@ -57,8 +57,8 @@ public class TileManager extends AbstractClimateData
   
   /* these are fairly rough estimates for the distance between two tiles on the
    X and Y axes.  Should be acceptable for our purposes */
-  public static final double DX_KM = EARTH_CIRCUMFERENCE / COLS;
-  public static final double DY_KM = EARTH_CIRCUMFERENCE / ROWS * 0.5;
+  public static final double DX_KM = Constant.EARTH_CIRCUMFERENCE / COLS;
+  public static final double DY_KM = Constant.EARTH_CIRCUMFERENCE / ROWS * 0.5;
   
   /* max radius from selected tiles to add noise to each year */
   public static final double NOISE_RADIUS = 100; /* in km */

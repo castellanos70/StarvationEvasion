@@ -89,22 +89,7 @@ public class EarthViewer {
     earthMaterial.setSelfIlluminationMap
         (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
 
-
     earth.setMaterial(earthMaterial);
-
-    /* Lat Long handler */
-    EventHandler<MouseEvent> handler = event -> {
-      PickResult pickResult = event.getPickResult();
-
-      /* Pick point on texture to derive lat long from java x y axis */
-      Point2D point = pickResult.getIntersectedTexCoord(); //in percentages
-      double lat = (point.getY() - 0.5) * -180;
-      double lon = (point.getX() - 0.5) * 360;
-      MapPoint p = new MapPoint(lat, lon);
-      System.out.println(point + " -> " + p);
-    };
-
-    earth.setOnMouseClicked(handler);
     return new Group(earth);
   }
 
@@ -154,11 +139,19 @@ public class EarthViewer {
       anchorY = event.getSceneY();
       anchorAngleX = angleX.get();
       anchorAngleY = angleY.get();
+      PickResult pickResult = event.getPickResult();
+
+      /* Pick point on texture to derive lat long from java x y axis */
+      Point2D point = pickResult.getIntersectedTexCoord(); //in percentages
+      double lat = (point.getY() - 0.5) * -180;
+      double lon = (point.getX() - 0.5) * 360;
+
+      /* TODO: Clarify if visual will have access to MapPoint class */
+      MapPoint p = new MapPoint(lat, lon);
+      System.out.println(point + " -> " + p);
+//      System.out.println(point + " -> Location{"+ lat + ", "+lon+"}");//more accurate latlong for debug
     });
-    largeEarth.setOnScroll(event ->
-    {
-      System.out.println("test)");
-    });
+
     largeEarth.setOnKeyPressed(new EventHandler<KeyEvent>() {
       @Override
       public void handle(KeyEvent event) {
@@ -172,7 +165,7 @@ public class EarthViewer {
     /**setTranslate can be used to zoom in and out on the world*/
     largeEarth.setOnScroll(me ->
         {
-
+          System.out.println("test)");
           if (me.getDeltaY() < 0 && zoomPosition > -840)
           {
             largeEarth.setTranslateZ(zoomPosition -= 10);

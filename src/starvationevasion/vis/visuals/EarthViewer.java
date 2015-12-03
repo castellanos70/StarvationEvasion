@@ -1,5 +1,6 @@
 package starvationevasion.vis.visuals;
 
+import com.sun.tools.internal.ws.wsdl.document.jaxws.CustomName;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.beans.property.DoubleProperty;
@@ -15,12 +16,16 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
+import javafx.scene.text.*;
+import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import starvationevasion.common.MapPoint;
 import starvationevasion.io.XMLparsers.GeographyXMLparser;
 import starvationevasion.sim.GeographicArea;
 import starvationevasion.sim.Territory;
+import starvationevasion.vis.ClientTest.CustomLayout;
+import starvationevasion.vis.controller.SimParser;
 import starvationevasion.vis.model.Coordinate;
 
 import javax.imageio.ImageIO;
@@ -68,15 +73,18 @@ public class EarthViewer {
 
   private static Group largeEarth;
   private static Group miniEarth;
+  private String regionTitle;
 
   private Sphere earth;
   private PhongMaterial earthMaterial;
+  private CustomLayout layoutPanel;
 
-  public EarthViewer(double smallEarthRadius, double largeEarthRadius) {
+  public EarthViewer(double smallEarthRadius, double largeEarthRadius, CustomLayout l) {
     MINI_EARTH_RADIUS = smallEarthRadius;
     LARGE_EARTH_RADIUS = largeEarthRadius;
     largeEarth = buildScene(LARGE_EARTH_RADIUS);
     miniEarth = buildScene(MINI_EARTH_RADIUS);
+    layoutPanel = l;
   }
 
   public Group buildScene(double earthRadius)
@@ -126,8 +134,7 @@ public class EarthViewer {
   }
 
   public void startEarth() {
-
-    //request focus to listen to key presseseses
+    /*request focus to listen to key presseseses*/
     largeEarth.requestFocus();
 
     /* Init group */
@@ -154,37 +161,19 @@ public class EarthViewer {
       Point2D point = pickResult.getIntersectedTexCoord(); //in percentages
       double lat = (point.getY() - 0.5) * -180;
       double lon = (point.getX() - 0.5) * 360;
-
-      /* TODO: Clarify if visual will have access to MapPoint class */
-      MapPoint p = new MapPoint(lat, lon);
-      System.out.println(point + " -> " + p);
-
-      /*parse the location data to find where the user clicked on the map*/
-      Collection<GeographicArea> modelGeography = new GeographyXMLparser().getGeography();
-      for (GeographicArea a : modelGeography) {
-          if(a.containsMapPoint(p))
-          {
-            /*TODO: send this info to another method to decide what to show the user*/
-            System.out.println("clicked on " + a.getName());
-          }
-        }
-
-    });
-
-    largeEarth.setOnScroll(event ->
-    {
-      System.out.println("test)");
+      new SimParser(lat, lon, this);
+      layoutPanel.title.setFont(Font.font ("Times", 20));
+      layoutPanel.title.setText(getRegionTitle());
     });
 
     /**setTranslate can be used to zoom in and out on the world*/
-    largeEarth.setOnScroll(me ->
+    largeEarth.setOnScroll(event ->
     {
-      System.out.println("test)");
-      if (me.getDeltaY() < 0 && zoomPosition > -840)
+      if (event.getDeltaY() < 0 && zoomPosition > -840)
       {
         largeEarth.setTranslateZ(zoomPosition -= 10);
       }
-      else if (me.getDeltaY() > 0 && zoomPosition < 500)
+      else if (event.getDeltaY() > 0 && zoomPosition < 500)
       {
         largeEarth.setTranslateZ(zoomPosition += 10);
       }
@@ -256,7 +245,18 @@ public class EarthViewer {
     }
     System.out.println("Done!");
     g.dispose();
-
   }
+
+  public void setRegionTitle(String s)
+  {
+    regionTitle = s;
+  }
+
+  public String getRegionTitle()
+  {
+    return regionTitle;
+  }
+
+
 }
 

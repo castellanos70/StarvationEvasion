@@ -19,7 +19,7 @@ public class CustomLayout extends BorderPane
   private GridPane topBar = new GridPane();
   private GridPane leftBarGrid = new GridPane();
   private GridPane centerGrid = new GridPane();
-  private Label title = new Label("Year, World/Region \nPopulation and HDI");
+  public  Label title = new Label("Year, World/Region \nPopulation and HDI");
   private Label toggleEarthMode = new Label("Press tab to toggle between Earth sizes");
   private EarthViewer earthViewer;
   //boolean to keep track of whether we are in Full Earth Mode or Mini Earth Mode
@@ -31,7 +31,7 @@ public class CustomLayout extends BorderPane
     //Earth Viewer takes two parameters, one is the desired radius of your mini Earth
     //and one is the desired radius of your large Earth
     //This was done so that each client could easily size the Earth to fit in with their GUI
-    earthViewer = new EarthViewer(70, 250);
+    earthViewer = new EarthViewer(70, 250, this);
     //Start rotate will put the earthViewer object in an automatic and continuous rotation (this is for the mini view)
     earthViewer.startRotate();
     initTopBar();

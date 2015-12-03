@@ -61,7 +61,7 @@ public abstract class AbstractTerritory implements Comparable<Territory>
   protected int[] cropImport = new int[EnumFood.SIZE];  //in metric tons.
   protected int[] cropExport = new int[EnumFood.SIZE];  //in metric tons.
 
-  protected int[] cultivationMethod = new int[EnumGrowMethod.SIZE]; //percentage [0,100]
+  protected int[] cultivationMethod = new int[EnumFarmMethod.SIZE]; //percentage [0,100]
 
   //In Milestone II, crop yield and per capita need are defined in the first year and assumed constant
   //    throughout each year of the simulation.
@@ -267,7 +267,7 @@ public abstract class AbstractTerritory implements Comparable<Territory>
    * @param method     cultivation method (Conventional, Organic or GMO)
    * @param percentage percentage [0, 100] of land cultivated by the given method.
    */
-  final public void setMethodPercentage(EnumGrowMethod method, int percentage)
+  final public void setMethod(EnumFarmMethod method, int percentage)
   {
     cultivationMethod[method.ordinal()] = percentage;
   }
@@ -362,7 +362,7 @@ public abstract class AbstractTerritory implements Comparable<Territory>
    * @param method cultivation method (Conventional, Organic or GMO)
    * @return percentage [0, 100] of land cultivated by the given method.
    */
-  final public int getMethodPercentage(EnumGrowMethod method)
+  final public int getMethod(EnumFarmMethod method)
   {
     return cultivationMethod[method.ordinal()];
   }

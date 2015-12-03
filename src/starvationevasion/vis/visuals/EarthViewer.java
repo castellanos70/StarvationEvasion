@@ -16,6 +16,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
+import starvationevasion.io.XMLparsers.GeographyXMLparser;
 import starvationevasion.vis.model.Coordinate;
 //import starvationevasion.simvis.visuals.smallevents.CropsTest;
 
@@ -51,6 +52,8 @@ public class EarthViewer
   //"http://planetmaker.wthr.us/img/earth_normalmap_flat_8192x4096.jpg";
   private static final String SPECULAR_MAP = "visResources/SPEC_MAP.jpg";//"vis_resources/SPEC_MAP.jpg";
   //"http://planetmaker.wthr.us/img/earth_specularmap_flat_8192x4096.jpg";
+  private static final String OUTLINE_MAP = "visResources/WorldMapOutline.png";//"vis_resources/SPEC_MAP.jpg";
+  private static final String REGION_OVERLAY = "visResources/WorldMapRegions.png";//"vis_resources/SPEC_MAP.jpg";
 
   private static Group largeEarth;
   private static Group miniEarth;
@@ -68,15 +71,17 @@ public class EarthViewer
   {
     Sphere earth = new Sphere(earthRadius);
 
-
     /* Material */
     PhongMaterial earthMaterial = new PhongMaterial();
     earthMaterial.setDiffuseMap
         (new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
     earthMaterial.setBumpMap
-        (new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
+            (new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
     earthMaterial.setSpecularMap
-        (new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
+            (new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
+    earthMaterial.setSelfIlluminationMap
+            (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
+
 
     earth.setMaterial(earthMaterial);
 
@@ -90,10 +95,22 @@ public class EarthViewer
       double z = point.getZ();
       double lat = Math.toDegrees(Math.acos(y / LARGE_EARTH_RADIUS) - Math.PI / 2); //theta
       double lon = Math.toDegrees(Math.atan(x / z)); //phi
+
+      double lat2 = 90 - (Math.acos(y / LARGE_EARTH_RADIUS)) * 180 / Math.PI;
+      double lon2 = ((270 + (Math.atan2(x , z)) * 180 / Math.PI) % 360) -180;
+
       if (z > 0) lon += (180 * Math.signum(-lon));
       Coordinate c = new Coordinate(lon, lat);
-//      System.out.println(lon + " " + lat + " " + point);
+      //System.out.println(lon + " " + lat + " " + point);
+
+      //39.470125, -101.601563
+
+      GeographyXMLparser gp = new GeographyXMLparser();
+      gp.getGeography();
+
+
     };
+
     earth.setOnMouseClicked(handler);
     return new Group(earth);
   }

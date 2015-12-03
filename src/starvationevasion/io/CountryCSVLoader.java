@@ -6,7 +6,7 @@ import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.EnumFood;
-import starvationevasion.sim.EnumGrowMethod;
+import starvationevasion.sim.EnumFarmMethod;
 
 import java.util.*;
 import java.lang.Integer;
@@ -115,59 +115,51 @@ public class CountryCSVLoader
             territory.setPopulation(year, value);
             break;
 
-          case averageAge:
-            territory.setMedianAge(value);
+          case averageAge: territory.setMedianAge(value); break;
+          case births: territory.setBirths(value); break;
+          case mortality: territory.setMortality(Constant.FIRST_YEAR, value); break;
+          case migration: territory.setMigration(value); break;
+          case undernourished: territory.setUndernourished(value); break;
+          case landArea: territory.setLandTotal(value); break;
+          case farmLand: territory.setTotalFarmLand(value); break;
+
+          case organic: territory.setMethod(EnumFarmMethod.ORGANIC, value); break;
+          case gmo: territory.setMethod(EnumFarmMethod.GMO, value); break;
+
+          case incomeCitrus: territory.setCropIncome(EnumFood.CITRUS, value); break;
+          case incomeNonCitrus: territory.setCropIncome(EnumFood.FRUIT, value); break;
+          case incomeNuts: territory.setCropIncome(EnumFood.NUT, value); break;
+          case incomeGrains: territory.setCropIncome(EnumFood.GRAIN, value); break;
+          case incomeSeedOil: territory.setCropIncome(EnumFood.OIL, value); break;
+          case incomeVeg: territory.setCropIncome(EnumFood.VEGGIES, value); break;
+          case incomeSpecial: territory.setCropIncome(EnumFood.SPECIAL, value); break;
+          case incomeFeed: territory.setCropIncome(EnumFood.FEED, value); break;
+          case incomeFish: territory.setCropIncome(EnumFood.FISH, value); break;
+          case incomeMeat: territory.setCropIncome(EnumFood.MEAT, value); break;
+          case incomePoultry: territory.setCropIncome(EnumFood.POULTRY, value); break;
+          case incomeDairy: territory.setCropIncome(EnumFood.DAIRY, value); break;
+
+
+          case produceCitrus: territory.setCropProduction(EnumFood.CITRUS, value);
+            if (value != 0) {
+              System.out.println(territory.getName() + "CropProduction(EnumFood.CITRUS="+value);
+            }
             break;
-
-          case births:
-            territory.setBirths(value);
-            break;
-
-          case mortality:
-            territory.setMortality(Constant.FIRST_YEAR, value);
-            break;
-
-          case migration:
-            territory.setMigration(value);
-            break;
-
-          case undernourished:
-            territory.setUndernourished(value);
-            break;
-
-          case landArea:
-            territory.setLandTotal(value);
-            break;
-
-          case farmLand:
-            territory.setTotalFarmLand(value);
-            break;
-
-          case organic:
-            territory.setMethodPercentage(EnumGrowMethod.ORGANIC,value);
-            break;
-
-          case gmo:
-            territory.setMethodPercentage(EnumGrowMethod.GMO,value);
-            break;
-
-          case incomeCitrus: case incomeNonCitrus: case incomeNuts:case incomeGrains:
-          case incomeSeedOil:case incomeVeg:case incomeSpecial: case incomeFeed:
-          case incomeFish:case incomeMeat:case incomePoultry:case incomeDairy:
-            territory.setCropIncome(EnumFood.values()[(i-18)/2], value);
-            break;
-
-          case produceCitrus: case produceNonCitrus: case produceNuts:case produceGrains:
-          case produceSeedOil:case produceVeg:case produceSpecial: case produceFeed:
-          case produceFish:case produceMeat:case producePoultry:case produceDairy:
-            territory.setCropProduction(EnumFood.values()[(i-19)/2], value);
-            break;
-
-
+          case produceNonCitrus: territory.setCropProduction(EnumFood.FRUIT, value); break;
+          case produceNuts: territory.setCropProduction(EnumFood.NUT, value); break;
+          case produceGrains: territory.setCropProduction(EnumFood.GRAIN, value); break;
+          case produceSeedOil: territory.setCropProduction(EnumFood.OIL, value); break;
+          case produceVeg: territory.setCropProduction(EnumFood.VEGGIES, value); break;
+          case produceSpecial: territory.setCropProduction(EnumFood.SPECIAL, value); break;
+          case produceFeed: territory.setCropProduction(EnumFood.FEED, value); break;
+          case produceFish: territory.setCropProduction(EnumFood.FISH, value); break;
+          case produceMeat: territory.setCropProduction(EnumFood.MEAT, value); break;
+          case producePoultry: territory.setCropProduction(EnumFood.POULTRY, value); break;
+          case produceDairy: territory.setCropProduction(EnumFood.DAIRY, value); break;
         }
-        int conventional = 100 - (territory.getMethodPercentage(EnumGrowMethod.GMO) +
-          territory.getMethodPercentage(EnumGrowMethod.ORGANIC));
-        territory.setMethodPercentage(EnumGrowMethod.CONVENTIONAL, conventional);
+        int conventional = 100 -
+          (territory.getMethod(EnumFarmMethod.GMO) + territory.getMethod(EnumFarmMethod.ORGANIC));
+        territory.setMethod(EnumFarmMethod.CONVENTIONAL, conventional);
 
         interpolatePopulation(territory, 1981, 1990);
         interpolatePopulation(territory, 1990, 2000);

@@ -1,6 +1,6 @@
 package starvationevasion.sim;
 
-public enum EnumGrowMethod
+public enum EnumFarmMethod
 {
   CONVENTIONAL
   {

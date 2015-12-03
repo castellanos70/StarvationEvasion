@@ -2,17 +2,14 @@ package starvationevasion.io;
 
 
 import starvationevasion.common.Constant;
+import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.io.CSVReader.CSVRecord;
-import starvationevasion.sim.Region;
 import starvationevasion.common.EnumFood;
 import starvationevasion.sim.EnumGrowMethod;
 
-import java.io.*;
 import java.util.*;
 import java.lang.Integer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -46,7 +43,7 @@ public class CountryCSVLoader
    * Constructor takes list of country objects that need data from csv file (previously created from xml file)
    */
   //public CountryCSVLoader(Collection<Territory> territoryList)
-  public CountryCSVLoader(Territory[] territoryList)
+  public CountryCSVLoader(Territory[] territoryList, Region[] regionList)
   {
     CSVReader fileReader = new CSVReader(PATH, 0);
 
@@ -100,6 +97,7 @@ public class CountryCSVLoader
               if (enumRegion.name().equals(fieldList[i]))
               {
                 territory.setGameRegion(enumRegion);
+                regionList[enumRegion.ordinal()].addTerritory(territory);
                 break;
               }
             }

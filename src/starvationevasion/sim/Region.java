@@ -61,11 +61,6 @@ public class Region extends AbstractTerritory
   {
     territories.add(tile);
     area.add(tile.getArea());
-
-    for (int i = Constant.FIRST_YEAR ; i < Constant.LAST_YEAR ; i += 1)
-      {
-        population[i - Constant.FIRST_YEAR] += tile.getPopulation(i);
-    }
   }
 
   public void optimizeCrops(int year)
@@ -151,6 +146,7 @@ public class Region extends AbstractTerritory
    */
   public void aggregateTerritoryFields(int year)
   {
+    System.out.println("Region.aggregateTerritoryFields() territories="+territories.size());
     population[year - Constant.FIRST_YEAR] = 0;
     births = 0;
     mortality = 0;

@@ -62,11 +62,13 @@ public class EarthViewer {
   private static final String SPECULAR_MAP = "visResources/SPEC_MAP.jpg";//"vis_resources/SPEC_MAP.jpg";
   //"http://planetmaker.wthr.us/img/earth_specularmap_flat_8192x4096.jpg";
   private static final String OUTLINE_MAP = "visResources/WorldMapOutline.png";//"vis_resources/SPEC_MAP.jpg";
-  private static final String REGION_OVERLAY = "visResources/WorldMapRegions.png";//"vis_resources/SPEC_MAP.jpg";
+  private static final String REGION_OVERLAY = "visResources/WorldMapRegions8x6.png";//"vis_resources/SPEC_MAP.jpg";
 
   private static Group largeEarth;
   private static Group miniEarth;
 
+  private Sphere earth;
+  private PhongMaterial earthMaterial;
 
   public EarthViewer(double smallEarthRadius, double largeEarthRadius) {
     MINI_EARTH_RADIUS = smallEarthRadius;
@@ -75,9 +77,10 @@ public class EarthViewer {
     miniEarth = buildScene(MINI_EARTH_RADIUS);
   }
 
-  public Group buildScene(double earthRadius) {
-    Sphere earth = new Sphere(earthRadius);
-
+  public Group buildScene(double earthRadius)
+  {
+    earth = new Sphere(earthRadius);
+    earthMaterial = new PhongMaterial();
     /* Material */
     PhongMaterial earthMaterial = new PhongMaterial();
     earthMaterial.setDiffuseMap
@@ -85,9 +88,9 @@ public class EarthViewer {
     earthMaterial.setBumpMap
         (new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
     earthMaterial.setSpecularMap
-        (new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
-    earthMaterial.setSelfIlluminationMap
-        (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
+            (new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
+//    earthMaterial.setSelfIlluminationMap
+//            (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
 
     earth.setMaterial(earthMaterial);
     return new Group(earth);
@@ -121,11 +124,15 @@ public class EarthViewer {
   }
 
   public void startEarth() {
+
+    //request focus to listen to key presseseses
+    largeEarth.requestFocus();
+
     /* Init group */
     Rotate groupXRotate, groupYRotate;
     largeEarth.getTransforms().setAll(
-        groupXRotate = new Rotate(0, Rotate.X_AXIS),
-        groupYRotate = new Rotate(0, Rotate.Y_AXIS)
+            groupXRotate = new Rotate(0, Rotate.X_AXIS),
+            groupYRotate = new Rotate(0, Rotate.Y_AXIS)
     );
     groupXRotate.angleProperty().bind(angleX);
     groupYRotate.angleProperty().bind(angleY);
@@ -152,39 +159,41 @@ public class EarthViewer {
 //      System.out.println(point + " -> Location{"+ lat + ", "+lon+"}");//more accurate latlong for debug
     });
 
-    largeEarth.setOnKeyPressed(new EventHandler<KeyEvent>() {
-      @Override
-      public void handle(KeyEvent event) {
-        switch (event.getCode()) {
-          case P:
-            rotateAroundYAxis(largeEarth).play();
-        }
-      }
+
+    largeEarth.setOnScroll(event ->
+    {
+      System.out.println("test)");
     });
 
     /**setTranslate can be used to zoom in and out on the world*/
     largeEarth.setOnScroll(me ->
-        {
-          System.out.println("test)");
-          if (me.getDeltaY() < 0 && zoomPosition > -840)
-          {
-            largeEarth.setTranslateZ(zoomPosition -= 10);
-          }
-          else if (me.getDeltaY() > 0 && zoomPosition < 500)
-          {
-            largeEarth.setTranslateZ(zoomPosition += 10);
-          }
-          //System.out.println(String.format("deltaX: %.3f deltaY: %.3f", me.getDeltaX(), me.getDeltaY()));
-          //System.out.println(zoomPosition);
-        });
-
+    {
+      System.out.println("test)");
+      if (me.getDeltaY() < 0 && zoomPosition > -840)
+      {
+        largeEarth.setTranslateZ(zoomPosition -= 10);
+      }
+      else if (me.getDeltaY() > 0 && zoomPosition < 500)
+      {
+        largeEarth.setTranslateZ(zoomPosition += 10);
+      }
+      //System.out.println(String.format("deltaX: %.3f deltaY: %.3f", me.getDeltaX(), me.getDeltaY()));
+      //System.out.println(zoomPosition);
+    });
     largeEarth.setOnKeyPressed(event->
       {
         switch (event.getCode())
         {
           case P:
             rotateAroundYAxis(largeEarth).play();
+            break;
+          case R:
+            earthMaterial.setSelfIlluminationMap
+                    (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
+            earth.setMaterial(earthMaterial);
+            break;
         }
+
       });
 
   }
@@ -235,6 +244,7 @@ public class EarthViewer {
     }
     System.out.println("Done!");
     g.dispose();
+
   }
 }
 

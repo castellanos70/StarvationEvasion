@@ -159,7 +159,7 @@ public class Territory extends AbstractTerritory
       landCrop[i] *= factor;
     }
 
-    for (int i = 0 ; i < EnumGrowMethod.values().length ; i += 1)
+    for (int i = 0 ; i < EnumFarmMethod.values().length ; i += 1)
     {
       cultivationMethod[i] *= factor;
     }
@@ -191,7 +191,7 @@ public class Territory extends AbstractTerritory
       landCrop[food.ordinal()] = fromTerritory.landCrop[food.ordinal()];
     }
 
-    for (EnumGrowMethod method : EnumGrowMethod.values())
+    for (EnumFarmMethod method : EnumFarmMethod.values())
     {
       cultivationMethod[method.ordinal()] = fromTerritory.cultivationMethod[method.ordinal()];
     }

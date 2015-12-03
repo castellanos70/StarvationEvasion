@@ -50,7 +50,7 @@ public class WorldLoader
     }
 
     // add data from csv to agricultureUnits
-    CountryCSVLoader csvLoader = new CountryCSVLoader(territoryList);
+    CountryCSVLoader csvLoader = new CountryCSVLoader(territoryList, regionList);
 
 
 

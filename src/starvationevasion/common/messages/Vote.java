@@ -14,6 +14,7 @@ public class Vote implements Serializable
   public final EnumRegion cardOwner;
   public final VoteType voteType;
 
+
   public Vote(EnumRegion cardOwner, VoteType voteType)
   {
     this.cardOwner = cardOwner;

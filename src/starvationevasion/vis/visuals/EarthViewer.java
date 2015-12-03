@@ -185,14 +185,6 @@ public class EarthViewer {
           //System.out.println(zoomPosition);
         });
 
-
-    largeEarth.setOnMousePressed(me ->
-        {
-          // not sure what this listener was for as there was no code in the body
-          //but I went ahead and replaced with a lambda to clean up a bit
-        });
-
-
     largeEarth.setOnKeyPressed(event->
       {
         switch (event.getCode())

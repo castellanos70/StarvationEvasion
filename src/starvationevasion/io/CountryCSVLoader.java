@@ -140,7 +140,11 @@ public class CountryCSVLoader
           case incomeDairy: territory.setCropIncome(EnumFood.DAIRY, value); break;
 
 
-          case produceCitrus: territory.setCropProduction(EnumFood.CITRUS, value); break;
+          case produceCitrus: territory.setCropProduction(EnumFood.CITRUS, value);
+            if (value != 0) {
+              System.out.println(territory.getName() + "CropProduction(EnumFood.CITRUS="+value);
+            }
+            break;
           case produceNonCitrus: territory.setCropProduction(EnumFood.FRUIT, value); break;
           case produceNuts: territory.setCropProduction(EnumFood.NUT, value); break;
           case produceGrains: territory.setCropProduction(EnumFood.GRAIN, value); break;

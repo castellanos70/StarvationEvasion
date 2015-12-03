@@ -1,16 +1,15 @@
 package starvationevasion.io;
 
+import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.sim.Territory;
 import starvationevasion.sim.Region;
 import starvationevasion.sim.World;
 import starvationevasion.sim.CropZoneDataIO;
 import starvationevasion.io.XMLparsers.GeographyXMLparser;
-import starvationevasion.io.XMLparsers.KMLParser;
 import starvationevasion.sim.GeographicArea;
 import starvationevasion.sim.LandTile;
 import starvationevasion.sim.TileManager;
-import starvationevasion.sim.util.EquirectangularConverter;
-import starvationevasion.sim.util.MapConverter;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -26,7 +25,6 @@ public class WorldLoader
 
   public static final String BG_DATA_PATH = "/sim/geography/ne_50m_land.kml";
 
-  //private Collection<Territory> territoryList;
   private Territory[] territoryList;
 
   /**
@@ -64,7 +62,6 @@ public class WorldLoader
     tileManager.setWorld(world);
   }
 
-  //public Collection<Territory> getTerritories()
   public Territory[] getTerritories()
   {
     return territoryList;

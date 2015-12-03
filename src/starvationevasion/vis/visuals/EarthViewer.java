@@ -5,6 +5,7 @@ import javafx.animation.RotateTransition;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -16,8 +17,17 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
+import starvationevasion.common.MapPoint;
 import starvationevasion.io.XMLparsers.GeographyXMLparser;
+import starvationevasion.sim.GeographicArea;
 import starvationevasion.vis.model.Coordinate;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
 //import starvationevasion.simvis.visuals.smallevents.CropsTest;
 
 
@@ -28,8 +38,7 @@ import starvationevasion.vis.model.Coordinate;
  **/
 
 
-public class EarthViewer
-{
+public class EarthViewer {
 
   private static final double ROTATE_SECS = 30;
 
@@ -59,16 +68,14 @@ public class EarthViewer
   private static Group miniEarth;
 
 
-  public EarthViewer(double smallEarthRadius, double largeEarthRadius)
-  {
+  public EarthViewer(double smallEarthRadius, double largeEarthRadius) {
     MINI_EARTH_RADIUS = smallEarthRadius;
     LARGE_EARTH_RADIUS = largeEarthRadius;
     largeEarth = buildScene(LARGE_EARTH_RADIUS);
     miniEarth = buildScene(MINI_EARTH_RADIUS);
   }
 
-  public Group buildScene(double earthRadius)
-  {
+  public Group buildScene(double earthRadius) {
     Sphere earth = new Sphere(earthRadius);
 
     /* Material */
@@ -76,11 +83,11 @@ public class EarthViewer
     earthMaterial.setDiffuseMap
         (new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
     earthMaterial.setBumpMap
-            (new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
+        (new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
     earthMaterial.setSpecularMap
-            (new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
+        (new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
     earthMaterial.setSelfIlluminationMap
-            (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
+        (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
 
 
     earth.setMaterial(earthMaterial);
@@ -88,27 +95,13 @@ public class EarthViewer
     /* Lat Long handler */
     EventHandler<MouseEvent> handler = event -> {
       PickResult pickResult = event.getPickResult();
-      Point3D point = pickResult.getIntersectedPoint();
 
-      double x = point.getX();
-      double y = point.getY();
-      double z = point.getZ();
-      double lat = Math.toDegrees(Math.acos(y / LARGE_EARTH_RADIUS) - Math.PI / 2); //theta
-      double lon = Math.toDegrees(Math.atan(x / z)); //phi
-
-      double lat2 = 90 - (Math.acos(y / LARGE_EARTH_RADIUS)) * 180 / Math.PI;
-      double lon2 = ((270 + (Math.atan2(x , z)) * 180 / Math.PI) % 360) -180;
-
-      if (z > 0) lon += (180 * Math.signum(-lon));
-      Coordinate c = new Coordinate(lon, lat);
-      //System.out.println(lon + " " + lat + " " + point);
-
-      //39.470125, -101.601563
-
-      GeographyXMLparser gp = new GeographyXMLparser();
-      gp.getGeography();
-
-
+      /* Pick point on texture to derive lat long from java x y axis */
+      Point2D point = pickResult.getIntersectedTexCoord(); //in percentages
+      double lat = (point.getY() - 0.5) * -180;
+      double lon = (point.getX() - 0.5) * 360;
+      MapPoint p = new MapPoint(lat, lon);
+      System.out.println(point + " -> " + p);
     };
 
     earth.setOnMouseClicked(handler);
@@ -120,8 +113,7 @@ public class EarthViewer
    *
    * @return Large Earth Group to be attached in client's layout
    */
-  public Group getLargeEarth()
-  {
+  public Group getLargeEarth() {
     return largeEarth;
   }
 
@@ -131,8 +123,7 @@ public class EarthViewer
    *
    * @return Mini Earth Group to be attached in client's layout
    */
-  public Group getMiniEarth()
-  {
+  public Group getMiniEarth() {
     return miniEarth;
   }
 
@@ -140,13 +131,11 @@ public class EarthViewer
    * Runs a continuous animation of the Earth rotating around its y-axis
    * Used for Mini Earth Mode in client GUI
    */
-  public void startRotate()
-  {
+  public void startRotate() {
     rotateAroundYAxis(miniEarth).play();
   }
 
-  public void startEarth()
-  {
+  public void startEarth() {
     /* Init group */
     Rotate groupXRotate, groupYRotate;
     largeEarth.getTransforms().setAll(
@@ -170,13 +159,10 @@ public class EarthViewer
     {
       System.out.println("test)");
     });
-    largeEarth.setOnKeyPressed(new EventHandler<KeyEvent>()
-    {
+    largeEarth.setOnKeyPressed(new EventHandler<KeyEvent>() {
       @Override
-      public void handle(KeyEvent event)
-      {
-        switch (event.getCode())
-        {
+      public void handle(KeyEvent event) {
+        switch (event.getCode()) {
           case P:
             rotateAroundYAxis(largeEarth).play();
         }
@@ -234,4 +220,36 @@ public class EarthViewer
 
     return rotate;
   }
+
+  public static void main(String args[])
+  {
+    int scale = 50;
+    BufferedImage i = new BufferedImage(360 * scale, 180 * scale, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g = i.createGraphics();
+    g.setComposite(AlphaComposite.Clear);
+    g.fillRect(0, 0, 360 * scale, 180 * scale);
+    g.setColor(Color.BLACK);
+
+    Collection<GeographicArea> modelGeography = new GeographyXMLparser().getGeography();
+    for (GeographicArea a : modelGeography) {
+      Polygon poly = new Polygon();
+      for (MapPoint p : a.getPerimeter()) {
+        int latitude = (int) ((p.latitude - 90) * -1 * scale);
+        int longitude = (int) ((p.longitude + 180) * scale);
+        poly.addPoint(longitude, latitude);
+      }
+      g.setComposite(AlphaComposite.Src);
+      g.setColor(Color.RED);
+      g.drawPolygon(poly);
+    }
+
+    try {
+      ImageIO.write(i, "PNG", new File("/Users/laurencemirabal/Desktop/test.png"));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    System.out.println("Done!");
+    g.dispose();
+  }
 }
+

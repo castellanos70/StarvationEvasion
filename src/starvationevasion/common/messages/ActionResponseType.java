@@ -24,8 +24,10 @@ public enum ActionResponseType
    */
   NONEXISTENT_CARD,
   /**
-   * An invalid card was attempted to be drafted. Additional information may in this case
+   * This may represent one of two messages:
+   * 1) An invalid card was attempted to be drafted. Additional information may in this case
    * be available in the ActionResponse's message field.
+   * 2) A vote was attempted to be cast on a card not eligible for voting.
    */
   INVALID
 }

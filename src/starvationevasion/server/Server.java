@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -29,9 +30,10 @@ public class Server
   private ScheduledFuture<?> gameStartFuture;
   private Simulator simulator;
   private Map<EnumRegion, List<EnumPolicy>> playerHands = new HashMap<>();
-  private Map<EnumRegion, RegionData> regionData = new HashMap<>();
-  private Map<EnumRegion, Integer> regionActionsRemaining = new HashMap<>();
-  private ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>();
+  private Map<EnumRegion, RegionTurnData> regionTurnData = new HashMap<>();
+  private Map<EnumRegion, PolicyCard> regionVoteRequiredCards = new HashMap<>();
+  private Map<PolicyCard, List<EnumRegion>> regionsWhoVotedOnCards = new HashMap<>();
+  private ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>(), draftedPolicyCards = new ArrayList<>();
 
   public Server(String loginFilePath)
   {
@@ -140,6 +142,21 @@ public class Server
         handleRegionChoice(client, (RegionChoice) message);
         continue;
       }
+      if (message instanceof DraftCard)
+      {
+        handleDraftMessage(client, (DraftCard) message);
+        continue;
+      }
+      if (message instanceof Discard)
+      {
+        handleDiscard(client, (Discard) message);
+        continue;
+      }
+      if (message instanceof Vote)
+      {
+        handleVote(client, (Vote) message);
+        continue;
+      }
       if (message instanceof ClientChatMessage)
       {
         handleChatMessage(client, (ClientChatMessage) message);
@@ -147,6 +164,132 @@ public class Server
       }
       client.send(Response.INAPPROPRIATE);
     }
+  }
+
+  private void handleVote(ServerWorker client, Vote message)
+  {
+    final EnumRegion region = client.getRegion();
+    if (getCurrentState() != ServerState.VOTING || region == null)
+    {
+      client.send(Response.INAPPROPRIATE);
+      return;
+    }
+    client.send(Response.OK);
+    List<EnumPolicy> hand = playerHands.get(region);
+    EnumPolicy[] handArray = hand.toArray(new EnumPolicy[hand.size()]);
+    if (!regionVoteRequiredCards.containsKey(message.cardOwner))
+    {
+      client.send(new ActionResponse(ActionResponseType.NONEXISTENT_CARD, handArray));
+      return;
+    }
+    final PolicyCard card = regionVoteRequiredCards.get(message.cardOwner);
+    if (regionsWhoVotedOnCards.get(card).contains(region))
+    {
+      client.send(new ActionResponse(ActionResponseType.TOO_MANY_ACTIONS, handArray));
+      return;
+    }
+    if (!card.isEligibleToVote(region))
+    {
+      client.send(new ActionResponse(ActionResponseType.INVALID, handArray));
+      return;
+    }
+
+    card.addEnactingRegion(region);
+    regionsWhoVotedOnCards.get(card).add(region);
+    broadcastVoteStatus();
+  }
+
+  private void broadcastVoteStatus()
+  {
+    Collection<PolicyCard> voteRequiredCards = regionVoteRequiredCards.values();
+    broadcast(new VoteStatus(voteRequiredCards.toArray(new PolicyCard[voteRequiredCards.size()])));
+  }
+
+  private void handleDiscard(ServerWorker client, Discard message)
+  {
+    final EnumRegion region = client.getRegion();
+    if (getCurrentState() != ServerState.DRAFTING || region == null)
+    {
+      client.send(Response.INAPPROPRIATE);
+      return;
+    }
+    client.send(Response.OK);
+    List<EnumPolicy> hand = playerHands.get(region);
+    EnumPolicy[] handArray = hand.toArray(new EnumPolicy[hand.size()]);
+    final RegionTurnData regionTurnData = this.regionTurnData.get(region);
+    if ((message.isFreeDiscard && regionTurnData.hasUsedFreeDiscard) || regionTurnData.actionsRemaining < 1)
+    {
+      client.send(new ActionResponse(ActionResponseType.TOO_MANY_ACTIONS, handArray));
+      return;
+    }
+    if (!Arrays.stream(message.discards).allMatch(hand::contains))
+    {
+      client.send(new ActionResponse(ActionResponseType.NONEXISTENT_CARD, handArray));
+      return;
+    }
+    if (message.isFreeDiscard)
+    {
+      hand.remove(message.discards[0]);
+      simulator.discard(region, message.discards[0]);
+      regionTurnData.hasUsedFreeDiscard = true;
+    }
+    else
+    {
+      regionTurnData.actionsRemaining--;
+      for (EnumPolicy discard : message.discards)
+      {
+        if (discard == null) continue;
+        hand.remove(discard);
+      }
+      Collections.addAll(hand, simulator.drawCards(region));
+    }
+    handArray = hand.toArray(new EnumPolicy[hand.size()]);
+    client.send(new ActionResponse(ActionResponseType.OK, handArray));
+  }
+
+  private void handleDraftMessage(ServerWorker client, DraftCard message)
+  {
+    final EnumRegion region = client.getRegion();
+    if (getCurrentState() != ServerState.DRAFTING || region == null)
+    {
+      client.send(Response.INAPPROPRIATE);
+      return;
+    }
+    client.send(Response.OK);
+    List<EnumPolicy> hand = playerHands.get(region);
+    EnumPolicy[] handArray = hand.toArray(new EnumPolicy[hand.size()]);
+    final RegionTurnData regionTurnData = this.regionTurnData.get(region);
+    if (regionTurnData.actionsRemaining < 1)
+    {
+      client.send(new ActionResponse(ActionResponseType.TOO_MANY_ACTIONS, handArray));
+      return;
+    }
+    if (!hand.contains(message.policyCard.getCardType()))
+    {
+      client.send(new ActionResponse(ActionResponseType.NONEXISTENT_CARD, handArray));
+      return;
+    }
+    String validationResponse = message.policyCard.validate();
+    if (message.policyCard.getOwner() != client.getRegion())
+    {
+      validationResponse = "Tried to play a region card with the wrong owner";
+    }
+    if (validationResponse != null)
+    {
+      client.send(new ActionResponse(ActionResponseType.INVALID, handArray, validationResponse));
+      return;
+    }
+    if (message.policyCard.votesRequired() > 0 && regionTurnData.hasPlayedVoteCard)
+    {
+      client.send(new ActionResponse(ActionResponseType.TOO_MANY_VOTING_CARDS, handArray));
+      return;
+    }
+    regionTurnData.actionsRemaining--;
+    if (message.policyCard.votesRequired() > 0) regionTurnData.hasPlayedVoteCard = true;
+    draftedPolicyCards.add(message.policyCard);
+    hand.remove(message.policyCard.getCardType());
+    handArray = hand.toArray(new EnumPolicy[hand.size()]);
+    client.send(new ActionResponse(ActionResponseType.OK, handArray));
   }
 
   private void handleChatMessage(ServerWorker client, ClientChatMessage message)
@@ -225,7 +368,7 @@ public class Server
     broadcast(PhaseStart.constructPhaseStart(ServerState.DRAFTING, ServerConstants.DRAFTING_PHASE_TIME));
     for (EnumRegion region : EnumRegion.US_REGIONS)
     {
-      regionActionsRemaining.put(region, ServerConstants.ACTIONS_PER_DRAFT_PHASE);
+      regionTurnData.put(region, new RegionTurnData());
     }
     scheduledExecutorService.schedule(this::enterVotingPhase, ServerConstants.DRAFTING_PHASE_TIME, TimeUnit.MILLISECONDS);
   }
@@ -234,14 +377,23 @@ public class Server
   {
     setServerState(ServerState.VOTING);
     broadcast(PhaseStart.constructPhaseStart(ServerState.VOTING, ServerConstants.VOTING_PHASE_TIME));
-
     scheduledExecutorService.schedule(this::enterDrawingPhase, ServerConstants.VOTING_PHASE_TIME, TimeUnit.MILLISECONDS);
+    regionsWhoVotedOnCards.clear();
+    regionVoteRequiredCards.putAll(draftedPolicyCards.stream()
+        .filter(c -> c.votesRequired() > 0)
+        .collect(Collectors.toMap(PolicyCard::getOwner, Function.identity())));
+    regionVoteRequiredCards.values().forEach(c -> regionsWhoVotedOnCards.put(c, new ArrayList<>()));
   }
 
   private void enterDrawingPhase()
   {
     setServerState(ServerState.DRAWING);
     broadcast(PhaseStart.constructPhaseStart(ServerState.DRAWING, -1));
+    for(PolicyCard p: draftedPolicyCards)
+    {
+      if (p.votesRequired() > p.getEnactingRegionCount()) simulator.discard(p.getOwner(), p.getCardType());
+      else enactedPolicyCards.add(p);
+    }
     for (Map.Entry<EnumRegion, List<EnumPolicy>> entry : playerHands.entrySet())
     {
       entry.getValue().addAll(Arrays.asList(simulator.drawCards(entry.getKey())));

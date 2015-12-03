@@ -47,14 +47,6 @@ public class Region extends AbstractTerritory
   public int getRevenue() {return revenue;}
 
   /**
-   * @return country's collection of agricultural units.
-   */
-  public Collection<Territory> getAgriculturalUnits()
-  {
-    return territories;
-  }
-
-  /**
    * @param tile Territory to add to country
    */
   public void addTerritory(Territory tile)

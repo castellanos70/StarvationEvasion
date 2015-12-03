@@ -11,6 +11,7 @@ import starvationevasion.sim.GeographicArea;
 import starvationevasion.sim.LandTile;
 import starvationevasion.sim.TileManager;
 
+import java.io.FileNotFoundException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.logging.Level;
@@ -48,8 +49,12 @@ public class WorldLoader
     }
 
     // add data from csv to agricultureUnits
-    CountryCSVLoader csvLoader = new CountryCSVLoader(territoryList, regionList);
-
+    CountryCSVLoader csvLoader;
+    try {
+      csvLoader = new CountryCSVLoader(territoryList, regionList);
+    } catch (FileNotFoundException e) {
+      throw new IllegalStateException("The world model can not be populated.");
+    }
 
 
     Calendar startingDate = Calendar.getInstance();
@@ -72,7 +77,7 @@ public class WorldLoader
     for (Region region : regions)
     {
       System.out.println("Region : " + region.getName());
-      for (Territory unit : region.getAgriculturalUnits())
+      for (Territory unit : region.getTerritories())
       {
         System.out.println("\t" + unit.toString());
 		if (verbose == false) continue;

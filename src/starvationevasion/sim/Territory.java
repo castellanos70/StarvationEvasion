@@ -163,8 +163,6 @@ public class Territory extends AbstractTerritory
     {
       cultivationMethod[i] *= factor;
     }
-
-    humanDevelopmentIndex  = (float) (population[0] - undernourished) / population[0];
   }
 
   /**

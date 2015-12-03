@@ -8,6 +8,7 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.common.EnumFood;
 import starvationevasion.sim.EnumFarmMethod;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.lang.Integer;
 import java.util.logging.Logger;
@@ -21,7 +22,7 @@ import java.util.logging.Logger;
 public class CountryCSVLoader
 {
   private final static Logger LOGGER = Logger.getLogger(CountryCSVLoader.class.getName());
-  private static final String PATH = "data/sim/WorldData/TerritoryFarmAreaAndIncome-2014.csv";
+  private static final String PATH = "/data/sim/WorldData/TerritoryFarmAreaAndIncome-2014.csv";
 
   private enum EnumHeader
   { territory, region, population1981, population1990, population2000,
@@ -43,7 +44,7 @@ public class CountryCSVLoader
    * Constructor takes list of country objects that need data from csv file (previously created from xml file)
    */
   //public CountryCSVLoader(Collection<Territory> territoryList)
-  public CountryCSVLoader(Territory[] territoryList, Region[] regionList)
+  public CountryCSVLoader(Territory[] territoryList, Region[] regionList) throws FileNotFoundException
   {
     CSVReader fileReader = new CSVReader(PATH, 0);
 

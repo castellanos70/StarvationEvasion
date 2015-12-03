@@ -20,6 +20,7 @@ import javafx.util.Duration;
 import starvationevasion.common.MapPoint;
 import starvationevasion.io.XMLparsers.GeographyXMLparser;
 import starvationevasion.sim.GeographicArea;
+import starvationevasion.sim.Territory;
 import starvationevasion.vis.model.Coordinate;
 
 import javax.imageio.ImageIO;
@@ -54,6 +55,7 @@ public class EarthViewer {
   double anchorX, anchorY;
   private double anchorAngleX = 0;
   private double anchorAngleY = 0;
+
 
   private static final String DIFFUSE_MAP = "visResources/DIFFUSE_MAP.jpg";//"vis_resources/DIFFUSE_MAP.jpg";
   //"http://www.daidegasforum.com/images/22/world-map-satellite-day-nasa-earth.jpg";
@@ -156,9 +158,18 @@ public class EarthViewer {
       /* TODO: Clarify if visual will have access to MapPoint class */
       MapPoint p = new MapPoint(lat, lon);
       System.out.println(point + " -> " + p);
-//      System.out.println(point + " -> Location{"+ lat + ", "+lon+"}");//more accurate latlong for debug
-    });
 
+      /*parse the location data to find where the user clicked on the map*/
+      Collection<GeographicArea> modelGeography = new GeographyXMLparser().getGeography();
+      for (GeographicArea a : modelGeography) {
+          if(a.containsMapPoint(p))
+          {
+            /*TODO: send this info to another method to decide what to show the user*/
+            System.out.println("clicked on " + a.getName());
+          }
+        }
+
+    });
 
     largeEarth.setOnScroll(event ->
     {
@@ -180,6 +191,7 @@ public class EarthViewer {
       //System.out.println(String.format("deltaX: %.3f deltaY: %.3f", me.getDeltaX(), me.getDeltaY()));
       //System.out.println(zoomPosition);
     });
+
     largeEarth.setOnKeyPressed(event->
       {
         switch (event.getCode())
@@ -188,15 +200,15 @@ public class EarthViewer {
             rotateAroundYAxis(largeEarth).play();
             break;
           case R:
-            earthMaterial.setSelfIlluminationMap
+            earthMaterial.setDiffuseMap
                     (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
             earth.setMaterial(earthMaterial);
             break;
         }
-
       });
 
   }
+
 
   public void startRotate(Group group)
   {

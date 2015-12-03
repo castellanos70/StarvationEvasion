@@ -39,7 +39,6 @@ public class CustomLayout extends BorderPane
     initCenter();
     this.setTop(topBar);
     this.setLeft(leftBarGrid);
-
   }
 
   public synchronized void switchEarthView()
@@ -51,23 +50,21 @@ public class CustomLayout extends BorderPane
     //The large Earth responds to scrolling, the mini Earth does not and should simply rotate continuously.
     if (fullEarth)
     {
-      centerGrid.getChildren().remove(0);
+      centerGrid.getChildren().remove(earthViewer.getLargeEarth());
       leftBarGrid.getChildren().add(earthViewer.getMiniEarth());
-      initCenter();
       fullEarth = false;
     }
     else
     {
       leftBarGrid.getChildren().remove(0);
+      //initCenter();
       centerGrid.getChildren().add((earthViewer.getLargeEarth()));
       earthViewer.startEarth();
       fullEarth = true;
     }
   }
 
-
 //The rest of these functions are layout things and not important
-
 
   private void initTopBar()
   {

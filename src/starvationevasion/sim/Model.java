@@ -77,7 +77,7 @@ public class Model
 
   // Verbosity of debug information during startup
   //
-  private final static Level debugLevel = Level.FINEST; // FINE;
+  private final static Level debugLevel = Level.FINE;
 
   private final int startYear;
   private int year;
@@ -123,7 +123,7 @@ public class Model
       // put them in ordinal order.
 
       region.aggregateTerritoryFields(Constant.FIRST_YEAR);
-      //if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(region, Constant.FIRST_YEAR);
+      if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(region, Constant.FIRST_YEAR);
     }
   }
 
@@ -167,6 +167,9 @@ public class Model
     for (int i=0; i<EnumRegion.SIZE; i++)
     {
       RegionData region = threeYearData.regionData[i];
+      region.population = regionList[i].getPopulation(year);
+      region.undernourished = regionList[i].getUndernourished();
+      region.humanDevelopmentIndex = regionList[i].getHumanDevelopmentIndex();
 
       region.revenueBalance = regionList[i].getRevenue();
 
@@ -182,6 +185,8 @@ public class Model
 
         //Round up
         region.foodIncome[food.ordinal()]   += ( thousandsOfDollars + 600)/1000;
+
+        region.farmArea[food.ordinal()] = regionList[i].getCropLand(food);
       }
     }
   }

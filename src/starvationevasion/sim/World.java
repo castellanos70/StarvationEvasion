@@ -69,7 +69,7 @@ public class World
       // to simply multiply all of the territorial data by 50%
       //
       state.estimateInitialYield();
-      state.scaleInitialStatistics(.50);
+      // state.scaleInitialStatistics(.50);
       CropOptimizer optimizer = new CropOptimizer(Constant.FIRST_YEAR, state);
       optimizer.optimizeCrops();
     }

@@ -157,6 +157,17 @@ public abstract class PolicyCard  implements Serializable
 
 
   //=========================================================================================
+
+  /**
+   * @return the owner of this policy card
+   */
+  public EnumRegion getOwner()
+  {
+    return owner;
+  }
+
+
+  //=========================================================================================
   /**
    * @return The title text for this policy.
    */

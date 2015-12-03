@@ -28,7 +28,12 @@ public abstract class AbstractTerritory implements Comparable<Territory>
   protected int births;  // number of live births x 1,000 per year.
   protected int mortality;   // number of deaths x 1,000 per year.
   protected int migration;   // immigration - emigration x 1,000 individuals.
-  protected int undernourished;  // percentage of population. 0.50 is 50%.
+  protected int undernourished;  // number of undernourished x 1,000 per year.
+
+  // The Fall 2015 spec on pg19 defines Human Development Index (HDI) as a function
+  // of undernourishment in two categories; Protien Energy and Micronutrient.
+  //
+  protected float humanDevelopmentIndex;
 
   /**
    * The territory's crop income is the gross farm income less
@@ -158,6 +163,14 @@ public abstract class AbstractTerritory implements Comparable<Territory>
   final public int getUndernourished()
   {
     return undernourished;
+  }
+
+  /**
+   * @return % human development index at end of the current year of the simulation.
+   */
+  final public float getHumanDevelopmentIndex()
+  {
+    return humanDevelopmentIndex;
   }
 
 

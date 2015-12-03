@@ -138,30 +138,12 @@ public class Territory extends AbstractTerritory
    * The loader loads 2014 data.  This function scales the data for 1981 given the scale factor.
    * @param factor The scaling factor.
    */
-  public void scaleInitialStatistics(double factor)
+  public void scaleCropData(double factor)
   {
-    int index = 0; // The 0th index is the start year.
-
-    population[index] *= factor;
-    medianAge *= factor;
-    births *= factor;
-    mortality *= factor;
-    migration *= factor;
-    undernourished *= factor;
-
-    landTotal *= factor;
-
     for (int i = 0 ; i < EnumFood.values().length ; i += 1)
     {
-      cropYield[i] *= factor;
-      cropNeedPerCapita[i] *= factor;
+      cropIncome[i] *= factor;
       cropProduction[i] *= factor;
-      landCrop[i] *= factor;
-    }
-
-    for (int i = 0 ; i < EnumFarmMethod.values().length ; i += 1)
-    {
-      cultivationMethod[i] *= factor;
     }
   }
 

@@ -36,7 +36,7 @@ public class CropData
 
   public CropData()
   {
-    final String PATH = "data/sim/CropData.csv";
+    final String PATH = "/sim/CropData.csv";
     CSVReader fileReader;
     try {
       fileReader = new CSVReader(PATH, 2);

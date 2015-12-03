@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 public class CountryCSVLoader
 {
   private final static Logger LOGGER = Logger.getLogger(CountryCSVLoader.class.getName());
-  private static final String PATH = "/data/sim/WorldData/TerritoryFarmAreaAndIncome-2014.csv";
+  private static final String PATH = "/sim/WorldData/TerritoryFarmAreaAndIncome-2014.csv";
 
   private enum EnumHeader
   { territory, region, population1981, population1990, population2000,
@@ -33,7 +33,7 @@ public class CountryCSVLoader
     produceGrains, incomeSeedOil, produceSeedOil, incomeVeg, produceVeg,
     incomeSpecial, produceSpecial, incomeFeed, produceFeed, incomeFish,
     produceFish, incomeMeat, produceMeat, incomePoultry, producePoultry,
-    incomeDairy, produceDairy;
+    incomeDairy, produceDairy, convert2014to1981;
 
     public static final int SIZE = values().length;
   };
@@ -62,11 +62,19 @@ public class CountryCSVLoader
     }
     fileReader.trashRecord();
 
+    // Implementation notes : The CSV file contains 2014 numbers for production, etc. Each row
+    // includes a column at the end that converts 2014 production and farm income to 1981.
+    // It is an int percentage to be multiplied onto the 2014 production and income by to get
+    // the corrosponding value for 1981.  For example CA is 61, so in 1981 they had 61% of
+    // their current production and income.
+    //
     for (int k=0; k<territoryList.length; k++)
     {
       Territory territory = null;
       fieldList = fileReader.readRecord(EnumHeader.SIZE);
       if (fieldList == null) break;
+
+      double foodFactor = 1.;
       for (EnumHeader header : EnumHeader.values())
       {
         int i = header.ordinal();
@@ -140,12 +148,7 @@ public class CountryCSVLoader
           case incomePoultry: territory.setCropIncome(EnumFood.POULTRY, value); break;
           case incomeDairy: territory.setCropIncome(EnumFood.DAIRY, value); break;
 
-
-          case produceCitrus: territory.setCropProduction(EnumFood.CITRUS, value);
-            if (value != 0) {
-              System.out.println(territory.getName() + "CropProduction(EnumFood.CITRUS="+value);
-            }
-            break;
+          case produceCitrus: territory.setCropProduction(EnumFood.CITRUS, value); break;
           case produceNonCitrus: territory.setCropProduction(EnumFood.FRUIT, value); break;
           case produceNuts: territory.setCropProduction(EnumFood.NUT, value); break;
           case produceGrains: territory.setCropProduction(EnumFood.GRAIN, value); break;
@@ -157,17 +160,23 @@ public class CountryCSVLoader
           case produceMeat: territory.setCropProduction(EnumFood.MEAT, value); break;
           case producePoultry: territory.setCropProduction(EnumFood.POULTRY, value); break;
           case produceDairy: territory.setCropProduction(EnumFood.DAIRY, value); break;
+          case convert2014to1981: foodFactor = (double) value / 100; break;
         }
-        int conventional = 100 -
-          (territory.getMethod(EnumFarmMethod.GMO) + territory.getMethod(EnumFarmMethod.ORGANIC));
-        territory.setMethod(EnumFarmMethod.CONVENTIONAL, conventional);
-
-        interpolatePopulation(territory, 1981, 1990);
-        interpolatePopulation(territory, 1990, 2000);
-        interpolatePopulation(territory, 2000, 2010);
-        interpolatePopulation(territory, 2010, 2014);
-        interpolatePopulation(territory, 2014, 2050);
       }
+
+      int conventional = 100 -
+        (territory.getMethod(EnumFarmMethod.GMO) + territory.getMethod(EnumFarmMethod.ORGANIC));
+      territory.setMethod(EnumFarmMethod.CONVENTIONAL, conventional);
+
+      // Scale the crop income and production by the 2014 to 1981 conversion factor.
+      //
+      territory.scaleCropData (foodFactor);
+
+      interpolatePopulation(territory, 1981, 1990);
+      interpolatePopulation(territory, 1990, 2000);
+      interpolatePopulation(territory, 2000, 2010);
+      interpolatePopulation(territory, 2010, 2014);
+      interpolatePopulation(territory, 2014, 2050);
     }
   }
 

@@ -73,8 +73,8 @@ public class CSVReader
    */
   public CSVReader(String resource, int headerLines) throws FileNotFoundException
   {
-    InputStream inputStream = getClass().getResourceAsStream(path);
-    if (inputStream == null) throw new FileNotFoundException(path);
+    InputStream inputStream = getClass().getResourceAsStream(resource);
+    if (inputStream == null) throw new FileNotFoundException(resource);
     this.path = resource;
     try
     {
@@ -115,7 +115,7 @@ public class CSVReader
     String[] fields = str.split(",");
     if (fields.length > fieldCount)
     {
-      LOGGER.severe("****ERROR reading "+path + ": Expected " + fieldCount +
+      LOGGER.severe("****ERROR reading " + path + ": Expected " + fieldCount +
         " fields but read "+ fields.length);
       return null;
     }

@@ -183,6 +183,10 @@ public class Region extends AbstractTerritory
         cropExport[i]     += part.cropExport[i];
       }
     }
+
+    humanDevelopmentIndex  = (float)
+            (population[year - Constant.FIRST_YEAR] - undernourished) /
+            population[year - Constant.FIRST_YEAR];
   }
 
 

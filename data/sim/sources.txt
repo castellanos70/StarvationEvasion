@@ -7,3 +7,6 @@ http://www.usda.gov/nass/PUBS/TODAYRPT/cropan15.pdf
 
 Commodity Food production
 http://www.indexmundi.com/agriculture/?commodity=corn&graph=production
+
+Water usage
+http://waterfootprint.org/media/downloads/Report47-WaterFootprintCrops-Vol1.pdf

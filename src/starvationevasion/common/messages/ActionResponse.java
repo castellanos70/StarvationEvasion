@@ -28,7 +28,7 @@ public class ActionResponse implements Serializable
     this.responseMessage = responseMessage;
   }
 
-  public ActionResponse(EnumPolicy[] playerHand, ActionResponseType responseType)
+  public ActionResponse(ActionResponseType responseType, EnumPolicy[] playerHand)
   {
     this(responseType, playerHand, null);
   }

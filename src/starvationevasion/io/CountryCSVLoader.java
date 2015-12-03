@@ -2,17 +2,14 @@ package starvationevasion.io;
 
 
 import starvationevasion.common.Constant;
+import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.io.CSVReader.CSVRecord;
-import starvationevasion.sim.Region;
 import starvationevasion.common.EnumFood;
-import starvationevasion.sim.EnumGrowMethod;
+import starvationevasion.sim.EnumFarmMethod;
 
-import java.io.*;
 import java.util.*;
 import java.lang.Integer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -25,11 +22,6 @@ public class CountryCSVLoader
 {
   private final static Logger LOGGER = Logger.getLogger(CountryCSVLoader.class.getName());
   private static final String PATH = "data/sim/WorldData/TerritoryFarmAreaAndIncome-2014.csv";
-
-  private Collection<Territory> countries;        // collection populated by parsing csv
-  private Collection<Territory> masterUnits; // collection passed in (i.e., after parsing xml)
-  private File csvFile;
-  private List<CSVRecord> records;
 
   private enum EnumHeader
   { territory, region, population1981, population1990, population2000,
@@ -50,57 +42,71 @@ public class CountryCSVLoader
   /**
    * Constructor takes list of country objects that need data from csv file (previously created from xml file)
    */
-  public CountryCSVLoader(Collection<Territory> territoryList)
+  //public CountryCSVLoader(Collection<Territory> territoryList)
+  public CountryCSVLoader(Territory[] territoryList, Region[] regionList)
   {
-    //this.masterUnits = territoryList;
-    countries = new ArrayList<>();
-
-
     CSVReader fileReader = new CSVReader(PATH, 0);
 
     //Check header
-    String field[] = fileReader.readRecord(EnumHeader.SIZE);
+    String[] fieldList = fileReader.readRecord(EnumHeader.SIZE);
     for (EnumHeader header : EnumHeader.values())
     {
       int i = header.ordinal();
-      if (!header.name().equals(field[i]))
+      if (!header.name().equals(fieldList[i]))
       {
         LOGGER.severe("**ERROR** Reading " + PATH+
-          "Expected header["+i+"]="+header + ", Found: "+ field[i]);
+          "Expected header["+i+"]="+header + ", Found: "+ fieldList[i]);
         return;
       }
     }
     fileReader.trashRecord();
 
-    for (Territory territory : territoryList)
+    for (int k=0; k<territoryList.length; k++)
     {
+      Territory territory = null;
+      fieldList = fileReader.readRecord(EnumHeader.SIZE);
+      if (fieldList == null) break;
       for (EnumHeader header : EnumHeader.values())
       {
         int i = header.ordinal();
         int value = 0;
-        if (i > 1) value = Integer.parseInt(field[i]);
+        if ((i > 1) && (i < fieldList.length))
+        {
+          try
+          {
+            value = Integer.parseInt(fieldList[i]);
+          }
+          catch (Exception e) {} //Default empty cell, and text to 0
+        }
         switch (header)
         {
           case territory:
-            if (!territory.getName().equals(field[i]))
+            Territory tmp = new Territory(fieldList[i]);
+            int idx = Arrays.binarySearch(territoryList,tmp);
+            if (idx < 0)
             {
               LOGGER.severe("**ERROR** Reading " + PATH+
-                "Expected Territory="+territory.getName() + ", Found: "+ field[i]);
+                  "Territory="+fieldList[i] + ", Not found in territory list.");
               return;
             }
+            territory = territoryList[idx];
             break;
           case region:
             for (EnumRegion enumRegion : EnumRegion.values())
             {
-              if (enumRegion.name().equals(field[i]))
+              if (enumRegion.name().equals(fieldList[i]))
               {
                 territory.setGameRegion(enumRegion);
+                regionList[enumRegion.ordinal()].addTerritory(territory);
                 break;
               }
             }
-            LOGGER.severe("**ERROR** Reading " + PATH+
-              "Game Region not recognized: "+ field[i]);
-            return;
+            if (territory.getGameRegion() == null)
+            { LOGGER.severe("**ERROR** Reading " + PATH+
+               "Game Region not recognized: "+ fieldList[i]);
+              return;
+            }
+            break;
 
           case population1981:  case population1990:  case population2000:
           case population2010:  case population2014:  case population2025:
@@ -109,59 +115,51 @@ public class CountryCSVLoader
             territory.setPopulation(year, value);
             break;
 
-          case averageAge:
-            territory.setMedianAge(value);
+          case averageAge: territory.setMedianAge(value); break;
+          case births: territory.setBirths(value); break;
+          case mortality: territory.setMortality(Constant.FIRST_YEAR, value); break;
+          case migration: territory.setMigration(value); break;
+          case undernourished: territory.setUndernourished(value); break;
+          case landArea: territory.setLandTotal(value); break;
+          case farmLand: territory.setTotalFarmLand(value); break;
+
+          case organic: territory.setMethod(EnumFarmMethod.ORGANIC, value); break;
+          case gmo: territory.setMethod(EnumFarmMethod.GMO, value); break;
+
+          case incomeCitrus: territory.setCropIncome(EnumFood.CITRUS, value); break;
+          case incomeNonCitrus: territory.setCropIncome(EnumFood.FRUIT, value); break;
+          case incomeNuts: territory.setCropIncome(EnumFood.NUT, value); break;
+          case incomeGrains: territory.setCropIncome(EnumFood.GRAIN, value); break;
+          case incomeSeedOil: territory.setCropIncome(EnumFood.OIL, value); break;
+          case incomeVeg: territory.setCropIncome(EnumFood.VEGGIES, value); break;
+          case incomeSpecial: territory.setCropIncome(EnumFood.SPECIAL, value); break;
+          case incomeFeed: territory.setCropIncome(EnumFood.FEED, value); break;
+          case incomeFish: territory.setCropIncome(EnumFood.FISH, value); break;
+          case incomeMeat: territory.setCropIncome(EnumFood.MEAT, value); break;
+          case incomePoultry: territory.setCropIncome(EnumFood.POULTRY, value); break;
+          case incomeDairy: territory.setCropIncome(EnumFood.DAIRY, value); break;
+
+
+          case produceCitrus: territory.setCropProduction(EnumFood.CITRUS, value);
+            if (value != 0) {
+              System.out.println(territory.getName() + "CropProduction(EnumFood.CITRUS="+value);
+            }
             break;
-
-          case births:
-            territory.setBirths(value);
-            break;
-
-          case mortality:
-            territory.setMortality(Constant.FIRST_YEAR, value);
-            break;
-
-          case migration:
-            territory.setMigration(value);
-            break;
-
-          case undernourished:
-            territory.setUndernourished(value);
-            break;
-
-          case landArea:
-            territory.setLandTotal(value);
-            break;
-
-          case farmLand:
-            territory.setTotalFarmLand(value);
-            break;
-
-          case organic:
-            territory.setMethodPercentage(EnumGrowMethod.ORGANIC,value);
-            break;
-
-          case gmo:
-            territory.setMethodPercentage(EnumGrowMethod.GMO,value);
-            break;
-
-          case incomeCitrus: case incomeNonCitrus: case incomeNuts:case incomeGrains:
-          case incomeSeedOil:case incomeVeg:case incomeSpecial: case incomeFeed:
-          case incomeFish:case incomeMeat:case incomePoultry:case incomeDairy:
-            territory.setCropIncome(EnumFood.values()[(i-18)/2], value);
-            break;
-
-          case produceCitrus: case produceNonCitrus: case produceNuts:case produceGrains:
-          case produceSeedOil:case produceVeg:case produceSpecial: case produceFeed:
-          case produceFish:case produceMeat:case producePoultry:case produceDairy:
-            territory.setCropProduction(EnumFood.values()[(i-19)/2], value);
-            break;
-
-
+          case produceNonCitrus: territory.setCropProduction(EnumFood.FRUIT, value); break;
+          case produceNuts: territory.setCropProduction(EnumFood.NUT, value); break;
+          case produceGrains: territory.setCropProduction(EnumFood.GRAIN, value); break;
+          case produceSeedOil: territory.setCropProduction(EnumFood.OIL, value); break;
+          case produceVeg: territory.setCropProduction(EnumFood.VEGGIES, value); break;
+          case produceSpecial: territory.setCropProduction(EnumFood.SPECIAL, value); break;
+          case produceFeed: territory.setCropProduction(EnumFood.FEED, value); break;
+          case produceFish: territory.setCropProduction(EnumFood.FISH, value); break;
+          case produceMeat: territory.setCropProduction(EnumFood.MEAT, value); break;
+          case producePoultry: territory.setCropProduction(EnumFood.POULTRY, value); break;
+          case produceDairy: territory.setCropProduction(EnumFood.DAIRY, value); break;
         }
-        int conventional = 100 - (territory.getMethodPercentage(EnumGrowMethod.GMO) +
-          territory.getMethodPercentage(EnumGrowMethod.ORGANIC));
-        territory.setMethodPercentage(EnumGrowMethod.CONVENTIONAL, conventional);
+        int conventional = 100 -
+          (territory.getMethod(EnumFarmMethod.GMO) + territory.getMethod(EnumFarmMethod.ORGANIC));
+        territory.setMethod(EnumFarmMethod.CONVENTIONAL, conventional);
 
         interpolatePopulation(territory, 1981, 1990);
         interpolatePopulation(territory, 1990, 2000);

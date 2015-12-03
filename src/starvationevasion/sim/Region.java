@@ -61,11 +61,6 @@ public class Region extends AbstractTerritory
   {
     territories.add(tile);
     area.add(tile.getArea());
-
-    for (int i = Constant.FIRST_YEAR ; i < Constant.LAST_YEAR ; i += 1)
-      {
-        population[i - Constant.FIRST_YEAR] += tile.getPopulation(i);
-    }
   }
 
   public void optimizeCrops(int year)
@@ -151,6 +146,8 @@ public class Region extends AbstractTerritory
    */
   public void aggregateTerritoryFields(int year)
   {
+    System.out.println("========> aggregateTerritoryFields("+year+")  territories="+ territories.size());
+
     population[year - Constant.FIRST_YEAR] = 0;
     births = 0;
     mortality = 0;
@@ -178,8 +175,9 @@ public class Region extends AbstractTerritory
       {
         cropIncome[i]     += part.cropIncome[i];
         cropProduction[i] += part.cropProduction[i];
-
-        System.out.println(region +": cropProduction["+EnumFood.values()[i]+"] ="+cropProduction[i]);
+        if (part.cropProduction[i] > 0)
+        { System.out.println("Region.aggregateTerritoryFields(): " + region +": cropProduction["+EnumFood.values()[i]+"] ="+cropProduction[i]);
+        }
         landCrop[i]       += part.landCrop[i];
         cropImport[i]     += part.cropImport[i];
         cropExport[i]     += part.cropExport[i];

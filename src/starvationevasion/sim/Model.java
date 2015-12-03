@@ -278,10 +278,10 @@ public class Model
     System.out.println();
 
     System.out.print(prefix + "\t            ");
-    for (EnumGrowMethod method : EnumGrowMethod.values()) System.out.print("\t" + method);
+    for (EnumFarmMethod method : EnumFarmMethod.values()) System.out.print("\t" + method);
     System.out.println();
     System.out.print(prefix + "\tcultivationMethod : ");
-    for (EnumGrowMethod method : EnumGrowMethod.values()) System.out.print("\t" + unit.getMethodPercentage(method));
+    for (EnumFarmMethod method : EnumFarmMethod.values()) System.out.print("\t" + unit.getMethod(method));
     System.out.println();
   }
 }

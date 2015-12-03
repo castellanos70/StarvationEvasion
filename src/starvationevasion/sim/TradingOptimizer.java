@@ -30,7 +30,7 @@ import java.util.*;
 public class TradingOptimizer
 {
   private final int year;
-  private final Collection<Territory> countries;
+  private final Territory[] territoryList;
   private static final boolean DEBUG = false;
   private final List<TradePair>[] allTrades = new ArrayList[]{
     new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList()
@@ -41,15 +41,15 @@ public class TradingOptimizer
   /**
    Construct a new TradingOptimizer with the set of countries to trade between.
 
-   @param countries
+   @param territoryList
    Collection of Countries to trade between
    @param year
    year to calculate trades for
    */
-  public TradingOptimizer(Collection<Territory> countries, int year)
+  public TradingOptimizer(Territory[] territoryList, int year)
   {
     this.year = year;
-    this.countries = countries;
+    this.territoryList = territoryList;
   }
 
   /**
@@ -183,12 +183,12 @@ public class TradingOptimizer
 
       /* Divide the countries in the parent class into importers and exporters
       based on the crop surplus for each country */
-      for(Territory c : countries)
+      for(Territory territory : territoryList)
       {
-        double surplus = c.getSurplus(year, crop);
+        double surplus = territory.getSurplus(year, crop);
         net += surplus;
-        if(surplus < 0) importers.add(c);
-        else if(surplus > 0) exporters.add(c);
+        if(surplus < 0) importers.add(territory);
+        else if(surplus > 0) exporters.add(territory);
       }
 
       /* create the TradePairs between importer and exporter */
@@ -202,7 +202,7 @@ public class TradingOptimizer
 
       /* create the master list used to instantiate all the temporary lists
       during the multiple runs of the algorithm */
-      master = new TradePairList(pairs, countries, crop, year);
+      master = new TradePairList(pairs, territoryList, crop, year);
 
       if (DEBUG) System.out.printf("Trader for %s setup:%n" +
           "net availability: %.3f tons, importers.size(): %d, exporters.size(): %d%n",
@@ -284,11 +284,11 @@ public class TradingOptimizer
     private Map<Territory, Double> exporterMap = new HashMap<>();
     private Map<Territory, Double> importerMap = new HashMap<>();
 
-    private TradePairList(Collection<TradePair> pairs, Collection<Territory> all, EnumFood crop, int year)
+    private TradePairList(Collection<TradePair> pairs, Territory[] territoryList, EnumFood crop, int year)
     {
       super(pairs);
       this.crop = crop;
-      createMaps(all);
+      createMaps(territoryList);
     }
 
     private TradePairList(TradePairList list)
@@ -304,18 +304,18 @@ public class TradingOptimizer
       exporterMap = new HashMap<>(list.exporterMap);
     }
 
-    private void createMaps(Collection<Territory> countries)
+    private void createMaps(Territory[] territoryList)
     {
-      for (Territory c : countries)
+      for (Territory territory : territoryList)
       {
-        double surplus = c.getSurplus(year, crop);
+        double surplus = territory.getSurplus(year, crop);
         if (surplus > 0)
         {
-          exporterMap.put(c, surplus);
+          exporterMap.put(territory, surplus);
         }
         else if (surplus < 0)
         {
-          importerMap.put(c, -surplus);
+          importerMap.put(territory, -surplus);
         }
       }
     }

@@ -97,7 +97,7 @@ public class CSVReader
     try
     {
       str = reader.readLine();
-      System.out.println(str);
+      //System.out.println(str);
       if (str == null)
       { reader.close();
         return null;
@@ -109,7 +109,7 @@ public class CSVReader
     }
 
     String[] fields = str.split(",");
-    if (fields.length != fieldCount)
+    if (fields.length > fieldCount)
     {
       LOGGER.severe("****ERROR reading "+path + ": Expected " + fieldCount +
         " fields but read "+ fields.length);

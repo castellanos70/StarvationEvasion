@@ -3,7 +3,7 @@ package starvationevasion.sim;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 
-public abstract class AbstractTerritory
+public abstract class AbstractTerritory implements Comparable<Territory>
 {
   protected String name;
 
@@ -61,7 +61,7 @@ public abstract class AbstractTerritory
   protected int[] cropImport = new int[EnumFood.SIZE];  //in metric tons.
   protected int[] cropExport = new int[EnumFood.SIZE];  //in metric tons.
 
-  protected int[] cultivationMethod = new int[EnumGrowMethod.SIZE]; //percentage [0,100]
+  protected int[] cultivationMethod = new int[EnumFarmMethod.SIZE]; //percentage [0,100]
 
   //In Milestone II, crop yield and per capita need are defined in the first year and assumed constant
   //    throughout each year of the simulation.
@@ -267,7 +267,7 @@ public abstract class AbstractTerritory
    * @param method     cultivation method (Conventional, Organic or GMO)
    * @param percentage percentage [0, 100] of land cultivated by the given method.
    */
-  final public void setMethodPercentage(EnumGrowMethod method, int percentage)
+  final public void setMethod(EnumFarmMethod method, int percentage)
   {
     cultivationMethod[method.ordinal()] = percentage;
   }
@@ -362,7 +362,7 @@ public abstract class AbstractTerritory
    * @param method cultivation method (Conventional, Organic or GMO)
    * @return percentage [0, 100] of land cultivated by the given method.
    */
-  final public int getMethodPercentage(EnumGrowMethod method)
+  final public int getMethod(EnumFarmMethod method)
   {
     return cultivationMethod[method.ordinal()];
   }
@@ -442,6 +442,9 @@ public abstract class AbstractTerritory
     }
   }
 
+
+
+
   /**
    * @param year year in question
    * @param n    population in that year
@@ -449,5 +452,18 @@ public abstract class AbstractTerritory
   public void setPopulation(int year, int n)
   {
     population[year - Constant.FIRST_YEAR] = n;
+  }
+
+
+  @Override
+  public int compareTo(Territory compareTerritory)
+  {
+    return name.compareTo(compareTerritory.name);
+  }
+
+  @Override
+  public boolean equals(Object compareTerritory)
+  {
+    return this.name.equals(((Territory)compareTerritory).name);
   }
 }

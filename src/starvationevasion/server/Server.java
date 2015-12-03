@@ -31,6 +31,7 @@ public class Server
   private Map<EnumRegion, List<EnumPolicy>> playerHands = new HashMap<>();
   private Map<EnumRegion, RegionData> regionData = new HashMap<>();
   private Map<EnumRegion, Integer> regionActionsRemaining = new HashMap<>();
+  private ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>();
 
   public Server(String loginFilePath)
   {
@@ -219,6 +220,7 @@ public class Server
 
   private void enterDraftingPhase()
   {
+    enactedPolicyCards.clear();
     setServerState(ServerState.DRAFTING);
     broadcast(PhaseStart.constructPhaseStart(ServerState.DRAFTING, ServerConstants.DRAFTING_PHASE_TIME));
     for (EnumRegion region : EnumRegion.US_REGIONS)
@@ -233,6 +235,25 @@ public class Server
     setServerState(ServerState.VOTING);
     broadcast(PhaseStart.constructPhaseStart(ServerState.VOTING, ServerConstants.VOTING_PHASE_TIME));
 
+    scheduledExecutorService.schedule(this::enterDrawingPhase, ServerConstants.VOTING_PHASE_TIME, TimeUnit.MILLISECONDS);
+  }
+
+  private void enterDrawingPhase()
+  {
+    setServerState(ServerState.DRAWING);
+    broadcast(PhaseStart.constructPhaseStart(ServerState.DRAWING, -1));
+    for (Map.Entry<EnumRegion, List<EnumPolicy>> entry : playerHands.entrySet())
+    {
+      entry.getValue().addAll(Arrays.asList(simulator.drawCards(entry.getKey())));
+    }
+    WorldData worldData = simulator.nextTurn(enactedPolicyCards);
+    for (ServerWorker client : connectedClients)
+    {
+      if (client.getRegion() == null) continue;
+      List<EnumPolicy> playerHand = playerHands.get(client.getRegion());
+      client.send(new GameState(worldData, playerHand.toArray(new EnumPolicy[playerHand.size()])));
+    }
+    enterDraftingPhase();
   }
 
   private void broadcastSimulatorState(WorldData worldData)

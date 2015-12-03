@@ -568,5 +568,40 @@ public abstract class PolicyCard  implements Serializable
 
     return null;
   }
+
+  /*Explicitly defined hashCode and equals() to ensure they are static across
+    different computers.*/
+
+  @Override
+  public int hashCode()
+  {
+    int result = type != null ? type.hashCode() : 0;
+    result = 31 * result + (getOwner() != null ? getOwner().hashCode() : 0);
+    result = 31 * result + approvedRegionBits;
+    result = 31 * result + (getTargetFood() != null ? getTargetFood().hashCode() : 0);
+    result = 31 * result + (getTargetRegion() != null ? getTargetRegion().hashCode() : 0);
+    result = 31 * result + varX;
+    result = 31 * result + varY;
+    result = 31 * result + varZ;
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object o)
+  {
+    if (this == o) return true;
+    if (!(o instanceof PolicyCard)) return false;
+
+    PolicyCard that = (PolicyCard) o;
+
+    if (approvedRegionBits != that.approvedRegionBits) return false;
+    if (varX != that.varX) return false;
+    if (varY != that.varY) return false;
+    if (varZ != that.varZ) return false;
+    if (type != that.type) return false;
+    if (getOwner() != that.getOwner()) return false;
+    if (getTargetFood() != that.getTargetFood()) return false;
+    return getTargetRegion() == that.getTargetRegion();
+  }
 }
 

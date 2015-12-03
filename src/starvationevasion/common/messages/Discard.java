@@ -17,7 +17,7 @@ import java.io.Serializable;
 public class Discard implements Serializable
 {
   public final boolean isFreeDiscard;
-  public final EnumPolicy discard1, discard2, discard3;
+  public final EnumPolicy[] discards;
 
   /**
    * Create a Discard representing a free discard action.
@@ -27,8 +27,7 @@ public class Discard implements Serializable
   {
     if (discard == null) throw new IllegalArgumentException();
     isFreeDiscard = true;
-    discard1 = discard;
-    discard2 = discard3 = null;
+    discards = new EnumPolicy[] {discard};
   }
 
   /**
@@ -45,8 +44,6 @@ public class Discard implements Serializable
       throw new IllegalArgumentException();
     }
     isFreeDiscard = false;
-    this.discard1 = discard1;
-    this.discard2 = discard2;
-    this.discard3 = discard3;
+    discards = new EnumPolicy[] {discard1, discard2, discard3};
   }
 }

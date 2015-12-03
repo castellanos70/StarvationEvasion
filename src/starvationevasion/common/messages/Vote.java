@@ -1,6 +1,6 @@
 package starvationevasion.common.messages;
 
-import starvationevasion.common.PolicyCard;
+import starvationevasion.common.EnumRegion;
 
 /**
  * Shea Polansky
@@ -9,12 +9,12 @@ import starvationevasion.common.PolicyCard;
  */
 public class Vote
 {
-  public final PolicyCard card;
+  public final EnumRegion cardOwner;
   public final VoteType voteType;
 
-  public Vote(PolicyCard card, VoteType voteType)
+  public Vote(EnumRegion cardOwner, VoteType voteType)
   {
-    this.card = card;
+    this.cardOwner = cardOwner;
     this.voteType = voteType;
   }
 }

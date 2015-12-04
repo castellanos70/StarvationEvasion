@@ -21,12 +21,11 @@ public class CropCSVLoader
 {
   private final static Logger LOGGER = Logger.getLogger(CountryCSVLoader.class.getName());
   private static final String PATH = "/sim/CropData.csv";
-
   private ArrayList<CropZoneData> categoryData;
 
   private enum EnumHeader
   {
-    Category, Price, Land, Water, Fertilizer, PesticideLbsPerAcre, Growing, Temperature, Ideal, High, Max;
+    Category, Price, Land, Water, FertilizerN, FertilizerP2O5, FertilizerK2O, Growing, Temperature, Ideal, High, Max;
     public static final int SIZE = values().length;
   };
 
@@ -59,7 +58,7 @@ public class CropCSVLoader
         return;
       }
     }
-    System.out.println("HEADER VALIDATED");
+    //System.out.println("HEADER VALIDATED");
     fileReader.trashRecord();
 
     // Implementation notes : The CSV file contains 2014 numbers for production, etc. Each row
@@ -104,13 +103,17 @@ public class CropCSVLoader
               value = Integer.parseInt(fieldList[i]);
               zoneData.setLitersPerKG(value);
               break;
-            case Fertilizer:
+            case FertilizerN:
               value = Integer.parseInt(fieldList[i]);
-              zoneData.setFertilizerPerKM2(value);
+              zoneData.setFertilizerNPerKM2(value);
               break;
-            case PesticideLbsPerAcre:
+            case FertilizerK2O:
               value = Integer.parseInt(fieldList[i]);
-              zoneData.setPesticide(value);
+              zoneData.setFertilizerK2OPerKM2(value);
+              break;
+            case FertilizerP2O5:
+              value = Integer.parseInt(fieldList[i]);
+              zoneData.setFertilizerP2O5PerKM2(value);
               break;
             case Growing:
               value = Integer.parseInt(fieldList[i]);

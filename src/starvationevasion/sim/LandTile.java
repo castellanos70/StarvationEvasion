@@ -294,7 +294,7 @@ public class LandTile
    */
   public EnumCropZone rateTileForCrop(EnumFood crop) throws NullPointerException
   {
-    CropClimateData data = CropClimateData.mapFood(crop);
+    CropZoneData data = CropZoneData.mapFood(crop);
     if (data == null)
     {
       //Logger.getGlobal().log(Level.SEVERE, "Couldn't find crop climate data for " + crop + ". Defaulting to POOR.");
@@ -335,7 +335,7 @@ public class LandTile
    * @param otherCropsData  a country's otherCropsData object
    * @return EnumCropZone (IDEAL, ACCEPTABLE, or POOR)
    */
-  public EnumCropZone rateTileForOtherCrops(CropClimateData otherCropsData)
+  public EnumCropZone rateTileForOtherCrops(CropZoneData otherCropsData)
   {
     float cropDayT = otherCropsData.dayTemp;
     float cropNightT = otherCropsData.nightTemp;

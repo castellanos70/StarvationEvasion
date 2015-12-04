@@ -1,32 +1,25 @@
 package starvationevasion.vis.visuals;
 
-import com.sun.tools.internal.ws.wsdl.document.jaxws.CustomName;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
-import javafx.scene.text.*;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import starvationevasion.common.MapPoint;
 import starvationevasion.io.XMLparsers.GeographyXMLparser;
 import starvationevasion.sim.GeographicArea;
-import starvationevasion.sim.Territory;
 import starvationevasion.vis.ClientTest.CustomLayout;
 import starvationevasion.vis.controller.SimParser;
-import starvationevasion.vis.model.Coordinate;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -34,7 +27,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-//import starvationevasion.simvis.visuals.smallevents.CropsTest;
 
 
 /**
@@ -82,8 +74,8 @@ public class EarthViewer {
   public EarthViewer(double smallEarthRadius, double largeEarthRadius, CustomLayout l) {
     MINI_EARTH_RADIUS = smallEarthRadius;
     LARGE_EARTH_RADIUS = largeEarthRadius;
-    largeEarth = buildScene(LARGE_EARTH_RADIUS);
     miniEarth = buildScene(MINI_EARTH_RADIUS);
+    largeEarth = buildScene(LARGE_EARTH_RADIUS);
     layoutPanel = l;
   }
 
@@ -92,13 +84,12 @@ public class EarthViewer {
     earth = new Sphere(earthRadius);
     earthMaterial = new PhongMaterial();
     /* Material */
-    PhongMaterial earthMaterial = new PhongMaterial();
     earthMaterial.setDiffuseMap
         (new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
-    earthMaterial.setBumpMap
-        (new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
-    earthMaterial.setSpecularMap
-            (new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
+//    earthMaterial.setBumpMap
+//        (new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
+//    earthMaterial.setSpecularMap
+//            (new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
 //    earthMaterial.setSelfIlluminationMap
 //            (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
 
@@ -177,8 +168,6 @@ public class EarthViewer {
       {
         largeEarth.setTranslateZ(zoomPosition += 10);
       }
-      //System.out.println(String.format("deltaX: %.3f deltaY: %.3f", me.getDeltaX(), me.getDeltaY()));
-      //System.out.println(zoomPosition);
     });
 
     largeEarth.setOnKeyPressed(event->
@@ -189,8 +178,8 @@ public class EarthViewer {
             rotateAroundYAxis(largeEarth).play();
             break;
           case R:
-            earthMaterial.setDiffuseMap
-                    (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
+            earthMaterial.setSelfIlluminationMap
+              (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
             earth.setMaterial(earthMaterial);
             break;
         }

@@ -108,5 +108,4 @@ public class CropZoneData
   {
     this.idealHighTemperature = idealHighTemperature;
   }
-
 }

@@ -2,6 +2,7 @@ package starvationevasion.sim;
 
 import starvationevasion.common.*;
 import starvationevasion.io.WorldLoader;
+import starvationevasion.io.CropCSVLoader;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -113,7 +114,7 @@ public class Model
 
     cropData = new CropData();
 
-
+    try{CropCSVLoader cropLoader = new CropCSVLoader();} catch (Throwable t){ System.out.println("CROP_LOADER "+t);}
     WorldLoader loader = new WorldLoader(regionList);
 
     float[] avgConversionFactors = new float[EnumFood.SIZE];

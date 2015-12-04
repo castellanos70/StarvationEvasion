@@ -72,13 +72,13 @@ public class CropCSVLoader
 
     for (EnumCategories category : EnumCategories.values())
     {
-      System.out.println("Catergory " + category.name());
+
       fieldList = fileReader.readRecord(EnumHeader.SIZE);
       //create data object
       CropZoneData zoneData = new CropZoneData(EnumFood.valueOf(category.name()));
       for (EnumHeader header : EnumHeader.values())
       {
-        System.out.println("Header " + header.name());
+
         //create data object
         int i = header.ordinal();
         int value = 0;
@@ -88,8 +88,6 @@ public class CropCSVLoader
 
         if (i > 0)
         {
-
-          System.out.println("Value " + value);
 
           //set fields for newest data objects. NOT COMPLETE
           switch (header)

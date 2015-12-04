@@ -32,10 +32,10 @@ public class CropZoneData
   
   public static final double ACCEPTABLE_THRESHOLD = 0.30;
   
-  public double annualMaximumTemperature; // in degrees Celsius.
-  public double annualMinimumTemperature; // in degrees Celsius.
-  public double averageAnnualDayTemperature; // in degrees Celsius.
-  public double averageAnnualNightTemperature; // in degrees Celsius.
-  public double annualPrecipitation; //in centimeters of rainfall.
+  private double annualMaximumTemperature; // in degrees Celsius.
+  private double annualMinimumTemperature; // in degrees Celsius.
+  private double averageAnnualDayTemperature; // in degrees Celsius.
+  private double averageAnnualNightTemperature; // in degrees Celsius.
+  private double annualPrecipitation; //in centimeters of rainfall.
 
 }

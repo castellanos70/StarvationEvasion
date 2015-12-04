@@ -39,6 +39,7 @@ public class CustomLayout extends BorderPane
     initCenter();
     this.setTop(topBar);
     this.setLeft(leftBarGrid);
+    this.setCenter(centerGrid);
   }
 
   public synchronized void switchEarthView()
@@ -56,7 +57,7 @@ public class CustomLayout extends BorderPane
     }
     else
     {
-      leftBarGrid.getChildren().remove(0);
+      leftBarGrid.getChildren().remove(earthViewer.getMiniEarth());
       //initCenter();
       centerGrid.getChildren().add((earthViewer.getLargeEarth()));
       earthViewer.startEarth();
@@ -91,6 +92,5 @@ public class CustomLayout extends BorderPane
   {
     centerGrid.setAlignment(Pos.TOP_CENTER);
     centerGrid.setPadding(new Insets(30, 0, 0, 0));
-    this.setCenter(centerGrid);
   }
 }

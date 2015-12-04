@@ -74,8 +74,8 @@ public class EarthViewer {
   public EarthViewer(double smallEarthRadius, double largeEarthRadius, CustomLayout l) {
     MINI_EARTH_RADIUS = smallEarthRadius;
     LARGE_EARTH_RADIUS = largeEarthRadius;
-    largeEarth = buildScene(LARGE_EARTH_RADIUS);
     miniEarth = buildScene(MINI_EARTH_RADIUS);
+    largeEarth = buildScene(LARGE_EARTH_RADIUS);
     layoutPanel = l;
   }
 
@@ -84,13 +84,12 @@ public class EarthViewer {
     earth = new Sphere(earthRadius);
     earthMaterial = new PhongMaterial();
     /* Material */
-    PhongMaterial earthMaterial = new PhongMaterial();
     earthMaterial.setDiffuseMap
         (new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
-    earthMaterial.setBumpMap
-        (new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
-    earthMaterial.setSpecularMap
-            (new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
+//    earthMaterial.setBumpMap
+//        (new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
+//    earthMaterial.setSpecularMap
+//            (new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
 //    earthMaterial.setSelfIlluminationMap
 //            (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
 
@@ -169,8 +168,6 @@ public class EarthViewer {
       {
         largeEarth.setTranslateZ(zoomPosition += 10);
       }
-      //System.out.println(String.format("deltaX: %.3f deltaY: %.3f", me.getDeltaX(), me.getDeltaY()));
-      //System.out.println(zoomPosition);
     });
 
     largeEarth.setOnKeyPressed(event->
@@ -181,8 +178,8 @@ public class EarthViewer {
             rotateAroundYAxis(largeEarth).play();
             break;
           case R:
-            earthMaterial.setDiffuseMap
-                    (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
+            earthMaterial.setSelfIlluminationMap
+              (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
             earth.setMaterial(earthMaterial);
             break;
         }

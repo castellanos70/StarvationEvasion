@@ -1,6 +1,5 @@
 package starvationevasion.vis.visuals;
 
-import com.sun.tools.internal.ws.wsdl.document.jaxws.CustomName;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.beans.property.DoubleProperty;

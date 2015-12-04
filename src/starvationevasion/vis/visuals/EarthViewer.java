@@ -1,32 +1,25 @@
 package starvationevasion.vis.visuals;
 
-import com.sun.tools.internal.ws.wsdl.document.jaxws.CustomName;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
-import javafx.scene.text.*;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import starvationevasion.common.MapPoint;
 import starvationevasion.io.XMLparsers.GeographyXMLparser;
 import starvationevasion.sim.GeographicArea;
-import starvationevasion.sim.Territory;
 import starvationevasion.vis.ClientTest.CustomLayout;
 import starvationevasion.vis.controller.SimParser;
-import starvationevasion.vis.model.Coordinate;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -34,7 +27,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-//import starvationevasion.simvis.visuals.smallevents.CropsTest;
 
 
 /**

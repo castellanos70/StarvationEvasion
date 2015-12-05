@@ -25,7 +25,7 @@ public class CustomLayout extends BorderPane
 
   private final ImageView image0 = new ImageView();
   private final ImageView image1 = new ImageView();
-  private Image coldImage = new Image(getClass().getClassLoader().getResourceAsStream("visResources/snowflake.png"));
+  private Image coldImage = new Image(  getClass().getClassLoader().getResourceAsStream("visResources/snowflake.png"));
   private Image hotImage = new Image(getClass().getClassLoader().getResourceAsStream("visResources/hot.png"));
 
   public  Label title = new Label("Year, World/Region \nPopulation and HDI");

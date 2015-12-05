@@ -37,23 +37,20 @@ public class TradingOptimizer
   };
   
   private List<SingleCropTrader> traders;
-  private PenaltyData penaltyData;
+  //private PenaltyData penaltyData;
   
   /**
    Construct a new TradingOptimizer with the set of countries to trade between.
 
    @param territoryList
    Collection of Countries to trade between
-   @param penaltyData
-   Penalty Function Data for territories
    @param year
    year to calculate trades for
    */
-  public TradingOptimizer(Territory[] territoryList, PenaltyData penaltyData, int year)
+  public TradingOptimizer(Territory[] territoryList, int year)
   {
     this.year = year;
     this.territoryList = territoryList;
-    this.penaltyData = penaltyData;
   }
 
   /**
@@ -136,8 +133,8 @@ public class TradingOptimizer
         double curExport = exporter.getCropExport(crop);
         double curImport = importer.getCropImport(crop);
 
-        double toGive = Math.min(need, supply);
-        double toReceive = toGive / (efficiency + 2);
+        double toGive = Math.min(need / efficiency, supply);
+        double toReceive = toGive * efficiency;
 
         amount = toReceive;
 
@@ -464,6 +461,4 @@ public class TradingOptimizer
       return new MapPoint(lat, lon);
     }
   }
-
-
 }

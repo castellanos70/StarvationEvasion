@@ -1,7 +1,7 @@
 package starvationevasion.sim.util;
 
-import starvationevasion.sim.geography.MapPoint;
-import starvationevasion.sim.geography.GeographicArea;
+import starvationevasion.sim.GeographicArea;
+import starvationevasion.common.MapPoint;
 
 import java.awt.*;
 import java.awt.geom.Dimension2D;
@@ -87,7 +87,7 @@ public class EquirectangularConverter extends MapConverter
    */
   public double lonToX(double lon, MapPoint refPoint)
   {
-    return lon * Math.cos(Math.toRadians(refPoint.getLat())) * SCALING_FACTOR;
+    return lon * Math.cos(Math.toRadians(refPoint.latitude)) * SCALING_FACTOR;
   }
   
   /**
@@ -117,8 +117,8 @@ public class EquirectangularConverter extends MapConverter
   @Override
   public Point mapPointToPoint(MapPoint mp)
   {
-    int x = (int) (lonToX(mp.getLon()));
-    int y = (int) (latToY(mp.getLat()));
+    int x = (int) (lonToX(mp.longitude));
+    int y = (int) (latToY(mp.latitude));
     return new Point(x, y);
   }
 
@@ -151,8 +151,8 @@ public class EquirectangularConverter extends MapConverter
     Polygon poly = new Polygon();
     for (MapPoint mPoint : r.getPerimeter())
     {
-      int x = (int) lonToX(mPoint.getLon());
-      int y = (int) latToY(mPoint.getLat());
+      int x = (int) lonToX(mPoint.longitude);
+      int y = (int) latToY(mPoint.latitude);
       poly.addPoint(x, y);
     }
 

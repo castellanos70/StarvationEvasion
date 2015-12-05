@@ -1,8 +1,8 @@
 package starvationevasion.io.XMLparsers;
 
-import starvationevasion.sim.geography.MapPoint;
 import org.xml.sax.*;
-import starvationevasion.sim.geography.GeographicArea;
+import starvationevasion.sim.GeographicArea;
+import starvationevasion.common.MapPoint;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -95,7 +95,7 @@ public class KMLParser extends RegionParserHandler
       String nums[] = s.split(",");
       double lon = Double.parseDouble(nums[0]);
       double lat = Double.parseDouble(nums[1]);
-      l.add(new MapPoint(lon, lat));
+      l.add(new MapPoint(lat, lon));
     }
     return l;
   }

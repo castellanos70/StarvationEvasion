@@ -17,6 +17,8 @@ public class Simulator
   private CardDeck[] playerDeck = new CardDeck[EnumRegion.US_REGIONS.length];
   private Model model;
 
+
+
   /**
    * This constructor should be called once at the start of each game by the Server.
    * Initializes the model
@@ -32,6 +34,8 @@ public class Simulator
     LOGGER.info("Loading and initializing model");
     model = new Model(startYear);
     model.instantiateRegions();
+
+
 
     LOGGER.info("Starting Simulator: year="+startYear);
 
@@ -62,11 +66,10 @@ public class Simulator
    */
   public WorldData init()
   {
-    return model.getWorldData();
+    WorldData startWorldData = new WorldData();
+    model.appendWorldData(startWorldData);
+    return startWorldData;
   }
-
-
-
 
   /**
    * The Server should call nextTurn(cards) when it is ready to advance the simulator
@@ -92,11 +95,13 @@ public class Simulator
   public WorldData nextTurn(ArrayList<PolicyCard> cards)
   {
     LOGGER.info("Advancing Turn...");
-    model.nextYear(cards);
-    model.nextYear(cards);
-    model.nextYear(cards);
-    LOGGER.info("Turn complete, year is now " + model.getCurrentYear());
-    return model.getWorldData();
+    WorldData threeYearData = new WorldData();
+
+    model.nextYear(cards, threeYearData);
+    model.nextYear(cards, threeYearData);
+    model.nextYear(cards, threeYearData);
+    LOGGER.info("Turn complete, year is now " + threeYearData.year);
+    return threeYearData;
   }
 
 
@@ -156,10 +161,12 @@ public class Simulator
    * to deal each player a hand of cards.
    * @param args ignored.
    */
-  public static void main(String[] args) {
-    LOGGER.setLevel(Level.ALL);
+  public static void main(String[] args)
+  {
+    LOGGER.setLevel(Level.INFO);
     Simulator sim = new Simulator(Constant.FIRST_YEAR);
     String msg = "Starting Hands: \n";
+
     for (EnumRegion playerRegion : EnumRegion.US_REGIONS)
     {
       EnumPolicy[]  hand = sim.drawCards(playerRegion);
@@ -170,6 +177,7 @@ public class Simulator
       }
       msg+='\n';
     }
-    LOGGER.info(msg);
+    WorldData worldData = sim.init();
+    LOGGER.info(worldData.toString());
   }
 }

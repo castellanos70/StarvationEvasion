@@ -2,10 +2,10 @@ package starvationevasion.io.XMLparsers;
 
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
-import spring2015code.model.geography.Territory;
+import starvationevasion.sim.Territory;
 import starvationevasion.io.GeographyValidator;
-import starvationevasion.sim.geography.GeographicArea;
-import starvationevasion.sim.geography.MapPoint;
+import starvationevasion.sim.GeographicArea;
+import starvationevasion.common.MapPoint;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -17,7 +17,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static spring2015code.io.IOHelpers.readIndex;
+import static starvationevasion.io.IOHelpers.readIndex;
 
 /**
  * Created by winston on 3/21/15.
@@ -52,31 +52,40 @@ public class GeographyXMLparser extends DefaultHandler
    * @param regions list to derive countries from
    * @return collection of countries created form the given regions.
    */
-  public static Collection<Territory> geograpyToAgriculture(Collection<GeographicArea> regions)
-  {
-    HashMap<String, Territory> nameToUnit = new HashMap<>();
+  //public static Collection<Territory> geograpyToAgriculture(Collection<GeographicArea> regions)
+  //{
+  //  HashMap<String, Territory> nameToUnit = new HashMap<>();
+  //for (GeographicArea region : regions)
+  //{
+  //  if ( ! nameToUnit.containsKey(region.getName()))
+  //  {
+  //    String name = region.getName();
+  //    Territory unit = new Territory(name);
+  //
+  //    nameToUnit.put(region.getName(), unit);
+  //  }
+  //
+  //  region.setAgriculturalUnit(nameToUnit.get(region.getName()));
+  //}
+  //
+  //return nameToUnit.values();
+  //}
 
+  public static Territory[] geograpyToAgriculture(Collection<GeographicArea> regions)
+  {
+    Territory[] territoryList = new Territory[regions.size()];
+    int i=0;
     for (GeographicArea region : regions)
     {
-      if ( ! nameToUnit.containsKey(region.getName()))
-      {
-		String name = region.getName();
-		String type = region.getType();
-        Territory unit = unit = new Territory(name);
-
-        nameToUnit.put(region.getName(), unit);
-      }
-
-      region.setAgriculturalUnit(nameToUnit.get(region.getName()));
+      territoryList[i] = new Territory(region.getName());
+      //System.out.println(territoryList[i].getName());
+      i++;
     }
+    Arrays.sort(territoryList);
 
-    return nameToUnit.values();
+    return territoryList;
   }
 
-  public static void main(String[] args)
-  {
-    System.out.println(new GeographyXMLparser().getCountries().size());
-  }
 
   public Locator getLocator()
   {
@@ -133,7 +142,7 @@ public class GeographyXMLparser extends DefaultHandler
           System.out.println(locator.getLineNumber());
           fatalError(new SAXParseException("Could not parse lat/lon.", locator));
         }
-        tmpPerimeterSet.add(new MapPoint(lon, lat));
+        tmpPerimeterSet.add(new MapPoint(lat, lon));
         break;
 
       default:
@@ -245,17 +254,5 @@ public class GeographyXMLparser extends DefaultHandler
         e.printStackTrace();
       }
     }
-  }
-
-  /**
-   * convenience method, simply composes the following two functions:
-   *
-   * geograpyToAgriculture() of getGeography()
-   *
-   * @return
-   */
-  public Collection<Territory> getCountries()
-  {
-    return geograpyToAgriculture(getGeography());
   }
 }

@@ -12,5 +12,7 @@ public enum EnumPolicy
   GMO_Seed_Insect_Resistance_Research,
   International_Food_Relief_Program,
   Loan,
-  MyPlate_Promotion_Campaign
+  MyPlate_Promotion_Campaign;
+
+  public static final int SIZE = values().length;
 }

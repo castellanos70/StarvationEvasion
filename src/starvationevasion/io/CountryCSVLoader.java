@@ -1,25 +1,16 @@
 package starvationevasion.io;
 
 
-// import org.apache.commons.csv.CSVRecord;
-// import org.apache.commons.csv.CSVParser;
-// import org.apache.commons.csv.CSVFormat;
-
-import spring2015code.model.geography.Territory;
+import starvationevasion.common.Constant;
+import starvationevasion.sim.Region;
+import starvationevasion.sim.Territory;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.io.CSVReader.CSVRecord;
-import spring2015code.model.geography.Region;
 import starvationevasion.common.EnumFood;
-import starvationevasion.io.CSVhelpers.CSVParsingException;
-import starvationevasion.io.CSVhelpers.CountryCSVDataGenerator;
-import spring2015code.common.EnumGrowMethod;
-import spring2015code.common.AbstractScenario;
+import starvationevasion.sim.EnumFarmMethod;
 
-import java.io.*;
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.lang.Integer;
-import java.lang.Double;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -30,197 +21,170 @@ import java.util.logging.Logger;
  */
 public class CountryCSVLoader
 {
-  private static final String DATA_DIR_PATH = "/sim/WorldData/";
-  private static final String DATA_FILE = "TerritoryFarmAreaAndIncome-2014.csv";
-  private static final int START_YEAR = AbstractScenario.START_YEAR;
+  private final static Logger LOGGER = Logger.getLogger(CountryCSVLoader.class.getName());
+  private static final String PATH = "/sim/WorldData/TerritoryFarmAreaAndIncome-2014.csv";
 
-  private Map<String, Region> regions;        // Regions discovered parsing csv
-  private Collection<Territory> countries;        // collection populated by parsing csv
-  private Collection<Territory> masterUnits; // collection passed in (i.e., after parsing xml)
-  private File csvFile;
-  private List<CSVRecord> records;
-  private String[] headers;
-  
+  private enum EnumHeader
+  { territory, region, population1981, population1990, population2000,
+    population2010, population2014, population2025, population2050,
+    averageAge, undernourished, births, migration, mortality,
+    landArea, organic, gmo, farmLand, incomeCitrus, produceCitrus,
+    incomeNonCitrus, produceNonCitrus, incomeNuts, produceNuts, incomeGrains,
+    produceGrains, incomeSeedOil, produceSeedOil, incomeVeg, produceVeg,
+    incomeSpecial, produceSpecial, incomeFeed, produceFeed, incomeFish,
+    produceFish, incomeMeat, produceMeat, incomePoultry, producePoultry,
+    incomeDairy, produceDairy, convert2014to1981;
+
+    public static final int SIZE = values().length;
+  };
+
+
+
   /**
    * Constructor takes list of country objects that need data from csv file (previously created from xml file)
    */
-  public CountryCSVLoader(Collection<Territory> countriesToMerge)
+  //public CountryCSVLoader(Collection<Territory> territoryList)
+  public CountryCSVLoader(Territory[] territoryList, Region[] regionList) throws FileNotFoundException
   {
-    this.masterUnits = countriesToMerge;
-    countries = new ArrayList<Territory>();
-    regions = new HashMap<String, Region>();
-  }
+    CSVReader fileReader = new CSVReader(PATH, 0);
 
-  /**
-   * Parses csv file with predetermined path; uses data from csv file to populate fields of
-   * country objects passed in constructor.
-   * @return  same country objects passed in, with fields populated from csv data (if possible)
-   */
-  public ParsedData getCountriesFromCSV() throws FileNotFoundException
-  {
-    boolean parsedOk = false;
-    // create collection of countries from CSV
-    while (parsedOk == false) parsedOk = parseCountries();
-    // merge those countries with the ones passed in
-    for (Territory xmlCountry: masterUnits)
+    //Check header
+    String[] fieldList = fileReader.readRecord(EnumHeader.SIZE);
+    for (EnumHeader header : EnumHeader.values())
     {
-      String xmlCountryName = xmlCountry.getName();
-      boolean countryFound = false;
-      Iterator<Territory> csvItr = countries.iterator();
-      while (csvItr.hasNext())
+      int i = header.ordinal();
+      if (!header.name().equals(fieldList[i]))
       {
-        Territory csvCountry = csvItr.next();
-        if (xmlCountryName.equals(csvCountry.getName()))
-        {
-          // copy data from csv country object into xml country object
-          xmlCountry.copyInitialValuesFrom(csvCountry);
-          // remove country from csv list after copying it
-          csvItr.remove();
+        LOGGER.severe("**ERROR** Reading " + PATH+
+          "Expected header["+i+"]="+header + ", Found: "+ fieldList[i]);
+        return;
+      }
+    }
+    fileReader.trashRecord();
 
-          // The XML object is considered the final object.  Map it to the region.
-          //
-          String region = csvCountry.getGameRegion().name();
-          EnumRegion enumRegion = EnumRegion.valueOf(region);
-          Region r = regions.get(region);
-          if (r == null)
+    // Implementation notes : The CSV file contains 2014 numbers for production, etc. Each row
+    // includes a column at the end that converts 2014 production and farm income to 1981.
+    // It is an int percentage to be multiplied onto the 2014 production and income by to get
+    // the corrosponding value for 1981.  For example CA is 61, so in 1981 they had 61% of
+    // their current production and income.
+    //
+    for (int k=0; k<territoryList.length; k++)
+    {
+      Territory territory = null;
+      fieldList = fileReader.readRecord(EnumHeader.SIZE);
+      if (fieldList == null) break;
+
+      double foodFactor = 1.;
+      for (EnumHeader header : EnumHeader.values())
+      {
+        int i = header.ordinal();
+        int value = 0;
+        if ((i > 1) && (i < fieldList.length))
+        {
+          try
           {
-            r = new Region(enumRegion);
-            regions.put(region, r);
+            value = Integer.parseInt(fieldList[i]);
           }
-
-          r.addTerritory(xmlCountry);
-
-          countryFound = true;
-          break;
+          catch (Exception e) {} //Default empty cell, and text to 0
         }
-      }
-
-      if (countryFound == false)
-      {
-        //todo add method (String nameOf Territory) -> offending xml file, -> load in XML editor.
-        System.err.print("CSV data not found for country " + xmlCountryName + "\n");
-      }
-    }
-    
-    // if not all csv data copied, print message
-    if (countries.isEmpty() == false)
-    {
-      for (Territory country:countries)
-      {
-        System.err.print("XML data not found for country "+country.getName()+"\n");
-      }
-    }
-
-    return new ParsedData(masterUnits, regions.values());
-  }
-
-  /**
-   * Parses country data from DATA_FILE, adds countries to countries list.
-   */ 
-  private boolean parseCountries() throws FileNotFoundException
-  {
-    boolean parsedOk = false;
-    ArrayList<Territory> tempCountryList = new ArrayList<Territory>();
-    getRecords();
-
-    for (CSVRecord record:records)
-    {
-      Territory unit;
-
-      // The spring 2015 data file has a line immediately following the header that
-      // indicates the data type of each column.  This line has been removed from
-      // the Fall 2015 data file.
-      //
-      // My temporary Fall 2015 file has an extra row of labels following header that
-      // indicates the contents of each column.
-      //
-      if (record.getRecordNumber() == 1) continue; // skip line
-
-      // if name in file, make country
-      try {
-        String name = record.get("territory");
-        if (name != null && name.isEmpty() == false) { // We use the generic AgUnit here.
-          //
-          unit = new Territory(name);
-        } else throw new CSVParsingException("territory", record, this.csvFile);
-
-        // The Fall 2015 data adds regions.
-        //
-        String regionName = record.get("region");
-        if (regionName != null && regionName.isEmpty() == false)
+        switch (header)
         {
-          EnumRegion region = EnumRegion.valueOf(regionName);
-          if (region != null) unit.setGameRegion(region);
-          else Logger.getGlobal().log(Level.SEVERE, "CSV record " + name + " undefined region " + regionName);
+          case territory:
+            Territory tmp = new Territory(fieldList[i]);
+            int idx = Arrays.binarySearch(territoryList,tmp);
+            if (idx < 0)
+            {
+              LOGGER.severe("**ERROR** Reading " + PATH+
+                  "Territory="+fieldList[i] + ", Not found in territory list.");
+              return;
+            }
+            territory = territoryList[idx];
+            break;
+          case region:
+            for (EnumRegion enumRegion : EnumRegion.values())
+            {
+              if (enumRegion.name().equals(fieldList[i]))
+              {
+                territory.setGameRegion(enumRegion);
+                regionList[enumRegion.ordinal()].addTerritory(territory);
+                break;
+              }
+            }
+            if (territory.getGameRegion() == null)
+            { LOGGER.severe("**ERROR** Reading " + PATH+
+               "Game Region not recognized: "+ fieldList[i]);
+              return;
+            }
+            break;
+
+          case population1981:  case population1990:  case population2000:
+          case population2010:  case population2014:  case population2025:
+          case population2050:
+            int year = Integer.valueOf(header.name().substring(10));
+            territory.setPopulation(year, value);
+            break;
+
+          case averageAge: territory.setMedianAge(value); break;
+          case births: territory.setBirths(value); break;
+          case mortality: territory.setMortality(Constant.FIRST_YEAR, value); break;
+          case migration: territory.setMigration(value); break;
+          case undernourished: territory.setUndernourished(value); break;
+          case landArea: territory.setLandTotal(value); break;
+          case farmLand: territory.setTotalFarmLand(value); break;
+
+          case organic: territory.setMethod(EnumFarmMethod.ORGANIC, value); break;
+          case gmo: territory.setMethod(EnumFarmMethod.GMO, value); break;
+
+          case incomeCitrus: territory.setCropIncome(EnumFood.CITRUS, value); break;
+          case incomeNonCitrus: territory.setCropIncome(EnumFood.FRUIT, value); break;
+          case incomeNuts: territory.setCropIncome(EnumFood.NUT, value); break;
+          case incomeGrains: territory.setCropIncome(EnumFood.GRAIN, value); break;
+          case incomeSeedOil: territory.setCropIncome(EnumFood.OIL, value); break;
+          case incomeVeg: territory.setCropIncome(EnumFood.VEGGIES, value); break;
+          case incomeSpecial: territory.setCropIncome(EnumFood.SPECIAL, value); break;
+          case incomeFeed: territory.setCropIncome(EnumFood.FEED, value); break;
+          case incomeFish: territory.setCropIncome(EnumFood.FISH, value); break;
+          case incomeMeat: territory.setCropIncome(EnumFood.MEAT, value); break;
+          case incomePoultry: territory.setCropIncome(EnumFood.POULTRY, value); break;
+          case incomeDairy: territory.setCropIncome(EnumFood.DAIRY, value); break;
+
+          case produceCitrus: territory.setCropProduction(EnumFood.CITRUS, value); break;
+          case produceNonCitrus: territory.setCropProduction(EnumFood.FRUIT, value); break;
+          case produceNuts: territory.setCropProduction(EnumFood.NUT, value); break;
+          case produceGrains: territory.setCropProduction(EnumFood.GRAIN, value); break;
+          case produceSeedOil: territory.setCropProduction(EnumFood.OIL, value); break;
+          case produceVeg: territory.setCropProduction(EnumFood.VEGGIES, value); break;
+          case produceSpecial: territory.setCropProduction(EnumFood.SPECIAL, value); break;
+          case produceFeed: territory.setCropProduction(EnumFood.FEED, value); break;
+          case produceFish: territory.setCropProduction(EnumFood.FISH, value); break;
+          case produceMeat: territory.setCropProduction(EnumFood.MEAT, value); break;
+          case producePoultry: territory.setCropProduction(EnumFood.POULTRY, value); break;
+          case produceDairy: territory.setCropProduction(EnumFood.DAIRY, value); break;
+          case convert2014to1981: foodFactor = (double) value / 100; break;
         }
-        else
-        { Logger.getGlobal().log(Level.SEVERE, "CSV record " + name + " is missing region");
-        }
-
-        setEssentialFields(unit, record);
-        setNonessentialFields(unit, record);
-
-        tempCountryList.add(unit);
       }
-      // if name or essential fields empty, edit file
-      catch (CSVParsingException exception)
-      {
-        // PAB : This used to invoke an error message in the GUI.
-        //
-        exception.printStackTrace();
-        // callEditor(exception);
-        return parsedOk;
-      }
-    }
-    countries.addAll(tempCountryList);
-    return true;
-  }
 
-  private double getValue(Map<String, String> record, String key)
-  {
-    String data = record.get(key);
+      int conventional = 100 -
+        (territory.getMethod(EnumFarmMethod.GMO) + territory.getMethod(EnumFarmMethod.ORGANIC));
+      territory.setMethod(EnumFarmMethod.CONVENTIONAL, conventional);
 
-	if (data == null || data.isEmpty()) return 0.;
+      // Scale the crop income and production by the 2014 to 1981 conversion factor.
+      //
+      territory.scaleCropData (foodFactor);
 
-	return Double.parseDouble(data);
-  }
-   
-  /**
-   * Set population and land area
-   * @param country   country object
-   * @param record    country's CSVRecord
-   */
-  private void setEssentialFields(Territory country, CSVRecord record)
-  {
-    String landArea = record.get("landArea");
-    try
-    {
-      country.setLandTotal(START_YEAR, Double.parseDouble(landArea));
-    }
-    catch (IllegalArgumentException e)
-    {
-      Logger.getGlobal().log(Level.SEVERE, "CSVLoader: " + country.getName() + " Invalid land area");
-      // throw new CSVParsingException("landArea", record, this.csvFile);
+      interpolatePopulation(territory, 1981, 1990);
+      interpolatePopulation(territory, 1990, 2000);
+      interpolatePopulation(territory, 2000, 2010);
+      interpolatePopulation(territory, 2010, 2014);
+      interpolatePopulation(territory, 2014, 2050);
     }
   }
+
+
+
 
   /**
-   * Set fields other than name, population, and total land area.
-   * If any field missing, its value must be determined.
-   * @param country   country object
-   * @param record    country's CSVRecord
-   */
-  private void setNonessentialFields(Territory country, CSVRecord record)
-  {
-    Map<String,String> recordMap = record.toMap();
-    setDemographicData(country,recordMap);    
-    // crop data; note can't do this before setting population
-    setCropData(country, recordMap);
-    // grow method percentages
-    setGrowMethodData(country, recordMap);
-  }
-
-  /** Linear interpolate population.
+   * Linear interpolate population.
   */
   private void interpolatePopulation(Territory territory, int year0, int year1)
   {
@@ -234,313 +198,26 @@ public class CountryCSVLoader
     }
   }
 
-  /**
-   * Set averageAge, births, mortality, migration, undernourish fields.
-   * @param territory     country object
-   * @param recordMap   map of strings (key=field name, value=field value) generated from
-   *                    country's CSVRecord
-   */
-  private void setDemographicData(Territory territory, Map<String,String> recordMap)
-  {
-    String[] demographicFields = {
-            "population1981", "population1990", "population2000", "population2010", "population2014", "population2025", "population2050",
-            "averageAge", "births", "mortality", "migration", "undernourish"
-    };
-    
-    for (int i = 0; i < demographicFields.length; i++)
-    {
-      String field = demographicFields[i];
-      String value = recordMap.get(field);
-
-      // Per Joel : Don't complain if the value is missing. We can see missing value in Excel.
-      //
-      if (value == null || value.isEmpty()) continue;
-
-      try
-      {
-        switch (field)
-        {
-          case "population1981":
-            territory.setPopulation(1981, Integer.parseInt(value));
-            break;
-
-          case "population1990":
-            territory.setPopulation(1990, Integer.parseInt(value));
-            break;
-
-          case "population2000":
-            territory.setPopulation(2000, Integer.parseInt(value));
-            break;
-
-          case "population2010":
-            territory.setPopulation(2010, Integer.parseInt(value));
-            break;
-
-          case "population2014":
-            territory.setPopulation(2014, Integer.parseInt(value));
-            break;
-
-          case "population2050":
-            territory.setPopulation(2050, Integer.parseInt(value));
-            break;
-
-          case "averageAge":
-            territory.setMedianAge(Integer.parseInt(value));
-            break;
-
-          case "births":
-            double numValue = Double.parseDouble(value);
-            territory.setBirths(numValue);
-            break;
-
-          case "mortality":
-            numValue = Double.parseDouble(value);
-            territory.setMortality(START_YEAR, numValue);
-            break;
-
-          case "migration":
-            numValue = Double.parseDouble(value);
-            territory.setMigration(numValue);
-            break;
-
-          case "undernourish":
-            numValue = Double.parseDouble(value);
-            territory.setUndernourished(START_YEAR, numValue / 100); // Convert to percent.
-            break;
-
-          case "arableOpen":
-            numValue = Double.parseDouble(value);
-            if (numValue >= 0 && numValue <= territory.getLandTotal(START_YEAR)) territory.setArableLand(START_YEAR, numValue);
-            else throw new IllegalArgumentException();
-            break;
-
-          default: ;
-        }
-      }
-      catch (NumberFormatException e)
-      {
-        Logger.getGlobal().log(Level.SEVERE,
-                "CSVLoader: " + territory.getName() + " Illegal value " + field + " = " + value);
-
-        CountryCSVDataGenerator.fixDemographic(territory, field);
-      }
-      catch (IllegalArgumentException e)
-      {
-        // need to assign default value
-        Logger.getGlobal().log(Level.INFO, "CSVLoader: {0} bad value for {1} {2}",
-                new Object[] {territory.getName(), field, value});
-        CountryCSVDataGenerator.fixDemographic(territory, field);
-      }
-    }
-
-    // Linear interpolate population.
-    //
-    interpolatePopulation(territory, 1981, 1990);
-    interpolatePopulation(territory, 1990, 2000);
-    interpolatePopulation(territory, 2000, 2010);
-    interpolatePopulation(territory, 2010, 2014);
-    interpolatePopulation(territory, 2014, 2050);
-  }
   
-  /**
-   * Set production, exports, imports, and land fields for each crop type in EnumFood.
-   * @param country     country object
-   * @param recordMap   map of strings (key=field name, value=field value) generated from
-   *                    country's CSVRecord
-   */
-  private void setCropData(Territory country, Map<String,String> recordMap)
-  {
-    int[] income = new int[EnumFood.SIZE];
-    int[] production = new int[EnumFood.SIZE];
 
-    int totalFarmLand = (int) getValue(recordMap, "farmLand");
-
-    income[EnumFood.CITRUS.ordinal()] = (int) getValue(recordMap, "incomeCitrusFruits");
-    production[EnumFood.CITRUS.ordinal()] = (int) getValue(recordMap, "productionCitrusFruits");
-
-    income[EnumFood.FRUIT.ordinal()] = (int) getValue(recordMap, "incomeNonCitrusFruits");
-    production[EnumFood.FRUIT.ordinal()] = (int) getValue(recordMap, "productionNonCitrusFruits");
-
-    income[EnumFood.NUT.ordinal()] = (int) getValue(recordMap, "incomeNuts");
-    production[EnumFood.NUT.ordinal()] = (int) getValue(recordMap, "productionNuts");
-
-    income[EnumFood.GRAIN.ordinal()] = (int) getValue(recordMap, "incomeGrains");
-    production[EnumFood.GRAIN.ordinal()] = (int) getValue(recordMap, "productionGrains");
-
-    income[EnumFood.OIL.ordinal()] = (int) getValue(recordMap, "incomeOilCrops");
-    production[EnumFood.OIL.ordinal()] = (int) getValue(recordMap, "productionOilCrops");
-
-    income[EnumFood.VEGGIES.ordinal()] = (int) getValue(recordMap, "incomeVegetables");
-    production[EnumFood.VEGGIES.ordinal()] = (int) getValue(recordMap, "productionVegetables");
-
-    income[EnumFood.SPECIAL.ordinal()] = (int) getValue(recordMap, "incomeSpecialtyCrops");
-    production[EnumFood.SPECIAL.ordinal()] = (int) getValue(recordMap, "productionSpecialtyCrops");
-
-    income[EnumFood.FEED.ordinal()] = (int) getValue(recordMap, "incomeFeedCrops");
-    production[EnumFood.FEED.ordinal()] = (int) getValue(recordMap, "productionFeedCrops");
-
-    income[EnumFood.FISH.ordinal()] = (int) getValue(recordMap, "incomeFish");
-    production[EnumFood.FISH.ordinal()] = (int) getValue(recordMap, "productionFish");
-
-    income[EnumFood.MEAT.ordinal()] = (int) getValue(recordMap, "incomeMeatAnimals");
-    production[EnumFood.MEAT.ordinal()] = (int) getValue(recordMap, "productionMeatAnimals");
-
-    income[EnumFood.POULTRY.ordinal()] = (int) getValue(recordMap, "incomePoultryAndEggs");
-    production[EnumFood.POULTRY.ordinal()] = (int) getValue(recordMap, "productionPoultryAndEggs");
-
-    income[EnumFood.DAIRY.ordinal()] = (int) getValue(recordMap, "incomeDairy");
-    production[EnumFood.DAIRY.ordinal()] = (int) getValue(recordMap, "productionDairy");
-
-    // double[] incomeToCategoryPercentages = new double[EnumFood.SIZE];
-    // double[] adjustmentFactors = new double[EnumFood.SIZE];
-    for (int i = 0; i < EnumFood.SIZE; i++)
-    { EnumFood food = EnumFood.values()[i];
-
-      country.setCropIncome(START_YEAR, food, income[i]);
-      country.setCropProduction(START_YEAR, food, production[i]);
-    }
-
-
-    // PAB : This was the Spring 2015 computation.
-    //
-    //
-    // double yield = production / land;
-    // double tonsConsumed = production + imports - exports;
-
-    // set values
-    // country.setCropProduction(START_YEAR, crop, production);
-    // country.setCropLand(START_YEAR, crop, land);
-    // country.setCropYield(START_YEAR, crop, yield);
-    // country.setCropNeedPerCapita(crop, tonsConsumed, country.getUndernourished(START_YEAR));
-  }
-  
-  /**
-   * Set percentage for each method in EnumGrowMethod.
-   * @param agriculturalUnit     agriculturalUnit object
-   * @param recordMap   map of strings (key=field name, value=field value) generated from
-   *                    agriculturalUnit's CSVRecord
-   */
-  private void setGrowMethodData(Territory agriculturalUnit, Map<String,String> recordMap)
-  {
-    double sum = 0;
-    for (EnumGrowMethod method : EnumGrowMethod.values()) 
-    {
-      try
-      {
-        double value = 0;
-        String methodString = method.toString().toLowerCase();
-        value = Double.parseDouble(recordMap.get(methodString));
-        if (value >= 0 && value <= 1)
-        {
-          agriculturalUnit.setMethodPercentage(START_YEAR, method, value);
-          sum += value;
-        }
-        else throw new IllegalArgumentException();
-      }
-      catch (IllegalArgumentException e) 
-      {
-        CountryCSVDataGenerator.fixGrowMethods(agriculturalUnit);
-        return;
-      }
-    }
-    if (sum != 1) CountryCSVDataGenerator.fixGrowMethods(agriculturalUnit);
-  }
-
-  /**
-   * Parse the csv file specified by DATA_DIR_PATH+DATA_FILE. Use it
-   * to populate a list of CSVRecords, assign list to records member variable.
-   */
-  private void getRecords() throws FileNotFoundException
-  {
-    try
-    {
-      String csvPath = DATA_DIR_PATH + DATA_FILE;
-      InputStream stream = this.getClass().getResourceAsStream(csvPath);
-      if (stream == null) throw new FileNotFoundException(csvPath);
-
-      CSVReader reader = new CSVReader();
-      reader.read(stream);
-      // csvFile = new File(DATA_DIR_PATH + DATA_FILE);
-      // reader.read(new FileInputStream(csvFile));
-      // CSVFormat format;
-      // CSVParser parser;
-      // format = CSVFormat.DEFAULT.withHeader();
-      // parser = CSVParser.parse(csvFile, StandardCharsets.US_ASCII, format);
-      headers = reader.getHeaders();
-      records = reader.getRecords();
-      reader.close();
-    }
-    catch (IOException e)
-    {
-      System.err.println("Territory data file not found");
-    }
-  }
   
   private void copyCropValues(Territory countryFinal, Territory agriculturalUnitTemp)
   {
     for (EnumFood crop:EnumFood.values())
     {
-      // double imports = agriculturalUnitTemp.getCropImport(START_YEAR, crop);
-      // double exports = agriculturalUnitTemp.getCropExport(START_YEAR, crop);
-      double production = agriculturalUnitTemp.getCropProduction(START_YEAR, crop);
-      double land = agriculturalUnitTemp.getCropLand(START_YEAR, crop);
-      double yield = agriculturalUnitTemp.getCropYield(START_YEAR, crop);
+      int imports = agriculturalUnitTemp.getCropImport(crop);
+      int exports = agriculturalUnitTemp.getCropExport(crop);
+      int production = agriculturalUnitTemp.getCropProduction(crop);
+      int land = agriculturalUnitTemp.getCropLand(crop);
+      double yield = agriculturalUnitTemp.getCropYield(crop);
       double need = agriculturalUnitTemp.getCropNeedPerCapita(crop);
 
-      // countryFinal.setCropImport(START_YEAR, crop, imports);
-      // countryFinal.setCropExport(START_YEAR, crop, exports);
-      countryFinal.setCropProduction(START_YEAR, crop, production);
-      countryFinal.setCropLand(START_YEAR, crop, land);
-      countryFinal.setCropYield(START_YEAR, crop, yield);
+      countryFinal.setCropImport(crop, imports);
+      countryFinal.setCropExport(crop, exports);
+      countryFinal.setCropProduction(crop, production);
+      countryFinal.setCropLand(crop, land);
+      countryFinal.setCropYield(crop, yield);
       countryFinal.setCropNeedPerCapita(crop, need);
-    }
-  }
-  
-  
-  public static void main(String[] args)
-  {
-    // First make sure that the data file can be seen from the class loader.
-    //
-    InputStream in = CountryCSVLoader.class.getResourceAsStream("/SomeTextFile.txt");
-
-
-    ArrayList<Territory> fakeXmlList = new ArrayList<Territory>();
-    fakeXmlList.add(new Territory("Afghanistan"));
-    //fakeXmlList.add(new Territory("Albania"));
-    fakeXmlList.add(new Territory("Algeria"));
-    fakeXmlList.add(new Territory("Vatican City"));
-    CountryCSVLoader testLoader = new CountryCSVLoader(fakeXmlList);
-    Collection<Territory> countryList;
-    //List<Territory> countryList = new ArrayList<Territory>();
-
-    ParsedData data;
-    try {
-      data = testLoader.getCountriesFromCSV();
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-      return;
-    }
-
-    countryList = data.territories;
-
-    System.out.println("Testing - main method in CountryCSVLoader");
-    for (Territory ctry:countryList)
-    {
-      System.out.println(ctry.getName()+" "+ctry.getMethodPercentage(START_YEAR,EnumGrowMethod.ORGANIC));
-      //System.out.println(ctry.getName()+" "+ctry.getPopulation(START_YEAR));
-      //System.out.println(ctry.getName()+" "+ctry.getCropProduction(START_YEAR,EnumFood.GRAIN));
-    }
-  }
-
-  public static class ParsedData
-  {
-    final public Collection<Territory> territories;
-    final public Collection<Region> regions;
-
-    protected ParsedData(final Collection<Territory> territories, final Collection<Region> regions)
-    {
-      this.territories = territories;
-      this.regions = regions;
     }
   }
 }

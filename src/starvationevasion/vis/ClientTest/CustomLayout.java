@@ -25,10 +25,7 @@ public class CustomLayout extends BorderPane
   private GridPane rightBarGrid = new GridPane();
   private GridPane centerGrid = new GridPane();
 
-  private final ImageView image0 = new ImageView();
-  private final ImageView image1 = new ImageView();
-  private Image coldImage = new Image(  getClass().getClassLoader().getResourceAsStream("visResources/snowflake.png"));
-  private Image hotImage = new Image(getClass().getClassLoader().getResourceAsStream("visResources/hot.png"));
+
 
   public  Label title = new Label("Year, World/Region \nPopulation and HDI");
   private Label toggleEarthMode = new Label("Press tab to toggle between Earth sizes");

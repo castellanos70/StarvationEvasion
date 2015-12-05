@@ -59,8 +59,9 @@ public class ClientGUI extends Application implements EventHandler<KeyEvent> {
         {
           fullEarthMode=true;
           VisualizerLayout visLayout = earthViewer.updateFull();
-          Scene earthScene = new Scene(visLayout,500,500);
+          Scene earthScene = new Scene(visLayout,700,700);
           earthStage.setScene(earthScene);
+          earthScene.getStylesheets().add(earthViewer.RESOURCE_LOADER.STYLE_SHEET);
           earthStage.getScene().setOnKeyPressed(this);
           earthStage.show();
         }

@@ -2,6 +2,7 @@ package starvationevasion.vis.visuals;
 
 
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 
@@ -22,6 +23,8 @@ public class ResourceLoader
   //"http://planetmaker.wthr.us/img/earth_specularmap_flat_8192x4096.jpg";
   private static final String STARS = "visResources/night_sky.jpg";//"vis_resources/SPEC_MAP.jpg";
 
+  protected static Image COLD_IMAGE;
+  protected static Image HOT_IMAGE;
   protected static Image STAR_BACKGROUND;
   protected static Image SPEC_MAP;
   protected static Image NORM_MAP;
@@ -39,6 +42,8 @@ public class ResourceLoader
       NORM_MAP = new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true);
       SPEC_MAP = new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true);
       STAR_BACKGROUND = new Image(getClass().getClassLoader().getResourceAsStream(STARS), MAP_WIDTH, MAP_HEIGHT, true, true);
+      COLD_IMAGE = new Image(  getClass().getClassLoader().getResourceAsStream("visResources/snowflake.png"));
+      HOT_IMAGE = new Image(getClass().getClassLoader().getResourceAsStream("visResources/hot.png"));
       STYLE_SHEET = this.getClass().getClassLoader().getResource("visResources/style.css").toExternalForm();
 
     }

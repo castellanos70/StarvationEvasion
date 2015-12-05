@@ -33,8 +33,6 @@ public class EarthViewer
   {
     earth = new Earth(smallEarthRadius, largeEarthRadius, RESOURCE_LOADER);
     SET_SIZE = new Scale();
-    //fullEarthScene = new Scene(VISUALIZER_LAYOUT,largeEarthRadius,largeEarthRadius);
-    //fullEarthScene.getStylesheets().add(RESOURCE_LOADER.STYLE_SHEET);
 
   }
 

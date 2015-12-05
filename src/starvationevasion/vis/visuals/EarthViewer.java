@@ -87,14 +87,11 @@ public class EarthViewer {
     earth = new Sphere(earthRadius);
     earthMaterial = new PhongMaterial();
     /* Material */
-    earthMaterial.setDiffuseMap
-        (new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
-//    earthMaterial.setBumpMap
-//        (new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
-//    earthMaterial.setSpecularMap
-//            (new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
-//    earthMaterial.setSelfIlluminationMap
-//            (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
+    earthMaterial.setDiffuseMap(ResourceLoader.DIFF_MAP);
+    earthMaterial.setBumpMap(ResourceLoader.NORM_MAP);
+    earthMaterial.setSpecularMap(ResourceLoader.SPEC_MAP);
+    earthMaterial.setSelfIlluminationMap
+            (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
 
     earth.setMaterial(earthMaterial);
     return new Group(earth);

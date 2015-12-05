@@ -10,9 +10,6 @@ import java.util.logging.Logger;
 
 /**
  * FertilizerCSVLoader contains methods for parsing fertilizer data in csv file.
- *
- * @author  alex
- * @version Dec-05-2015
  */
 public class FertilizerCSVLoader
 {
@@ -125,6 +122,11 @@ public class FertilizerCSVLoader
     }
   }
 
+  /**
+   * Get the fertilizer data read in by the loader
+   *
+   * @return FertilizerData
+   */
   public FertilizerData getReadData()
   {
     return data;

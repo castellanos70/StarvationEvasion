@@ -5,7 +5,6 @@ import starvationevasion.sim.PenaltyData;
 import starvationevasion.sim.Territory;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -34,6 +33,11 @@ public class PenaltyCSVLoader
     }
   }
 
+  /**
+   * Get the penalty function data read in by the loader
+   *
+   * @return PenaltyData
+   */
   public PenaltyData getReadData()
   {
     return data;

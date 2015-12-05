@@ -52,8 +52,8 @@ public abstract class AbstractTerritory implements Comparable<Territory>
    * under permanent crops, and under permanent pastures. Arable land includes
    * land defined by the FAO as land under temporary crops (double-cropped
    * areas are counted once), temporary meadows for mowing or for pasture, land
-   * under market or kitchen gardens, and land temporarily fallow. Land abandoned
-   * as a result of shifting cultivation is excluded. Land under permanent crops
+   * under market or kitchen gardens, and land temporarily fallow. land abandoned
+   * as a result of shifting cultivation is excluded. land under permanent crops
    * is land cultivated with crops that occupy the land for long periods and need
    * not be replanted after each harvest, such as cocoa, coffee, and rubber.
    * This category includes land under flowering shrubs, fruit trees, nut trees,

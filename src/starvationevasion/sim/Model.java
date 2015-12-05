@@ -54,7 +54,7 @@ import java.util.logging.Logger;
  * grain to very low income populations reduces the supply of that grain while not
  * affecting the world demand. This is because anyone who's income is below being able
  * to afford a product, in economic terms, has no demand for that product.</li>
- * <li>Farm Product Demand and Price: Product foodPrice on the world market and demand are
+ * <li>Farm Product Demand and price: Product foodPrice on the world market and demand are
  * highly interdependent and therefore calculated together.
  * <li>Food Distribution: In the global market, food distribution is effected by many
  * economic, political, and transportation factors. The Food Trade Penalty Function

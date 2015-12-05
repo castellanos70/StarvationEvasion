@@ -15,7 +15,7 @@ import starvationevasion.sim.CropZoneData.EnumCropZone;
  * crop being a 0-1 Knapsack Problem. Our approach was inspired by:
  * http://www.cs.technion.ac.il/~lirank/pubs/2006-IPL-Generalized-Assignment-Problem.pdf
  * 
- * Since all the items (Land Tiles) are of identical size, we start with the largest knapsack
+ * Since all the items (land Tiles) are of identical size, we start with the largest knapsack
  * (crop with largest area allocated to it) and sort the tiles by their yield for that crop.
  * We proceed to the other crops in descending order of area allocated, resorting the tiles
  * by their yield for the crop and taking the number required from the top of the list.

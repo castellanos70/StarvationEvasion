@@ -12,24 +12,24 @@ public class CropData
 
 
   /**
-   * Price in Dollars per Metric Ton for the first year of the model.
+   * price in Dollars per Metric Ton for the first year of the model.
    */
   public double[] foodPriceStart = new double[EnumFood.SIZE];
 
   /**
-   * Price in Dollars per Metric Ton for the current year of the model.
+   * price in Dollars per Metric Ton for the current year of the model.
    */
   public double[] foodPrice = new double[EnumFood.SIZE];
 
 
   /**
-   * Land Yield in Metric Tons / Square Kilometer for USA in first year of model.
+   * land Yield in Metric Tons / Square Kilometer for USA in first year of model.
    */
   public double[] foodYieldStart = new double[EnumFood.SIZE];
 
 
   /**
-   * Land Yield in Metric Tons / Square Kilometer for USA in current year of model.
+   * land Yield in Metric Tons / Square Kilometer for USA in current year of model.
    */
   public double[] foodYield = new double[EnumFood.SIZE];
 

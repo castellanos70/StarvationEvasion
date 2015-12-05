@@ -1,7 +1,9 @@
 package starvationevasion.sim;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -9,40 +11,56 @@ import java.util.HashMap;
  */
 public class PenaltyData
 {
-  private HashMap<String, Double> penaltyData;
+  private HashMap<Territory, Double> penaltyData;
+  private List<Territory> territories;
 
-  public PenaltyData()
+  public PenaltyData(List<Territory> territories)
   {
     penaltyData = new HashMap<>();
+    this.territories = territories;
   }
 
   public double getPenaltyValue(String territory)
   {
-    double penaltyValue;
-    if (territory.startsWith("US-"))
-    {
-      penaltyValue = penaltyData.get("United States of America");
-    }
-    else
-    {
-      penaltyValue = penaltyData.get(territory);
-    }
-    return penaltyValue;
+    return getPenaltyValue(getTerritory(territory));
   }
 
   public double getPenaltyValue(Territory territory)
   {
-    return getPenaltyValue(territory.getName());
+    double value;
+    if (penaltyData.containsKey(territory))
+    {
+      value = penaltyData.get(territory);
+    }
+    else
+    {
+      double weightedSum = 0;
+      double weightedTotal = 0;
+      for (Territory t : getRegionTerritories(territory))
+      {
+        weightedSum += getPenaltyValue(t)*t.getPopulation(33);
+        weightedTotal += t.getPopulation(33);
+      }
+      if (weightedTotal == 0)
+      {
+        value = 0;
+      }
+      else
+      {
+        value = weightedSum / weightedTotal;
+      }
+    }
+    return value;
   }
 
   public void setPenaltyData(String territory, double penaltyValue)
   {
-    penaltyData.put(territory, penaltyValue);
+    setPenaltyData(getTerritory(territory), penaltyValue);
   }
 
   public void setPenaltyData(Territory territory, double penaltyValue)
   {
-    setPenaltyData(territory.getName(), penaltyValue);
+    penaltyData.put(territory, penaltyValue);
   }
 
   @Override
@@ -50,10 +68,35 @@ public class PenaltyData
   {
     String string = "";
 
-    for (String territory : penaltyData.keySet())
+    for (Territory territory : penaltyData.keySet())
     {
-      string += territory + ": " + getPenaltyValue(territory) + "\n";
+      string += territory.getName() + ": " + getPenaltyValue(territory) + "\n";
     }
     return string;
+  }
+
+  private Territory getTerritory(String name)
+  {
+    for (Territory territory : territories)
+    {
+      if (territory.getName().equals(name))
+      {
+        return territory;
+      }
+    }
+    return null;
+  }
+
+  private List<Territory> getRegionTerritories(Territory territory)
+  {
+    List<Territory> regionTerritories = new ArrayList<>();
+    for (Territory t : territories)
+    {
+      if (penaltyData.containsKey(territory) && t.getGameRegion() == territory.getGameRegion())
+      {
+        regionTerritories.add(t);
+      }
+    }
+    return regionTerritories;
   }
 }

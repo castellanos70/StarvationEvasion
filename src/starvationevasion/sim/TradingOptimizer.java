@@ -37,19 +37,23 @@ public class TradingOptimizer
   };
   
   private List<SingleCropTrader> traders;
+  private PenaltyData penaltyData;
   
   /**
    Construct a new TradingOptimizer with the set of countries to trade between.
 
    @param territoryList
    Collection of Countries to trade between
+   @param penaltyData
+   Penalty Function Data for territories
    @param year
    year to calculate trades for
    */
-  public TradingOptimizer(Territory[] territoryList, int year)
+  public TradingOptimizer(Territory[] territoryList, PenaltyData penaltyData, int year)
   {
     this.year = year;
     this.territoryList = territoryList;
+    this.penaltyData = penaltyData;
   }
 
   /**
@@ -94,7 +98,7 @@ public class TradingOptimizer
     {
       this.exporter = exporter;
       this.importer = importer;
-      this.efficiency = calcEfficiency(exporter, importer);
+      this.efficiency = calcEfficiency(importer);
     }
 
     private TradePair(TradePair t)
@@ -108,7 +112,7 @@ public class TradingOptimizer
       Distance between them, as implemented in the Territory class, and half
       the radius of the Earth (theoretical maximum distance between the two
       countries) ~20,000km */
-    private static double calcEfficiency(Territory c1, Territory c2)
+    private static double calcEfficiency(Territory importer)
     {
       return 1;
     }
@@ -122,7 +126,7 @@ public class TradingOptimizer
     private boolean implementTrade(EnumFood crop, int year)
     { // Not supported yet.
       //
-      if (true) throw new UnsupportedOperationException("Fall 2015 doesn't used crop import or export values.");
+      //if (true) throw new UnsupportedOperationException("Fall 2015 doesn't used crop import or export values.");
 
       double need = -(importer.getNetCropAvailable(crop) - importer.getTotalCropNeed(year, crop));
       double supply = exporter.getNetCropAvailable(crop) - exporter.getTotalCropNeed(year, crop);
@@ -133,7 +137,7 @@ public class TradingOptimizer
         double curImport = importer.getCropImport(crop);
 
         double toGive = Math.min(need / efficiency, supply);
-        double toReceive = toGive * efficiency;
+        double toReceive = toGive / efficiency + 2;
 
         amount = toReceive;
 

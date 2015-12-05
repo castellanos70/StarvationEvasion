@@ -2,8 +2,11 @@ package starvationevasion.io;
 
 
 import starvationevasion.sim.PenaltyData;
+import starvationevasion.sim.Territory;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 
@@ -17,24 +20,16 @@ public class PenaltyCSVLoader
 
   private PenaltyData data;
 
-  public PenaltyCSVLoader() throws FileNotFoundException
+  public PenaltyCSVLoader(List<Territory> territories) throws FileNotFoundException
   {
     CSVReader fileReader = new CSVReader(PATH, 2);
-    data = new PenaltyData();
+    data = new PenaltyData(territories);
 
     String[] fieldList;
     while ((fieldList = fileReader.readRecord(2)) != null)
     {
       String territory = fieldList[0];
-      double value;
-      if (fieldList.length > 1)
-      {
-        value = Double.parseDouble(fieldList[1]);
-      }
-      else
-      {
-        value = 0;
-      }
+      double value = Double.parseDouble(fieldList[1]);
       data.setPenaltyData(territory, value);
     }
   }
@@ -42,18 +37,5 @@ public class PenaltyCSVLoader
   public PenaltyData getReadData()
   {
     return data;
-  }
-
-  public static void main(String[] args)
-  {
-    try
-    {
-      PenaltyCSVLoader loader = new PenaltyCSVLoader();
-      System.out.println(loader.getReadData());
-    }
-    catch (FileNotFoundException e)
-    {
-      e.printStackTrace();
-    }
   }
 }

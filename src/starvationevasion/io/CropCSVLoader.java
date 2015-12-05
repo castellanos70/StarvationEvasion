@@ -135,13 +135,11 @@ public class CropCSVLoader
               value_d = Double.parseDouble(fieldList[i]);
               zoneData.setAnnualMaximumTemperature(value_d);
               break;
-            default:
-
-              break;
           }
         }
-        categoryData.add(zoneData);
+
       }
+      categoryData.add(zoneData);
     }
   }
 

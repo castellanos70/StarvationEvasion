@@ -89,7 +89,7 @@ public class Model
 
   private SeaLevel seaLevel;
   private CropData cropData;
-
+  private CropCSVLoader cropLoader = null;
 
 
 
@@ -116,9 +116,15 @@ public class Model
       regionList[i] = new Region(EnumRegion.values()[i]);
     }
 
-    //cropData = new CropData();
 
-    try{CropCSVLoader cropLoader = new CropCSVLoader();} catch (Throwable t){ System.out.println("CROP_LOADER "+t);}
+    try{cropLoader = new CropCSVLoader();} catch (Throwable t){ System.out.println("CROP_LOADER "+t);}
+    //ArrayList<CropZoneData> categoryData = cropLoader.getCategoryData();
+/*
+    for (CropZoneData czd : categoryData)
+    {
+      System.out.println(czd.toString());
+    }
+*/
     WorldLoader loader = new WorldLoader(regionList);
     world = loader.getWorld();
 
@@ -163,11 +169,14 @@ public class Model
 
   protected void appendWorldData(WorldData threeYearData)
   {
+    ArrayList<CropZoneData> categoryData = cropLoader.getCategoryData();
+
     threeYearData.year = year;
     threeYearData.seaLevel = seaLevel.getSeaLevel(year);
     for (int i=0; i< EnumFood.SIZE; i++)
     {
-      threeYearData.foodPrice[i] = (int)cropData.foodPrice[i];
+      CropZoneData currentZone   = categoryData.get(i);
+      threeYearData.foodPrice[i] = currentZone.pricePerMetricTon;
     }
 
 

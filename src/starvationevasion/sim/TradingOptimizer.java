@@ -37,6 +37,7 @@ public class TradingOptimizer
   };
   
   private List<SingleCropTrader> traders;
+  //private PenaltyData penaltyData;
   
   /**
    Construct a new TradingOptimizer with the set of countries to trade between.
@@ -108,7 +109,7 @@ public class TradingOptimizer
       Distance between them, as implemented in the Territory class, and half
       the radius of the Earth (theoretical maximum distance between the two
       countries) ~20,000km */
-    private static double calcEfficiency(Territory c1, Territory c2)
+    private static double calcEfficiency(Territory t1, Territory t2)
     {
       return 1;
     }
@@ -460,6 +461,4 @@ public class TradingOptimizer
       return new MapPoint(lat, lon);
     }
   }
-
-
 }

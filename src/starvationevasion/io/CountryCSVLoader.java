@@ -28,12 +28,10 @@ public class CountryCSVLoader
   { territory, region, population1981, population1990, population2000,
     population2010, population2014, population2025, population2050,
     averageAge, undernourished, births, migration, mortality,
-    landArea, organic, gmo, farmLand, incomeCitrus, produceCitrus,
-    incomeNonCitrus, produceNonCitrus, incomeNuts, produceNuts, incomeGrains,
-    produceGrains, incomeSeedOil, produceSeedOil, incomeVeg, produceVeg,
-    incomeSpecial, produceSpecial, incomeFeed, produceFeed, incomeFish,
-    produceFish, incomeMeat, produceMeat, incomePoultry, producePoultry,
-    incomeDairy, produceDairy, convert2014to1981;
+    landArea, organic, gmo, farmLand, incomeCitrus,
+    incomeNonCitrus, incomeNuts, incomeGrains,
+    incomeSeedOil, incomeVeg, incomeSpecial, incomeFeed, incomeFish,
+    incomeMeat, incomePoultry, incomeDairy, convert2014to1981;
 
     public static final int SIZE = values().length;
   };
@@ -148,18 +146,6 @@ public class CountryCSVLoader
           case incomePoultry: territory.setCropIncome(EnumFood.POULTRY, value); break;
           case incomeDairy: territory.setCropIncome(EnumFood.DAIRY, value); break;
 
-          case produceCitrus: territory.setCropProduction(EnumFood.CITRUS, value); break;
-          case produceNonCitrus: territory.setCropProduction(EnumFood.FRUIT, value); break;
-          case produceNuts: territory.setCropProduction(EnumFood.NUT, value); break;
-          case produceGrains: territory.setCropProduction(EnumFood.GRAIN, value); break;
-          case produceSeedOil: territory.setCropProduction(EnumFood.OIL, value); break;
-          case produceVeg: territory.setCropProduction(EnumFood.VEGGIES, value); break;
-          case produceSpecial: territory.setCropProduction(EnumFood.SPECIAL, value); break;
-          case produceFeed: territory.setCropProduction(EnumFood.FEED, value); break;
-          case produceFish: territory.setCropProduction(EnumFood.FISH, value); break;
-          case produceMeat: territory.setCropProduction(EnumFood.MEAT, value); break;
-          case producePoultry: territory.setCropProduction(EnumFood.POULTRY, value); break;
-          case produceDairy: territory.setCropProduction(EnumFood.DAIRY, value); break;
           case convert2014to1981: foodFactor = (double) value / 100; break;
         }
       }

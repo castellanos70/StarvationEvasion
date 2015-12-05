@@ -2,8 +2,6 @@ package starvationevasion.sim;
 
 
 import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.policies.InternationalFoodReliefProgramPolicy;
 
 import java.util.HashMap;
 
@@ -20,6 +18,13 @@ public class FertilizerData
     fertilizerData = new HashMap<>();
   }
 
+  /**
+   * Sets fertilizer data based on the region name
+   *
+   * @param region name of the region to set the fertilizer for
+   * @param food type of food the fertilizer is for
+   * @param value how much of the fertilizer is used
+   */
   public void setFertilizerData(String region, EnumFood food, int value)
   {
     if (!fertilizerData.containsKey(region))
@@ -29,6 +34,13 @@ public class FertilizerData
     fertilizerData.get(region).put(food, value);
   }
 
+  /**
+   * Gets the fertilizer data for a given name of a region
+   *
+   * @param region name of a region
+   * @param food type of food
+   * @return amount of fertalizer for food in region
+   */
   public int getFertilizerData(String region, EnumFood food)
   {
     int value = 0;
@@ -43,6 +55,12 @@ public class FertilizerData
     return value;
   }
 
+  /**
+   * Gets the total amount of fertilizer used in a region
+   *
+   * @param region name of region
+   * @return total amount of fertilizer used
+   */
   public int getFertilizerData(String region)
   {
     int total = 0;

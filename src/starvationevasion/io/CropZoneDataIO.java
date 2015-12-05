@@ -1,6 +1,9 @@
-package starvationevasion.sim;
+package starvationevasion.io;
 
 import starvationevasion.io.XMLparsers.KMLParser;
+import starvationevasion.sim.LandTile;
+import starvationevasion.sim.Territory;
+import starvationevasion.sim.TileManager;
 
 import java.io.*;
 import java.nio.ByteBuffer;

@@ -57,7 +57,7 @@ public class ServerWorker extends Thread
     }
   }
 
-  public void send(Serializable message)
+  public synchronized void send(Serializable message)
   {
     try
     {

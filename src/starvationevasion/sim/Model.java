@@ -81,6 +81,8 @@ public class Model
 
   private final int startYear;
   private int year;
+
+  private World world;
   private Region[] regionList = new Region[EnumRegion.SIZE];
 
 
@@ -115,6 +117,7 @@ public class Model
 
 
     WorldLoader loader = new WorldLoader(regionList);
+    world = loader.getWorld();
 
     float[] avgConversionFactors = new float[EnumFood.SIZE];
 
@@ -216,7 +219,11 @@ public class Model
     }
   }
 
-  private void updateClimate(){}
+  private void updateClimate()
+  {
+    world.getTileManager().setClimate(year);
+  }
+
   private void generateSpecialEvents(){}
 
   private void updateFarmProductYield()
@@ -234,9 +241,6 @@ public class Model
   private void updateFoodDistribution(){}
   private void updatePlayerRegionRevenue(){}
   private void updateHumanDevelopmentIndex(){}
-
-
-
 
 
   public static void printRegion(Region region, int year)

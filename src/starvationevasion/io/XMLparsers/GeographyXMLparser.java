@@ -34,11 +34,7 @@ public class GeographyXMLparser extends DefaultHandler
   private static String BORDERS_DIR = "/sim/geography";
   private static String BORDERS_INDEX = BORDERS_DIR + "/PolygonBoarders.txt";
 
-  // PAB : This was a hook into last semester's XML editor.
-  //
-  // private XMLEditor editor;
-
-  private Collection<GeographicArea> regionList;
+  private List<GeographicArea> regionList;
   private Locator locator;
   private String regionName;
   private String regionType;
@@ -46,46 +42,6 @@ public class GeographyXMLparser extends DefaultHandler
   private List<MapPoint> tmpPerimeterSet;
   private GeographyValidator regionValidator = new GeographyValidator();
   private boolean name;
-
-  /**
-   * generates a set of Countries from a list of regions. liked properly together.
-   * @param regions list to derive countries from
-   * @return collection of countries created form the given regions.
-   */
-  //public static Collection<Territory> geograpyToAgriculture(Collection<GeographicArea> regions)
-  //{
-  //  HashMap<String, Territory> nameToUnit = new HashMap<>();
-  //for (GeographicArea region : regions)
-  //{
-  //  if ( ! nameToUnit.containsKey(region.getName()))
-  //  {
-  //    String name = region.getName();
-  //    Territory unit = new Territory(name);
-  //
-  //    nameToUnit.put(region.getName(), unit);
-  //  }
-  //
-  //  region.setAgriculturalUnit(nameToUnit.get(region.getName()));
-  //}
-  //
-  //return nameToUnit.values();
-  //}
-
-  public static Territory[] geograpyToAgriculture(Collection<GeographicArea> regions)
-  {
-    Territory[] territoryList = new Territory[regions.size()];
-    int i=0;
-    for (GeographicArea region : regions)
-    {
-      territoryList[i] = new Territory(region.getName());
-      //System.out.println(territoryList[i].getName());
-      i++;
-    }
-    Arrays.sort(territoryList);
-
-    return territoryList;
-  }
-
 
   public Locator getLocator()
   {
@@ -185,12 +141,14 @@ public class GeographyXMLparser extends DefaultHandler
     }
   }
 
-  public Collection<GeographicArea> getGeography()
+  public List<GeographicArea> getGeography()
   {
     if (regionList == null)
     {
       try
       {
+        // Generate the sorted list of territories.
+        //
         generateRegions();
       }
       catch (ParserConfigurationException | SAXException | IOException ex)
@@ -201,7 +159,8 @@ public class GeographyXMLparser extends DefaultHandler
     return regionList;
   }
 
-  /* private method to generate the set of regions*/
+  /* private method to generate the set of geographical regions
+  */
   private void generateRegions() throws FileNotFoundException, ParserConfigurationException, SAXException, IOException
   {
     regionList = new ArrayList<>();
@@ -221,35 +180,7 @@ public class GeographyXMLparser extends DefaultHandler
 
         BufferedInputStream inputStream = new BufferedInputStream(resourceStream);
         xmlReader.parse(new InputSource(inputStream));
-      } catch (SAXException e)
-      {
-        String errorMessage = "";
-
-        // PAB : It looks like the Phase 2 project allowed the user to select
-        // if (editor == null) editor = new XMLEditor(); // to be lazy
-        // editor.loadFile(file);
-
-        // Locator locator = getLocator();
-
-        // if (locator.getLineNumber() != -1)
-        // {
-        //  // we know the line that the error happened on
-        //  editor.highlightLine(locator.getLineNumber() - 1);
-        //  editor.setCaretToLine(locator.getLineNumber() - 1);
-        //  errorMessage = "line " + locator.getLineNumber() + ": ";
-        // }
-        // editor.setTitle("editing: " + file);
-        // editor.setErrorMessage(errorMessage + e.getMessage());
-        // editor.setVisible(true);
-
-        // if (!editor.getIgnoreFile())
-        // {
-        //   filesToRead.add(0, file);
-        // }
-
-        filesToRead.add(0, file);
-      }
-      catch (IOException e)
+      } catch (SAXException | IOException e)
       {
         e.printStackTrace();
       }

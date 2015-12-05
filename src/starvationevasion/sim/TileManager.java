@@ -22,7 +22,7 @@ import java.util.*;
  coordinates.
  */
 
-public class TileManager extends AbstractClimateData
+public class TileManager
 {
   /*
     Tiles represent 100 sq. km areas on the globe, defined by the
@@ -83,173 +83,99 @@ public class TileManager extends AbstractClimateData
   {this(null);}
 
   /**
-   Get the max temperature at a location, given a year.  If the year is the
-   current year in the World, the temperature is the actual model temperature at
-   that location.  Otherwise it is an interpolated estimate that will NOT include
-   the noise due to randomization in the year-stepping model.
+   Get the max temperature at a location in the current simulation year.
    
    @param lat [-90.0 to 90.0], South latitudes are less than 0.
    @param lon [-180.0 to 180.0], West longitudes are less than 0.
-   @param year between current year and AbstractScenario.END_YEAR
    @return  the max temperature at the coordinates, either estimated or exact,
             depending on the year
    */
-  @Override
-  public float getTemperatureMax(float lat, float lon, int year)
+  public float getTemperatureMax(float lat, float lon)
   {
-    if(year < world.getCurrentYear())
-    {
-      throw new IllegalArgumentException("year argument must be current year or later");
-    }
     LandTile tile = getTile(lon, lat);
     if(tile == NO_DATA)
     {
       throw new NoDataException(
         String.format("No data for longitude: %f, latitude: %f)", lon, lat));
     }
-    if (year == world.getCurrentYear()) return tile.getMaxAnnualTemp();
-    
-    float cur = tile.getMaxAnnualTemp();
-    float proj = tile.getProj_maxAnnualTemp();
-    int slices = Constant.LAST_YEAR - world.getCurrentYear();
-    int sliceNum = year - world.getCurrentYear();
-    return LandTile.interpolate(cur, proj, slices, sliceNum);
+    return tile.getMaxAnnualTemp();
   }
 
   /**
-   Get the min temperature at a location, given a year.  If the year is the
-   current year in the World, the temperature is the actual model temperature at
-   that location.  Otherwise it is an interpolated estimate that will NOT include
-   the noise due to randomization in the year-stepping model.
+   Get the min temperature at a location in the current simulation year.
 
    @param lat [-90.0 to 90.0], South latitudes are less than 0.
    @param lon [-180.0 to 180.0], West longitudes are less than 0.
-   @param year between current year and AbstractScenario.END_YEAR
    @return  the min temperature at the coordinates, either estimated or exact,
    depending on the year
    */
-  @Override
-  public float getTemperatureMin(float lat, float lon, int year)
+  public float getTemperatureMin(float lat, float lon)
   {
-    if(year < world.getCurrentYear())
-    {
-      throw new IllegalArgumentException("year argument must be current year or later");
-    }
     LandTile tile = getTile(lon, lat);
     if(tile == NO_DATA)
     {
       throw new NoDataException(
         String.format("No data for longitude: %f, latitude: %f)", lon, lat));
     }
-    if (year == world.getCurrentYear()) return tile.getMinAnnualTemp();
-
-    float cur = tile.getMinAnnualTemp();
-    float proj = tile.getProj_minAnnualTemp();
-    int slices = Constant.LAST_YEAR - world.getCurrentYear();
-    int sliceNum = year - world.getCurrentYear();
-    return LandTile.interpolate(cur, proj, slices, sliceNum);
+    return tile.getMinAnnualTemp();
   }
 
   /**
-   Get the average daytime temperature at a location, given a year.  If the year
-   is the current year in the World, the temperature is the actual model 
-   temperature at that location.  Otherwise it is an interpolated estimate that
-   will NOT include the noise due to randomization in the year-stepping model.
+   Get the average daytime temperature at a location in the current simulation year.
 
    @param lat [-90.0 to 90.0], South latitudes are less than 0.
    @param lon [-180.0 to 180.0], West longitudes are less than 0.
-   @param year between current year and AbstractScenario.END_YEAR
    @return  the average daytime temperature at the coordinates, either estimated
    or exact, depending on the year
    */
-  @Override
-  public float getTemperatureDay(float lat, float lon, int year)
+  public float getTemperatureDay(float lat, float lon)
   {
-    if(year < world.getCurrentYear())
-    {
-      throw new IllegalArgumentException("year argument must be current year or later");
-    }
     LandTile tile = getTile(lon, lat);
     if(tile == NO_DATA)
     {
       throw new NoDataException(
         String.format("No data for longitude: %f, latitude: %f)", lon, lat));
     }
-    if (year == world.getCurrentYear()) return tile.getAvgDayTemp();
-
-    float cur = tile.getAvgDayTemp();
-    float proj = tile.getProj_avgDayTemp();
-    int slices = Constant.LAST_YEAR - world.getCurrentYear();
-    int sliceNum = year - world.getCurrentYear();
-    return LandTile.interpolate(cur, proj, slices, sliceNum);
+    return tile.getAvgDayTemp();
   }
 
   /**
-   Get the average nighttime temperature at a location, given a year.  If the year
-   is the current year in the World, the temperature is the actual model 
-   temperature at that location.  Otherwise it is an interpolated estimate that
-   will NOT include the noise due to randomization in the year-stepping model.
+   Get the average nighttime temperature at a location in the current simulation year.
 
    @param lat [-90.0 to 90.0], South latitudes are less than 0.
    @param lon [-180.0 to 180.0], West longitudes are less than 0.
-   @param year between current year and AbstractScenario.END_YEAR
    @return  the average night temperature at the coordinates, either estimated 
    or exact, depending on the year
    */
-  @Override
-  public float getTemperatureNight(float lat, float lon, int year)
+  public float getTemperatureNight(float lat, float lon)
   {
-    if(year < world.getCurrentYear())
-    {
-      throw new IllegalArgumentException("year argument must be current year or later");
-    }
     LandTile tile = getTile(lon, lat);
     if(tile == NO_DATA)
     {
       throw new NoDataException(
         String.format("No data for longitude: %f, latitude: %f)", lon, lat));
     }
-    if (year == world.getCurrentYear()) return tile.getAvgNightTemp();
-
-    float cur = tile.getAvgNightTemp();
-    float proj = tile.getProj_avgNightTemp();
-    int slices = Constant.LAST_YEAR - world.getCurrentYear();
-    int sliceNum = year - world.getCurrentYear();
-    return LandTile.interpolate(cur, proj, slices, sliceNum);
+    return tile.getAvgNightTemp();
   }
 
   /**
-   Get the annual rainfall at a location, given a year.  If the year is the
-   current year in the World, the rainfall is the actual model rainfall at
-   that location.  Otherwise it is an interpolated estimate that will NOT include
-   the noise due to randomization in the year-stepping model.
+   Get the annual rainfall at a location in the current simulation year.
 
    @param lat [-90.0 to 90.0], South latitudes are less than 0.
    @param lon [-180.0 to 180.0], West longitudes are less than 0.
-   @param year between current year and AbstractScenario.END_YEAR
    @return  the annual rainfall at the coordinates, either estimated or exact,
    depending on the year
    */
-  @Override
-  public float getRainfall(float lat, float lon, int year)
+  public float getRainfall(float lat, float lon)
   {
-    if(year < world.getCurrentYear())
-    {
-      throw new IllegalArgumentException("year argument must be current year or later");
-    }
     LandTile tile = getTile(lon, lat);
     if(tile == NO_DATA)
     {
       throw new NoDataException(
         String.format("No data for longitude: %f, latitude: %f)", lon, lat));
     }
-    if (year == world.getCurrentYear()) return tile.getRainfall();
-
-    float cur = tile.getRainfall();
-    float proj = tile.getProj_rainfall();
-    int slices =  Constant.LAST_YEAR - world.getCurrentYear();
-    int sliceNum = year - world.getCurrentYear();
-    return LandTile.interpolate(cur, proj, slices, sliceNum);
+      
+    return tile.getRainfall();
   }
 
 
@@ -257,14 +183,15 @@ public class TileManager extends AbstractClimateData
    Mutates all the tile data based on projections maintained within each tile
    and noise added randomly.
    */
-  public void stepTileData()
+  public void setClimate(int year)
   {
     List<LandTile> tiles = dataTiles();
-    for(LandTile tile : tiles) tile.stepTile( Constant.LAST_YEAR - world.getCurrentYear());
+    for(LandTile tile : tiles) tile.setClimate(year);
     
     /* shuffle tiles before adding noise */
     Collections.shuffle(tiles);
-    
+
+if (false)
     /* take ten percent of tiles, add noise */
     for(LandTile tile : tiles.subList(0,tiles.size()/10))
     {
@@ -360,7 +287,6 @@ public class TileManager extends AbstractClimateData
     return (float)(0.1 * (max - min)  * (r1 - r2));
   }
 
-
   /**
    Calculates the actual amount to add to a given parameter in a LandTile, given
    the delta value, the distance between the tile from which noise is being added
@@ -375,7 +301,6 @@ public class TileManager extends AbstractClimateData
   {
     return (float)(delta/(Math.log(Math.E + distance * r3)));
   }
-  
 
   /**
    Get a tile by longitude and latitude

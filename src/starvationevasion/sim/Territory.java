@@ -8,8 +8,7 @@ import starvationevasion.sim.util.MapConverter;
 import starvationevasion.common.MapPoint;
 
 import java.awt.geom.Area;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * Territory is the former Country class, and extends AbstractAgriculturalUnit.
@@ -241,11 +240,41 @@ public class Territory extends AbstractTerritory
     return regions;
   }
 
-
-
-
   public String toString()
   {
     return getClass().getSimpleName() + " " + name;
+  }
+
+  /**
+   * Parses the geographic data and generates a unified set of Territory objects from the
+   * list of cartagraphic regions.
+   * @return collection of countries created form the given regions.
+   */
+  public static Territory[] parseTerritories(List<GeographicArea> geography)
+  {
+    Collections.sort(geography, new Comparator<GeographicArea>() {
+      @Override
+      public int compare(GeographicArea a1, GeographicArea a2) {
+        return a1.getName().compareTo(a2.getName());
+      }
+    });
+
+    ArrayList<Territory> territoryList = new ArrayList<>(geography.size());
+    Territory territory = null;
+    for (GeographicArea region : geography)
+    {
+      if (territory != null && territory.getName().equals(region.getName()))
+      {
+        region.setTerritory(territory);
+        territory.addRegion(region);
+      }
+      else {
+        territory = new Territory(region.getName());
+        territory.addRegion(region);
+        territoryList.add(territory);
+      }
+    }
+
+    return territoryList.toArray(new Territory[territoryList.size()]);
   }
 }

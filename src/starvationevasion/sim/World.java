@@ -16,7 +16,6 @@ import java.util.*;
  */
 public class World
 {
-  private static World theOneWorld;
   private Random random = new Random(44);
   private Collection<GeographicArea> world;
   //private Collection<Territory> politicalWorld;
@@ -27,7 +26,7 @@ public class World
   private boolean DEBUG = false;
   private TileManager[] idealCropZone = new TileManager[EnumFood.SIZE];
 
-  private AbstractClimateData climateData;
+  private TileManager climateData;
 
   //private World(Collection<GeographicArea> world, Collection<Territory> regions, Calendar cal)
   private World(Collection<GeographicArea> world, Territory[] territoryList, Calendar cal)
@@ -49,16 +48,11 @@ public class World
   //                             Collection<Territory> territories,
   //                             TileManager allTheLand,
   //                             Calendar cal)
-  public static void makeWorld(Collection<GeographicArea> world,
+  public static World makeWorld(Collection<GeographicArea> world,
                                Territory[] territories,
                                TileManager allTheLand,
                                Calendar cal)
   {
-    if (theOneWorld != null)
-    {
-      new RuntimeException("Make World can only be called once!");
-    }
-
     // TODO : The tile optimization function will only work if we have the
     // CropClimateData structure correctly populated for each of the crops.
     //
@@ -74,20 +68,9 @@ public class World
       optimizer.optimizeCrops();
     }
 
-    theOneWorld = new World(world, territories, cal);
+    World theOneWorld = new World(world, territories, cal);
     theOneWorld.tileManager = allTheLand;
-  }
 
-  /**
-   * used to return the world to singleton design pattern.
-   * @return  the world
-   */
-  public static World getWorld()
-  {
-    if (theOneWorld == null)
-    {
-      throw new RuntimeException("WORLD HAS NOT BEEN MADE YET!");
-    }
     return theOneWorld;
   }
 
@@ -160,7 +143,7 @@ public class World
     long start = System.currentTimeMillis();
 
     if (DEBUG) System.out.println("Mutating climate data...");
-    updateEcoSystems();
+    // updateEcoSystems();
     if (DEBUG) System.out.printf("climate data mutated in %dms%n", System.currentTimeMillis() - start);
     
     currentDate.add(Calendar.YEAR, 1);
@@ -207,15 +190,6 @@ public class World
     }
   }
 
-  /*
-    Mutate the LandTile data through the TileManger.  This steps climate data,
-    interpolating based on 2050 predictions with random noise added.
-   */
-  private void updateEcoSystems()
-  {
-    tileManager.stepTileData();
-  }
-
   /**
    * @return a Collection holding all the LandTiles in the world, including those
    * not assigned to regions and those without data
@@ -251,6 +225,14 @@ public class World
   public void setTileManager(TileManager mgr)
   {
     this.tileManager = mgr;
+  }
+
+  /**
+   * @return the TileManager for the World
+   */
+  public TileManager getTileManager()
+  {
+    return tileManager;
   }
 
   /**

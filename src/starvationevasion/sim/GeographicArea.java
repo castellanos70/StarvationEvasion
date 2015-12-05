@@ -32,7 +32,7 @@ public class GeographicArea
   //  return agriculturalUnit;
   //}
 
-  public void setAgriculturalUnit(Territory agriculturalUnit)
+  public void setTerritory(Territory agriculturalUnit)
   {
     //this.agriculturalUnit = agriculturalUnit;
     agriculturalUnit.addRegion(this);
@@ -76,7 +76,6 @@ public class GeographicArea
   {
     this.perimeter = perimeter;
   }
-
 
   public String toString()
   {

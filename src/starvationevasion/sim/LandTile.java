@@ -1,5 +1,6 @@
 package starvationevasion.sim;
 
+import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.MapPoint;
 import starvationevasion.sim.CropZoneData.EnumCropZone;
@@ -12,7 +13,7 @@ import java.nio.ByteBuffer;
 
  description: 
  LandTile class describes a single section of the equal area projection of the
- world map.  It holds elevation, climate and climate projection data found
+ world map.  It holds y0Elevation, climate and climate projection data found
  at www.worldclim.org.  The class also describes a ByteBuffer format for a
  custom binary file.  This allows the data from the raw sets to be parsed, projected
  and averaged across equal-area sections of the globe once.  This data can then
@@ -22,17 +23,37 @@ import java.nio.ByteBuffer;
 public class LandTile
 {
   
+  // PAB 12/15 - The data is divided into 3 sets :
+  // 1. The 'year 0' data points.  The Fall 2015 project has a longer timeline 
+  //    than the Spring 2015 team, but the Spring teams were working with 2014 
+  //    data points.  Rather than try to extrapolate back to 1981, 2014 is 
+  //    considered 'year 0' for the purposes of land climate data.  
+  //
+  private float y0Elevation = 0;     /* in meters above sea level */
+  private float y0MaxAnnualTemp = 0; /* in degrees Celsius. */
+  private float y0MinAnnualTemp = 0; /* in degrees Celsius. */
+  private float y0AvgDayTemp = 0;    /* in degrees Celsius. */
+  private float y0AvgNightTemp = 0;  /* in degrees Celsius. */
+  private float y0Rainfall = 0;      /* in cm */
+  
+  // 2. The 2050 data points necessary to interpolate the values between the
+  //    years.  Both the Spring and Fall 2015 projects use 2050 as the end year.
+  //
+  private float proj2050MaxAnnualTemp = 0; /* in degrees Celsius. */
+  private float proj2050MinAnnualTemp = 0; /* in degrees Celsius. */
+  private float proj2050AvgDayTemp = 0;    /* in degrees Celsius. */
+  private float proj2050AvgNightTemp = 0;  /* in degrees Celsius. */
+  private float proj2050rainfall = 0;      /* in cm */
+
+  // 3. The data for the current simulation year.
+  //
   private float elevation = 0;     /* in meters above sea level */
   private float maxAnnualTemp = 0; /* in degrees Celsius. */
   private float minAnnualTemp = 0; /* in degrees Celsius. */
   private float avgDayTemp = 0;    /* in degrees Celsius. */
   private float avgNightTemp = 0;  /* in degrees Celsius. */
   private float rainfall = 0;      /* in cm */
-  private float proj_maxAnnualTemp = 0; /* in degrees Celsius. */
-  private float proj_minAnnualTemp = 0; /* in degrees Celsius. */
-  private float proj_avgDayTemp = 0;    /* in degrees Celsius. */
-  private float proj_avgNightTemp = 0;  /* in degrees Celsius. */
-  private float proj_rainfall = 0;      /* in cm */
+
   private MapPoint center;
   private EnumFood currCrop;
 
@@ -65,19 +86,32 @@ public class LandTile
 
     float lon = buf.getFloat(BYTE_DEF.LONGITUDE.index());
     float lat = buf.getFloat(BYTE_DEF.LATITUDE.index());
-    elevation = buf.getFloat(BYTE_DEF.ELEVATION.index());
 
-    maxAnnualTemp = buf.getFloat(BYTE_DEF.MAX_ANNUAL_TEMP.index());
-    minAnnualTemp = buf.getFloat(BYTE_DEF.MIN_ANNUAL_TEMP.index());
-    avgDayTemp = buf.getFloat(BYTE_DEF.AVG_DAY_TEMP.index());
-    avgNightTemp = buf.getFloat(BYTE_DEF.AVG_NIGHT_TEMP.index());
-    rainfall = buf.getFloat(BYTE_DEF.RAINFALL.index());
+    y0Elevation = buf.getFloat(BYTE_DEF.ELEVATION.index());
 
-    proj_maxAnnualTemp = buf.getFloat(BYTE_DEF.PROJ_MAX_ANNUAL_TEMP.index());
-    proj_minAnnualTemp = buf.getFloat(BYTE_DEF.PROJ_MIN_ANNUAL_TEMP.index());
-    proj_avgDayTemp = buf.getFloat(BYTE_DEF.PROJ_AVG_DAY_TEMP.index());
-    proj_avgNightTemp = buf.getFloat(BYTE_DEF.PROJ_AVG_NIGHT_TEMP.index());
-    proj_rainfall = buf.getFloat(BYTE_DEF.PROJ_RAINFALL.index());
+    y0MaxAnnualTemp = buf.getFloat(BYTE_DEF.MAX_ANNUAL_TEMP.index());
+    y0MinAnnualTemp = buf.getFloat(BYTE_DEF.MIN_ANNUAL_TEMP.index());
+    y0AvgDayTemp = buf.getFloat(BYTE_DEF.AVG_DAY_TEMP.index());
+    y0AvgNightTemp = buf.getFloat(BYTE_DEF.AVG_NIGHT_TEMP.index());
+    y0Rainfall = buf.getFloat(BYTE_DEF.RAINFALL.index());
+
+    proj2050MaxAnnualTemp = buf.getFloat(BYTE_DEF.PROJ_MAX_ANNUAL_TEMP.index());
+    proj2050MinAnnualTemp = buf.getFloat(BYTE_DEF.PROJ_MIN_ANNUAL_TEMP.index());
+    proj2050AvgDayTemp = buf.getFloat(BYTE_DEF.PROJ_AVG_DAY_TEMP.index());
+    proj2050AvgNightTemp = buf.getFloat(BYTE_DEF.PROJ_AVG_NIGHT_TEMP.index());
+    proj2050rainfall = buf.getFloat(BYTE_DEF.PROJ_RAINFALL.index());
+
+    // The Fall 2015 project needs 1981 values, which is not supported by the data
+    // collected by the Spring 2015 project team.  Rather than attempt to compute
+    // 1981 - 1993 values, Joel has asked that we simply use 1994's values for
+    // those years.
+    //
+    elevation = y0Elevation;
+    maxAnnualTemp = y0MaxAnnualTemp;
+    minAnnualTemp = y0MinAnnualTemp;
+    avgDayTemp = proj2050AvgDayTemp;
+    avgNightTemp = y0AvgNightTemp;
+    rainfall = y0Rainfall;
 
     center = new MapPoint(lat, lon);
   }
@@ -102,11 +136,11 @@ public class LandTile
 
   
   /**
-   * @param elev  tile's elevation
+   * @param elev  tile's y0Elevation
    */
   public void setElev(float elev)
   {
-    elevation = elev;
+    y0Elevation = elev;
   }
 
   /**
@@ -115,12 +149,12 @@ public class LandTile
   public String toolTipText()
   {
     return String.format("<html>(lon:%.2f, lat:%.2f)<br>" +
-        "rainfall:%.6fcm<br>" +
+        "y0Rainfall:%.6fcm<br>" +
         "daily temp range: (%.2f C, %.2f C)<br>" +
         "yearly temp range: (%.2f C, %.2f C)<br>" +
         "crop: %s</html>",
-      center.longitude, center.latitude, rainfall,
-      avgNightTemp, avgDayTemp, minAnnualTemp, maxAnnualTemp, currCrop);
+      center.longitude, center.latitude, y0Rainfall,
+            y0AvgNightTemp, y0AvgDayTemp, y0MinAnnualTemp, y0MaxAnnualTemp, currCrop);
   }
 
   public ByteBuffer toByteBuffer()
@@ -129,19 +163,19 @@ public class LandTile
 
     buf.putFloat(BYTE_DEF.LONGITUDE.index(), (float) center.longitude);
     buf.putFloat(BYTE_DEF.LATITUDE.index(), (float) center.latitude);
-    buf.putFloat(BYTE_DEF.ELEVATION.index(), elevation);
+    buf.putFloat(BYTE_DEF.ELEVATION.index(), y0Elevation);
 
-    buf.putFloat(BYTE_DEF.MAX_ANNUAL_TEMP.index(), maxAnnualTemp);
-    buf.putFloat(BYTE_DEF.MIN_ANNUAL_TEMP.index(), minAnnualTemp);
-    buf.putFloat(BYTE_DEF.AVG_DAY_TEMP.index(), avgDayTemp);
-    buf.putFloat(BYTE_DEF.AVG_NIGHT_TEMP.index(), avgNightTemp);
-    buf.putFloat(BYTE_DEF.RAINFALL.index(), rainfall);
+    buf.putFloat(BYTE_DEF.MAX_ANNUAL_TEMP.index(), y0MaxAnnualTemp);
+    buf.putFloat(BYTE_DEF.MIN_ANNUAL_TEMP.index(), y0MinAnnualTemp);
+    buf.putFloat(BYTE_DEF.AVG_DAY_TEMP.index(), y0AvgDayTemp);
+    buf.putFloat(BYTE_DEF.AVG_NIGHT_TEMP.index(), y0AvgNightTemp);
+    buf.putFloat(BYTE_DEF.RAINFALL.index(), y0Rainfall);
 
-    buf.putFloat(BYTE_DEF.PROJ_MAX_ANNUAL_TEMP.index(), proj_maxAnnualTemp);
-    buf.putFloat(BYTE_DEF.PROJ_MIN_ANNUAL_TEMP.index(), proj_minAnnualTemp);
-    buf.putFloat(BYTE_DEF.PROJ_AVG_DAY_TEMP.index(), proj_avgDayTemp);
-    buf.putFloat(BYTE_DEF.PROJ_AVG_NIGHT_TEMP.index(), proj_avgNightTemp);
-    buf.putFloat(BYTE_DEF.PROJ_RAINFALL.index(), proj_rainfall);
+    buf.putFloat(BYTE_DEF.PROJ_MAX_ANNUAL_TEMP.index(), proj2050MaxAnnualTemp);
+    buf.putFloat(BYTE_DEF.PROJ_MIN_ANNUAL_TEMP.index(), proj2050MinAnnualTemp);
+    buf.putFloat(BYTE_DEF.PROJ_AVG_DAY_TEMP.index(), proj2050AvgDayTemp);
+    buf.putFloat(BYTE_DEF.PROJ_AVG_NIGHT_TEMP.index(), proj2050AvgNightTemp);
+    buf.putFloat(BYTE_DEF.PROJ_RAINFALL.index(), proj2050rainfall);
 
     return buf;
   }
@@ -163,15 +197,33 @@ public class LandTile
 
   /**
    * Mutates tile's values when year changes
-   * @param yearsRemaining  years remaining in game
+   * @param year  The simulation year
    */
-  public void stepTile(int yearsRemaining)
+  public void setClimate(int year)
   {
-    maxAnnualTemp = interpolate(maxAnnualTemp, proj_maxAnnualTemp, yearsRemaining,1);
-    minAnnualTemp = interpolate(minAnnualTemp, proj_minAnnualTemp, yearsRemaining,1);
-    avgDayTemp = interpolate(avgDayTemp, proj_avgDayTemp, yearsRemaining,1);
-    avgNightTemp = interpolate(avgNightTemp, proj_avgNightTemp, yearsRemaining,1);
-    rainfall = interpolate(rainfall, proj_rainfall, yearsRemaining,1);
+    if (year < 2014)
+    {
+      // The Fall 2015 project needs 1981-2013 values, which is not supported by the
+      // Spring 2015 project data.  Joel has asked that we simply use 1994's values for
+      // those years.
+      //
+      elevation = y0Elevation;
+      maxAnnualTemp = y0MaxAnnualTemp;
+      minAnnualTemp = y0MinAnnualTemp;
+      avgDayTemp = proj2050AvgDayTemp;
+      avgNightTemp = y0AvgNightTemp;
+      rainfall = y0Rainfall;
+
+      return;
+    }
+    
+    int yearsRemaining = Constant.LAST_YEAR - year;
+
+    maxAnnualTemp = interpolate(y0MaxAnnualTemp, proj2050MaxAnnualTemp, yearsRemaining, 1);
+    minAnnualTemp = interpolate(y0MinAnnualTemp, proj2050MinAnnualTemp, yearsRemaining, 1);
+    avgDayTemp = interpolate(y0AvgDayTemp, proj2050AvgDayTemp, yearsRemaining, 1);
+    avgNightTemp = interpolate(y0AvgNightTemp, proj2050AvgNightTemp, yearsRemaining, 1);
+    rainfall = interpolate(y0Rainfall, proj2050rainfall, yearsRemaining, 1);
   }
 
   public float getElevation()
@@ -229,57 +281,57 @@ public class LandTile
     this.rainfall = Math.max(0, rainfall);
   }
 
-  public float getProj_maxAnnualTemp()
+  public float getProj2050MaxAnnualTemp()
   {
-    return proj_maxAnnualTemp;
+    return proj2050MaxAnnualTemp;
   }
 
-  public void setProj_maxAnnualTemp(float proj_maxAnnualTemp)
+  public void setProj2050MaxAnnualTemp(float proj2050MaxAnnualTemp)
   {
-    this.proj_maxAnnualTemp = proj_maxAnnualTemp;
+    this.proj2050MaxAnnualTemp = proj2050MaxAnnualTemp;
   }
 
-  public float getProj_minAnnualTemp()
+  public float getProj2050MinAnnualTemp()
   {
-    return proj_minAnnualTemp;
+    return proj2050MinAnnualTemp;
   }
 
-  public void setProj_minAnnualTemp(float proj_minAnnualTemp)
+  public void setProj2050MinAnnualTemp(float proj2050MinAnnualTemp)
   {
-    this.proj_minAnnualTemp = proj_minAnnualTemp;
+    this.proj2050MinAnnualTemp = proj2050MinAnnualTemp;
   }
 
-  public float getProj_avgDayTemp()
+  public float getProj2050AvgDayTemp()
   {
-    return proj_avgDayTemp;
+    return proj2050AvgDayTemp;
   }
 
-  public void setProj_avgDayTemp(float proj_avgDayTemp)
+  public void setProj2050AvgDayTemp(float proj2050AvgDayTemp)
   {
-    this.proj_avgDayTemp = proj_avgDayTemp;
+    this.proj2050AvgDayTemp = proj2050AvgDayTemp;
   }
 
-  public float getProj_avgNightTemp()
+  public float getProj2050AvgNightTemp()
   {
-    return proj_avgNightTemp;
+    return proj2050AvgNightTemp;
   }
 
-  public void setProj_avgNightTemp(float proj_avgNightTemp)
+  public void setProj2050AvgNightTemp(float proj2050AvgNightTemp)
   {
-    this.proj_avgNightTemp = proj_avgNightTemp;
+    this.proj2050AvgNightTemp = proj2050AvgNightTemp;
   }
 
-  public float getProj_rainfall()
+  public float getProj2050Rainfall()
   {
-    return proj_rainfall;
+    return proj2050rainfall;
   }
 
-  public void setProj_rainfall(float proj_rainfall)
+  public void setProj2050Rainfall(float proj2050rainfall)
   {
-    this.proj_rainfall = proj_rainfall;
+    this.proj2050rainfall = proj2050rainfall;
   }
 
-  public void setCurrCrop(EnumFood crop)
+  protected void setCurrCrop(EnumFood crop)
   {
     currCrop = crop;
   }
@@ -309,7 +361,7 @@ public class LandTile
     int cropMinR = data.minRain;
     
     double tRange = cropDayT - cropNightT;                               // tempRange is crop's optimum day-night temp range
-    double rRange = cropMaxR - cropMinR;                                 // rainRange is crop's optimum rainfall range
+    double rRange = cropMaxR - cropMinR;                                 // rainRange is crop's optimum Rainfall range
     if (isBetween(avgDayTemp, cropNightT, cropDayT) &&
       isBetween(avgNightTemp, cropNightT, cropDayT) &&
       isBetween(rainfall, cropMinR, cropMaxR) &&
@@ -344,7 +396,7 @@ public class LandTile
     float cropMaxR = otherCropsData.maxRain;
     float cropMinR = otherCropsData.minRain;
     float tRange = cropDayT - cropNightT;                               // tempRange is crop's optimum day-night temp range
-    float rRange = cropMaxR - cropMinR;                                 // rainRange is crop's optimum rainfall range
+    float rRange = cropMaxR - cropMinR;                                 // rainRange is crop's optimum Rainfall range
     if (isBetween(avgDayTemp, cropNightT, cropDayT) &&
       isBetween(avgNightTemp, cropNightT, cropDayT) &&
       isBetween(rainfall, cropMinR, cropMaxR) &&
@@ -447,14 +499,27 @@ public class LandTile
 
 //    return "LandTile{" +
 //      "center=" + center +
-//      ", rainfall=" + rainfall +
+//      ", Rainfall=" + rainfall +
 //      ", avgNightTemp=" + avgNightTemp +
 //      ", avgDayTemp=" + avgDayTemp +
 //      ", minAnnualTemp=" + minAnnualTemp +
 //      ", maxAnnualTemp=" + maxAnnualTemp +
-//      ", elevation=" + elevation +
+//      ", Elevation=" + Elevation +
+//    ", current crop =" + currCrop +
 //      '}';
   }
 
-
+  public String toDetailedString()
+  {
+    return "LandTile{" +
+      "center=" + center +
+      ", Rainfall=" + rainfall +
+      ", avgNightTemp=" + avgNightTemp +
+      ", avgDayTemp=" + avgDayTemp +
+      ", minAnnualTemp=" + minAnnualTemp +
+      ", maxAnnualTemp=" + maxAnnualTemp +
+      ", Elevation=" + elevation +
+    ", current crop =" + currCrop +
+      '}';
+  }
 }

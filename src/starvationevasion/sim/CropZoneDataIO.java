@@ -4,7 +4,6 @@ import starvationevasion.io.XMLparsers.KMLParser;
 
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +37,9 @@ public class CropZoneDataIO
         tile = new LandTile(buf);
         dataSet.putTile(tile);
 
+        // In order to avoid scanning through every territory during every iteration, we
+        // hope that checking the most recent one will save us time.
+        //
         if (lastUnit != null && lastUnit.containsMapPoint(tile.getCenter()))
         {
           lastUnit.addLandTile(tile);
@@ -84,48 +86,6 @@ public class CropZoneDataIO
     catch (IOException e)
     {
       e.printStackTrace();
-    }
-  }
-
-  private static void loadAndCheckTiles()
-  {
-    TileManager data;
-    try {
-      data = parseFile(DEFAULT_FILE, null);
-    }
-    catch (FileNotFoundException ex)
-    {
-      Logger.getGlobal().log(Level.SEVERE, "Error parsing tile data", ex);
-      return;
-    }
-
-    int noTiles = 0;
-    int realTiles = 0;
-    float elev = 0, tmpAM = 0, tmpPM = 0, tmpMax = 0, tmpMin = 0;
-    List<LandTile> tiles = data.allTiles();
-    for (LandTile t : tiles)
-    {
-      try
-      {
-        if (t == TileManager.NO_DATA)
-        {
-          noTiles++;
-        }
-        else
-        {
-          realTiles++;
-          elev += t.getElevation();
-          tmpAM += t.getAvgDayTemp();
-          tmpPM += t.getAvgNightTemp();
-          tmpMax += t.getMaxAnnualTemp();
-          tmpMin += t.getMinAnnualTemp();
-        }
-      }
-      catch (NumberFormatException e)
-      {
-        System.err.println("Exception caused by");
-        System.err.println(t);
-      }
     }
   }
 }

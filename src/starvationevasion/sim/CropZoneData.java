@@ -40,6 +40,7 @@ public class CropZoneData
   public int    fertilizerP2O5PerKM2;
   public int    fertilizerK2OPerKM2;
   public int    daysGrownPerYear;
+  public int    dollarsPerKM2;       //Conversion factor #1
 
   public double annualMaximumTemperature; // in degrees Celsius.
   public double annualMinimumTemperature; // in degrees Celsius.
@@ -81,6 +82,7 @@ public class CropZoneData
   public void setTonsPerKM2(int tonsPerKM2)
   {
     this.tonsPerKM2 = tonsPerKM2;
+    dollarsPerKM2 = pricePerMetricTon*this.tonsPerKM2;  //set conversion factor #1
   }
 
   public void setLitersPerKG(int litersPerKG)

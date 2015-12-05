@@ -1,6 +1,5 @@
 package starvationevasion.io;
 
-import starvationevasion.sim.CropZoneDataIO;
 import starvationevasion.sim.LandTile;
 import starvationevasion.sim.TileManager;
 

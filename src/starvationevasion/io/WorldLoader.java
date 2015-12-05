@@ -3,7 +3,6 @@ package starvationevasion.io;
 import starvationevasion.sim.Territory;
 import starvationevasion.sim.Region;
 import starvationevasion.sim.World;
-import starvationevasion.sim.CropZoneDataIO;
 import starvationevasion.io.XMLparsers.GeographyXMLparser;
 import starvationevasion.sim.GeographicArea;
 import starvationevasion.sim.LandTile;

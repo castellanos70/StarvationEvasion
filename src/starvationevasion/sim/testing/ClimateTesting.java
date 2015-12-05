@@ -50,12 +50,15 @@ public class ClimateTesting {
     WorldLoader loader = new WorldLoader(regionList);
     World world = loader.getWorld();
 
-    // Dump the data to disk for only the regions in play,
-    //
-    try {
-      pruneTiles(regionList);
-    } catch (IOException e) {
-      e.printStackTrace();
+    if (false)
+    {
+        // Dump the data to disk for only the regions in play,
+        //
+        try {
+            pruneTiles(regionList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     TileManager tileManager = world.getTileManager();

@@ -25,7 +25,7 @@ public class CropCSVLoader
 
   private enum EnumHeader
   {
-    Category, Price, Land, Water, FertilizerN, FertilizerP2O5, FertilizerK2O, Growing, Temperature, Ideal, High, Max;
+    category, price, land, water, fertilizerN, fertilizerP2O5, fertilizerK2O, growing, temperature, ideal, high, max;
     public static final int SIZE = values().length;
   };
 
@@ -91,57 +91,55 @@ public class CropCSVLoader
           //set fields for newest data objects. NOT COMPLETE
           switch (header)
           {
-            case Price:
+            case price:
               value = Integer.parseInt(fieldList[i]);
               zoneData.setPricePerMetricTon(value);
               break;
-            case Land:
+            case land:
               value = Integer.parseInt(fieldList[i]);
               zoneData.setTonsPerKM2(value);
               break;
-            case Water:
+            case water:
               value = Integer.parseInt(fieldList[i]);
               zoneData.setLitersPerKG(value);
               break;
-            case FertilizerN:
+            case fertilizerN:
               value = Integer.parseInt(fieldList[i]);
               zoneData.setFertilizerNPerKM2(value);
               break;
-            case FertilizerK2O:
+            case fertilizerK2O:
               value = Integer.parseInt(fieldList[i]);
               zoneData.setFertilizerK2OPerKM2(value);
               break;
-            case FertilizerP2O5:
+            case fertilizerP2O5:
               value = Integer.parseInt(fieldList[i]);
               zoneData.setFertilizerP2O5PerKM2(value);
               break;
-            case Growing:
+            case growing:
               value = Integer.parseInt(fieldList[i]);
               zoneData.setDaysGrownPerYear(value);
               break;
-            case Temperature:
+            case temperature:
               value_d = Double.parseDouble(fieldList[i]);
               zoneData.setAnnualMinimumTemperature(value_d);
               break;
-            case Ideal:
+            case ideal:
               value_d = Double.parseDouble(fieldList[i]);
               zoneData.setIdealLowTemperature(value_d);
               break;
-            case High:
+            case high:
               value_d = Double.parseDouble(fieldList[i]);
               zoneData.setIdealHighTemperature(value_d);
               break;
-            case Max:
+            case max:
               value_d = Double.parseDouble(fieldList[i]);
               zoneData.setAnnualMaximumTemperature(value_d);
               break;
-            default:
-
-              break;
           }
         }
-        categoryData.add(zoneData);
+
       }
+      categoryData.add(zoneData);
     }
   }
 

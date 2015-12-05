@@ -40,6 +40,7 @@ public class CropZoneData
   public int    fertilizerP2O5PerKM2;
   public int    fertilizerK2OPerKM2;
   public int    daysGrownPerYear;
+  public int    dollarsPerKM2;       //Conversion factor #1
 
   public double annualMaximumTemperature; // in degrees Celsius.
   public double annualMinimumTemperature; // in degrees Celsius.
@@ -81,6 +82,7 @@ public class CropZoneData
   public void setTonsPerKM2(int tonsPerKM2)
   {
     this.tonsPerKM2 = tonsPerKM2;
+    dollarsPerKM2 = pricePerMetricTon*this.tonsPerKM2;  //set conversion factor #1
   }
 
   public void setLitersPerKG(int litersPerKG)
@@ -126,5 +128,26 @@ public class CropZoneData
   public void setIdealHighTemperature(double idealHighTemperature)
   {
     this.idealHighTemperature = idealHighTemperature;
+  }
+
+  @Override
+  public String toString()
+  {
+    String str = "";
+    str += food.name()+"\n";
+    str += "\tIncome per KM2:            "+dollarsPerKM2+"\n";
+    str += "\tSale Price per metric ton: "+pricePerMetricTon+"\n";
+    str += "\tTons per KM2:              "+tonsPerKM2+"\n";
+    str += "\tLiters Water per KG:       "+litersPerKG+"\n";
+    str += "\tFertilizer_N per KM2:      "+fertilizerNPerKM2+"\n";
+    str += "\tFertilizer_P2O5 per KM2:   "+fertilizerP2O5PerKM2+"\n";
+    str += "\tFertilizer_K2O per KM2:    "+fertilizerK2OPerKM2+"\n";
+    str += "\tDays grown per year:       "+daysGrownPerYear+"\n";
+    str += "\tTemp: annual min:          "+annualMinimumTemperature+"\n";
+    str += "\tTemp: annual max:          "+annualMaximumTemperature+"\n";
+    str += "\tTemp: ideal low:           "+idealLowTemperature+"\n";
+    str += "\tTemp: ideal high:          "+idealHighTemperature+"\n";
+
+    return str;
   }
 }

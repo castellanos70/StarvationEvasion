@@ -2,11 +2,15 @@ package starvationevasion.vis.ClientTest;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.TextAlignment;
-import starvationevasion.vis.visuals.*;
+import javafx.stage.Stage;
+import starvationevasion.vis.controller.EarthViewer;
 
 /**
  * Created by Tess Daughton on 11/23/15.
@@ -18,50 +22,31 @@ public class CustomLayout extends BorderPane
 {
   private GridPane topBar = new GridPane();
   private GridPane leftBarGrid = new GridPane();
+  private GridPane rightBarGrid = new GridPane();
   private GridPane centerGrid = new GridPane();
+
+
+
   public  Label title = new Label("Year, World/Region \nPopulation and HDI");
   private Label toggleEarthMode = new Label("Press tab to toggle between Earth sizes");
+
   private EarthViewer earthViewer;
-  //boolean to keep track of whether we are in Full Earth Mode or Mini Earth Mode
-  private boolean fullEarth = false;
 
 
-  public CustomLayout()
+  public CustomLayout(EarthViewer earthViewer)
   {
     //Earth Viewer takes two parameters, one is the desired radius of your mini Earth
     //and one is the desired radius of your large Earth
     //This was done so that each client could easily size the Earth to fit in with their GUI
-    earthViewer = new EarthViewer(70, 250, this);
     //Start rotate will put the earthViewer object in an automatic and continuous rotation (this is for the mini view)
-    earthViewer.startRotate();
+    this.earthViewer = earthViewer;
     initTopBar();
     initLeftBar();
-    initCenter();
+
     this.setTop(topBar);
     this.setLeft(leftBarGrid);
-  }
-
-  public synchronized void switchEarthView()
-  {
-    //This method will switch between Earth "modes", the modes being either Mini or Large
-    //Needs to be synchronized, since it will be removing and adding nodes while the program is running
-    //In my example, I am using BorderLayout and I switching between displaying the mini Earth in the
-    //left pane and the large Earth in the center.
-    //The large Earth responds to scrolling, the mini Earth does not and should simply rotate continuously.
-    if (fullEarth)
-    {
-      centerGrid.getChildren().remove(earthViewer.getLargeEarth());
-      leftBarGrid.getChildren().add(earthViewer.getMiniEarth());
-      fullEarth = false;
-    }
-    else
-    {
-      leftBarGrid.getChildren().remove(0);
-      //initCenter();
-      centerGrid.getChildren().add((earthViewer.getLargeEarth()));
-      earthViewer.startEarth();
-      fullEarth = true;
-    }
+    this.setRight(rightBarGrid);
+    this.setCenter(centerGrid);
   }
 
 //The rest of these functions are layout things and not important
@@ -76,7 +61,7 @@ public class CustomLayout extends BorderPane
     toggleEarthMode.setWrapText(true);
     topBar.setHgap(7);
     topBar.add(title, 15, 0);
-    topBar.add(toggleEarthMode, 0, 0);
+    topBar.add(toggleEarthMode, 10, 10);
   }
 
   private void initLeftBar()
@@ -84,13 +69,6 @@ public class CustomLayout extends BorderPane
     leftBarGrid.setHgap(10);
     leftBarGrid.setVgap(10);
     leftBarGrid.setPadding(new Insets(0, 0, 0, 0));
-    leftBarGrid.add(earthViewer.getMiniEarth(), 0, 0);
-  }
-
-  private void initCenter()
-  {
-    centerGrid.setAlignment(Pos.TOP_CENTER);
-    centerGrid.setPadding(new Insets(30, 0, 0, 0));
-    this.setCenter(centerGrid);
+    leftBarGrid.add(earthViewer.updateMini(), 0, 0);
   }
 }

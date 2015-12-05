@@ -4,28 +4,22 @@ import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Sphere;
-import javafx.scene.text.*;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import starvationevasion.common.MapPoint;
 import starvationevasion.io.XMLparsers.GeographyXMLparser;
 import starvationevasion.sim.GeographicArea;
-import starvationevasion.sim.Territory;
 import starvationevasion.vis.ClientTest.CustomLayout;
 import starvationevasion.vis.controller.SimParser;
-import starvationevasion.vis.model.Coordinate;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -33,7 +27,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-//import starvationevasion.simvis.visuals.smallevents.CropsTest;
 
 
 /**
@@ -59,7 +52,8 @@ public class EarthViewer {
   double anchorX, anchorY;
   private double anchorAngleX = 0;
   private double anchorAngleY = 0;
-
+  private boolean showOverlay = true;  //show all country overlay
+  private boolean showClouds = true;  //show cloud overlay
 
   private static final String DIFFUSE_MAP = "visResources/DIFFUSE_MAP.jpg";//"vis_resources/DIFFUSE_MAP.jpg";
   //"http://www.daidegasforum.com/images/22/world-map-satellite-day-nasa-earth.jpg";
@@ -68,21 +62,23 @@ public class EarthViewer {
   private static final String SPECULAR_MAP = "visResources/SPEC_MAP.jpg";//"vis_resources/SPEC_MAP.jpg";
   //"http://planetmaker.wthr.us/img/earth_specularmap_flat_8192x4096.jpg";
   private static final String OUTLINE_MAP = "visResources/WorldMapOutline.png";//"vis_resources/SPEC_MAP.jpg";
-  private static final String REGION_OVERLAY = "visResources/WorldMapRegions8x6.png";//"vis_resources/SPEC_MAP.jpg";
+  private static final String REGION_OVERLAY = "visResources/WorldMapRegionsFull8x6.png";//"vis_resources/SPEC_MAP.jpg";
 
   private static Group largeEarth;
   private static Group miniEarth;
   private String regionTitle;
 
   private Sphere earth;
+  private Sphere overlay;
+  private Sphere cloud;
   private PhongMaterial earthMaterial;
   private CustomLayout layoutPanel;
 
   public EarthViewer(double smallEarthRadius, double largeEarthRadius, CustomLayout l) {
     MINI_EARTH_RADIUS = smallEarthRadius;
     LARGE_EARTH_RADIUS = largeEarthRadius;
-    largeEarth = buildScene(LARGE_EARTH_RADIUS);
     miniEarth = buildScene(MINI_EARTH_RADIUS);
+    largeEarth = buildScene(LARGE_EARTH_RADIUS);
     layoutPanel = l;
   }
 
@@ -91,18 +87,36 @@ public class EarthViewer {
     earth = new Sphere(earthRadius);
     earthMaterial = new PhongMaterial();
     /* Material */
-    PhongMaterial earthMaterial = new PhongMaterial();
-    earthMaterial.setDiffuseMap
-        (new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
-    earthMaterial.setBumpMap
-        (new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
-    earthMaterial.setSpecularMap
-            (new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true));
-//    earthMaterial.setSelfIlluminationMap
-//            (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
+    earthMaterial.setDiffuseMap(ResourceLoader.DIFF_MAP);
+    earthMaterial.setBumpMap(ResourceLoader.NORM_MAP);
+    earthMaterial.setSpecularMap(ResourceLoader.SPEC_MAP);
+    earthMaterial.setSelfIlluminationMap
+            (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
 
     earth.setMaterial(earthMaterial);
     return new Group(earth);
+  }
+
+  /*Overlay for any events needing to be displayed on the globe**/
+  private void buildOverlay()
+  {
+    overlay = new Sphere(LARGE_EARTH_RADIUS);
+    final PhongMaterial cloudMaterial = new PhongMaterial();
+    cloudMaterial.setDiffuseMap
+            (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
+    overlay.setMaterial(cloudMaterial);
+    largeEarth.getChildren().addAll(overlay);
+  }
+
+  /*Clouds to be displayed on the globe**/
+  private void buildClouds()
+  {
+    cloud = new Sphere(LARGE_EARTH_RADIUS*1.05);
+    final PhongMaterial cloudMaterial = new PhongMaterial();
+//    cloudMaterial.setDiffuseMap
+//            (new Image(getClass().getClassLoader().getResourceAsStream(CLOUD_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
+    cloud.setMaterial(cloudMaterial);
+    largeEarth.getChildren().addAll(cloud);
   }
 
   /**
@@ -176,25 +190,47 @@ public class EarthViewer {
       {
         largeEarth.setTranslateZ(zoomPosition += 10);
       }
-      //System.out.println(String.format("deltaX: %.3f deltaY: %.3f", me.getDeltaX(), me.getDeltaY()));
-      //System.out.println(zoomPosition);
     });
 
     largeEarth.setOnKeyPressed(event->
       {
         switch (event.getCode())
         {
+
           case P:
-            rotateAroundYAxis(largeEarth).play();
+            //currently I cannot find a stop for this animation
+              rotateAroundYAxis(largeEarth).playFromStart();
             break;
+
           case R:
-            earthMaterial.setDiffuseMap
-                    (new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
-            earth.setMaterial(earthMaterial);
+            if(showOverlay)
+            {
+              buildOverlay();
+              showOverlay = false;
+            }
+            else
+            {
+              largeEarth.getChildren().remove(overlay);
+              showOverlay = true;
+            }
             break;
+
+          case C:
+            if(showClouds)
+            {
+              buildClouds();
+              showClouds = false;
+            }
+            else
+            {
+              largeEarth.getChildren().remove(cloud);
+              showClouds = true;
+            }
+            break;
+
+
         }
       });
-
   }
 
 

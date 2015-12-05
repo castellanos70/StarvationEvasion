@@ -126,7 +126,7 @@ public class TradingOptimizer
     private boolean implementTrade(EnumFood crop, int year)
     { // Not supported yet.
       //
-      //if (true) throw new UnsupportedOperationException("Fall 2015 doesn't used crop import or export values.");
+      if (true) throw new UnsupportedOperationException("Fall 2015 doesn't used crop import or export values.");
 
       double need = -(importer.getNetCropAvailable(crop) - importer.getTotalCropNeed(year, crop));
       double supply = exporter.getNetCropAvailable(crop) - exporter.getTotalCropNeed(year, crop);
@@ -136,8 +136,8 @@ public class TradingOptimizer
         double curExport = exporter.getCropExport(crop);
         double curImport = importer.getCropImport(crop);
 
-        double toGive = Math.min(need / efficiency, supply);
-        double toReceive = toGive / efficiency + 2;
+        double toGive = Math.min(need, supply);
+        double toReceive = toGive / (efficiency + 2);
 
         amount = toReceive;
 

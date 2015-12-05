@@ -95,7 +95,7 @@ public class TradingOptimizer
     {
       this.exporter = exporter;
       this.importer = importer;
-      this.efficiency = calcEfficiency(importer);
+      this.efficiency = calcEfficiency(exporter, importer);
     }
 
     private TradePair(TradePair t)
@@ -109,7 +109,7 @@ public class TradingOptimizer
       Distance between them, as implemented in the Territory class, and half
       the radius of the Earth (theoretical maximum distance between the two
       countries) ~20,000km */
-    private static double calcEfficiency(Territory importer)
+    private static double calcEfficiency(Territory t1, Territory t2)
     {
       return 1;
     }

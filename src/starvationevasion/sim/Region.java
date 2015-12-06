@@ -477,6 +477,17 @@ public class Region extends AbstractTerritory
     cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
   }
 
+  public void updateCropNeed()
+  {
+    for (Territory t : getTerritories())
+    {
+      for (EnumFood crop : EnumFood.values())
+      {
+        t.setCropNeedPerCapita(crop, getInitialConsumption(crop, 1981) / (getPopulation(START_YEAR) * 1000));
+      }
+    }
+  }
+
   /**
    */
   public static Region createBookKeepingRegion(String name)

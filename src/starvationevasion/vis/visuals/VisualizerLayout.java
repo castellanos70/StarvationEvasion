@@ -85,6 +85,7 @@ public class VisualizerLayout extends BorderPane
     userEventHandler.setLargeEarthRadius(largeRadius);
     earthGroup.addEventFilter(MouseDragEvent.DRAG_DETECTED, event -> userEventHandler.handle(event));
     earthGroup.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> userEventHandler.handle(event));
+    earthGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> userEventHandler.handle(event));
     earthGroup.addEventFilter(ScrollEvent.ANY, event -> userEventHandler.handle(event));
     earthGroup.addEventFilter(ZoomEvent.ANY, event -> userEventHandler.handle(event));
 

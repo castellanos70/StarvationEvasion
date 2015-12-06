@@ -39,7 +39,7 @@ public class UserEventHandler  implements EventHandler
 //    earthScale = new Scale();
 //    earth.getTransforms().add(earthScale);
     Rotate groupXRotate, groupYRotate;
-    earth.getTransforms().setAll(
+    earthGroup.getTransforms().setAll(
         groupXRotate = new Rotate(0, Rotate.X_AXIS),
         groupYRotate = new Rotate(0, Rotate.Y_AXIS)
     );

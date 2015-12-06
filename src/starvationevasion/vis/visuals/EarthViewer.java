@@ -56,6 +56,8 @@ public class EarthViewer {
   private boolean showClouds = true;  //show cloud overlay
 
   private static final String DIFFUSE_MAP = "visResources/DIFFUSE_MAP.jpg";//"vis_resources/DIFFUSE_MAP.jpg";
+  private static final String CLOUD_OVERLAY = "visResources/animation1.gif";
+  // private static final String CLOUD_OVERLAY = "visResources/Cloud-32.png";
   //"http://www.daidegasforum.com/images/22/world-map-satellite-day-nasa-earth.jpg";
   private static final String NORMAL_MAP = "visResources/NORMAL_MAP.jpg";//"vis_resources/NORMAL_MAP.jpg";
   //"http://planetmaker.wthr.us/img/earth_normalmap_flat_8192x4096.jpg";
@@ -109,14 +111,15 @@ public class EarthViewer {
   }
 
   /*Clouds to be displayed on the globe**/
-  private void buildClouds()
+  public void buildClouds()
   {
     cloud = new Sphere(LARGE_EARTH_RADIUS*1.05);
     final PhongMaterial cloudMaterial = new PhongMaterial();
-//    cloudMaterial.setDiffuseMap
-//            (new Image(getClass().getClassLoader().getResourceAsStream(CLOUD_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
+    cloudMaterial.setDiffuseMap
+            (new Image(getClass().getClassLoader().getResourceAsStream(CLOUD_OVERLAY), MAP_WIDTH, MAP_HEIGHT, true, true));
     cloud.setMaterial(cloudMaterial);
     largeEarth.getChildren().addAll(cloud);
+    rotateAroundYAxis(cloud).play();
   }
 
   /**
@@ -218,12 +221,15 @@ public class EarthViewer {
           case C:
             if(showClouds)
             {
-              buildClouds();
+              if(cloud==null){buildClouds();}
+              cloud.setVisible(true);
               showClouds = false;
+              System.out.println("testing press");
             }
             else
             {
-              largeEarth.getChildren().remove(cloud);
+              cloud.setVisible(false);
+              //largeEarth.getChildren().remove(cloud);
               showClouds = true;
             }
             break;
@@ -236,7 +242,8 @@ public class EarthViewer {
 
   public void startRotate(Group group)
   {
-    rotateAroundYAxis(group).play();
+    //rotateAroundYAxis(group).play();
+
   }
 
   private RotateTransition rotateAroundYAxis(Node node)
@@ -253,7 +260,7 @@ public class EarthViewer {
 
   public static void main(String args[])
   {
-    int scale = 50;
+    int scale = 1;
     BufferedImage i = new BufferedImage(360 * scale, 180 * scale, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = i.createGraphics();
     g.setComposite(AlphaComposite.Clear);
@@ -274,7 +281,7 @@ public class EarthViewer {
     }
 
     try {
-      ImageIO.write(i, "PNG", new File("/Users/laurencemirabal/Desktop/test.png"));
+      ImageIO.write(i, "PNG", new File("../generatedEarthWithMagic.png"));
     } catch (IOException e) {
       e.printStackTrace();
     }

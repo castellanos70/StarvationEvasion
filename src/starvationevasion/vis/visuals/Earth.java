@@ -7,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.paint.PhongMaterial;
@@ -36,6 +37,10 @@ public class Earth
     RESOURCE_LOADER = resourceLoader;
     MINI_EARTH_RADIUS=miniRadius;
     LARGE_EARTH_RADIUS=largeRadius;
+
+    ResourceLoader.LARGE_EARTH_RADIUS = largeRadius;
+    ResourceLoader.MINI_EARTH_RADIUS = miniRadius;
+
     earth = buildScene();
     userEventHandler = new UserEventHandler(earth);
     earth.addEventFilter(Event.ANY, event -> userEventHandler.handle(event));
@@ -107,5 +112,17 @@ public class Earth
     return rotate;
 
   }
+
+  /*
+  public void buildClouds()
+  {
+    Sphere cloud = new Sphere(LARGE_EARTH_RADIUS*1.05);
+    final PhongMaterial cloudMaterial = new PhongMaterial();
+    cloudMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_CLOUD);
+    cloud.setMaterial(cloudMaterial);
+    earth.getChildren().addAll(cloud);
+    rotateAroundYAxis(cloud).play();
+  }
+  */
 }
 

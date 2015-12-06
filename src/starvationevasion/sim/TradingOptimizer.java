@@ -33,12 +33,13 @@ public class TradingOptimizer
   private final Territory[] territoryList;
   private static final boolean DEBUG = false;
   private final List<TradePair>[] allTrades = new ArrayList[]{
-    new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList()
+    new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(),
+    new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(),
+    new ArrayList(), new ArrayList(), new ArrayList()
   };
   
   private List<SingleCropTrader> traders;
-  //private PenaltyData penaltyData;
-  
+
   /**
    Construct a new TradingOptimizer with the set of countries to trade between.
 
@@ -95,7 +96,7 @@ public class TradingOptimizer
     {
       this.exporter = exporter;
       this.importer = importer;
-      this.efficiency = calcEfficiency(exporter, importer);
+      this.efficiency = calcEfficiency(importer);
     }
 
     private TradePair(TradePair t)
@@ -109,9 +110,9 @@ public class TradingOptimizer
       Distance between them, as implemented in the Territory class, and half
       the radius of the Earth (theoretical maximum distance between the two
       countries) ~20,000km */
-    private static double calcEfficiency(Territory t1, Territory t2)
+    private static double calcEfficiency(Territory importer)
     {
-      return 1;
+      return importer.getPenaltyValue() / 100;
     }
 
     /* implement a trade between this pair, given a crop and year to trade in.
@@ -133,8 +134,8 @@ public class TradingOptimizer
         double curExport = exporter.getCropExport(crop);
         double curImport = importer.getCropImport(crop);
 
-        double toGive = Math.min(need / efficiency, supply);
-        double toReceive = toGive * efficiency;
+        double toGive = Math.min(need, supply);
+        double toReceive = toGive / (efficiency + 2);
 
         amount = toReceive;
 
@@ -217,7 +218,7 @@ public class TradingOptimizer
     public void run()
     {
       tradeDeterministic();
-//      tradeProbablistic();
+      tradeProbablistic();
       isDone = true;
     }
     
@@ -341,8 +342,8 @@ public class TradingOptimizer
         else continue;
 
         /* calculate the amounts to export and import */
-        double toGive = Math.min(need/pair.efficiency, supply);
-        double toReceive = toGive * pair.efficiency;
+        double toGive = Math.min(need, supply);
+        double toReceive = toGive / (pair.efficiency + 2);
 
         /* calculate the new values for the importer and exporter maps */
         double newNeed = need - toReceive;

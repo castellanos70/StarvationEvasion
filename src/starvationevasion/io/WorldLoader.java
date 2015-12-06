@@ -48,8 +48,10 @@ public class WorldLoader
 
     // add data from csv to agricultureUnits
     CountryCSVLoader csvLoader;
+    PenaltyCSVLoader penaltyLoader;
     try {
       csvLoader = new CountryCSVLoader(territories, regionList);
+      penaltyLoader = new PenaltyCSVLoader(territories);
     } catch (FileNotFoundException e) {
       throw new IllegalStateException("The world model can not be populated.");
     }

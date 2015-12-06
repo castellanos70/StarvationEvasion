@@ -1,5 +1,9 @@
 package starvationevasion.server;
 
+import starvationevasion.common.Tuple;
+import starvationevasion.common.Util;
+import starvationevasion.common.messages.Hello;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -25,5 +29,13 @@ public class ServerUtil
     {
       e.printStackTrace();
     }
+  }
+
+  private static final String AI_NAME_PREFIX = "(BOT) ";
+  private static final String[] AI_NAMES =
+      {"Emma", "Olivia", "Noah", "Sophia", "Liam", "Mason", "Isabella", "Jacob", "William", "Ethan"};
+  public Tuple<String, String> getRandomAILogin()
+  {
+    return new Tuple<>(AI_NAME_PREFIX + AI_NAMES[Util.rand.nextInt(AI_NAMES.length)], Hello.generateRandomLoginNonce());
   }
 }

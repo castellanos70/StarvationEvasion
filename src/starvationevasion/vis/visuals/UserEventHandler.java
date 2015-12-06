@@ -4,16 +4,15 @@ package starvationevasion.vis.visuals;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
+import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.event.Event;
-import javafx.scene.input.MouseDragEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.input.ZoomEvent;
+import javafx.scene.input.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
-
+import starvationevasion.vis.controller.SimParser;
+import starvationevasion.vis.model.Coordinate;
 
 
 /**
@@ -21,96 +20,132 @@ import javafx.scene.transform.Scale;
  */
 public class UserEventHandler  implements EventHandler
 {
+  private final SimParser SIM_PARSER = new SimParser();
   private final DoubleProperty angleX = new SimpleDoubleProperty(0);
   private final DoubleProperty angleY = new SimpleDoubleProperty(0);
-  double anchorX, anchorY;
+  private double anchorX, anchorY;
   private double anchorAngleX = 0;
   private double anchorAngleY = 0;
   private Group earth;
+  private Scale earthScale;
+  private double LARGE_EARTH_RADIUS;
+
 
   public UserEventHandler(Group earth)
   {
-    this.earth=earth;
+    this.earth = earth;
+//    earthScale = new Scale();
+//    earth.getTransforms().add(earthScale);
   }
-  protected void earthScroll(Event event)
+
+  protected void setLargeEarthRadius(double radius)
   {
-  /* Init group */
-    if (event instanceof MouseDragEvent)
-    {
-      MouseDragEvent mouseEvent = (MouseDragEvent) event;
-
-      Rotate groupXRotate, groupYRotate;
-      earth.getTransforms().addAll(
-          groupXRotate = new Rotate(0, Rotate.X_AXIS),
-          groupYRotate = new Rotate(0, Rotate.Y_AXIS)
-      );
-      groupXRotate.angleProperty().bind(angleX);
-      groupYRotate.angleProperty().bind(angleY);
-
-      angleX.set(anchorAngleX - (anchorY - mouseEvent.getSceneY()));
-      angleY.set(anchorAngleY + (anchorX - mouseEvent.getSceneX()));
-    }
+    this.LARGE_EARTH_RADIUS=radius;
   }
 
-  protected void earthZoom(Event event)
+  protected void earthScroll(MouseDragEvent event)
+  {
+    Rotate groupXRotate, groupYRotate;
+    earth.getTransforms().setAll(
+        groupXRotate = new Rotate(0, Rotate.X_AXIS),
+        groupYRotate = new Rotate(0, Rotate.Y_AXIS)
+    );
+    groupXRotate.angleProperty().bind(angleX);
+    groupYRotate.angleProperty().bind(angleY);
+    anchorX = event.getSceneX();
+    anchorY = event.getSceneY();
+    anchorAngleX = angleX.get();
+    anchorAngleY = angleY.get();
+    angleX.set(anchorAngleX - (anchorY - event.getSceneY()));
+    angleY.set(anchorAngleY + (anchorX - event.getSceneX()));
+  }
+
+  protected void earthZoom(ScrollEvent event)
   {
     /**setTranslate can be used to zoom in and out on the world*/
-    Scale earthScale = new Scale();
-    earth.getTransforms().add(earthScale);
-    System.out.println(earth.getScaleZ());
-
-    if (event instanceof ScrollEvent)
+    double scrollFactor = event.getDeltaY();
+    if (scrollFactor > 0)
     {
-      ScrollEvent scrollEvent = (ScrollEvent) event;
-      double scrollFactor = scrollEvent.getDeltaY();
-      if (scrollFactor > 0)
-      {
-        if(earth.getScaleZ()<0.5) return;
-        earth.setScaleZ(earth.getScaleZ() * .99);
-        earth.setScaleX(earth.getScaleX() * .99);
-        earth.setScaleY(earth.getScaleY() * .99);
-      }
-      else if (scrollFactor < 0)
-      {
-        if(earth.getScaleZ()>2) return;
-        earth.setScaleZ(earth.getScaleZ() * 1.01);
-        earth.setScaleX(earth.getScaleX() * 1.01);
-        earth.setScaleY(earth.getScaleY() * 1.01);
-      }
-      System.out.println(String.format("deltaX: %.3f", scrollFactor));
-    }
-    else if (event instanceof ZoomEvent)
+      if (earth.getScaleZ() < 0.5) return;
+      earth.setScaleZ(earth.getScaleZ() * .99);
+      earth.setScaleX(earth.getScaleX() * .99);
+      earth.setScaleY(earth.getScaleY() * .99);
+    } else if (scrollFactor < 0)
     {
-      ZoomEvent zoomEvent = (ZoomEvent) event;
-      double zoomFactor = zoomEvent.getX();
-      if (zoomFactor > 0)
-      {
-        if(earth.getScaleZ()>2) return;
-        earth.setScaleZ(earth.getScaleZ() * .99);
-        earth.setScaleX(earth.getScaleX() * .99);
-        earth.setScaleY(earth.getScaleY() * .99);
-      }
-      else if (zoomFactor < 0)
-      {
-        if(earth.getScaleZ()<0.5) return;
-        earth.setScaleZ(earth.getScaleZ() * 1.01);
-        earth.setScaleX(earth.getScaleX() * 1.01);
-        earth.setScaleY(earth.getScaleY() * 1.01);
-      }
-      System.out.println(String.format("deltaX: %.3f", zoomFactor));
+      if (earth.getScaleZ() > 2) return;
+      earth.setScaleZ(earth.getScaleZ() * 1.01);
+      earth.setScaleX(earth.getScaleX() * 1.01);
+      earth.setScaleY(earth.getScaleY() * 1.01);
     }
+    System.out.println(String.format("deltaX: %.3f", scrollFactor));
   }
+
+  protected void earthZoom(ZoomEvent event)
+  {
+    double zoomFactor = event.getX();
+    if (zoomFactor > 0)
+    {
+      if (earth.getScaleZ() > 2) return;
+      earth.setScaleZ(earth.getScaleZ() * .99);
+      earth.setScaleX(earth.getScaleX() * .99);
+      earth.setScaleY(earth.getScaleY() * .99);
+    } else if (zoomFactor < 0)
+    {
+      if (earth.getScaleZ() < 0.5) return;
+      earth.setScaleZ(earth.getScaleZ() * 1.01);
+      earth.setScaleX(earth.getScaleX() * 1.01);
+      earth.setScaleY(earth.getScaleY() * 1.01);
+    }
+    System.out.println(String.format("deltaX: %.3f", zoomFactor));
+  }
+
+  protected void latLongHandler(MouseEvent event)
+  {
+
+    PickResult pickResult = event.getPickResult();
+    Point3D point = pickResult.getIntersectedPoint();
+
+    double x = point.getX();
+    double y = point.getY();
+    double z = point.getZ();
+    double lat = Math.toDegrees(Math.acos(y / LARGE_EARTH_RADIUS) - Math.PI / 2); //theta
+    double lon = Math.toDegrees(Math.atan(x / z)); //phi
+    if (z > 0) lon += (180 * Math.signum(-lon));
+    Coordinate c = new Coordinate(lon, lat);
+//      System.out.println(lon + " " + lat + " " + point);
+  }
+
+  public void displayEarthInformation(MouseEvent event)
+  {
+
+    PickResult pickResult = event.getPickResult();
+
+      /* Pick point on texture to derive lat long from java x y axis */
+    Point2D point = pickResult.getIntersectedTexCoord(); //in percentages
+    double lat = (point.getY() - 0.5) * -180;
+    double lon = (point.getX() - 0.5) * 360;
+    String regionName = SIM_PARSER.parse(lat, lon);
+  }
+
+
 
   @Override
   public void handle(Event event)
   {
-    if (event instanceof MouseDragEvent || event instanceof MouseEvent)
+    if (event instanceof MouseDragEvent)
     {
-      earthScroll(event);
+      earthScroll((MouseDragEvent) event);
+    } else if (event instanceof ScrollEvent)
+    {
+      earthZoom((ScrollEvent) event);
+    } else if (event instanceof ZoomEvent)
+    {
+      earthZoom((ZoomEvent) event);
     }
-    else if (event instanceof ZoomEvent | event instanceof ScrollEvent)
+    else if(event instanceof MouseEvent)
     {
-      earthZoom(event);
+      displayEarthInformation((MouseEvent) event);
+      latLongHandler((MouseEvent) event);
     }
   }
 }

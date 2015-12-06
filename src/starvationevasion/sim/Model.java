@@ -326,7 +326,10 @@ public class Model
 
   private void updateFarmProductNeed()
   {
-     // TODO : Not implemented.  This should use the new file.
+     for (int i = 0; i < EnumRegion.SIZE; i++)
+     {
+       regionList[i].updateCropNeed();
+     }
   }
 
   private void updateFarmProductMarket()

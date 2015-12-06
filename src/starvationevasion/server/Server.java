@@ -401,7 +401,21 @@ public class Server
     }
     WorldData worldData = simulator.nextTurn(enactedPolicyCards);
     broadcastSimulatorState(worldData);
-    enterDraftingPhase();
+    if (worldData.year >= Constant.LAST_YEAR)
+    {
+      setServerState(ServerState.WIN);
+      broadcast(PhaseStart.constructPhaseStart(ServerState.WIN, -1));
+      setServerState(ServerState.END);
+      broadcast(PhaseStart.constructPhaseStart(ServerState.END, -1));
+    }
+    else if (Arrays.stream(worldData.regionData).allMatch(r -> r.population < 1))
+    {
+      setServerState(ServerState.LOSE);
+      broadcast(PhaseStart.constructPhaseStart(ServerState.LOSE, -1));
+      setServerState(ServerState.END);
+      broadcast(PhaseStart.constructPhaseStart(ServerState.END, -1));
+    }
+    else enterDraftingPhase();
   }
 
   private void broadcastSimulatorState(WorldData worldData)

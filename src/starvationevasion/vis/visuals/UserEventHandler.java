@@ -36,8 +36,8 @@ public class UserEventHandler  implements EventHandler
   {
     this.earth = earth;
     this.earthGroup = earth.getEarth();
-//    earthScale = new Scale();
-//    earthGroup.getTransforms().add(earthScale);
+    earthScale = new Scale();
+    earthGroup.getTransforms().add(earthScale);
   }
 
   protected void setLargeEarthRadius(double radius)
@@ -137,12 +137,9 @@ public class UserEventHandler  implements EventHandler
     {
       System.out.println("Drag");
       earthScroll((MouseDragEvent) event);
-      event.consume();
     } else if (event instanceof ScrollEvent)
     {
-      earth.pauseRotation();
       earthZoom((ScrollEvent) event);
-      event.consume();
     } else if (event instanceof ZoomEvent)
     {
       earthZoom((ZoomEvent) event);

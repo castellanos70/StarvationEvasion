@@ -24,6 +24,7 @@ public class ResourceLoader
   private static final String STARS = "visResources/night_sky.jpg";//"vis_resources/SPEC_MAP.jpg";
 
   private static final String DIFFUSE_CLOUD = "visResources/Cloud-32.png";
+  private static final String DIFFUSE_PINPOINT = "visResources/PinPoint.png";
 
   protected static Image COLD_IMAGE;
   protected static Image HOT_IMAGE;
@@ -32,6 +33,7 @@ public class ResourceLoader
   protected static Image NORM_MAP;
   protected static Image DIFF_MAP;
   protected static Image DIFF_CLOUD;
+  protected static Image DIFF_PINPOINT;
   public static String STYLE_SHEET;
 
   protected static int LARGE_EARTH_RADIUS;
@@ -46,6 +48,7 @@ public class ResourceLoader
     {
       DIFF_MAP = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_MAP), MAP_WIDTH, MAP_HEIGHT, true, true);
       DIFF_CLOUD = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_CLOUD), MAP_WIDTH, MAP_HEIGHT, true, true);
+      DIFF_PINPOINT = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_PINPOINT), MAP_WIDTH, MAP_HEIGHT, true, true);
       NORM_MAP = new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true);
       SPEC_MAP = new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true);
       STAR_BACKGROUND = new Image(getClass().getClassLoader().getResourceAsStream(STARS), MAP_WIDTH, MAP_HEIGHT, true, true);

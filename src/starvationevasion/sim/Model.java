@@ -319,7 +319,7 @@ public class Model
     for (int i = 0; i < EnumRegion.SIZE ; i++)
     {
       for (Territory territory : regionList[i].getTerritories()) {
-        // territory.updatePopulation(year);
+        territory.updateYield();
       }
     }
   }

@@ -367,7 +367,32 @@ public class Region extends AbstractTerritory
       }
     }
 
-    for (Territory t : territories) t.estimateInitialYield();
+    for (Territory t : territories) t.updateYield();
+  }
+
+  /**
+   * Updates the yield of all territories in the region and aggregates the values for
+   * the entire region.
+   */
+  public void updateYield()
+  {
+    for (Territory t : territories)
+    { t.updateYield();
+      for (EnumFood crop : EnumFood.values())
+      {
+        landCrop[crop.ordinal()] += t.landCrop[crop.ordinal()];
+        cropProduction[crop.ordinal()] += t.cropProduction[crop.ordinal()];
+        cropIncome[crop.ordinal()] += t.cropIncome[crop.ordinal()];
+      }
+    }
+
+    for (EnumFood crop : EnumFood.values())
+    {
+      if (landCrop[crop.ordinal()] != 0)
+      { cropYield[crop.ordinal()] = cropProduction[crop.ordinal()] / landCrop[crop.ordinal()];
+      }
+      else cropYield[crop.ordinal()] = 0;
+    }
   }
 
   /**

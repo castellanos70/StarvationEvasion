@@ -191,9 +191,8 @@ public class TileManager
     /* shuffle tiles before adding noise */
     Collections.shuffle(tiles);
 
-if (false)
     /* take ten percent of tiles, add noise */
-    for(LandTile tile : tiles.subList(0,tiles.size()/10))
+    for(LandTile tile : tiles.subList(0,tiles.size() / 10))
     {
       addNoiseByTile(tile);
     }

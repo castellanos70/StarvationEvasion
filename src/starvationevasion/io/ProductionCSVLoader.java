@@ -67,7 +67,10 @@ public class ProductionCSVLoader
             food = EnumFood.valueOf(fieldList[i]);
             break;
           case region:
-            region = EnumRegion.valueOf(fieldList[i]);
+            if (!fieldList[i].equals("UNITED_STATES"))
+            {
+              region = EnumRegion.valueOf(fieldList[i]);
+            }
             break;
           case exports:
             exports = Long.parseLong(fieldList[i]);

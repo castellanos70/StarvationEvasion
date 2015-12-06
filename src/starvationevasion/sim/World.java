@@ -4,6 +4,7 @@ import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Created by winston on 1/23/15.
@@ -16,9 +17,16 @@ import java.util.*;
  */
 public class World
 {
-  private Random random = new Random(44);
+  /**
+   * The random number seed is used to initialize the random number generator.  During
+   * normal game play this value should be 0, indicating that the default random number
+   * seed should be used.  It is useful to set this to a fixed value during debugging
+   * so that events can be repeated.
+   */
+  public static int RANDOM_SEED = 0;
+  private final Random random;
   private Collection<GeographicArea> world;
-  //private Collection<Territory> politicalWorld;
+  // private Collection<Territory> politicalWorld;
   private Territory[] territoryList;
   private TileManager tileManager;
   private Calendar currentDate;
@@ -27,13 +35,17 @@ public class World
   private TileManager[] idealCropZone = new TileManager[EnumFood.SIZE];
 
   private TileManager climateData;
-
-  //private World(Collection<GeographicArea> world, Collection<Territory> regions, Calendar cal)
   private World(Collection<GeographicArea> world, Territory[] territoryList, Calendar cal)
   {
     this.world = world;
     this.territoryList = territoryList;
     this.currentDate = cal;
+
+    if (RANDOM_SEED != 0)
+    {
+      Logger.getGlobal().warning("World initializing used fixed random number seed.");
+      random = new Random(RANDOM_SEED);
+    } else random = new Random();
   }
 
   /**
@@ -72,6 +84,11 @@ public class World
     theOneWorld.tileManager = allTheLand;
 
     return theOneWorld;
+  }
+
+  public Random getRandomGenerator()
+  {
+    return random;
   }
 
   /**
@@ -129,9 +146,6 @@ public class World
     totalPop = totalPop / 1000000;
     return totalPop;
   }
-
-
-
 
   /**
    * performs operations needed when stepping from 1 year to next
@@ -206,7 +220,7 @@ public class World
    * those at the extremes of latitude.  For all tiles, use allTiles();
    * @return  a Collection holding only those tiles for which there exists raster data.
    */
-  public List<LandTile> dataTiles()
+  public LandTile[] dataTiles()
   {
     return tileManager.dataTiles();
   }

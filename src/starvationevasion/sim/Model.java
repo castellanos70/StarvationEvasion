@@ -198,8 +198,6 @@ public class Model
     return year;
   }
 
-
-
   protected void appendWorldData(WorldData threeYearData)
   {
     ArrayList<CropZoneData> categoryData = cropLoader.getCategoryData();
@@ -256,10 +254,7 @@ public class Model
    */
   private void updatePopulation()
   {
-    // TODO: Year to year population changes are now a fixed value, provided in the .csv
-    // file.  We need a way to take the net change in population, and back that number
-    // out to birth rate, mortality rate, and undernourishment.  Our current thinking is
-    // that undernourishment needs to be computed after the trading happens.
+    // Territory.updatePopulation updates internal state variables related to production.
     //
     // Note : The total population for the region is updated in region.aggregateTerritoryFields().
     //
@@ -267,7 +262,7 @@ public class Model
     {
       for (Territory territory : regionList[i].getTerritories())
       {
-        // territory.updatePopulation(year);
+        territory.updatePopulation(year);
       }
     }
   }

@@ -70,7 +70,7 @@ public class TileManager
 
   private List<LandTile> countryTiles = new ArrayList<>();
   private List<LandTile> allTiles;
-  private List<LandTile> dataTiles;
+  private LandTile[] dataTiles;
 
   public TileManager(World world)
   {
@@ -182,20 +182,29 @@ public class TileManager
   /**
    Mutates all the tile data based on projections maintained within each tile
    and noise added randomly.
+   @param year The simulation year.
    */
   public void setClimate(int year)
   {
-    List<LandTile> tiles = dataTiles();
+    LandTile[] tiles = dataTiles();
     for(LandTile tile : tiles) tile.setClimate(year);
-    
-    /* shuffle tiles before adding noise */
-    Collections.shuffle(tiles);
 
-    /* take ten percent of tiles, add noise */
-    for(LandTile tile : tiles.subList(0,tiles.size() / 10))
+    // Take ten percent of tiles, add noise.
+    //
+    int count = tiles.length / 10;
+    for (int i = 0 ; i < count ; i += 10)
     {
-      addNoiseByTile(tile);
+      int victim = world.getRandomGenerator().nextInt(count);
+      addNoiseByTile(tiles[victim]);
     }
+
+//    /* Shuffle tiles before adding noise
+//    */
+//    Collections.shuffle(tiles);
+//    for (LandTile tile : tiles.subList(0, tiles.size() / 10))
+//    {
+//      addNoiseByTile(tile);
+//    }
   }
 
   /* adds noise to the parameters of all the tiles within the NOISE_RADIUS of 
@@ -372,16 +381,19 @@ public class TileManager
    @return  a Collection holding only those tiles for which there exists raster
             data.
    */
-  public List<LandTile> dataTiles()
+  public LandTile[] dataTiles()
   {
     if(null == dataTiles)
     {
-      dataTiles = new ArrayList<>();
+      List<LandTile> tiles = new ArrayList<>();
       for(LandTile t : allTiles())
       {
-        if(NO_DATA != t) dataTiles.add(t);
+        if(NO_DATA != t) tiles.add(t);
       }
+
+      dataTiles = tiles.toArray(new LandTile[tiles.size()]);
     }
+
     return dataTiles;
   }
 

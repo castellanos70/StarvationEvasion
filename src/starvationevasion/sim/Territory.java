@@ -184,7 +184,50 @@ public class Territory extends AbstractTerritory
     }
   }
 
+  public void updatePopulation(int year)
+  {
+    int index = year - Constant.FIRST_YEAR;
 
+    // Population data is stored in a fixed array.
+    //
+    int netChange = 0;
+    if (index > 0) netChange = population[index] - population[index - 1];
+
+    // TODO: We need a way to take the net change in population and back that
+    // number out to birth rate, mortality rate, and undernourishment. This is
+    // the Spring code to update undernourishment, based on the Spring 2015
+    // spec. :
+    //
+    double numUndernourished;
+    double population = getPopulation(year);
+    double[] netCropsAvail = new double[EnumFood.SIZE];
+    int numCropsAvail = 0;
+    for (EnumFood crop : EnumFood.values())
+    {
+      double netAvail = getNetCropAvailable(crop);
+      netCropsAvail[crop.ordinal()] = netAvail;
+      if (netAvail >= 0) numCropsAvail++;
+    }
+
+    if (numCropsAvail == EnumFood.SIZE)
+    {
+      numUndernourished = 0;
+    }
+    else
+    {
+      double maxResult = 0;
+      for (EnumFood crop : EnumFood.values())
+      {
+        double need = getCropNeedPerCapita(crop);
+        double result = (netCropsAvail[crop.ordinal()]) / (0.5 * need * population);
+        if (result > maxResult) maxResult = result;
+      }
+
+      numUndernourished = Math.min(population, maxResult);
+    }
+
+    setUndernourished((int) numUndernourished);
+  }
 
 
   /**

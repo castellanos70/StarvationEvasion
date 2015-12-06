@@ -326,7 +326,6 @@ public abstract class AbstractTerritory implements Comparable<Territory>
     cropYield[crop.ordinal()] = tonPerSqKilom;
   }
 
-
   /**
    * @param crop crop in question
    * @return tons produced  at end of the current year of the simulation.

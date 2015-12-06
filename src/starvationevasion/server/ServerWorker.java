@@ -65,7 +65,7 @@ public class ServerWorker extends Thread
     }
     catch (IOException e)
     {
-      e.printStackTrace();
+      // e.printStackTrace(); this is a little annoying
       server.disconnectClient(this, null);
     }
   }

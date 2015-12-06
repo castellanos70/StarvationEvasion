@@ -81,7 +81,15 @@ public class ProductionCSVLoader
         }
       }
 
-      Region r = regions[region.ordinal()];
+      Region r;
+      if (region == null)
+      {
+        r = regions[regions.length-1];
+      }
+      else
+      {
+        r = regions[region.ordinal()];
+      }
       r.setInitialProduction(food, r.getInitialProduction(food, year) + production, year);
       r.setInitialImports(food, r.getInitialImports(food, year) + imports, year);
       r.setInitialExports(food, r.getInitialExports(food, year) + exports, year);

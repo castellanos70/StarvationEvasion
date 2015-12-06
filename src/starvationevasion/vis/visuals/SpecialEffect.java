@@ -50,21 +50,7 @@ public class SpecialEffect {
         pinMaterial.setDiffuseMap(ResourceLoader.DIFF_PINPOINT);
         pin.setMaterial(pinMaterial);
 
-        // longitude
-        //pin.setRotationAxis(Rotate.Y_AXIS);
-        //pin.setRotate(20.0);
-        // latitude
-        //pin.setRotationAxis(Rotate.X_AXIS);
-        //pin.setRotate(20.0);
         pin = transformNode(pin, latitude, longitude);
-
-        //pin.getTransforms().addAll(
-        //new Rotate(20, Rotate.X_AXIS),
-        //new Rotate(20, Rotate.Y_AXIS)
-        //);
-
-        //pin.setTranslateX(longitude);
-        //pin.setTranslateY(latitude);
 
         specialEffects.add(pin);
 

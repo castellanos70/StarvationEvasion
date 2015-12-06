@@ -75,7 +75,7 @@ public abstract class AbstractTerritory implements Comparable<Territory>
   protected double[] cropYield = new double[EnumFood.SIZE]; //metric tons per square kilometer
   protected double[] cropNeedPerCapita = new double[EnumFood.SIZE]; //metric tons per person per year.
 
-
+  protected double penaltyValue = -1;
 
   /**
    * Average conversion factor, this is set by the Simulator.
@@ -173,6 +173,15 @@ public abstract class AbstractTerritory implements Comparable<Territory>
     return humanDevelopmentIndex;
   }
 
+  final public double getPenaltyValue()
+  {
+    return penaltyValue;
+  }
+
+  final public void setPenaltyValue(double penaltyValue)
+  {
+    this.penaltyValue = penaltyValue;
+  }
 
   /**
    * Populate medianAge array with given age; assumes median age remains constant.

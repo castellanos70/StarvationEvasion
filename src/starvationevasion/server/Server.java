@@ -322,7 +322,8 @@ public class Server
     }
     client.send(Response.OK);
     final EnumRegion regionChoice = message.region;
-    if (!connectedClients.stream().map(ServerWorker::getRegion).anyMatch(Predicate.isEqual(regionChoice)))
+    if (regionChoice == null ||
+        !connectedClients.stream().map(ServerWorker::getRegion).anyMatch(Predicate.isEqual(regionChoice)))
     {
       client.setRegion(regionChoice);
     }
@@ -399,12 +400,7 @@ public class Server
       entry.getValue().addAll(Arrays.asList(simulator.drawCards(entry.getKey())));
     }
     WorldData worldData = simulator.nextTurn(enactedPolicyCards);
-    for (ServerWorker client : connectedClients)
-    {
-      if (client.getRegion() == null) continue;
-      List<EnumPolicy> playerHand = playerHands.get(client.getRegion());
-      client.send(new GameState(worldData, playerHand.toArray(new EnumPolicy[playerHand.size()])));
-    }
+    broadcastSimulatorState(worldData);
     enterDraftingPhase();
   }
 

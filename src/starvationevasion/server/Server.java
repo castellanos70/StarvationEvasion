@@ -256,6 +256,7 @@ public class Server
     }
     handArray = hand.toArray(new EnumPolicy[hand.size()]);
     client.send(new ActionResponse(ActionResponseType.OK, handArray));
+    checkForDraftPhaseEnd();
   }
 
   private void handleDraftMessage(ServerWorker client, DraftCard message)
@@ -301,6 +302,15 @@ public class Server
     hand.remove(message.policyCard.getCardType());
     handArray = hand.toArray(new EnumPolicy[hand.size()]);
     client.send(new ActionResponse(ActionResponseType.OK, handArray));
+    checkForDraftPhaseEnd();
+  }
+
+  private void checkForDraftPhaseEnd()
+  {
+    if (getCurrentState() != ServerState.DRAFTING) return;
+    if (!regionTurnData.values().stream().allMatch(v -> v.actionsRemaining < 1)) return;
+    if (!phaseChangeFuture.cancel(false)) return;
+    enterVotingPhase();
   }
 
   private void handleChatMessage(ServerWorker client, ClientChatMessage message)
@@ -401,14 +411,14 @@ public class Server
     {
       regionTurnData.put(region, new RegionTurnData());
     }
-    scheduledExecutorService.schedule(this::enterVotingPhase, ServerConstants.DRAFTING_PHASE_TIME, TimeUnit.MILLISECONDS);
+    phaseChangeFuture = scheduledExecutorService.schedule(this::enterVotingPhase, ServerConstants.DRAFTING_PHASE_TIME, TimeUnit.MILLISECONDS);
   }
 
   private void enterVotingPhase()
   {
     setServerState(ServerState.VOTING);
     broadcast(PhaseStart.constructPhaseStart(ServerState.VOTING, ServerConstants.VOTING_PHASE_TIME));
-    scheduledExecutorService.schedule(this::enterDrawingPhase, ServerConstants.VOTING_PHASE_TIME, TimeUnit.MILLISECONDS);
+    phaseChangeFuture = scheduledExecutorService.schedule(this::enterDrawingPhase, ServerConstants.VOTING_PHASE_TIME, TimeUnit.MILLISECONDS);
     regionsWhoVotedOnCards.clear();
     regionVoteRequiredCards.putAll(draftedPolicyCards.stream()
         .filter(c -> c.votesRequired() > 0)

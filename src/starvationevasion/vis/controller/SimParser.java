@@ -17,7 +17,9 @@ public class SimParser
 
     public String parse(double lat, double lon)
     {
-           /* TODO: Clarify if visual will have access to MapPoint class */
+       /* TODO: Clarify if visual will have access to MapPoint class.
+       ** Yes, you have access to the MapPoint class.  -- Peter Blemel
+       */
         MapPoint p = new MapPoint(lat, lon);
 
       /*parse the location data to find where the user clicked on the map*/

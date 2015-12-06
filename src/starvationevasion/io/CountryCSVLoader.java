@@ -210,8 +210,8 @@ public class CountryCSVLoader
   {
     for (EnumFood crop:EnumFood.values())
     {
-      int imports = agriculturalUnitTemp.getCropImport(crop);
-      int exports = agriculturalUnitTemp.getCropExport(crop);
+      long imports = agriculturalUnitTemp.getCropImport(crop);
+      long exports = agriculturalUnitTemp.getCropExport(crop);
       long production = agriculturalUnitTemp.getCropProduction(crop);
       int land = agriculturalUnitTemp.getCropLand(crop);
       double yield = agriculturalUnitTemp.getCropYield(crop);

@@ -65,21 +65,6 @@ public class World
                                TileManager allTheLand,
                                Calendar cal)
   {
-    // TODO : The tile optimization function will only work if we have the
-    // CropClimateData structure correctly populated for each of the crops.
-    //
-    // calculate OTHER_CROPS temp & rain requirements for each country
-    for (Territory state : territories)
-    {
-      // The loader loads 2014 data.  We need to adjust the data for 1981.  Joel's first estimate is
-      // to simply multiply all of the territorial data by 50%
-      //
-      state.estimateInitialYield();
-      // state.scaleInitialStatistics(.50);
-      CropOptimizer optimizer = new CropOptimizer(Constant.FIRST_YEAR, state);
-      optimizer.optimizeCrops();
-    }
-
     World theOneWorld = new World(world, territories, cal);
     theOneWorld.tileManager = allTheLand;
 

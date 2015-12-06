@@ -26,12 +26,12 @@ public class Region extends AbstractTerritory
   private int revenue;
 
   // all data in metric tons
-  private int[] initialProduction1981 = new int[EnumFood.SIZE];
-  private int[] initialImports1981 = new int[EnumFood.SIZE];
-  private int[] initialExports1981 = new int[EnumFood.SIZE];
-  private int[] initialProduction2014 = new int[EnumFood.SIZE];
-  private int[] initialImports2014 = new int[EnumFood.SIZE];
-  private int[] initialExports2014 = new int[EnumFood.SIZE];
+  private long[] initialProduction1981 = new long[EnumFood.SIZE];
+  private long[] initialImports1981 = new long[EnumFood.SIZE];
+  private long[] initialExports1981 = new long[EnumFood.SIZE];
+  private long[] initialProduction2014 = new long[EnumFood.SIZE];
+  private long[] initialImports2014 = new long[EnumFood.SIZE];
+  private long[] initialExports2014 = new long[EnumFood.SIZE];
 
   /**
    * Territory constructor
@@ -105,7 +105,7 @@ public class Region extends AbstractTerritory
    * @param production production of food in metric tons
    * @param year either 1981 or 2014
    */
-  public void setInitialProduction(EnumFood food, int production, int year)
+  public void setInitialProduction(EnumFood food, long production, int year)
   {
     if (year == 2014)
     {
@@ -124,7 +124,7 @@ public class Region extends AbstractTerritory
    * @param imports imports of food in metric tons
    * @param year either 1981 or 2014
    */
-  public void setInitialImports(EnumFood food, int imports, int year)
+  public void setInitialImports(EnumFood food, long imports, int year)
   {
     if (year == 2014)
     {
@@ -143,7 +143,7 @@ public class Region extends AbstractTerritory
    * @param exports exports of food in metric tons
    * @param year either 1981 or 2014
    */
-  public void setInitialExports(EnumFood food, int exports, int year)
+  public void setInitialExports(EnumFood food, long exports, int year)
   {
     if (year == 2014)
     {
@@ -163,7 +163,7 @@ public class Region extends AbstractTerritory
    * @param year 1981 or 2014
    * @return initial food production for type food for 1981 or 2014 (metic tons)
    */
-  public int getInitialProduction(EnumFood food, int year)
+  public long getInitialProduction(EnumFood food, int year)
   {
     if (year == 2014)
     {
@@ -179,10 +179,10 @@ public class Region extends AbstractTerritory
    * @param year 1981 or 2014
    * @return total food production for 1981 or 2014 (metric tons)
    */
-  public int getInitialProduction(int year)
+  public long getInitialProduction(int year)
   {
     int totalProduction = 0;
-    int[] production = year == 2014 ? initialProduction2014 : initialProduction1981;
+    long[] production = year == 2014 ? initialProduction2014 : initialProduction1981;
     for (int i = 0; i < production.length; i++)
     {
       totalProduction += production[i];
@@ -198,7 +198,7 @@ public class Region extends AbstractTerritory
    * @param year 1981 or 2014
    * @return initial food imports for type food for 1981 or 2014 (metric tons)
    */
-  public int getInitialImports(EnumFood food, int year)
+  public long getInitialImports(EnumFood food, int year)
   {
     if (year == 2014)
     {
@@ -214,10 +214,10 @@ public class Region extends AbstractTerritory
    * @param year 1981 or 2014
    * @return total food imports for 1981 or 2014 (metric tons)
    */
-  public int getInitialImports(int year)
+  public long getInitialImports(int year)
   {
     int totalImports = 0;
-    int[] imports = year == 2014 ? initialImports2014 : initialImports1981;
+    long[] imports = year == 2014 ? initialImports2014 : initialImports1981;
     for (int i = 0; i < imports.length; i++)
     {
       totalImports += imports[i];
@@ -233,7 +233,7 @@ public class Region extends AbstractTerritory
    * @param year 1981 or 2014
    * @return initial food exports for type food for 1981 or 2014 (metric tons)
    */
-  public int getInitialExports(EnumFood food, int year)
+  public long getInitialExports(EnumFood food, int year)
   {
     if (year == 2014)
     {
@@ -249,10 +249,10 @@ public class Region extends AbstractTerritory
    * @param year 1981 or 2014
    * @return total food exports for 1981 or 2014 (metric tons)
    */
-  public int getInitialExports(int year)
+  public long getInitialExports(int year)
   {
     int totalExports = 0;
-    int[] exports = year == 2014 ? initialExports2014 : initialExports1981;
+    long[] exports = year == 2014 ? initialExports2014 : initialExports1981;
     for (int i = 0; i < exports.length; i++)
     {
       totalExports += exports[i];
@@ -267,7 +267,7 @@ public class Region extends AbstractTerritory
    * @param food type of food to get consumption for
    * @return initial food consumption for type food for 1981 or 2014
    */
-  public int getInitialConsumption(EnumFood food, int year)
+  public long getInitialConsumption(EnumFood food, int year)
   {
     return getInitialProduction(food, year) + getInitialImports(food, year) - getInitialExports(food, year);
   }
@@ -278,7 +278,7 @@ public class Region extends AbstractTerritory
    *
    * @return initial total food consumption for 1981 or 2014 in the region
    */
-  public int getInitialConsumption(int year)
+  public long getInitialConsumption(int year)
   {
     return getInitialProduction(year) + getInitialImports(year) - getInitialExports(year);
   }
@@ -347,6 +347,26 @@ public class Region extends AbstractTerritory
    */
   public void estimateInitialYield()
   {
+    long[] regionalIncome = new long[EnumFood.SIZE];
+    for (Territory t : territories)
+    {
+      for (EnumFood food : EnumFood.values()) regionalIncome[food.ordinal()] += t.getCropIncome(food);
+    }
+
+    // Now we can take the ratio of icome to total income to set the initial production
+    // for the region.
+    //
+    for (Territory t : territories)
+    {
+      for (EnumFood food : EnumFood.values())
+      {
+        double r = (double) t.getCropIncome(food) / regionalIncome[food.ordinal()];
+        t.setCropProduction(food, (long) (r * initialProduction1981[food.ordinal()]));
+        t.setCropExport(food, (long) (r * initialExports1981[food.ordinal()]));
+        t.setCropImport(food, (long) (r * initialImports1981[food.ordinal()]));
+      }
+    }
+
     for (Territory t : territories) t.estimateInitialYield();
   }
 

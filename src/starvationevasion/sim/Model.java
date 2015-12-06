@@ -158,11 +158,35 @@ public class Model
 
     float[] avgConversionFactors = new float[EnumFood.SIZE];
 
-    for (Region region : regionList)
-    { // The loader builds regions in the order that it finds them in the data file.  We need to
-      // put them in ordinal order.
+    // Traverse all of the regions, estimating the initial yield.
+    // Note that this includes the book-keeping regions.
+    //
+    for (Region region : regionList) region.estimateInitialYield();
 
-      region.aggregateTerritoryFields(Constant.FIRST_YEAR);
+    // Now iterate over the enumeration to optimize planting for each game
+    // region.
+    //
+    for (EnumRegion region : EnumRegion.values())
+    {
+      // TODO : The tile optimization function will only work if we have the
+      // CropClimateData structure correctly populated for each of the crops.
+      //
+      // calculate OTHER_CROPS temp & rain requirements for each country
+      for (Territory state : regionList[region.ordinal()].getTerritories())
+      {
+        // The loader loads 2014 data.  We need to adjust the data for 1981.  Joel's first estimate is
+        // to simply multiply all of the territorial data by 50%
+        //
+        // state.scaleInitialStatistics(.50);
+        CropOptimizer optimizer = new CropOptimizer(Constant.FIRST_YEAR, state);
+        optimizer.optimizeCrops();
+      }
+    }
+
+    // Finally, aggregate the totals for all regions (including book keeping).
+    //
+    for (Region region : regionList)
+    { region.aggregateTerritoryFields(Constant.FIRST_YEAR);
       if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(region, Constant.FIRST_YEAR);
     }
   }

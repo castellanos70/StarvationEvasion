@@ -33,9 +33,9 @@ public class EarthViewer
   public EarthViewer(int smallEarthRadius, int largeEarthRadius)
   {
     earth = new Earth(smallEarthRadius, largeEarthRadius);
-    specialEffect = new SpecialEffect(earth);
-    specialEffect.buildClouds();
-    specialEffect.buildPinPoint(-20,40);
+//    specialEffect = new SpecialEffect(earth);
+//    specialEffect.buildClouds();
+//    specialEffect.buildPinPoint(-20,40);
     this.LARGE_EARTH_RADIUS=largeEarthRadius;
   }
 
@@ -45,11 +45,7 @@ public class EarthViewer
   }
   public Group updateMini()
   {
-    userView = earth.getEarth();
-    userView.setScaleZ(0.3);
-    userView.setScaleY(0.3);
-    userView.setScaleX(0.3);
-    userView.setDisable(true);
+    userView = earth.getSmallEarth();
     return userView;
   }
 

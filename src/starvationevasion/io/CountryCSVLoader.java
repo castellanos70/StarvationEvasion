@@ -76,12 +76,12 @@ public class CountryCSVLoader
       for (EnumHeader header : EnumHeader.values())
       {
         int i = header.ordinal();
-        int value = 0;
+        long value = 0;
         if ((i > 1) && (i < fieldList.length))
         {
           try
           {
-            value = Integer.parseInt(fieldList[i]);
+            value = Long.parseLong(fieldList[i]);
           }
           catch (Exception e) {} //Default empty cell, and text to 0
         }
@@ -89,7 +89,7 @@ public class CountryCSVLoader
         {
           case territory:
             Territory tmp = new Territory(fieldList[i]);
-            int idx = Arrays.binarySearch(territoryList,tmp);
+            int idx = Arrays.binarySearch(territoryList, tmp);
             if (idx < 0)
             {
               LOGGER.severe("**ERROR** Reading " + PATH+
@@ -119,19 +119,19 @@ public class CountryCSVLoader
           case population2010:  case population2014:  case population2025:
           case population2050:
             int year = Integer.valueOf(header.name().substring(10));
-            territory.setPopulation(year, value);
+            territory.setPopulation(year, (int) value);
             break;
 
-          case averageAge: territory.setMedianAge(value); break;
-          case births: territory.setBirths(value); break;
-          case mortality: territory.setMortality(Constant.FIRST_YEAR, value); break;
-          case migration: territory.setMigration(value); break;
-          case undernourished: territory.setUndernourished(value); break;
-          case landArea: territory.setLandTotal(value); break;
-          case farmLand: territory.setTotalFarmLand(value); break;
+          case averageAge: territory.setMedianAge((int) value); break;
+          case births: territory.setBirths((int) value); break;
+          case mortality: territory.setMortality(Constant.FIRST_YEAR, (int) value); break;
+          case migration: territory.setMigration((int) value); break;
+          case undernourished: territory.setUndernourished((int) value); break;
+          case landArea: territory.setLandTotal((int) value); break;
+          case farmLand: territory.setTotalFarmLand((int) value); break;
 
-          case organic: territory.setMethod(EnumFarmMethod.ORGANIC, value); break;
-          case gmo: territory.setMethod(EnumFarmMethod.GMO, value); break;
+          case organic: territory.setMethod(EnumFarmMethod.ORGANIC, (int) value); break;
+          case gmo: territory.setMethod(EnumFarmMethod.GMO, (int) value); break;
 
           case incomeCitrus: territory.setCropIncome(EnumFood.CITRUS, value); break;
           case incomeNonCitrus: territory.setCropIncome(EnumFood.FRUIT, value); break;
@@ -193,7 +193,7 @@ public class CountryCSVLoader
     {
       int imports = agriculturalUnitTemp.getCropImport(crop);
       int exports = agriculturalUnitTemp.getCropExport(crop);
-      int production = agriculturalUnitTemp.getCropProduction(crop);
+      long production = agriculturalUnitTemp.getCropProduction(crop);
       int land = agriculturalUnitTemp.getCropLand(crop);
       double yield = agriculturalUnitTemp.getCropYield(crop);
       double need = agriculturalUnitTemp.getCropNeedPerCapita(crop);

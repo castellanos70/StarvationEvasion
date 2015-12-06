@@ -18,12 +18,18 @@ import java.util.List;
 
 /**
  * Created by Brett on 12/6/2015.
+ * BRETT HI THIS IS TESS:) I'm changing one thing in this class before I push up.
+ * I made earth no longer static inside of EarthViewer, so I will just give this class a copy
  */
 public class SpecialEffect {
     private Sphere cloud;
+    private Earth earth;
     private List<Sphere> specialEffects = new ArrayList<Sphere>();
 
-    public SpecialEffect() {}
+    public SpecialEffect(Earth earth)
+    {
+      this.earth=earth;
+    }
 
     public void buildClouds()
     {
@@ -31,7 +37,6 @@ public class SpecialEffect {
         final PhongMaterial cloudMaterial = new PhongMaterial();
         cloudMaterial.setDiffuseMap(ResourceLoader.DIFF_CLOUD);
         cloud.setMaterial(cloudMaterial);
-        EarthViewer.earth.getUniverse().getChildren().addAll(cloud);
         rotateAroundYAxis(cloud, 100).play();
     }
 
@@ -60,12 +65,11 @@ public class SpecialEffect {
 
         specialEffects.add(pin);
 
-        EarthViewer.earth.getUniverse().getChildren().addAll(pin);
     }
 
     public void removeSpecialEffects()
     {
-        ObservableList currentUniverse = EarthViewer.earth.getUniverse().getChildren();
+        ObservableList currentUniverse = earth.getEarth().getChildren();
         for(Sphere effect : specialEffects)
         {
             currentUniverse.remove(effect);

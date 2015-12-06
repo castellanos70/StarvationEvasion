@@ -109,7 +109,7 @@ public class World
     return world;
   }
 
-  public Territory[] getCountries()
+  public Territory[] getTerritories()
   {
     return territoryList;
   }

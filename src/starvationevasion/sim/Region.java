@@ -347,25 +347,19 @@ public class Region extends AbstractTerritory
    */
   public void estimateInitialYield()
   {
-    long[] regionalIncome = new long[EnumFood.SIZE];
+    // Find the region 1981 population by summing the population of each Territory in the region.
+    // Note, the population in the data file is in 1000s of people.
+    //
+    long population = 0;
     for (Territory t : territories)
     {
-      for (EnumFood food : EnumFood.values()) regionalIncome[food.ordinal()] += t.getCropIncome(food);
+      population += t.getPopulation(1981);
     }
 
-    // Now we can take the ratio of icome to total income to set the initial production
-    // for the region.
+    // The 1981 need for each category of food per 1000 people is the domestic consumption of that
+    // category divided by the region’s population in 1000s of people.
     //
-    for (Territory t : territories)
-    {
-      for (EnumFood food : EnumFood.values())
-      {
-        double r = (double) t.getCropIncome(food) / regionalIncome[food.ordinal()];
-        t.setCropProduction(food, (long) (r * initialProduction1981[food.ordinal()]));
-        t.setCropExport(food, (long) (r * initialExports1981[food.ordinal()]));
-        t.setCropImport(food, (long) (r * initialImports1981[food.ordinal()]));
-      }
-    }
+
 
     for (Territory t : territories) t.updateYield();
   }

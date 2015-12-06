@@ -24,6 +24,7 @@ public enum Response implements Serializable
         /**
          * @return true if this message represents an error, false otherwise.
          */
+        @Override
         public boolean isError()
         {
           return true;
@@ -38,6 +39,7 @@ public enum Response implements Serializable
         /**
          * @return true if this message represents an error, false otherwise.
          */
+        @Override
         public boolean isError()
         {
           return true;
@@ -51,6 +53,7 @@ public enum Response implements Serializable
         /**
          * @return true if this message represents an error, false otherwise.
          */
+        @Override
         public boolean isError()
         {
           return true;
@@ -64,9 +67,12 @@ public enum Response implements Serializable
         /**
          * @return true if this message represents an error, false otherwise.
          */
+        @Override
         public boolean isError()
         {
           return false;
         }
-      }
+      };
+
+  public abstract boolean isError();
 }

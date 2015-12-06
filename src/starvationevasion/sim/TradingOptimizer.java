@@ -33,12 +33,13 @@ public class TradingOptimizer
   private final Territory[] territoryList;
   private static final boolean DEBUG = false;
   private final List<TradePair>[] allTrades = new ArrayList[]{
-    new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList()
+    new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(),
+    new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(),
+    new ArrayList(), new ArrayList(), new ArrayList()
   };
   
   private List<SingleCropTrader> traders;
-  //private PenaltyData penaltyData;
-  
+
   /**
    Construct a new TradingOptimizer with the set of countries to trade between.
 

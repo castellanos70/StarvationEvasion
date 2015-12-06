@@ -37,6 +37,7 @@ public class Earth
   private final double LARGE_EARTH_RADIUS;
 
   private Group earthGroup;
+  private Group smallEarthGroup;
   private Group earthOverlay;
   private Group earthWeather;
 
@@ -53,7 +54,8 @@ public class Earth
     ResourceLoader.LARGE_EARTH_RADIUS = largeRadius;
     ResourceLoader.MINI_EARTH_RADIUS = miniRadius;
 
-    earthGroup = buildScene();
+    earthGroup = buildScene(largeRadius);
+    smallEarthGroup = buildScene(miniRadius);
     earthOverlay = buildOverlay();
     earthWeather = buildClouds();
 
@@ -64,9 +66,9 @@ public class Earth
    * Creates the "Earth" by placing PhongMaterials on a Sphere
    * @return  the Group "earthGroup" which will contain all of this
    */
-  public Group buildScene()
+  public Group buildScene(int radius)
   {
-    Sphere earth = new Sphere(LARGE_EARTH_RADIUS);
+    Sphere earth = new Sphere(radius);
     PhongMaterial earthMaterial = new PhongMaterial();
     earthMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_MAP);
     earthMaterial.setBumpMap(RESOURCE_LOADER.NORM_MAP);
@@ -111,6 +113,11 @@ public class Earth
     return earthGroup;
   }
 
+  public Group getSmallEarth()
+  {
+    return smallEarthGroup;
+  }
+
   /**
    * Used by VisualizerLayout to access overlay group
    * @return returns universe group to be attached in client's layout
@@ -135,6 +142,7 @@ public class Earth
   public void startRotate()
   {
     rotateAroundYAxis(earthGroup).play();
+    rotateAroundYAxis(smallEarthGroup).play();
   }
 
   /**

@@ -37,6 +37,9 @@ public class SpecialEffect {
         final PhongMaterial cloudMaterial = new PhongMaterial();
         cloudMaterial.setDiffuseMap(ResourceLoader.DIFF_CLOUD);
         cloud.setMaterial(cloudMaterial);
+
+        earth.getEarth().getChildren().add(cloud);
+
         rotateAroundYAxis(cloud, 100).play();
     }
 
@@ -64,6 +67,8 @@ public class SpecialEffect {
         //pin.setTranslateY(latitude);
 
         specialEffects.add(pin);
+
+        earth.getEarth().getChildren().add(pin);
 
     }
 

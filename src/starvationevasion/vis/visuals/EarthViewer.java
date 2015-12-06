@@ -177,7 +177,7 @@ public class EarthViewer {
       Point2D point = pickResult.getIntersectedTexCoord(); //in percentages
       double lat = (point.getY() - 0.5) * -180;
       double lon = (point.getX() - 0.5) * 360;
-      new SimParser(lat, lon, this);
+      //new SimParser(lat, lon, this);
       layoutPanel.title.setFont(Font.font ("Times", 20));
       layoutPanel.title.setText(getRegionTitle());
     });

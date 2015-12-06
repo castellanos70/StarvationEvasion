@@ -102,6 +102,9 @@ public class ServerWorker extends Thread
 
   public void closeSocket()
   {
+    // Since we are sending stuff in the exception stop receiving.
+    Thread.currentThread().interrupt();
+
     try
     {
       receiveStream.close();
@@ -116,7 +119,7 @@ public class ServerWorker extends Thread
     }
     catch (IOException e)
     {
-      System.out.print("Error closing sendStream in client: " + this);
+      System.out.println("Error closing sendStream in client: " + this);
     }
   }
 }

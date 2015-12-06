@@ -343,23 +343,118 @@ public class Region extends AbstractTerritory
   }
 
   /**
+   * Estimates the initial yield of all US states the US bookkeeping region.
+   */
+  public void estimateInitialUSYield()
+  {
+    // For consistency, find the US 1981 population by summing the population of
+	// each state.  Note, the population in the data file is in 1000s of people.
+    //
+    long population = 0;
+    for (Territory t : territories) 
+	{ if (t.getName().startsWith("US-")) population += t.getPopulation(1981);
+	}
+
+    // category divided by the region’s population in 1000s of people.
+    //
+    for (EnumFood crop : EnumFood.values())
+    {
+      long income = 0;
+      for (Territory t : territories)
+      { if (t.getName().startsWith("US-")) income += t.getCropIncome(crop);
+      }
+
+      // The 1981 need for each category of food per 1000 people is the domestic consumption
+      // of the crop.
+      //
+      double need = getInitialConsumption(crop, 1981) / (population * 1000);
+
+      // Imports & exports per capita for all regions.
+      //
+      double cropImport = (double) initialImports1981[crop.ordinal()] / population;
+      double cropExport = (double) initialExports1981[crop.ordinal()] / population;
+
+      for (Territory t : territories)
+      { // Skip the 'umbrella' territory.
+	    //
+        if (t.getName().startsWith("US-") == false) continue;
+
+	    t.setCropNeedPerCapita(crop, need);
+
+        double r = (double) t.getCropIncome(crop) / income;
+        t.setCropProduction(crop, (long) (initialProduction1981[crop.ordinal()] * r));
+
+        t.setCropImport(crop, (long) (cropImport * t.getPopulation(1981)));
+        t.setCropExport(crop, (long) (cropExport * t.getPopulation(1981)));
+      }
+    }
+
+    for (Territory t : territories) t.updateYield();
+  }
+
+  /**
    * Estimates the initial yield of all territories in the region.
    */
   public void estimateInitialYield()
   {
-    // Find the region 1981 population by summing the population of each Territory in the region.
+    if (region == null)
+    {
+      // At present the only Region that does not correspond to the region enum is
+      // the special US bookkeeping region.  This region is special because there
+      // are income numbers in the csv file that can be translated to production
+      // numbers.
+      //
+      estimateInitialUSYield();
+      return;
+	}
+
+    // For United States regions, this data will be populated when the special book-
+    // keeping region is visited (above).
+    //
+    if (region.isUS() == true) return;
+
+    // For all non-US regions find the region 1981 population by summing the population
+    // of each Territory in the region.
+    //
     // Note, the population in the data file is in 1000s of people.
     //
     long population = 0;
     for (Territory t : territories)
-    {
-      population += t.getPopulation(1981);
+    { // If this territory is not a US territory then add its population to the tally.
+	  // US regions are handled in estimateInitialUSYield();
+      //
+      if (t.getName().startsWith("US-") == false) population += t.getPopulation(1981);
     }
 
-    // The 1981 need for each category of food per 1000 people is the domestic consumption of that
-    // category divided by the region’s population in 1000s of people.
+    // category divided by the region's population in 1000s of people.
     //
+    for (EnumFood crop : EnumFood.values())
+    {
+      // The 1981 need for each region and category of food per 1000 people is
+      // the domestic consumption of the crop.
+      //
+      double need = getInitialConsumption(crop, 1981) / (population * 1000);
 
+      // Production per capita for non-US regions.
+      //
+      double cropProduction = (double) initialProduction1981[crop.ordinal()] / population;
+
+      // Imports & exports per capita for all regions.
+      //
+      double cropImport = (double) initialImports1981[crop.ordinal()] / population;
+      double cropExport = (double) initialExports1981[crop.ordinal()] / population;
+
+      for (Territory t : territories)
+      { 
+        if (t.getName().startsWith("US-") == false) 
+		{
+	      t.setCropNeedPerCapita(crop, need);
+          t.setCropProduction(crop, (long) (cropProduction * t.getPopulation(1981)));
+          t.setCropImport(crop, (long) (cropImport * t.getPopulation(1981)));
+          t.setCropExport(crop, (long) (cropExport * t.getPopulation(1981)));
+        }
+      }
+    }
 
     for (Territory t : territories) t.updateYield();
   }
@@ -394,7 +489,7 @@ public class Region extends AbstractTerritory
    */
   public void aggregateTerritoryFields(int year)
   {
-    System.out.println("========> aggregateTerritoryFields("+year+")  territories="+ territories.size());
+    if (VERBOSE) System.out.println("========> aggregateTerritoryFields("+year+")  territories="+ territories.size());
 
     population[year - Constant.FIRST_YEAR] = 0;
     births = 0;
@@ -423,7 +518,7 @@ public class Region extends AbstractTerritory
       {
         cropIncome[i]     += part.cropIncome[i];
         cropProduction[i] += part.cropProduction[i];
-        if (part.cropProduction[i] > 0)
+        if (VERBOSE && part.cropProduction[i] > 0)
         { System.out.println("Region.aggregateTerritoryFields(): " + region +": cropProduction["+EnumFood.values()[i]+"] ="+cropProduction[i]);
         }
         landCrop[i]       += part.landCrop[i];

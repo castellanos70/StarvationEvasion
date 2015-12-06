@@ -36,6 +36,10 @@ public class Earth
   private final double MINI_EARTH_RADIUS;
   private final double LARGE_EARTH_RADIUS;
 
+  private RotateTransition largeRotate;
+  private RotateTransition smallRotate;
+
+
   private Group earthGroup;
   private Group smallEarthGroup;
   private Group earthOverlay;
@@ -160,6 +164,13 @@ public class Earth
     rotate.setCycleCount(RotateTransition.INDEFINITE);
 
     return rotate;
+  }
+  /**
+   * Used for Big Earth mode to stop rotation when user clicks and drags
+   */
+  protected void pauseRotation()
+  {
+    rotateAroundYAxis(earthGroup).pause();
   }
 
   /**

@@ -5,6 +5,7 @@ import javafx.scene.AmbientLight;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.ZoomEvent;
@@ -80,14 +81,12 @@ public class VisualizerLayout extends BorderPane
 
   private void initEventHandling(int largeRadius)
   {
-    userEventHandler = new UserEventHandler(earthGroup);
+    userEventHandler = new UserEventHandler(earth);
     userEventHandler.setLargeEarthRadius(largeRadius);
+    earthGroup.addEventFilter(MouseDragEvent.DRAG_DETECTED, event -> userEventHandler.handle(event));
     earthGroup.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> userEventHandler.handle(event));
-    earthGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> userEventHandler.handle(event));
     earthGroup.addEventFilter(ScrollEvent.ANY, event -> userEventHandler.handle(event));
     earthGroup.addEventFilter(ZoomEvent.ANY, event -> userEventHandler.handle(event));
-
-
 
   }
 

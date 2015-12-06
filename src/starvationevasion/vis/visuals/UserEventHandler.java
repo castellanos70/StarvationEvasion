@@ -18,21 +18,24 @@ import starvationevasion.vis.model.Coordinate;
 /**
  * Created by Tess Daughton on 11/15/15.
  */
-public class UserEventHandler implements EventHandler {
+public class UserEventHandler  implements EventHandler
+{
   private final SimParser SIM_PARSER = new SimParser();
   private final DoubleProperty angleX = new SimpleDoubleProperty(0);
   private final DoubleProperty angleY = new SimpleDoubleProperty(0);
   private double anchorX, anchorY;
   private double anchorAngleX = 0;
   private double anchorAngleY = 0;
-  private Group earth;
+  private Group earthGroup;
+  private Earth earth;
   private Scale earthScale;
   private double LARGE_EARTH_RADIUS;
 
 
-  public UserEventHandler(Group earth)
+  public UserEventHandler(Earth earth)
   {
     this.earth = earth;
+    this.earthGroup = earth.getEarth();
 //    earthScale = new Scale();
 //    earth.getTransforms().add(earthScale);
     Rotate groupXRotate, groupYRotate;
@@ -83,16 +86,16 @@ public class UserEventHandler implements EventHandler {
     double scrollFactor = event.getDeltaY();
     if (scrollFactor > 0)
     {
-      if (earth.getScaleZ() < 0.5) return;
-      earth.setScaleZ(earth.getScaleZ() * .99);
-      earth.setScaleX(earth.getScaleX() * .99);
-      earth.setScaleY(earth.getScaleY() * .99);
+      if (earthGroup.getScaleZ() < 0.5) return;
+      earthGroup.setScaleZ(earthGroup.getScaleZ() * .99);
+      earthGroup.setScaleX(earthGroup.getScaleX() * .99);
+      earthGroup.setScaleY(earthGroup.getScaleY() * .99);
     } else if (scrollFactor < 0)
     {
-      if (earth.getScaleZ() > 2) return;
-      earth.setScaleZ(earth.getScaleZ() * 1.01);
-      earth.setScaleX(earth.getScaleX() * 1.01);
-      earth.setScaleY(earth.getScaleY() * 1.01);
+      if (earthGroup.getScaleZ() > 2) return;
+      earthGroup.setScaleZ(earthGroup.getScaleZ() * 1.01);
+      earthGroup.setScaleX(earthGroup.getScaleX() * 1.01);
+      earthGroup.setScaleY(earthGroup.getScaleY() * 1.01);
     }
     System.out.println(String.format("deltaX: %.3f", scrollFactor));
   }
@@ -102,16 +105,16 @@ public class UserEventHandler implements EventHandler {
     double zoomFactor = event.getX();
     if (zoomFactor > 0)
     {
-      if (earth.getScaleZ() > 2) return;
-      earth.setScaleZ(earth.getScaleZ() * .99);
-      earth.setScaleX(earth.getScaleX() * .99);
-      earth.setScaleY(earth.getScaleY() * .99);
+      if (earthGroup.getScaleZ() > 2) return;
+      earthGroup.setScaleZ(earthGroup.getScaleZ() * .99);
+      earthGroup.setScaleX(earthGroup.getScaleX() * .99);
+      earthGroup.setScaleY(earthGroup.getScaleY() * .99);
     } else if (zoomFactor < 0)
     {
-      if (earth.getScaleZ() < 0.5) return;
-      earth.setScaleZ(earth.getScaleZ() * 1.01);
-      earth.setScaleX(earth.getScaleX() * 1.01);
-      earth.setScaleY(earth.getScaleY() * 1.01);
+      if (earthGroup.getScaleZ() < 0.5) return;
+      earthGroup.setScaleZ(earthGroup.getScaleZ() * 1.01);
+      earthGroup.setScaleX(earthGroup.getScaleX() * 1.01);
+      earthGroup.setScaleY(earthGroup.getScaleY() * 1.01);
     }
     System.out.println(String.format("deltaX: %.3f", zoomFactor));
   }
@@ -138,17 +141,21 @@ public class UserEventHandler implements EventHandler {
   }
 
 
+
   @Override
-  public void handle(Event event) {
+  public void handle(Event event)
+  {
     if (event.getEventType().equals(MouseDragEvent.MOUSE_DRAGGED))
     {
       earthScroll((MouseEvent) event);
+      event.consume();
     }
     else if (event instanceof ScrollEvent)
     {
+      earth.pauseRotation();
       earthZoom((ScrollEvent) event);
-    }
-    else if (event instanceof ZoomEvent)
+      event.consume();
+    } else if (event instanceof ZoomEvent)
     {
       earthZoom((ZoomEvent) event);
     }
@@ -158,6 +165,8 @@ public class UserEventHandler implements EventHandler {
       latLongHandler((MouseEvent) event);
       earthStartScroll((MouseEvent) event);
     }
+    event.consume();
   }
 }
+
 

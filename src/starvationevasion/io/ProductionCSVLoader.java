@@ -49,9 +49,9 @@ public class ProductionCSVLoader
       EnumFood food = null;
       EnumRegion region = null;
       int year = 0;
-      int exports = 0;
-      int imports = 0;
-      int production = 0;
+      long exports = 0;
+      long imports = 0;
+      long production = 0;
 
       for (EnumHeader header : EnumHeader.values())
       {
@@ -70,13 +70,13 @@ public class ProductionCSVLoader
             region = EnumRegion.valueOf(fieldList[i]);
             break;
           case exports:
-            exports = Integer.parseInt(fieldList[i]);
+            exports = Long.parseLong(fieldList[i]);
             break;
           case imports:
-            imports = Integer.parseInt(fieldList[i]);
+            imports = Long.parseLong(fieldList[i]);
             break;
           case production:
-            production = Integer.parseInt(fieldList[i]);
+            production = Long.parseLong(fieldList[i]);
             break;
         }
       }

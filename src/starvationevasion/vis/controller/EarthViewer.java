@@ -35,7 +35,7 @@ public class EarthViewer
     earth = new Earth(smallEarthRadius, largeEarthRadius);
     specialEffect = new SpecialEffect(earth);
     specialEffect.buildClouds();
-    specialEffect.buildPinPoint();
+    specialEffect.buildPinPoint(-20,40);
     this.LARGE_EARTH_RADIUS=largeEarthRadius;
   }
 

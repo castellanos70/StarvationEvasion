@@ -26,27 +26,29 @@ public class UserEventHandler  implements EventHandler
   private double anchorX, anchorY;
   private double anchorAngleX = 0;
   private double anchorAngleY = 0;
-  private Group earth;
+  private Group earthGroup;
+  private Earth earth;
   private Scale earthScale;
   private double LARGE_EARTH_RADIUS;
 
 
-  public UserEventHandler(Group earth)
+  public UserEventHandler(Earth earth)
   {
     this.earth = earth;
+    this.earthGroup = earth.getEarth();
 //    earthScale = new Scale();
-//    earth.getTransforms().add(earthScale);
+//    earthGroup.getTransforms().add(earthScale);
   }
 
   protected void setLargeEarthRadius(double radius)
   {
-    this.LARGE_EARTH_RADIUS=radius;
+    this.LARGE_EARTH_RADIUS = radius;
   }
 
   protected void earthScroll(MouseDragEvent event)
   {
     Rotate groupXRotate, groupYRotate;
-    earth.getTransforms().setAll(
+    earthGroup.getTransforms().setAll(
         groupXRotate = new Rotate(0, Rotate.X_AXIS),
         groupYRotate = new Rotate(0, Rotate.Y_AXIS)
     );
@@ -66,16 +68,16 @@ public class UserEventHandler  implements EventHandler
     double scrollFactor = event.getDeltaY();
     if (scrollFactor > 0)
     {
-      if (earth.getScaleZ() < 0.5) return;
-      earth.setScaleZ(earth.getScaleZ() * .99);
-      earth.setScaleX(earth.getScaleX() * .99);
-      earth.setScaleY(earth.getScaleY() * .99);
+      if (earthGroup.getScaleZ() < 0.5) return;
+      earthGroup.setScaleZ(earthGroup.getScaleZ() * .99);
+      earthGroup.setScaleX(earthGroup.getScaleX() * .99);
+      earthGroup.setScaleY(earthGroup.getScaleY() * .99);
     } else if (scrollFactor < 0)
     {
-      if (earth.getScaleZ() > 2) return;
-      earth.setScaleZ(earth.getScaleZ() * 1.01);
-      earth.setScaleX(earth.getScaleX() * 1.01);
-      earth.setScaleY(earth.getScaleY() * 1.01);
+      if (earthGroup.getScaleZ() > 2) return;
+      earthGroup.setScaleZ(earthGroup.getScaleZ() * 1.01);
+      earthGroup.setScaleX(earthGroup.getScaleX() * 1.01);
+      earthGroup.setScaleY(earthGroup.getScaleY() * 1.01);
     }
     System.out.println(String.format("deltaX: %.3f", scrollFactor));
   }
@@ -85,16 +87,16 @@ public class UserEventHandler  implements EventHandler
     double zoomFactor = event.getX();
     if (zoomFactor > 0)
     {
-      if (earth.getScaleZ() > 2) return;
-      earth.setScaleZ(earth.getScaleZ() * .99);
-      earth.setScaleX(earth.getScaleX() * .99);
-      earth.setScaleY(earth.getScaleY() * .99);
+      if (earthGroup.getScaleZ() > 2) return;
+      earthGroup.setScaleZ(earthGroup.getScaleZ() * .99);
+      earthGroup.setScaleX(earthGroup.getScaleX() * .99);
+      earthGroup.setScaleY(earthGroup.getScaleY() * .99);
     } else if (zoomFactor < 0)
     {
-      if (earth.getScaleZ() < 0.5) return;
-      earth.setScaleZ(earth.getScaleZ() * 1.01);
-      earth.setScaleX(earth.getScaleX() * 1.01);
-      earth.setScaleY(earth.getScaleY() * 1.01);
+      if (earthGroup.getScaleZ() < 0.5) return;
+      earthGroup.setScaleZ(earthGroup.getScaleZ() * 1.01);
+      earthGroup.setScaleX(earthGroup.getScaleX() * 1.01);
+      earthGroup.setScaleY(earthGroup.getScaleY() * 1.01);
     }
     System.out.println(String.format("deltaX: %.3f", zoomFactor));
   }
@@ -128,25 +130,30 @@ public class UserEventHandler  implements EventHandler
   }
 
 
-
   @Override
   public void handle(Event event)
   {
     if (event instanceof MouseDragEvent)
     {
+      System.out.println("Drag");
       earthScroll((MouseDragEvent) event);
+      event.consume();
     } else if (event instanceof ScrollEvent)
     {
+      earth.pauseRotation();
       earthZoom((ScrollEvent) event);
+      event.consume();
     } else if (event instanceof ZoomEvent)
     {
       earthZoom((ZoomEvent) event);
     }
-    else if(event instanceof MouseEvent)
-    {
-      displayEarthInformation((MouseEvent) event);
-      latLongHandler((MouseEvent) event);
-    }
+    event.consume();
   }
+//    else if(event instanceof MouseEvent)
+//    {
+//      displayEarthInformation((MouseEvent) event);
+//      latLongHandler((MouseEvent) event);
+//    }
 }
+
 

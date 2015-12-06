@@ -23,13 +23,19 @@ public class ResourceLoader
   //"http://planetmaker.wthr.us/img/earth_specularmap_flat_8192x4096.jpg";
   private static final String STARS = "visResources/night_sky.jpg";//"vis_resources/SPEC_MAP.jpg";
 
+  private static final String DIFFUSE_CLOUD = "visResources/Cloud-32.png";
+
   protected static Image COLD_IMAGE;
   protected static Image HOT_IMAGE;
   protected static Image STAR_BACKGROUND;
   protected static Image SPEC_MAP;
   protected static Image NORM_MAP;
   protected static Image DIFF_MAP;
+  protected static Image DIFF_CLOUD;
   public static String STYLE_SHEET;
+
+  protected static int LARGE_EARTH_RADIUS;
+  protected static int MINI_EARTH_RADIUS;
 
   private static final double MAP_WIDTH = 8192 / 2d;
   private static final double MAP_HEIGHT = 4092 / 2d;
@@ -39,6 +45,7 @@ public class ResourceLoader
     try
     {
       DIFF_MAP = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_MAP), MAP_WIDTH, MAP_HEIGHT, true, true);
+      DIFF_CLOUD = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_CLOUD), MAP_WIDTH, MAP_HEIGHT, true, true);
       NORM_MAP = new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true);
       SPEC_MAP = new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true);
       STAR_BACKGROUND = new Image(getClass().getClassLoader().getResourceAsStream(STARS), MAP_WIDTH, MAP_HEIGHT, true, true);

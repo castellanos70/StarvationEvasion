@@ -118,18 +118,11 @@ public class UserEventHandler implements EventHandler {
 
   protected void latLongHandler(MouseEvent event)
   {
-
     PickResult pickResult = event.getPickResult();
-    Point3D point = pickResult.getIntersectedPoint();
-
-    double x = point.getX();
-    double y = point.getY();
-    double z = point.getZ();
-    double lat = Math.toDegrees(Math.acos(y / LARGE_EARTH_RADIUS) - Math.PI / 2); //theta
-    double lon = Math.toDegrees(Math.atan(x / z)); //phi
-    if (z > 0) lon += (180 * Math.signum(-lon));
-    Coordinate c = new Coordinate(lon, lat);
-//      System.out.println(lon + " " + lat + " " + point);
+    Point2D point = pickResult.getIntersectedTexCoord(); //in percentages
+    double lat = (point.getY() - 0.5) * -180;
+    double lon = (point.getX() - 0.5) * 360;
+//    System.out.println(lat, lon);
   }
 
   public void displayEarthInformation(MouseEvent event)

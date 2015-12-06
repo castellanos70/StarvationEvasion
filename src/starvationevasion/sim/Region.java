@@ -39,6 +39,13 @@ public class Region extends AbstractTerritory
     }
   }
 
+  private Region(String name)
+  {
+    super(name);
+
+    this.region = null;
+  }
+
   public EnumRegion getRegionEnum()
   {
     return region;
@@ -181,14 +188,6 @@ public class Region extends AbstractTerritory
             population[year - Constant.FIRST_YEAR];
   }
 
-
-
-
-
-
-
-
-
   /**
    * Method for calculating and setting crop need
    *
@@ -227,5 +226,12 @@ public class Region extends AbstractTerritory
     }
 
     cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
+  }
+
+  /**
+   */
+  public static Region createBookKeepingRegion(String name)
+  {
+    return new Region(name);
   }
 }

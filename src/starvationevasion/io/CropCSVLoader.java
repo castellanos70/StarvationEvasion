@@ -154,7 +154,7 @@ public class CropCSVLoader
     {
       int imports = agriculturalUnitTemp.getCropImport(crop);
       int exports = agriculturalUnitTemp.getCropExport(crop);
-      int production = agriculturalUnitTemp.getCropProduction(crop);
+      long production = agriculturalUnitTemp.getCropProduction(crop);
       int land = agriculturalUnitTemp.getCropLand(crop);
       double yield = agriculturalUnitTemp.getCropYield(crop);
       double need = agriculturalUnitTemp.getCropNeedPerCapita(crop);

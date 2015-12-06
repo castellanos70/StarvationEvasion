@@ -245,6 +245,11 @@ public class Territory extends AbstractTerritory
     return getClass().getSimpleName() + " " + name;
   }
 
+  public int compareTo(String territoryName)
+  {
+    return territoryName.compareTo(name);
+  }
+
   /**
    * Parses the geographic data and generates a unified set of Territory objects from the
    * list of cartagraphic regions.

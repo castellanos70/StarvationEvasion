@@ -92,26 +92,45 @@ public class CountryCSVLoader
             int idx = Arrays.binarySearch(territoryList, tmp);
             if (idx < 0)
             {
-              LOGGER.severe("**ERROR** Reading " + PATH+
-                  "Territory="+fieldList[i] + ", Not found in territory list.");
+              LOGGER.severe("**ERROR** Reading " + PATH +
+                  "Territory=" + fieldList[i] + " not found in territory list.  Check the XML.");
               return;
             }
+
             territory = territoryList[idx];
             break;
+
           case region:
             for (EnumRegion enumRegion : EnumRegion.values())
             {
               if (enumRegion.name().equals(fieldList[i]))
               {
+                // System.out.println("Territory " + territory.getName() + " region " + enumRegion);
+
                 territory.setGameRegion(enumRegion);
                 regionList[enumRegion.ordinal()].addTerritory(territory);
                 break;
               }
             }
+
             if (territory.getGameRegion() == null)
-            { LOGGER.severe("**ERROR** Reading " + PATH+
-               "Game Region not recognized: "+ fieldList[i]);
-              return;
+            { // Handle special case book-keeping regions.
+              //
+              int r;
+              for (r = EnumRegion.SIZE ; r < regionList.length ; r += 1)
+              {
+                if (regionList[r].getName().equals(fieldList[i]))
+                {
+                  regionList[r].addTerritory(territory);
+                  break;
+                }
+              }
+
+              if (r == regionList.length)
+              {
+                LOGGER.severe("**ERROR** Reading " + PATH + "Game Region not recognized: " + fieldList[i]);
+                return;
+              }
             }
             break;
 

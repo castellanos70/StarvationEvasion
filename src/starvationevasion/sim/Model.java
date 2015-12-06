@@ -105,6 +105,11 @@ public class Model
     //System.out.println("MODEL INIT");
   }
 
+  public Region getRegion(EnumRegion r)
+  {
+    return regionList[r.ordinal()];
+  }
+
   /**
    * This method is used to create USState objects along with
    * the Region data structure
@@ -120,7 +125,7 @@ public class Model
 
     // Add the US book keeping region.
     //
-    regionList[EnumRegion.SIZE] = Region.createBookKeepingRegion("US");
+    regionList[EnumRegion.SIZE] = Region.createBookKeepingRegion("UNITED_STATES");
 
     try{cropLoader = new CropCSVLoader();} catch (Throwable t){ System.out.println("CROP_LOADER "+t);}
     //ArrayList<CropZoneData> categoryData = cropLoader.getCategoryData();
@@ -143,11 +148,11 @@ public class Model
     }
 
     Territory[] territories = world.getTerritories();
-    int index = Arrays.binarySearch(territories, "US-Alaska");
+    int index = Arrays.binarySearch(territories, new Territory("US-Alaska"));
     if (index >= 0) unitedStates.addTerritory(territories[index]);
     else LOGGER.severe("Can not find Alaska?");
 
-    index = Arrays.binarySearch(territories, "US-Hawaii");
+    index = Arrays.binarySearch(territories, new Territory("US-Hawaii"));
     if (index >= 0) unitedStates.addTerritory(territories[index]);
     else LOGGER.severe("Can not find Hawaii?");
 

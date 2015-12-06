@@ -151,9 +151,6 @@ public class Simulator
     deck.discard(card);
   }
 
-
-
-
   /**
    * This entry point is for testing only. <br><br>
    *

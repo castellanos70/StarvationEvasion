@@ -323,6 +323,12 @@ public class Territory extends AbstractTerritory
       }
     }
 
+    // We may not have a territory for the United States.
+    //
+    Territory us = new Territory("United States");
+    Collections.sort(territoryList);
+    if (Collections.binarySearch(territoryList, us) < 0) territoryList.add(us);
+
     return territoryList.toArray(new Territory[territoryList.size()]);
   }
 }

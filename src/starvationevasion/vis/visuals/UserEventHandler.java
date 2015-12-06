@@ -18,8 +18,7 @@ import starvationevasion.vis.model.Coordinate;
 /**
  * Created by Tess Daughton on 11/15/15.
  */
-public class UserEventHandler  implements EventHandler
-{
+public class UserEventHandler implements EventHandler {
   private final SimParser SIM_PARSER = new SimParser();
   private final DoubleProperty angleX = new SimpleDoubleProperty(0);
   private final DoubleProperty angleY = new SimpleDoubleProperty(0);
@@ -36,15 +35,6 @@ public class UserEventHandler  implements EventHandler
     this.earth = earth;
 //    earthScale = new Scale();
 //    earth.getTransforms().add(earthScale);
-  }
-
-  protected void setLargeEarthRadius(double radius)
-  {
-    this.LARGE_EARTH_RADIUS=radius;
-  }
-
-  protected void earthScroll(MouseDragEvent event)
-  {
     Rotate groupXRotate, groupYRotate;
     earth.getTransforms().setAll(
         groupXRotate = new Rotate(0, Rotate.X_AXIS),
@@ -52,6 +42,33 @@ public class UserEventHandler  implements EventHandler
     );
     groupXRotate.angleProperty().bind(angleX);
     groupYRotate.angleProperty().bind(angleY);
+
+  }
+
+  protected void setLargeEarthRadius(double radius)
+  {
+    this.LARGE_EARTH_RADIUS = radius;
+  }
+
+  /**
+   * Based on anchors that have been set when intially click, start rotating. Inside method there is a variable called
+   * scale. Adjusting this double value will cause the rotation to be slower or faster. 1 = normal speed, less than 1
+   * means slower, and greater than 1 means faster.
+   *
+   * @param event Event should contain x and y of scene.
+   */
+  protected void earthScroll(MouseEvent event) {
+    double scale = .1; //Adjust this to slow down rotations,
+    angleX.set(anchorAngleX - ((anchorY - event.getSceneY())*scale));
+    angleY.set(anchorAngleY + ((anchorX - event.getSceneX())*scale));
+  }
+
+  /**
+   * Before starting to rotate, set some anchor points to rotate against
+   *
+   * @param event Event should contain x and y
+   */
+  protected void earthStartScroll(MouseEvent event) {
     anchorX = event.getSceneX();
     anchorY = event.getSceneY();
     anchorAngleX = angleX.get();
@@ -128,17 +145,17 @@ public class UserEventHandler  implements EventHandler
   }
 
 
-
   @Override
-  public void handle(Event event)
-  {
-    if (event instanceof MouseDragEvent)
+  public void handle(Event event) {
+    if (event.getEventType().equals(MouseDragEvent.MOUSE_DRAGGED))
     {
-      earthScroll((MouseDragEvent) event);
-    } else if (event instanceof ScrollEvent)
+      earthScroll((MouseEvent) event);
+    }
+    else if (event instanceof ScrollEvent)
     {
       earthZoom((ScrollEvent) event);
-    } else if (event instanceof ZoomEvent)
+    }
+    else if (event instanceof ZoomEvent)
     {
       earthZoom((ZoomEvent) event);
     }
@@ -146,6 +163,7 @@ public class UserEventHandler  implements EventHandler
     {
       displayEarthInformation((MouseEvent) event);
       latLongHandler((MouseEvent) event);
+      earthStartScroll((MouseEvent) event);
     }
   }
 }

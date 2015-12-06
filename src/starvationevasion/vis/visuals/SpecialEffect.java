@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Shape;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
@@ -34,12 +35,28 @@ public class SpecialEffect {
         rotateAroundYAxis(cloud, 100).play();
     }
 
-    public void buildPinPoint()
+    public void buildPinPoint(double latitude, double longitude)
     {
         Sphere pin = new Sphere(ResourceLoader.LARGE_EARTH_RADIUS*1.05);
         final PhongMaterial pinMaterial = new PhongMaterial();
         pinMaterial.setDiffuseMap(ResourceLoader.DIFF_PINPOINT);
         pin.setMaterial(pinMaterial);
+
+        // longitude
+        //pin.setRotationAxis(Rotate.Y_AXIS);
+        //pin.setRotate(20.0);
+        // latitude
+        //pin.setRotationAxis(Rotate.X_AXIS);
+        //pin.setRotate(20.0);
+        pin = transformNode(pin, latitude, longitude);
+
+        //pin.getTransforms().addAll(
+        //new Rotate(20, Rotate.X_AXIS),
+        //new Rotate(20, Rotate.Y_AXIS)
+        //);
+
+        //pin.setTranslateX(longitude);
+        //pin.setTranslateY(latitude);
 
         specialEffects.add(pin);
 
@@ -54,6 +71,16 @@ public class SpecialEffect {
             currentUniverse.remove(effect);
         }
         specialEffects = null;
+    }
+
+    private Sphere transformNode(Sphere shape, double latitude, double longitude)
+    {
+        shape.getTransforms().addAll(
+                new Rotate(latitude, Rotate.X_AXIS),
+                new Rotate(longitude, Rotate.Y_AXIS)
+        );
+
+        return shape;
     }
 
     private RotateTransition rotateAroundYAxis(Node node,int ROTATE_SECS)

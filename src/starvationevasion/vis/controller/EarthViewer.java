@@ -40,7 +40,7 @@ public class EarthViewer
     earth = new Earth(smallEarthRadius, largeEarthRadius, RESOURCE_LOADER);
     SET_SIZE = new Scale();
     specialEffect.buildClouds();
-    specialEffect.buildPinPoint();
+    specialEffect.buildPinPoint(-40.0, 00.0);
   }
 
   public VisualizerLayout updateFull()

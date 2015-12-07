@@ -28,10 +28,11 @@ public class CountryCSVLoader
   { territory, region, population1981, population1990, population2000,
     population2010, population2014, population2025, population2050,
     averageAge, undernourished, births, migration, mortality,
-    landArea, organic, gmo, farmLand, incomeCitrus,
-    incomeNonCitrus, incomeNuts, incomeGrains,
+    landArea, farmLand1981, farmLand2014,
+    incomeCitrus, incomeNonCitrus, incomeNuts, incomeGrains,
     incomeSeedOil, incomeVeg, incomeSpecial, incomeFeed, incomeFish,
-    incomeMeat, incomePoultry, incomeDairy, convert2014to1981;
+    incomeMeat, incomePoultry, incomeDairy,
+    organic, gmo, convert2014to1981;
 
     public static final int SIZE = values().length;
   };
@@ -147,7 +148,9 @@ public class CountryCSVLoader
           case migration: territory.setMigration((int) value); break;
           case undernourished: territory.setUndernourished((int) value); break;
           case landArea: territory.setLandTotal((int) value); break;
-          case farmLand: territory.setTotalFarmLand((int) value); break;
+
+          case farmLand1981: territory.setFarmLand1981((int) value); break;
+          case farmLand2014: territory.setFarmLand2014((int) value); break;
 
           case organic: territory.setMethod(EnumFarmMethod.ORGANIC, (int) value); break;
           case gmo: territory.setMethod(EnumFarmMethod.GMO, (int) value); break;
@@ -185,9 +188,6 @@ public class CountryCSVLoader
     }
   }
 
-
-
-
   /**
    * Linear interpolate population.
   */
@@ -202,9 +202,6 @@ public class CountryCSVLoader
       territory.setPopulation(i, (int) y);
     }
   }
-
-  
-
   
   private void copyCropValues(Territory countryFinal, Territory agriculturalUnitTemp)
   {

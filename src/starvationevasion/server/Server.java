@@ -534,7 +534,7 @@ public class Server
     if (Login.generateHashedPassword(client.getLoginNonce(),
         passwordFile.credentialMap.get(message.username)).equals(message.hashedPassword))
     {
-      if (getCurrentState() != ServerState.LOGIN)
+      if (getCurrentState() == ServerState.LOGIN)
       {
         if (passwordFile.regionMap != null)
         {

@@ -485,7 +485,7 @@ public class Region extends AbstractTerritory
       for (CropZoneData zoneData : cropData)
       {
         double cropLand = cropLandAreaHelper(t, zoneData) * landCropRatio;
-        t.setLand1981(zoneData.food, cropLand);
+        t.setCropLand(zoneData.food, (int) cropLand);
       }
     }
   }

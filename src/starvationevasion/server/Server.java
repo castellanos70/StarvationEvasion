@@ -24,7 +24,7 @@ public class Server
   private final String[] AICommand;
   private volatile ServerState currentState = ServerState.LOGIN;
   private ServerSocket serverSocket;
-  private final List<ServerWorker> connectedClients = new ArrayList<>();
+  private final List<ServerWorker> connectedClients = Collections.synchronizedList(new ArrayList<>());
   private ConcurrentLinkedQueue<Tuple<Serializable, ServerWorker>> messageQueue = new ConcurrentLinkedQueue<>();
   private PasswordFile passwordFile;
   private Map<String, String> aiCredentials = Collections.synchronizedMap(new HashMap<>());
@@ -66,7 +66,7 @@ public class Server
   */
   public static void main(String[] args)
   {
-    new Server(args[0], Arrays.copyOfRange(args, 1, args.length - 1)).start();
+    new Server(args[0], Arrays.copyOfRange(args, 1, args.length)).start();
   }
 
   private void start()
@@ -118,7 +118,10 @@ public class Server
 
   public void broadcast(Serializable message)
   {
-    connectedClients.forEach(c -> c.send(message));
+    synchronized (connectedClients)
+    {
+      connectedClients.forEach(c -> c.send(message));
+    }
   }
 
   public void acceptMessage(Serializable message, ServerWorker client)

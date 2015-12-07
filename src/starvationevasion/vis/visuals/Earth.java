@@ -1,6 +1,5 @@
 package starvationevasion.vis.visuals;
 
-import com.apple.eawt.event.RotationEvent;
 import javafx.animation.*;
 
 import javafx.scene.Group;
@@ -64,7 +63,7 @@ public class Earth
     earthOverlay = buildOverlay();
     earthWeather = buildClouds();
 
-//    startRotate();
+    startRotate();
 
 
   }
@@ -106,7 +105,7 @@ public class Earth
   {
     Sphere cloud = new Sphere(LARGE_EARTH_RADIUS * 1.05);
     final PhongMaterial cloudMaterial = new PhongMaterial();
-    cloudMaterial.setDiffuseMap(RESOURCE_LOADER.REGION_OVERLAY);
+    cloudMaterial.setDiffuseMap(RESOURCE_LOADER.CLOUDS);
     cloud.setMaterial(cloudMaterial);
     return new Group(cloud);
   }
@@ -186,6 +185,16 @@ public class Earth
   {
     largeRotate.pause();
   }
+
+  /**
+   * Used for Big Earth mode to restart rotation when user clicks and drags
+   */
+  protected void resumeRotation()
+  {
+    largeRotate.play();
+  }
+
+
 
   /**
    * Vis Team Testing Purposes

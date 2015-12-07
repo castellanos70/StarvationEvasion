@@ -20,10 +20,13 @@ public class ResourceLoader
   //"http://planetmaker.wthr.us/img/earth_specularmap_flat_8192x4096.jpg";
   private static final String STARS = "visResources/night_sky.jpg";//"vis_resources/SPEC_MAP.jpg";
   private static final String REGION_OVERELAY_FILE = "visResources/WorldMapRegionsFull8x6.png";//"vis_resources/SPEC_MAP.jpg";
+  private static final String CLOUD_FILE = "visResources/Cloud-32.png";//"vis_resources/SPEC_MAP.jpg";
 
 
   private static final String DIFFUSE_CLOUD = "visResources/Cloud-32.png";
   private static final String DIFFUSE_PINPOINT = "visResources/PinPoint.png";
+  private static final String DIFFUSE_HURRICANE = "visResources/hurricane.png";
+
 
   protected static Image COLD_IMAGE;
   protected static Image HOT_IMAGE;
@@ -32,8 +35,10 @@ public class ResourceLoader
   protected static Image NORM_MAP;
   protected static Image DIFF_MAP;
   protected static Image DIFF_CLOUD;
+  protected static Image DIFF_HURRICANE;
   protected static Image DIFF_PINPOINT;
   protected static Image REGION_OVERLAY;
+  protected static Image CLOUDS;
   public static String STYLE_SHEET;
 
   protected static int LARGE_EARTH_RADIUS;
@@ -48,6 +53,8 @@ public class ResourceLoader
     {
       DIFF_MAP = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_MAP), MAP_WIDTH, MAP_HEIGHT, true, true);
       DIFF_CLOUD = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_CLOUD), MAP_WIDTH, MAP_HEIGHT, true, true);
+      DIFF_HURRICANE = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_HURRICANE), MAP_WIDTH, MAP_HEIGHT, true, true);
+
       DIFF_PINPOINT = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_PINPOINT), MAP_WIDTH, MAP_HEIGHT, true, true);
       NORM_MAP = new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true);
       SPEC_MAP = new Image(getClass().getClassLoader().getResourceAsStream(SPECULAR_MAP), MAP_WIDTH, MAP_HEIGHT, true, true);
@@ -55,6 +62,7 @@ public class ResourceLoader
       COLD_IMAGE = new Image(  getClass().getClassLoader().getResourceAsStream("visResources/snowflake.png"));
       HOT_IMAGE = new Image(getClass().getClassLoader().getResourceAsStream("visResources/hot.png"));
       REGION_OVERLAY = new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERELAY_FILE), MAP_WIDTH, MAP_HEIGHT, true, true);
+      CLOUDS = new Image(getClass().getClassLoader().getResourceAsStream(CLOUD_FILE), MAP_WIDTH, MAP_HEIGHT, true, true);
       STYLE_SHEET = this.getClass().getClassLoader().getResource("visResources/style.css").toExternalForm();
 
 

@@ -33,6 +33,8 @@ public class Territory extends AbstractTerritory
    */
   private EnumRegion region;
 
+  private double[] land1981 = new double[EnumFood.SIZE];
+  private double[] yield1981 = new double[EnumFood.SIZE];
   private long[] cropBudget = new long[EnumFood.SIZE];
 
   /**
@@ -152,6 +154,68 @@ public class Territory extends AbstractTerritory
       budget += cropBudget[i];
     }
     return budget;
+  }
+
+  public void setLand1981(EnumFood food, double land)
+  {
+    land1981[food.ordinal()] = land;
+  }
+
+  /**
+   * Get the land area for the type of food
+   *
+   * @param food EnumFood
+   * @return current land area of the food
+   */
+  public double getLand1981(EnumFood food)
+  {
+    return land1981[food.ordinal()];
+  }
+
+  /**
+   * Get the total land area for all crops
+   *
+   * @return total land area of all crops for the territory
+   */
+  public double getLand1981()
+  {
+    double land = 0;
+    for (int i = 0; i < land1981.length; i++)
+    {
+      land += land1981[i];
+    }
+    return land;
+  }
+
+  public void setYield1981(EnumFood food, double yield)
+  {
+    yield1981[food.ordinal()] = yield;
+  }
+
+  /**
+   * Get the yield for the type of food
+   *
+   * @param food EnumFood
+   * @return current yield of the food
+   */
+  public double getYield1981(EnumFood food)
+  {
+    return yield1981[food.ordinal()];
+  }
+
+  /**
+   * Get the total yield for all crops
+   *
+   * @return total yield of all crops for the territory
+   */
+  public double getYield1981()
+  {
+    double yield = 0;
+    for (int i = 0; i < yield1981.length; i++)
+    {
+      yield += yield1981[i];
+    }
+    return yield;
   }
 
   /**

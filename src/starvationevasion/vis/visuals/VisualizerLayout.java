@@ -1,17 +1,19 @@
 package starvationevasion.vis.visuals;
 
-import javafx.event.Event;
-import javafx.scene.AmbientLight;
+import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
-import javafx.scene.input.MouseDragEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.input.ZoomEvent;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import starvationevasion.vis.controller.EarthViewer;
+
+import javax.swing.*;
 
 /**
  * Created by Tess Daughton on 11/23/15.
@@ -19,18 +21,30 @@ import starvationevasion.vis.controller.EarthViewer;
  */
 public class VisualizerLayout extends BorderPane
 {
-  private  ResourceLoader RESOURCE_LOADER = EarthViewer.RESOURCE_LOADER;
-  private  UserEventHandler userEventHandler;
-
+  private ResourceLoader RESOURCE_LOADER = EarthViewer.RESOURCE_LOADER;
+  private UserEventHandler userEventHandler;
   private Earth earth;
   private Group earthGroup;
   private Group earthOverlay;
   private Group earthWeather;
-  private String regionTitle;
-  private boolean showOverlay;
-  private boolean showClouds;
-  private PerspectiveCamera camera = new PerspectiveCamera();
   private PointLight pointLight = new PointLight();
+  private boolean earthRotating = true;
+  private boolean showOverlay = false;
+  private boolean showClouds = false;
+
+  private VBox earthInfo;
+  private GridPane center;
+
+  private Label country;
+  private Label latLong;
+  private Label avgTemp;
+  private Label crops;
+
+  private Button regionOverlay;
+  private Button weather;
+  private Button rotate;
+
+
 
   /**
    * VisualizerLayout Constructor
@@ -42,10 +56,10 @@ public class VisualizerLayout extends BorderPane
   {
     earth = earthViewer.getEarth();
     earthGroup = earth.getEarth();
-    this.initEventHandling(largeRadius);
     this.initEarth();
-    this.initKeyBindings();
     this.initOverlays();
+    this.initEarthInfo();
+    this.initEventHandling(largeRadius);
   }
 
   /**
@@ -54,6 +68,7 @@ public class VisualizerLayout extends BorderPane
    */
   private void initEarth()
   {
+    center=new GridPane();
     earthGroup = earth.getEarth();
     earthGroup.setScaleX(1.0);
     earthGroup.setScaleY(1.0);
@@ -61,12 +76,43 @@ public class VisualizerLayout extends BorderPane
     earthGroup.setDisable(false);
     earthGroup.requestFocus();
     this.setPrefSize(500, 500);
-    this.setCenter(earthGroup);
+    center.add(earthGroup,0,0);
+    this.setCenter(center);
     pointLight.setColor(Color.WHITE);
     pointLight.setTranslateZ(-4000);
     pointLight.setTranslateX(4000);
     pointLight.setTranslateY(-1000);
     this.getChildren().add(pointLight);
+  }
+
+  private void initEarthInfo()
+  {
+    earthInfo = new VBox();
+    earthInfo.setMaxWidth(300);
+    earthInfo.setPrefWidth(300);
+    earthInfo.setMaxHeight(200);
+    earthInfo.setPrefHeight(200);
+    earthInfo.setId("earthInfo");
+    country = new Label("Country: ");
+    latLong = new Label("Global Position: ");
+    avgTemp = new Label("Average Temperature: ");
+    crops = new Label("Crops Grown: ");
+    rotate = new Button("Earth Rotation: Off");
+    weather = new Button("Show Weather Events");
+    regionOverlay = new Button("Show Region Map");
+    country.setTextFill(Color.WHITE);
+    latLong.setTextFill(Color.WHITE);
+    avgTemp.setTextFill(Color.WHITE);
+    crops.setTextFill(Color.WHITE);
+    weather.setTextFill(Color.WHITE);
+    rotate.setTextFill(Color.WHITE);
+    regionOverlay.setTextFill(Color.WHITE);
+    weather.setId("button");
+    rotate.setId("button");
+    regionOverlay.setId("button");
+    earthInfo.getChildren().addAll(country, latLong, avgTemp, crops, rotate, weather, regionOverlay);
+    this.setLeft(earthInfo);
+
   }
 
   /**
@@ -76,21 +122,34 @@ public class VisualizerLayout extends BorderPane
   {
     earthOverlay = earth.getEarthOverlay();
     earthWeather = earth.getEarthWeather();
-
   }
 
   private void initEventHandling(int largeRadius)
   {
-    userEventHandler = new UserEventHandler(earth);
+    userEventHandler = new UserEventHandler(earth, this);
     userEventHandler.setLargeEarthRadius(largeRadius);
     earthGroup.addEventFilter(MouseDragEvent.DRAG_DETECTED, event -> userEventHandler.handle(event));
     earthGroup.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> userEventHandler.handle(event));
     earthGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> userEventHandler.handle(event));
+    earthGroup.addEventFilter(MouseEvent.MOUSE_MOVED, event -> userEventHandler.handle(event));
+
     earthGroup.addEventFilter(ScrollEvent.ANY, event -> userEventHandler.handle(event));
     earthGroup.addEventFilter(ZoomEvent.ANY, event -> userEventHandler.handle(event));
+    weather.setOnAction(event -> handleWeather(event));
+    regionOverlay.setOnAction(event -> handleOverlay(event));
+    rotate.setOnAction(event->handleRotate(event));
 
   }
 
+  protected void setRegionString(String regionName)
+  {
+    country.setText("Country: " + regionName);
+  }
+
+  protected void setLatLong(double lat, double lon)
+  {
+    latLong.setText("Global Position: " + String.format("%.3f, %.3f", lat, lon));
+  }
   /**
    * Called when user specifies they want to see earthOverlay inside of UserEventHandler
    * Will attach transparent earthOverlay to earthGroup
@@ -126,62 +185,45 @@ public class VisualizerLayout extends BorderPane
     earthGroup.getChildren().remove(earthWeather);
   }
 
-  private void initKeyBindings()
+  public void handleWeather(ActionEvent event)
   {
-    this.setOnKeyPressed(event ->
+    if (showClouds)
     {
-      switch (event.getCode())
-      {
-        case P:
-          //currently I cannot find a stop for this animation
-          earth.startRotate();
-          break;
-
-        case R:
-          if (showOverlay)
-          {
-            this.removeOverlay();
-            showOverlay = false;
-          }
-        else
-          { this.showOverlay();
-            showOverlay = true;
-          }
-          break;
-
-        case C:
-          if (showClouds)
-          {
-            this.removeWeather();
-            showClouds = false;
-          } else
-          {
-            this.showWeather();
-            showClouds = true;
-
-
-          }
-        break;
-
-
+      weather.setText("Show Weather Events");
+      this.removeWeather();
+      showClouds = false;
+    } else
+    {
+      weather.setText("Hide Weather Events");
+      this.showWeather();
+      showClouds = true;
     }
-  });
-}
-
-  /**
-   * Called inside UserEventHandler when user clicks on a region
-   * @param s   Title of the region to be displayed
-   */
-  public void setRegionTitle(String s)
-  {
-    regionTitle = s;
   }
-
-  /**
-   * @return
-   */
-  public String getRegionTitle()
+  public void handleOverlay(ActionEvent event)
   {
-    return regionTitle;
+    if (showOverlay)
+    {
+      regionOverlay.setText("Show Region Map");
+      this.removeOverlay();
+      showOverlay = false;
+    } else
+    {
+      regionOverlay.setText("Hide Region Map");
+      this.showOverlay();
+      showOverlay = true;
+    }
+  }
+  public void handleRotate(ActionEvent event)
+  {
+    if (earthRotating)
+    {
+      rotate.setText("Earth Rotation: Off");
+      earth.pauseRotation();
+    }
+    else
+    {
+      rotate.setText("Earth Rotation: On");
+      earth.resumeRotation();
+    }
   }
 }

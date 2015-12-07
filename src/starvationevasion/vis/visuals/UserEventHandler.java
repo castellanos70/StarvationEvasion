@@ -168,14 +168,11 @@ public class UserEventHandler  implements EventHandler
       if ((event.getEventType().equals(MouseEvent.MOUSE_CLICKED)
           || event.getEventType().equals(MouseEvent.MOUSE_MOVED)))
       {
-        if(event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) earth.pauseRotation();
         displayEarthInformation((MouseEvent) event);
         latLongHandler((MouseEvent) event);
-
         event.consume();
       }
       earthStartScroll((MouseEvent) event);
-      earth.pauseRotation();
 
     }
   }

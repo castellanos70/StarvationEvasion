@@ -7,10 +7,9 @@ import javafx.scene.PointLight;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 import starvationevasion.common.EnumFood;
 import starvationevasion.vis.controller.EarthViewer;
 
@@ -34,12 +33,17 @@ public class VisualizerLayout extends BorderPane
   private boolean showClouds = false;
 
   private VBox earthInfo;
+  private VBox left = new VBox();
+  private VBox cropNames = new VBox();
+  private VBox cropNums = new VBox();
+  private GridPane earthInfoGrid;
   private GridPane center;
 
   private Label country;
   private Label latLong;
   private Label avgTemp;
-  private Label crops;
+  private Label crop_Names;
+  private Label crop_Nums;
 
   private Button regionOverlay;
   private Button weather;
@@ -88,31 +92,50 @@ public class VisualizerLayout extends BorderPane
 
   private void initEarthInfo()
   {
+    earthInfoGrid = new GridPane();
     earthInfo = new VBox();
     earthInfo.setMaxWidth(300);
     earthInfo.setPrefWidth(300);
     earthInfo.setMaxHeight(600);
-    earthInfo.setPrefHeight(600);
-    earthInfo.setId("earthInfo");
+    earthInfo.setPrefHeight(300);
+    earthInfo.setSpacing(20);
+    earthInfoGrid.setMaxWidth(300);
+    earthInfoGrid.setPrefWidth(300);
+    left.setId("earthInfo");
+
     country = new Label("Country: ");
     latLong = new Label("Global Position: ");
     avgTemp = new Label("Average Temperature: ");
-    crops = new Label("Crops Grown: ");
+    crop_Names = new Label("Crops Grown: ");
+    crop_Nums = new Label("\n");
     rotate = new Button("Earth Rotation: Off");
     weather = new Button("Show Weather Events");
     regionOverlay = new Button("Show Region Map");
+    crop_Names.setTextAlignment(TextAlignment.LEFT);
+    crop_Nums.setTextAlignment(TextAlignment.LEFT);
     country.setTextFill(Color.WHITE);
     latLong.setTextFill(Color.WHITE);
     avgTemp.setTextFill(Color.WHITE);
-    crops.setTextFill(Color.WHITE);
+    crop_Names.setTextFill(Color.WHITE);
+    crop_Nums.setTextFill(Color.WHITE);
+
     weather.setTextFill(Color.WHITE);
     rotate.setTextFill(Color.WHITE);
     regionOverlay.setTextFill(Color.WHITE);
+    weather.setPrefWidth(200);
+    rotate.setPrefWidth(200);
+    regionOverlay.setPrefWidth(200);
     weather.setId("button");
     rotate.setId("button");
     regionOverlay.setId("button");
-    earthInfo.getChildren().addAll(country, latLong, avgTemp, rotate, weather, regionOverlay, crops);
-    this.setLeft(earthInfo);
+    cropNames.getChildren().add(crop_Names);
+    cropNums.getChildren().add(crop_Nums);
+    earthInfoGrid.getColumnConstraints().add(new ColumnConstraints(125));
+    earthInfoGrid.add(crop_Names, 0, 0);
+    earthInfoGrid.add(crop_Nums, 1, 0);
+    earthInfo.getChildren().addAll(country, latLong, avgTemp, rotate, weather, regionOverlay);
+    left.getChildren().addAll(earthInfo,earthInfoGrid);
+    this.setLeft(left);
 
   }
 
@@ -166,19 +189,25 @@ public class VisualizerLayout extends BorderPane
 
   protected void setFoodProduced(int[] data)
   {
-    String s = "Food:\n";
+    String names = "Food:\n";
+    String nums = "";
     if (data != null && data.length == EnumFood.SIZE)
     {
       for (int i = 0; i < data.length; i++)
       {
-        s += (data[i] > 0) ? EnumFood.values()[i].name() + ":\t" + data[i] + "\n" : "";
+        names += (data[i] > 0) ? EnumFood.values()[i].name() + "\n" : "";
+        nums +=  (data[i] > 0) ? data[i] + "\n" : "";
       }
     }
     else
     {
-      s = "Food: No country to display";
+      names = "Food: N/A";
     }
-    crops.setText(s);
+    crop_Names.setText(names);
+
+
+    crop_Nums.setText(nums);
+
   }
   /**
    * Called when user specifies they want to see earthOverlay inside of UserEventHandler
@@ -224,6 +253,12 @@ public class VisualizerLayout extends BorderPane
       showClouds = false;
     } else
     {
+      if(showOverlay) {
+        regionOverlay.setText("Show Region Map");
+        removeOverlay();
+        showOverlay=false;
+
+      }
       weather.setText("Hide Weather Events");
       this.showWeather();
       showClouds = true;
@@ -238,6 +273,11 @@ public class VisualizerLayout extends BorderPane
       showOverlay = false;
     } else
     {
+      if(showClouds) {
+        weather.setText("Show Weather Events");
+        removeWeather();
+        showClouds=false;
+      }
       regionOverlay.setText("Hide Region Map");
       this.showOverlay();
       showOverlay = true;

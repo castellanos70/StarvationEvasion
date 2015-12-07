@@ -21,6 +21,7 @@ public class ResourceLoader
   private static final String STARS = "visResources/night_sky.jpg";//"vis_resources/SPEC_MAP.jpg";
   private static final String REGION_OVERELAY_FILE = "visResources/WorldMapRegionsFull8x6.png";//"vis_resources/SPEC_MAP.jpg";
   private static final String CLOUD_FILE = "visResources/Cloud-32.png";//"vis_resources/SPEC_MAP.jpg";
+  private static final String REGION_OVERLAY_BACKGROUND_FILE = "visResources/region_background.png";
 
 
   private static final String DIFFUSE_CLOUD = "visResources/Cloud-32.png";
@@ -68,9 +69,8 @@ public class ResourceLoader
       REGION_OVERLAY = new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERELAY_FILE), MAP_WIDTH, MAP_HEIGHT, true, true);
       CLOUDS = new Image(getClass().getClassLoader().getResourceAsStream(CLOUD_FILE), MAP_WIDTH, MAP_HEIGHT, true, true);
       STYLE_SHEET = this.getClass().getClassLoader().getResource("visResources/style.css").toExternalForm();
-
-
     }
+
     catch(NullPointerException e)
     {
       e.printStackTrace();

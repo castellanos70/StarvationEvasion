@@ -508,6 +508,53 @@ public class Region extends AbstractTerritory
     }
   }
 
+  public void estimateInitialCropLandArea(List<CropZoneData> cropData)
+  {
+    if (region == null)
+    {
+      estimateInitialUSCropLandArea(cropData);
+    }
+  }
+
+  public void estimateInitialUSCropLandArea(List<CropZoneData> cropData)
+  {
+    // from spec, 1981 total farm land is 0.7 of 2014 farm land
+    for (CropZoneData zoneData : cropData)
+    {
+      for (Territory t : getTerritories())
+      {
+        double cropLand = cropLandAreaHelper(t, zoneData) * ((t.totalFarmLand * 0.7) / cropLandAreaHelper(t, cropData));
+        double cropYield = getTerritoryProduction(t, zoneData.food) / cropLand;
+
+        t.setLand1981(zoneData.food, cropLand);
+        t.setYield1981(zoneData.food, cropYield);
+      }
+    }
+  }
+
+  // defined to be the temp function in the spec
+  private double cropLandAreaHelper(Territory t, CropZoneData zoneData)
+  {
+    return getTerritoryProduction(t, zoneData.food) / zoneData.tonsPerKM2;
+  }
+
+  // finds the sum of the temp function defined in the spec
+  private double cropLandAreaHelper(Territory t, List<CropZoneData> zoneData)
+  {
+    double sum = 0;
+    for (CropZoneData zone : zoneData)
+    {
+      sum += cropLandAreaHelper(t, zone);
+    }
+    return sum;
+  }
+
+  private double getTerritoryProduction(Territory t, EnumFood food)
+  {
+    long cropProductionPerCapita = getInitialProduction(food, 1981) / getPopulation(1981);
+    return cropProductionPerCapita * t.getPopulation(1981);
+  }
+
   /**
    * A region is a collection of one or more territories.
    */

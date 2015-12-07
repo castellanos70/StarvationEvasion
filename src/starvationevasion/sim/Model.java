@@ -162,6 +162,7 @@ public class Model
     //
     for (Region region : regionList) region.estimateInitialYield();
     for (Region region : regionList) region.estimateInitialBudget(cropLoader.getCategoryData());
+    for (Region region : regionList) region.estimateInitialCropLandArea(cropLoader.getCategoryData());
 
     // Now iterate over the enumeration to optimize planting for each game
     // region.

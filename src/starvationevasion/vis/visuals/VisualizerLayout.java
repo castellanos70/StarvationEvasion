@@ -81,7 +81,8 @@ public class VisualizerLayout extends BorderPane
     earthGroup.setDisable(false);
     earthGroup.requestFocus();
     this.setPrefSize(800, 600);
-    center.add(earthGroup,0,0);
+    center.add(earthGroup, 0, 0);
+    center.setPadding(new Insets(20,20,0,0));
     this.setCenter(center);
     pointLight.setColor(Color.WHITE);
     pointLight.setTranslateZ(-4000);
@@ -107,7 +108,8 @@ public class VisualizerLayout extends BorderPane
     latLong = new Label("Global Position: ");
     avgTemp = new Label("Average Temperature: ");
     crop_Names = new Label("Crops Grown: ");
-    crop_Nums = new Label("\n");
+    crop_Nums = new Label("\n\n");
+    crop_Nums.setPadding(new Insets(15,0,0,0));
     rotate = new Button("Earth Rotation: Off");
     weather = new Button("Show Weather Events");
     regionOverlay = new Button("Show Region Map");

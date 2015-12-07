@@ -26,32 +26,52 @@ public class UserEventHandler  implements EventHandler
   private double anchorX, anchorY;
   private double anchorAngleX = 0;
   private double anchorAngleY = 0;
-  private Group earth;
+  private Group earthGroup;
+  private Earth earth;
   private Scale earthScale;
   private double LARGE_EARTH_RADIUS;
 
 
-  public UserEventHandler(Group earth)
+  public UserEventHandler(Earth earth)
   {
     this.earth = earth;
+    this.earthGroup = earth.getEarth();
 //    earthScale = new Scale();
 //    earth.getTransforms().add(earthScale);
-  }
-
-  protected void setLargeEarthRadius(double radius)
-  {
-    this.LARGE_EARTH_RADIUS=radius;
-  }
-
-  protected void earthScroll(MouseDragEvent event)
-  {
     Rotate groupXRotate, groupYRotate;
-    earth.getTransforms().setAll(
+    earthGroup.getTransforms().setAll(
         groupXRotate = new Rotate(0, Rotate.X_AXIS),
         groupYRotate = new Rotate(0, Rotate.Y_AXIS)
     );
     groupXRotate.angleProperty().bind(angleX);
     groupYRotate.angleProperty().bind(angleY);
+
+  }
+
+  protected void setLargeEarthRadius(double radius)
+  {
+    this.LARGE_EARTH_RADIUS = radius;
+  }
+
+  /**
+   * Based on anchors that have been set when intially click, start rotating. Inside method there is a variable called
+   * scale. Adjusting this double value will cause the rotation to be slower or faster. 1 = normal speed, less than 1
+   * means slower, and greater than 1 means faster.
+   *
+   * @param event Event should contain x and y of scene.
+   */
+  protected void earthScroll(MouseEvent event) {
+    double scale = .1; //Adjust this to slow down rotations,
+    angleX.set(anchorAngleX - ((anchorY - event.getSceneY())*scale));
+    angleY.set(anchorAngleY + ((anchorX - event.getSceneX())*scale));
+  }
+
+  /**
+   * Before starting to rotate, set some anchor points to rotate against
+   *
+   * @param event Event should contain x and y
+   */
+  protected void earthStartScroll(MouseEvent event) {
     anchorX = event.getSceneX();
     anchorY = event.getSceneY();
     anchorAngleX = angleX.get();
@@ -66,16 +86,16 @@ public class UserEventHandler  implements EventHandler
     double scrollFactor = event.getDeltaY();
     if (scrollFactor > 0)
     {
-      if (earth.getScaleZ() < 0.5) return;
-      earth.setScaleZ(earth.getScaleZ() * .99);
-      earth.setScaleX(earth.getScaleX() * .99);
-      earth.setScaleY(earth.getScaleY() * .99);
+      if (earthGroup.getScaleZ() < 0.5) return;
+      earthGroup.setScaleZ(earthGroup.getScaleZ() * .99);
+      earthGroup.setScaleX(earthGroup.getScaleX() * .99);
+      earthGroup.setScaleY(earthGroup.getScaleY() * .99);
     } else if (scrollFactor < 0)
     {
-      if (earth.getScaleZ() > 2) return;
-      earth.setScaleZ(earth.getScaleZ() * 1.01);
-      earth.setScaleX(earth.getScaleX() * 1.01);
-      earth.setScaleY(earth.getScaleY() * 1.01);
+      if (earthGroup.getScaleZ() > 2) return;
+      earthGroup.setScaleZ(earthGroup.getScaleZ() * 1.01);
+      earthGroup.setScaleX(earthGroup.getScaleX() * 1.01);
+      earthGroup.setScaleY(earthGroup.getScaleY() * 1.01);
     }
     System.out.println(String.format("deltaX: %.3f", scrollFactor));
   }
@@ -85,34 +105,27 @@ public class UserEventHandler  implements EventHandler
     double zoomFactor = event.getX();
     if (zoomFactor > 0)
     {
-      if (earth.getScaleZ() > 2) return;
-      earth.setScaleZ(earth.getScaleZ() * .99);
-      earth.setScaleX(earth.getScaleX() * .99);
-      earth.setScaleY(earth.getScaleY() * .99);
+      if (earthGroup.getScaleZ() > 2) return;
+      earthGroup.setScaleZ(earthGroup.getScaleZ() * .99);
+      earthGroup.setScaleX(earthGroup.getScaleX() * .99);
+      earthGroup.setScaleY(earthGroup.getScaleY() * .99);
     } else if (zoomFactor < 0)
     {
-      if (earth.getScaleZ() < 0.5) return;
-      earth.setScaleZ(earth.getScaleZ() * 1.01);
-      earth.setScaleX(earth.getScaleX() * 1.01);
-      earth.setScaleY(earth.getScaleY() * 1.01);
+      if (earthGroup.getScaleZ() < 0.5) return;
+      earthGroup.setScaleZ(earthGroup.getScaleZ() * 1.01);
+      earthGroup.setScaleX(earthGroup.getScaleX() * 1.01);
+      earthGroup.setScaleY(earthGroup.getScaleY() * 1.01);
     }
     System.out.println(String.format("deltaX: %.3f", zoomFactor));
   }
 
   protected void latLongHandler(MouseEvent event)
   {
-
     PickResult pickResult = event.getPickResult();
-    Point3D point = pickResult.getIntersectedPoint();
-
-    double x = point.getX();
-    double y = point.getY();
-    double z = point.getZ();
-    double lat = Math.toDegrees(Math.acos(y / LARGE_EARTH_RADIUS) - Math.PI / 2); //theta
-    double lon = Math.toDegrees(Math.atan(x / z)); //phi
-    if (z > 0) lon += (180 * Math.signum(-lon));
-    Coordinate c = new Coordinate(lon, lat);
-//      System.out.println(lon + " " + lat + " " + point);
+    Point2D point = pickResult.getIntersectedTexCoord(); //in percentages
+    double lat = (point.getY() - 0.5) * -180;
+    double lon = (point.getX() - 0.5) * 360;
+//    System.out.println(lat, lon);
   }
 
   public void displayEarthInformation(MouseEvent event)
@@ -132,12 +145,16 @@ public class UserEventHandler  implements EventHandler
   @Override
   public void handle(Event event)
   {
-    if (event instanceof MouseDragEvent)
+    if (event.getEventType().equals(MouseDragEvent.MOUSE_DRAGGED))
     {
-      earthScroll((MouseDragEvent) event);
-    } else if (event instanceof ScrollEvent)
+      earthScroll((MouseEvent) event);
+      event.consume();
+    }
+    else if (event instanceof ScrollEvent)
     {
+      earth.pauseRotation();
       earthZoom((ScrollEvent) event);
+      event.consume();
     } else if (event instanceof ZoomEvent)
     {
       earthZoom((ZoomEvent) event);
@@ -146,7 +163,10 @@ public class UserEventHandler  implements EventHandler
     {
       displayEarthInformation((MouseEvent) event);
       latLongHandler((MouseEvent) event);
+      earthStartScroll((MouseEvent) event);
     }
+    event.consume();
   }
 }
+
 

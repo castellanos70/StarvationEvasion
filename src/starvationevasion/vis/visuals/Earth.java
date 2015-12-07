@@ -105,7 +105,7 @@ public class Earth
   {
     Sphere cloud = new Sphere(LARGE_EARTH_RADIUS * 1.05);
     final PhongMaterial cloudMaterial = new PhongMaterial();
-    cloudMaterial.setDiffuseMap(RESOURCE_LOADER.REGION_OVERLAY);
+    cloudMaterial.setDiffuseMap(RESOURCE_LOADER.CLOUDS);
     cloud.setMaterial(cloudMaterial);
     return new Group(cloud);
   }
@@ -185,6 +185,16 @@ public class Earth
   {
     largeRotate.pause();
   }
+
+  /**
+   * Used for Big Earth mode to restart rotation when user clicks and drags
+   */
+  protected void resumeRotation()
+  {
+    largeRotate.play();
+  }
+
+
 
   /**
    * Vis Team Testing Purposes

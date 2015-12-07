@@ -291,11 +291,13 @@ public class VisualizerLayout extends BorderPane
     {
       rotate.setText("Earth Rotation: Off");
       earth.pauseRotation();
+      earthRotating=false;
     }
     else
     {
       rotate.setText("Earth Rotation: On");
       earth.resumeRotation();
+      earthRotating=true;
     }
   }
 }

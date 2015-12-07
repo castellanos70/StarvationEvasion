@@ -98,8 +98,8 @@ public class Earth {
   private Group buildOverlay() {
     Sphere overlay = new Sphere(LARGE_EARTH_RADIUS);
     final PhongMaterial cloudMaterial = new PhongMaterial();
-    cloudMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_MAP);
-    cloudMaterial.setSelfIlluminationMap(RESOURCE_LOADER.REGION_OVERLAY);
+    //cloudMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_MAP);
+    cloudMaterial.setDiffuseMap(RESOURCE_LOADER.REGION_OVERLAY);
     overlay.setMaterial(cloudMaterial);
     return new Group(overlay);
   }

@@ -147,12 +147,12 @@ public class UserEventHandler  implements EventHandler
   {
     if (event.getEventType().equals(MouseDragEvent.MOUSE_DRAGGED))
     {
+      earth.pauseRotation();
       earthScroll((MouseEvent) event);
       event.consume();
     }
     else if (event instanceof ScrollEvent)
     {
-      earth.pauseRotation();
       earthZoom((ScrollEvent) event);
       event.consume();
     } else if (event instanceof ZoomEvent)
@@ -161,8 +161,8 @@ public class UserEventHandler  implements EventHandler
     }
     else if(event instanceof MouseEvent)
     {
-      displayEarthInformation((MouseEvent) event);
-      latLongHandler((MouseEvent) event);
+//      displayEarthInformation((MouseEvent) event);
+//      latLongHandler((MouseEvent) event);
       earthStartScroll((MouseEvent) event);
     }
     event.consume();

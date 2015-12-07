@@ -20,6 +20,7 @@ public class ResourceLoader
   //"http://planetmaker.wthr.us/img/earth_specularmap_flat_8192x4096.jpg";
   private static final String STARS = "visResources/night_sky.jpg";//"vis_resources/SPEC_MAP.jpg";
   private static final String REGION_OVERELAY_FILE = "visResources/WorldMapRegionsFull8x6.png";//"vis_resources/SPEC_MAP.jpg";
+  private static final String CLOUD_FILE = "visResources/Cloud-32.png";//"vis_resources/SPEC_MAP.jpg";
 
 
   private static final String DIFFUSE_CLOUD = "visResources/Cloud-32.png";
@@ -34,6 +35,7 @@ public class ResourceLoader
   protected static Image DIFF_CLOUD;
   protected static Image DIFF_PINPOINT;
   protected static Image REGION_OVERLAY;
+  protected static Image CLOUDS;
   public static String STYLE_SHEET;
 
   protected static int LARGE_EARTH_RADIUS;
@@ -55,6 +57,7 @@ public class ResourceLoader
       COLD_IMAGE = new Image(  getClass().getClassLoader().getResourceAsStream("visResources/snowflake.png"));
       HOT_IMAGE = new Image(getClass().getClassLoader().getResourceAsStream("visResources/hot.png"));
       REGION_OVERLAY = new Image(getClass().getClassLoader().getResourceAsStream(REGION_OVERELAY_FILE), MAP_WIDTH, MAP_HEIGHT, true, true);
+      CLOUDS = new Image(getClass().getClassLoader().getResourceAsStream(CLOUD_FILE), MAP_WIDTH, MAP_HEIGHT, true, true);
       STYLE_SHEET = this.getClass().getClassLoader().getResource("visResources/style.css").toExternalForm();
 
 

@@ -458,7 +458,9 @@ public class Region extends AbstractTerritory
     for (EnumFood crop : EnumFood.values())
     {
       int idx = crop.ordinal();
-      double need = (double) (cropProduction[idx] + cropImport[idx] - cropExport[idx]) / (getPopulation(year) - undernourished);
+      double wellFed = (double) getPopulation(year) - undernourished;
+      if (wellFed == 0) wellFed = 1; // avoid divide by zero
+      double need = (cropProduction[idx] + cropImport[idx] - cropExport[idx]) / wellFed;
       setCropNeedPerCapita(crop, need);
     }
   }

@@ -150,6 +150,19 @@ public class VisualizerLayout extends BorderPane
   {
     latLong.setText("Global Position: " + String.format("%.3f, %.3f", lat, lon));
   }
+
+  protected void setTemperature(float temperature)
+  {
+    if (temperature == Float.MAX_VALUE)
+    {
+      avgTemp.setText("Average temperature: No value found");
+    }
+    else
+    {
+      avgTemp.setText("Average temperature: " + String.format("%.3f", temperature));
+    }
+
+  }
   /**
    * Called when user specifies they want to see earthOverlay inside of UserEventHandler
    * Will attach transparent earthOverlay to earthGroup

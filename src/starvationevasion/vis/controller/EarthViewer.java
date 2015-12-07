@@ -4,11 +4,15 @@ package starvationevasion.vis.controller;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import starvationevasion.common.MapPoint;
+import starvationevasion.common.SpecialEventData;
 import starvationevasion.vis.visuals.Earth;
 import starvationevasion.vis.visuals.ResourceLoader;
 import starvationevasion.vis.visuals.SpecialEffect;
 import starvationevasion.vis.visuals.VisualizerLayout;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Queue;
 
 /**
@@ -32,7 +36,7 @@ public class EarthViewer
     earth = new Earth(smallEarthRadius, largeEarthRadius);
     specialEffect = new SpecialEffect(earth);
 //    specialEffect.buildClouds();
-    specialEffect.buildPinPoint(-45,0);
+//    specialEffect.buildPinPoint(-45,0);
 
 
     this.LARGE_EARTH_RADIUS=largeEarthRadius;
@@ -63,10 +67,32 @@ public class EarthViewer
   /**
    * Called yearly/whenever Client decides to update Global Events (e.g., beginning of turn, beginning of year).
    * Pass in an array with global event data for Visualizer to parse and then display
-   * @param eventData
+   * @param specialEventData contains each of the six special event data. Each specialeventdata can contain multiple locations.
    */
-  public void updateEvents(String[] eventData)
-  {}
+  public void updateEvents(ArrayList<SpecialEventData> specialEventData)
+  {
+
+  }
+
+  public void updateTemperature(HashMap<MapPoint, Float> data)
+  {
+    if (data != null) earth.setTemperatures(data);
+
+    /* testing purposes */
+//    int count = 0;
+//    for (Map.Entry<MapPoint, Float> entry : data.entrySet())
+//    {
+//      int x = (int)entry.getKey().latitude;
+//      int y = (int)entry.getKey().longitude;
+//      if (entry.getValue() - earth.getTemperature(x, y) > .01)
+//      {
+//        System.out.println(entry.getValue() + ":" +earth.getTemperature(x, y));
+//      }
+//      count++;
+//      if (count % 100 == 0) System.out.println(count + "/" + data.entrySet().size());
+//    }
+
+  }
 
   /**
    * To be called by ClientGUI to add Vis style sheet to the Scene client creates

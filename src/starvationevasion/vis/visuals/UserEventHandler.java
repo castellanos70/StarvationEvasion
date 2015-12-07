@@ -140,6 +140,10 @@ public class UserEventHandler  implements EventHandler
     double lon = (point.getX() - 0.5) * 360;
     String regionName = SIM_PARSER.parse(lat, lon);
     visLayout.setRegionString(regionName);
+
+    /* temperature - get closest map point in earth's list*/
+    visLayout.setTemperature(earth.getTemperature(lat, lon));
+
   }
 
 

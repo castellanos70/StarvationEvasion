@@ -6,7 +6,11 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import starvationevasion.common.MapPoint;
+import starvationevasion.common.Util;
 import starvationevasion.vis.controller.EarthViewer;
+
+import java.util.HashMap;
 
 /**
  * Created by Tess Daughton on 11/15/15.
@@ -62,6 +66,21 @@ public class ClientGUI extends Application implements EventHandler<KeyEvent> {
           earthStage.setScene(earthScene);
           earthStage.show();
         }
+      }
+      case ENTER:
+      {
+        //World Data..
+        /* client passes in crop and temperature data, expecting MapPoints to be whole degrees */
+        HashMap<MapPoint, Float> tempData = new HashMap<>();
+        HashMap<MapPoint, int []> foodData = new HashMap<>();
+        for (double lat = -90; lat < 90; lat += 1) {
+          for (double lon = -180; lon < 180; lon += 1) {
+            MapPoint p = new MapPoint(lat, lon);
+            /* temperature test data */
+            tempData.put(p, Util.rand.nextFloat() * 100);
+          }
+        }
+        earthViewer.updateTemperature(tempData);
       }
     }
   }

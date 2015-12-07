@@ -37,8 +37,12 @@ public class EarthViewer
     earth = new Earth(smallEarthRadius, largeEarthRadius);
     specialEffect = new SpecialEffect(earth);
     specialEffect.buildClouds();
-    specialEffect.buildPinPoint(-45,0);
-    specialEffect.buildEffect("hurricane", 0.0, 0.0);
+    specialEffect.buildPinPoint(0,20);
+    specialEffect.buildEffect("hurricane", 180.0, 0.0);
+    specialEffect.buildEffect("forestFire", 0.0, 20.0);
+    specialEffect.buildEffect("flood", 0.0, -20.0);
+    specialEffect.buildEffect("drought", 20.0, 0.0);
+    specialEffect.buildEffect("blight", 20.0, -20.0);
 
 
     this.LARGE_EARTH_RADIUS=largeEarthRadius;

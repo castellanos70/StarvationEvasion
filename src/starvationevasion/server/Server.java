@@ -28,14 +28,17 @@ public class Server
   private ConcurrentLinkedQueue<Tuple<Serializable, ServerWorker>> messageQueue = new ConcurrentLinkedQueue<>();
   private PasswordFile passwordFile;
   private Map<String, String> aiCredentials = Collections.synchronizedMap(new HashMap<>());
+  private Map<String, EnumRegion> finalUsernames = Collections.synchronizedMap(new HashMap<>());
   private ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
   private ScheduledFuture<?> phaseChangeFuture;
+  private long phaseEndTime;
   private Simulator simulator;
   private Map<EnumRegion, List<EnumPolicy>> playerHands = new HashMap<>();
   private Map<EnumRegion, RegionTurnData> regionTurnData = new HashMap<>();
   private Map<EnumRegion, PolicyCard> regionVoteRequiredCards = new HashMap<>();
   private Map<PolicyCard, List<EnumRegion>> regionsWhoVotedOnCards = new HashMap<>();
   private ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>(), draftedPolicyCards = new ArrayList<>();
+  private WorldData currentWorldData;
 
   public Server(String loginFilePath, String[] AICommand)
   {
@@ -403,6 +406,10 @@ public class Server
 
       }
     }
+    finalUsernames.putAll(
+        connectedClients.stream()
+            .filter(c -> c.getRegion() != null)
+            .collect(Collectors.toMap(ServerWorker::getUserName, ServerWorker::getRegion)));
     setServerState(ServerState.DRAWING);
     broadcast(new BeginGame(getTakenRegions()));
     simulator = new Simulator(Constant.FIRST_YEAR);
@@ -411,7 +418,8 @@ public class Server
       playerHands.put(region, Arrays.asList(simulator.drawCards(region)));
     }
     broadcast(PhaseStart.constructPhaseStart(ServerState.DRAWING, -1));
-    broadcastSimulatorState(simulator.init());
+    currentWorldData = simulator.init();
+    broadcastSimulatorState(currentWorldData);
     enterDraftingPhase();
   }
 
@@ -419,7 +427,9 @@ public class Server
   {
     enactedPolicyCards.clear();
     setServerState(ServerState.DRAFTING);
-    broadcast(PhaseStart.constructPhaseStart(ServerState.DRAFTING, ServerConstants.DRAFTING_PHASE_TIME));
+    final PhaseStart message = PhaseStart.constructPhaseStart(ServerState.DRAFTING, ServerConstants.DRAFTING_PHASE_TIME);
+    phaseEndTime = message.phaseEndTime;
+    broadcast(message);
     for (EnumRegion region : EnumRegion.US_REGIONS)
     {
       regionTurnData.put(region, new RegionTurnData());
@@ -430,7 +440,9 @@ public class Server
   private void enterVotingPhase()
   {
     setServerState(ServerState.VOTING);
-    broadcast(PhaseStart.constructPhaseStart(ServerState.VOTING, ServerConstants.VOTING_PHASE_TIME));
+    final PhaseStart message = PhaseStart.constructPhaseStart(ServerState.VOTING, ServerConstants.VOTING_PHASE_TIME);
+    phaseEndTime = message.phaseEndTime;
+    broadcast(message);
     phaseChangeFuture = scheduledExecutorService.schedule(this::enterDrawingPhase, ServerConstants.VOTING_PHASE_TIME, TimeUnit.MILLISECONDS);
     regionsWhoVotedOnCards.clear();
     regionVoteRequiredCards.putAll(draftedPolicyCards.stream()
@@ -452,16 +464,16 @@ public class Server
     {
       entry.getValue().addAll(Arrays.asList(simulator.drawCards(entry.getKey())));
     }
-    WorldData worldData = simulator.nextTurn(enactedPolicyCards);
-    broadcastSimulatorState(worldData);
-    if (worldData.year >= Constant.LAST_YEAR)
+    currentWorldData = simulator.nextTurn(enactedPolicyCards);
+    broadcastSimulatorState(currentWorldData);
+    if (currentWorldData.year >= Constant.LAST_YEAR)
     {
       setServerState(ServerState.WIN);
       broadcast(PhaseStart.constructPhaseStart(ServerState.WIN, -1));
       setServerState(ServerState.END);
       broadcast(PhaseStart.constructPhaseStart(ServerState.END, -1));
     }
-    else if (Arrays.stream(worldData.regionData).allMatch(r -> r.population < 1))
+    else if (Arrays.stream(currentWorldData.regionData).allMatch(r -> r.population < 1))
     {
       setServerState(ServerState.LOSE);
       broadcast(PhaseStart.constructPhaseStart(ServerState.LOSE, -1));
@@ -476,9 +488,14 @@ public class Server
     for (ServerWorker client : connectedClients)
     {
       if (client.getRegion() == null) continue;
-      final List<EnumPolicy> playerHand = playerHands.get(client.getRegion());
-      client.send(new GameState(worldData, playerHand.toArray(new EnumPolicy[playerHand.size()])));
+      sendSimulatorState(worldData, client);
     }
+  }
+
+  private void sendSimulatorState(WorldData worldData, ServerWorker client)
+  {
+    final List<EnumPolicy> playerHand = playerHands.get(client.getRegion());
+    client.send(new GameState(worldData, playerHand.toArray(new EnumPolicy[playerHand.size()])));
   }
 
   private void handleLogin(ServerWorker client, Login message)
@@ -517,18 +534,30 @@ public class Server
     if (Login.generateHashedPassword(client.getLoginNonce(),
         passwordFile.credentialMap.get(message.username)).equals(message.hashedPassword))
     {
-      if (passwordFile.regionMap != null)
+      if (getCurrentState() != ServerState.LOGIN)
       {
-        client.setRegion(passwordFile.regionMap.get(message.username));
+        if (passwordFile.regionMap != null)
+        {
+          client.setRegion(passwordFile.regionMap.get(message.username));
+        }
+
+        client.setUserName(message.username);
+        client.send(new LoginResponse(client.getRegion() != null ?
+            LoginResponse.ResponseType.ASSIGNED_REGION : LoginResponse.ResponseType.CHOOSE_REGION, client.getRegion()));
+        final AvailableRegions availableRegions = getAvailableRegions();
+        broadcast(availableRegions);
+        if (getCurrentState() == ServerState.LOGIN && getTakenRegions().size() == passwordFile.credentialMap.size())
+        {
+          beginToStartGame();
+        }
       }
-      client.setUserName(message.username);
-      client.send(new LoginResponse(client.getRegion() != null ?
-          LoginResponse.ResponseType.ASSIGNED_REGION : LoginResponse.ResponseType.CHOOSE_REGION, client.getRegion()));
-      final AvailableRegions availableRegions = getAvailableRegions();
-      broadcast(availableRegions);
-      if (getCurrentState() == ServerState.LOGIN && getTakenRegions().size() == passwordFile.credentialMap.size())
+      else if (finalUsernames.containsKey(message.username))
       {
-        beginToStartGame();
+        client.setRegion(finalUsernames.get(message.username));
+        client.setUserName(message.username);
+        client.send(new LoginResponse(LoginResponse.ResponseType.ASSIGNED_REGION, client.getRegion()));
+        sendSimulatorState(currentWorldData, client);
+        client.send(new PhaseStart(getCurrentState(), Instant.now().getEpochSecond(), phaseEndTime));
       }
     }
     else

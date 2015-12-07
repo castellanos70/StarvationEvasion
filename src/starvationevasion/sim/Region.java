@@ -476,16 +476,16 @@ public class Region extends AbstractTerritory
 
   public void estimateInitialUSCropLandArea(List<CropZoneData> cropData)
   {
-    // from spec, 1981 total farm land is 0.7 of 2014 farm land
-    for (CropZoneData zoneData : cropData)
+    for (Territory t : getTerritories())
     {
-      for (Territory t : getTerritories())
-      {
-        double cropLand = cropLandAreaHelper(t, zoneData) * ((t.totalFarmLand * 0.7) / cropLandAreaHelper(t, cropData));
-        double cropYield = getTerritoryProduction(t, zoneData.food) / cropLand;
+      double territoryFarmLand = (t.totalFarmLand / 100) * t.getLandTotal();
+      double helperSum = cropLandAreaHelper(t, cropData);
+      double landCropRatio = territoryFarmLand / helperSum;
 
+      for (CropZoneData zoneData : cropData)
+      {
+        double cropLand = cropLandAreaHelper(t, zoneData) * landCropRatio;
         t.setLand1981(zoneData.food, cropLand);
-        t.setYield1981(zoneData.food, cropYield);
       }
     }
   }

@@ -33,6 +33,8 @@ public class Territory extends AbstractTerritory
    */
   private EnumRegion region;
 
+  private long[] cropBudget = new long[EnumFood.SIZE];
+
   /**
    * Territory constructor
    *
@@ -119,6 +121,37 @@ public class Territory extends AbstractTerritory
       }
       else cropYield[crop.ordinal()] = 0;
     }
+  }
+
+  public void setCropBudget(EnumFood food, long budget)
+  {
+    cropBudget[food.ordinal()] = budget;
+  }
+
+  /**
+   * Get the budget for the type of food
+   *
+   * @param food EnumFood
+   * @return current budget of the food
+   */
+  public long getCropBudget(EnumFood food)
+  {
+    return cropBudget[food.ordinal()];
+  }
+
+  /**
+   * Get the total budget for all crops
+   *
+   * @return total budget of all crops for the territory
+   */
+  public long getCropBudget()
+  {
+    long budget = 0;
+    for (int i = 0; i < cropBudget.length; i++)
+    {
+      budget += cropBudget[i];
+    }
+    return budget;
   }
 
   /**

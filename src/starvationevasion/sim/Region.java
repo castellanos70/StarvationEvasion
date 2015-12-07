@@ -8,6 +8,8 @@ import starvationevasion.common.MapPoint;
 import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
 
 /**
  * Region class extends AbstractAgriculturalUnit, includes methods for accessing its
@@ -355,7 +357,7 @@ public class Region extends AbstractTerritory
 	{ if (t.getName().startsWith("US-")) population += t.getPopulation(1981);
 	}
 
-    // category divided by the region’s population in 1000s of people.
+    // category divided by the regionï¿½s population in 1000s of people.
     //
     for (EnumFood crop : EnumFood.values())
     {
@@ -392,6 +394,7 @@ public class Region extends AbstractTerritory
     for (Territory t : territories) t.updateYield();
   }
 
+
   /**
    * Estimates the initial yield of all territories in the region.
    */
@@ -406,7 +409,7 @@ public class Region extends AbstractTerritory
       //
       estimateInitialUSYield();
       return;
-	}
+	  }
 
     // For United States regions, this data will be populated when the special book-
     // keeping region is visited (above).
@@ -447,8 +450,8 @@ public class Region extends AbstractTerritory
       for (Territory t : territories)
       { 
         if (t.getName().startsWith("US-") == false) 
-		{
-	      t.setCropNeedPerCapita(crop, need);
+		    {
+	        t.setCropNeedPerCapita(crop, need);
           t.setCropProduction(crop, (long) (cropProduction * t.getPopulation(1981)));
           t.setCropImport(crop, (long) (cropImport * t.getPopulation(1981)));
           t.setCropExport(crop, (long) (cropExport * t.getPopulation(1981)));
@@ -481,6 +484,27 @@ public class Region extends AbstractTerritory
       { cropYield[crop.ordinal()] = cropProduction[crop.ordinal()] / landCrop[crop.ordinal()];
       }
       else cropYield[crop.ordinal()] = 0;
+    }
+  }
+
+
+  /**
+   * Estimates the initial crop budget for a all of the territories in the region by multiplying the territory
+   * consumption of the crop by its cost.
+   *
+   * @param cropData crop data loaded from "/data/sim/CropData.csv"
+   */
+  public void estimateInitialBudget(List<CropZoneData> cropData)
+  {
+    for (CropZoneData zoneData : cropData)
+    {
+      long cropConsumptionPerCapita = getInitialConsumption(zoneData.food, 1981) / getPopulation(1981);
+      for (Territory t : getTerritories())
+      {
+        long territoryCropConsumption = cropConsumptionPerCapita * t.getPopulation(1981);
+        long budget = territoryCropConsumption * zoneData.pricePerMetricTon;
+        t.setCropBudget(zoneData.food, budget);
+      }
     }
   }
 

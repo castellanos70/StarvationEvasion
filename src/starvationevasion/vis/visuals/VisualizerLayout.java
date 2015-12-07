@@ -49,8 +49,6 @@ public class VisualizerLayout extends BorderPane
   private Button weather;
   private Button rotate;
 
-
-
   /**
    * VisualizerLayout Constructor
    * Adds the custom event handler to this layout, called UserEventHandler

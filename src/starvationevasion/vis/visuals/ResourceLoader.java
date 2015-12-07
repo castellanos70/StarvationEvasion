@@ -24,7 +24,7 @@ public class ResourceLoader
   private static final String SPECULAR_MAP = "visResources/SPEC_MAP.jpg";//"vis_resources/SPEC_MAP.jpg";
   //"http://planetmaker.wthr.us/img/earth_specularmap_flat_8192x4096.jpg";
   private static final String STARS = "visResources/night_sky.jpg";//"vis_resources/SPEC_MAP.jpg";
-  private static final String REGION_OVERELAY_FILE = "visResources/WorldMapRegionsFull8x6.png";//"vis_resources/SPEC_MAP.jpg";
+  private static final String REGION_OVERELAY_FILE = "visResources/WorldMapRegionsFullColor.png";//"vis_resources/SPEC_MAP.jpg";
   private static final String CLOUD_FILE = "visResources/Cloud-32.png";//"vis_resources/SPEC_MAP.jpg";
   private static final String REGION_OVERLAY_BACKGROUND_FILE = "visResources/region_background.png";
 

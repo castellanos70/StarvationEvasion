@@ -20,13 +20,10 @@ public class CustomLayout extends BorderPane
   private GridPane rightBarGrid = new GridPane();
   private GridPane centerGrid = new GridPane();
 
-
-
   public  Label title = new Label("Year, World/Region \nPopulation and HDI");
   private Label toggleEarthMode = new Label("Press tab to toggle between Earth sizes");
 
   private EarthViewer earthViewer;
-
 
   public CustomLayout(EarthViewer earthViewer)
   {

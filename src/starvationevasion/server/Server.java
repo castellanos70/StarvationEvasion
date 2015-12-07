@@ -24,7 +24,7 @@ public class Server
   private final String[] AICommand;
   private volatile ServerState currentState = ServerState.LOGIN;
   private ServerSocket serverSocket;
-  private final List<ServerWorker> connectedClients = new ArrayList<>();
+  private final List<ServerWorker> connectedClients = Collections.synchronizedList(new ArrayList<>());
   private ConcurrentLinkedQueue<Tuple<Serializable, ServerWorker>> messageQueue = new ConcurrentLinkedQueue<>();
   private PasswordFile passwordFile;
   private Map<String, String> aiCredentials = Collections.synchronizedMap(new HashMap<>());

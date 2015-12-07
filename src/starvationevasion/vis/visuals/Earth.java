@@ -64,6 +64,8 @@ public class Earth
     earthWeather = buildClouds();
 
     startRotate();
+
+
   }
 
   /**

@@ -66,7 +66,7 @@ public class Server
   */
   public static void main(String[] args)
   {
-    new Server(args[0], Arrays.copyOfRange(args, 1, args.length - 1)).start();
+    new Server(args[0], Arrays.copyOfRange(args, 1, args.length)).start();
   }
 
   private void start()
@@ -534,7 +534,7 @@ public class Server
     if (Login.generateHashedPassword(client.getLoginNonce(),
         passwordFile.credentialMap.get(message.username)).equals(message.hashedPassword))
     {
-      if (getCurrentState() != ServerState.LOGIN)
+      if (getCurrentState() == ServerState.LOGIN)
       {
         if (passwordFile.regionMap != null)
         {

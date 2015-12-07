@@ -29,10 +29,10 @@ import java.util.List;
  */
 public class SpecialEffect {
     private Sphere cloud;
-    private Earth earth;
+    private Group earth;
     private List<Sphere> specialEffects = new ArrayList<Sphere>();
 
-    public SpecialEffect(Earth earth)
+    public SpecialEffect(Group earth)
     {
       this.earth=earth;
     }
@@ -44,7 +44,7 @@ public class SpecialEffect {
         cloudMaterial.setDiffuseMap(ResourceLoader.DIFF_CLOUD);
         cloud.setMaterial(cloudMaterial);
 
-        earth.getEarth().getChildren().add(cloud);
+        earth.getChildren().add(cloud);
 
         rotateAroundYAxis(cloud, 100).play();
     }
@@ -69,13 +69,13 @@ public class SpecialEffect {
 
         specialEffects.add(pin);
 
-        earth.getEarth().getChildren().add(pin);
+        earth.getChildren().add(pin);
 
     }
 
     public void removeSpecialEffects()
     {
-        ObservableList currentUniverse = earth.getEarth().getChildren();
+        ObservableList currentUniverse = earth.getChildren();
         for(Sphere effect : specialEffects)
         {
             currentUniverse.remove(effect);
@@ -108,7 +108,7 @@ public class SpecialEffect {
     {
         Image diffuseMap = ResourceLoader.DIFF_HURRICANE;
         int rotationSpeed = 50;
-        double sphereExpansion = 1.05;
+        double sphereExpansion = 1.00;
 
         Sphere pin = new Sphere(ResourceLoader.LARGE_EARTH_RADIUS*sphereExpansion);
         PhongMaterial pinMaterial = new PhongMaterial();
@@ -120,7 +120,7 @@ public class SpecialEffect {
 
         specialEffects.add(pin);
 
-        earth.getEarth().getChildren().add(pin);
+        earth.getChildren().add(pin);
         //rotateAroundAxis(pin, latitude, longitude, rotationSpeed).play();
 
         // BUILD SHADOW
@@ -138,7 +138,7 @@ public class SpecialEffect {
 
         specialEffects.add(pin);
 
-        earth.getEarth().getChildren().add(pin);
+        earth.getChildren().add(pin);
         //rotateAroundAxis(pin, latitude, longitude, rotationSpeed).play();
     }
 
@@ -146,7 +146,7 @@ public class SpecialEffect {
     {
         Image diffuseMap = ResourceLoader.DIFF_FORESTFIRE;
         int rotationSpeed = 3;
-        double sphereExpansion = 1.02;
+        double sphereExpansion = 1.00;
 
         Sphere pin = new Sphere(ResourceLoader.LARGE_EARTH_RADIUS*sphereExpansion);
         PhongMaterial pinMaterial = new PhongMaterial();
@@ -158,7 +158,7 @@ public class SpecialEffect {
 
         specialEffects.add(pin);
 
-        earth.getEarth().getChildren().add(pin);
+        earth.getChildren().add(pin);
 
         //rotateAroundAxis(pin, latitude, longitude, rotationSpeed).play();
     }
@@ -167,7 +167,7 @@ public class SpecialEffect {
     {
         Image diffuseMap = ResourceLoader.DIFF_FLOOD;
         int rotationSpeed = 3;
-        double sphereExpansion = 1.02;
+        double sphereExpansion = 1.00;
 
         Sphere pin = new Sphere(ResourceLoader.LARGE_EARTH_RADIUS*sphereExpansion);
         PhongMaterial pinMaterial = new PhongMaterial();
@@ -179,7 +179,7 @@ public class SpecialEffect {
 
         specialEffects.add(pin);
 
-        earth.getEarth().getChildren().add(pin);
+        earth.getChildren().add(pin);
 
         //rotateAroundAxis(pin, latitude, longitude, rotationSpeed).play();
     }
@@ -187,7 +187,7 @@ public class SpecialEffect {
     {
         Image diffuseMap = ResourceLoader.DIFF_DROUGHT;
         int rotationSpeed = 3;
-        double sphereExpansion = 1.02;
+        double sphereExpansion = 1.00;
 
         Sphere pin = new Sphere(ResourceLoader.LARGE_EARTH_RADIUS*sphereExpansion);
         PhongMaterial pinMaterial = new PhongMaterial();
@@ -199,7 +199,7 @@ public class SpecialEffect {
 
         specialEffects.add(pin);
 
-        earth.getEarth().getChildren().add(pin);
+        earth.getChildren().add(pin);
 
         //rotateAroundAxis(pin, latitude, longitude, rotationSpeed).play();
     }
@@ -208,7 +208,7 @@ public class SpecialEffect {
     {
         Image diffuseMap = ResourceLoader.DIFF_BLIGHT;
         int rotationSpeed = 3;
-        double sphereExpansion = 1.02;
+        double sphereExpansion = 1.00;
 
         Sphere pin = new Sphere(ResourceLoader.LARGE_EARTH_RADIUS*sphereExpansion);
         PhongMaterial pinMaterial = new PhongMaterial();
@@ -220,7 +220,7 @@ public class SpecialEffect {
 
         specialEffects.add(pin);
 
-        earth.getEarth().getChildren().add(pin);
+        earth.getChildren().add(pin);
 
         //rotateAroundAxis(pin, latitude, longitude, rotationSpeed).play();
     }
@@ -247,7 +247,7 @@ public class SpecialEffect {
         rotate.setAxis(AXIS);
         rotate.setFromAngle(360);
         rotate.setToAngle(0);
-        rotate.setInterpolator(Interpolator.LINEAR);
+        rotate.setInterpolator(Interpolator.DISCRETE);
         rotate.setCycleCount(RotateTransition.INDEFINITE);
 
         return rotate;

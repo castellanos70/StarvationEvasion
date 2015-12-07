@@ -45,7 +45,7 @@ public class Earth {
   private Group earthGroup;
   private Group smallEarthGroup;
   private Group earthOverlay;
-  private Group earthWeather;
+  private Group earthWeather = new Group();
 
   private HashMap<EnumRegion, int[]> foodProduced = new HashMap<>();
   private HashMap<MapPoint, Float> temperatures = new HashMap<>();
@@ -67,11 +67,8 @@ public class Earth {
     earthGroup = buildScene(largeRadius);
     smallEarthGroup = buildScene(miniRadius);
     earthOverlay = buildOverlay();
-    earthWeather = buildClouds();
 
     startRotate();
-
-
   }
 
   /**
@@ -80,6 +77,14 @@ public class Earth {
    * @return the Group "earthGroup" which will contain all of this
    */
   public Group buildScene(int radius) {
+
+//    Group tempEarth = new Group();
+//    Sphere earthBox = new Sphere(radius*1.10);
+//    PhongMaterial earthBoxMaterial = new PhongMaterial();
+//    earthBoxMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_MAP);
+//    earthBox.setMaterial(earthBoxMaterial);
+//    tempEarth.getChildren().add(earthBox);
+
     Sphere earth = new Sphere(radius);
     PhongMaterial earthMaterial = new PhongMaterial();
     earthMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_MAP);
@@ -98,23 +103,10 @@ public class Earth {
   private Group buildOverlay() {
     Sphere overlay = new Sphere(LARGE_EARTH_RADIUS);
     final PhongMaterial cloudMaterial = new PhongMaterial();
-    //cloudMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_MAP);
+    cloudMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_MAP);
     cloudMaterial.setDiffuseMap(RESOURCE_LOADER.REGION_OVERLAY);
     overlay.setMaterial(cloudMaterial);
     return new Group(overlay);
-  }
-
-  /**
-   * Creates a transparent sphere overlay for weather (clouds) to be displayed on the globe
-   *
-   * @return Group  the Group containing the transparent sphere, to be attached on the earthGroup to render
-   */
-  private Group buildClouds() {
-    Sphere cloud = new Sphere(LARGE_EARTH_RADIUS * 1.05);
-    final PhongMaterial cloudMaterial = new PhongMaterial();
-    cloudMaterial.setDiffuseMap(RESOURCE_LOADER.CLOUDS);
-    cloud.setMaterial(cloudMaterial);
-    return new Group(cloud);
   }
 
   /**

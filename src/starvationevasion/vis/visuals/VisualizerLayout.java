@@ -23,10 +23,11 @@ public class VisualizerLayout extends BorderPane
 {
   private ResourceLoader RESOURCE_LOADER = EarthViewer.RESOURCE_LOADER;
   private UserEventHandler userEventHandler;
+  private SpecialEffect specialEffect;
   private Earth earth;
   private Group earthGroup;
   private Group earthOverlay;
-  private Group earthWeather;
+  private Group earthWeather = new Group();
   private PointLight pointLight = new PointLight();
   private boolean earthRotating = true;
   private boolean showOverlay = false;
@@ -63,6 +64,13 @@ public class VisualizerLayout extends BorderPane
     this.initOverlays();
     this.initEarthInfo();
     this.initEventHandling(largeRadius);
+    specialEffect = new SpecialEffect(earthWeather);
+    specialEffect.buildClouds();
+    specialEffect.buildEffect("hurricane", 180.0, 0.0);
+    specialEffect.buildEffect("forestFire", 0.0, 20.0);
+    specialEffect.buildEffect("flood", 0.0, -20.0);
+    specialEffect.buildEffect("drought", 20.0, 0.0);
+    specialEffect.buildEffect("blight", 20.0, -20.0);
   }
 
   /**

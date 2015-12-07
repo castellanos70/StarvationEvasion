@@ -8,6 +8,8 @@ import starvationevasion.common.MapPoint;
 import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
 
 /**
  * Region class extends AbstractAgriculturalUnit, includes methods for accessing its
@@ -355,7 +357,7 @@ public class Region extends AbstractTerritory
 	{ if (t.getName().startsWith("US-")) population += t.getPopulation(1981);
 	}
 
-    // category divided by the region’s population in 1000s of people.
+    // category divided by the regionï¿½s population in 1000s of people.
     //
     for (EnumFood crop : EnumFood.values())
     {
@@ -392,6 +394,7 @@ public class Region extends AbstractTerritory
     for (Territory t : territories) t.updateYield();
   }
 
+
   /**
    * Estimates the initial yield of all territories in the region.
    */
@@ -406,7 +409,7 @@ public class Region extends AbstractTerritory
       //
       estimateInitialUSYield();
       return;
-	}
+	  }
 
     // For United States regions, this data will be populated when the special book-
     // keeping region is visited (above).
@@ -447,8 +450,8 @@ public class Region extends AbstractTerritory
       for (Territory t : territories)
       { 
         if (t.getName().startsWith("US-") == false) 
-		{
-	      t.setCropNeedPerCapita(crop, need);
+		    {
+	        t.setCropNeedPerCapita(crop, need);
           t.setCropProduction(crop, (long) (cropProduction * t.getPopulation(1981)));
           t.setCropImport(crop, (long) (cropImport * t.getPopulation(1981)));
           t.setCropExport(crop, (long) (cropExport * t.getPopulation(1981)));
@@ -482,6 +485,74 @@ public class Region extends AbstractTerritory
       }
       else cropYield[crop.ordinal()] = 0;
     }
+  }
+
+
+  /**
+   * Estimates the initial crop budget for a all of the territories in the region by multiplying the territory
+   * consumption of the crop by its cost.
+   *
+   * @param cropData crop data loaded from "/data/sim/CropData.csv"
+   */
+  public void estimateInitialBudget(List<CropZoneData> cropData)
+  {
+    for (CropZoneData zoneData : cropData)
+    {
+      long cropConsumptionPerCapita = getInitialConsumption(zoneData.food, 1981) / getPopulation(1981);
+      for (Territory t : getTerritories())
+      {
+        long territoryCropConsumption = cropConsumptionPerCapita * t.getPopulation(1981);
+        long budget = territoryCropConsumption * zoneData.pricePerMetricTon;
+        t.setCropBudget(zoneData.food, budget);
+      }
+    }
+  }
+
+  public void estimateInitialCropLandArea(List<CropZoneData> cropData)
+  {
+    if (region == null)
+    {
+      estimateInitialUSCropLandArea(cropData);
+    }
+  }
+
+  public void estimateInitialUSCropLandArea(List<CropZoneData> cropData)
+  {
+    // from spec, 1981 total farm land is 0.7 of 2014 farm land
+    for (CropZoneData zoneData : cropData)
+    {
+      for (Territory t : getTerritories())
+      {
+        double cropLand = cropLandAreaHelper(t, zoneData) * ((t.totalFarmLand * 0.7) / cropLandAreaHelper(t, cropData));
+        double cropYield = getTerritoryProduction(t, zoneData.food) / cropLand;
+
+        t.setLand1981(zoneData.food, cropLand);
+        t.setYield1981(zoneData.food, cropYield);
+      }
+    }
+  }
+
+  // defined to be the temp function in the spec
+  private double cropLandAreaHelper(Territory t, CropZoneData zoneData)
+  {
+    return getTerritoryProduction(t, zoneData.food) / zoneData.tonsPerKM2;
+  }
+
+  // finds the sum of the temp function defined in the spec
+  private double cropLandAreaHelper(Territory t, List<CropZoneData> zoneData)
+  {
+    double sum = 0;
+    for (CropZoneData zone : zoneData)
+    {
+      sum += cropLandAreaHelper(t, zone);
+    }
+    return sum;
+  }
+
+  private double getTerritoryProduction(Territory t, EnumFood food)
+  {
+    long cropProductionPerCapita = getInitialProduction(food, 1981) / getPopulation(1981);
+    return cropProductionPerCapita * t.getPopulation(1981);
   }
 
   /**

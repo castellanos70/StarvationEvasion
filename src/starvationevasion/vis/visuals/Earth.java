@@ -1,6 +1,5 @@
 package starvationevasion.vis.visuals;
 
-import com.apple.eawt.event.RotationEvent;
 import javafx.animation.*;
 
 import javafx.scene.Group;
@@ -65,6 +64,8 @@ public class Earth
     earthWeather = buildClouds();
 
     startRotate();
+
+
   }
 
   /**

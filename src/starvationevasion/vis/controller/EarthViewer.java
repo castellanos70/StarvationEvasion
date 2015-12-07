@@ -30,9 +30,11 @@ public class EarthViewer
   public EarthViewer(int smallEarthRadius, int largeEarthRadius)
   {
     earth = new Earth(smallEarthRadius, largeEarthRadius);
-//    specialEffect = new SpecialEffect(earth);
+    specialEffect = new SpecialEffect(earth);
 //    specialEffect.buildClouds();
-//    specialEffect.buildPinPoint(-20,40);
+    specialEffect.buildPinPoint(-45,0);
+
+
     this.LARGE_EARTH_RADIUS=largeEarthRadius;
   }
 

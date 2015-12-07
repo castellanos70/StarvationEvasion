@@ -458,7 +458,8 @@ public class Region extends AbstractTerritory
     for (EnumFood crop : EnumFood.values())
     {
       int idx = crop.ordinal();
-      cropNeedPerCapita[idx] = (double) (cropProduction[idx] + cropImport[idx] - cropExport[idx]) / getPopulation(year);
+      double need = (double) (cropProduction[idx] + cropImport[idx] - cropExport[idx]) / (getPopulation(year) - undernourished);
+      setCropNeedPerCapita(crop, need);
     }
   }
 
@@ -487,12 +488,6 @@ public class Region extends AbstractTerritory
   public void estimateInitialCropLandArea(List<CropZoneData> cropData)
   {
     setRegionLandTotal();
-
-    if (region == null)
-    {
-      System.out.println(name);
-    }
-
     for (EnumFood food : EnumFood.values())
     {
       landCrop[food.ordinal()] = 0;
@@ -533,12 +528,6 @@ public class Region extends AbstractTerritory
       sum += cropLandAreaHelper(t, zone);
     }
     return sum;
-  }
-
-  private double getTerritoryProduction(Territory t, EnumFood food)
-  {
-    long cropProductionPerCapita = getInitialProduction(food, Constant.FIRST_YEAR) / getPopulation(Constant.FIRST_YEAR);
-    return cropProductionPerCapita * t.getPopulation(Constant.FIRST_YEAR);
   }
 
   private void setRegionLandTotal()
@@ -631,14 +620,19 @@ public class Region extends AbstractTerritory
    */
   public void setCropNeedPerCapita(EnumFood crop, double tonPerPerson)
   {
+    // *Changed*
+    // amount is already ton per person for the region, so it shouldn't be divided up
+    // based on the number of territory.
+    // each territory will have the same need per capita as the region.
+
     // Divide it up amongst the units.
     //
-    double perUnit = tonPerPerson / territories.size();
-    double remainder = tonPerPerson % (territories.size() * perUnit);
+    //double perUnit = tonPerPerson / territories.size();
+    //double remainder = tonPerPerson % (territories.size() * perUnit);
     for (Territory unit : territories)
     {
-      unit.setCropNeedPerCapita(crop, perUnit + remainder);
-      remainder = 0;
+      unit.setCropNeedPerCapita(crop, tonPerPerson);
+      //remainder = 0;
     }
 
     cropNeedPerCapita[crop.ordinal()] = tonPerPerson;

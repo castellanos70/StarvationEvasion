@@ -618,9 +618,17 @@ public class Region extends AbstractTerritory
    */
   public void updatePopulation(int year)
   {
+    // Do not recompute territory undernourished statistics in the 1st year, or if
+    // this is a book-keeping region.
+    //
+    boolean updateTerritories = region != null && year != Constant.FIRST_YEAR;
     int people = 0, underfed = 0;
     for (Territory t : territories)
-    {
+    { // Territory.updatePopulation because it updates internal state variables related
+      // to production.
+      //
+      if (updateTerritories) t.updatePopulation(year);
+
       people += t.getPopulation(year);
       underfed += t.getUndernourished();
     }

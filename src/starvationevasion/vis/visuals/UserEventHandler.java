@@ -161,8 +161,8 @@ public class UserEventHandler  implements EventHandler
     }
     else if(event instanceof MouseEvent)
     {
-//      displayEarthInformation((MouseEvent) event);
-//      latLongHandler((MouseEvent) event);
+      displayEarthInformation((MouseEvent) event);
+      latLongHandler((MouseEvent) event);
       earthStartScroll((MouseEvent) event);
     }
     event.consume();

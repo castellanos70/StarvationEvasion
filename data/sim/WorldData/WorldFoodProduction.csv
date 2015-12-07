@@ -319,3 +319,248 @@ Raisins,FRUIT,Malaysia,SOUTHEAST_ASIA,2014,0,7900,0
 Raisins,FRUIT,Philippines,SOUTHEAST_ASIA,2014,0,4000,0
 Raisins,FRUIT,South Africa,SUB_SAHARAN,2014,56700,400,83900
 Raisins,FRUIT,United States,UNITED_STATES,2014,1292453,826852,1663869
+Almonds,NUT,Iran,,1981,2100,600,5500
+Almonds,NUT,Italy,,1981,11174,4000,20000
+Almonds,NUT,Morocco,,1981,200,0,2500
+Almonds,NUT,Portugal,,1981,4362,1162,5000
+Almonds,NUT,Spain,,1981,26500,6500,45000
+Almonds,NUT,Turkey,,1981,7500,2000,32000
+Filberts,NUT,Italy,,1981,64827,6886,100000
+Filberts,NUT,Spain,,1981,12400,1400,16000
+Filberts,NUT,Turkey,,1981,254200,50000,240000
+Pistachios,NUT,Turkey,,1981,5900,9000,7000
+Walnuts,NUT,France,,1981,8300,3800,21000
+Walnuts,NUT,India,,1981,12200,500,18000
+Walnuts,NUT,Italy,,1981,4390,7819,14000
+Walnuts,NUT,Turkey,,1981,5800,7000,70000
+Almonds,NUT,Algeria,,2014,0,42700,0
+Almonds,NUT,Australia,,2014,30100,11900,90700
+Almonds,NUT,Canada,,2014,0,284600,0
+Almonds,NUT,Chile,,2014,42300,15500,45900
+Almonds,NUT,China,,2014,0,328100,15500
+Almonds,NUT,Hong Kong,,2014,0,131900,0
+Almonds,NUT,Japan,,2014,0,317800,0
+Almonds,NUT,Malaysia,,2014,0,20300,0
+Almonds,NUT,Mexico,,2014,0,73200,0
+Almonds,NUT,Norway,,2014,0,10900,0
+Almonds,NUT,Russia,,2014,0,117100,0
+Almonds,NUT,South Korea,,2014,0,110900,0
+Almonds,NUT,Switzerland,,2014,0,13100,0
+Almonds,NUT,Taiwan,,2014,0,66500,0
+Almonds,NUT,Turkey,,2014,44100,125400,162600
+Almonds,NUT,United Arab Emirates,,2014,0,338500,0
+Almonds,NUT,United States,,2014,3080968,474411,3714921
+Pistachios,NUT,Afghanistan,,2014,0,0,0
+Pistachios,NUT,Australia,,2014,0,5200,0
+Pistachios,NUT,Canada,,2014,0,17000,0
+Pistachios,NUT,China,,2014,0,181775,0
+Pistachios,NUT,European Union,,2014,7025,166730,22400
+Pistachios,NUT,Greece,,2014,0,0,0
+Pistachios,NUT,Hong Kong,,2014,0,236500,0
+Pistachios,NUT,Iran,,2014,641500,50000,833000
+Pistachios,NUT,Iraq,,2014,0,6100,0
+Pistachios,NUT,Italy,,2014,0,0,0
+Pistachios,NUT,Japan,,2014,0,3500,0
+Pistachios,NUT,Saudi Arabia,,2014,0,0,0
+Pistachios,NUT,Syria,,2014,17500,66884,587600
+Pistachios,NUT,Taiwan,,2014,0,2100,0
+Pistachios,NUT,United States,,2014,812294,230746,820549
+Pistachios,NUT,Vietnam,,2014,0,0,0
+Walnuts,NUT,Chile,,2014,80600,5400,81000
+Walnuts,NUT,China,,2014,251600,299900,5605521
+Walnuts,NUT,European Union,,2014,262100,863500,479700
+Walnuts,NUT,Hong Kong,,2014,0,74200,0
+Walnuts,NUT,Israel,,2014,0,9600,0
+Walnuts,NUT,Japan,,2014,0,27700,0
+Walnuts,NUT,Mexico,,2014,0,16800,0
+Walnuts,NUT,Norway,,2014,0,3000,0
+Walnuts,NUT,Russia,,2014,0,12300,0
+Walnuts,NUT,South Korea,,2014,0,57300,0
+Walnuts,NUT,Switzerland,,2014,0,5400,0
+Walnuts,NUT,Taiwan,,2014,0,7300,0
+Walnuts,NUT,Turkey,,2014,31200,102600,165000
+Walnuts,NUT,United States,,2014,1460388,366597,2175433
+Almonds,NUT,Algeria,,2015,0,5200,0
+Almonds,NUT,Australia,,2015,317800,45400,421800
+Almonds,NUT,Canada,,2015,0,71000,0
+Almonds,NUT,Chile,,2015,60800,29700,59300
+Almonds,NUT,China,,2015,0,174000,26500
+Almonds,NUT,European Union,,2015,501900,3495100,1274400
+Almonds,NUT,Greece,,2015,0,0,0
+Almonds,NUT,Hong Kong,,2015,0,36400,0
+Almonds,NUT,India,,2015,212300,851600,16750
+Almonds,NUT,Iran,,2015,0,0,0
+Almonds,NUT,Italy,,2015,0,0,0
+Almonds,NUT,Japan,,2015,0,78000,0
+Almonds,NUT,Malaysia,,2015,0,5700,0
+Almonds,NUT,Mexico,,2015,0,32100,0
+Almonds,NUT,Norway,,2015,0,7100,0
+Almonds,NUT,Russia,,2015,0,27100,0
+Almonds,NUT,South Korea,,2015,0,52900,0
+Almonds,NUT,Spain,,2015,0,0,0
+Almonds,NUT,Switzerland,,2015,0,11200,0
+Almonds,NUT,Taiwan,,2015,0,9700,0
+Almonds,NUT,Turkey,,2015,22600,70600,45000
+Almonds,NUT,United Arab Emirates,,2015,0,126300,0
+Almonds,NUT,United States,,2015,4987440,1153281,5737949
+Almonds,NUT,Vietnam,,2015,0,0,0
+Pistachios,NUT,Afghanistan,,2015,0,0,0
+Pistachios,NUT,Australia,,2015,0,17550,0
+Pistachios,NUT,Canada,,2015,0,52300,0
+Pistachios,NUT,China,,2015,0,410725,0
+Pistachios,NUT,Egypt,,2015,0,2550,0
+Pistachios,NUT,European Union,,2015,13800,346875,63700
+Pistachios,NUT,Greece,,2015,0,0,0
+Pistachios,NUT,Hong Kong,,2015,0,57400,0
+Pistachios,NUT,India,,2015,0,44400,0
+Pistachios,NUT,Iran,,2015,333100,26000,390000
+Pistachios,NUT,Iraq,,2015,0,17575,0
+Pistachios,NUT,Israel,,2015,0,25700,0
+Pistachios,NUT,Italy,,2015,0,0,0
+Pistachios,NUT,Japan,,2015,0,10025,0
+Pistachios,NUT,Jordan,,2015,0,1850,0
+Pistachios,NUT,Lebanon,,2015,0,18600,0
+Pistachios,NUT,Mexico,,2015,0,16650,0
+Pistachios,NUT,Pakistan,,2015,0,9050,0
+Pistachios,NUT,Russia,,2015,0,44525,0
+Pistachios,NUT,Saudi Arabia,,2015,0,0,0
+Pistachios,NUT,Syria,,2015,6900,1200,114000
+Pistachios,NUT,Taiwan,,2015,0,4800,0
+Pistachios,NUT,Turkey,,2015,164100,239410,450000
+Pistachios,NUT,Ukraine,,2015,0,2575,0
+Pistachios,NUT,United Arab Emirates,,2015,0,86325,0
+Pistachios,NUT,United States,,2015,916679,235062,1023304
+Pistachios,NUT,Vietnam,,2015,0,0,0
+Walnuts,NUT,Australia,,2015,23500,123966,19100
+Walnuts,NUT,Brazil,,2015,13000,99600,55600
+Walnuts,NUT,Canada,,2015,5900,127900,0
+Walnuts,NUT,Chile,,2015,242900,9600,252000
+Walnuts,NUT,China,,2015,46200,242100,2680000
+Walnuts,NUT,European Union,,2015,181200,668400,338000
+Walnuts,NUT,Hong Kong,,2015,0,25300,0
+Walnuts,NUT,India,,2015,120150,64500,222000
+Walnuts,NUT,Iran,,2015,0,0,0
+Walnuts,NUT,Israel,,2015,0,22700,0
+Walnuts,NUT,Japan,,2015,0,106800,0
+Walnuts,NUT,Jordan,,2015,0,0,0
+Walnuts,NUT,Mexico,,2015,0,19600,0
+Walnuts,NUT,Moldova,,2015,347300,85700,276600
+Walnuts,NUT,Norway,,2015,0,6700,0
+Walnuts,NUT,Russia,,2015,0,5500,0
+Walnuts,NUT,South Korea,,2015,0,91200,0
+Walnuts,NUT,Switzerland,,2015,0,15000,0
+Walnuts,NUT,Syria,,2015,0,21900,0
+Walnuts,NUT,Taiwan,,2015,0,23600,0
+Walnuts,NUT,Turkey,,2015,47000,194100,175000
+Walnuts,NUT,Ukraine,,2015,357600,6000,530020
+Walnuts,NUT,United Arab Emirates,,2015,0,109100,0
+Walnuts,NUT,United States,,2015,2477431,388704,3207805
+Walnuts,NUT,Vietnam,,2015,0,0,0
+Coffee,,Angola,,1981,180000,108000,47040
+Coffee,,Benin,,1981,4320,0,4440
+Coffee,,Bolivia,,1981,12720,1200,16200
+Coffee,,Brazil,,1981,2936040,372300,3960000
+Coffee,,Burundi,,1981,81120,180,87600
+Coffee,,Cameroon,,1981,268560,52020,222000
+Coffee,,Central African Republic,,1981,32400,600,34080
+Coffee,,Colombia,,1981,1681260,380340,1721040
+Coffee,,Congo (Brazzaville),,1981,5340,660,4320
+Coffee,,Congo (Kinshasa),,1981,182400,39600,171000
+Coffee,,Costa Rica,,1981,215340,27900,213840
+Coffee,,Cote d'Ivoire,,1981,765720,221760,499200
+Coffee,,Cuba,,1981,36240,37200,45960
+Coffee,,Dominican Republic,,1981,93960,26400,97560
+Coffee,,Ecuador,,1981,198120,33840,215040
+Coffee,,El Salvador,,1981,362460,71520,346320
+Coffee,,Equatorial Guinea,,1981,1500,720,2400
+Coffee,,Ethiopia,,1981,240660,65280,385440
+Coffee,,Gabon,,1981,1680,0,1800
+Coffee,,Ghana,,1981,3600,720,4200
+Coffee,,Guatemala,,1981,331920,47280,318360
+Coffee,,Guinea,,1981,9780,2160,7680
+Coffee,,Guyana,,1981,840,0,3120
+Coffee,,Haiti,,1981,35100,2100,59280
+Coffee,,Honduras,,1981,131460,12000,144000
+Coffee,,India,,1981,233100,48060,304800
+Coffee,,Indonesia,,1981,526320,39720,694200
+Coffee,,Jamaica,,1981,2340,900,2760
+Coffee,,Kenya,,1981,239700,60600,167520
+Coffee,,Liberia,,1981,20460,1980,19800
+Coffee,,Madagascar,,1981,144900,18180,156600
+Coffee,,Malawi,,1981,1320,60,1200
+Coffee,,Malaysia,,1981,16740,27360,10680
+Coffee,,Mexico,,1981,313800,55800,468000
+Coffee,,New Caledonia,,1981,0,0,960
+Coffee,,Nicaragua,,1981,113820,9900,120480
+Coffee,,Nigeria,,1981,6240,22560,6240
+Coffee,,Panama,,1981,8460,1500,14280
+Coffee,,Papua New Guinea,,1981,103020,1080,110040
+Coffee,,Paraguay,,1981,9900,3480,12000
+Coffee,,Peru,,1981,104640,11400,132000
+Coffee,,Philippines,,1981,84000,25680,128040
+Coffee,,Rwanda,,1981,65880,6660,60240
+Coffee,,Sierra Leone,,1981,24780,2460,21120
+Coffee,,Sri Lanka,,1981,7500,2040,6480
+Coffee,,Tanzania,,1981,137760,25320,115080
+Coffee,,Thailand,,1981,15600,960,33240
+Coffee,,Togo,,1981,30900,3120,27000
+Coffee,,Trinidad and Tobago,,1981,3660,540,5280
+Coffee,,Uganda,,1981,398880,48480,346200
+Coffee,,United States,,1981,4320,13680,27480
+Coffee,,Venezuela,,1981,17940,12060,132840
+Coffee,,Vietnam,,1981,8280,0,9240
+Coffee,,Yemen (Sanaa),,1981,5760,0,6960
+Coffee,,Zambia,,1981,60,540,240
+Coffee,,Zimbabwe,,1981,10980,1440,9840
+Coffee,,Algeria,,2014,0,233400,0
+Coffee,,Angola,,2014,3300,480,15000
+Coffee,,Benin,,2014,0,0,0
+Coffee,,Bolivia,,2014,13560,240,27000
+Coffee,,Brazil,,2014,4223280,134280,6912000
+Coffee,,Burundi,,2014,41100,600,41400
+Coffee,,Cameroon,,2014,101340,2880,115200
+Coffee,,Colombia,,2014,1108860,92940,1191240
+Coffee,,Congo (Brazzaville),,2014,0,0,0
+Coffee,,Congo (Kinshasa),,2014,16680,1200,56400
+Coffee,,Costa Rica,,2014,2147160,196320,2364000
+Coffee,,Croatia,,2014,0,0,0
+Coffee,,Cuba,,2014,1560,27000,15000
+Coffee,,Dominican Republic,,2014,7080,0,111000
+Coffee,,Ecuador,,2014,192840,170040,55800
+Coffee,,Equatorial Guinea,,2014,0,0,0
+Coffee,,Gabon,,2014,0,0,0
+Coffee,,Guatemala,,2014,950940,83640,1010400
+Coffee,,Guinea,,2014,17700,720,19800
+Coffee,,Guyana,,2014,0,0,0
+Coffee,,Haiti,,2014,2340,1500,42000
+Coffee,,Honduras,,2014,1036800,17400,1095000
+Coffee,,India,,2014,1417020,439620,1263960
+Coffee,,Indonesia,,2014,1073880,134880,1260000
+Coffee,,Iran,,2014,0,112200,0
+Coffee,,Jamaica,,2014,5520,0,6720
+Coffee,,Kazakhstan,,2014,0,147000,0
+Coffee,,Kenya,,2014,918180,175440,762120
+Coffee,,Laos,,2014,45000,0,57000
+Coffee,,Liberia,,2014,360,0,360
+Coffee,,Madagascar,,2014,19800,420,66000
+Coffee,,Malawi,,2014,12120,60,12600
+Coffee,,Malaysia,,2014,258000,165000,168000
+Coffee,,Mexico,,2014,1668840,531660,2562000
+Coffee,,New Caledonia,,2014,0,0,0
+Coffee,,Nigeria,,2014,960,0,8400
+Coffee,,Papua New Guinea,,2014,99960,2160,102600
+Coffee,,Paraguay,,2014,31680,27900,21480
+Coffee,,Peru,,2014,988080,3480,1026000
+Coffee,,Philippines,,2014,39300,1031340,139200
+Coffee,,Rwanda,,2014,30000,0,30000
+Coffee,,Serbia,,2014,0,76800,0
+Coffee,,Sierra Leone,,2014,3000,0,5400
+Coffee,,Sri Lanka,,2014,0,0,0
+Coffee,,Tanzania,,2014,371100,30120,375600
+Coffee,,Togo,,2014,21600,0,21600
+Coffee,,Trinidad and Tobago,,2014,0,0,0
+Coffee,,Uganda,,2014,906360,54060,894000
+Coffee,,Venezuela,,2014,23040,143760,171600
+Coffee,,Vietnam,,2014,3073920,164280,3180000
+Coffee,,Zambia,,2014,0,0,0
+Coffee,,Zimbabwe,,2014,0,0,0

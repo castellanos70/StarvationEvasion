@@ -224,11 +224,11 @@ public class Model
 
     updateFarmProductNeed(); // Done.
 
-    updateFarmProductMarket();
+    updateFarmProductMarket(); // Not started.
 
-    updateFoodDistribution();
+    updateFoodDistribution(); // Not started.
 
-    updatePlayerRegionRevenue();
+    updatePlayerRegionRevenue(); // Not started.
 
     updateHumanDevelopmentIndex(); // Done.
 

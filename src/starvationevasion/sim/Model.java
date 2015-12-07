@@ -160,7 +160,16 @@ public class Model
     // Traverse all of the regions, estimating the initial yield.
     // Note that this includes the book-keeping regions.
     //
-    for (Region region : regionList) region.estimateInitialYield();
+    for (Region region : regionList)
+    { // Roll up the population and undernourished for each region.
+      //
+      region.updatePopulation(Constant.FIRST_YEAR);
+
+      // Update the initial yield.
+      //
+      region.estimateInitialYield();
+    }
+
     for (Region region : regionList) region.estimateInitialBudget(cropLoader.getCategoryData());
     for (Region region : regionList) region.estimateInitialCropLandArea(cropLoader.getCategoryData());
 

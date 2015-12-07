@@ -228,7 +228,11 @@ public abstract class AbstractTerritory implements Comparable<Territory>
 
   final public void setTotalFarmLand(int squareKm) { totalFarmLand = squareKm;}
 
-  final public void setFarmLand1981(int squareKm) { farmLand1981 = squareKm;}
+  final public void setFarmLand1981(int squareKm)
+  {
+    farmLand1981 = squareKm;
+    totalFarmLand = farmLand1981;
+  }
 
   final public void setFarmLand2014(int squareKm) { farmLand2014 = squareKm;}
 

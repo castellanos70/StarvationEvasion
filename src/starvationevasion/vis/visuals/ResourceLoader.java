@@ -26,6 +26,8 @@ public class ResourceLoader
   private static final String DIFFUSE_CLOUD = "visResources/Cloud-32.png";
   private static final String DIFFUSE_PINPOINT = "visResources/PinPoint.png";
   private static final String DIFFUSE_HURRICANE = "visResources/hurricane.png";
+  private static final String DIFFUSE_HURRICANESHADOW = "visResources/hurricaneShadow.png";
+
 
 
   protected static Image COLD_IMAGE;
@@ -36,6 +38,7 @@ public class ResourceLoader
   protected static Image DIFF_MAP;
   protected static Image DIFF_CLOUD;
   protected static Image DIFF_HURRICANE;
+  protected static Image DIFF_HURRICANESHADOW;
   protected static Image DIFF_PINPOINT;
   protected static Image REGION_OVERLAY;
   protected static Image CLOUDS;
@@ -54,6 +57,7 @@ public class ResourceLoader
       DIFF_MAP = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_MAP), MAP_WIDTH, MAP_HEIGHT, true, true);
       DIFF_CLOUD = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_CLOUD), MAP_WIDTH, MAP_HEIGHT, true, true);
       DIFF_HURRICANE = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_HURRICANE), MAP_WIDTH, MAP_HEIGHT, true, true);
+      DIFF_HURRICANESHADOW = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_HURRICANESHADOW), MAP_WIDTH, MAP_HEIGHT, true, true);
 
       DIFF_PINPOINT = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_PINPOINT), MAP_WIDTH, MAP_HEIGHT, true, true);
       NORM_MAP = new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true);

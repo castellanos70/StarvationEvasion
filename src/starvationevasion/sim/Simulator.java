@@ -3,9 +3,10 @@ package starvationevasion.sim;
 
 import starvationevasion.common.*;
 
+import java.io.*;
 import java.util.ArrayList;
-import java.util.logging.Logger;
-import java.util.logging.Level;
+import java.util.Date;
+import java.util.logging.*;
 
 /**
  * This is the main API point of the Starvation Evasion Simulator.
@@ -13,11 +14,13 @@ import java.util.logging.Level;
  */
 public class Simulator
 {
-  private final static Logger LOGGER = Logger.getLogger(Simulator.class.getName());
+  public static PrintStream dbg = System.out;
+
+  private final static Logger LOGGER = Logger.getGlobal(); // getLogger(Simulator.class.getName());
+  private final static Level debugLevel = Level.FINEST;
+
   private CardDeck[] playerDeck = new CardDeck[EnumRegion.US_REGIONS.length];
   private Model model;
-
-
 
   /**
    * This constructor should be called once at the start of each game by the Server.
@@ -34,8 +37,6 @@ public class Simulator
     LOGGER.info("Loading and initializing model");
     model = new Model(startYear);
     model.instantiateRegions();
-
-
 
     LOGGER.info("Starting Simulator: year="+startYear);
 
@@ -94,7 +95,7 @@ public class Simulator
    */
   public WorldData nextTurn(ArrayList<PolicyCard> cards)
   {
-    LOGGER.info("Advancing Turn...");
+    LOGGER.info("Advancing Turn to ...");
     WorldData threeYearData = new WorldData();
 
     model.nextYear(cards, threeYearData);
@@ -152,6 +153,61 @@ public class Simulator
   }
 
   /**
+   * Configure the system logger to write to both a log file and the console.
+   *
+   * @param fileName Path to output log file.
+   * @throws IOException
+   */
+  public static void setLogFile(String fileName) throws IOException
+  {
+    Handler fh = new FileHandler(fileName);
+
+    Formatter formatter = new Formatter() {
+      @Override
+      public String format(LogRecord arg0) {
+        StringBuilder b = new StringBuilder();
+        b.append(new Date());
+        b.append(" ");
+        b.append(arg0.getSourceClassName());
+        b.append(" ");
+        b.append(arg0.getSourceMethodName());
+        b.append(" ");
+        b.append(arg0.getLevel());
+        b.append(" ");
+        b.append(formatMessage(arg0));
+        b.append(System.getProperty("line.separator"));
+        return b.toString();
+      }
+    };
+
+    LOGGER.setUseParentHandlers(false);
+
+    // Remove the default console handler from the root logger.
+    //
+    Logger globalLogger = Logger.getGlobal();
+    Handler[] handlers = globalLogger.getHandlers();
+    for(Handler handler : handlers)
+    {
+      globalLogger.removeHandler(handler);
+    }
+
+    // Now add our own handlers.
+    //
+    fh.setFormatter(formatter);
+    LOGGER.addHandler(fh);
+
+    // We do not strictly need a console handler since we're logging to a file, so
+    // this could be removed.
+    //
+    Handler ch = new ConsoleHandler();
+    ch.setFormatter(formatter);
+    LOGGER.addHandler(ch);
+
+    LogManager lm = LogManager.getLogManager();
+    lm.addLogger(LOGGER);
+  }
+
+  /**
    * This entry point is for testing only. <br><br>
    *
    * This test shows how to instantiate the simulator and how to tell it
@@ -160,8 +216,34 @@ public class Simulator
    */
   public static void main(String[] args)
   {
+    // Configure a debug output stream for dumping verbose simulatoin data.
+    //
+    String tmpdir = System.getProperty("java.io.tmpdir");
+    String separator = System.getProperty("file.separator");
+    String tmpfile = tmpdir + "StarvationEvation.log";
+    FileOutputStream fos = null;
+    Logger.getGlobal();
+    try
+    {
+      fos = new FileOutputStream(new File(tmpfile));
+      Simulator.dbg = new PrintStream(fos);
+      System.err.println("Verbose debug logging to '" + tmpfile + "'");
+    }
+    catch (FileNotFoundException e)
+    {
+      System.err.println("Can't open log file '" + tmpfile + "'");
+    }
+
+    // Configure the logger for summary data (this is what the Server class will see).  We can
+    // also send this to a file.
+    // Handler fh = new FileHandler("test.txt");
+    // fh.setFormatter(formatter);
+    // logger.addHandler(fh);
+    //
     LOGGER.setLevel(Level.INFO);
+
     Simulator sim = new Simulator(Constant.FIRST_YEAR);
+
     String msg = "Starting Hands: \n";
 
     for (EnumRegion playerRegion : EnumRegion.US_REGIONS)
@@ -174,7 +256,25 @@ public class Simulator
       }
       msg+='\n';
     }
+
     WorldData worldData = sim.init();
     LOGGER.info(worldData.toString());
+
+    // Now step through the simulation years for debugging
+    //
+    for (int i = Constant.FIRST_YEAR + 1; i < Constant.LAST_YEAR ; i += 3)
+    {
+      sim.nextTurn(null); // Test w/o playing any cards.
+    }
+
+    try
+    {
+      fos.flush();
+      fos.close();;
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
   }
 }

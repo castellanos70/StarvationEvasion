@@ -53,7 +53,12 @@ public class SpecialEffect {
         if(type.equals("hurricane"))
         {
             diffuseMap = ResourceLoader.DIFF_HURRICANE;
-            rotationSpeed = 100;
+            rotationSpeed = 50;
+        }
+        else if(type.equals("hurricaneShadow"))
+        {
+            diffuseMap = ResourceLoader.DIFF_HURRICANE;
+            rotationSpeed = 25;
         }
         else
         {
@@ -62,6 +67,7 @@ public class SpecialEffect {
 
         Sphere pin = new Sphere(ResourceLoader.LARGE_EARTH_RADIUS*sphereExpansion);
         final PhongMaterial pinMaterial = new PhongMaterial();
+
         pinMaterial.setDiffuseMap(diffuseMap);
         pin.setMaterial(pinMaterial);
 
@@ -73,10 +79,12 @@ public class SpecialEffect {
 
         if(rotationSpeed!=0)
         {
-            //rotateAroundAxis(pin, latitude, longitude, rotationSpeed).play();
+            //matrixRotateNode(pin, latitude, longitude, 1).play();
+            //pin.getTransforms().add(new Rotate(latitude, longitude, 0));
+            rotateAroundAxis(pin, latitude, longitude, rotationSpeed).play();
             //rotateAroundYAxis(pin, 100).play();
-            System.out.println("Got Here!");
         }
+        if(type.equals("hurricane")) buildEffect("hurricaneShadow",latitude,longitude);
 
     }
 
@@ -116,10 +124,9 @@ public class SpecialEffect {
         /* JAVAFX will use 360 degrees, while lat long will use +- 180 and 90 */
         double lon = longitude + 180;
         double lat = (latitude + 90)*2;
-
         shape.getTransforms().addAll(
-                new Rotate(lat, Rotate.X_AXIS),
-                new Rotate(lon, Rotate.Y_AXIS)
+                new Rotate(latitude, Rotate.X_AXIS),
+                new Rotate(longitude, Rotate.Y_AXIS)
         );
 
         return shape;
@@ -140,6 +147,10 @@ public class SpecialEffect {
     {
         RotateTransition rotate = new RotateTransition(Duration.seconds(ROTATE_SECS), node);
         Point3D AXIS = new Point3D(latitude, longitude, 0.0);
+
+        //node.getTransforms().add(new Rotate(latitude, longitude, 0));
+
+        AXIS = new Point3D(latitude, longitude, node.getRotationAxis().getZ());
         rotate.setAxis(AXIS);
         rotate.setFromAngle(360);
         rotate.setToAngle(0);

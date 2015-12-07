@@ -7,8 +7,10 @@ import starvationevasion.sim.util.EquirectangularConverter;
 import starvationevasion.sim.util.MapConverter;
 import starvationevasion.common.MapPoint;
 
+import java.awt.*;
 import java.awt.geom.Area;
 import java.util.*;
+import java.util.List;
 
 /**
  * Territory is the former Country class, and extends AbstractAgriculturalUnit.
@@ -28,6 +30,7 @@ public class Territory extends AbstractTerritory
   private final Area area = new Area();
   private final Collection<GeographicArea> regions = new ArrayList<>();
   private Collection<LandTile> landTiles;
+  private MapPoint capitolLocation;
 
   /* The region to which this country belongs.
    */
@@ -81,6 +84,7 @@ public class Territory extends AbstractTerritory
     int income = 0;
     int production = 0;
     int land = 0;
+
     for (EnumFood crop : EnumFood.values())
     {
       land += landCrop[crop.ordinal()];
@@ -329,6 +333,50 @@ public class Territory extends AbstractTerritory
   final public void addLandTile(LandTile tile)
   {
     landTiles.add(tile);
+  }
+
+  // generate the capital by finding the center of the largest landmass.
+  // this method can only be called after the Country's regions have been set.
+  //
+  private MapPoint calCapitolLocation()
+  {
+    if (regions == null) throw new RuntimeException("(!) regions not set!");
+    if (regions.isEmpty()) throw new RuntimeException("(!) no regions !");
+
+    int maxArea = 0;
+    Polygon largest = null;
+
+    for (GeographicArea region : regions)
+    {
+      Polygon poly = converter.regionToPolygon(region);
+      int area = (int) (poly.getBounds().getWidth() * poly.getBounds().getHeight());
+      if (area >= maxArea)
+      {
+        largest = poly;
+        maxArea = area;
+      }
+    }
+
+    int x = (int) largest.getBounds().getCenterX();
+    int y = (int) largest.getBounds().getCenterY();
+
+    return converter.pointToMapPoint(new Point(y, x));
+  }
+
+  /**
+   * returns the point representing the shipping location of that country.
+   * <p/>
+   * (!) note: this method can only be called after the Country's regions have
+   * been set.
+   *
+   * @return map point representing the lat and lon location of the Country's
+   * capitol.
+   */
+  public MapPoint getCapitolLocation()
+  {
+    if (capitolLocation == null)  capitolLocation = calCapitolLocation();
+
+    return capitolLocation;
   }
 
   /**

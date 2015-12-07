@@ -118,7 +118,10 @@ public class Server
 
   public void broadcast(Serializable message)
   {
-    connectedClients.forEach(c -> c.send(message));
+    synchronized (connectedClients)
+    {
+      connectedClients.forEach(c -> c.send(message));
+    }
   }
 
   public void acceptMessage(Serializable message, ServerWorker client)

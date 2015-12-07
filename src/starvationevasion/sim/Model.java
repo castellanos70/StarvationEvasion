@@ -375,7 +375,7 @@ public class Model
     //
     for (Region region : regionList)
     {
-        region.updateYield();
+        region.updateYield(year);
     }
   }
 

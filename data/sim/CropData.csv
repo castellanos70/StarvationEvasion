@@ -1,7 +1,7 @@
 category,price,land,water,fertilizerN,fertilizerP2O5,fertilizerK2O,growing,temperature,ideal,high,max;
 Category,Price (In 2014 : Dollars per Metric Ton),Land Yield in 2014 USA (Metric Tons / Square Kilometer),Water (liters per kilogram),FertilizerN (kg per Metric ton),FertilizerP2O5 (kg per Metric ton),FertilizerK2O (kg per Metric ton),Growing Period (days/year),Temperature Min (Deg C),Temperature Ideal Low (Deg C),Temperature Ideal High (Deg C),Temperature Max (Deg C)
 CITRUS,700,3000,560,,,,365,-2,12,32,48
-FRUIT,1060,4000,500,,,,365,-40,10,32,45
+FRUIT,1060,4000,500,,,,365,-40,-1,32,45
 NUT,1200,340,14000,,,,365,-40,10,35,45
 GRAIN,200,900,2000,,,,100,5,20,30,45
 OIL,500,150,21000,,,,75,5,25,30,37

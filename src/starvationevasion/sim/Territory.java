@@ -84,6 +84,7 @@ public class Territory extends AbstractTerritory
     int income = 0;
     int production = 0;
     int land = 0;
+
     for (EnumFood crop : EnumFood.values())
     {
       land += landCrop[crop.ordinal()];

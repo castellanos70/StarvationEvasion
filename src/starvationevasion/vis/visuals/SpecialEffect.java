@@ -94,7 +94,6 @@ public class SpecialEffect {
         final PhongMaterial pinMaterial = new PhongMaterial();
         pinMaterial.setDiffuseMap(ResourceLoader.DIFF_PINPOINT);
         pin.setMaterial(pinMaterial);
-
         pin = transformNode(pin, latitude, longitude);
 
         specialEffects.add(pin);

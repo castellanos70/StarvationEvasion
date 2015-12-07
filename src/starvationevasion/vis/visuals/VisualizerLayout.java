@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import starvationevasion.common.EnumFood;
 import starvationevasion.vis.controller.EarthViewer;
 
 import javax.swing.*;
@@ -75,7 +76,7 @@ public class VisualizerLayout extends BorderPane
     earthGroup.setScaleZ(1.0);
     earthGroup.setDisable(false);
     earthGroup.requestFocus();
-    this.setPrefSize(500, 500);
+    this.setPrefSize(800, 600);
     center.add(earthGroup,0,0);
     this.setCenter(center);
     pointLight.setColor(Color.WHITE);
@@ -90,8 +91,8 @@ public class VisualizerLayout extends BorderPane
     earthInfo = new VBox();
     earthInfo.setMaxWidth(300);
     earthInfo.setPrefWidth(300);
-    earthInfo.setMaxHeight(200);
-    earthInfo.setPrefHeight(200);
+    earthInfo.setMaxHeight(600);
+    earthInfo.setPrefHeight(600);
     earthInfo.setId("earthInfo");
     country = new Label("Country: ");
     latLong = new Label("Global Position: ");
@@ -110,7 +111,7 @@ public class VisualizerLayout extends BorderPane
     weather.setId("button");
     rotate.setId("button");
     regionOverlay.setId("button");
-    earthInfo.getChildren().addAll(country, latLong, avgTemp, crops, rotate, weather, regionOverlay);
+    earthInfo.getChildren().addAll(country, latLong, avgTemp, rotate, weather, regionOverlay, crops);
     this.setLeft(earthInfo);
 
   }
@@ -149,6 +150,35 @@ public class VisualizerLayout extends BorderPane
   protected void setLatLong(double lat, double lon)
   {
     latLong.setText("Global Position: " + String.format("%.3f, %.3f", lat, lon));
+  }
+
+  protected void setTemperature(float temperature)
+  {
+    if (temperature == Float.MAX_VALUE)
+    {
+      avgTemp.setText("Average temperature: No value found");
+    }
+    else
+    {
+      avgTemp.setText("Average temperature: " + String.format("%.3f", temperature));
+    }
+  }
+
+  protected void setFoodProduced(int[] data)
+  {
+    String s = "Food:\n";
+    if (data != null && data.length == EnumFood.SIZE)
+    {
+      for (int i = 0; i < data.length; i++)
+      {
+        s += (data[i] > 0) ? EnumFood.values()[i].name() + ":\t" + data[i] + "\n" : "";
+      }
+    }
+    else
+    {
+      s = "Food: No country to display";
+    }
+    crops.setText(s);
   }
   /**
    * Called when user specifies they want to see earthOverlay inside of UserEventHandler

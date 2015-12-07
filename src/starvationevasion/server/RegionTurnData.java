@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class RegionTurnData
 {
-  public int actionsRemaining = 2;
+  public int actionsRemaining = ServerConstants.ACTIONS_PER_DRAFT_PHASE;
   public boolean hasUsedFreeDiscard = false;
   public boolean hasPlayedVoteCard = false;
 }

@@ -208,6 +208,19 @@ public class Server
     card.addEnactingRegion(region);
     regionsWhoVotedOnCards.get(card).add(region);
     broadcastVoteStatus();
+    checkForVotePhaseEnd();
+  }
+
+  private void checkForVotePhaseEnd()
+  {
+    if (getCurrentState() != ServerState.VOTING) return;
+    for (PolicyCard card : regionVoteRequiredCards.values())
+    {
+      if (card.voteWaitForAll() && regionsWhoVotedOnCards.get(card).size() < 7) return;
+      if (card.getEnactingRegionCount() < card.votesRequired()) return;
+    }
+    if (!phaseChangeFuture.cancel(false)) return;
+    enterDrawingPhase();
   }
 
   private void broadcastVoteStatus()

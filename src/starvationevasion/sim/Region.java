@@ -455,13 +455,12 @@ public class Region extends AbstractTerritory
 
   public void updateCropNeed(int year)
   {
+    double undernourishedRatio = undernourished / getPopulation(year);
     for (EnumFood crop : EnumFood.values())
     {
       int idx = crop.ordinal();
-      double wellFed = (double) getPopulation(year) - undernourished;
-      if (wellFed == 0) wellFed = 1; // avoid divide by zero
-      double need = (cropProduction[idx] + cropImport[idx] - cropExport[idx]) / wellFed;
-      setCropNeedPerCapita(crop, need);
+      double consumed = cropProduction[idx] + cropImport[idx] - cropExport[idx];
+      setCropNeedPerCapita(crop, consumed, undernourishedRatio);
     }
   }
 
@@ -610,7 +609,7 @@ public class Region extends AbstractTerritory
     }
 
     double population = getPopulation(Constant.FIRST_YEAR);
-    double tonPerPerson = tonsConsumed / (population - 0.5 * percentUndernourished * population);
+    double tonPerPerson = tonsConsumed / (population - (0.5 * percentUndernourished * population));
     cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
   }
 

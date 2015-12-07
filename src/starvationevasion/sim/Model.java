@@ -172,7 +172,13 @@ public class Model
     }
 
     for (Region region : regionList) region.estimateInitialBudget(cropLoader.getCategoryData());
-    for (Region region : regionList) region.estimateInitialCropLandArea(cropLoader.getCategoryData());
+    for (Region region : regionList)
+    {
+      if (region.getRegionEnum() == null || !region.getRegionEnum().isUS())
+      {
+        region.estimateInitialCropLandArea(cropLoader.getCategoryData());
+      }
+    }
 
     // Now iterate over the enumeration to optimize planting for each game
     // region.
@@ -407,7 +413,7 @@ public class Model
     //
     for (int i = 0; i < EnumRegion.SIZE; i++)
     {
-      regionList[i].updateCropNeed();
+      regionList[i].updateCropNeed(year);
     }
 
     if (debugLevel.intValue() < Level.INFO.intValue())

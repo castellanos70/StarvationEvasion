@@ -340,7 +340,7 @@ public class Region extends AbstractTerritory
       // the actual domestic consumption of the crop (excluding the underfed
       // people).
       //
-      double need = getInitialConsumption(crop, Constant.FIRST_YEAR) / ((population[0] - undernourished) * 1000);
+      double need = getInitialConsumption(crop, Constant.FIRST_YEAR) / (population[0] - undernourished);
 
       // Imports & exports per capita for all regions.
       //
@@ -397,7 +397,7 @@ public class Region extends AbstractTerritory
       // The 1981 need for each region and category of food per 1000 people is
       // the domestic consumption of the crop.
       //
-      double need = getInitialConsumption(crop, Constant.FIRST_YEAR) / ((population[0] - undernourished) * 1000);
+      double need = getInitialConsumption(crop, Constant.FIRST_YEAR) / (population[0] - undernourished);
 
       // Production per capita for non-US regions.
       //
@@ -453,6 +453,15 @@ public class Region extends AbstractTerritory
     }
   }
 
+  public void updateCropNeed(int year)
+  {
+    for (EnumFood crop : EnumFood.values())
+    {
+      int idx = crop.ordinal();
+      cropNeedPerCapita[idx] = (double) (cropProduction[idx] + cropImport[idx] - cropExport[idx]) / getPopulation(year);
+    }
+  }
+
 
   /**
    * Estimates the initial crop budget for a all of the territories in the region by multiplying the territory
@@ -477,24 +486,32 @@ public class Region extends AbstractTerritory
 
   public void estimateInitialCropLandArea(List<CropZoneData> cropData)
   {
+    setRegionLandTotal();
+
     if (region == null)
     {
-      estimateInitialUSCropLandArea(cropData);
+      System.out.println(name);
     }
-  }
 
-  public void estimateInitialUSCropLandArea(List<CropZoneData> cropData)
-  {
+    for (EnumFood food : EnumFood.values())
+    {
+      landCrop[food.ordinal()] = 0;
+    }
+
     for (Territory t : getTerritories())
     {
-      double territoryFarmLand = (t.farmLand1981 / 100.0) * t.landTotal;
-      double helperSum = cropLandAreaHelper(t, cropData);
-      double landCropRatio = territoryFarmLand / helperSum;
-
-      for (CropZoneData zoneData : cropData)
+      if (t.getGameRegion() != null)
       {
-        double cropLand = cropLandAreaHelper(t, zoneData) * landCropRatio;
-        t.setCropLand(zoneData.food, (int) cropLand);
+        double territoryFarmLand = (t.farmLand1981 / 100.0) * t.landTotal;
+        double helperSum = cropLandAreaHelper(t, cropData);
+        double landCropRatio = territoryFarmLand / helperSum;
+
+        for (CropZoneData zoneData : cropData)
+        {
+          double cropLand = cropLandAreaHelper(t, zoneData) * landCropRatio;
+          t.setCropLand(zoneData.food, (int) cropLand);
+          landCrop[zoneData.food.ordinal()] += cropLand;
+        }
       }
     }
   }
@@ -502,7 +519,9 @@ public class Region extends AbstractTerritory
   // defined to be the temp function in the spec
   private double cropLandAreaHelper(Territory t, CropZoneData zoneData)
   {
-    return getTerritoryProduction(t, zoneData.food) / zoneData.tonsPerKM2;
+    double productionYieldRatio = initialProduction1981[zoneData.food.ordinal()] / (double) zoneData.tonsPerKM2;
+    double landRatio = (double) (t.landTotal * t.totalFarmLand) / (this.landTotal * this.totalFarmLand);
+    return productionYieldRatio * landRatio;
   }
 
   // finds the sum of the temp function defined in the spec
@@ -520,6 +539,21 @@ public class Region extends AbstractTerritory
   {
     long cropProductionPerCapita = getInitialProduction(food, Constant.FIRST_YEAR) / getPopulation(Constant.FIRST_YEAR);
     return cropProductionPerCapita * t.getPopulation(Constant.FIRST_YEAR);
+  }
+
+  private void setRegionLandTotal()
+  {
+    landTotal = 0;
+    totalFarmLand = 0;
+    for (Territory t : getTerritories())
+    {
+      if (t.getGameRegion() != null)
+      {
+        landTotal += t.landTotal;
+        totalFarmLand += (t.totalFarmLand * t.landTotal);
+      }
+    }
+    totalFarmLand = (int) (((double) totalFarmLand / landTotal) * 100);
   }
 
   /**
@@ -610,16 +644,6 @@ public class Region extends AbstractTerritory
     cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
   }
 
-  public void updateCropNeed()
-  {
-    for (Territory t : getTerritories())
-    {
-      for (EnumFood crop : EnumFood.values())
-      {
-        t.setCropNeedPerCapita(crop, getInitialConsumption(crop, Constant.FIRST_YEAR) / (getPopulation(Constant.FIRST_YEAR) * 1000));
-      }
-    }
-  }
 
   /**
    * Updates the region population for the year.

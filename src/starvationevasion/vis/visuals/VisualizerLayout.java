@@ -76,7 +76,7 @@ public class VisualizerLayout extends BorderPane
     earthGroup.setScaleZ(1.0);
     earthGroup.setDisable(false);
     earthGroup.requestFocus();
-    this.setPrefSize(500, 500);
+    this.setPrefSize(800, 600);
     center.add(earthGroup,0,0);
     this.setCenter(center);
     pointLight.setColor(Color.WHITE);
@@ -91,8 +91,8 @@ public class VisualizerLayout extends BorderPane
     earthInfo = new VBox();
     earthInfo.setMaxWidth(300);
     earthInfo.setPrefWidth(300);
-    earthInfo.setMaxHeight(200);
-    earthInfo.setPrefHeight(200);
+    earthInfo.setMaxHeight(600);
+    earthInfo.setPrefHeight(600);
     earthInfo.setId("earthInfo");
     country = new Label("Country: ");
     latLong = new Label("Global Position: ");
@@ -111,7 +111,7 @@ public class VisualizerLayout extends BorderPane
     weather.setId("button");
     rotate.setId("button");
     regionOverlay.setId("button");
-    earthInfo.getChildren().addAll(country, latLong, avgTemp, crops, rotate, weather, regionOverlay);
+    earthInfo.getChildren().addAll(country, latLong, avgTemp, rotate, weather, regionOverlay, crops);
     this.setLeft(earthInfo);
 
   }
@@ -166,12 +166,17 @@ public class VisualizerLayout extends BorderPane
 
   protected void setFoodProduced(int[] data)
   {
-    if (data == null || data.length != EnumFood.SIZE) return;
-
-    String s = "";
-    for (int i = 0; i < data.length; i++)
+    String s = "Food:\n";
+    if (data != null && data.length == EnumFood.SIZE)
     {
-      s += (data[i] > 0) ? EnumFood.values()[i].name() + ": " + data[i] + "\n" : "";
+      for (int i = 0; i < data.length; i++)
+      {
+        s += (data[i] > 0) ? EnumFood.values()[i].name() + ":\t" + data[i] + "\n" : "";
+      }
+    }
+    else
+    {
+      s = "Food: No country to display";
     }
     crops.setText(s);
   }

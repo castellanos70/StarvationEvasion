@@ -264,14 +264,14 @@ public class Earth {
    * Vis Team Testing Purposes
    **/
   public static void main(String args[]) {
-    int scale = 50;
+    int scale = 10;
     BufferedImage i = new BufferedImage(360 * scale, 180 * scale, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = i.createGraphics();
     g.setComposite(AlphaComposite.Clear);
     g.fillRect(0, 0, 360 * scale, 180 * scale);
     g.setColor(Color.BLACK);
 
-    Collection<GeographicArea> modelGeography = new GeographyXMLparser().getGeography();
+ /*   Collection<GeographicArea> modelGeography = new GeographyXMLparser().getGeography();
     for (GeographicArea a : modelGeography) {
       java.awt.Polygon poly = new java.awt.Polygon();
       for (MapPoint p : a.getPerimeter()) {
@@ -285,13 +285,13 @@ public class Earth {
     }
 
     try {
-      ImageIO.write(i, "PNG", new File("C:\\Users\\Anand\\Desktop\\test.png"));
+      ImageIO.write(i, "PNG", new File("/Users/laurencemirabal/Desktop/image.png"));
     } catch (IOException e) {
       e.printStackTrace();
     }
     System.out.println("Done!");
     g.dispose();
-
+*/
 
     HashMap<MapPoint, Float> data = new HashMap<>();
     for (double lat = -90; lat < 90; lat += 1) {
@@ -308,13 +308,20 @@ public class Earth {
     g.fillRect(0, 0, 360 * scale, 180 * scale);
     g.setColor(Color.BLACK);
     g.setComposite(AlphaComposite.Src);
+    Color red = new Color(255,0,0,75);
+    Color blue = new Color(0,0,255,75);
+    Color white = new Color(255,255,255,75);
+    Color yellow = new Color(255,255,0,75);
+    Color orange = new Color(255,100,10,75);
+
+
 
     ArrayList<Color> colors = new ArrayList<>();
-    colors.add(Color.white);
-    colors.add(Color.BLUE);
-    colors.add(Color.yellow);
-    colors.add(Color.orange);
-    colors.add(Color.red);
+    colors.add(white);
+    colors.add(blue);
+    colors.add(yellow);
+    colors.add(orange);
+    colors.add(red);
 
     for (Map.Entry<MapPoint, Float> e : data.entrySet()) {
       if (e.getKey().latitude > 90 || e.getKey().latitude < -90) continue;
@@ -330,11 +337,13 @@ public class Earth {
       else if (t < 75) g.setColor(colors.get(2));
       else if (t < 90) g.setColor(colors.get(3));
       else g.setColor(colors.get(4));
-      g.drawOval(x, y, 1, 1);
+      //g.drawOval(x, y, 1, 1);
+      g.fillRect(x, y, 10, 10);
+
     }
     g.dispose();
     try {
-      ImageIO.write(i, "PNG", new File("C:\\Users\\Anand\\Desktop\\test.png"));
+      ImageIO.write(i, "PNG", new File("/Users/laurencemirabal/Desktop/image.png"));
     } catch (IOException e) {
       e.printStackTrace();
     }

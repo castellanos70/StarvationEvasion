@@ -829,7 +829,6 @@ public class SimParser {
     //
     for (GeographicArea a : regions.keySet()) {
       if (a.containsMapPoint(p)) {
-            /*TODO: send this info to another method to decide what to show the user*/
         System.out.println("clicked on " + a.getName());
         return a.getName();
       }

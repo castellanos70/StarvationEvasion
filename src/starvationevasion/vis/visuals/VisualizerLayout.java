@@ -215,7 +215,6 @@ public class VisualizerLayout extends BorderPane
 
 
     crop_Nums.setText(nums);
-
   }
   /**
    * Called when user specifies they want to see earthOverlay inside of UserEventHandler

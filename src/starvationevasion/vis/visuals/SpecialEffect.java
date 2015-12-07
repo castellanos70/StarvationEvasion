@@ -68,11 +68,22 @@ public class SpecialEffect {
         specialEffects = null;
     }
 
+  /**
+   * Transforms the latitude and longitude to JAVAFX coordinates
+   * @param shape shape to transform on
+   * @param latitude degrees that ranges from -90 to 90 degrees
+   * @param longitude degrees that ranges from -180 to 180 degrees
+   * @return Returns the transformed shape
+   */
     private Sphere transformNode(Sphere shape, double latitude, double longitude)
     {
+        /* JAVAFX will use 360 degrees, while lat long will use +- 180 and 90 */
+        double lon = longitude + 180;
+        double lat = (latitude + 90)*2;
+
         shape.getTransforms().addAll(
-                new Rotate(latitude, Rotate.X_AXIS),
-                new Rotate(longitude, Rotate.Y_AXIS)
+                new Rotate(lat, Rotate.X_AXIS),
+                new Rotate(lon, Rotate.Y_AXIS)
         );
 
         return shape;

@@ -483,7 +483,7 @@ public class Region extends AbstractTerritory
   {
     for (Territory t : getTerritories())
     {
-      double territoryFarmLand = (t.totalFarmLand / 100) * t.getLandTotal();
+      double territoryFarmLand = (t.farmLand1981 / 100.0) * t.landTotal;
       double helperSum = cropLandAreaHelper(t, cropData);
       double landCropRatio = territoryFarmLand / helperSum;
 

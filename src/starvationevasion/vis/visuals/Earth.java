@@ -9,12 +9,14 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.common.MapPoint;
 import starvationevasion.common.SpecialEventData;
 import starvationevasion.common.Util;
 import starvationevasion.io.XMLparsers.GeographyXMLparser;
 import starvationevasion.sim.GeographicArea;
 import starvationevasion.vis.controller.EarthViewer;
+import starvationevasion.vis.controller.SimParser;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -30,6 +32,7 @@ import java.util.*;
  */
 public class Earth {
 
+  private final SimParser SIM_PARSER = new SimParser();
   private final ResourceLoader RESOURCE_LOADER = EarthViewer.RESOURCE_LOADER;
   private static double ROTATE_SECS = 30;
 
@@ -44,6 +47,7 @@ public class Earth {
   private Group earthOverlay;
   private Group earthWeather;
 
+  private HashMap<EnumRegion, int[]> foodProduced = new HashMap<>();
   private HashMap<MapPoint, Float> temperatures = new HashMap<>();
   private ArrayList<SpecialEventData> specialEventDatas =  new ArrayList<>();
 
@@ -242,6 +246,25 @@ public class Earth {
   public void setSpecialEventDatas(ArrayList<SpecialEventData> data) {
     specialEventDatas.clear();
     specialEventDatas.addAll(data);
+  }
+
+  public void setFoodProducedData(HashMap<EnumRegion, int[]> data)
+  {
+    foodProduced.clear();
+    foodProduced.putAll(data);
+  }
+
+  public int[] getFoodProducedData(double lat, double lon)
+  {
+    EnumRegion r = SIM_PARSER.getRegion(lat, lon);
+    boolean containsRegion = foodProduced.containsKey(r);
+    if (containsRegion) return foodProduced.get(r);
+    return null;
+  }
+
+  public String getRegionString(double lat, double lon)
+  {
+    return SIM_PARSER.parse(lat, lon);
   }
 
   /**

@@ -4,6 +4,7 @@ package starvationevasion.vis.controller;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.common.MapPoint;
 import starvationevasion.common.SpecialEventData;
 import starvationevasion.vis.visuals.Earth;
@@ -92,6 +93,11 @@ public class EarthViewer
 //      if (count % 100 == 0) System.out.println(count + "/" + data.entrySet().size());
 //    }
 
+  }
+
+  public void updateFoodProduced(HashMap<EnumRegion, int[]> data)
+  {
+    if (data != null) earth.setFoodProducedData(data);
   }
 
   /**

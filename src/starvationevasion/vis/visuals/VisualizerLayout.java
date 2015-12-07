@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import starvationevasion.common.EnumFood;
 import starvationevasion.vis.controller.EarthViewer;
 
 import javax.swing.*;
@@ -161,7 +162,18 @@ public class VisualizerLayout extends BorderPane
     {
       avgTemp.setText("Average temperature: " + String.format("%.3f", temperature));
     }
+  }
 
+  protected void setFoodProduced(int[] data)
+  {
+    if (data == null || data.length != EnumFood.SIZE) return;
+
+    String s = "";
+    for (int i = 0; i < data.length; i++)
+    {
+      s += (data[i] > 0) ? EnumFood.values()[i].name() + ": " + data[i] + "\n" : "";
+    }
+    crops.setText(s);
   }
   /**
    * Called when user specifies they want to see earthOverlay inside of UserEventHandler

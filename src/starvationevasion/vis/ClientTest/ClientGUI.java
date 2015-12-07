@@ -6,6 +6,8 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.common.MapPoint;
 import starvationevasion.common.Util;
 import starvationevasion.vis.controller.EarthViewer;
@@ -72,7 +74,6 @@ public class ClientGUI extends Application implements EventHandler<KeyEvent> {
         //World Data..
         /* client passes in crop and temperature data, expecting MapPoints to be whole degrees */
         HashMap<MapPoint, Float> tempData = new HashMap<>();
-        HashMap<MapPoint, int []> foodData = new HashMap<>();
         for (double lat = -90; lat < 90; lat += 1) {
           for (double lon = -180; lon < 180; lon += 1) {
             MapPoint p = new MapPoint(lat, lon);
@@ -81,6 +82,18 @@ public class ClientGUI extends Application implements EventHandler<KeyEvent> {
           }
         }
         earthViewer.updateTemperature(tempData);
+
+        HashMap<EnumRegion, int []> foodData = new HashMap<>();
+        for (EnumRegion e : EnumRegion.values())
+        {
+          int [] fData = new int[EnumFood.SIZE];
+          for (int i = 0; i < EnumFood.SIZE; i++)
+          {
+            fData[i] = Util.rand.nextInt(100);
+          }
+          foodData.put(e, fData);
+        }
+        earthViewer.updateFoodProduced(foodData);
       }
     }
   }

@@ -18,7 +18,6 @@ import starvationevasion.vis.controller.SimParser;
  */
 public class UserEventHandler  implements EventHandler
 {
-  private final SimParser SIM_PARSER = new SimParser();
   private final DoubleProperty angleX = new SimpleDoubleProperty(0);
   private final DoubleProperty angleY = new SimpleDoubleProperty(0);
   private double anchorX, anchorY;
@@ -138,12 +137,10 @@ public class UserEventHandler  implements EventHandler
     Point2D point = pickResult.getIntersectedTexCoord(); //in percentages
     double lat = (point.getY() - 0.5) * -180;
     double lon = (point.getX() - 0.5) * 360;
-    String regionName = SIM_PARSER.parse(lat, lon);
-    visLayout.setRegionString(regionName);
 
-    /* temperature - get closest map point in earth's list*/
+    visLayout.setRegionString(earth.getRegionString(lat, lon));
     visLayout.setTemperature(earth.getTemperature(lat, lon));
-
+    visLayout.setFoodProduced(earth.getFoodProducedData(lat, lon));
   }
 
 

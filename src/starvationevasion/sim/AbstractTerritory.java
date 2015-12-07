@@ -62,9 +62,9 @@ public abstract class AbstractTerritory implements Comparable<Territory>
    * cultivated crops.
    */
   protected int totalFarmLand;
-  protected int[] landCrop = new int[EnumFood.SIZE];  //in square kilometers
-  protected int[] cropImport = new int[EnumFood.SIZE];  //in metric tons.
-  protected int[] cropExport = new int[EnumFood.SIZE];  //in metric tons.
+  protected int[] landCrop = new int[EnumFood.SIZE];  // in square kilometers
+  protected long[] cropImport = new long[EnumFood.SIZE];  //in metric tons.
+  protected long[] cropExport = new long[EnumFood.SIZE];  //in metric tons.
 
   protected int[] cultivationMethod = new int[EnumFarmMethod.SIZE]; //percentage [0,100]
 
@@ -250,7 +250,7 @@ public abstract class AbstractTerritory implements Comparable<Territory>
    * @param metTons tons exported
    */
 
-  final public void setCropExport(EnumFood crop, int metTons)
+  final public void setCropExport(EnumFood crop, long metTons)
   {
     cropExport[crop.ordinal()] = metTons;
   }
@@ -259,7 +259,7 @@ public abstract class AbstractTerritory implements Comparable<Territory>
    * @param crop    crop in question
    * @param metTons tons imported
    */
-  final public void setCropImport(EnumFood crop, int metTons)
+  final public void setCropImport(EnumFood crop, long metTons)
   {
     cropImport[crop.ordinal()] = metTons;
   }
@@ -326,7 +326,6 @@ public abstract class AbstractTerritory implements Comparable<Territory>
     cropYield[crop.ordinal()] = tonPerSqKilom;
   }
 
-
   /**
    * @param crop crop in question
    * @return tons produced  at end of the current year of the simulation.
@@ -349,7 +348,7 @@ public abstract class AbstractTerritory implements Comparable<Territory>
    * @param crop crop in question
    * @return tons exported
    */
-  final public int getCropExport(EnumFood crop)
+  final public long getCropExport(EnumFood crop)
   {
     return cropExport[crop.ordinal()];
   }
@@ -358,7 +357,7 @@ public abstract class AbstractTerritory implements Comparable<Territory>
    * @param crop crop in question
    * @return tons imported
    */
-  final public int getCropImport(EnumFood crop)
+  final public long getCropImport(EnumFood crop)
   {
     return cropImport[crop.ordinal()];
   }

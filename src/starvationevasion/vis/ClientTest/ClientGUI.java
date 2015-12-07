@@ -2,13 +2,11 @@ package starvationevasion.vis.ClientTest;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import starvationevasion.vis.controller.EarthViewer;
-import starvationevasion.vis.visuals.VisualizerLayout;
 
 /**
  * Created by Tess Daughton on 11/15/15.
@@ -23,8 +21,8 @@ public class ClientGUI extends Application implements EventHandler<KeyEvent> {
   private Stage earthStage = new Stage();
   private final int MINI_EARTH_RADIUS = 100;
   private final int LARGE_EARTH_RADIUS = 300;
-  boolean fullEarthMode = false;
-  EarthViewer earthViewer = new EarthViewer(MINI_EARTH_RADIUS, LARGE_EARTH_RADIUS);
+  private boolean fullEarthMode = false;
+  private EarthViewer earthViewer = new EarthViewer(MINI_EARTH_RADIUS, LARGE_EARTH_RADIUS);
 
 
   @Override
@@ -58,11 +56,10 @@ public class ClientGUI extends Application implements EventHandler<KeyEvent> {
         else
         {
           fullEarthMode=true;
-          VisualizerLayout visLayout = earthViewer.updateFull();
-          Scene earthScene = new Scene(visLayout,700,700);
+          Scene earthScene = new Scene(earthViewer.updateFull(),700,700);
+          earthViewer.addVisStyleSheet(earthScene);
+          earthScene.setOnKeyPressed(this);
           earthStage.setScene(earthScene);
-          earthScene.getStylesheets().add(earthViewer.RESOURCE_LOADER.STYLE_SHEET);
-          earthStage.getScene().setOnKeyPressed(this);
           earthStage.show();
         }
       }

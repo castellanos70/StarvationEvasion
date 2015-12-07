@@ -105,6 +105,11 @@ public class Model
     //System.out.println("MODEL INIT");
   }
 
+  public Region getRegion(EnumRegion r)
+  {
+    return regionList[r.ordinal()];
+  }
+
   /**
    * This method is used to create USState objects along with
    * the Region data structure
@@ -120,7 +125,7 @@ public class Model
 
     // Add the US book keeping region.
     //
-    regionList[EnumRegion.SIZE] = Region.createBookKeepingRegion("US");
+    regionList[EnumRegion.SIZE] = Region.createBookKeepingRegion("UNITED_STATES");
 
     try{cropLoader = new CropCSVLoader();} catch (Throwable t){ System.out.println("CROP_LOADER "+t);}
     //ArrayList<CropZoneData> categoryData = cropLoader.getCategoryData();
@@ -143,21 +148,45 @@ public class Model
     }
 
     Territory[] territories = world.getTerritories();
-    int index = Arrays.binarySearch(territories, "US-Alaska");
+    int index = Arrays.binarySearch(territories, new Territory("US-Alaska"));
     if (index >= 0) unitedStates.addTerritory(territories[index]);
     else LOGGER.severe("Can not find Alaska?");
 
-    index = Arrays.binarySearch(territories, "US-Hawaii");
+    index = Arrays.binarySearch(territories, new Territory("US-Hawaii"));
     if (index >= 0) unitedStates.addTerritory(territories[index]);
     else LOGGER.severe("Can not find Hawaii?");
 
     float[] avgConversionFactors = new float[EnumFood.SIZE];
 
-    for (Region region : regionList)
-    { // The loader builds regions in the order that it finds them in the data file.  We need to
-      // put them in ordinal order.
+    // Traverse all of the regions, estimating the initial yield.
+    // Note that this includes the book-keeping regions.
+    //
+    for (Region region : regionList) region.estimateInitialYield();
 
-      region.aggregateTerritoryFields(Constant.FIRST_YEAR);
+    // Now iterate over the enumeration to optimize planting for each game
+    // region.
+    //
+    for (EnumRegion region : EnumRegion.values())
+    {
+      // TODO : The tile optimization function will only work if we have the
+      // CropClimateData structure correctly populated for each of the crops.
+      //
+      // calculate OTHER_CROPS temp & rain requirements for each country
+      for (Territory state : regionList[region.ordinal()].getTerritories())
+      {
+        // The loader loads 2014 data.  We need to adjust the data for 1981.  Joel's first estimate is
+        // to simply multiply all of the territorial data by 50%
+        //
+        // state.scaleInitialStatistics(.50);
+        CropOptimizer optimizer = new CropOptimizer(Constant.FIRST_YEAR, state);
+        optimizer.optimizeCrops();
+      }
+    }
+
+    // Finally, aggregate the totals for all regions (including book keeping).
+    //
+    for (Region region : regionList)
+    { region.aggregateTerritoryFields(Constant.FIRST_YEAR);
       if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(region, Constant.FIRST_YEAR);
     }
   }
@@ -197,8 +226,6 @@ public class Model
 
     return year;
   }
-
-
 
   protected void appendWorldData(WorldData threeYearData)
   {
@@ -249,6 +276,12 @@ public class Model
   private void updateLandUse()
   {
     // TODO : Land use is based on policies.
+    // Notes :
+    // Start with how much each country is producing v/s how much land they are using.
+    // This gives us a yield factor.  If a country with a high yield applies irrigation
+    // won't benefit as much as countries with a low yield.  Make an 'S' curve (bezier)
+    // with a fit quadratic equation.
+    //
   }
 
   /**
@@ -256,10 +289,7 @@ public class Model
    */
   private void updatePopulation()
   {
-    // TODO: Year to year population changes are now a fixed value, provided in the .csv
-    // file.  We need a way to take the net change in population, and back that number
-    // out to birth rate, mortality rate, and undernourishment.  Our current thinking is
-    // that undernourishment needs to be computed after the trading happens.
+    // Territory.updatePopulation updates internal state variables related to production.
     //
     // Note : The total population for the region is updated in region.aggregateTerritoryFields().
     //
@@ -267,7 +297,7 @@ public class Model
     {
       for (Territory territory : regionList[i].getTerritories())
       {
-        // territory.updatePopulation(year);
+        territory.updatePopulation(year);
       }
     }
   }
@@ -286,23 +316,23 @@ public class Model
 
   private void updateFarmProductYield()
   {
-    // Notes :
-    // Start with how much each country is producing v/s how much land they are using.
-    // This gives us a yield factor.  If a country with a high yield applies irrigation
-    // won't benefit as much as countries with a low yield.  Make an 'S' curve (bezier)
-    // with a fit quadratic equation.
+    // Iterate over all of the regions, including the book keeping regions.  Each
+    // region invokes a territory update and then computes an aggregate number
+    // for the region.  Territories that are in both game and book-keeping regions
+    // may compute their yield twice, but this has no side effects.
     //
-    for (int i = 0; i < EnumRegion.SIZE ; i++)
+    for (Region region : regionList)
     {
-      for (Territory territory : regionList[i].getTerritories()) {
-        // territory.updatePopulation(year);
-      }
+        region.updateYield();
     }
   }
 
   private void updateFarmProductNeed()
   {
-     // TODO : Not implemented.  This should use the new file.
+     for (int i = 0; i < EnumRegion.SIZE; i++)
+     {
+       regionList[i].updateCropNeed();
+     }
   }
 
   private void updateFarmProductMarket()

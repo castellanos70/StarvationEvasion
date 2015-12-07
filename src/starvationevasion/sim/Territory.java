@@ -72,7 +72,7 @@ public class Territory extends AbstractTerritory
   /**
    * Estimates the initial land used per food type, and the yield.
    */
-  public void estimateInitialYield()
+  public void updateYield()
   {
     int income = 0;
     int production = 0;
@@ -84,53 +84,41 @@ public class Territory extends AbstractTerritory
       income += cropIncome[crop.ordinal()];
     }
 
-    // If the total land is > 0 then this function has already been called.
-    //
-    //if (land == 0.)
-    //{
-      //if (income == 0. && production == 0.)
-      //{ Logger.getGlobal().log(Level.INFO,
-      //        "Territory {0} has no production or income. Faking it.", getName());
-
-        // Assume they're getting $100 per acre.  Terrible guess, but it's just a
-        // default for empty rows.
+    if (production == 0.)
+    {
+      for (EnumFood crop : EnumFood.values()) {
+        // The current version of the CSV file doesn't have any production values.
+        // Use the income values (if available) to estimate land per crop.
         //
-      //  income = landTotal / 10; // $100 per acre / 1000.;
 
-      //  for (int i = 0 ; i < EnumFood.SIZE ; i += 1) cropIncome[i] = income * EnumFood.SIZE;
-      //}
-
-      if (production == 0.)
-      {
-        for (EnumFood crop : EnumFood.values()) {
-          // The current version of the CSV file doesn't have any production values.
-          // Use the income values (if available) to estimate land per crop.
-          //
-
-          // Estimate production from the yield.
-          //TODO: read data
-          //cropProduction[crop.ordinal()] = (cropIncome[crop.ordinal()] / income) * landTotal;
-          production += cropProduction[crop.ordinal()];
-        }
-      }
-
-      for (EnumFood crop : EnumFood.values())
-      {
+        // Estimate production from the yield.
         //TODO: read data
-        //cropYield[crop.ordinal()] = cropProduction[crop.ordinal()] / landTotal;
-
-        // Use the crop production to estimate land per crop.
-        //
-        //double p = cropProduction[crop.ordinal()] / production;
-
-        // This is an initial naive estimate.  Per Joel there will eventually be a multiplier
-        // applied that gives a more realistic estimate.
-        //
-        //landCrop[crop.ordinal()] =(int)( landTotal * p );// multiplier[food]
-
-        land += landCrop[crop.ordinal()];
+        //cropProduction[crop.ordinal()] = (cropIncome[crop.ordinal()] / income) * landTotal;
+        production += cropProduction[crop.ordinal()];
       }
-    //}
+    }
+
+    for (EnumFood crop : EnumFood.values())
+    {
+      //TODO: read data
+      //cropYield[crop.ordinal()] = cropProduction[crop.ordinal()] / landTotal;
+
+      // Use the crop production to estimate land per crop.
+      //
+      //double p = cropProduction[crop.ordinal()] / production;
+
+      // This is an initial naive estimate.  Per Joel there will eventually be a multiplier
+      // applied that gives a more realistic estimate.
+      //
+      //landCrop[crop.ordinal()] =(int)( landTotal * p );// multiplier[food]
+
+      land += landCrop[crop.ordinal()];
+
+      if (landCrop[crop.ordinal()] != 0)
+      { cropYield[crop.ordinal()] = cropProduction[crop.ordinal()] / landCrop[crop.ordinal()];
+      }
+      else cropYield[crop.ordinal()] = 0;
+    }
   }
 
   /**
@@ -184,7 +172,50 @@ public class Territory extends AbstractTerritory
     }
   }
 
+  public void updatePopulation(int year)
+  {
+    int index = year - Constant.FIRST_YEAR;
 
+    // Population data is stored in a fixed array.
+    //
+    int netChange = 0;
+    if (index > 0) netChange = population[index] - population[index - 1];
+
+    // TODO: We need a way to take the net change in population and back that
+    // number out to birth rate, mortality rate, and undernourishment. This is
+    // the Spring code to update undernourishment, based on the Spring 2015
+    // spec. :
+    //
+    double numUndernourished;
+    double population = getPopulation(year);
+    double[] netCropsAvail = new double[EnumFood.SIZE];
+    int numCropsAvail = 0;
+    for (EnumFood crop : EnumFood.values())
+    {
+      double netAvail = getNetCropAvailable(crop);
+      netCropsAvail[crop.ordinal()] = netAvail;
+      if (netAvail >= 0) numCropsAvail++;
+    }
+
+    if (numCropsAvail == EnumFood.SIZE)
+    {
+      numUndernourished = 0;
+    }
+    else
+    {
+      double maxResult = 0;
+      for (EnumFood crop : EnumFood.values())
+      {
+        double need = getCropNeedPerCapita(crop);
+        double result = (netCropsAvail[crop.ordinal()]) / (0.5 * need * population);
+        if (result > maxResult) maxResult = result;
+      }
+
+      numUndernourished = Math.min(population, maxResult);
+    }
+
+    setUndernourished((int) numUndernourished);
+  }
 
 
   /**
@@ -279,6 +310,12 @@ public class Territory extends AbstractTerritory
         territoryList.add(territory);
       }
     }
+
+    // We may not have a territory for the United States.
+    //
+    Territory us = new Territory("United States");
+    Collections.sort(territoryList);
+    if (Collections.binarySearch(territoryList, us) < 0) territoryList.add(us);
 
     return territoryList.toArray(new Territory[territoryList.size()]);
   }

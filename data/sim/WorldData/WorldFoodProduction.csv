@@ -1,3 +1,4 @@
+food,category,country,region,year,exports,imports,production
 Food,Category,Country,Region,Year,Exports MetricTon,Imports MetricTon,Production MetricTon
 Grapefruit,CITRUS,Italy,EUROPE,1981,2000,45000,5000
 Grapefruit,CITRUS,Spain,EUROPE,1981,5000,0,9000

@@ -182,6 +182,7 @@ PolygonBoarder_Countries/Ukraine.xml
 PolygonBoarder_Countries/United Arab Emirates.xml
 PolygonBoarder_Countries/UnitedKingdom.xml
 PolygonBoarder_Countries/UnitedRepublicOf Tanzania.xml
+PolygonBoarder_Countries/UnitedStates.xml
 PolygonBoarder_Countries/Uruguay.xml
 PolygonBoarder_Countries/Uzbekistan.xml
 PolygonBoarder_Countries/Vanuatu.xml

@@ -160,7 +160,16 @@ public class Model
     // Traverse all of the regions, estimating the initial yield.
     // Note that this includes the book-keeping regions.
     //
-    for (Region region : regionList) region.estimateInitialYield();
+    for (Region region : regionList)
+    { // Roll up the population and undernourished for each region.
+      //
+      region.updatePopulation(Constant.FIRST_YEAR);
+
+      // Update the initial yield.
+      //
+      region.estimateInitialYield();
+    }
+
     for (Region region : regionList) region.estimateInitialBudget(cropLoader.getCategoryData());
     for (Region region : regionList) region.estimateInitialCropLandArea(cropLoader.getCategoryData());
 
@@ -201,29 +210,29 @@ public class Model
     year++;
     LOGGER.info("Advancing year to " + year);
 
-    applyPolicies();
+    applyPolicies(); // Not started.
 
-    updateLandUse();
+    updateLandUse(); // Not started.
 
-    updatePopulation();
+    updatePopulation(); // Done.
 
-    updateClimate();
+    updateClimate(); // Done.
 
-    generateSpecialEvents();
+    generateSpecialEvents(); // In progress (Alfred).
 
-    updateFarmProductYield();
+    updateFarmProductYield(); // Done.
 
-    updateFarmProductNeed();
+    updateFarmProductNeed(); // Done.
 
-    updateFarmProductMarket();
+    updateFarmProductMarket(); // Not started.
 
-    updateFoodDistribution();
+    updateFoodDistribution(); // Not started.
 
-    updatePlayerRegionRevenue();
+    updatePlayerRegionRevenue(); // Not started.
 
-    updateHumanDevelopmentIndex();
+    updateHumanDevelopmentIndex(); // Done.
 
-    appendWorldData(threeYearData);
+    appendWorldData(threeYearData); // Done
 
     return year;
   }
@@ -290,16 +299,13 @@ public class Model
    */
   private void updatePopulation()
   {
-    // Territory.updatePopulation updates internal state variables related to production.
+    // Iterate over all of the regions, including the book keeping regions
     //
     // Note : The total population for the region is updated in region.aggregateTerritoryFields().
     //
     for (int i=0; i<EnumRegion.SIZE; i++)
     {
-      for (Territory territory : regionList[i].getTerritories())
-      {
-        territory.updatePopulation(year);
-      }
+      regionList[i].updatePopulation(year);
     }
   }
 
@@ -313,6 +319,7 @@ public class Model
   private void generateSpecialEvents()
   {
     // TODO: 12/6/2015 Alfred is working on this.
+    //
   }
 
   private void updateFarmProductYield()
@@ -324,16 +331,18 @@ public class Model
     //
     for (Region region : regionList)
     {
-        region.updateYield();
+        region.updateYield(year);
     }
   }
 
   private void updateFarmProductNeed()
   {
-     for (int i = 0; i < EnumRegion.SIZE; i++)
-     {
-       regionList[i].updateCropNeed();
-     }
+    // Iterate over only the game regions.
+    //
+    for (int i = 0; i < EnumRegion.SIZE; i++)
+    {
+      regionList[i].updateCropNeed();
+    }
   }
 
   private void updateFarmProductMarket()

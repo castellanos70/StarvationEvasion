@@ -642,7 +642,7 @@ public class Region extends AbstractTerritory
 
     // Region population in year 0.
     //
-    population[0] = people;
+    population[year - Constant.FIRST_YEAR] = people;
     undernourished = underfed;
   }
 

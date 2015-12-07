@@ -132,14 +132,16 @@ public class UserEventHandler  implements EventHandler
 
   public void displayEarthInformation(MouseEvent event)
   {
-    PickResult pickResult = event.getPickResult();
+    return;
 
-      /* Pick point on texture to derive lat long from java x y axis */
-    Point2D point = pickResult.getIntersectedTexCoord(); //in percentages
-    double lat = (point.getY() - 0.5) * -180;
-    double lon = (point.getX() - 0.5) * 360;
-    String regionName = SIM_PARSER.parse(lat, lon);
-    visLayout.setRegionString(regionName);
+//    PickResult pickResult = event.getPickResult();
+//
+//      /* Pick point on texture to derive lat long from java x y axis */
+//    Point2D point = pickResult.getIntersectedTexCoord(); //in percentages
+//    double lat = (point.getY() - 0.5) * -180;
+//    double lon = (point.getX() - 0.5) * 360;
+//    String regionName = SIM_PARSER.parse(lat, lon);
+//    visLayout.setRegionString(regionName);
   }
 
 
@@ -151,15 +153,18 @@ public class UserEventHandler  implements EventHandler
       earth.pauseRotation();
       earthScroll((MouseEvent) event);
       event.consume();
-    } else if (event instanceof ScrollEvent)
+    }
+    else if (event instanceof ScrollEvent)
     {
       earth.pauseRotation();
       earthZoom((ScrollEvent) event);
       event.consume();
-    } else if (event instanceof ZoomEvent)
+    }
+    else if (event instanceof ZoomEvent)
     {
       earthZoom((ZoomEvent) event);
-    } else if (event instanceof MouseEvent)
+    }
+    else if (event instanceof MouseEvent)
     {
       if ((event.getEventType().equals(MouseEvent.MOUSE_CLICKED)
           || event.getEventType().equals(MouseEvent.MOUSE_MOVED)))
@@ -167,6 +172,7 @@ public class UserEventHandler  implements EventHandler
         if(event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) earth.pauseRotation();
         displayEarthInformation((MouseEvent) event);
         latLongHandler((MouseEvent) event);
+
         event.consume();
       }
       earthStartScroll((MouseEvent) event);

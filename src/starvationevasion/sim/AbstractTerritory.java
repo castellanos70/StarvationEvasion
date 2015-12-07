@@ -61,7 +61,8 @@ public abstract class AbstractTerritory implements Comparable<Territory>
    * pasture is land used for five or more years for forage, including natural and
    * cultivated crops.
    */
-  protected int totalFarmLand;
+
+  protected int farmLand1981, farmLand2014, totalFarmLand;
   protected int[] landCrop = new int[EnumFood.SIZE];  // in square kilometers
   protected long[] cropImport = new long[EnumFood.SIZE];  //in metric tons.
   protected long[] cropExport = new long[EnumFood.SIZE];  //in metric tons.
@@ -226,6 +227,14 @@ public abstract class AbstractTerritory implements Comparable<Territory>
   }
 
   final public void setTotalFarmLand(int squareKm) { totalFarmLand = squareKm;}
+
+  final public void setFarmLand1981(int squareKm)
+  {
+    farmLand1981 = squareKm;
+    totalFarmLand = farmLand1981;
+  }
+
+  final public void setFarmLand2014(int squareKm) { farmLand2014 = squareKm;}
 
   /**
    * @param crop    crop in question

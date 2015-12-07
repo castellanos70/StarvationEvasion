@@ -63,7 +63,9 @@ public class Earth
     earthOverlay = buildOverlay();
     earthWeather = buildClouds();
 
-    startRotate();
+//    startRotate();
+
+
   }
 
   /**

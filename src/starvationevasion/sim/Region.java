@@ -423,10 +423,15 @@ public class Region extends AbstractTerritory
    * Updates the yield of all territories in the region and aggregates the values for
    * the entire region.
    */
-  public void updateYield()
+  public void updateYield(int year)
   {
     for (Territory t : territories)
-    { t.updateYield();
+    {
+      // replant crops based on the new land used for farming
+      CropOptimizer cropOptimizer = new CropOptimizer(year, t);
+      cropOptimizer.optimizeCrops();
+
+      t.updateYield();
       for (EnumFood crop : EnumFood.values())
       {
         landCrop[crop.ordinal()] += t.landCrop[crop.ordinal()];

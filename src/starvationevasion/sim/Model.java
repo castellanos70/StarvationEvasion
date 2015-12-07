@@ -360,6 +360,20 @@ public class Model
     if (debugLevel.intValue() < Level.INFO.intValue())
     { Simulator.dbg.println("******************************************* No special events");
     }
+
+    //check current year.
+    int CURRENT_YEAR = 2015;
+    if (year < CURRENT_YEAR)
+    {
+      //Then there should be a pre-existing event to draw upon. Then
+      //there ought to have been a process that loaded the events to draw from
+    }
+    else
+    {
+      //If this is the case then examine the players behaviors. Is it probable
+      //that their region could experience an event based on the leaders actions
+      //through policy. 
+    }
   }
 
   private void updateFarmProductYield()

@@ -2,9 +2,11 @@ package starvationevasion.vis.visuals;
 
 import javafx.animation.*;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Group;
 import javafx.scene.Node;
 
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
@@ -106,14 +108,89 @@ public class Earth {
     cloudMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_MAP);
     cloudMaterial.setDiffuseMap(RESOURCE_LOADER.REGION_OVERLAY);
     overlay.setMaterial(cloudMaterial);
+    overlay.setMaterial(cloudMaterial);
+
     return new Group(overlay);
   }
 
-  /**
-   * Used by controller to access universe group
-   *
-   * @return returns universe group to be attached in client's layout
-   */
+  private Group buildHeatMapOverlay()
+  {
+    Sphere heatMap = new Sphere(LARGE_EARTH_RADIUS);
+    final PhongMaterial heatMapMaterial = new PhongMaterial();
+    heatMapMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_MAP);
+    heatMap.setMaterial(heatMapMaterial);
+
+    int scale = 10;
+    BufferedImage i = new BufferedImage(360 * scale, 180 * scale, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g = i.createGraphics();
+    g.setComposite(AlphaComposite.Clear);
+    g.fillRect(0, 0, 360 * scale, 180 * scale);
+    g.setColor(Color.BLACK);
+
+    HashMap<MapPoint, Float> data = new HashMap<>();
+    for (double lat = -90; lat < 90; lat += 1) {
+      for (double lon = -180; lon < 180; lon += 1) {
+        data.put(new MapPoint(lat, lon), Util.rand.nextFloat() * 100);
+      }
+    }
+    System.out.println("done building test");
+
+
+    i = new BufferedImage(360 * scale, 180 * scale, BufferedImage.TYPE_INT_ARGB);
+    g = i.createGraphics();
+    g.setComposite(AlphaComposite.Clear);
+    g.fillRect(0, 0, 360 * scale, 180 * scale);
+    g.setColor(Color.BLACK);
+    g.setComposite(AlphaComposite.Src);
+    Color red = new Color(255,0,0,75);
+    Color blue = new Color(0,0,255,75);
+    Color white = new Color(255,255,255,75);
+    Color yellow = new Color(255,255,0,75);
+    Color orange = new Color(255,100,10,75);
+
+
+    ArrayList<Color> colors = new ArrayList<>();
+    colors.add(white);
+    colors.add(blue);
+    colors.add(yellow);
+    colors.add(orange);
+    colors.add(red);
+
+    for (Map.Entry<MapPoint, Float> e : data.entrySet()) {
+      if (e.getKey().latitude > 90 || e.getKey().latitude < -90) continue;
+      if (e.getKey().longitude > 180 || e.getKey().longitude < -180) continue;
+
+      int x = (int) ((e.getKey().longitude + 180) * scale);
+      int y = (int) ((e.getKey().latitude - 90) * -1 * scale);
+      float t = e.getValue();
+
+      g.setColor(colors.get(0));
+      if (t < 32) g.setColor(colors.get(0));
+      else if (t < 55) g.setColor(colors.get(1));
+      else if (t < 75) g.setColor(colors.get(2));
+      else if (t < 90) g.setColor(colors.get(3));
+      else g.setColor(colors.get(4));
+      //g.drawOval(x, y, 1, 1);
+      g.fillRect(x, y, 10, 10);
+
+    }
+    g.dispose();
+    WritableImage image;
+    image = SwingFXUtils.toFXImage(i, null);
+
+
+    heatMapMaterial.setDiffuseMap(image);
+    heatMap.setMaterial(heatMapMaterial);
+    return new Group(heatMap);
+  }
+
+
+
+    /**
+     * Used by controller to access universe group
+     *
+     * @return returns universe group to be attached in client's layout
+     */
   public Group getEarth() {
     return earthGroup;
   }
@@ -315,7 +392,6 @@ public class Earth {
     Color orange = new Color(255,100,10,75);
 
 
-
     ArrayList<Color> colors = new ArrayList<>();
     colors.add(white);
     colors.add(blue);
@@ -343,7 +419,11 @@ public class Earth {
     }
     g.dispose();
     try {
-      ImageIO.write(i, "PNG", new File("/Users/laurencemirabal/Desktop/image.png"));
+      WritableImage image = SwingFXUtils.toFXImage(i, null);
+
+     // WritableImage writableImage = new W
+
+      ImageIO.write(i, "PNG", new File("~/heatImage.png"));
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -351,6 +431,3 @@ public class Earth {
   }
 
 }
-
-
-

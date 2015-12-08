@@ -359,7 +359,7 @@ public class Territory extends AbstractTerritory
     int x = (int) largest.getBounds().getCenterX();
     int y = (int) largest.getBounds().getCenterY();
 
-    return converter.pointToMapPoint(new Point(y, x));
+    return converter.pointToMapPoint(new Point(x, y));
   }
 
   /**

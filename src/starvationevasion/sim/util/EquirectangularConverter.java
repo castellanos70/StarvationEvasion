@@ -135,7 +135,9 @@ public class EquirectangularConverter extends MapConverter
   @Override
   public MapPoint pointToMapPoint(Point2D p)
   {
-    return new MapPoint(p.getX() / SCALING_FACTOR, - p.getY() / SCALING_FACTOR);
+    // Y is latitude, X is longitude.
+    //
+    return new MapPoint(-p.getY() / SCALING_FACTOR, p.getX() / SCALING_FACTOR);
   }
   
 

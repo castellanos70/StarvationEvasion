@@ -543,8 +543,9 @@ public class Model
     //
     Simulator.dbg.println("Region " + region.getName() + " climate : ");
     for (Territory territory : region.getTerritories())
-    { // MapPoint capitol = territory.getCapitolLocation();
-      LandTile tile = territory.getLandTiles().iterator().next();
+    {
+      MapPoint capitol = territory.getCapitolLocation();
+      LandTile tile = world.getTileManager().getTile(capitol.longitude, capitol.latitude);
       Simulator.dbg.println("\t" + territory.getName() + ": " + tile.toDetailedString());
     }
   }

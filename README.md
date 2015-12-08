@@ -29,7 +29,6 @@ Sever:
 Simulator:
 * Joel Castellanos - joel@unm.edu
 * Alfred Sanchez - miggens@unm.edu
-* Miri Ryu - chilunguni@unm.edu
 * Peter Blemel - pblemel@unm.edu
 * Alex Baker - alexebaker@unm.edu
 

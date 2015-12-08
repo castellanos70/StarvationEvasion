@@ -18,6 +18,9 @@ public class SimParser {
   private HashMap<GeographicArea, EnumRegion> regions = new HashMap<>();
   private Collection<GeographicArea> modelGeography;
 
+  /**
+   * Creates a new parser for the simulations XML file to get the country and region data's lat longs
+   */
   public SimParser() {
     modelGeography = new GeographyXMLparser().getGeography();
     for (GeographicArea g : modelGeography) {
@@ -807,15 +810,38 @@ public class SimParser {
     }
   }
 
-  public EnumRegion getRegion(double lat, double lon)
-  {
-    for (Map.Entry<GeographicArea, EnumRegion> e : regions.entrySet())
-    {
+  /**
+   * Gets the region given a lat long
+   *
+   * @param center MapPoint containing the lat and long
+   * @return returns a region if a country is found. Else returns a null
+   */
+  public EnumRegion getRegion(MapPoint center) {
+    return getRegion(center.latitude, center.longitude);
+  }
+
+
+  /**
+   * Gets the region given a lat and long
+   *
+   * @param lat latitude to query
+   * @param lon longitude to query
+   * @return returns a region if a country is found. Else returns a null
+   */
+  public EnumRegion getRegion(double lat, double lon) {
+    for (Map.Entry<GeographicArea, EnumRegion> e : regions.entrySet()) {
       if (e.getKey().containsMapPoint(new MapPoint(lat, lon))) return e.getValue();
     }
     return null;
   }
 
+  /**
+   * Gets the country name given a lat and long
+   *
+   * @param lat latitude to query
+   * @param lon longtitude to query
+   * @return Returns the country's name if found, else returns 'no name on record'
+   */
   public String parse(double lat, double lon) {
     if (modelGeography == null) modelGeography = new GeographyXMLparser().getGeography();
     MapPoint p = new MapPoint(lat, lon);
@@ -829,11 +855,11 @@ public class SimParser {
     //
     for (GeographicArea a : regions.keySet()) {
       if (a.containsMapPoint(p)) {
-            /*TODO: send this info to another method to decide what to show the user*/
-        System.out.println("clicked on " + a.getName());
+//        System.out.println("clicked on " + a.getName());
         return a.getName();
       }
     }
     return "No Name on Record";
   }
+
 }

@@ -24,7 +24,7 @@ public class ServerChatMessage implements Serializable
   public ServerChatMessage(String message, EnumRegion sender)
   {
     this.message = message;
-    this.sender = null;
+    this.sender = sender;
     this.card = null;
   }
 

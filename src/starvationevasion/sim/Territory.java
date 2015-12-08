@@ -318,7 +318,6 @@ public class Territory extends AbstractTerritory
     setUndernourished((int) numUndernourished);
   }
 
-
   /**
    * @return country's collection of 100km2 tiles
    */
@@ -360,7 +359,7 @@ public class Territory extends AbstractTerritory
     int x = (int) largest.getBounds().getCenterX();
     int y = (int) largest.getBounds().getCenterY();
 
-    return converter.pointToMapPoint(new Point(y, x));
+    return converter.pointToMapPoint(new Point(x, y));
   }
 
   /**

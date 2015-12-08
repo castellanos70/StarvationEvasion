@@ -149,6 +149,7 @@ public abstract class PolicyCard  implements Serializable
     {
       myCard.owner = owner;
       myCard.approvedRegionBits = owner.getBit(); //The owner auto votes yes.
+      myCard.type = type;
     }
 
     return myCard;
@@ -488,7 +489,7 @@ public abstract class PolicyCard  implements Serializable
     {
       int n = varX;
       if (variable == EnumVariable.Y) n = varY;
-      else n = varZ;
+      else if (variable == EnumVariable.Z) n = varZ;
 
       EnumVariableUnit unit = getRequiredVariables(variable);
       if (unit == EnumVariableUnit.PERCENT)

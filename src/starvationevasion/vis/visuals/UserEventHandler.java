@@ -29,7 +29,12 @@ public class UserEventHandler  implements EventHandler
   private double LARGE_EARTH_RADIUS;
   private VisualizerLayout visLayout;
 
-
+  /**
+   * UserEventHandler Constructor
+   * @param earth An earth object to get the large Earth group from, as well as to access pause/start rotations
+   * @param visLayout The layout that this handler is registered to, the handler
+   *                  updates information inside this layout on relevant user interaction
+   */
   public UserEventHandler(Earth earth, VisualizerLayout visLayout)
   {
     this.earth = earth;
@@ -47,6 +52,10 @@ public class UserEventHandler  implements EventHandler
 
   }
 
+  /**
+   * Used for the Lat/Long handling
+   * @param radius    radius of the large Earth specified by client
+   */
   protected void setLargeEarthRadius(double radius)
   {
     this.LARGE_EARTH_RADIUS = radius;
@@ -81,6 +90,10 @@ public class UserEventHandler  implements EventHandler
     angleY.set(anchorAngleY + (anchorX - event.getSceneX()));
   }
 
+  /**
+   * Set the earth scale depending on the zoom direction
+   * @param event   User scrolling in event
+   */
   protected void earthZoom(ScrollEvent event)
   {
     /**setTranslate can be used to zoom in and out on the world*/
@@ -101,6 +114,10 @@ public class UserEventHandler  implements EventHandler
     System.out.println(String.format("deltaX: %.3f", scrollFactor));
   }
 
+  /**
+   * Set the earth scale depending on the zoom direction
+   * @param event   User zooming in event (two fingers on touch pad)
+   */
   protected void earthZoom(ZoomEvent event)
   {
     double zoomFactor = event.getX();
@@ -145,6 +162,10 @@ public class UserEventHandler  implements EventHandler
 
 
   @Override
+  /**
+   * Sends any event that has been filtered in to the proper method to "handle" it
+   * @param event   User interaction event (clicking, scolling, zooming, dragging)
+   */
   public void handle(Event event)
   {
     if (event.getEventType().equals(MouseDragEvent.MOUSE_DRAGGED))
@@ -168,14 +189,11 @@ public class UserEventHandler  implements EventHandler
       if ((event.getEventType().equals(MouseEvent.MOUSE_CLICKED)
           || event.getEventType().equals(MouseEvent.MOUSE_MOVED)))
       {
-        if(event.getEventType().equals(MouseEvent.MOUSE_CLICKED)) earth.pauseRotation();
         displayEarthInformation((MouseEvent) event);
         latLongHandler((MouseEvent) event);
-
         event.consume();
       }
       earthStartScroll((MouseEvent) event);
-      earth.pauseRotation();
 
     }
   }

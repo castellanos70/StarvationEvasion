@@ -2,17 +2,16 @@ package starvationevasion.vis.visuals;
 
 import javafx.animation.*;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Group;
 import javafx.scene.Node;
 
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.MapPoint;
-import starvationevasion.common.SpecialEventData;
-import starvationevasion.common.Util;
+import starvationevasion.common.*;
 import starvationevasion.io.XMLparsers.GeographyXMLparser;
 import starvationevasion.sim.GeographicArea;
 import starvationevasion.vis.controller.EarthViewer;
@@ -45,12 +44,13 @@ public class Earth {
   private Group earthGroup;
   private Group smallEarthGroup;
   private Group earthOverlay;
-  private Group earthWeather;
+  private Group earthWeather = new Group();
+  private Group earthHeatMap = new Group();
+
 
   private HashMap<EnumRegion, int[]> foodProduced = new HashMap<>();
-  private HashMap<MapPoint, Float> temperatures = new HashMap<>();
   private ArrayList<SpecialEventData> specialEventDatas =  new ArrayList<>();
-
+  private ArrayList<LandTile> landTiles = new ArrayList<>();
   /**
    * Earth constructor
    *
@@ -67,11 +67,13 @@ public class Earth {
     earthGroup = buildScene(largeRadius);
     smallEarthGroup = buildScene(miniRadius);
     earthOverlay = buildOverlay();
-    earthWeather = buildClouds();
-
+    earthHeatMap = buildHeatMapOverlay();
     startRotate();
+  }
 
-
+  public void rebuildHeatMapOverlay()
+  {
+    earthHeatMap = buildHeatMapOverlay();
   }
 
   /**
@@ -80,6 +82,7 @@ public class Earth {
    * @return the Group "earthGroup" which will contain all of this
    */
   public Group buildScene(int radius) {
+
     Sphere earth = new Sphere(radius);
     PhongMaterial earthMaterial = new PhongMaterial();
     earthMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_MAP);
@@ -98,29 +101,84 @@ public class Earth {
   private Group buildOverlay() {
     Sphere overlay = new Sphere(LARGE_EARTH_RADIUS);
     final PhongMaterial cloudMaterial = new PhongMaterial();
+    cloudMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_MAP);
     cloudMaterial.setDiffuseMap(RESOURCE_LOADER.REGION_OVERLAY);
     overlay.setMaterial(cloudMaterial);
+    overlay.setMaterial(cloudMaterial);
+
     return new Group(overlay);
   }
 
-  /**
-   * Creates a transparent sphere overlay for weather (clouds) to be displayed on the globe
-   *
-   * @return Group  the Group containing the transparent sphere, to be attached on the earthGroup to render
-   */
-  private Group buildClouds() {
-    Sphere cloud = new Sphere(LARGE_EARTH_RADIUS * 1.05);
-    final PhongMaterial cloudMaterial = new PhongMaterial();
-    cloudMaterial.setDiffuseMap(RESOURCE_LOADER.CLOUDS);
-    cloud.setMaterial(cloudMaterial);
-    return new Group(cloud);
+  private Group buildHeatMapOverlay()
+  {
+    Sphere heatMap = new Sphere(LARGE_EARTH_RADIUS);
+    final PhongMaterial heatMapMaterial = new PhongMaterial();
+
+    int scale = 10;
+    BufferedImage i = new BufferedImage(360 * scale, 180 * scale, BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g = i.createGraphics();
+    g.setComposite(AlphaComposite.Clear);
+    g.fillRect(0, 0, 360 * scale, 180 * scale);
+    g.setColor(Color.BLACK);
+
+    i = new BufferedImage(360 * scale, 180 * scale, BufferedImage.TYPE_INT_ARGB);
+    g = i.createGraphics();
+    g.setComposite(AlphaComposite.Clear);
+    g.fillRect(0, 0, 360 * scale, 180 * scale);
+    g.setColor(Color.BLACK);
+    g.setComposite(AlphaComposite.Src);
+    int alpha = 135;
+    Color red = new Color(255,0,0,alpha);
+    Color blue = new Color(0,0,255,alpha);
+    Color white = new Color(255,255,255,alpha);
+    Color yellow = new Color(255,255,0,alpha);
+    Color orange = new Color(255,100,10,alpha);
+
+
+    ArrayList<Color> colors = new ArrayList<>();
+    colors.add(white);
+    colors.add(blue);
+    colors.add(yellow);
+    colors.add(orange);
+    colors.add(red);
+
+//    for (Map.Entry<MapPoint, Float> e : data.entrySet()) {
+
+    for (LandTile l : landTiles){
+//      if(SIM_PARSER.getRegion(l.center) == null) continue;
+      if (l.center.latitude > 90 || l.center.latitude < -90) continue;
+      if (l.center.longitude > 180 || l.center.longitude < -180) continue;
+
+      int x = (int) ((l.center.longitude + 180) * scale);
+      int y = (int) ((l.center.latitude - 90) * -1 * scale);
+      float t = l.maxAnnualTemp;
+
+      g.setColor(colors.get(0));
+      if (t < 32) g.setColor(colors.get(0));
+      else if (t < 55) g.setColor(colors.get(1));
+      else if (t < 75) g.setColor(colors.get(2));
+      else if (t < 90) g.setColor(colors.get(3));
+      else g.setColor(colors.get(4));
+      g.fillRect(x, y, 10, 10);
+
+    }
+    g.dispose();
+
+    //make map image into an fx imag
+    WritableImage image;
+    image = SwingFXUtils.toFXImage(i, null);
+
+    //put dat image on the sphere
+    heatMapMaterial.setDiffuseMap(image);
+    heatMap.setMaterial(heatMapMaterial);
+    return new Group(heatMap);
   }
 
-  /**
-   * Used by controller to access universe group
-   *
-   * @return returns universe group to be attached in client's layout
-   */
+    /**
+     * Used by controller to access universe group
+     *
+     * @return returns universe group to be attached in client's layout
+     */
   public Group getEarth() {
     return earthGroup;
   }
@@ -145,6 +203,15 @@ public class Earth {
    */
   public Group getEarthWeather() {
     return earthWeather;
+  }
+
+  /**
+   * Used by VisualizerLayout to access heat map group
+   *
+   * @return returns heat map group to be attached in client's layout
+   */
+  public Group getEarthHeatMap() {
+    return earthHeatMap;
   }
 
   /**
@@ -173,6 +240,9 @@ public class Earth {
     return rotate;
   }
 
+  /**
+   * Initiate rotations
+   **/
   private void initRotaters() {
     largeRotate = new RotateTransition(Duration.seconds(ROTATE_SECS), earthGroup);
     smallRotate = new RotateTransition(Duration.seconds(ROTATE_SECS), smallEarthGroup);
@@ -194,12 +264,6 @@ public class Earth {
     largeRotate.play();
   }
 
-  public void setTemperatures(HashMap<MapPoint, Float> data) {
-
-    temperatures.clear();
-    temperatures.putAll(data);
-  }
-
   /**
    * Gets the temperature at the closet point.
    *
@@ -216,31 +280,30 @@ public class Earth {
    * gis.stackexchange.com/questions/8650/  -  tells us the the units place will give us 111 km x 111 km
    * precision so we will first check units place, then check first decimal place for closest point
    *
-   * @param lat latitude of the given point
-   * @param lon longitude of the given point
+   * @param lat latitude of the given point given by GUI
+   * @param lon longitude of the given point given by GUI
    * @return float value of temperature
    */
   public float getTemperature(double lat, double lon) {
-    if (temperatures == null || temperatures.size() == 0) return Float.MAX_VALUE;
-    ArrayList<MapPoint> closestPoints = new ArrayList<>();
-    double precision = Math.pow(10, 0);
-
-    for (Map.Entry<MapPoint, Float> entry : temperatures.entrySet())
+    Collections.sort(landTiles, new Comparator<LandTile>()
     {
-      double eLat = Math.abs(entry.getKey().latitude - lat);
-      double eLon = Math.abs(entry.getKey().longitude - lon);
-      if (eLat < precision && eLon < precision) closestPoints.add(entry.getKey());
-    }
-    Collections.sort(closestPoints, new Comparator<MapPoint>()
-    {
-      public int compare(MapPoint p1, MapPoint p2)
+      public int compare(LandTile t1, LandTile t2)
       {
+        MapPoint p1 = t1.center;
+        MapPoint p2 = t2.center;
         double d1 = Point.distance(p1.latitude, p1.longitude, lat, lon);
         double d2 = Point.distance(p2.latitude, p2.longitude, lat, lon);
         return Double.compare(d1, d2);
       }
     });
-    return (closestPoints.size() > 0) ? temperatures.get(closestPoints.get(0)) : Float.MAX_VALUE;
+    for(LandTile t : landTiles)
+    {
+      if ((int)t.center.latitude == (int) lat && (int)t.center.longitude == (int) lon)
+      {
+        return t.maxAnnualTemp;
+      }
+    }
+    return Float.MAX_VALUE;
   }
 
   public void setSpecialEventDatas(ArrayList<SpecialEventData> data) {
@@ -248,12 +311,11 @@ public class Earth {
     specialEventDatas.addAll(data);
   }
 
-  public void setFoodProducedData(HashMap<EnumRegion, int[]> data)
-  {
-    foodProduced.clear();
-    foodProduced.putAll(data);
-  }
-
+  /**
+   * @param lat - latitude
+   * @param lon - longitude
+   * @return food produced data
+   **/
   public int[] getFoodProducedData(double lat, double lon)
   {
     EnumRegion r = SIM_PARSER.getRegion(lat, lon);
@@ -262,16 +324,41 @@ public class Earth {
     return null;
   }
 
+  /**
+   * @param d - list of land tiles parsed for food, temp, region information
+   * */
+  public void setLandTiles(ArrayList<LandTile> d)
+  {
+    landTiles.clear();
+    landTiles.addAll(d);
+
+    foodProduced.clear();
+    for (LandTile t : d)
+    {
+      EnumRegion r = SIM_PARSER.getRegion(t.center);
+      if (r == null) continue;
+      if (!foodProduced.containsKey(r)) foodProduced.put(r, new int [EnumFood.SIZE]);
+      foodProduced.get(r)[t.currCrop.ordinal()]++;
+    }
+  }
+
+  /**
+   * @param lat - latitude
+   * @param lon - longitude
+   * @return the region selected
+   *
+   **/
   public String getRegionString(double lat, double lon)
   {
     return SIM_PARSER.parse(lat, lon);
   }
 
   /**
-   * Vis Team Testing Purposes
+   * Vis Team Testing Purposes- testing map overlays. Will create an overlay of all region on the earth
+   *
    **/
   public static void main(String args[]) {
-    int scale = 50;
+    int scale = 10;
     BufferedImage i = new BufferedImage(360 * scale, 180 * scale, BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = i.createGraphics();
     g.setComposite(AlphaComposite.Clear);
@@ -292,7 +379,7 @@ public class Earth {
     }
 
     try {
-      ImageIO.write(i, "PNG", new File("C:\\Users\\Anand\\Desktop\\test.png"));
+      ImageIO.write(i, "PNG", new File("/Users/laurencemirabal/Desktop/image.png"));
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -315,13 +402,19 @@ public class Earth {
     g.fillRect(0, 0, 360 * scale, 180 * scale);
     g.setColor(Color.BLACK);
     g.setComposite(AlphaComposite.Src);
+    Color red = new Color(255,0,0,75);
+    Color blue = new Color(0,0,255,75);
+    Color white = new Color(255,255,255,75);
+    Color yellow = new Color(255,255,0,75);
+    Color orange = new Color(255,100,10,75);
+
 
     ArrayList<Color> colors = new ArrayList<>();
-    colors.add(Color.white);
-    colors.add(Color.BLUE);
-    colors.add(Color.yellow);
-    colors.add(Color.orange);
-    colors.add(Color.red);
+    colors.add(white);
+    colors.add(blue);
+    colors.add(yellow);
+    colors.add(orange);
+    colors.add(red);
 
     for (Map.Entry<MapPoint, Float> e : data.entrySet()) {
       if (e.getKey().latitude > 90 || e.getKey().latitude < -90) continue;
@@ -337,11 +430,17 @@ public class Earth {
       else if (t < 75) g.setColor(colors.get(2));
       else if (t < 90) g.setColor(colors.get(3));
       else g.setColor(colors.get(4));
-      g.drawOval(x, y, 1, 1);
+      //g.drawOval(x, y, 1, 1);
+      g.fillRect(x, y, 10, 10);
+
     }
     g.dispose();
     try {
-      ImageIO.write(i, "PNG", new File("C:\\Users\\Anand\\Desktop\\test.png"));
+      WritableImage image = SwingFXUtils.toFXImage(i, null);
+
+     // WritableImage writableImage = new W
+
+      ImageIO.write(i, "PNG", new File("~/heatImage.png"));
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -349,6 +448,3 @@ public class Earth {
   }
 
 }
-
-
-

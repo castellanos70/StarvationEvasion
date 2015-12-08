@@ -452,6 +452,7 @@ public class Server
     regionVoteRequiredCards.values().forEach(c -> regionsWhoVotedOnCards.put(c, new ArrayList<>()));
     broadcast(message);
     setServerState(ServerState.VOTING);
+    broadcastVoteStatus();
   }
 
   private void enterDrawingPhase()

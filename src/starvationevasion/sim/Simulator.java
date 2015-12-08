@@ -2,10 +2,12 @@ package starvationevasion.sim;
 
 
 import starvationevasion.common.*;
+import starvationevasion.sim.events.AbstractEvent;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.*;
 
 /**
@@ -205,6 +207,16 @@ public class Simulator
 
     LogManager lm = LogManager.getLogManager();
     lm.addLogger(LOGGER);
+  }
+
+  /**
+   * Get a list of special events in the world
+   *
+   * @return a list of events effecting the current world state
+   */
+  public List<AbstractEvent> getWorldEvents()
+  {
+    return model.getSpecialEvents();
   }
 
   /**

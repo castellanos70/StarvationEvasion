@@ -12,7 +12,7 @@ public class Drought extends AbstractEvent<Region>
 {
   public Drought(Region landArea)
   {
-    super(EnumSpecialEvent.DROUGHT, landArea, 3);
+    super(EnumSpecialEvent.DROUGHT, landArea, 4);
   }
 
   public void applyEffects()

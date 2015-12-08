@@ -13,7 +13,7 @@ public class Hurricane extends AbstractEvent<Territory>
 {
   public Hurricane(Territory landArea)
   {
-    super(EnumSpecialEvent.HURRICANE, landArea, 1);
+    super(EnumSpecialEvent.HURRICANE, landArea, 4);
   }
 
   public void applyEffects()

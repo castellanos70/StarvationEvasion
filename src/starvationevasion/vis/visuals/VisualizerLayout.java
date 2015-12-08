@@ -91,7 +91,9 @@ public class VisualizerLayout extends BorderPane
     earthGroup.requestFocus();
     this.setPrefSize(800, 600);
     center.add(earthGroup, 0, 0);
-    center.setPadding(new Insets(20,20,0,0));
+    center.setPadding(new Insets(20, 20, 0, 0));
+    center.setMaxWidth(700);
+
     this.setCenter(center);
     pointLight.setColor(Color.WHITE);
     pointLight.setTranslateZ(-4000);
@@ -185,7 +187,7 @@ public class VisualizerLayout extends BorderPane
     weather.setOnAction(event -> handleWeather(event));
     heatMap.setOnAction(event -> handleHeatMap(event));
     regionOverlay.setOnAction(event -> handleOverlay(event));
-    rotate.setOnAction(event->handleRotate(event));
+    rotate.setOnAction(event -> handleRotate(event));
 
   }
 

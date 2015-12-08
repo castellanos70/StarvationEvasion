@@ -77,6 +77,8 @@ import java.util.logging.Logger;
 
 public class Model
 {
+  public static double EVENT_CHANCE = 0.02;
+
   EnumRegion debugRegion = EnumRegion.CALIFORNIA;
   private final static Logger LOGGER = Logger.getGlobal(); // getLogger(Model.class.getName())
 
@@ -395,11 +397,10 @@ public class Model
     // Temporary code just to make special events happen in the absence of Alfred's timeline.
     //
     int attempts = 5;
-    double chance = 0.5;
     Random rand = new Random();
     while (attempts > 0)
     {
-      if (rand.nextFloat() < chance)
+      if (rand.nextFloat() < EVENT_CHANCE)
       {
         if (rand.nextBoolean())
         {

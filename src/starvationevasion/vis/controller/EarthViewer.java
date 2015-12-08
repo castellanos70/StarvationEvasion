@@ -4,8 +4,7 @@ package starvationevasion.vis.controller;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.MapPoint;
+import starvationevasion.common.LandTile;
 import starvationevasion.common.SpecialEventData;
 import starvationevasion.vis.visuals.Earth;
 import starvationevasion.vis.visuals.ResourceLoader;
@@ -13,7 +12,6 @@ import starvationevasion.vis.visuals.SpecialEffect;
 import starvationevasion.vis.visuals.VisualizerLayout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Queue;
 
 /**
@@ -80,29 +78,9 @@ public class EarthViewer
 
   }
 
-  public void updateTemperature(HashMap<MapPoint, Float> data)
+  public void updateLandTiles(ArrayList<LandTile> d)
   {
-    if (data != null) earth.setTemperatures(data);
-
-    /* testing purposes */
-//    int count = 0;
-//    for (Map.Entry<MapPoint, Float> entry : data.entrySet())
-//    {
-//      int x = (int)entry.getKey().latitude;
-//      int y = (int)entry.getKey().longitude;
-//      if (entry.getValue() - earth.getTemperature(x, y) > .01)
-//      {
-//        System.out.println(entry.getValue() + ":" +earth.getTemperature(x, y));
-//      }
-//      count++;
-//      if (count % 100 == 0) System.out.println(count + "/" + data.entrySet().size());
-//    }
-
-  }
-
-  public void updateFoodProduced(HashMap<EnumRegion, int[]> data)
-  {
-    if (data != null) earth.setFoodProducedData(data);
+    if (d != null) earth.setLandTiles(d);
   }
 
   /**

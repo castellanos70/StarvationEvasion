@@ -11,10 +11,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.MapPoint;
-import starvationevasion.common.SpecialEventData;
-import starvationevasion.common.Util;
+import starvationevasion.common.*;
 import starvationevasion.io.XMLparsers.GeographyXMLparser;
 import starvationevasion.sim.GeographicArea;
 import starvationevasion.vis.controller.EarthViewer;
@@ -50,9 +47,8 @@ public class Earth {
   private Group earthWeather = new Group();
 
   private HashMap<EnumRegion, int[]> foodProduced = new HashMap<>();
-  private HashMap<MapPoint, Float> temperatures = new HashMap<>();
   private ArrayList<SpecialEventData> specialEventDatas =  new ArrayList<>();
-
+  private ArrayList<LandTile> landTiles = new ArrayList<>();
   /**
    * Earth constructor
    *
@@ -264,12 +260,6 @@ public class Earth {
     largeRotate.play();
   }
 
-  public void setTemperatures(HashMap<MapPoint, Float> data) {
-
-    temperatures.clear();
-    temperatures.putAll(data);
-  }
-
   /**
    * Gets the temperature at the closet point.
    *
@@ -286,42 +276,35 @@ public class Earth {
    * gis.stackexchange.com/questions/8650/  -  tells us the the units place will give us 111 km x 111 km
    * precision so we will first check units place, then check first decimal place for closest point
    *
-   * @param lat latitude of the given point
-   * @param lon longitude of the given point
+   * @param lat latitude of the given point given by GUI
+   * @param lon longitude of the given point given by GUI
    * @return float value of temperature
    */
   public float getTemperature(double lat, double lon) {
-    if (temperatures == null || temperatures.size() == 0) return Float.MAX_VALUE;
-    ArrayList<MapPoint> closestPoints = new ArrayList<>();
-    double precision = Math.pow(10, 0);
-
-    for (Map.Entry<MapPoint, Float> entry : temperatures.entrySet())
+    Collections.sort(landTiles, new Comparator<LandTile>()
     {
-      double eLat = Math.abs(entry.getKey().latitude - lat);
-      double eLon = Math.abs(entry.getKey().longitude - lon);
-      if (eLat < precision && eLon < precision) closestPoints.add(entry.getKey());
-    }
-    Collections.sort(closestPoints, new Comparator<MapPoint>()
-    {
-      public int compare(MapPoint p1, MapPoint p2)
+      public int compare(LandTile t1, LandTile t2)
       {
+        MapPoint p1 = t1.center;
+        MapPoint p2 = t2.center;
         double d1 = Point.distance(p1.latitude, p1.longitude, lat, lon);
         double d2 = Point.distance(p2.latitude, p2.longitude, lat, lon);
         return Double.compare(d1, d2);
       }
     });
-    return (closestPoints.size() > 0) ? temperatures.get(closestPoints.get(0)) : Float.MAX_VALUE;
+    for(LandTile t : landTiles)
+    {
+      if ((int)t.center.latitude == (int) lat && (int)t.center.longitude == (int) lon)
+      {
+        return t.maxAnnualTemp;
+      }
+    }
+    return Float.MAX_VALUE;
   }
 
   public void setSpecialEventDatas(ArrayList<SpecialEventData> data) {
     specialEventDatas.clear();
     specialEventDatas.addAll(data);
-  }
-
-  public void setFoodProducedData(HashMap<EnumRegion, int[]> data)
-  {
-    foodProduced.clear();
-    foodProduced.putAll(data);
   }
 
   public int[] getFoodProducedData(double lat, double lon)
@@ -330,6 +313,21 @@ public class Earth {
     boolean containsRegion = foodProduced.containsKey(r);
     if (containsRegion) return foodProduced.get(r);
     return null;
+  }
+
+  public void setLandTiles(ArrayList<LandTile> d)
+  {
+    landTiles.clear();
+    landTiles.addAll(d);
+
+    foodProduced.clear();
+    for (LandTile t : d)
+    {
+      EnumRegion r = SIM_PARSER.getRegion(t.center);
+      if (r == null) continue;
+      if (!foodProduced.containsKey(r)) foodProduced.put(r, new int [EnumFood.SIZE]);
+      foodProduced.get(r)[t.currCrop.ordinal()]++;
+    }
   }
 
   public String getRegionString(double lat, double lon)

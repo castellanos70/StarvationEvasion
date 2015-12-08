@@ -807,6 +807,11 @@ public class SimParser {
     }
   }
 
+  public EnumRegion getRegion(MapPoint center) {
+    return getRegion(center.latitude, center.longitude);
+  }
+
+
   public EnumRegion getRegion(double lat, double lon)
   {
     for (Map.Entry<GeographicArea, EnumRegion> e : regions.entrySet())
@@ -835,4 +840,5 @@ public class SimParser {
     }
     return "No Name on Record";
   }
+
 }

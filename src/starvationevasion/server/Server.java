@@ -431,12 +431,12 @@ public class Server
     enactedPolicyCards.clear();
     final PhaseStart message = PhaseStart.constructPhaseStart(ServerState.DRAFTING, ServerConstants.DRAFTING_PHASE_TIME);
     phaseEndTime = message.phaseEndTime;
-    broadcast(message);
     for (EnumRegion region : EnumRegion.US_REGIONS)
     {
       regionTurnData.put(region, new RegionTurnData());
     }
     phaseChangeFuture = scheduledExecutorService.schedule(this::enterVotingPhase, ServerConstants.DRAFTING_PHASE_TIME, TimeUnit.MILLISECONDS);
+    broadcast(message);
     setServerState(ServerState.DRAFTING);
   }
 
@@ -444,13 +444,13 @@ public class Server
   {
     final PhaseStart message = PhaseStart.constructPhaseStart(ServerState.VOTING, ServerConstants.VOTING_PHASE_TIME);
     phaseEndTime = message.phaseEndTime;
-    broadcast(message);
     phaseChangeFuture = scheduledExecutorService.schedule(this::enterDrawingPhase, ServerConstants.VOTING_PHASE_TIME, TimeUnit.MILLISECONDS);
     regionsWhoVotedOnCards.clear();
     regionVoteRequiredCards.putAll(draftedPolicyCards.stream()
         .filter(c -> c.votesRequired() > 0)
         .collect(Collectors.toMap(PolicyCard::getOwner, Function.identity())));
     regionVoteRequiredCards.values().forEach(c -> regionsWhoVotedOnCards.put(c, new ArrayList<>()));
+    broadcast(message);
     setServerState(ServerState.VOTING);
   }
 

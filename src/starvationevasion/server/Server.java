@@ -369,7 +369,7 @@ public class Server
     }
     final AvailableRegions availableRegions = getAvailableRegions();
     broadcast(availableRegions);
-    if (getCurrentState() == ServerState.LOGIN && availableRegions.availableRegions.size() == 0)
+    if (getCurrentState() == ServerState.LOGIN && availableRegions.takenRegions.size() == passwordFile.credentialMap.size())
     {
       beginToStartGame();
     }

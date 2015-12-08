@@ -56,7 +56,7 @@ public class WorldData implements Serializable
    */
   public String toString()
   {
-    String msg = "WorldData[" + year + "] =====================================\n     Price: [";
+    String msg = "WorldData[" + year + "] =====================================\n     price: [";
     for (EnumFood food :EnumFood.values())
     {
       msg += String.format("%s:%.0f", food, foodPrice[food.ordinal()]);

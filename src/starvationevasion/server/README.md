@@ -6,7 +6,7 @@ This part of the project is probably not supposed to be invoked manually. If you
 
 Password files are tab separated, with the first column being the user name, the second being the password, and the third (optional) column specifying a (case-sensitive, all caps) region from the US, as specified in the EnumRegion enumeration. The third column must be present in all rows, or absent in all rows.
 
-The rest of the command line will be fed to the system shell, and be used to invoke an AI process.
+The rest of the command line will be fed to the system shell, and be used to invoke an AI process. Note that you should ***not*** quote the command.
 
 ##Readme for Developers
 ###AI Processes

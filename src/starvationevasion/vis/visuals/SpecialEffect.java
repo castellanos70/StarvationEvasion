@@ -11,6 +11,7 @@ import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.Sphere;
@@ -46,7 +47,7 @@ public class SpecialEffect {
 
     public void buildClouds()
     {
-        cloud = new Sphere(ResourceLoader.LARGE_EARTH_RADIUS*1.05);
+        cloud = new Sphere(ResourceLoader.LARGE_EARTH_RADIUS);
         final PhongMaterial cloudMaterial = new PhongMaterial();
 
         cloudMaterial.setDiffuseMap(ResourceLoader.DIFF_CLOUD);

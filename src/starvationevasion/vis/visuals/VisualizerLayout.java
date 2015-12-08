@@ -166,6 +166,10 @@ public class VisualizerLayout extends BorderPane
     heatMapWeather = earth.getEarthHeatMap();
   }
 
+  /**
+   * @param largeRadius - sets the earth size
+   * initializes all events on the gui.
+   */
   private void initEventHandling(int largeRadius)
   {
     userEventHandler = new UserEventHandler(earth, this);
@@ -184,16 +188,27 @@ public class VisualizerLayout extends BorderPane
 
   }
 
+  /**
+   * @param regionName - sets regionName for gui to display
+   */
   protected void setRegionString(String regionName)
   {
     country.setText("Country: " + regionName);
   }
 
+  /**
+   * @param lat - latitude
+   * @param lon - longitude
+   * sets params for the gui display
+   */
   protected void setLatLong(double lat, double lon)
   {
     latLong.setText("Global Position: " + String.format("%.3f, %.3f", lat, lon));
   }
 
+  /**
+   * @param temperature - sets temperature for gui to display
+   */
   protected void setTemperature(float temperature)
   {
     if (temperature == Float.MAX_VALUE)
@@ -206,6 +221,9 @@ public class VisualizerLayout extends BorderPane
     }
   }
 
+  /**
+   * @param data - int array of food, sent to the gui
+   */
   protected void setFoodProduced(int[] data)
   {
     String names = "Food:\n";
@@ -223,7 +241,6 @@ public class VisualizerLayout extends BorderPane
       names = "Food: N/A";
     }
     crop_Names.setText(names);
-
 
     crop_Nums.setText(nums);
   }
@@ -254,7 +271,6 @@ public class VisualizerLayout extends BorderPane
     earthGroup.getChildren().add(heatMapWeather);
   }
 
-
   /**
    * Remove transparent overlay
    */
@@ -271,11 +287,18 @@ public class VisualizerLayout extends BorderPane
     earthGroup.getChildren().remove(earthWeather);
   }
 
+  /**
+   * Remove transparent heat map overlay
+   */
   protected void removeHeatMap()
   {
     earthGroup.getChildren().remove(heatMapWeather);
   }
 
+  /**
+   * @param event - heat weather event
+   * takes a button press and acts accordingly
+   * */
   public void handleWeather(ActionEvent event)
   {
     if (showClouds)
@@ -297,6 +320,10 @@ public class VisualizerLayout extends BorderPane
     }
   }
 
+  /**
+   * @param event - handle overlay
+   * takes a button press and acts accordingly
+   * */
   public void handleOverlay(ActionEvent event)
   {
     if (showOverlay)
@@ -316,6 +343,11 @@ public class VisualizerLayout extends BorderPane
       showOverlay = true;
     }
   }
+
+  /**
+   * @param event - handle rotate
+   * takes a button press and acts accordingly
+   * */
   public void handleRotate(ActionEvent event)
   {
     if (earthRotating)
@@ -332,6 +364,10 @@ public class VisualizerLayout extends BorderPane
     }
   }
 
+  /**
+   * @param event - heat map event
+   * takes a button press and acts accordingly
+   * */
   public void handleHeatMap(ActionEvent event)
   {
     if (showHeatMap)
@@ -351,9 +387,5 @@ public class VisualizerLayout extends BorderPane
       showHeatMap = true;
     }
   }
-
-
-
-
 
 }

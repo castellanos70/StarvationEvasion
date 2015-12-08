@@ -3,6 +3,9 @@ package starvationevasion.sim;
 import starvationevasion.common.*;
 import starvationevasion.io.WorldLoader;
 import starvationevasion.io.CropCSVLoader;
+import starvationevasion.sim.events.AbstractEvent;
+import starvationevasion.sim.events.Drought;
+import starvationevasion.sim.events.Hurricane;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -395,6 +398,17 @@ public class Model
         if (rand.nextBoolean())
         {
           // do a hurricane
+          Region us = regionList[EnumRegion.SIZE];
+          int idx = rand.nextInt(us.getTerritories().size()-1) + 1;
+          for (Territory territory : us.getTerritories())
+          {
+            if (idx == 0)
+            {
+              specialEvents.add(new Hurricane(territory));
+              break;
+            }
+            idx--;
+          }
         }
         else
         {
@@ -404,6 +418,7 @@ public class Model
           specialEvents.add(new Drought(usRegion));
         }
       }
+      attempts--;
     }
   }
 

@@ -84,7 +84,6 @@ public class SpecialEffect {
         {
             currentUniverse.remove(effect);
         }
-        specialEffects = null;
     }
 
   /**

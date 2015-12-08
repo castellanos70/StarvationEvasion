@@ -24,6 +24,7 @@ public class VisualizerLayout extends BorderPane
   private ResourceLoader RESOURCE_LOADER = EarthViewer.RESOURCE_LOADER;
   private UserEventHandler userEventHandler;
   private SpecialEffect specialEffect;
+  private int currentEffect = 0;
   private Earth earth;
   private Group earthGroup;
   private Group earthOverlay;
@@ -70,11 +71,11 @@ public class VisualizerLayout extends BorderPane
     this.initEventHandling(largeRadius);
     specialEffect = new SpecialEffect(earthWeather);
     specialEffect.buildClouds();
-    specialEffect.buildEffect("hurricane", 180.0, 0.0);
-    specialEffect.buildEffect("forestFire", 0.0, 20.0);
-    specialEffect.buildEffect("flood", 0.0, -20.0);
-    specialEffect.buildEffect("drought", 20.0, 0.0);
-    specialEffect.buildEffect("blight", 20.0, -20.0);
+//    specialEffect.buildEffect("hurricane", 180.0, 0.0);
+//    specialEffect.buildEffect("forestFire", 0.0, 20.0);
+//    specialEffect.buildEffect("flood", 0.0, -20.0);
+//    specialEffect.buildEffect("drought", 20.0, 0.0);
+//    specialEffect.buildEffect("blight", 20.0, -20.0);
   }
 
   /**
@@ -128,8 +129,8 @@ public class VisualizerLayout extends BorderPane
     rotate = new Button("Earth Rotation: Off");
     weather = new Button("Show Weather Events");
     regionOverlay = new Button("Show Region Map");
-    heatMap = new Button("Heat map");
-    nextEffect = new Button("Next Effect");
+    heatMap = new Button("Show Heat Map");
+    nextEffect = new Button("Next Effect: Hurricane");
     crop_Names.setTextAlignment(TextAlignment.LEFT);
     crop_Nums.setTextAlignment(TextAlignment.LEFT);
     country.setTextFill(Color.WHITE);
@@ -268,7 +269,7 @@ public class VisualizerLayout extends BorderPane
    */
   protected void showWeather()
   {
-    earthGroup.getChildren().add(earthWeather);
+    if(!showClouds) earthGroup.getChildren().add(earthWeather);
   }
 
   /**
@@ -394,7 +395,28 @@ public class VisualizerLayout extends BorderPane
 
   public void handleNextEffect(ActionEvent event)
   {
-    nextEffect.setText("Next Effect Change");
+    this.showWeather();
+    showClouds = true;
+    // change through effects
+    currentEffect++;
+    if(currentEffect>5) currentEffect = 0;
+
+    String effect = "";
+    if(currentEffect == 0) effect = "Hurricane";
+    else if(currentEffect == 1) effect = "Forest Fire";
+    else if(currentEffect == 2) effect = "Flood";
+    else if(currentEffect == 3) effect = "Drought";
+    else if(currentEffect == 4) effect = "Blight";
+    else if(currentEffect == 5) effect = "Clear";
+    nextEffect.setText("Next Effect: " + effect);
+
+    specialEffect.removeSpecialEffects();
+    if(currentEffect == 1) specialEffect.buildEffect("hurricane",0,0);
+    else if(currentEffect == 2) specialEffect.buildEffect("forestFire",0,0);
+    else if(currentEffect == 3) specialEffect.buildEffect("flood",0,0);
+    else if(currentEffect == 4) specialEffect.buildEffect("drought",0,0);
+    else if(currentEffect == 5) specialEffect.buildEffect("blight",0,0);
+
   }
 
 }

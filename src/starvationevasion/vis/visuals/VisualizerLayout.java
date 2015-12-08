@@ -269,7 +269,7 @@ public class VisualizerLayout extends BorderPane
    */
   protected void showWeather()
   {
-    earthGroup.getChildren().add(earthWeather);
+    if(!showClouds) earthGroup.getChildren().add(earthWeather);
   }
 
   /**
@@ -395,6 +395,8 @@ public class VisualizerLayout extends BorderPane
 
   public void handleNextEffect(ActionEvent event)
   {
+    this.showWeather();
+    showClouds = true;
     // change through effects
     currentEffect++;
     if(currentEffect>5) currentEffect = 0;

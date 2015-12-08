@@ -423,7 +423,7 @@ public class Server
     simulator = new Simulator(Constant.FIRST_YEAR);
     for (EnumRegion region : EnumRegion.US_REGIONS)
     {
-      playerHands.put(region, Arrays.asList(simulator.drawCards(region)));
+      playerHands.put(region, new ArrayList<>(Arrays.asList(simulator.drawCards(region))));
     }
     broadcast(PhaseStart.constructPhaseStart(ServerState.DRAWING, -1));
     currentWorldData = simulator.init();

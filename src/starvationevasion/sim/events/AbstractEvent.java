@@ -1,10 +1,9 @@
-package starvationevasion.sim;
+package starvationevasion.sim.events;
 
 
 import starvationevasion.common.EnumSpecialEvent;
 import starvationevasion.common.MapPoint;
-
-import java.awt.*;
+import starvationevasion.sim.AbstractTerritory;
 
 
 /**

@@ -3,6 +3,8 @@ package starvationevasion.sim;
 import starvationevasion.common.*;
 import starvationevasion.io.WorldLoader;
 import starvationevasion.io.CropCSVLoader;
+import starvationevasion.sim.events.AbstractEvent;
+import starvationevasion.sim.events.Drought;
 
 import java.util.ArrayList;
 import java.util.Arrays;

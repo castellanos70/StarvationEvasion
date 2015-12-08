@@ -1,7 +1,9 @@
-package starvationevasion.sim;
+package starvationevasion.sim.events;
 
 
 import starvationevasion.common.*;
+import starvationevasion.sim.*;
+import starvationevasion.sim.events.AbstractEvent;
 
 
 /**
@@ -18,7 +20,7 @@ public class Drought extends AbstractEvent<Region>
   {
     for (Territory territory : landArea.getTerritories())
     {
-      for (LandTile tile : territory.getLandTiles())
+      for (starvationevasion.sim.LandTile tile : territory.getLandTiles())
       {
         tile.setRainfall(tile.getRainfall() / 3);
       }

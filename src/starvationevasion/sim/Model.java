@@ -370,7 +370,7 @@ public class Model
     // TODO: 12/6/2015 Alfred is working on this.
     //
     if (debugLevel.intValue() < Level.INFO.intValue())
-    { Simulator.dbg.println("******************************************* No special events");
+    { Simulator.dbg.println("******************************************* Generating special events");
     }
 
     //check current year.
@@ -387,7 +387,8 @@ public class Model
       //through policy. 
     }
 
-    // temporary code just to let special events happen
+    // Temporary code just to make special events happen in the absence of Alfred's timeline.
+    //
     int attempts = 5;
     double chance = 0.5;
     Random rand = new Random();
@@ -426,14 +427,15 @@ public class Model
   {
     if (specialEvents.isEmpty()) return;
 
-    for (Iterator<AbstractEvent> iterator = specialEvents.iterator(); iterator.hasNext(); ) {
+    for (Iterator<AbstractEvent> iterator = specialEvents.iterator(); iterator.hasNext(); )
+    {
       AbstractEvent event = iterator.next();
       event.applyEffects();
 
       // remove the event if its duration is 0.
       if (event.getDuration() < 1)
       {
-        specialEvents.remove(event);
+        iterator.remove();
       }
     }
   }

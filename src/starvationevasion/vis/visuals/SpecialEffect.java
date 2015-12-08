@@ -48,27 +48,9 @@ public class SpecialEffect {
     {
         cloud = new Sphere(ResourceLoader.LARGE_EARTH_RADIUS*1.05);
         final PhongMaterial cloudMaterial = new PhongMaterial();
-//
-//        BufferedImage x = new BufferedImage(1000, 500, BufferedImage.TYPE_INT_ARGB);
-//        Graphics2D image = x.createGraphics();
-//        image.setBackground(new Color(0,0,0,0));
-//        //image.setBackground(null);
-//        //Image icon = new ImageIcon();
-//        BufferedImage image2 = SwingFXUtils.fromFXImage(ResourceLoader.DIFF_ANIMATION, null);
-//
-//        image.drawImage(image2, 0,0, 100, 100, null);
-//        //image.drawImage(x,0,0,null);
-//
-//        ResourceLoader.DIFF_ANIMATION = SwingFXUtils.toFXImage(x, null);
-
-
-        /*
-        g2.drawImage(buffTRAP, trap.getPos()[0] * tileSize + offsetX, trap.getPos()[1] * tileSize + offsetY, tileSize, tileSize, null);
-*/
 
         cloudMaterial.setDiffuseMap(ResourceLoader.DIFF_CLOUD);
         cloud.setMaterial(cloudMaterial);
-        rotateAroundYAxis(cloud, 100).play();
 
         earth.getChildren().add(cloud);
 

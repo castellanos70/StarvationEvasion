@@ -71,6 +71,11 @@ public class Earth {
     startRotate();
   }
 
+  public void rebuildHeatMapOverlay()
+  {
+    earthHeatMap = buildHeatMapOverlay();
+  }
+
   /**
    * Creates the "Earth" by placing PhongMaterials on a Sphere
    *
@@ -108,8 +113,6 @@ public class Earth {
   {
     Sphere heatMap = new Sphere(LARGE_EARTH_RADIUS);
     final PhongMaterial heatMapMaterial = new PhongMaterial();
-    heatMapMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_MAP);
-    heatMap.setMaterial(heatMapMaterial);
 
     int scale = 10;
     BufferedImage i = new BufferedImage(360 * scale, 180 * scale, BufferedImage.TYPE_INT_ARGB);
@@ -118,26 +121,18 @@ public class Earth {
     g.fillRect(0, 0, 360 * scale, 180 * scale);
     g.setColor(Color.BLACK);
 
-    HashMap<MapPoint, Float> data = new HashMap<>();
-    for (double lat = -90; lat < 90; lat += 1) {
-      for (double lon = -180; lon < 180; lon += 1) {
-        data.put(new MapPoint(lat, lon), Util.rand.nextFloat() * 100);
-      }
-    }
-    System.out.println("done building test");
-
-
     i = new BufferedImage(360 * scale, 180 * scale, BufferedImage.TYPE_INT_ARGB);
     g = i.createGraphics();
     g.setComposite(AlphaComposite.Clear);
     g.fillRect(0, 0, 360 * scale, 180 * scale);
     g.setColor(Color.BLACK);
     g.setComposite(AlphaComposite.Src);
-    Color red = new Color(255,0,0,75);
-    Color blue = new Color(0,0,255,75);
-    Color white = new Color(255,255,255,75);
-    Color yellow = new Color(255,255,0,75);
-    Color orange = new Color(255,100,10,75);
+    int alpha = 135;
+    Color red = new Color(255,0,0,alpha);
+    Color blue = new Color(0,0,255,alpha);
+    Color white = new Color(255,255,255,alpha);
+    Color yellow = new Color(255,255,0,alpha);
+    Color orange = new Color(255,100,10,alpha);
 
 
     ArrayList<Color> colors = new ArrayList<>();
@@ -147,13 +142,16 @@ public class Earth {
     colors.add(orange);
     colors.add(red);
 
-    for (Map.Entry<MapPoint, Float> e : data.entrySet()) {
-      if (e.getKey().latitude > 90 || e.getKey().latitude < -90) continue;
-      if (e.getKey().longitude > 180 || e.getKey().longitude < -180) continue;
+//    for (Map.Entry<MapPoint, Float> e : data.entrySet()) {
 
-      int x = (int) ((e.getKey().longitude + 180) * scale);
-      int y = (int) ((e.getKey().latitude - 90) * -1 * scale);
-      float t = e.getValue();
+    for (LandTile l : landTiles){
+//      if(SIM_PARSER.getRegion(l.center) == null) continue;
+      if (l.center.latitude > 90 || l.center.latitude < -90) continue;
+      if (l.center.longitude > 180 || l.center.longitude < -180) continue;
+
+      int x = (int) ((l.center.longitude + 180) * scale);
+      int y = (int) ((l.center.latitude - 90) * -1 * scale);
+      float t = l.maxAnnualTemp;
 
       g.setColor(colors.get(0));
       if (t < 32) g.setColor(colors.get(0));
@@ -161,7 +159,6 @@ public class Earth {
       else if (t < 75) g.setColor(colors.get(2));
       else if (t < 90) g.setColor(colors.get(3));
       else g.setColor(colors.get(4));
-      //g.drawOval(x, y, 1, 1);
       g.fillRect(x, y, 10, 10);
 
     }

@@ -28,7 +28,7 @@ public class VisualizerLayout extends BorderPane
   private Group earthGroup;
   private Group earthOverlay;
   private Group earthWeather = new Group();
-  private Group heatMapWeather = new Group();
+//  private Group heatMapWeather = new Group();
   private PointLight pointLight = new PointLight();
   private boolean earthRotating = true;
   private boolean showOverlay = false;
@@ -163,7 +163,7 @@ public class VisualizerLayout extends BorderPane
   {
     earthOverlay = earth.getEarthOverlay();
     earthWeather = earth.getEarthWeather();
-    heatMapWeather = earth.getEarthHeatMap();
+//    heatMapWeather = earth.getEarthHeatMap();
   }
 
   /**
@@ -268,7 +268,7 @@ public class VisualizerLayout extends BorderPane
    */
   protected void showHeatMap()
   {
-    earthGroup.getChildren().add(heatMapWeather);
+    earthGroup.getChildren().add(earth.getEarthHeatMap());
   }
 
   /**
@@ -292,7 +292,7 @@ public class VisualizerLayout extends BorderPane
    */
   protected void removeHeatMap()
   {
-    earthGroup.getChildren().remove(heatMapWeather);
+    earthGroup.getChildren().remove(earth.getEarthHeatMap());
   }
 
   /**
@@ -377,11 +377,6 @@ public class VisualizerLayout extends BorderPane
       showHeatMap = false;
     } else
     {
-      if(showHeatMap) {
-        heatMap.setText("Show Region Map");
-        removeHeatMap();
-        showHeatMap=false;
-      }
       heatMap.setText("Hide Heat Map");
       this.showHeatMap();
       showHeatMap = true;

@@ -95,6 +95,7 @@ public class ClientGUI extends Application implements EventHandler<KeyEvent> {
         }
         earthViewer.updateLandTiles(data);
 
+
 //        HashMap<MapPoint, Float> tempData = new HashMap<>();
 //        for (double lat = -90; lat < 90; lat += 1) {
 //          for (double lon = -180; lon < 180; lon += 1) {

@@ -81,6 +81,7 @@ public class EarthViewer
   public void updateLandTiles(ArrayList<LandTile> d)
   {
     if (d != null) earth.setLandTiles(d);
+    earth.rebuildHeatMapOverlay();
   }
 
   /**

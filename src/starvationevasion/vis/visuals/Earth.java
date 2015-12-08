@@ -45,6 +45,8 @@ public class Earth {
   private Group smallEarthGroup;
   private Group earthOverlay;
   private Group earthWeather = new Group();
+  private Group earthHeatMap = new Group();
+
 
   private HashMap<EnumRegion, int[]> foodProduced = new HashMap<>();
   private ArrayList<SpecialEventData> specialEventDatas =  new ArrayList<>();
@@ -65,7 +67,7 @@ public class Earth {
     earthGroup = buildScene(largeRadius);
     smallEarthGroup = buildScene(miniRadius);
     earthOverlay = buildOverlay();
-
+    earthHeatMap = buildHeatMapOverlay();
     startRotate();
   }
 
@@ -205,6 +207,15 @@ public class Earth {
    */
   public Group getEarthWeather() {
     return earthWeather;
+  }
+
+  /**
+   * Used by VisualizerLayout to access heat map group
+   *
+   * @return returns heat map group to be attached in client's layout
+   */
+  public Group getEarthHeatMap() {
+    return earthHeatMap;
   }
 
   /**

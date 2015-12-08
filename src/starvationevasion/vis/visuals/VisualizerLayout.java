@@ -28,10 +28,12 @@ public class VisualizerLayout extends BorderPane
   private Group earthGroup;
   private Group earthOverlay;
   private Group earthWeather = new Group();
+  private Group heatMapWeather = new Group();
   private PointLight pointLight = new PointLight();
   private boolean earthRotating = true;
   private boolean showOverlay = false;
   private boolean showClouds = false;
+  private boolean showHeatMap = false;
 
   private VBox earthInfo;
   private VBox left = new VBox();
@@ -48,6 +50,7 @@ public class VisualizerLayout extends BorderPane
 
   private Button regionOverlay;
   private Button weather;
+  private Button heatMap;
   private Button rotate;
 
   /**
@@ -119,6 +122,7 @@ public class VisualizerLayout extends BorderPane
     rotate = new Button("Earth Rotation: Off");
     weather = new Button("Show Weather Events");
     regionOverlay = new Button("Show Region Map");
+    heatMap = new Button("Heat map");
     crop_Names.setTextAlignment(TextAlignment.LEFT);
     crop_Nums.setTextAlignment(TextAlignment.LEFT);
     country.setTextFill(Color.WHITE);
@@ -129,19 +133,22 @@ public class VisualizerLayout extends BorderPane
 
     weather.setTextFill(Color.WHITE);
     rotate.setTextFill(Color.WHITE);
+    heatMap.setTextFill(Color.WHITE);
     regionOverlay.setTextFill(Color.WHITE);
     weather.setPrefWidth(200);
     rotate.setPrefWidth(200);
+    heatMap.setPrefWidth(200);
     regionOverlay.setPrefWidth(200);
     weather.setId("button");
     rotate.setId("button");
+    heatMap.setId("button");
     regionOverlay.setId("button");
     cropNames.getChildren().add(crop_Names);
     cropNums.getChildren().add(crop_Nums);
     earthInfoGrid.getColumnConstraints().add(new ColumnConstraints(125));
     earthInfoGrid.add(crop_Names, 0, 0);
     earthInfoGrid.add(crop_Nums, 1, 0);
-    earthInfo.getChildren().addAll(country, latLong, avgTemp, rotate, weather, regionOverlay);
+    earthInfo.getChildren().addAll(country, latLong, avgTemp, rotate, weather, regionOverlay, heatMap);
     left.getChildren().addAll(earthInfo,earthInfoGrid);
     this.setLeft(left);
 
@@ -154,6 +161,7 @@ public class VisualizerLayout extends BorderPane
   {
     earthOverlay = earth.getEarthOverlay();
     earthWeather = earth.getEarthWeather();
+    heatMapWeather = earth.getEarthHeatMap();
   }
 
   private void initEventHandling(int largeRadius)
@@ -168,6 +176,7 @@ public class VisualizerLayout extends BorderPane
     earthGroup.addEventFilter(ScrollEvent.ANY, event -> userEventHandler.handle(event));
     earthGroup.addEventFilter(ZoomEvent.ANY, event -> userEventHandler.handle(event));
     weather.setOnAction(event -> handleWeather(event));
+    heatMap.setOnAction(event -> handleHeatMap(event));
     regionOverlay.setOnAction(event -> handleOverlay(event));
     rotate.setOnAction(event->handleRotate(event));
 
@@ -234,6 +243,15 @@ public class VisualizerLayout extends BorderPane
     earthGroup.getChildren().add(earthWeather);
   }
 
+  /**
+   *Called when user specifies they want to see heat map earthOverlay inside of UserEventHandler
+   * Will attach transparent earthOverlay to earthGroup
+   */
+  protected void showHeatMap()
+  {
+    earthGroup.getChildren().add(heatMapWeather);
+  }
+
 
   /**
    * Remove transparent overlay
@@ -249,6 +267,11 @@ public class VisualizerLayout extends BorderPane
   protected void removeWeather()
   {
     earthGroup.getChildren().remove(earthWeather);
+  }
+
+  protected void removeHeatMap()
+  {
+    earthGroup.getChildren().remove(heatMapWeather);
   }
 
   public void handleWeather(ActionEvent event)
@@ -271,6 +294,7 @@ public class VisualizerLayout extends BorderPane
       showClouds = true;
     }
   }
+
   public void handleOverlay(ActionEvent event)
   {
     if (showOverlay)
@@ -305,4 +329,29 @@ public class VisualizerLayout extends BorderPane
       earthRotating=true;
     }
   }
+
+  public void handleHeatMap(ActionEvent event)
+  {
+    if (showHeatMap)
+    {
+      heatMap.setText("Show Heat Map");
+      this.removeHeatMap();
+      showHeatMap = false;
+    } else
+    {
+      if(showHeatMap) {
+        heatMap.setText("Show Region Map");
+        removeHeatMap();
+        showHeatMap=false;
+      }
+      heatMap.setText("Hide Heat Map");
+      this.showHeatMap();
+      showHeatMap = true;
+    }
+  }
+
+
+
+
+
 }

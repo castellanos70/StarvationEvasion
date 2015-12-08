@@ -164,16 +164,15 @@ public class Earth {
     }
     g.dispose();
 
+    //make map image into an fx imag
     WritableImage image;
     image = SwingFXUtils.toFXImage(i, null);
 
-
+    //put dat image on the sphere
     heatMapMaterial.setDiffuseMap(image);
     heatMap.setMaterial(heatMapMaterial);
     return new Group(heatMap);
   }
-
-
 
     /**
      * Used by controller to access universe group
@@ -241,6 +240,9 @@ public class Earth {
     return rotate;
   }
 
+  /**
+   * Initiate rotations
+   **/
   private void initRotaters() {
     largeRotate = new RotateTransition(Duration.seconds(ROTATE_SECS), earthGroup);
     smallRotate = new RotateTransition(Duration.seconds(ROTATE_SECS), smallEarthGroup);
@@ -309,6 +311,11 @@ public class Earth {
     specialEventDatas.addAll(data);
   }
 
+  /**
+   * @param lat - latitude
+   * @param lon - longitude
+   * @return food produced data
+   **/
   public int[] getFoodProducedData(double lat, double lon)
   {
     EnumRegion r = SIM_PARSER.getRegion(lat, lon);
@@ -317,6 +324,9 @@ public class Earth {
     return null;
   }
 
+  /**
+   * @param d - list of land tiles parsed for food, temp, region information
+   * */
   public void setLandTiles(ArrayList<LandTile> d)
   {
     landTiles.clear();
@@ -332,13 +342,20 @@ public class Earth {
     }
   }
 
+  /**
+   * @param lat - latitude
+   * @param lon - longitude
+   * @return the region selected
+   *
+   **/
   public String getRegionString(double lat, double lon)
   {
     return SIM_PARSER.parse(lat, lon);
   }
 
   /**
-   * Vis Team Testing Purposes
+   * Vis Team Testing Purposes- testing map overlays. Will create an overlay of all region on the earth
+   *
    **/
   public static void main(String args[]) {
     int scale = 10;

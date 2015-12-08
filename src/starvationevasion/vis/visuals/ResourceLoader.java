@@ -56,9 +56,6 @@ public class ResourceLoader
   protected static Image DIFF_ANIMATION;
 
 
-
-
-
   protected static Image REGION_OVERLAY;
   protected static Image CLOUDS;
   public static String STYLE_SHEET;
@@ -69,6 +66,9 @@ public class ResourceLoader
   private static final double MAP_WIDTH = 8192 / 2d;
   private static final double MAP_HEIGHT = 4092 / 2d;
 
+  /**
+   *  images used throught the project
+   * */
   public ResourceLoader()
   {
     try

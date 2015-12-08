@@ -100,6 +100,9 @@ public class VisualizerLayout extends BorderPane
     this.getChildren().add(pointLight);
   }
 
+  /**
+   *  Initialize gui info for food, position, temp
+   */
   private void initEarthInfo()
   {
     earthInfoGrid = new GridPane();

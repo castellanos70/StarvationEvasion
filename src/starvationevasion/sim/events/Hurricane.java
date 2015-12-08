@@ -4,7 +4,6 @@ import starvationevasion.common.EnumSpecialEvent;
 import starvationevasion.common.MapPoint;
 import starvationevasion.sim.LandTile;
 import starvationevasion.sim.Territory;
-import starvationevasion.sim.events.AbstractEvent;
 
 
 /**

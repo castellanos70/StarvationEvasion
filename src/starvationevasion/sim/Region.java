@@ -669,6 +669,11 @@ public class Region extends AbstractTerritory
     undernourished = underfed;
   }
 
+  public MapPoint getCenter()
+  {
+    return new MapPoint(area.getBounds().getCenterY(), area.getBounds().getCenterX());
+  }
+
   /**
    */
   public static Region createBookKeepingRegion(String name)

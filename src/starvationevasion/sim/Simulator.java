@@ -227,7 +227,8 @@ public class Simulator
     {
       fos = new FileOutputStream(new File(tmpfile));
       Simulator.dbg = new PrintStream(fos);
-      System.err.println("Verbose debug logging to '" + tmpfile + "'");
+      System.err.println(debugLevel.getName() + " debug logging to '" + tmpfile + "'");
+      System.err.println("To increase (decrease) the verbosity of this output, change the debugLevel member of the Simulation class.");
     }
     catch (FileNotFoundException e)
     {

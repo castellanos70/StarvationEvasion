@@ -402,6 +402,9 @@ public class Model
         else
         {
           // do a drought
+          int idx = rand.nextInt(EnumRegion.US_REGIONS.length);
+          Region usRegion = regionList[EnumRegion.US_REGIONS[idx].ordinal()];
+          specialEvents.add(new Drought(usRegion));
         }
       }
     }

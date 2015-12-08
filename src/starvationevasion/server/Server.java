@@ -66,6 +66,11 @@ public class Server
   */
   public static void main(String[] args)
   {
+    if (args.length < 2)
+    {
+      System.out.println("Usage: java -jar Server.jar /path/to/password/file.tsv command to launch ai");
+      return;
+    }
     new Server(args[0], Arrays.copyOfRange(args, 1, args.length)).start();
   }
 

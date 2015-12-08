@@ -22,11 +22,6 @@ import javafx.util.Duration;
 import starvationevasion.vis.controller.*;
 import starvationevasion.vis.controller.EarthViewer;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.net.URL;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +65,7 @@ public class SpecialEffect {
 
     public void buildPinPoint(double latitude, double longitude)
     {
-        Sphere pin = new Sphere(ResourceLoader.LARGE_EARTH_RADIUS*1.05);
+        Sphere pin = new Sphere(ResourceLoader.LARGE_EARTH_RADIUS);
         final PhongMaterial pinMaterial = new PhongMaterial();
         pinMaterial.setDiffuseMap(ResourceLoader.DIFF_PINPOINT);
         pin.setMaterial(pinMaterial);
@@ -104,11 +99,11 @@ public class SpecialEffect {
         /* JAVAFX will use 360 degrees, while lat long will use +- 180 and 90 */
        // double lon = longitude + 180;
         //double lat = (latitude + 90)*2;
-
-        shape.getTransforms().addAll(
-                new Rotate(latitude, Rotate.X_AXIS),
-                new Rotate(longitude, Rotate.Y_AXIS)
-        );
+//
+//        shape.getTransforms().addAll(
+//                new Rotate(latitude, Rotate.X_AXIS),
+//                new Rotate(longitude, Rotate.Y_AXIS)
+//        );
 
         return shape;
     }
@@ -131,8 +126,9 @@ public class SpecialEffect {
 
         earth.getChildren().add(pin);
         //rotateAroundAxis(pin, latitude, longitude, rotationSpeed).play();
-
+        /*
         // BUILD SHADOW
+
 
         diffuseMap = ResourceLoader.DIFF_HURRICANESHADOW;
         rotationSpeed = 25;
@@ -148,7 +144,9 @@ public class SpecialEffect {
         specialEffects.add(pin);
 
         earth.getChildren().add(pin);
-        //rotateAroundAxis(pin, latitude, longitude, rotationSpeed).play();
+
+        rotateAroundAxis(pin, latitude, longitude, rotationSpeed).play();
+        */
     }
 
     private void buildForestFire(double latitude, double longitude)
@@ -248,15 +246,12 @@ public class SpecialEffect {
     private RotateTransition rotateAroundAxis(Node node, double latitude, double longitude, int ROTATE_SECS)
     {
         RotateTransition rotate = new RotateTransition(Duration.seconds(ROTATE_SECS), node);
-        Point3D AXIS = new Point3D(latitude, longitude, 0.0);
+        Point3D AXIS = new Point3D(latitude, longitude, node.getRotationAxis().getZ());
 
-        //node.getTransforms().add(new Rotate(latitude, longitude, 0));
-
-        AXIS = new Point3D(node.getRotationAxis().getX(), node.getRotationAxis().getY(), node.getRotationAxis().getZ());
         rotate.setAxis(AXIS);
         rotate.setFromAngle(360);
         rotate.setToAngle(0);
-        rotate.setInterpolator(Interpolator.DISCRETE);
+        rotate.setInterpolator(Interpolator.LINEAR);
         rotate.setCycleCount(RotateTransition.INDEFINITE);
 
         return rotate;

@@ -52,6 +52,7 @@ public class VisualizerLayout extends BorderPane
   private Button weather;
   private Button heatMap;
   private Button rotate;
+  private Button nextEffect;
 
   /**
    * VisualizerLayout Constructor
@@ -128,6 +129,7 @@ public class VisualizerLayout extends BorderPane
     weather = new Button("Show Weather Events");
     regionOverlay = new Button("Show Region Map");
     heatMap = new Button("Heat map");
+    nextEffect = new Button("Next Effect");
     crop_Names.setTextAlignment(TextAlignment.LEFT);
     crop_Nums.setTextAlignment(TextAlignment.LEFT);
     country.setTextFill(Color.WHITE);
@@ -140,20 +142,23 @@ public class VisualizerLayout extends BorderPane
     rotate.setTextFill(Color.WHITE);
     heatMap.setTextFill(Color.WHITE);
     regionOverlay.setTextFill(Color.WHITE);
+    nextEffect.setTextFill(Color.WHITE);
     weather.setPrefWidth(200);
     rotate.setPrefWidth(200);
     heatMap.setPrefWidth(200);
     regionOverlay.setPrefWidth(200);
+    nextEffect.setPrefWidth(200);
     weather.setId("button");
     rotate.setId("button");
     heatMap.setId("button");
     regionOverlay.setId("button");
+    nextEffect.setId("button");
     cropNames.getChildren().add(crop_Names);
     cropNums.getChildren().add(crop_Nums);
     earthInfoGrid.getColumnConstraints().add(new ColumnConstraints(125));
     earthInfoGrid.add(crop_Names, 0, 0);
     earthInfoGrid.add(crop_Nums, 1, 0);
-    earthInfo.getChildren().addAll(country, latLong, avgTemp, rotate, weather, regionOverlay, heatMap);
+    earthInfo.getChildren().addAll(country, latLong, avgTemp, rotate, weather, regionOverlay, heatMap, nextEffect);
     left.getChildren().addAll(earthInfo,earthInfoGrid);
     this.setLeft(left);
 
@@ -188,6 +193,7 @@ public class VisualizerLayout extends BorderPane
     heatMap.setOnAction(event -> handleHeatMap(event));
     regionOverlay.setOnAction(event -> handleOverlay(event));
     rotate.setOnAction(event -> handleRotate(event));
+    nextEffect.setOnAction(event -> handleNextEffect(event));
 
   }
 
@@ -384,6 +390,11 @@ public class VisualizerLayout extends BorderPane
       this.showHeatMap();
       showHeatMap = true;
     }
+  }
+
+  public void handleNextEffect(ActionEvent event)
+  {
+    nextEffect.setText("Next Effect Change");
   }
 
 }

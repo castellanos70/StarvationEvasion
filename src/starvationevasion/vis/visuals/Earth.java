@@ -351,7 +351,7 @@ public class Earth {
     g.fillRect(0, 0, 360 * scale, 180 * scale);
     g.setColor(Color.BLACK);
 
- /*   Collection<GeographicArea> modelGeography = new GeographyXMLparser().getGeography();
+    Collection<GeographicArea> modelGeography = new GeographyXMLparser().getGeography();
     for (GeographicArea a : modelGeography) {
       java.awt.Polygon poly = new java.awt.Polygon();
       for (MapPoint p : a.getPerimeter()) {
@@ -371,7 +371,7 @@ public class Earth {
     }
     System.out.println("Done!");
     g.dispose();
-*/
+
 
     HashMap<MapPoint, Float> data = new HashMap<>();
     for (double lat = -90; lat < 90; lat += 1) {

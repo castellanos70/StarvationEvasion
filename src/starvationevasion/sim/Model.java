@@ -4,10 +4,7 @@ import starvationevasion.common.*;
 import starvationevasion.io.WorldLoader;
 import starvationevasion.io.CropCSVLoader;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -98,7 +95,7 @@ public class Model
   private SeaLevel seaLevel;
   private CropCSVLoader cropLoader = null;
 
-  private List<AbstractEvent<?>> specialEvents = new ArrayList<>();
+  private List<AbstractEvent> specialEvents = new ArrayList<>();
 
   public Model(int startYear)
   {
@@ -412,8 +409,10 @@ public class Model
 
   private void applySpecialEvents()
   {
-    for (AbstractEvent<?> event : specialEvents)
-    {
+    if (specialEvents.isEmpty()) return;
+
+    for (Iterator<AbstractEvent> iterator = specialEvents.iterator(); iterator.hasNext(); ) {
+      AbstractEvent event = iterator.next();
       event.applyEffects();
 
       // remove the event if its duration is 0.

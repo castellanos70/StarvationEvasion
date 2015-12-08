@@ -38,13 +38,8 @@ public class ResourceLoader
   private static final String DIFFUSE_FLOOD = "visResources/flood.png";
   private static final String DIFFUSE_DROUGHT = "visResources/drought.png";
   private static final String DIFFUSE_BLIGHT = "visResources/blight.png";
-
-
-
-
-
-
-
+  private static final String DIFFUSE_TRANSLARGE = "visResources/transparentLarge.png";
+  private static final String DIFFUSE_ANIMATION = "visResources/animation1.gif";
 
   protected static Image COLD_IMAGE;
   protected static Image HOT_IMAGE;
@@ -61,6 +56,10 @@ public class ResourceLoader
   protected static Image DIFF_FLOOD;
   protected static Image DIFF_DROUGHT;
   protected static Image DIFF_BLIGHT;
+  protected static Image DIFF_TRANSLARGE;
+  protected static Image DIFF_ANIMATION;
+
+
 
 
 
@@ -87,6 +86,9 @@ public class ResourceLoader
       DIFF_FLOOD = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_FLOOD), MAP_WIDTH, MAP_HEIGHT, true, true);
       DIFF_DROUGHT = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_DROUGHT), MAP_WIDTH, MAP_HEIGHT, true, true);
       DIFF_BLIGHT = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_BLIGHT), MAP_WIDTH, MAP_HEIGHT, true, true);
+      DIFF_TRANSLARGE = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_TRANSLARGE), MAP_WIDTH, MAP_HEIGHT, true, true);
+      DIFF_ANIMATION = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_ANIMATION), MAP_WIDTH, MAP_HEIGHT, true, true);
+
 
       DIFF_PINPOINT = new Image(getClass().getClassLoader().getResourceAsStream(DIFFUSE_PINPOINT), MAP_WIDTH, MAP_HEIGHT, true, true);
       NORM_MAP = new Image(getClass().getClassLoader().getResourceAsStream(NORMAL_MAP), MAP_WIDTH, MAP_HEIGHT, true, true);

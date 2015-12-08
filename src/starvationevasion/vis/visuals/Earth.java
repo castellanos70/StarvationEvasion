@@ -76,13 +76,6 @@ public class Earth {
    */
   public Group buildScene(int radius) {
 
-//    Group tempEarth = new Group();
-//    Sphere earthBox = new Sphere(radius*1.10);
-//    PhongMaterial earthBoxMaterial = new PhongMaterial();
-//    earthBoxMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_MAP);
-//    earthBox.setMaterial(earthBoxMaterial);
-//    tempEarth.getChildren().add(earthBox);
-
     Sphere earth = new Sphere(radius);
     PhongMaterial earthMaterial = new PhongMaterial();
     earthMaterial.setDiffuseMap(RESOURCE_LOADER.DIFF_MAP);

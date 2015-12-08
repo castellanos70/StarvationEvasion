@@ -2,9 +2,11 @@ package starvationevasion.vis.visuals;
 
 import com.sun.javafx.geom.transform.Affine3D;
 import com.sun.javafx.geom.transform.BaseTransform;
+import com.sun.prism.Graphics;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -19,6 +21,11 @@ import javafx.util.Duration;
 import starvationevasion.vis.controller.*;
 import starvationevasion.vis.controller.EarthViewer;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.net.URL;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,12 +48,31 @@ public class SpecialEffect {
     {
         cloud = new Sphere(ResourceLoader.LARGE_EARTH_RADIUS*1.05);
         final PhongMaterial cloudMaterial = new PhongMaterial();
+//
+//        BufferedImage x = new BufferedImage(1000, 500, BufferedImage.TYPE_INT_ARGB);
+//        Graphics2D image = x.createGraphics();
+//        image.setBackground(new Color(0,0,0,0));
+//        //image.setBackground(null);
+//        //Image icon = new ImageIcon();
+//        BufferedImage image2 = SwingFXUtils.fromFXImage(ResourceLoader.DIFF_ANIMATION, null);
+//
+//        image.drawImage(image2, 0,0, 100, 100, null);
+//        //image.drawImage(x,0,0,null);
+//
+//        ResourceLoader.DIFF_ANIMATION = SwingFXUtils.toFXImage(x, null);
+
+
+        /*
+        g2.drawImage(buffTRAP, trap.getPos()[0] * tileSize + offsetX, trap.getPos()[1] * tileSize + offsetY, tileSize, tileSize, null);
+*/
+
         cloudMaterial.setDiffuseMap(ResourceLoader.DIFF_CLOUD);
         cloud.setMaterial(cloudMaterial);
+        rotateAroundYAxis(cloud, 100).play();
 
         earth.getChildren().add(cloud);
 
-        rotateAroundYAxis(cloud, 100).play();
+        //rotateAroundYAxis(cloud, 100).play();
     }
 
     public void buildEffect(String type, double latitude, double longitude)

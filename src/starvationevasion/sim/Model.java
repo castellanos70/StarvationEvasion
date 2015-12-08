@@ -1,6 +1,7 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.*;
+import starvationevasion.io.SpecialEventCSVLoader;
 import starvationevasion.io.WorldLoader;
 import starvationevasion.io.CropCSVLoader;
 
@@ -96,13 +97,17 @@ public class Model
   private SeaLevel seaLevel;
   private CropCSVLoader cropLoader = null;
 
+  private ArrayList<CropZoneData>     cropZoneDatum;
+  private ArrayList<SpecialEventData> specialEventDatum;
+
   public Model(int startYear)
   {
 
     this.startYear = startYear;
     year = startYear;
     seaLevel = new SeaLevel();
-    //System.out.println("MODEL INIT");
+    //load any special events
+    loadExistingSpecialEvents();
   }
 
   public Region getRegion(EnumRegion r)
@@ -128,13 +133,9 @@ public class Model
     regionList[EnumRegion.SIZE] = Region.createBookKeepingRegion("UNITED_STATES");
 
     try{cropLoader = new CropCSVLoader();} catch (Throwable t){ System.out.println("CROP_LOADER "+t);}
-    //ArrayList<CropZoneData> categoryData = cropLoader.getCategoryData();
-/*
-    for (CropZoneData czd : categoryData)
-    {
-      System.out.println(czd.toString());
-    }
-*/
+    cropZoneDatum = cropLoader.getCategoryData();
+
+
     WorldLoader loader = new WorldLoader(regionList);
     world = loader.getWorld();
 
@@ -367,12 +368,23 @@ public class Model
     {
       //Then there should be a pre-existing event to draw upon. Then
       //there ought to have been a process that loaded the events to draw from
+      for (SpecialEventData event : specialEventDatum)
+      {
+        if (event.year == year)
+        {
+          //add current event to data structure of events for the year
+        }
+      }
     }
     else
     {
       //If this is the case then examine the players behaviors. Is it probable
       //that their region could experience an event based on the leaders actions
-      //through policy. 
+      //through policy. So their current status is important:
+      //1. Are they in crisis already?
+      //2. What are their current policies?
+      //3. if in crisis will the current policies help or hurt?
+      //4. if not in crisis will the current policies improve the regions state?
     }
   }
 
@@ -439,6 +451,13 @@ public class Model
     // TODO: HDI is updated in the roll-up of the territories into regions, based on the
     // undernourished factor.
     //
+  }
+
+  private void loadExistingSpecialEvents()
+  {
+    SpecialEventCSVLoader loader = null;
+    try{loader = new SpecialEventCSVLoader();} catch (Throwable t) {}
+    specialEventDatum = loader.getEventData();
   }
 
   public void printCropNeed(Region region, int year)

@@ -171,6 +171,7 @@ public class Earth {
 
     }
     g.dispose();
+
     WritableImage image;
     image = SwingFXUtils.toFXImage(i, null);
 

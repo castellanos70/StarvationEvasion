@@ -407,6 +407,7 @@ public class Model
           specialEvents.add(new Drought(usRegion));
         }
       }
+      attempts--;
     }
   }
 

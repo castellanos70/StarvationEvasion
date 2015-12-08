@@ -114,6 +114,11 @@ public class Model
     return regionList[r.ordinal()];
   }
 
+  public List<AbstractEvent> getSpecialEvents()
+  {
+    return specialEvents;
+  }
+
   /**
    * This method is used to create USState objects along with
    * the Region data structure

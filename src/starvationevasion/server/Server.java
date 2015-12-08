@@ -429,7 +429,6 @@ public class Server
   private void enterDraftingPhase()
   {
     enactedPolicyCards.clear();
-    setServerState(ServerState.DRAFTING);
     final PhaseStart message = PhaseStart.constructPhaseStart(ServerState.DRAFTING, ServerConstants.DRAFTING_PHASE_TIME);
     phaseEndTime = message.phaseEndTime;
     broadcast(message);
@@ -438,11 +437,11 @@ public class Server
       regionTurnData.put(region, new RegionTurnData());
     }
     phaseChangeFuture = scheduledExecutorService.schedule(this::enterVotingPhase, ServerConstants.DRAFTING_PHASE_TIME, TimeUnit.MILLISECONDS);
+    setServerState(ServerState.DRAFTING);
   }
 
   private void enterVotingPhase()
   {
-    setServerState(ServerState.VOTING);
     final PhaseStart message = PhaseStart.constructPhaseStart(ServerState.VOTING, ServerConstants.VOTING_PHASE_TIME);
     phaseEndTime = message.phaseEndTime;
     broadcast(message);
@@ -452,6 +451,7 @@ public class Server
         .filter(c -> c.votesRequired() > 0)
         .collect(Collectors.toMap(PolicyCard::getOwner, Function.identity())));
     regionVoteRequiredCards.values().forEach(c -> regionsWhoVotedOnCards.put(c, new ArrayList<>()));
+    setServerState(ServerState.VOTING);
   }
 
   private void enterDrawingPhase()

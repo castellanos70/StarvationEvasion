@@ -6,6 +6,8 @@ import starvationevasion.io.CropCSVLoader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -95,6 +97,8 @@ public class Model
 
   private SeaLevel seaLevel;
   private CropCSVLoader cropLoader = null;
+
+  private List<AbstractEvent<?>> specialEvents = new ArrayList<>();
 
   public Model(int startYear)
   {
@@ -234,6 +238,8 @@ public class Model
     updateClimate(); // Done.
 
     generateSpecialEvents(); // In progress (Alfred).
+
+    applySpecialEvents(); // Done.
 
     updateFarmProductYield(); // Done.
 
@@ -379,6 +385,39 @@ public class Model
       //If this is the case then examine the players behaviors. Is it probable
       //that their region could experience an event based on the leaders actions
       //through policy. 
+    }
+
+    // temporary code just to let special events happen
+    int attempts = 5;
+    double chance = 0.5;
+    Random rand = new Random();
+    while (attempts > 0)
+    {
+      if (rand.nextFloat() < chance)
+      {
+        if (rand.nextBoolean())
+        {
+          // do a hurricane
+        }
+        else
+        {
+          // do a drought
+        }
+      }
+    }
+  }
+
+  private void applySpecialEvents()
+  {
+    for (AbstractEvent<?> event : specialEvents)
+    {
+      event.applyEffects();
+
+      // remove the event if its duration is 0.
+      if (event.getDuration() < 1)
+      {
+        specialEvents.remove(event);
+      }
     }
   }
 

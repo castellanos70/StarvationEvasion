@@ -57,8 +57,8 @@ public class TileManager
   
   /* these are fairly rough estimates for the distance between two tiles on the
    X and Y axes.  Should be acceptable for our purposes */
-  public static final double DX_KM = Constant.EARTH_CIRCUMFERENCE / COLS;
-  public static final double DY_KM = Constant.EARTH_CIRCUMFERENCE / ROWS * 0.5;
+  public static final double DX_KM = 20.; // Constant.EARTH_CIRCUMFERENCE / COLS;
+  public static final double DY_KM = 20.; // Constant.EARTH_CIRCUMFERENCE / ROWS * 0.5;
   
   /* max radius from selected tiles to add noise to each year */
   public static final double NOISE_RADIUS = 100; /* in km */
@@ -192,10 +192,9 @@ public class TileManager
     // Take ten percent of tiles, add noise.
     //
     int count = tiles.length / 10;
-    for (int i = 0 ; i < count ; i += 10)
-    {
-      int victim = world.getRandomGenerator().nextInt(count);
-      addNoiseByTile(tiles[victim]);
+    for (int i = 0; i < count; i += 1) {
+        int victim = world.getRandomGenerator().nextInt(count);
+        addNoiseByTile(tiles[victim]);
     }
 
 //    /* Shuffle tiles before adding noise

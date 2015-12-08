@@ -6,7 +6,12 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import starvationevasion.common.*;
 import starvationevasion.vis.controller.EarthViewer;
+
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Tess Daughton on 11/15/15.
@@ -26,7 +31,7 @@ public class ClientGUI extends Application implements EventHandler<KeyEvent> {
 
 
   @Override
-  public void start(Stage primaryStage) throws Exception{
+  public void start(Stage primaryStage) throws Exception {
     primaryStage.setWidth(800);
     primaryStage.setHeight(600);
 
@@ -56,12 +61,59 @@ public class ClientGUI extends Application implements EventHandler<KeyEvent> {
         else
         {
           fullEarthMode=true;
-          Scene earthScene = new Scene(earthViewer.updateFull(),800,850);
+          Scene earthScene = new Scene(earthViewer.updateFull(),1000,700);
           earthViewer.addVisStyleSheet(earthScene);
           earthScene.setOnKeyPressed(this);
           earthStage.setScene(earthScene);
           earthStage.show();
         }
+      }
+      case ENTER:
+      {
+        /* client passes in crop and temperature data, expecting MapPoints to be whole degrees */
+        ArrayList<LandTile> data = new ArrayList<>();
+        for (double lat = -90; lat < 90; lat += 1)
+        {
+          for (double lon = -180; lon < 180; lon += 1)
+          {
+            LandTile t = new LandTile(lon, lat);
+            t.elevation = Util.rand.nextFloat() * 100;
+            t.rainfall = Util.rand.nextFloat() * 20;
+
+            float max = Util.rand.nextFloat() * 100;
+            float min = max - 50;
+            float day = min + ((max - min) * Util.rand.nextFloat());
+            float night = min + ((max - min) * Util.rand.nextFloat());
+
+            t.maxAnnualTemp = max;
+            t.minAnnualTemp = min;
+            t.avgDayTemp = day;
+            t.avgNightTemp = night;
+            t.currCrop = EnumFood.values()[Util.rand.nextInt(EnumFood.SIZE)];
+            data.add(t);
+          }
+        }
+        earthViewer.updateLandTiles(data);
+
+//        HashMap<MapPoint, Float> tempData = new HashMap<>();
+//        for (double lat = -90; lat < 90; lat += 1) {
+//          for (double lon = -180; lon < 180; lon += 1) {
+//            MapPoint p = new MapPoint(lat, lon);
+//            /* temperature test data */
+//            tempData.put(p, Util.rand.nextFloat() * 100);
+//          }
+//        }
+//        earthViewer.updateTemperature(tempData);
+//
+//        HashMap<EnumRegion, int[]> foodData = new HashMap<>();
+//        for (EnumRegion e : EnumRegion.values()) {
+//          int[] fData = new int[EnumFood.SIZE];
+//          for (int i = 0; i < EnumFood.SIZE; i++) {
+//            fData[i] = Util.rand.nextInt(100);
+//          }
+//          foodData.put(e, fData);
+//        }
+//        earthViewer.updateFoodProduced(foodData);
       }
     }
   }

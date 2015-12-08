@@ -4,11 +4,14 @@ import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.MapPoint;
+import starvationevasion.common.Util;
+import sun.plugin.dom.exception.InvalidStateException;
 
 import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 
 /**
@@ -17,7 +20,6 @@ import java.util.List;
  */
 public class Region extends AbstractTerritory
 {
-  private static final int START_YEAR = Constant.FIRST_YEAR;
   private static final int PLAYER_START_REVENUE = 50; //million dollars
   private static final boolean VERBOSE = false;
 
@@ -26,6 +28,8 @@ public class Region extends AbstractTerritory
   private final Collection<Territory> territories = new ArrayList<>();
 
   private int revenue;
+
+  public int ethanolProducerTaxCredit = 0;
 
   // all data in metric tons
   private long[] initialProduction1981 = new long[EnumFood.SIZE];
@@ -46,6 +50,7 @@ public class Region extends AbstractTerritory
     this.region = region;
     if (region.isUS())
     { revenue = PLAYER_START_REVENUE;
+      ethanolProducerTaxCredit = Util.rand.nextInt(15) + Util.rand.nextInt(15);
     }
   }
 
@@ -316,84 +321,53 @@ public class Region extends AbstractTerritory
   }
 
   /**
-   * @param year year in question
-   * @param n  population in that year
-   */
-  public void setPopulation(int year, int n)
-  {
-    if (n >= 0)
-    {
-      // Divide it up amongst the units.
-      //
-      int perUnit = n / territories.size();
-      int remainder = n % (territories.size() * perUnit);
-      for (Territory unit : territories)
-      {
-        unit.setPopulation(year, perUnit + remainder);
-        remainder = 0;
-      }
-
-      population[year - START_YEAR] = n;
-    }
-    else
-    {
-      if (VERBOSE)
-      {
-        System.err.println("Invalid argument for Territory.setPopulation method");
-      }
-    }
-  }
-
-  /**
    * Estimates the initial yield of all US states the US bookkeeping region.
    */
   public void estimateInitialUSYield()
   {
-    // For consistency, find the US 1981 population by summing the population of
-	// each state.  Note, the population in the data file is in 1000s of people.
-    //
-    long population = 0;
-    for (Territory t : territories) 
-	{ if (t.getName().startsWith("US-")) population += t.getPopulation(1981);
-	}
-
-    // category divided by the region�s population in 1000s of people.
+    // category divided by the region�s people in 1000s of people.
     //
     for (EnumFood crop : EnumFood.values())
-    {
+    { // Spec section 3.4 2) c) - For each food category find the sum of all 1981
+      // state incomes.
+      //
       long income = 0;
       for (Territory t : territories)
       { if (t.getName().startsWith("US-")) income += t.getCropIncome(crop);
       }
 
-      // The 1981 need for each category of food per 1000 people is the domestic consumption
-      // of the crop.
+      // The 1981 per capita need for each category of food per 1000 people is
+      // the actual domestic consumption of the crop (excluding the underfed
+      // people).
       //
-      double need = getInitialConsumption(crop, 1981) / (population * 1000);
+      double need = getInitialConsumption(crop, Constant.FIRST_YEAR) / (population[0] - undernourished);
 
       // Imports & exports per capita for all regions.
       //
-      double cropImport = (double) initialImports1981[crop.ordinal()] / population;
-      double cropExport = (double) initialExports1981[crop.ordinal()] / population;
+      double cropImport = (double) initialImports1981[crop.ordinal()] / population[0];
+      double cropExport = (double) initialExports1981[crop.ordinal()] / population[0];
 
       for (Territory t : territories)
-      { // Skip the 'umbrella' territory.
+      { // Skip the umbrella 'Unitied States' territory object.
 	    //
         if (t.getName().startsWith("US-") == false) continue;
 
-	    t.setCropNeedPerCapita(crop, need);
-
+        // Spec section 3.4 2) d) - Calculate the production of each category as total
+        // US production(Constant.FIRST_YEAR) * state income / total US income.  Note that these values
+        // are summed into their respective player region in a subsequent step (section
+        // 'e)', sum these totals per region).
+        //
         double r = (double) t.getCropIncome(crop) / income;
         t.setCropProduction(crop, (long) (initialProduction1981[crop.ordinal()] * r));
 
-        t.setCropImport(crop, (long) (cropImport * t.getPopulation(1981)));
-        t.setCropExport(crop, (long) (cropExport * t.getPopulation(1981)));
+        t.setCropNeedPerCapita(crop, need);
+        t.setCropImport(crop, (long) (cropImport * t.getPopulation(Constant.FIRST_YEAR)));
+        t.setCropExport(crop, (long) (cropExport * t.getPopulation(Constant.FIRST_YEAR)));
       }
     }
 
     for (Territory t : territories) t.updateYield();
   }
-
 
   /**
    * Estimates the initial yield of all territories in the region.
@@ -409,52 +383,39 @@ public class Region extends AbstractTerritory
       //
       estimateInitialUSYield();
       return;
-	  }
+    }
 
     // For United States regions, this data will be populated when the special book-
     // keeping region is visited (above).
     //
     if (region.isUS() == true) return;
 
-    // For all non-US regions find the region 1981 population by summing the population
-    // of each Territory in the region.
-    //
-    // Note, the population in the data file is in 1000s of people.
-    //
-    long population = 0;
-    for (Territory t : territories)
-    { // If this territory is not a US territory then add its population to the tally.
-	  // US regions are handled in estimateInitialUSYield();
-      //
-      if (t.getName().startsWith("US-") == false) population += t.getPopulation(1981);
-    }
-
-    // category divided by the region's population in 1000s of people.
+    // category divided by the region's people in 1000s of people.
     //
     for (EnumFood crop : EnumFood.values())
     {
       // The 1981 need for each region and category of food per 1000 people is
       // the domestic consumption of the crop.
       //
-      double need = getInitialConsumption(crop, 1981) / (population * 1000);
+      double need = getInitialConsumption(crop, Constant.FIRST_YEAR) / (population[0] - undernourished);
 
       // Production per capita for non-US regions.
       //
-      double cropProduction = (double) initialProduction1981[crop.ordinal()] / population;
+      double cropProduction = (double) initialProduction1981[crop.ordinal()] / population[0];
 
       // Imports & exports per capita for all regions.
       //
-      double cropImport = (double) initialImports1981[crop.ordinal()] / population;
-      double cropExport = (double) initialExports1981[crop.ordinal()] / population;
+      double cropImport = (double) initialImports1981[crop.ordinal()] / population[0];
+      double cropExport = (double) initialExports1981[crop.ordinal()] / population[0];
 
       for (Territory t : territories)
       { 
         if (t.getName().startsWith("US-") == false) 
-		    {
-	        t.setCropNeedPerCapita(crop, need);
-          t.setCropProduction(crop, (long) (cropProduction * t.getPopulation(1981)));
-          t.setCropImport(crop, (long) (cropImport * t.getPopulation(1981)));
-          t.setCropExport(crop, (long) (cropExport * t.getPopulation(1981)));
+        {
+          t.setCropNeedPerCapita(crop, need);
+          t.setCropProduction(crop, (long) (cropProduction * t.getPopulation(Constant.FIRST_YEAR)));
+          t.setCropImport(crop, (long) (cropImport * t.getPopulation(Constant.FIRST_YEAR)));
+          t.setCropExport(crop, (long) (cropExport * t.getPopulation(Constant.FIRST_YEAR)));
         }
       }
     }
@@ -466,10 +427,15 @@ public class Region extends AbstractTerritory
    * Updates the yield of all territories in the region and aggregates the values for
    * the entire region.
    */
-  public void updateYield()
+  public void updateYield(int year)
   {
     for (Territory t : territories)
-    { t.updateYield();
+    {
+      // replant crops based on the new land used for farming
+      CropOptimizer cropOptimizer = new CropOptimizer(year, t);
+      cropOptimizer.optimizeCrops();
+
+      t.updateYield();
       for (EnumFood crop : EnumFood.values())
       {
         landCrop[crop.ordinal()] += t.landCrop[crop.ordinal()];
@@ -487,6 +453,17 @@ public class Region extends AbstractTerritory
     }
   }
 
+  public void updateCropNeed(int year)
+  {
+    double undernourishedRatio = undernourished / getPopulation(year);
+    for (EnumFood crop : EnumFood.values())
+    {
+      int idx = crop.ordinal();
+      double consumed = cropProduction[idx] + cropImport[idx] - cropExport[idx];
+      setCropNeedPerCapita(crop, consumed, undernourishedRatio);
+    }
+  }
+
 
   /**
    * Estimates the initial crop budget for a all of the territories in the region by multiplying the territory
@@ -498,11 +475,12 @@ public class Region extends AbstractTerritory
   {
     for (CropZoneData zoneData : cropData)
     {
-      long cropConsumptionPerCapita = getInitialConsumption(zoneData.food, 1981) / getPopulation(1981);
+      double cropConsumptionPerCapita = getInitialConsumption(zoneData.food, Constant.FIRST_YEAR) / getPopulation(Constant.FIRST_YEAR);
+
       for (Territory t : getTerritories())
       {
-        long territoryCropConsumption = cropConsumptionPerCapita * t.getPopulation(1981);
-        long budget = territoryCropConsumption * zoneData.pricePerMetricTon;
+        double territoryCropConsumption = cropConsumptionPerCapita * t.getPopulation(Constant.FIRST_YEAR);
+        long budget = (long) territoryCropConsumption * zoneData.pricePerMetricTon;
         t.setCropBudget(zoneData.food, budget);
       }
     }
@@ -510,24 +488,26 @@ public class Region extends AbstractTerritory
 
   public void estimateInitialCropLandArea(List<CropZoneData> cropData)
   {
-    if (region == null)
+    setRegionLandTotal();
+    for (EnumFood food : EnumFood.values())
     {
-      estimateInitialUSCropLandArea(cropData);
+      landCrop[food.ordinal()] = 0;
     }
-  }
 
-  public void estimateInitialUSCropLandArea(List<CropZoneData> cropData)
-  {
-    // from spec, 1981 total farm land is 0.7 of 2014 farm land
-    for (CropZoneData zoneData : cropData)
+    for (Territory t : getTerritories())
     {
-      for (Territory t : getTerritories())
+      if (t.getGameRegion() != null)
       {
-        double cropLand = cropLandAreaHelper(t, zoneData) * ((t.totalFarmLand * 0.7) / cropLandAreaHelper(t, cropData));
-        double cropYield = getTerritoryProduction(t, zoneData.food) / cropLand;
+        double territoryFarmLand = (t.farmLand1981 / 100.0) * t.landTotal;
+        double helperSum = cropLandAreaHelper(t, cropData);
+        double landCropRatio = territoryFarmLand / helperSum;
 
-        t.setLand1981(zoneData.food, cropLand);
-        t.setYield1981(zoneData.food, cropYield);
+        for (CropZoneData zoneData : cropData)
+        {
+          double cropLand = cropLandAreaHelper(t, zoneData) * landCropRatio;
+          t.setCropLand(zoneData.food, (int) cropLand);
+          landCrop[zoneData.food.ordinal()] += cropLand;
+        }
       }
     }
   }
@@ -535,7 +515,9 @@ public class Region extends AbstractTerritory
   // defined to be the temp function in the spec
   private double cropLandAreaHelper(Territory t, CropZoneData zoneData)
   {
-    return getTerritoryProduction(t, zoneData.food) / zoneData.tonsPerKM2;
+    double productionYieldRatio = initialProduction1981[zoneData.food.ordinal()] / (double) zoneData.tonsPerKM2;
+    double landRatio = (double) (t.landTotal * t.totalFarmLand) / (this.landTotal * this.totalFarmLand);
+    return productionYieldRatio * landRatio;
   }
 
   // finds the sum of the temp function defined in the spec
@@ -549,10 +531,19 @@ public class Region extends AbstractTerritory
     return sum;
   }
 
-  private double getTerritoryProduction(Territory t, EnumFood food)
+  private void setRegionLandTotal()
   {
-    long cropProductionPerCapita = getInitialProduction(food, 1981) / getPopulation(1981);
-    return cropProductionPerCapita * t.getPopulation(1981);
+    landTotal = 0;
+    totalFarmLand = 0;
+    for (Territory t : getTerritories())
+    {
+      if (t.getGameRegion() != null)
+      {
+        landTotal += t.landTotal;
+        totalFarmLand += (t.totalFarmLand * t.landTotal);
+      }
+    }
+    totalFarmLand = (int) (((double) totalFarmLand / landTotal) * 100);
   }
 
   /**
@@ -617,8 +608,8 @@ public class Region extends AbstractTerritory
       unit.setCropNeedPerCapita(crop, tonsConsumed, percentUndernourished);
     }
 
-    double population = getPopulation(START_YEAR);
-    double tonPerPerson = tonsConsumed / (population - 0.5 * percentUndernourished * population);
+    double population = getPopulation(Constant.FIRST_YEAR);
+    double tonPerPerson = tonsConsumed / (population - (0.5 * percentUndernourished * population));
     cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
   }
 
@@ -630,28 +621,52 @@ public class Region extends AbstractTerritory
    */
   public void setCropNeedPerCapita(EnumFood crop, double tonPerPerson)
   {
+    // *Changed*
+    // amount is already ton per person for the region, so it shouldn't be divided up
+    // based on the number of territory.
+    // each territory will have the same need per capita as the region.
+
     // Divide it up amongst the units.
     //
-    double perUnit = tonPerPerson / territories.size();
-    double remainder = tonPerPerson % (territories.size() * perUnit);
+    //double perUnit = tonPerPerson / territories.size();
+    //double remainder = tonPerPerson % (territories.size() * perUnit);
     for (Territory unit : territories)
     {
-      unit.setCropNeedPerCapita(crop, perUnit + remainder);
-      remainder = 0;
+      unit.setCropNeedPerCapita(crop, tonPerPerson);
+      //remainder = 0;
     }
 
     cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
   }
 
-  public void updateCropNeed()
+
+  /**
+   * Updates the region population for the year.
+   * @param year
+   */
+  public void updatePopulation(int year)
   {
-    for (Territory t : getTerritories())
-    {
-      for (EnumFood crop : EnumFood.values())
-      {
-        t.setCropNeedPerCapita(crop, getInitialConsumption(crop, 1981) / (getPopulation(START_YEAR) * 1000));
-      }
+    // Do not recompute territory undernourished statistics in the 1st year, or if
+    // this is a book-keeping region.
+    //
+    boolean updateTerritories = region != null && year != Constant.FIRST_YEAR;
+    int people = 0, underfed = 0;
+    for (Territory t : territories)
+    { // Territory.updatePopulation because it updates internal state variables related
+      // to production.
+      //
+      if (updateTerritories) t.updatePopulation(year);
+
+      people += t.getPopulation(year);
+      underfed += t.getUndernourished();
     }
+
+    if (people == 0) throw new InvalidStateException("Region " + getName() + " has zero population.");
+
+    // Region population in year 0.
+    //
+    population[year - Constant.FIRST_YEAR] = people;
+    undernourished = underfed;
   }
 
   /**

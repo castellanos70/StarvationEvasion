@@ -4,11 +4,14 @@ package starvationevasion.vis.controller;
 import javafx.scene.Group;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import starvationevasion.common.LandTile;
+import starvationevasion.common.SpecialEventData;
 import starvationevasion.vis.visuals.Earth;
 import starvationevasion.vis.visuals.ResourceLoader;
 import starvationevasion.vis.visuals.SpecialEffect;
 import starvationevasion.vis.visuals.VisualizerLayout;
 
+import java.util.ArrayList;
 import java.util.Queue;
 
 /**
@@ -30,9 +33,14 @@ public class EarthViewer
   public EarthViewer(int smallEarthRadius, int largeEarthRadius)
   {
     earth = new Earth(smallEarthRadius, largeEarthRadius);
-    specialEffect = new SpecialEffect(earth);
+//    specialEffect = new SpecialEffect(earth);
 //    specialEffect.buildClouds();
-    specialEffect.buildPinPoint(-45,0);
+//    specialEffect.buildPinPoint(0,20);
+//    specialEffect.buildEffect("hurricane", 180.0, 0.0);
+//    specialEffect.buildEffect("forestFire", 0.0, 20.0);
+//    specialEffect.buildEffect("flood", 0.0, -20.0);
+//    specialEffect.buildEffect("drought", 20.0, 0.0);
+//    specialEffect.buildEffect("blight", 20.0, -20.0);
 
 
     this.LARGE_EARTH_RADIUS=largeEarthRadius;
@@ -63,10 +71,17 @@ public class EarthViewer
   /**
    * Called yearly/whenever Client decides to update Global Events (e.g., beginning of turn, beginning of year).
    * Pass in an array with global event data for Visualizer to parse and then display
-   * @param eventData
+   * @param specialEventData contains each of the six special event data. Each specialeventdata can contain multiple locations.
    */
-  public void updateEvents(String[] eventData)
-  {}
+  public void updateEvents(ArrayList<SpecialEventData> specialEventData)
+  {
+
+  }
+
+  public void updateLandTiles(ArrayList<LandTile> d)
+  {
+    if (d != null) earth.setLandTiles(d);
+  }
 
   /**
    * To be called by ClientGUI to add Vis style sheet to the Scene client creates

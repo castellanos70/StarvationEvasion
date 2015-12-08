@@ -44,6 +44,10 @@ public class RegionData implements Serializable
    */
   public int[] foodProduced = new int[EnumFood.SIZE];
 
+
+
+
+
   /**
    * This is the farm income in millions of dollars from to the region's
    * production of each foodType during the past turn (3 years).<br><br>
@@ -70,6 +74,15 @@ public class RegionData implements Serializable
    */
   public int[] foodExported = new int[EnumFood.SIZE];
 
+
+
+  /**
+   * This region's current ethanol producer tax credit as an
+   * integer percentage from [0 through 100]. This percentage of all profits earned
+   * by farmers in this
+   * region for sale of farm products used in ethanol production is tax deductible.
+   */
+  public int ethanolProducerTaxCredit;
 
 
   /**

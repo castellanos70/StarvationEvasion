@@ -59,8 +59,7 @@ public class LandingPage extends Application
           String path = System.getProperty("java.home") + seperator + "bin" + seperator + "java";
           public Void call()
           {
-            String[] command = {"example_password_file.tsv",
-              path, "-jar", pathToJar};
+            String[] command = {path, "-jar", pathToJar};
             Server.main(command);
             return null;
           }

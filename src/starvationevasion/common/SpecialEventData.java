@@ -41,15 +41,6 @@ public class SpecialEventData implements Serializable
     eventName = name;
   }
 
-  /**
-   * @return Data stored in this structure as a formatted String.
-   */
-  /*
-  public String toString()
-  {
-    String msg = type + "["+year+":"+month+" -> " + durationInMonths + "months]: " + regions.toString();
-    return msg;
-  }*/
 
   public void setType(EnumSpecialEvent type)
   {

@@ -5,13 +5,13 @@ import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.MapPoint;
 import starvationevasion.common.Util;
-import sun.plugin.dom.exception.InvalidStateException;
+
 
 import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Logger;
+import java.lang.IllegalStateException;
 
 
 /**
@@ -661,7 +661,7 @@ public class Region extends AbstractTerritory
       underfed += t.getUndernourished();
     }
 
-    if (people == 0) throw new InvalidStateException("Region " + getName() + " has zero population.");
+    if (people == 0) throw new IllegalStateException("Region " + getName() + " has zero population.");
 
     // Region population in year 0.
     //

@@ -363,8 +363,8 @@ public class Territory extends AbstractTerritory
   }
 
   /**
-   * returns the point representing the shipping location of that country.
-   * <p/>
+   * returns the point representing the shipping location of that country.<br>
+   *
    * (!) note: this method can only be called after the Country's regions have
    * been set.
    *

@@ -355,7 +355,7 @@ public class GameEngine implements GameController, Initializable, EventHandler<E
   /**
    * Gets and returns the history from mainFeed up to 50 lines.
    *
-   * @return LinkedList<String> mainFeedHistory
+   * @return mainFeedHistory
    */
   public LinkedList<String> getMainFeedHistory()
   {

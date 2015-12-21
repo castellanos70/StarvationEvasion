@@ -5,7 +5,7 @@ import javafx.scene.image.Image;
 
 /**
  * Created by Tess Daughton 11/14/15.
- * This class will be used to load & contain resources necessary for the Visualization rendering.
+ * This class will be used to load and contain resources necessary for the Visualization rendering.
  *
  * images
  * DIFF_FORESTFIRE - http://nobacks.com/photos/nature/page/39/

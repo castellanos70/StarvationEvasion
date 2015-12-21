@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="90.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" >
+   <children>
+      <Button fx:id="draftButton" layoutX="25.0" layoutY="14.0" mnemonicParsing="false" onAction="#draftCard" text="Draft" />
+      <Button fx:id="discardDrawButton" layoutX="1.0" layoutY="48.0" mnemonicParsing="false" onAction="#discardDrawCard" text="Discard/Draw" />
+      <Button fx:id="discardButton" layoutX="18.0" layoutY="82.0" mnemonicParsing="false" onAction="#discardCard" text="Discard" />
+      <Button fx:id="cancelButton" layoutX="20.0" layoutY="116.0" mnemonicParsing="false" onAction="#cancelCard" text="Cancel" />
+   </children>
+</Pane>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="188.0" prefWidth="212.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="starvationevasion.client.MegaMawile.gui.WelcomePopupController">
+   <children>
+      <Button fx:id="singlePlayer" layoutX="65.0" layoutY="36.0" mnemonicParsing="false" onAction="#handleSinglePlayer" text="Single Player" />
+      <Button fx:id="hostMultiplayer" layoutX="54.0" layoutY="69.0" mnemonicParsing="false" onAction="#handleHostMultiplayer" text="Host Multiplayer" />
+      <Button fx:id="joinMultiplayer" layoutX="56.0" layoutY="106.0" mnemonicParsing="false" onAction="#handleJoinMultiplayer" text="Join Multiplayer" />
+      <Label layoutX="14.0" layoutY="14.0" text="Play Alone or with Friends!" />
+   </children>
+</AnchorPane>

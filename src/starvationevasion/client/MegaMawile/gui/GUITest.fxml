@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?language javascript?>
+<?import javafx.scene.media.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<GridPane prefHeight="745.0" prefWidth="1348.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="starvationevasion.client.MegaMawile.gui.GUIMain">
+  <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="368.0" minWidth="10.0" prefWidth="280.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="453.0" minWidth="10.0" prefWidth="321.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="467.0" minWidth="10.0" prefWidth="249.0" />
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="448.0" minWidth="10.0" prefWidth="241.0" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="448.0" minWidth="10.0" prefWidth="257.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="263.0" minHeight="10.0" prefHeight="199.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="276.0" minHeight="10.0" prefHeight="194.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="292.0" minHeight="10.0" prefHeight="96.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="215.0" minHeight="10.0" prefHeight="178.0" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="193.0" minHeight="10.0" prefHeight="78.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <TitledPane collapsible="false" prefHeight="300.0" prefWidth="230.0" text="Main Feed" GridPane.columnIndex="4" GridPane.rowIndex="1" GridPane.rowSpan="2">
+         <effect>
+            <InnerShadow />
+         </effect>
+         <content>
+            <TextFlow prefHeight="200.0" prefWidth="200.0" />
+         </content>
+      </TitledPane>
+      <TabPane prefHeight="516.0" prefWidth="811.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowSpan="3">
+        <tabs>
+          <Tab closable="false" text="Visualization">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="612.0" prefWidth="770.0">
+                     <children>
+                         <ImageView fitHeight="463.0" fitWidth="890.0" layoutX="0" layoutY="0">
+                            <image>
+                                <Image url="@images/Water_US.png" />
+                            </image>
+                         </ImageView>
+                         <Label layoutX="497.0" layoutY="2.0" prefHeight="16.0" prefWidth="280.0" text="Drafting Phase Time Remaining :  ">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font></Label>
+                         <ImageView fx:id="california" fitHeight="192.0" fitWidth="116.0" layoutX="56.0" layoutY="109.0" onMouseClicked="#handleCalifornia" onMouseEntered="#californiaEntered" onMouseExited="#californiaExited">
+                            <image>
+                                <Image url="@images/California.png" />
+                            </image>
+                         </ImageView>
+                         <ImageView fx:id="mountainStates" fitHeight="339.0" fitWidth="283.0" layoutX="68" layoutY="2.0" onMouseClicked="#handlePacificNorthwestAndMountainStates" onMouseEntered="#mountainStatesEntered" onMouseExited="#mountainStatesExited">
+                            <image>
+                                <Image url="@images/PacificNorthwestAndMountainStates.png" />
+                            </image>
+                         </ImageView>
+                         <ImageView fx:id="heartland" fitHeight="129.0" fitWidth="161" layoutX="422.0" layoutY="139.0" onMouseClicked="#handleHeartland" onMouseEntered="#heartlandEntered" onMouseExited="#heartlandExited">
+                            <image>
+                                <Image url="@images/Heartland.png" />
+                            </image>
+                         </ImageView>
+                         <ImageView fx:id="northernPlains" fitHeight="214.0" fitWidth="187" layoutX="321.0" layoutY="40.0" onMouseClicked="#handleNorthernPlains" onMouseEntered="#northernPlainsEntered" onMouseExited="#northernPlainsExited">
+                            <image>
+                                <Image url="@images/NorthernPlains.png" />
+                            </image>
+                         </ImageView>
+                         <ImageView fx:id="southernPlains" fitHeight="200.0" fitWidth="280" layoutX="261.0" layoutY="244.0" onMouseClicked="#handleSouthernPlainsAndDeltaStates" onMouseEntered="#southernPlainsEntered" onMouseExited="#southernPlainsExited">
+                            <image>
+                                <Image url="@images/SouthernPlainsAndDeltaStates.png" />
+                            </image>
+                         </ImageView>
+                         <ImageView fx:id="southeast" fitHeight="290.0" fitWidth="230" layoutX="494.0" layoutY="164.0" onMouseClicked="#handleSoutheast" onMouseEntered="#southeastEntered" onMouseExited="#southeastExited">
+                            <image>
+                                <Image url="@images/Southeast.png" />
+                            </image>
+                         </ImageView>
+                         <ImageView fx:id="northernCrescent" fitHeight="194.0" fitWidth="326" layoutX="468.0" layoutY="26.0" onMouseClicked="#handleNorthernCrescent" onMouseEntered="#northernCrescentEntered" onMouseExited="#northernCrescentExited">
+                            <image>
+                                <Image url="@images/NorthernCrescent.png" />
+                            </image>
+                         </ImageView>
+                        <Pane layoutY="297.0" prefHeight="147.0" prefWidth="165.0">
+                           <children>
+                              <Label layoutX="4.0" layoutY="7.0" prefHeight="15.0" prefWidth="165.0" text="Cards to be Drafted">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </Pane>
+                        <Label layoutX="254.0" layoutY="2.0" prefHeight="15.0" prefWidth="243.0" text="Year :    World Population :  ">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                        </Label>
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Voting Phase">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+        </tabs>
+         <effect>
+            <InnerShadow />
+         </effect>
+      </TabPane>
+      <SplitPane dividerPositions="0.5017064846416383" prefHeight="160.0" prefWidth="200.0" GridPane.columnIndex="4" GridPane.rowIndex="3">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <TitledPane collapsible="false" prefHeight="176.0" prefWidth="124.0" text="Deck">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="138.0" prefWidth="115.0">
+                           <children>
+                              <ImageView fitHeight="150.0" fitWidth="123.0" layoutX="8.0" layoutY="-2.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@images/pseudo_japanese_style_pokemon_card_back_by_iamthedaveo-d6i7mbi.png" />
+                                 </image>
+                              </ImageView>
+                           </children></AnchorPane>
+                        </content>
+                     <effect>
+                        <InnerShadow />
+                     </effect>
+                  </TitledPane>
+               </children></AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <TitledPane collapsible="false" prefHeight="200.0" prefWidth="200.0" text="Discard">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="200.0" />
+                        </content>
+                     <effect>
+                        <InnerShadow />
+                     </effect>
+                  </TitledPane>
+               </children></AnchorPane>
+        </items>
+         <effect>
+            <InnerShadow />
+         </effect>
+      </SplitPane>
+      <TitledPane collapsible="false" prefHeight="183.0" prefWidth="811.0" text="Hand" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="3">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="809.0">
+                  <children>
+                        <ImageView fitHeight="154.0" fitWidth="811.0" layoutY="0.0" pickOnBounds="true">
+                           <image>
+                              <Image url="@images/HandBackground.png" />
+                           </image>
+                        </ImageView>
+                      <ImageView fitHeight="150" fitWidth="90" layoutX="60.0" layoutY="2.0" onMouseClicked="#handleFirstCard">
+                         <image>
+                             <Image url="@images/Snow3.png" />
+                         </image>
+                      </ImageView>
+                      <ImageView fitHeight="150" fitWidth="90" layoutX="160.0" layoutY="2.0" onMouseClicked="#handleSecondCard">
+                         <image>
+                             <Image url="@images/Snow3.png" />
+                         </image>
+                      </ImageView>
+                      <ImageView fitHeight="150" fitWidth="90" layoutX="260.0" layoutY="2.0" onMouseClicked="#handleThirdCard">
+                         <image>
+                             <Image url="@images/Snow3.png" />
+                         </image>
+                      </ImageView>
+                      <ImageView fitHeight="150" fitWidth="90" layoutX="360.0" layoutY="2.0" onMouseClicked="#handleFourthCard">
+                         <image>
+                             <Image url="@images/Snow3.png" />
+                         </image>
+                      </ImageView>
+                      <ImageView fitHeight="150" fitWidth="90" layoutX="460.0" layoutY="2.0" onMouseClicked="#handleFifthCard">
+                         <image>
+                             <Image url="@images/Snow3.png" />
+                         </image>
+                      </ImageView>
+                      <ImageView fitHeight="150" fitWidth="90" layoutX="560.0" layoutY="2.0" onMouseClicked="#handleSixthCard">
+                         <image>
+                             <Image url="@images/Snow3.png" />
+                         </image>
+                      </ImageView>
+                      <ImageView fitHeight="150" fitWidth="90" layoutX="660.0" layoutY="2.0" onMouseClicked="#handleSeventhCard">
+                         <image>
+                             <Image url="@images/Snow3.png" />
+                         </image>
+                      </ImageView>
+                  </children>
+              </AnchorPane>
+            </content>
+         <effect>
+            <InnerShadow />
+         </effect>
+      </TitledPane>
+      <Pane GridPane.columnIndex="4">
+         <children>
+            <ImageView fitHeight="194.0" fitWidth="251.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </Pane>
+      <TitledPane animated="false" collapsible="false" prefHeight="94.0" prefWidth="1028.0" text="Crop/Food List" GridPane.columnIndex="1" GridPane.columnSpan="4" GridPane.rowIndex="4">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+             <children>
+                 <ImageView fx:id="citrus" fitHeight="50" fitWidth="50" layoutX="35" layoutY="0" onMouseEntered="#handleCitrusEntered" onMouseExited="#handleCitrusExited">
+                    <image>
+                          <Image url="@images/FarmProduct_CITRUS_256x256.png" />
+                    </image>
+                 </ImageView>
+                 <ImageView fx:id="fruit" fitHeight="50" fitWidth="50" layoutX="130" layoutY="0" onMouseEntered="#handleFruitEntered" onMouseExited="#handleFruitExited">
+                    <image>
+                          <Image url="@images/FarmProduct_Fruit_256x256.png" />
+                    </image>
+                 </ImageView>
+                 <ImageView fx:id="nuts" fitHeight="50" fitWidth="50" layoutX="215" layoutY="0" onMouseEntered="#handleNutsEntered" onMouseExited="#handleNutsExited">
+                    <image>
+                        <Image url="@images/FarmProduct_NUT_256x256.png" />
+                    </image>
+                 </ImageView>
+                 <ImageView fx:id="grains" fitHeight="50" fitWidth="50" layoutX="300" layoutY="0" onMouseEntered="#handleGrainsEntered" onMouseExited="#handleGrainsExited">
+                    <image>
+                        <Image url="@images/FarmProduct_GRAIN_256x256.png" />
+                    </image>
+                 </ImageView>
+                 <ImageView fx:id="oil" fitHeight="50" fitWidth="50" layoutX="385" layoutY="0" onMouseEntered="#handleOilEntered" onMouseExited="#handleOilExited">
+                    <image>
+                        <Image url="@images/FarmProduct_OIL_256x256.png" />
+                    </image>
+                 </ImageView>
+                 <ImageView fx:id="vegetables" fitHeight="50" fitWidth="50" layoutX="470" layoutY="0" onMouseEntered="#handleVegetablesEntered" onMouseExited="#handleVegetablesExited">
+                    <image>
+                        <Image url="@images/FarmProduct_VEGGIES_256x256.png" />
+                    </image>
+                 </ImageView>
+                 <ImageView fx:id="special" fitHeight="50" fitWidth="50" layoutX="555" layoutY="0" onMouseEntered="#handleSpecialEntered" onMouseExited="#handleSpecialExited">
+                    <image>
+                        <Image url="@images/FarmProduct_SPECIAL_256x256.png" />
+                    </image>
+                 </ImageView>
+                 <ImageView fx:id="feed" fitHeight="50" fitWidth="50" layoutX="640" layoutY="0" onMouseEntered="#handleFeedEntered" onMouseExited="#handleFeedExited">
+                    <image>
+                        <Image url="@images/FarmProduct_FEED_256x256.png" />
+                    </image>
+                 </ImageView>
+                 <ImageView fx:id="fish" fitHeight="50" fitWidth="50" layoutX="725" layoutY="0" onMouseEntered="#handleFishEntered" onMouseExited="#handleFishExited">
+                    <image>
+                        <Image url="@images/FarmProduct_FISH_256x256.png" />
+                    </image>
+                 </ImageView>
+                 <ImageView fx:id="meat" fitHeight="50" fitWidth="50" layoutX="810" layoutY="0" onMouseEntered="#handleMeatEntered" onMouseExited="#handleMeatExited">
+                    <image>
+                        <Image url="@images/FarmProduct_MEAT_256x256.png" />
+                    </image>
+                 </ImageView>
+                 <ImageView fx:id="poultry" fitHeight="50" fitWidth="50" layoutX="895" layoutY="0" onMouseEntered="#handlePoultryEntered" onMouseExited="#handlePoultryExited">
+                    <image>
+                        <Image url="@images/FarmProduct_POULTRY_256x256.png" />
+                    </image>
+                 </ImageView>
+                 <ImageView fx:id="dairy" fitHeight="50" fitWidth="50" layoutX="980" layoutY="0" onMouseEntered="#handleDairyEntered" onMouseExited="#handleDairyExited">
+                    <image>
+                        <Image url="@images/FarmProduct_DAIRY_256x256.png" />
+                    </image>
+                 </ImageView>
+             </children>
+               <effect>
+                  <InnerShadow color="#030303" />
+               </effect>
+            </AnchorPane>
+        </content>
+         <effect>
+            <InnerShadow color="#1e1d1d" />
+         </effect>
+      </TitledPane>
+      <TitledPane animated="false" collapsible="false" text="Selected Region Statistics">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <LineChart layoutY="-2.0" prefHeight="181.0" prefWidth="283.0">
+                     <xAxis>
+                        <CategoryAxis side="BOTTOM" />
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis side="LEFT" />
+                     </yAxis>
+                  </LineChart>
+               </children>
+            </AnchorPane>
+        </content>
+      </TitledPane>
+      <TitledPane animated="false" collapsible="false" prefHeight="202.0" prefWidth="327.0" text="World Statistics" GridPane.rowIndex="1">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <LineChart layoutX="-1.0" layoutY="-3.0" prefHeight="181.0" prefWidth="286.0">
+                    <xAxis>
+                      <CategoryAxis side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis side="LEFT" />
+                    </yAxis>
+                  </LineChart>
+               </children>
+            </AnchorPane>
+        </content>
+      </TitledPane>
+      <TitledPane fx:id="gameInstructions" animated="false" collapsible="false" onMouseEntered="#handleGameInstructionsEntered" onMouseExited="#handleGameInstructionsExited" prefHeight="360.0" prefWidth="280.0" text="Game Instructions" GridPane.rowIndex="2" GridPane.rowSpan="3">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <ImageView fitHeight="339.0" fitWidth="243.0" layoutX="18.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/GameInstructions.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </AnchorPane>
+        </content>
+      </TitledPane>
+   </children>
+</GridPane>

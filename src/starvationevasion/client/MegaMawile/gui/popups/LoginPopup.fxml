@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="205.0" prefWidth="239.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="starvationevasion.client.MegaMawile.gui.WelcomePopupController">
+   <children>
+      <Button fx:id="login" layoutX="97.0" layoutY="166.0" mnemonicParsing="false" text="Login" />
+      <PasswordField fx:id="passwordField" layoutX="46.0" layoutY="84.0" />
+      <TextField fx:id="usernameField" layoutX="45.0" layoutY="35.0" />
+      <Label layoutX="92.0" layoutY="14.0" text="Username:" />
+      <Label layoutX="96.0" layoutY="67.0" text="Password" />
+      <TextField fx:id="serverIPField" layoutX="47.0" layoutY="135.0" />
+      <Label layoutX="96.0" layoutY="118.0" text="Server IP" />
+   </children>
+</AnchorPane>

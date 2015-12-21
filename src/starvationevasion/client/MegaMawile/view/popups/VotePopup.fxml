@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TitledPane collapsible="false" prefHeight="427.0" prefWidth="310.0" text="Vote on Card" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+    <content>
+        <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="323.0">
+            <children>
+                <Label fx:id="curVoteCardName" layoutX="19.0" layoutY="16.0" prefHeight="32.0" prefWidth="282.0" textAlignment="CENTER" />
+                <TextFlow layoutX="30.0" layoutY="173.0" prefHeight="158.0" prefWidth="267.0">
+                   <children>
+                       <Text fx:id="curVoteCardText" layoutX="21.0" layoutY="88.0" />
+                   </children>
+                </TextFlow>
+            <Button fx:id="voteYes" layoutX="62.0" layoutY="343.0" mnemonicParsing="false" onMouseClicked="#handleVote" text="   Yes   " />
+            <Button fx:id="voteNo" layoutX="136.0" layoutY="343.0" mnemonicParsing="false" onMouseClicked="#handleVote" text="   No   " />
+            <Button fx:id="voteAbstain" layoutX="208.0" layoutY="343.0" mnemonicParsing="false" onMouseClicked="#handleVote" text="Abstain" />
+            </children>
+        </Pane>
+    </content>
+</TitledPane>

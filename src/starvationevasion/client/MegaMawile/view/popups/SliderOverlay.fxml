@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="91.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Button fx:id="lockinButtonSlider" layoutX="21.0" layoutY="95.0" mnemonicParsing="false" onAction="#submitDraft" prefHeight="15.0" prefWidth="50.0" text="Submit">
+         <font>
+            <Font size="10.0" />
+         </font></Button>
+      <Button fx:id="cancelButtonSlider" layoutX="5.0" layoutY="121.0" mnemonicParsing="false" onAction="#cancelDraftSlider" prefHeight="21.0" prefWidth="50.0" text="Cancel">
+         <font>
+            <Font size="10.0" />
+         </font></Button>
+      <Slider fx:id="xSlider" layoutX="7.0" layoutY="21.0" prefHeight="15.0" prefWidth="76.0" />
+      <Slider fx:id="ySlider" layoutX="7.0" layoutY="50.0" prefHeight="15.0" prefWidth="76.0" />
+      <Slider fx:id="zSlider" layoutX="7.0" layoutY="79.0" prefHeight="15.0" prefWidth="76.0" />
+      <Label layoutX="27.0" layoutY="11.0" text="X Value">
+         <font>
+            <Font size="10.0" />
+         </font></Label>
+      <Label layoutX="27.0" layoutY="41.0" text="Y Value">
+         <font>
+            <Font size="10.0" />
+         </font></Label>
+      <Label layoutX="26.0" layoutY="69.0" text="Z Value">
+         <font>
+            <Font size="10.0" />
+         </font></Label>
+      <Button fx:id="toDropdown" layoutX="60.0" layoutY="121.0" mnemonicParsing="false" onAction="#switchToDropdown" text="-&gt;">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Button>
+   </children>
+</Pane>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="91.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Button fx:id="lockinButtonDropdown" layoutX="21.0" layoutY="95.0" mnemonicParsing="false" onAction="#submitDraft" prefHeight="15.0" prefWidth="50.0" text="Submit">
+         <font>
+            <Font size="10.0" />
+         </font></Button>
+      <Button fx:id="cancelButtonDropdown" layoutX="36.0" layoutY="122.0" mnemonicParsing="false" onAction="#cancelDraftDropdown" prefHeight="21.0" prefWidth="50.0" text="Cancel">
+         <font>
+            <Font size="10.0" />
+         </font></Button>
+      <Button fx:id="toSlider" layoutX="4.0" layoutY="122.0" mnemonicParsing="false" onAction="#switchToSlider" text="&lt;-">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Button>
+      <ComboBox fx:id="regionBox" layoutX="5.0" layoutY="23.0" prefHeight="5.0" prefWidth="80.0" />
+      <Label layoutX="10.0" layoutY="8.0" text="Target Region">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="foodBox" layoutX="5.0" layoutY="66.0" prefHeight="5.0" prefWidth="80.0" />
+      <Label layoutX="15.0" layoutY="53.0" text="Target Food">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Label>
+   </children>
+</Pane>

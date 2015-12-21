@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ImageView fitHeight="400.0" fitWidth="600.0" layoutX="-3.0" layoutY="-2.0" opacity="0.61">
+         <image>
+            <Image url="@images/basket-554096_1920.jpg" />
+         </image>
+      </ImageView>
+      <Pane layoutX="82.0" layoutY="44.0" prefHeight="162.0" prefWidth="434.0" />
+      <Pane layoutX="197.0" layoutY="166.0" prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <TextArea layoutX="-1.0" layoutY="88.0" prefHeight="31.0" prefWidth="200.0" />
+            <Button layoutX="68.0" layoutY="147.0" mnemonicParsing="false" text="Submit" />
+            <Pane layoutX="-1.0" layoutY="56.0" prefHeight="31.0" prefWidth="200.0">
+               <children>
+                  <Label layoutX="34.0" layoutY="5.0" text="Enter User Name" textAlignment="CENTER" textFill="#141313" underline="true">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+         </children>
+      </Pane>
+   </children>
+</Pane>

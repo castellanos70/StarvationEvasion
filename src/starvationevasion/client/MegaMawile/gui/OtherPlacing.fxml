@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="starvationevasion.client.MegaMawile.gui.GameOverController">
+  <tabs>
+    <Tab text="US Region Statistics">
+         <content>
+            <Pane fx:id="pane1" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <ImageView fx:id="page1" fitHeight="367" fitWidth="600" layoutY="-2.0" opacity="0.43">
+                     <image>
+                     <Image url="@images/field-839797_1920.jpg" />
+                     </image>
+                  </ImageView>
+                  <Pane fx:id="subpane1" layoutX="51.0" layoutY="1.0" prefHeight="92.0" prefWidth="515.0">
+                     <children>
+                        <Label layoutX="20.0" layoutY="-2.0" prefHeight="75.0" prefWidth="511.0" text="Congratulations You Prevented Global Famine!">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                     </children></Pane>
+                  <Pane layoutX="61.0" layoutY="76.0" prefHeight="158.0" prefWidth="421.0">
+                     <children>
+                        <ComboBox fx:id="usStatSelect" layoutX="155.0" layoutY="1.0" prefHeight="25.0" prefWidth="180.0" />
+                        <TableView fx:id="tableView1" layoutY="34.0" prefHeight="121.0" prefWidth="350.0">
+                          <columns>
+                             <TableColumn fx:id="usCol1" text="Rank">
+                             </TableColumn>
+                             <TableColumn fx:id="usCol2" prefWidth="150" text="US Region">
+                             </TableColumn>
+                             <TableColumn fx:id="usCol3" prefWidth="145" text="Final Statistics">
+                             </TableColumn>
+                          </columns>
+                        </TableView>
+                        <Label fx:id="usStatLabel" layoutX="0.0" layoutY="7.0" prefHeight="15.0" prefWidth="150.0" />
+                     </children>
+                  </Pane>
+                  <Pane layoutX="61.0" layoutY="231.0" prefHeight="135.0" prefWidth="376.0">
+                     <children>
+                        <LineChart fx:id="usChart" minHeight="135.0" minWidth="162.0" prefHeight="135.0" prefWidth="363.0">
+                          <xAxis>
+                            <CategoryAxis side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                        </LineChart>
+                     </children></Pane>
+                  <Button fx:id="newGame1" layoutX="454.0" layoutY="278.0" mnemonicParsing="false" text="New Game" />
+                  <Button fx:id="exit1" layoutX="454.0" layoutY="315.0" mnemonicParsing="false" text="Exit Game" />
+                  <Pane layoutX="438.0" layoutY="117.0" prefHeight="131.0" prefWidth="137.0">
+                     <ImageView fitHeight="131.0" fitWidth="137.0" layoutX="1.0" >
+                        <image>
+                           <Image url="@images/ribbon-308391_1280.png" />
+                        </image>
+                     </ImageView>
+                  </Pane>
+               </children>
+            </Pane>
+         </content></Tab>
+    <Tab text="World Region Statistics">
+         <content>
+            <Pane prefHeight="242.0" prefWidth="179.0">
+               <children>
+                  <ImageView fitHeight="367.0" fitWidth="600.0" layoutX="1.0" opacity="0.43">
+                     <image>
+                        <Image url="@images/wine-berries-694198_1280.jpg" />
+                     </image>
+                  </ImageView>
+                  <Pane layoutX="51.0" layoutY="1.0" prefHeight="92.0" prefWidth="515.0">
+                     <children>
+                        <Label layoutX="20.0" layoutY="-2.0" prefHeight="75.0" prefWidth="511.0" text="Congratulations You Prevented Global Famine!">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </Pane>
+                  <Pane layoutX="61.0" layoutY="76.0" prefHeight="158.0" prefWidth="421.0">
+                     <children>
+                        <ComboBox fx:id="worldStatSelect" layoutX="155.0" layoutY="1.0" prefHeight="25.0" prefWidth="180.0" />
+                        <TableView fx:id="tableView2" layoutY="34.0" prefHeight="121.0" prefWidth="350.0">
+                          <columns>
+                             <TableColumn fx:id="worldCol1" text="Rank">
+                             </TableColumn>
+                             <TableColumn fx:id="worldCol2" prefWidth="150" text="World Region">
+                             </TableColumn>
+                             <TableColumn fx:id="worldCol3" prefWidth="145" text="Final Statistics">
+                             </TableColumn>
+                          </columns>
+                        </TableView>
+                        <Label fx:id="worldStatLabel" layoutX="0.0" layoutY="7.0" prefHeight="15.0" prefWidth="150.0" />
+                     </children>
+                  </Pane>
+                  <Pane layoutX="61.0" layoutY="231.0" prefHeight="135.0" prefWidth="376.0">
+                     <children>
+                        <LineChart fx:id="worldChart" minHeight="135.0" minWidth="162.0" prefHeight="135.0" prefWidth="363.0">
+                           <xAxis>
+                              <CategoryAxis side="BOTTOM" />
+                           </xAxis>
+                           <yAxis>
+                              <NumberAxis side="LEFT" />
+                           </yAxis>
+                        </LineChart>
+                     </children></Pane>
+                  <Button fx:id="newGame2" layoutX="454.0" layoutY="278.0" mnemonicParsing="false" text="New Game" />
+                  <Button fx:id="exit2" layoutX="454.0" layoutY="315.0" mnemonicParsing="false" text="Exit Game" />
+                  <Pane layoutX="438.0" layoutY="117.0" prefHeight="131.0" prefWidth="137.0">
+                     <ImageView fitHeight="131.0" fitWidth="137.0" layoutX="1.0" >
+                        <image>
+                           <Image url="@images/ribbon-308391_1280.png" />
+                        </image>
+                     </ImageView>
+                  </Pane>
+               </children>
+            </Pane>
+         </content></Tab>
+  </tabs>
+</TabPane>

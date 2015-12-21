@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+
+<TitledPane collapsible="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="412.0" prefWidth="529.0" text="Starvation Evasion" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="starvationevasion.client.MegaMawile.gui.GUIMain">
+  <content>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="373.0" prefWidth="611.0">
+         <children>
+            <ImageView fitHeight="380.0" fitWidth="530.0" layoutX="2.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                   <Image url="@../images/StartupBackground.png" />
+               </image>
+            </ImageView>
+            <ComboBox layoutX="151.0" layoutY="314.0" prefHeight="25.0" prefWidth="225.0" promptText="Select a region" onShowing="#item">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="California" />
+                        <String fx:value="Pacific Northwest and Mountain States" />
+                        <String fx:value="Northern Plains" />
+                        <String fx:value="Southern Plains and Delta States" />
+                        <String fx:value="Heartland" />
+                        <String fx:value="Northern Crescent" />
+                        <String fx:value="Southeast" />
+                    </FXCollections>
+                </items>
+            </ComboBox>
+            <ImageView fitHeight="221.0" fitWidth="466.0" layoutX="31.0" layoutY="37.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/Intro.png" />
+               </image>
+            </ImageView>
+            <Button fx:id="lockButton" layoutX="215.0" layoutY="347.0" mnemonicParsing="false" text="Lock Region" onAction="#lockRegion" />
+         </children></AnchorPane>
+  </content>
+</TitledPane>

@@ -1,13 +1,12 @@
 package starvationevasion.sim.testing;
 
 import starvationevasion.common.EnumRegion;
-import starvationevasion.io.WorldLoader;
+import starvationevasion.client.Aegislash.io.WorldLoader;
 import starvationevasion.sim.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * Created by peter on 12/3/2015.

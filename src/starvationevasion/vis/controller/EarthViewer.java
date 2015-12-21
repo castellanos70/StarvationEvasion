@@ -48,7 +48,7 @@ public class EarthViewer
 
   /**
    * Used when Toggling into full Earth Mode
-   * Returns a layout manager for the Visualizer GUI
+   * Returns a layout manager for the Visualizer starvationevasion.client.Aegislash.GUI
    * use this line inside ClientGUI: Scene earthScene = new Scene(earthViewer.updateFull(),700,700);
    * See handle() method inside ClientGUI for more info
    * @return  Layout manager for Visualizer to use as Root for new Large Earth Scene

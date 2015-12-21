@@ -10,8 +10,8 @@ import starvationevasion.vis.controller.EarthViewer;
 
 /**
  * Created by Tess Daughton on 11/15/15.
- * Class for testing purposes - simulate what a client's GUI might be like and ensure that our application
- * is function properly within their GUI
+ * Class for testing purposes - simulate what a client's starvationevasion.client.Aegislash.GUI might be like and ensure that our application
+ * is function properly within their starvationevasion.client.Aegislash.GUI
  */
 
 public class ClientGUI extends Application implements EventHandler<KeyEvent> {

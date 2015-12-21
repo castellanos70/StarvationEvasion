@@ -12,7 +12,7 @@ import java.awt.geom.Point2D;
  * Created by winston on 1/23/15.
  * Phase_01
  *
- * class is used to convert between the spring2015code.model and the GUI
+ * class is used to convert between the spring2015code.model and the starvationevasion.client.Aegislash.GUI
  * for converting between lat lon to   x, y and back.
  */
 public abstract class MapConverter

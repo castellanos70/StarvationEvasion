@@ -71,7 +71,7 @@ public class GameData
   }
 
   /**
-   * Returns the client's main feed queue, for use in the GUI.
+   * Returns the client's main feed queue, for use in the starvationevasion.client.Aegislash.GUI.
    *
    * @return the client's main feed.
    */
@@ -124,7 +124,7 @@ public class GameData
 
   /**
    * Adds the passed String to client's message feed/queue. This is utilized for displaying messages
-   * in the feed on the GUI.
+   * in the feed on the starvationevasion.client.Aegislash.GUI.
    *
    * @param message a String to add to the feed.
    */

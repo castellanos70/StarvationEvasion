@@ -77,7 +77,7 @@ public class GameEngine implements GameController, Initializable, EventHandler<E
   TextFlow ksd;
 
   /**
-   * FXML field injectors for the GUI fx:id's
+   * FXML field injectors for the starvationevasion.client.Aegislash.GUI fx:id's
    */
   @FXML
   private javafx.scene.control.TextArea consoleTextArea;
@@ -326,7 +326,7 @@ public class GameEngine implements GameController, Initializable, EventHandler<E
   }
 
   /**
-   * Separate function used to display the mainFeed to the GUI.
+   * Separate function used to display the mainFeed to the starvationevasion.client.Aegislash.GUI.
    */
   private void mainFeed()
   {
@@ -391,7 +391,7 @@ public class GameEngine implements GameController, Initializable, EventHandler<E
   }
 
   /**
-   * All of the MouseEvent, Event, and ActionEvent listeners from the GUI.fxml file.
+   * All of the MouseEvent, Event, and ActionEvent listeners from the starvationevasion.client.Aegislash.GUI.fxml file.
    */
   @FXML
   protected void handleHand(MouseEvent event)

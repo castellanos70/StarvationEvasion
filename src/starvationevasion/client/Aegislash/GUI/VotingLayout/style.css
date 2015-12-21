@@ -1,0 +1,24 @@
+.cardspace {
+    -fx-background-color: #caeabf;
+    -fx-background-radius: 22;
+}
+
+.summarybar
+{
+    -fx-background-color: #81be31;
+}
+
+.timer
+{
+    -fx-background-color: #95dbb2;
+}
+
+.votingnode
+{
+    -fx-background-color: #974069;
+}
+
+.regionmap
+{
+    -fx-background-color: #FFFFFF;
+}

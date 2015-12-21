@@ -17,7 +17,7 @@ import javax.swing.*;
 
 /**
  * Created by Tess Daughton on 11/23/15.
- * Layout Manager for LargeEarthMode GUI
+ * Layout Manager for LargeEarthMode starvationevasion.client.Aegislash.GUI
  */
 public class VisualizerLayout extends BorderPane
 {

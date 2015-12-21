@@ -53,7 +53,7 @@ public class MainClient_MegaMawile extends Application
   @Override
   public void start(Stage primaryStage) throws Exception
   {
-    // TODO update this GUI file
+    // TODO update this starvationevasion.client.Aegislash.GUI file
     FXMLLoader loader = new FXMLLoader(this.getClass().getResource("gui/GUI.fxml"));
     GridPane pane = loader.load();
 

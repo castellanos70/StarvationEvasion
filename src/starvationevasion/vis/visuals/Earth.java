@@ -12,7 +12,7 @@ import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import starvationevasion.common.*;
-import starvationevasion.io.XMLparsers.GeographyXMLparser;
+import starvationevasion.client.Aegislash.io.XMLparsers.GeographyXMLparser;
 import starvationevasion.sim.GeographicArea;
 import starvationevasion.vis.controller.EarthViewer;
 import starvationevasion.vis.controller.SimParser;
@@ -216,7 +216,7 @@ public class Earth {
 
   /**
    * Runs a continuous animation of the Earth rotating around its y-axis
-   * Used for Mini Earth Mode in client GUI
+   * Used for Mini Earth Mode in client starvationevasion.client.Aegislash.GUI
    */
   public void startRotate() {
     initRotaters();
@@ -280,8 +280,8 @@ public class Earth {
    * gis.stackexchange.com/questions/8650/  -  tells us the the units place will give us 111 km x 111 km
    * precision so we will first check units place, then check first decimal place for closest point
    *
-   * @param lat latitude of the given point given by GUI
-   * @param lon longitude of the given point given by GUI
+   * @param lat latitude of the given point given by starvationevasion.client.Aegislash.GUI
+   * @param lon longitude of the given point given by starvationevasion.client.Aegislash.GUI
    * @return float value of temperature
    */
   public float getTemperature(double lat, double lon) {

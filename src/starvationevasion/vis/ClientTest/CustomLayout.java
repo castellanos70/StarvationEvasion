@@ -29,7 +29,7 @@ public class CustomLayout extends BorderPane
   {
     //Earth Viewer takes two parameters, one is the desired radius of your mini Earth
     //and one is the desired radius of your large Earth
-    //This was done so that each client could easily size the Earth to fit in with their GUI
+    //This was done so that each client could easily size the Earth to fit in with their starvationevasion.client.Aegislash.GUI
     //Start rotate will put the earthViewer object in an automatic and continuous rotation (this is for the mini view)
     this.earthViewer = earthViewer;
     initTopBar();

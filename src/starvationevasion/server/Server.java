@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
  */
 public class Server
 {
+  private static final String PASSWORD_FILE_PATH = "data/server/example_password_file.tsv";
   private final Object stateSynchronizationObject = new Object();
   private final String[] AICommand;
   private volatile ServerState currentState = ServerState.LOGIN;
@@ -40,12 +41,12 @@ public class Server
   private ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>(), draftedPolicyCards = new ArrayList<>();
   private WorldData currentWorldData;
 
-  public Server(String loginFilePath, String[] AICommand)
+  public Server(String[] AICommand)
   {
     this.AICommand = AICommand;
     try
     {
-      passwordFile = PasswordFile.loadFromFile(loginFilePath);
+      passwordFile = PasswordFile.loadFromFile(PASSWORD_FILE_PATH);
       serverSocket = new ServerSocket(ServerConstants.DEFAULT_PORT);
     }
     catch (IOException e)
@@ -56,8 +57,8 @@ public class Server
   }
 
   /*
-    Usage: java starvationevasion.server.Server PasswordFilePath path to AI command
-    e.g.: java starvationevasion.server.Server config/example/password/file.tsv java starvationevasion.client.AI --environment
+    Usage: java starvationevasion.server.Server  AI_command
+    e.g.: java starvationevasion.server.Server  java starvationevasion.client.AI --environment
     The AI command will be launched with the following environment variables:
       "SEUSERNAME": The username to use
       "SEPASSWORD": the password
@@ -66,12 +67,12 @@ public class Server
   */
   public static void main(String[] args)
   {
-    if (args.length < 2)
+    if (args.length < 1)
     {
-      System.out.println("Usage: java -jar Server.jar /path/to/password/file.tsv command to launch ai");
+      System.out.println("Usage: java -jar Server.jar  ai_command");
       return;
     }
-    new Server(args[0], Arrays.copyOfRange(args, 1, args.length)).start();
+    new Server(Arrays.copyOfRange(args, 0, args.length)).start();
   }
 
   private void start()

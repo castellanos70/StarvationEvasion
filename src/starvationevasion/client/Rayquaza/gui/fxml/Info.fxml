@@ -2,7 +2,6 @@
 
 <?import javafx.scene.image.*?>
 <?import javafx.scene.chart.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
 

@@ -3,12 +3,8 @@ package starvationevasion.client.MegaMawile2.controller;
 import javafx.fxml.Initializable;
 import starvationevasion.client.MegaMawile2.model.*;
 import starvationevasion.client.MegaMawile2.net.NetworkHandler;
-import starvationevasion.client.MegaMawile2.view.PolicyCardImageManager;
 
-import javax.swing.Timer;
 import java.awt.*;
-import java.io.Console;
-import java.io.PrintStream;
 import java.net.URL;
 import java.util.*;
 
@@ -23,11 +19,7 @@ public class GameEngine implements GameController, Initializable
   //private final Player player;
   private AbstractPlayerController playerController;
 
-  private final int DELAY = 0;
-  private final int MINUTES_DRAFT_PHASE = 2;
-
   private NetworkHandler network;
-  private PolicyCardImageManager policyCardImageManager = new PolicyCardImageManager();
 
   // private final Renderer simulationVisualization;
   // private MenuRenderer menuRenderer;
@@ -36,14 +28,6 @@ public class GameEngine implements GameController, Initializable
   private float loginTryTime = 0f;
   private long lengthOfTurn = 0;
   private long curTimeLeft = 0;
-
-  private Thread thread;
-  private Timer timer;
-  private PrintStream printStream;
-  private Console console;
-  private int clockMinutes = 0;
-  private int clockSeconds = 0;
-  private boolean initialize = true;
 
   private GameStateData gameState = new GameStateData();
   private boolean state;

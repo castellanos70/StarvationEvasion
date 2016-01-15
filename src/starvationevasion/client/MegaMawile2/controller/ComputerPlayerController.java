@@ -1,9 +1,5 @@
 package starvationevasion.client.MegaMawile2.controller;
 
-
-import starvationevasion.client.MegaMawile2.ai.brain.Ai;
-import starvationevasion.client.MegaMawile2.ai.brain.EasyAi;
-import starvationevasion.client.MegaMawile2.controller.*;
 import starvationevasion.client.MegaMawile2.model.GameOptions;
 import starvationevasion.client.MegaMawile2.model.Player;
 import starvationevasion.client.MegaMawile2.model.GameStateData;
@@ -14,7 +10,6 @@ import starvationevasion.server.ServerState;
  */
 public class ComputerPlayerController extends starvationevasion.client.MegaMawile2.controller.AbstractPlayerController
 {
-  private Ai brain;
 
   /**
    * Creates a new ComputerPlayerController with access to the current {@link GameStateData} as well as necessary
@@ -27,7 +22,6 @@ public class ComputerPlayerController extends starvationevasion.client.MegaMawil
   public ComputerPlayerController(GameStateData gameState, GameOptions options, Player player)
   {
     super(gameState, player, options);
-    this.brain = new EasyAi(this);
   }
 
   /**
@@ -39,15 +33,6 @@ public class ComputerPlayerController extends starvationevasion.client.MegaMawil
   public void update(float deltaTime)
   {
     super.update(deltaTime);
-    if(gameState.getServerState() == ServerState.DRAFTING)
-    {
-      brain.draftUpdate(deltaTime);
-    }
-
-    if(gameState.getServerState() == ServerState.VOTING)
-    {
-      brain.voteUpdate(deltaTime);
-    }
   }
 
 }

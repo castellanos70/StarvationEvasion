@@ -2,7 +2,6 @@ package starvationevasion.client.MegaMawile2.net;
 
 
 import starvationevasion.client.MegaMawile2.controller.AbstractPlayerController;
-import starvationevasion.client.MegaMawile2.model.Ballot;
 import starvationevasion.client.MegaMawile2.model.GameOptions;
 import starvationevasion.client.MegaMawile2.model.NetworkStatus;
 import starvationevasion.client.MegaMawile2.model.Player;

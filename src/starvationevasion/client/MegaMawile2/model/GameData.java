@@ -134,12 +134,6 @@ public class GameData
     mainFeed.add(message);
   }
 
-
-  public enum MoveType
-  {
-    DRAFT, DISCARDDRAW,DISCARD;
-  }
-
   private long serverStartTime;
   private float phaseEndTime;//I think it's already calculated by the server. serverStartTime + length of phase
   private ServerState serverState;

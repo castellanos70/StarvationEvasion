@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.control.*?>
@@ -227,8 +228,12 @@
                   <Image url="@../images/CleanRiverIncentive.png" />
                </image>
             </ImageView>
-            <TextArea fx:id="chatBox" layoutX="23.0" layoutY="390.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="210.0" text="CHAT GOES HERE" />
             <TextField fx:id="chatField" layoutX="23.0" layoutY="640.0" prefHeight="40.0" prefWidth="210.0" text="Chat typing" />
+            <ScrollPane layoutX="23.0" layoutY="390.0" prefHeight="250.0" prefWidth="210.0">
+               <content>
+                  <TextFlow fx:id="chatBox" prefHeight="200.0" prefWidth="200.0" />
+               </content>
+            </ScrollPane>
          </children>
       </Pane>
    </children>

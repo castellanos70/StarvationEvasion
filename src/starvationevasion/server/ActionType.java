@@ -10,10 +10,16 @@ package starvationevasion.server;
  */
 public enum ActionType
 {
-  // requests
-  BUY, SELL, INVENTORY, QUIT,
+  QUIT,
 
   // responses
-  SUCCESS, FAIL, NOTIFY, CONNECT
+  SUCCESS, FAIL, NOTIFY, CONNECT,
+
+  // NEW
+  // get request for something
+  // post request to add something new
+  // put request to change an attribute of something
+  // delete request to delete something
+  GET, POST, PUT, DELETE
 
 }

@@ -2766,7 +2766,7 @@ public class GameEngine implements GameController, Initializable, EventHandler<E
   }
 
   /**
-   * getter that returns the Network Handler.
+   * getter that returns the Network AbstractHandler.
    */
   public NetworkHandler getNetworkHandler()
   {

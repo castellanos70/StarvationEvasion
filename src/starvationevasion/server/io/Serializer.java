@@ -1,8 +1,12 @@
 package starvationevasion.server.io;
 
-/**
- * Created by javier on 1/21/16.
- */
-public class Serializer
+
+import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.server.ActionType;
+
+public interface Serializer<T extends JSONDocument, V>
 {
+  T encode (ActionType action, V data);
+
+  V decode (T data);
 }

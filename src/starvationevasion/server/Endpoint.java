@@ -1,8 +1,25 @@
 package starvationevasion.server;
 
-/**
- * Created by javier on 1/21/16.
- */
+
 public enum Endpoint
 {
+  USER("user"), HAND("hand"),
+  CHAT("chat"),
+  CARD("card?");
+
+
+
+
+
+  private String url;
+
+  Endpoint(String url)
+  {
+    this.url = url;
+  }
+
+  public String getUrl ()
+  {
+    return url;
+  }
 }

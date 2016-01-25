@@ -183,7 +183,7 @@ public class ButtonOverlayController implements Initializable, GameController
   }
 
   /**
-   * Handler to discard and draw cards.
+   * AbstractHandler to discard and draw cards.
    *
    * @param event
    */
@@ -195,7 +195,7 @@ public class ButtonOverlayController implements Initializable, GameController
   }
 
   /**
-   * Handler used to just discard a card.
+   * AbstractHandler used to just discard a card.
    *
    * @param event
    */
@@ -207,7 +207,7 @@ public class ButtonOverlayController implements Initializable, GameController
   }
 
   /**
-   * Handler to cancel a selected card.
+   * AbstractHandler to cancel a selected card.
    *
    * @param event
    */
@@ -219,7 +219,7 @@ public class ButtonOverlayController implements Initializable, GameController
   }
 
   /**
-   * Handler used to submit selected values for the given card before passing it to the
+   * AbstractHandler used to submit selected values for the given card before passing it to the
    * server.
    *
    * @param event
@@ -248,7 +248,7 @@ public class ButtonOverlayController implements Initializable, GameController
   }
 
   /**
-   * Handler used to cancel the draft for the slider overlay.
+   * AbstractHandler used to cancel the draft for the slider overlay.
    *
    * @param event
    */
@@ -259,7 +259,7 @@ public class ButtonOverlayController implements Initializable, GameController
   }
 
   /**
-   * Handler used to cancel the draft for the dropdown overlay.
+   * AbstractHandler used to cancel the draft for the dropdown overlay.
    *
    * @param event
    */
@@ -270,7 +270,7 @@ public class ButtonOverlayController implements Initializable, GameController
   }
 
   /**
-   * Handler used to switch from the slider to the dropdown overlay.
+   * AbstractHandler used to switch from the slider to the dropdown overlay.
    *
    * @param event
    */
@@ -283,7 +283,7 @@ public class ButtonOverlayController implements Initializable, GameController
   }
 
   /**
-   * Handler used to switch from the dropdown to the slider overlay.
+   * AbstractHandler used to switch from the dropdown to the slider overlay.
    *
    * @param event
    */

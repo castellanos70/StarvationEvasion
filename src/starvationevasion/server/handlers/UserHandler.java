@@ -3,7 +3,6 @@ package starvationevasion.server.handlers;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.*;
-import starvationevasion.sim.Simulator;
 
 public class UserHandler extends AbstractHandler
 {
@@ -25,7 +24,7 @@ public class UserHandler extends AbstractHandler
         System.out.println("getting");
         m_response = new Response(ActionType.SUCCESS,
                                   serverMaster.uptime(),
-                                  serverMaster.getUser(getClient().getName()).toJson());
+                                  serverMaster.getUser(getClient().getName()).toJSON());
         return true;
       }
       // update a user

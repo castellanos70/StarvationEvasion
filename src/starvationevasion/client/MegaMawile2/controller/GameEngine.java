@@ -156,7 +156,7 @@ public class GameEngine implements GameController, Initializable
   }
 
   /**
-   * getter that returns the Network Handler.
+   * getter that returns the Network AbstractHandler.
    */
   public NetworkHandler getNetworkHandler()
   {

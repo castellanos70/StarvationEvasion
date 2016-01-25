@@ -5,85 +5,56 @@ import starvationevasion.common.PolicyCard;
 /**
  * The Validity object is used to validate the legality of moves per the game rules before they are
  * submitted.
- *
- * @author Chris Wu
- * @since 11/18/2015
  */
 public class Validity
 {
-  private int actions;
-  private int requiresVotes;
-  private int discard;
+  private final int MAX_DRAFTS = 2;
+  private final int MAX_REPLACEMENTS = 2;
+  private int drafts = 0;
+  private int replacements = 0;
 
-  //Initializes the validator with the appropriate limits for each action.
   Validity()
   {
-    actions = 2;
-    requiresVotes = 1;
-    discard = 1;
+    drafts = 0;
+    replacements = 0;
   }
 
-  /**
-   * Allows drafting when there is up to 1 card that requires votes and actions available.
-   *
-   * @param policyCard the {@link PolicyCard} to validate.
-   * @return <code>true</code> when actions are available and no more than 1 policy needs votes.
-   */
-  public boolean canDraft(PolicyCard policyCard)
+  public int getDrafts()
   {
-    if (actions > 1)
+    return drafts;
+  }
+
+  public int getReplacements()
+  {
+    return replacements;
+  }
+
+  public boolean draftCard(PolicyCard policyCard)
+  {
+    if (drafts < MAX_DRAFTS)
     {
-      if(policyCard.votesRequired() > 0)
+      if (!policyCard.validate().equals(""))
       {
-        if (requiresVotes > 0) requiresVotes--;
-        else return false;//can't play more than 1 policy card that requires voting
+        drafts++;
+        return true;
       }
-      actions--;
-      return true;
     }
-    return false;//not enough actions
+    return false;
   }
 
-  /**
-   * Allows a discard up to 3 cards if there is an action available.
-   *
-   * @param policyCards the {@link PolicyCard} to validate.
-   * @return <code>true</code> when there are at most 3 cards to discard and an action available.
-   */
-  public boolean canDiscardDraw(PolicyCard[] policyCards)
+  public boolean replaceCard()
   {
-    if (policyCards.length > 3) return false;
-    if (actions > 1)
-    {//there are actions to take
-      actions--;
-      return true;
-    }
-    return true;
-  }
-
-  /**
-   * Boolean check for discarding a card.
-   *
-   * @param policyCard the {@link PolicyCard} we're trying to discard.
-   * @return <code>true</code> if there is a discard allowed.
-   */
-  public boolean canDiscard(PolicyCard policyCard)
-  {
-    if(discard > 0)
+    if (replacements < MAX_REPLACEMENTS)
     {
-      discard--;
+      replacements++;
       return true;
     }
     return false;
   }
 
-  /**
-   * Resets the counters for the next drafting phase.
-   */
-  public void reset()
+  public void resetCount()
   {
-    actions = 2;
-    requiresVotes = 1;
-    discard = 1;
+    drafts = 0;
+    replacements = 0;
   }
 }

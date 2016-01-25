@@ -8,5 +8,5 @@ public interface GameController
    *
    * @param deltaTime the amount of time that it took between updates
    */
-  void update (float deltaTime);
+  void update(float deltaTime);
 }

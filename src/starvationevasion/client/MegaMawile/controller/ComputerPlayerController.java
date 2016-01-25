@@ -1,19 +1,14 @@
 package starvationevasion.client.MegaMawile.controller;
 
-
-import starvationevasion.client.MegaMawile.ai.brain.Ai;
-import starvationevasion.client.MegaMawile.ai.brain.EasyAi;
 import starvationevasion.client.MegaMawile.model.GameOptions;
 import starvationevasion.client.MegaMawile.model.Player;
 import starvationevasion.client.MegaMawile.model.GameStateData;
-import starvationevasion.server.ServerState;
 
 /**
  * ComputerPlayerController updates an AI brain to make decisions based on the current round.
  */
-public class ComputerPlayerController extends AbstractPlayerController
+public class ComputerPlayerController extends starvationevasion.client.MegaMawile.controller.AbstractPlayerController
 {
-  private Ai brain;
 
   /**
    * Creates a new ComputerPlayerController with access to the current {@link GameStateData} as well as necessary
@@ -26,7 +21,6 @@ public class ComputerPlayerController extends AbstractPlayerController
   public ComputerPlayerController(GameStateData gameState, GameOptions options, Player player)
   {
     super(gameState, player, options);
-    this.brain = new EasyAi(this);
   }
 
   /**
@@ -38,15 +32,6 @@ public class ComputerPlayerController extends AbstractPlayerController
   public void update(float deltaTime)
   {
     super.update(deltaTime);
-    if(gameState.getServerState() == ServerState.DRAFTING)
-    {
-      brain.draftUpdate(deltaTime);
-    }
-
-    if(gameState.getServerState() == ServerState.VOTING)
-    {
-      brain.voteUpdate(deltaTime);
-    }
   }
 
 }

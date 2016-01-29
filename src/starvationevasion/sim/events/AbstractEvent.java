@@ -20,7 +20,7 @@ public abstract class AbstractEvent<T extends AbstractTerritory>
   /**
    * Creates a special event object
    *
-   * @param eventType Type of event this will be
+   * @param eventType ActionType of event this will be
    * @param landArea The land area (Territory, Region, etc...) this event effects
    * @param duration How many simulator years this event lasts
    */

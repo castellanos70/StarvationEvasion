@@ -249,7 +249,7 @@ public class Simulator
 
     // Configure the logger for summary data (this is what the Server class will see).  We can
     // also send this to a file.
-    // Handler fh = new FileHandler("test.txt");
+    // AbstractHandler fh = new FileHandler("test.txt");
     // fh.setFormatter(formatter);
     // logger.addHandler(fh);
     //

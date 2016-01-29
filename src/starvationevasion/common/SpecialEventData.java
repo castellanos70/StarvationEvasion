@@ -93,7 +93,7 @@ public class SpecialEventData implements Serializable
     String str = "";
     str += "Event "+ eventName + "\n";
     str += "\tYear   : "+year+"\n";
-    str += "\tType   : "+type.name()+"\n";
+    str += "\tActionType   : "+type.name()+"\n";
     str += "\tRegions: \n";
     for (EnumRegion region : regions)
     {

@@ -21,7 +21,7 @@ public class GameStateData
 
   private Set<EnumRegion> availableRegions;
   private Map<EnumRegion, String> takenRegions;
-  private ArrayList<Player> players = new ArrayList<>();
+  private ArrayList<starvationevasion.client.MegaMawile.model.Player> players = new ArrayList<>();
 
   /**
    * Returns the current {@link ServerState}, used to modify client behavior based on current game phase/connectivity.
@@ -104,12 +104,12 @@ public class GameStateData
   }
 
 
-  public void updatePlayers(ArrayList<Player> players)
+  public void updatePlayers(ArrayList<starvationevasion.client.MegaMawile.model.Player> players)
   {
     this.players = players;
   }
 
-  public ArrayList<Player> getPlayers()
+  public ArrayList<starvationevasion.client.MegaMawile.model.Player> getPlayers()
   {
     return players;
   }

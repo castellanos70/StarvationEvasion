@@ -15,7 +15,7 @@ import starvationevasion.client.MegaMawile.model.GameStateData;
 public class NetworkHandler
 {
   private final GameOptions options;
-  private AbstractClient playerClient;
+  private starvationevasion.client.MegaMawile.net.AbstractClient playerClient;
   private GameStateData gameState;
   private Player player;
 
@@ -36,7 +36,7 @@ public class NetworkHandler
   {
     if (playerController instanceof HumanPlayerController)
     {
-      playerClient = new HumanClient(options, playerController.getPlayer(), gameState);
+      playerClient = new starvationevasion.client.MegaMawile.net.HumanClient(options, playerController.getPlayer(), gameState);
     }
     else if (playerController instanceof ComputerPlayerController)
     {

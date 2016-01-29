@@ -1,21 +1,18 @@
 package starvationevasion.client.MegaMawile.controller;
 
-
 import starvationevasion.client.MegaMawile.model.*;
 import starvationevasion.client.MegaMawile.net.AbstractClient;
 import starvationevasion.client.MegaMawile.model.GameStateData;
-import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 import starvationevasion.common.messages.*;
-import starvationevasion.server.ServerState;
 
 import java.util.Iterator;
 
 /**
  * Class that contains methods that are relevant/used for both Computer and Human player.
  */
-public abstract class AbstractPlayerController implements GameController
+public abstract class AbstractPlayerController implements starvationevasion.client.MegaMawile.controller.GameController
 {
   private final GameOptions options;
   private AbstractClient client;
@@ -69,16 +66,6 @@ public abstract class AbstractPlayerController implements GameController
   }
 
   /**
-   * Returns the current {@link Ballot} owned by the {@link Player} controlled by this controller.
-   *
-   * @return the player's Ballot
-   */
-  public Ballot getBallot()
-  {
-    return player.getBallot();
-  }
-
-  /**
    * Returns the name of the {@link Player} controlled by this controller.
    *
    * @return the name of the player, as a String.
@@ -106,16 +93,6 @@ public abstract class AbstractPlayerController implements GameController
   public void setPlayerStatus(NetworkStatus playerStatus)
   {
     player.setStatus(playerStatus);
-  }
-
-  /**
-   * Sets the {@link Ballot} owned by the {@link Player} controlled by this controller.
-   *
-   * @param ballot the player's Ballot.
-   */
-  public void setBallot(Ballot ballot)
-  {
-    player.setBallot(ballot);
   }
 
   /**
@@ -154,144 +131,6 @@ public abstract class AbstractPlayerController implements GameController
   {
     client.send(new RegionChoice(region));
     player.setRegion(region);
-  }
-
-  /**
-   * Submit a PolicyCard to draft.
-   *
-   * @param policyCard the PolicyCard to submit for drafting.
-   * @return <code>true</code> if the card is valid to draft and was drafted successfully.
-   */
-  public boolean draftPolicy(PolicyCard policyCard)
-  {
-    if (gameState.getServerState() == ServerState.DRAFTING)
-    {
-      if (player.getStatus() != NetworkStatus.LOGGED_IN)
-      {
-        //error
-        System.out.println("Player is not connected to the Server");
-        return false;
-      }
-      else
-      {
-        client.send(new DraftCard(policyCard));
-      }
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Checks to see if an array of cards is eligible to be discarded and drawn this turn.
-   *
-   * @param policyCards
-   * @return <code>true</code> if there is an action to use and there are no more than 3 cards to discard/draw.
-   */
-  public boolean discardDraw(PolicyCard[] policyCards)
-  {
-    if (gameState.getServerState() == ServerState.DRAFTING)
-    {
-      if (player.getStatus() != NetworkStatus.LOGGED_IN)
-      {
-        // error
-        System.out.println("Player is not connected to the Server");
-        return false;
-      }
-      else
-      {
-        EnumPolicy[] draftCards = new EnumPolicy[3];
-        for (int i = 0; i < draftCards.length; i++)
-        {
-          if(policyCards[i] != null) draftCards[i] = policyCards[i].getCardType();
-          else draftCards[i] = null;
-        }
-        client.send(new Discard(draftCards[0], draftCards[1], draftCards[2]));
-      }
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Discards a card this turn. DOES NOT draw immediately.
-   *
-   * @param policyCard a PolicyCard to discard.
-   * @return <code>true</code> if there is a discard action to use.
-   */
-  public boolean discard(PolicyCard policyCard)
-  {
-    if ( gameState.getServerState() == ServerState.DRAFTING)
-    {
-      if (player.getStatus() != NetworkStatus.LOGGED_IN)
-      {
-        // error
-        System.out.println("Player is not connected to the Server");
-        return false;
-      }
-      else
-      {
-        client.send(new Discard(policyCard.getCardType()));
-      }
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Submits a yes vote for the passed {@link PolicyCard} to the server, as well as updating the player's {@link Ballot}
-   * accordingly.
-   *
-   * @param policyCard a PolicyCard to vote yes on.
-   */
-  public void voteYes(PolicyCard policyCard)
-  {
-    if (gameState.getServerState() == ServerState.VOTING)
-    {
-      player.setVote(policyCard,  VoteType.FOR);
-      client.send(new Vote(policyCard.getOwner(), VoteType.FOR));
-    }
-    else
-    {
-      System.out.println("Not voting yet!");
-    }
-  }
-
-  /**
-   * Submits a no vote to the server for the passed {@link PolicyCard}, as well as updating the player's {@link Ballot}
-   * accordingly.
-   *
-   * @param policyCard a PolicyCard to vote no on.
-   */
-  public void voteNo(PolicyCard policyCard)
-  {
-    if (gameState.getServerState() == ServerState.VOTING)
-    {
-      player.setVote(policyCard, VoteType.AGAINST);
-      client.send(new Vote(policyCard.getOwner(), VoteType.AGAINST));
-    }
-    else
-    {
-      System.out.println("Not voting yet!");
-    }
-  }
-
-  /**
-   * Submits an abstain vote to the server for the passed {@link PolicyCard}, as well as updating it in the player's
-   * current {@link Ballot}.
-   *
-   * @param policyCard a PolicyCard to vote abstain on.
-   */
-  public void voteAbstain(PolicyCard policyCard)
-  {
-    if (gameState.getServerState() == ServerState.VOTING)
-    {
-      player.setVote(policyCard,VoteType.ABSTAIN);
-      client.send(new Vote(policyCard.getOwner(), VoteType.ABSTAIN));
-    }
-    else
-    {
-      System.out.println("Not voting yet!");
-    }
   }
 
   public Player getPlayer()

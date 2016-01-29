@@ -21,7 +21,7 @@ public class Statistics
     this.worldData = worldData;
   }
 
-  public RegionData getRegionByPlayer(Player player)
+  public RegionData getRegionByPlayer(starvationevasion.client.MegaMawile.model.Player player)
   {
     return Arrays.asList(worldData.regionData).stream().filter(regionData -> {
       return regionData.region == player.getRegion();

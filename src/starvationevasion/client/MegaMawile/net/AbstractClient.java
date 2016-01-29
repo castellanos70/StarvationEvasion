@@ -1,15 +1,12 @@
 package starvationevasion.client.MegaMawile.net;
 
 
-import starvationevasion.client.MegaMawile.StatisticReadData;
 import starvationevasion.client.MegaMawile.controller.AbstractPlayerController;
-import starvationevasion.client.MegaMawile.model.Ballot;
 import starvationevasion.client.MegaMawile.model.GameOptions;
 import starvationevasion.client.MegaMawile.model.NetworkStatus;
 import starvationevasion.client.MegaMawile.model.Player;
 import starvationevasion.client.MegaMawile.model.GameStateData;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.PolicyCard;
 import starvationevasion.common.messages.*;
 import starvationevasion.server.ServerState;
 
@@ -19,8 +16,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * A client that will communicate with server. Responsible for holding relevant
@@ -293,289 +288,12 @@ public abstract class AbstractClient extends Thread
     }
 
     /**
-     * Takes a server message as an Object and casts it to the appropriate type, then directs the program to a
-     * handler method to take proper action.
-     *
-     * @param message the generic server message to respond to, in Object form.
+     * Deserialize a message to do stuff to it
+     * @param message
      */
     private void typeOfMSG(Object message)
     {
-      if (message instanceof ActionResponse)
-      {
-        handleActionResponse((ActionResponse) message);
-      }
-      if (message instanceof AvailableRegions)
-      {
-        handleAvailableRegions((AvailableRegions) message);
-      }
-      if (message instanceof BeginGame)
-      {
-        handleBeginGame((BeginGame) message);
-      }
-      if (message instanceof ClientChatMessage)
-      {
-        handleClientChatMessage((ClientChatMessage) message);
-      }
-      if (message instanceof GameState)
-      {
-        handleGameState((GameState) message);
-      }
-      if (message instanceof Goodbye)
-      {
-        handleGoodbye((Goodbye) message);
-      }
-      if (message instanceof Hello)
-      {
-        handleHello((Hello) message);
-      }
-      if (message instanceof LoginResponse)
-      {
-        handleLoginResponse((LoginResponse) message);
-      }
-      if (message instanceof PhaseStart)
-      {
-        handlePhaseStart((PhaseStart) message);
-      }
-      if (message instanceof ReadyToBegin)
-      {
-        handleReadyToBegin((ReadyToBegin) message);
-      }
-      if (message instanceof Response)
-      {
-        handleResponse((Response) message);
-      }
-      if (message instanceof ServerChatMessage)
-      {
-        handleServerChatMessage((ServerChatMessage) message);
-      }
-      if (message instanceof VoteStatus)
-      {
-        handleVoteStatus((VoteStatus) message);
-      }
-    }
-
-    /**
-     * Changes the player's hand once an ok for the action sent is received.
-     *
-     * @param actionResponse the server's {@link ActionResponse} to the client's previous action.
-     */
-    private void handleActionResponse(ActionResponse actionResponse)
-    {
-      options.addToMainFeed("Action response type: " + actionResponse.responseType);
-      if (actionResponse.responseType == ActionResponseType.OK)
-      {
-        player.setHand(actionResponse.playerHand);
-        options.setUpdateHand(true);
-      }
-      else
-      {
-        System.out.println(actionResponse.responseMessage);
-        options.addToMainFeed(actionResponse.responseMessage + "\n");
-      }
-    }
-
-    /**
-     * Saves a client-side copy of the currently available regions and prints out the currently taken regions.
-     *
-     * @param availableRegionMsg the server's {@link AvailableRegions} message to handle.
-     * @since 12/3/15
-     */
-    private void handleAvailableRegions(AvailableRegions availableRegionMsg)
-    {
-      gameState.setAvailableRegions(availableRegionMsg.availableRegions);
-
-      for (Map.Entry<EnumRegion, String> entry : availableRegionMsg.takenRegions.entrySet())
-      {
-        if (player.getUsername().equals(entry.getValue()))
-        {
-          player.setRegion(entry.getKey());
-        }
-      }
-      gameState.setTakenRegions(availableRegionMsg.takenRegions);
-
-      availableRegionMsg.takenRegions.forEach((k, v) -> {
-        options.addToMainFeed("Region : " + k + " Owner : " + v + "\n");
-        options.addToMainFeed(k + " is available\n");
-      });
-
-    }
-
-    /**
-     * Handles a message from the server indicating that the game is about to begin.
-     *
-     * @param beginGame the server's {@link BeginGame} message to handle.
-     */
-    private void handleBeginGame(BeginGame beginGame)
-    {
-      System.out.println("Begin Game: " + beginGame.toString());
-      options.addToMainFeed("Begin Game: " + beginGame.toString() + "\n");
-      for (Map.Entry<EnumRegion, String> entry : beginGame.finalRegionChoices.entrySet())
-      {
-        if (entry.getValue().equals(player.getUsername()))
-        {
-          player.setRegion(entry.getKey());
-        }
-        else
-        {
-          gameState.getPlayers().add(new Player(entry.getValue(), entry.getKey()));
-        }
-      }
-
-    }
-
-    /**
-     * Prints out client chat messages to the console.
-     *
-     * @param clientChatMessage the server's {@link ClientChatMessage} to print.
-     * @since 12/1/15
-     */
-    private void handleClientChatMessage(ClientChatMessage clientChatMessage)
-    {
-      System.out.println(clientChatMessage.toString());
-      options.addToMainFeed(clientChatMessage.toString() + "\n");
-    }
-
-    /**
-     * Handles game state messages from the server by updating the client's {@link StatisticReadData} with the
-     * information received from the server.
-     *
-     * @param messageGameState the server's {@link starvationevasion.common.messages.GameState} message to use to populate
-     *                         the statistics data set.
-     * @since 12/1/15
-     */
-    private void handleGameState(starvationevasion.common.messages.GameState messageGameState)
-    {
-      if (!isAi) StatisticReadData.srd.populateStats(messageGameState.worldData);
-      player.setHand(messageGameState.hand);
-      options.setUpdateHand(true);
-    }
-
-    /**
-     * Handles a goodbye message from the server by printing it to the console.
-     *
-     * @param goodbye the server's {@link Goodbye} message to respond to.
-     * @since 12/1/15
-     */
-    private void handleGoodbye(Goodbye goodbye)
-    {
-      options.addToMainFeed(goodbye.disconnectMessage + "\n");
-      disconnect();
-    }
-
-    /**
-     * Handles the server's hello message by saving the client's login nonce and printing confirmation to the console.
-     *
-     * @param hello the server's {@link Hello} message to pull the login nonce from.
-     * @since 12/1/15
-     */
-    private void handleHello(Hello hello)
-    {
-      //connect message
-      options.addToMainFeed("Recieved:" + hello.loginNonce + "\n");
-      //connect to server
-
-      options.setLoginNonce(hello.loginNonce);
-      options.setNetworkStatus(NetworkStatus.CONNECTED);
-    }
-
-    /**
-     * Handles the login response from the server by either assigning the selected region (specified in the presets
-     * stored in the server's password file) or notifying the player of available regions to select.
-     *
-     * @param loginResponse the server's {@link LoginResponse} message to handle.
-     * @since 12/1/15
-     */
-    private void handleLoginResponse(LoginResponse loginResponse)
-    {
-      System.out.println("You have been assigned to " + loginResponse.assignedRegion);
-      System.out.println(loginResponse.responseType + " response type");
-      options.addToMainFeed("You have been assigned to " + loginResponse.assignedRegion + "\n");
-      options.addToMainFeed(loginResponse.responseType + " response type\n");
-      if (loginResponse.responseType == LoginResponse.ResponseType.ASSIGNED_REGION
-        || loginResponse.responseType == LoginResponse.ResponseType.REJOIN
-        || loginResponse.responseType == LoginResponse.ResponseType.CHOOSE_REGION)
-      {
-        player.setRegion(loginResponse.assignedRegion);
-        player.setStatus(NetworkStatus.LOGGED_IN);
-      }
-      if (loginResponse.responseType == LoginResponse.ResponseType.ACCESS_DENIED || loginResponse.responseType == LoginResponse.ResponseType.DUPLICATE)
-      {
-        // options.setNetworkStatus(NetworkStatus.AUTH_ERROR);
-        player.setStatus(NetworkStatus.AUTH_ERROR);
-      }
-    }
-
-    /**
-     * Handles the phase start message from the server, indicating that a new phase is about to begin. We update
-     * the client's {@link GameStateData} accordingly, as well as reset the counters in our.
-     *
-     * @param phaseStart the server's {@link PhaseStart} message to handle.
-     * @since 12/2/15
-     */
-    private void handlePhaseStart(PhaseStart phaseStart)
-    {
-      System.out.println("Current game state: " + phaseStart.currentGameState + " Server time: " + phaseStart.currentServerTime + " End time: " + phaseStart.phaseEndTime);
-      options.addToMainFeed("Current game state: " + phaseStart.currentGameState + " Server time: " + phaseStart.currentServerTime + " End time: " + phaseStart.phaseEndTime + "\n");
-      gameState.setServerState(phaseStart.currentGameState);//sets the current state
-      gameState.setTime(phaseStart.currentServerTime, phaseStart.phaseEndTime);
-    }
-
-    /**
-     * Handles the server's ready to begin message.
-     *
-     * @param readyToBegin the server's {@link ReadyToBegin} message to handle.
-     * @since 12/2/15
-     */
-    private void handleReadyToBegin(ReadyToBegin readyToBegin)
-    {
-      System.out.println("Ready: " + readyToBegin.isReady);
-      options.addToMainFeed("Ready: " + readyToBegin.isReady + "\n");
-
-    }
-
-    /**
-     * Handles generic server response messages by printing them to the console.
-     *
-     * @param response the server's {@link Response} message to handle.
-     * @since 12/2/15
-     */
-    private void handleResponse(Response response)
-    {
-      System.out.println("Response: " + response.toString());
-      options.addToMainFeed("Response: " + response.toString() + "\n");
-    }
-
-    /**
-     * Handles server chat messages.
-     *
-     * @param serverChatMessage the server's {@link ServerChatMessage} to handle.
-     * @since 12/2/15
-     */
-    private void handleServerChatMessage(ServerChatMessage serverChatMessage)
-    {
-      System.out.println(serverChatMessage.toString());
-      options.addToMainFeed(serverChatMessage.message + "\n");
-    }
-
-    /**
-     * Handles the server's vote status message by creating a new {@link Ballot} and assigning it to our
-     * {@link AbstractPlayerController} to be filled out during the voting phase.
-     *
-     * @param voteStatus the server's {@link VoteStatus} message to handle.
-     * @since 12/3/15
-     */
-    private void handleVoteStatus(VoteStatus voteStatus)
-    {
-      options.addToMainFeed("Got voting");
-      ArrayList<PolicyCard> card = new ArrayList<>();
-      for (PolicyCard currentCard : voteStatus.currentCards)
-      {
-        card.add(currentCard);
-      }
-      Ballot newBallot = new Ballot(card);
-      player.setBallot(newBallot);
-      gameState.setServerState(ServerState.VOTING);
-
+      //go to deserializer
     }
   }
 }

@@ -11,7 +11,7 @@ import starvationevasion.client.MegaMawile.model.GameStateData;
  * changes to {@link starvationevasion.server.ServerState}, namely current game phase, the ComputerClient modifies its
  * behavior.
  */
-public class ComputerClient extends AbstractClient
+public class ComputerClient extends starvationevasion.client.MegaMawile.net.AbstractClient
 {
   private boolean loggedIn;
 

@@ -1,10 +1,8 @@
 package starvationevasion.client.MegaMawile.model;
 
-
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
-import starvationevasion.common.messages.VoteType;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,7 +16,6 @@ public class Player
   private EnumRegion region;
   private float hdi;
   private int money;
-  private Ballot ballot;
   private NetworkStatus status = NetworkStatus.NOT_CONNECTED;
   private String username = "";
   private String password = "";
@@ -69,16 +66,6 @@ public class Player
   }
 
   /**
-   * Retrieves the cards up for voting
-   *
-   * @return cards to vote on from ALL players
-   */
-  public synchronized Ballot getBallot()
-  {
-    return ballot;
-  }
-
-  /**
    * Returns the player's hand.
    *
    * @return an Iterator to iterate through the player's current hand.
@@ -111,17 +98,6 @@ public class Player
   public int getHandSize()
   {
     return hand.size();
-  }
-
-
-  public VoteType getVote(PolicyCard card)
-  {
-    return ballot.getBallotItems().get(card);
-  }
-
-  public VoteType setVote(PolicyCard card, VoteType vote)
-  {
-    return ballot.getBallotItems().put(card, vote);
   }
 
   /*
@@ -157,12 +133,6 @@ public class Player
 //      System.out.println(policyCard.toString());
       this.hand.add(policyCard);
     }
-  }
-
-
-  public void setBallot(Ballot ballot)
-  {
-    this.ballot = ballot;
   }
 
   public String getUsername()

@@ -12,7 +12,7 @@ fields are ordered as follows:
 Longitude
 Latitude
 Elevation
-Max Annual Temp
+Max Annual Temp //switching to avg monthly instead of annual
 Min Annual Temp
 Average Day Temp
 Average Night Temp

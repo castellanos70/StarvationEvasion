@@ -10,7 +10,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.TextFlow;
 import starvationevasion.client.MegaMawile.controller.GameEngine;
-import starvationevasion.client.Rayquaza.model.simulationData.ComboBoxItem;
 import starvationevasion.common.EnumPolicy;
 
 import java.net.URL;

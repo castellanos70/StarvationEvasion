@@ -87,6 +87,8 @@ public class Model
   //
   private final static Level debugLevel = Level.FINE;
 
+  private final static boolean DEBUG = true;
+
   private final int startYear;
   private int year;
 
@@ -135,43 +137,27 @@ public class Model
   protected void instantiateRegions()
   {
     // The load() operation is very time consuming.
-    //
+    if (DEBUG) System.out.println("Model.instantiateRegions() Enter");
     for (int i=0; i<EnumRegion.SIZE; i++)
     {
       regionList[i] = new Region(EnumRegion.values()[i]);
     }
 
-    // Add the US book keeping region.
-    //
-    regionList[EnumRegion.SIZE] = Region.createBookKeepingRegion("UNITED_STATES");
-
     try{cropLoader = new CropCSVLoader();} catch (Throwable t){ System.out.println("CROP_LOADER "+t);}
     cropZoneDatum = cropLoader.getCategoryData();
 
-
+    if (DEBUG) System.out.println("Model.instantiateRegions() new WorldLoader(regionList)");
     WorldLoader loader = new WorldLoader(regionList);
     world = loader.getWorld();
 
-    // Now add the US states to the book keeping regions.
-    //
-    Region unitedStates = regionList[EnumRegion.SIZE];
-    for (EnumRegion r : EnumRegion.US_REGIONS)
-    { for (Territory t : regionList[r.ordinal()].getTerritories())
-      { unitedStates.addTerritory(t);
-      }
-    }
+
 
     Territory[] territories = world.getTerritories();
-    int index = Arrays.binarySearch(territories, new Territory("US-Alaska"));
-    if (index >= 0) unitedStates.addTerritory(territories[index]);
-    else LOGGER.severe("Can not find Alaska?");
-
-    index = Arrays.binarySearch(territories, new Territory("US-Hawaii"));
-    if (index >= 0) unitedStates.addTerritory(territories[index]);
-    else LOGGER.severe("Can not find Hawaii?");
 
     float[] avgConversionFactors = new float[EnumFood.SIZE];
 
+
+    if (DEBUG) System.out.println("Model.instantiateRegions() estimate initial yield.");
     // Traverse all of the regions, estimating the initial yield.
     // Note that this includes the book-keeping regions.
     //
@@ -205,10 +191,7 @@ public class Model
       // calculate OTHER_CROPS temp & rain requirements for each country
       for (Territory state : regionList[region.ordinal()].getTerritories())
       {
-        // The loader loads 2014 data.  We need to adjust the data for 1981.  Joel's first estimate is
-        // to simply multiply all of the territorial data by 50%
-        //
-        // state.scaleInitialStatistics(.50);
+
         CropOptimizer optimizer = new CropOptimizer(Constant.FIRST_YEAR, state);
         optimizer.optimizeCrops();
       }

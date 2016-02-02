@@ -1,9 +1,9 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.*;
-import starvationevasion.client.Aegislash.io.SpecialEventCSVLoader;
-import starvationevasion.client.Aegislash.io.WorldLoader;
-import starvationevasion.client.Aegislash.io.CropCSVLoader;
+import starvationevasion.sim.io.SpecialEventCSVLoader;
+import starvationevasion.sim.io.WorldLoader;
+import starvationevasion.sim.io.CropCSVLoader;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
 import starvationevasion.sim.events.Hurricane;

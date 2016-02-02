@@ -1,7 +1,7 @@
 package starvationevasion.sim.testing;
 
 import starvationevasion.common.EnumRegion;
-import starvationevasion.client.Aegislash.io.WorldLoader;
+import starvationevasion.sim.io.WorldLoader;
 import starvationevasion.sim.*;
 
 import java.io.File;

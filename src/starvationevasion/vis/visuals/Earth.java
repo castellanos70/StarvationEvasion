@@ -12,7 +12,7 @@ import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import starvationevasion.common.*;
-import starvationevasion.client.Aegislash.io.XMLparsers.GeographyXMLparser;
+import starvationevasion.sim.io.XMLparsers.GeographyXMLparser;
 import starvationevasion.sim.GeographicArea;
 import starvationevasion.vis.controller.EarthViewer;
 import starvationevasion.vis.controller.SimParser;

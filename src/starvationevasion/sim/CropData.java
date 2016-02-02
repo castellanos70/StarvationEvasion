@@ -1,7 +1,7 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.EnumFood;
-import starvationevasion.client.Aegislash.io.CSVReader;
+import starvationevasion.sim.io.CSVReader;
 
 import java.io.FileNotFoundException;
 import java.util.logging.Logger;

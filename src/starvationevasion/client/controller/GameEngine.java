@@ -5,7 +5,6 @@ import starvationevasion.client.model.GameStateData;
 import starvationevasion.client.model.Player;
 import starvationevasion.client.net.NetworkHandler;
 import starvationevasion.client.model.GameOptions;
-import starvationevasion.client.net.common.NetworkStatus;
 
 
 import java.awt.*;

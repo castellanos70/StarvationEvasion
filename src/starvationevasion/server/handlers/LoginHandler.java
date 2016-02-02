@@ -1,14 +1,13 @@
 package starvationevasion.server.handlers;
 
 
-import starvationevasion.server.ClientWorker;
+import starvationevasion.server.Worker;
 import starvationevasion.server.Request;
-import starvationevasion.server.ServerMaster;
-import starvationevasion.sim.Simulator;
+import starvationevasion.server.Server;
 
 public class LoginHandler extends AbstractHandler
 {
-  public LoginHandler (ServerMaster server, ClientWorker client)
+  public LoginHandler (Server server, Worker client)
   {
     super(server, client);
   }

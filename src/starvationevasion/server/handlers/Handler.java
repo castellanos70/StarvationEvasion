@@ -1,25 +1,24 @@
 package starvationevasion.server.handlers;
 
 
-import starvationevasion.server.ClientWorker;
+import starvationevasion.server.Worker;
 import starvationevasion.server.Request;
 import starvationevasion.server.Response;
-import starvationevasion.server.ServerMaster;
-import starvationevasion.sim.Simulator;
+import starvationevasion.server.Server;
 
 public class Handler
 {
   private AbstractHandler handler;
-  private ClientWorker worker;
+  private Worker worker;
 
-  public Handler (ServerMaster server, ClientWorker clientWorker)
+  public Handler (Server server, Worker worker)
   {
-    worker = clientWorker;
-    handler = new UserHandler(server, clientWorker).setSuccessor(
-            new VoteHandler(server, clientWorker).setSuccessor(
-                    new ChatHandler(server, clientWorker).setSuccessor(
-                            new DiscardHandler(server, clientWorker).setSuccessor(
-                                    new LoginHandler(server, clientWorker)))));
+    this.worker = worker;
+    handler = new UserHandler(server, worker).setSuccessor(
+            new VoteHandler(server, worker).setSuccessor(
+                    new ChatHandler(server, worker).setSuccessor(
+                            new DiscardHandler(server, worker).setSuccessor(
+                                    new LoginHandler(server, worker)))));
   }
 
   public void handle (Request request)

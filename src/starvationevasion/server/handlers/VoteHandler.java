@@ -1,13 +1,12 @@
 package starvationevasion.server.handlers;
 
-import starvationevasion.server.ClientWorker;
+import starvationevasion.server.Worker;
 import starvationevasion.server.Request;
-import starvationevasion.server.ServerMaster;
-import starvationevasion.sim.Simulator;
+import starvationevasion.server.Server;
 
 public class VoteHandler extends AbstractHandler
 {
-  public VoteHandler (ServerMaster server, ClientWorker client)
+  public VoteHandler (Server server, Worker client)
   {
     super(server, client);
   }

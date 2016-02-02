@@ -2,21 +2,21 @@
 package starvationevasion.server.handlers;
 
 
-import starvationevasion.server.ClientWorker;
+import starvationevasion.server.Server;
+import starvationevasion.server.Worker;
 import starvationevasion.server.Request;
 import starvationevasion.server.Response;
-import starvationevasion.server.ServerMaster;
 
 public abstract class AbstractHandler
 {
-  private final ClientWorker client;
+  private final Worker client;
   protected AbstractHandler m_successor;
-  protected final ServerMaster serverMaster;
+  protected final Server server;
   protected Response m_response = null;
 
-  public AbstractHandler (ServerMaster server, ClientWorker client)
+  public AbstractHandler (Server server, Worker client)
   {
-    this.serverMaster = server;
+    this.server = server;
     this.client = client;
   }
 
@@ -51,7 +51,7 @@ public abstract class AbstractHandler
     return null;
   }
 
-  public ClientWorker getClient ()
+  public Worker getClient ()
   {
     return client;
   }

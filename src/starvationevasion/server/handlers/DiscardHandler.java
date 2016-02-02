@@ -1,14 +1,13 @@
 package starvationevasion.server.handlers;
 
 
-import starvationevasion.server.ClientWorker;
+import starvationevasion.server.Server;
+import starvationevasion.server.Worker;
 import starvationevasion.server.Request;
-import starvationevasion.server.ServerMaster;
-import starvationevasion.sim.Simulator;
 
 public class DiscardHandler extends AbstractHandler
 {
-  public DiscardHandler (ServerMaster server, ClientWorker client)
+  public DiscardHandler (Server server, Worker client)
   {
     super(server, client);
   }

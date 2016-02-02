@@ -17,20 +17,20 @@ import java.net.Socket;
 /**
  * ServerWorker
  */
-public class ClientWorker extends Thread
+public class Worker extends Thread
 {
 
   private Socket client;
   private PrintWriter clientWriter;
   private BufferedReader clientReader;
   private boolean isRunning = true;
-  private final ServerMaster server;
+  private final Server server;
   private final Simulator simulator;
   private Handler handler;
   private long serverStartTime;
   private boolean sent = false;
 
-  public ClientWorker (Socket client, ServerMaster server)
+  public Worker (Socket client, Server server)
   {
     this.client = client;
     this.simulator = server.getSimulator();

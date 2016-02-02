@@ -1,105 +1,118 @@
 package starvationevasion.server;
 
-import starvationevasion.common.*;
-import starvationevasion.common.messages.*;
+
+/**
+ * @author Javier Chavez
+ */
+
 import starvationevasion.sim.Simulator;
 
 import java.io.IOException;
-import java.io.Serializable;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.time.Instant;
+import java.net.UnknownHostException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import starvationevasion.common.messages.Response;
 
 /**
- * Entry point for Server
  */
 public class Server
 {
-  private static final String PASSWORD_FILE_PATH = "data/server/example_password_file.tsv";
-  private final Object stateSynchronizationObject = new Object();
-  private final String[] AICommand;
-  private volatile ServerState currentState = ServerState.LOGIN;
   private ServerSocket serverSocket;
-  private final List<ServerWorker> connectedClients = Collections.synchronizedList(new ArrayList<>());
-  private ConcurrentLinkedQueue<Tuple<Serializable, ServerWorker>> messageQueue = new ConcurrentLinkedQueue<>();
-  private PasswordFile passwordFile;
-  private Map<String, String> aiCredentials = Collections.synchronizedMap(new HashMap<>());
-  private Map<String, EnumRegion> finalUsernames = Collections.synchronizedMap(new HashMap<>());
-  private ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-  private ScheduledFuture<?> phaseChangeFuture;
-  private long phaseEndTime;
+  private LinkedList<Worker> allConnections = new LinkedList<>();
+  private long startNanoSec = 0l;
+  private final Timer timer = new Timer();
   private Simulator simulator;
-  private Map<EnumRegion, List<EnumPolicy>> playerHands = new HashMap<>();
-  private Map<EnumRegion, RegionTurnData> regionTurnData = new HashMap<>();
-  private Map<EnumRegion, PolicyCard> regionVoteRequiredCards = new HashMap<>();
-  private Map<PolicyCard, List<EnumRegion>> regionsWhoVotedOnCards = new HashMap<>();
-  private ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>(), draftedPolicyCards = new ArrayList<>();
-  private WorldData currentWorldData;
+  private HashMap<String, User> users = new HashMap<>();
 
-  public Server(String[] AICommand)
+  public Server (int portNumber)
   {
-    this.AICommand = AICommand;
+    startNanoSec = System.nanoTime();
+    //    simulator = new Simulator(Constant.FIRST_YEAR);
+    ////    for (EnumRegion region : EnumRegion.US_REGIONS)
+    ////    {
+    ////      playerHands.put(region, new ArrayList<>(Arrays.asList(simulator.drawCards(region))));
+    ////    }
+    //
+    //    WorldData currentWorldData = simulator.init();
+
     try
     {
-      passwordFile = PasswordFile.loadFromFile(PASSWORD_FILE_PATH);
-      serverSocket = new ServerSocket(ServerConstants.DEFAULT_PORT);
+      serverSocket = new ServerSocket(portNumber);
     }
-    catch (IOException e)
+    catch(IOException e)
+    {
+      System.err.println("Server error: Opening socket failed.");
+      e.printStackTrace();
+      System.exit(-1);
+    }
+
+    // Mimic a chron-job that every half sec. it deletes stale workers.
+    timer.schedule(new TimerTask()
+    {
+      @Override
+      public void run ()
+      {
+        cleanConnectionList();
+      }
+    }, 500, 500);
+
+    waitForConnection(portNumber);
+
+
+  }
+
+
+  /**
+   * Get the time of server spawn time to a given time.
+   *
+   * @param curr is the current time
+   *
+   * @return difference time in seconds
+   */
+  public double getTimeDiff (long curr)
+  {
+    long nanoSecDiff = curr - startNanoSec;
+    return nanoSecDiff / 1000000000.0;
+  }
+
+
+  /**
+   * Wait for a connection.
+   *
+   * @param port port to listen on.
+   */
+  public void waitForConnection (int port)
+  {
+
+    String host = "";
+    try
+    {
+      host = InetAddress.getLocalHost().getHostName();
+    }
+    catch(UnknownHostException e)
     {
       e.printStackTrace();
-      System.exit(1);
     }
-  }
-
-  /*
-    Usage: java starvationevasion.server.Server  AI_command
-    e.g.: java starvationevasion.server.Server  java starvationevasion.client.AI --environment
-    The AI command will be launched with the following environment variables:
-      "SEUSERNAME": The username to use
-      "SEPASSWORD": the password
-      "SEHOSTNAME": the host of the server
-      "SEPORT": the port to connect to
-  */
-  public static void main(String[] args)
-  {
-    if (args.length < 1)
+    while(true)
     {
-      System.out.println("Usage: java -jar Server.jar  ai_command");
-      return;
-    }
-    new Server(Arrays.copyOfRange(args, 0, args.length)).start();
-  }
-
-  private void start()
-  {
-    new Thread(this::processMessages).start();
-    waitForConnections();
-  }
-
-  private void waitForConnections()
-  {
-    System.out.println("Waiting for clients to connect...");
-    while (true)
-    {
-      //System.out.println("ServerMaster("+host+"): waiting for Connection on port: "+port);
+      System.out.println("Server(" + host + "): waiting for Connection on port: " + port);
       try
       {
         Socket client = serverSocket.accept();
-        ServerWorker worker = new ServerWorker(this, client);
+        System.out.println("Server: *********** new Connection");
+        Worker worker = new Worker(client, this);
+        worker.setServerStartTime(startNanoSec);
+
         worker.start();
-        System.out.println("Client connected: " + client.getInetAddress());
-        connectedClients.add(worker);
-        String nonce = Hello.generateRandomLoginNonce();
-        worker.setLoginNonce(nonce);
-        worker.send(new Hello(nonce, ServerConstants.SERVER_VERSION));
+        worker.setName("worker" + timeDiff());
+
+        allConnections.add(worker);
+
       }
-      catch (IOException e)
+      catch(IOException e)
       {
         System.err.println("Server error: Failed to connect to client.");
         e.printStackTrace();
@@ -107,513 +120,173 @@ public class Server
     }
   }
 
-  public ServerState getCurrentState()
+
+  /**
+   * Send a response of a transaction to all listening workers.
+   *
+   * @param response a response to be send globally.
+   */
+  public void broadcastTransaction (Response response)
   {
-    synchronized (stateSynchronizationObject)
+    for (Worker workers : allConnections)
     {
-      return currentState;
+      workers.send(response.toString());
     }
   }
 
-  private void setServerState(ServerState newState)
+  /**
+   * Send a message to all workers.
+   *
+   * @param s string containing a message.
+   */
+  public void broadcast (String s)
   {
-    synchronized (stateSynchronizationObject)
+    for (Worker workers : allConnections)
     {
-      currentState = newState;
+      workers.send(s);
     }
   }
 
-  public void broadcast(Serializable message)
+  public static void main (String args[])
   {
-    synchronized (connectedClients)
-    {
-      connectedClients.forEach(c -> c.send(message));
-    }
-  }
-
-  public void acceptMessage(Serializable message, ServerWorker client)
-  {
-    messageQueue.add(new Tuple<>(message, client));
-  }
-
-  public void processMessages()
-  {
-    while (!getCurrentState().equals(ServerState.END))
-    {
-      Tuple<Serializable, ServerWorker> messageClientPair = messageQueue.poll();
-      if (messageClientPair == null)
-      {
-        try
-        {
-          Thread.sleep(10);
-        }
-        catch (InterruptedException e)
-        {
-          e.printStackTrace();
-        }
-        continue;
-      }
-      ServerWorker client = messageClientPair.b;
-      Serializable message = messageClientPair.a;
-
-      if (message instanceof Login)
-      {
-        handleLogin(client, (Login) message);
-        continue;
-      }
-      if (message instanceof RegionChoice)
-      {
-        handleRegionChoice(client, (RegionChoice) message);
-        continue;
-      }
-      if (message instanceof DraftCard)
-      {
-        handleDraftMessage(client, (DraftCard) message);
-        continue;
-      }
-      if (message instanceof Discard)
-      {
-        handleDiscard(client, (Discard) message);
-        continue;
-      }
-      if (message instanceof Vote)
-      {
-        handleVote(client, (Vote) message);
-        continue;
-      }
-      if (message instanceof ClientChatMessage)
-      {
-        handleChatMessage(client, (ClientChatMessage) message);
-        continue;
-      }
-      client.send(Response.INAPPROPRIATE);
-    }
-  }
-
-  private void handleVote(ServerWorker client, Vote message)
-  {
-    final EnumRegion region = client.getRegion();
-    if (getCurrentState() != ServerState.VOTING || region == null)
-    {
-      client.send(Response.INAPPROPRIATE);
-      return;
-    }
-    client.send(Response.OK);
-    List<EnumPolicy> hand = playerHands.get(region);
-    EnumPolicy[] handArray = hand.toArray(new EnumPolicy[hand.size()]);
-    if (!regionVoteRequiredCards.containsKey(message.cardOwner))
-    {
-      client.send(new ActionResponse(ActionResponseType.NONEXISTENT_CARD, handArray));
-      return;
-    }
-    final PolicyCard card = regionVoteRequiredCards.get(message.cardOwner);
-    if (regionsWhoVotedOnCards.get(card).contains(region))
-    {
-      client.send(new ActionResponse(ActionResponseType.TOO_MANY_ACTIONS, handArray));
-      return;
-    }
-    if (!card.isEligibleToVote(region))
-    {
-      client.send(new ActionResponse(ActionResponseType.INVALID, handArray));
-      return;
-    }
-
-    card.addEnactingRegion(region);
-    regionsWhoVotedOnCards.get(card).add(region);
-    broadcastVoteStatus();
-    checkForVotePhaseEnd();
-  }
-
-  private void checkForVotePhaseEnd()
-  {
-    if (getCurrentState() != ServerState.VOTING) return;
-    for (PolicyCard card : regionVoteRequiredCards.values())
-    {
-      if (card.voteWaitForAll() && regionsWhoVotedOnCards.get(card).size() < 7) return;
-      if (card.getEnactingRegionCount() < card.votesRequired()) return;
-    }
-    if (!phaseChangeFuture.cancel(false)) return;
-    enterDrawingPhase();
-  }
-
-  private void broadcastVoteStatus()
-  {
-    Collection<PolicyCard> voteRequiredCards = regionVoteRequiredCards.values();
-    broadcast(new VoteStatus(voteRequiredCards.toArray(new PolicyCard[voteRequiredCards.size()])));
-  }
-
-  private void handleDiscard(ServerWorker client, Discard message)
-  {
-    final EnumRegion region = client.getRegion();
-    if (getCurrentState() != ServerState.DRAFTING || region == null)
-    {
-      client.send(Response.INAPPROPRIATE);
-      return;
-    }
-    client.send(Response.OK);
-    List<EnumPolicy> hand = playerHands.get(region);
-    EnumPolicy[] handArray = hand.toArray(new EnumPolicy[hand.size()]);
-    final RegionTurnData regionTurnData = this.regionTurnData.get(region);
-    if ((message.isFreeDiscard && regionTurnData.hasUsedFreeDiscard) || regionTurnData.actionsRemaining < 1)
-    {
-      client.send(new ActionResponse(ActionResponseType.TOO_MANY_ACTIONS, handArray));
-      return;
-    }
-    if (!Arrays.stream(message.discards).allMatch(hand::contains))
-    {
-      client.send(new ActionResponse(ActionResponseType.NONEXISTENT_CARD, handArray));
-      return;
-    }
-    if (message.isFreeDiscard)
-    {
-      hand.remove(message.discards[0]);
-      simulator.discard(region, message.discards[0]);
-      regionTurnData.hasUsedFreeDiscard = true;
-    }
-    else
-    {
-      regionTurnData.actionsRemaining--;
-      for (EnumPolicy discard : message.discards)
-      {
-        if (discard == null) continue;
-        hand.remove(discard);
-      }
-      Collections.addAll(hand, simulator.drawCards(region));
-    }
-    handArray = hand.toArray(new EnumPolicy[hand.size()]);
-    client.send(new ActionResponse(ActionResponseType.OK, handArray));
-    checkForDraftPhaseEnd();
-  }
-
-  private void handleDraftMessage(ServerWorker client, DraftCard message)
-  {
-    final EnumRegion region = client.getRegion();
-    if (getCurrentState() != ServerState.DRAFTING || region == null)
-    {
-      client.send(Response.INAPPROPRIATE);
-      return;
-    }
-    client.send(Response.OK);
-    List<EnumPolicy> hand = playerHands.get(region);
-    EnumPolicy[] handArray = hand.toArray(new EnumPolicy[hand.size()]);
-    final RegionTurnData regionTurnData = this.regionTurnData.get(region);
-    if (regionTurnData.actionsRemaining < 1)
-    {
-      client.send(new ActionResponse(ActionResponseType.TOO_MANY_ACTIONS, handArray));
-      return;
-    }
-    if (!hand.contains(message.policyCard.getCardType()))
-    {
-      client.send(new ActionResponse(ActionResponseType.NONEXISTENT_CARD, handArray));
-      return;
-    }
-    String validationResponse = message.policyCard.validate();
-    if (message.policyCard.getOwner() != client.getRegion())
-    {
-      validationResponse = "Tried to play a region card with the wrong owner";
-    }
-    if (validationResponse != null)
-    {
-      client.send(new ActionResponse(ActionResponseType.INVALID, handArray, validationResponse));
-      return;
-    }
-    if (message.policyCard.votesRequired() > 0 && regionTurnData.hasPlayedVoteCard)
-    {
-      client.send(new ActionResponse(ActionResponseType.TOO_MANY_VOTING_CARDS, handArray));
-      return;
-    }
-    regionTurnData.actionsRemaining--;
-    if (message.policyCard.votesRequired() > 0) regionTurnData.hasPlayedVoteCard = true;
-    draftedPolicyCards.add(message.policyCard);
-    hand.remove(message.policyCard.getCardType());
-    handArray = hand.toArray(new EnumPolicy[hand.size()]);
-    client.send(new ActionResponse(ActionResponseType.OK, handArray));
-    checkForDraftPhaseEnd();
-  }
-
-  private void checkForDraftPhaseEnd()
-  {
-    if (getCurrentState() != ServerState.DRAFTING) return;
-    if (!regionTurnData.values().stream().allMatch(v -> v.actionsRemaining < 1)) return;
-    if (!phaseChangeFuture.cancel(false)) return;
-    enterVotingPhase();
-  }
-
-  private void handleChatMessage(ServerWorker client, ClientChatMessage message)
-  {
-    if (client.getRegion() == null)
-    {
-      client.send(Response.INAPPROPRIATE); //if you haven't been assigned a region, no reason to be able to send messages
-      return;
-    }
-    client.send(Response.OK);
-    Set<EnumRegion> recipientSet = new HashSet<>(Arrays.asList(message.messageRecipients));
-    ServerChatMessage serverChatMessage = ServerChatMessage.constructFromClientMessage(message, client.getRegion());
-    for (ServerWorker connectedClient : connectedClients)
-    {
-      if (connectedClient.getRegion() != null &&
-          recipientSet.contains(connectedClient.getRegion()))
-      {
-        connectedClient.send(serverChatMessage);
-      }
-    }
-  }
-
-  private void handleRegionChoice(ServerWorker client, RegionChoice message)
-  {
-    if ((getCurrentState() != ServerState.LOGIN && getCurrentState() != ServerState.BEGINNING) ||
-        passwordFile.regionMap != null)
-    {
-      client.send(Response.INAPPROPRIATE);
-      return;
-    }
-    client.send(Response.OK);
-    final EnumRegion regionChoice = message.region;
-    if (regionChoice == null ||
-        !connectedClients.stream().map(ServerWorker::getRegion).anyMatch(Predicate.isEqual(regionChoice)))
-    {
-      client.setRegion(regionChoice);
-    }
-    final AvailableRegions availableRegions = getAvailableRegions();
-    broadcast(availableRegions);
-    if (getCurrentState() == ServerState.LOGIN && availableRegions.takenRegions.size() == passwordFile.credentialMap.size())
-    {
-      beginToStartGame();
-    }
-    else if (getCurrentState() == ServerState.BEGINNING && availableRegions.availableRegions.size() != 0)
-    {
-      broadcastCancelGameBeginning();
-    }
-  }
-
-  private void broadcastCancelGameBeginning()
-  {
-    if (getCurrentState() == ServerState.DRAFTING) return; //already started, too late, oh well
-    if (getCurrentState() != ServerState.BEGINNING) throw new IllegalStateException();
-    if (!phaseChangeFuture.cancel(false)) return; //already started, too late
-    setServerState(ServerState.LOGIN);
-    broadcast(new ReadyToBegin(false, 0, 0));
-  }
-
-  private void startGame()
-  {
-    List<String> aiNames = Arrays.asList(ServerConstants.AI_NAMES);
-    Collections.shuffle(aiNames);
-    aiNames.stream()
-        .limit(getAvailableRegions()
-            .availableRegions.size()).forEach(
-        n -> aiCredentials.put(ServerConstants.AI_NAME_PREFIX + n, Hello.generateRandomLoginNonce()));
-    aiCredentials.entrySet()
-        .forEach(e -> ServerUtil.StartAIProcess(AICommand, "localhost", ServerConstants.DEFAULT_PORT, e.getKey(), e.getValue()));
-    while (getAvailableRegions().availableRegions.size() > 0)
+    //Valid port numbers are Port numbers are 1024 through 65535.
+    //  ports under 1024 are reserved for system services http, ftp, etc.
+    int port = 5555; //default
+    if (args.length > 0)
     {
       try
       {
-        Thread.sleep(10);
+        port = Integer.parseInt(args[0]);
+        if (port < 1)
+        {
+          throw new Exception();
+        }
       }
-      catch (InterruptedException ignored)
+      catch(Exception e)
       {
-
+        System.out.println("Usage: Server portNumber");
+        System.exit(0);
       }
     }
-    finalUsernames.putAll(
-        connectedClients.stream()
-            .filter(c -> c.getRegion() != null)
-            .collect(Collectors.toMap(ServerWorker::getUserName, ServerWorker::getRegion)));
-    setServerState(ServerState.DRAWING);
-    broadcast(new BeginGame(getTakenRegions()));
-    simulator = new Simulator(Constant.FIRST_YEAR);
-    for (EnumRegion region : EnumRegion.US_REGIONS)
-    {
-      playerHands.put(region, new ArrayList<>(Arrays.asList(simulator.drawCards(region))));
-    }
-    broadcast(PhaseStart.constructPhaseStart(ServerState.DRAWING, -1));
-    currentWorldData = simulator.init();
-    broadcastSimulatorState(currentWorldData);
-    enterDraftingPhase();
+
+    new Server(port);
   }
 
-  private void enterDraftingPhase()
+
+  public String timeDiff ()
   {
-    enactedPolicyCards.clear();
-    final PhaseStart message = PhaseStart.constructPhaseStart(ServerState.DRAFTING, ServerConstants.DRAFTING_PHASE_TIME);
-    phaseEndTime = message.phaseEndTime;
-    for (EnumRegion region : EnumRegion.US_REGIONS)
-    {
-      regionTurnData.put(region, new RegionTurnData());
-    }
-    phaseChangeFuture = scheduledExecutorService.schedule(this::enterVotingPhase, ServerConstants.DRAFTING_PHASE_TIME, TimeUnit.MILLISECONDS);
-    broadcast(message);
-    setServerState(ServerState.DRAFTING);
+    long nanoSecDiff = System.nanoTime() - startNanoSec;
+    double secDiff = nanoSecDiff / 1000000000.0;
+    return String.format("%.3f", secDiff);
   }
 
-  private void enterVotingPhase()
+  public double uptime ()
   {
-    final PhaseStart message = PhaseStart.constructPhaseStart(ServerState.VOTING, ServerConstants.VOTING_PHASE_TIME);
-    phaseEndTime = message.phaseEndTime;
-    phaseChangeFuture = scheduledExecutorService.schedule(this::enterDrawingPhase, ServerConstants.VOTING_PHASE_TIME, TimeUnit.MILLISECONDS);
-    regionsWhoVotedOnCards.clear();
-    regionVoteRequiredCards.putAll(draftedPolicyCards.stream()
-        .filter(c -> c.votesRequired() > 0)
-        .collect(Collectors.toMap(PolicyCard::getOwner, Function.identity())));
-    regionVoteRequiredCards.values().forEach(c -> regionsWhoVotedOnCards.put(c, new ArrayList<>()));
-    broadcast(message);
-    setServerState(ServerState.VOTING);
-    broadcastVoteStatus();
+    long nanoSecDiff = System.nanoTime() - startNanoSec;
+    double secDiff = nanoSecDiff / 1000000000.0;
+    return secDiff;
   }
 
-  private void enterDrawingPhase()
+  public Simulator getSimulator ()
   {
-    setServerState(ServerState.DRAWING);
-    broadcast(PhaseStart.constructPhaseStart(ServerState.DRAWING, -1));
-    for(PolicyCard p: draftedPolicyCards)
-    {
-      if (p.votesRequired() > p.getEnactingRegionCount()) simulator.discard(p.getOwner(), p.getCardType());
-      else enactedPolicyCards.add(p);
-    }
-    for (Map.Entry<EnumRegion, List<EnumPolicy>> entry : playerHands.entrySet())
-    {
-      entry.getValue().addAll(Arrays.asList(simulator.drawCards(entry.getKey())));
-    }
-    currentWorldData = simulator.nextTurn(enactedPolicyCards);
-    broadcastSimulatorState(currentWorldData);
-    if (currentWorldData.year >= Constant.LAST_YEAR)
-    {
-      setServerState(ServerState.WIN);
-      broadcast(PhaseStart.constructPhaseStart(ServerState.WIN, -1));
-      setServerState(ServerState.END);
-      broadcast(PhaseStart.constructPhaseStart(ServerState.END, -1));
-    }
-    else if (Arrays.stream(currentWorldData.regionData).allMatch(r -> r.population < 1))
-    {
-      setServerState(ServerState.LOSE);
-      broadcast(PhaseStart.constructPhaseStart(ServerState.LOSE, -1));
-      setServerState(ServerState.END);
-      broadcast(PhaseStart.constructPhaseStart(ServerState.END, -1));
-    }
-    else enterDraftingPhase();
+    return simulator;
   }
 
-  private void broadcastSimulatorState(WorldData worldData)
+  public User getUser (String worker)
   {
-    for (ServerWorker client : connectedClients)
-    {
-      if (client.getRegion() == null) continue;
-      sendSimulatorState(worldData, client);
-    }
+    return users.get(worker);
   }
 
-  private void sendSimulatorState(WorldData worldData, ServerWorker client)
+  public boolean addUser (User u, Worker client)
   {
-    final List<EnumPolicy> playerHand = playerHands.get(client.getRegion());
-    client.send(new GameState(worldData, playerHand.toArray(new EnumPolicy[playerHand.size()])));
+    users.put(client.getName(), u);
+    // get available regions
+    // check if region is available
+    // if username and region available
+    // return true
+    // else return region taken
+    // else return username taken
+
+    return true;
   }
 
-  private void handleLogin(ServerWorker client, Login message)
+  /**
+   * Handle a handshake with web client
+   * @param x
+   * @return
+   */
+  private static String handshake (String x)
   {
-    if (client.getRegion() != null)
+
+    MessageDigest digest = null;
+    byte[] one = x.getBytes();
+    byte[] two = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11".getBytes();
+    byte[] combined = new byte[one.length + two.length];
+
+    for (int i = 0; i < combined.length; ++i)
     {
-      client.send(Response.INAPPROPRIATE);
-      return;
+      combined[i] = i < one.length ? one[i] : two[i - one.length];
     }
 
-    client.send(Response.OK);
-    if (aiCredentials.containsKey(message.username) &&
-        Login.generateHashedPassword(client.getLoginNonce(), aiCredentials.get(message.username)).equals(message.hashedPassword))
+    try
     {
-      Optional<EnumRegion> region = getAvailableRegions().availableRegions.stream().findFirst();
-      if (region.isPresent())
+      digest = MessageDigest.getInstance("SHA-1");
+    }
+    catch(NoSuchAlgorithmException e)
+    {
+      e.printStackTrace();
+      return "";
+    }
+
+    digest.reset();
+    digest.update(combined);
+
+    return new String(Base64.getEncoder().encode(digest.digest()));
+
+  }
+
+  private void websocketConnect(Worker worker) throws IOException
+  {
+    // Handling websocket
+    StringBuilder reading = new StringBuilder();
+    String line = "";
+
+    while((line = worker.getClientReader().readLine()) != null)
+    {
+      if (line.equals("") || line.isEmpty())
       {
-        client.setUserName(message.username);
-        client.setRegion(region.get());
-        client.send(new LoginResponse(LoginResponse.ResponseType.ASSIGNED_REGION, client.getRegion()));
         return;
       }
-    }
-    if (!passwordFile.credentialMap.keySet().contains(message.username))
-    {
-      client.send(new LoginResponse(LoginResponse.ResponseType.ACCESS_DENIED, null));
-      return;
-    }
-    if (connectedClients.stream().map(ServerWorker::getRegion).anyMatch(
-        s -> s != null && s.equals(passwordFile.regionMap.get(message.username))))
-    {
-      client.send(new LoginResponse(LoginResponse.ResponseType.DUPLICATE, null));
-      return;
-    }
-
-    if (Login.generateHashedPassword(client.getLoginNonce(),
-        passwordFile.credentialMap.get(message.username)).equals(message.hashedPassword))
-    {
-      if (getCurrentState() == ServerState.LOGIN)
+      reading.append(line);
+      if (line.contains("Sec-WebSocket-Key:"))
       {
-        if (passwordFile.regionMap != null)
-        {
-          client.setRegion(passwordFile.regionMap.get(message.username));
-        }
-
-        client.setUserName(message.username);
-        client.send(new LoginResponse(client.getRegion() != null ?
-            LoginResponse.ResponseType.ASSIGNED_REGION : LoginResponse.ResponseType.CHOOSE_REGION, client.getRegion()));
-        final AvailableRegions availableRegions = getAvailableRegions();
-        broadcast(availableRegions);
-        if (getCurrentState() == ServerState.LOGIN && getTakenRegions().size() == passwordFile.credentialMap.size())
-        {
-          beginToStartGame();
-        }
-      }
-      else if (finalUsernames.containsKey(message.username))
-      {
-        client.setRegion(finalUsernames.get(message.username));
-        client.setUserName(message.username);
-        client.send(new LoginResponse(LoginResponse.ResponseType.ASSIGNED_REGION, client.getRegion()));
-        sendSimulatorState(currentWorldData, client);
-        client.send(new PhaseStart(getCurrentState(), Instant.now().getEpochSecond(), phaseEndTime));
+        String key = line.replace("Sec-WebSocket-Key: ", "");
+        String socketKey = Server.handshake(key);
+        worker.send("HTTP/1.1 101 Switching Protocols\n" +
+                            "Upgrade: websocket\n" +
+                            "Connection: Upgrade\n" +
+                            "Sec-WebSocket-Accept: " + socketKey + "\n");
       }
     }
-    else
+  }
+
+  private void cleanConnectionList ()
+  {
+    int con = 0;
+    for (int i = 0; i < allConnections.size(); i++)
     {
-      client.send(new LoginResponse(LoginResponse.ResponseType.ACCESS_DENIED, null));
+      if (!allConnections.get(i).isRunning())
+      {
+        // the worker is not running. remove it.
+        allConnections.remove(i);
+        con++;
+      }
+    }
+    // check if any removed. Show removed count
+    if (con > 0)
+    {
+      System.out.println("Removed " + con + " connection workers.");
     }
   }
 
-  private void beginToStartGame()
-  {
-    if (getCurrentState() != ServerState.LOGIN) throw new IllegalStateException();
-    final Instant now = Instant.now();
-    broadcast(new ReadyToBegin(true,
-        now.getEpochSecond(), now.plusMillis(ServerConstants.GAME_START_WAIT_TIME).getEpochSecond()));
-    setServerState(ServerState.BEGINNING);
-    phaseChangeFuture = scheduledExecutorService.schedule(
-        this::startGame, ServerConstants.GAME_START_WAIT_TIME, TimeUnit.MILLISECONDS);
-  }
-
-  private AvailableRegions getAvailableRegions()
-  {
-    Map<EnumRegion, String> takenRegions = getTakenRegions();
-    Set<EnumRegion> availableRegions = Arrays.stream(EnumRegion.US_REGIONS)
-        .filter(r -> !takenRegions.keySet().contains(r)).collect(Collectors.toSet());
-    return new AvailableRegions(takenRegions, availableRegions);
-  }
-
-  private Map<EnumRegion, String> getTakenRegions()
-  {
-    return connectedClients.stream().filter(c -> c.getRegion() != null)
-          .collect(Collectors.toMap(ServerWorker::getRegion, ServerWorker::getUserName));
-  }
-
-  public void disconnectClient(ServerWorker client, String disconnectMessage)
-  {
-    connectedClients.remove(client);
-    client.closeSocket();
-    if (disconnectMessage != null)
-    {
-      client.send(new Goodbye(disconnectMessage));
-    }
-    if (getCurrentState() == ServerState.LOGIN || getCurrentState() == ServerState.BEGINNING)
-    {
-      broadcast(getAvailableRegions());
-    }
-    if (getCurrentState() == ServerState.BEGINNING) broadcastCancelGameBeginning();
-  }
 }

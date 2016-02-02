@@ -7,7 +7,7 @@ import starvationevasion.server.*;
 public class UserHandler extends AbstractHandler
 {
 
-  public UserHandler (ServerMaster server, ClientWorker client)
+  public UserHandler (Server server, Worker client)
   {
     super(server, client);
   }
@@ -23,8 +23,8 @@ public class UserHandler extends AbstractHandler
       {
         System.out.println("getting");
         m_response = new Response(ActionType.SUCCESS,
-                                  serverMaster.uptime(),
-                                  serverMaster.getUser(getClient().getName()).toJSON());
+                                  server.uptime(),
+                                  server.getUser(getClient().getName()).toJSON());
         return true;
       }
       // update a user
@@ -39,8 +39,8 @@ public class UserHandler extends AbstractHandler
       // get the user info
       if (request.getRequest() == ActionType.GET)
       {
-        // serverMaster.getHand()
-        // m_response = new Response(ActionType.SUCCESS, serverMaster.uptime(), new JSONDocument(JSONDocument.Type.OBJECT));
+        // server.getHand()
+        // m_response = new Response(ActionType.SUCCESS, server.uptime(), new JSONDocument(JSONDocument.Type.OBJECT));
         // parse the hand and create rsponse
         return true;
       }
@@ -61,14 +61,14 @@ public class UserHandler extends AbstractHandler
       if (request.getRequest() == ActionType.POST)
       {
         System.out.println("new user");
-        if (serverMaster.addUser(new User(request.getPayload()), getClient()))
+        if (server.addUser(new User(request.getPayload()), getClient()))
         {
 
-          m_response = new Response(ActionType.SUCCESS, serverMaster.uptime(), getUser());
+          m_response = new Response(ActionType.SUCCESS, server.uptime(), getUser());
         }
         else
         {
-          m_response = new Response(ActionType.FAIL, serverMaster.uptime(), getUser());
+          m_response = new Response(ActionType.FAIL, server.uptime(), getUser());
 
         }
         return true;

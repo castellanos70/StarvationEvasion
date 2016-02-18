@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  */
 public class SpecialEventCSVLoader
 {
-  private final static Logger LOGGER = Logger.getLogger(CountryCSVLoader.class.getName());
+  private final static Logger LOGGER = Logger.getLogger(SpecialEventCSVLoader.class.getName());
   private static final String PATH = "/sim/SpecialEvents1980To2014.csv";
   private ArrayList<SpecialEventData> eventDatum;
 

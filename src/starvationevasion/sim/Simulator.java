@@ -38,7 +38,7 @@ public class Simulator
     //
     LOGGER.info("Loading and initializing model");
     model = new Model(startYear);
-    model.instantiateRegions();
+
 
     LOGGER.info("Starting Simulator: year="+startYear);
 
@@ -70,7 +70,7 @@ public class Simulator
   public WorldData init()
   {
     WorldData startWorldData = new WorldData();
-    model.appendWorldData(startWorldData);
+    //model.appendWorldData(startWorldData);
     return startWorldData;
   }
 
@@ -275,10 +275,10 @@ public class Simulator
 
     // Now step through the simulation years for debugging
     //
-    for (int i = Constant.FIRST_YEAR + 1; i < Constant.LAST_YEAR ; i += 3)
-    {
-      sim.nextTurn(null); // Test w/o playing any cards.
-    }
+    //for (int i = Constant.FIRST_YEAR + 1; i < Constant.LAST_YEAR ; i += 3)
+    //{
+    //  sim.nextTurn(null); // Test w/o playing any cards.
+    //}
 
     try
     {

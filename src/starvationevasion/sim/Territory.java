@@ -3,6 +3,7 @@ package starvationevasion.sim;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.sim.io.CSVReader;
 import starvationevasion.sim.util.EquirectangularConverter;
 import starvationevasion.sim.util.MapConverter;
 import starvationevasion.common.MapPoint;
@@ -11,6 +12,7 @@ import java.awt.*;
 import java.awt.geom.Area;
 import java.util.*;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Territory is the former Country class, and extends AbstractAgriculturalUnit.
@@ -25,6 +27,19 @@ import java.util.List;
  */
 public class Territory extends AbstractTerritory
 {
+  private static final String PATH = "/sim/TerritoryPopulationAndLandUse.csv";
+
+  private enum EnumHeader
+  { territory, region, population1981, population1990, population2000,
+    population2010, population2014, population2025, population2050,
+    averageAge, undernourished, births, migration, mortality,
+    landArea, farmLand1981, farmLand2014,
+    organic, gmo;
+
+    public static final int SIZE = values().length;
+  };
+
+
   final public static MapConverter converter = new EquirectangularConverter();
 
   private final Area area = new Area();
@@ -463,4 +478,137 @@ public class Territory extends AbstractTerritory
 
     return territoryList.toArray(new Territory[territoryList.size()]);
   }
-}
+
+
+
+
+
+  //====================================================================
+  /**
+   * Constructor takes list of country objects that need data from csv file
+   */
+
+  public static Territory[] territoryLoader(List<GeographicArea> geography)
+  {
+    CSVReader fileReader = new CSVReader(PATH, 0);
+
+    //Check header
+    String[] fieldList = fileReader.readRecord(EnumHeader.SIZE);
+    for (EnumHeader header : EnumHeader.values())
+    {
+      int i = header.ordinal();
+      if (!header.name().equals(fieldList[i]))
+      {
+        System.out.println("**ERROR** Reading " + PATH +
+          "Expected header[" + i + "]=" + header + ", Found: " + fieldList[i]);
+        System.exit(0);
+      }
+    }
+    fileReader.trashRecord();
+
+    // Implementation notes : The CSV file contains 2014 numbers for production, etc. Each row
+    // includes a column at the end that converts 2014 production and farm income to 1981.
+    // It is an int percentage to be multiplied onto the 2014 production and income by to get
+    // the corrosponding value for 1981.  For example CA is 61, so in 1981 they had 61% of
+    // their current production and income.
+    //
+    /*
+    for (int k=0; k<territoryList.length; k++)
+    {
+      Territory territory = null;
+      fieldList = fileReader.readRecord(EnumHeader.SIZE);
+      if (fieldList == null) break;
+
+      double foodFactor = 1.;
+      for (EnumHeader header : EnumHeader.values())
+      {
+        int i = header.ordinal();
+        long value = 0;
+        if ((i > 1) && (i < fieldList.length))
+        {
+          try
+          {
+            value = Long.parseLong(fieldList[i]);
+          }
+          catch (Exception e) {} //Default empty cell, and text to 0
+        }
+        switch (header)
+        {
+          case territory:
+            Territory tmp = new Territory(fieldList[i]);
+            int idx = Arrays.binarySearch(territoryList, tmp);
+            if (idx < 0)
+            {
+              System.out.println("Territory.territoryLoader(): **ERROR** Reading " + PATH +
+                "Territory=" + fieldList[i] + " not found in territory list.  Check the XML.");
+              System.exit(0);
+            }
+
+            territory = territoryList[idx];
+            break;
+
+          case region:
+            for (EnumRegion enumRegion : EnumRegion.values())
+            {
+              if (enumRegion.name().equals(fieldList[i]))
+              {
+                // System.out.println("Territory " + territory.getName() + " region " + enumRegion);
+
+                territory.setGameRegion(enumRegion);
+                regionList[enumRegion.ordinal()].addTerritory(territory);
+                break;
+              }
+            }
+
+            if (territory.getGameRegion() == null)
+            { // Handle special case book-keeping regions.
+              //
+              int r;
+              for (r = EnumRegion.SIZE ; r < regionList.length ; r += 1)
+              {
+                if (regionList[r].getName().equals(fieldList[i]))
+                {
+                  regionList[r].addTerritory(territory);
+                  break;
+                }
+              }
+
+              if (r == regionList.length)
+              {
+                LOGGER.severe("**ERROR** Reading " + PATH + "Game Region not recognized: " + fieldList[i]);
+                return;
+              }
+            }
+            break;
+
+          case population1981:  case population1990:  case population2000:
+          case population2010:  case population2014:  case population2025:
+          case population2050:
+            int year = Integer.valueOf(header.name().substring(10));
+            territory.setPopulation(year, (int) value);
+            break;
+
+          case averageAge: territory.setMedianAge((int) value); break;
+          case births: territory.setBirths((int) value); break;
+          case mortality: territory.setMortality(Constant.FIRST_YEAR, (int) value); break;
+          case migration: territory.setMigration((int) value); break;
+          case undernourished: territory.setUndernourished((int) value); break;
+          case landArea: territory.setLandTotal((int) value); break;
+
+          case farmLand1981: territory.setFarmLand1981((int) value); break;
+          case farmLand2014: territory.setFarmLand2014((int) value); break;
+
+          case organic: territory.setMethod(EnumFarmMethod.ORGANIC, (int) value); break;
+          case gmo: territory.setMethod(EnumFarmMethod.GMO, (int) value); break;
+        }
+      }
+
+      int conventional = 100 -
+        (territory.getMethod(EnumFarmMethod.GMO) + territory.getMethod(EnumFarmMethod.ORGANIC));
+      territory.setMethod(EnumFarmMethod.CONVENTIONAL, conventional);
+*/
+    return null;
+    }
+
+  }
+

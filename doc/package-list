@@ -4,6 +4,7 @@ starvationevasion.client.ai.client
 starvationevasion.client.controller
 starvationevasion.client.controller.guiController
 starvationevasion.client.model
+starvationevasion.client.model.simulationData
 starvationevasion.client.net
 starvationevasion.client.net.common
 starvationevasion.client.utils

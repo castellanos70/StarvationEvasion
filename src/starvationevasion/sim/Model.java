@@ -1,12 +1,11 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.*;
-import starvationevasion.sim.io.SpecialEventCSVLoader;
-import starvationevasion.sim.io.WorldLoader;
-import starvationevasion.sim.io.CropCSVLoader;
+import starvationevasion.sim.io.*;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
 import starvationevasion.sim.events.Hurricane;
+import starvationevasion.sim.io.XMLparsers.GeographyXMLparser;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -79,6 +78,7 @@ import java.util.logging.Logger;
 public class Model
 {
   public static double EVENT_CHANCE = 0.02;
+  public static final String BG_DATA_PATH = "/sim/geography/ne_50m_land.kml";
 
   EnumRegion debugRegion = EnumRegion.CALIFORNIA;
   private final static Logger LOGGER = Logger.getGlobal(); // getLogger(Model.class.getName())
@@ -92,7 +92,10 @@ public class Model
   private final int startYear;
   private int year;
 
-  private World world;
+
+  private TileManager tileManager;
+  private List<GeographicArea> geography;
+  private Territory[]  territories;
 
   // The set of world regions includes all of the regions in the enum, plus an
   // extra United States region aggregating all of the US states for book keeping
@@ -115,9 +118,16 @@ public class Model
 
     this.startYear = startYear;
     year = startYear;
-    seaLevel = new SeaLevel();
+
+    geography = new GeographyXMLparser().getGeography();
+    //territories = Territory.territoryLoader(geography);
+    //tileManager = CropZoneDataIO.parseFile(territories);
+
+    //instantiateRegions();
+    //seaLevel = new SeaLevel();
+
     //load any special events
-    loadExistingSpecialEvents();
+    //loadExistingSpecialEvents();
   }
 
   public Region getRegion(EnumRegion r)
@@ -130,14 +140,17 @@ public class Model
     return specialEvents;
   }
 
+
+
   /**
-   * This method is used to create USState objects along with
-   * the Region data structure
+   * A Region is the base political unit exposed to the player.
+   * A region a set of territories. Each territory is assigned to one region.
    */
-  protected void instantiateRegions()
+  private void instantiateRegions()
   {
-    // The load() operation is very time consuming.
     if (DEBUG) System.out.println("Model.instantiateRegions() Enter");
+    new ProductionCSVLoader(regionList);
+
     for (int i=0; i<EnumRegion.SIZE; i++)
     {
       regionList[i] = new Region(EnumRegion.values()[i]);
@@ -145,16 +158,6 @@ public class Model
 
     try{cropLoader = new CropCSVLoader();} catch (Throwable t){ System.out.println("CROP_LOADER "+t);}
     cropZoneDatum = cropLoader.getCategoryData();
-
-    if (DEBUG) System.out.println("Model.instantiateRegions() new WorldLoader(regionList)");
-    WorldLoader loader = new WorldLoader(regionList);
-    world = loader.getWorld();
-
-
-
-    Territory[] territories = world.getTerritories();
-
-    float[] avgConversionFactors = new float[EnumFood.SIZE];
 
 
     if (DEBUG) System.out.println("Model.instantiateRegions() estimate initial yield.");
@@ -208,6 +211,9 @@ public class Model
       if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(region, Constant.FIRST_YEAR);
     }
   }
+
+
+
 
   /**
    *
@@ -297,6 +303,21 @@ public class Model
     }
   }
 
+  /**
+   * Linear interpolate population.
+   */
+  private void interpolatePopulation(Territory territory, int year0, int year1)
+  {
+    int y0 = territory.getPopulation(year0);
+    int y1 = territory.getPopulation(year1);
+
+    for (int i = year0 + 1 ; i < year1 ; i += 1)
+    {
+      double y = y0 + (y1 - y0) * (((double) i - year0) / (year1 - year0));
+      territory.setPopulation(i, (int) y);
+    }
+  }
+
   // TODO : Not implemented.
   //
   private void applyPolicies()
@@ -350,8 +371,6 @@ public class Model
     if (debugLevel.intValue() < Level.INFO.intValue())
     { Simulator.dbg.println("******************************************* Updating climate");
     }
-
-    world.getTileManager().setClimate(year);
 
     if (debugLevel.intValue() < Level.INFO.intValue())
     { printCurrentClimate(regionList[debugRegion.ordinal()], year);
@@ -572,10 +591,30 @@ public class Model
     for (Territory territory : region.getTerritories())
     {
       MapPoint capitol = territory.getCapitolLocation();
-      LandTile tile = world.getTileManager().getTile(capitol.longitude, capitol.latitude);
+      LandTile tile = tileManager.getTile(capitol.longitude, capitol.latitude);
       Simulator.dbg.println("\t" + territory.getName() + ": " + tile.toDetailedString());
     }
   }
+
+
+  public void printRegions(boolean verbose)
+  {
+    for (Region region : regionList)
+    {
+      System.out.println("Region : " + region.getName());
+      for (Territory unit : region.getTerritories())
+      {
+        System.out.println("\t" + unit.toString());
+        if (verbose == false) continue;
+
+        for (LandTile tile : unit.getLandTiles())
+        {
+          System.out.println("\t\t" + tile.toString());
+        }
+      }
+    }
+  }
+
 
   public void printRegion(Region region, int year)
   {

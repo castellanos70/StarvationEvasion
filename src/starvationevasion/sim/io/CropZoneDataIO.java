@@ -14,13 +14,12 @@ public class CropZoneDataIO
 {
   public static final String DEFAULT_FILE = "/sim/geography/tiledata.bil";
 
-  //public static TileManager parseFile(String resourcePath, Collection<Territory> countries) throws FileNotFoundException
-  public static TileManager parseFile(String resourcePath, Territory[] territoryList) throws FileNotFoundException
+  public static TileManager parseFile(Territory[] territoryList)
   {
-    TileManager dataSet = new TileManager(null);
+    TileManager dataSet = new TileManager();
 
-    InputStream resourceStream = KMLParser.class.getResourceAsStream(resourcePath);
-    if (resourceStream == null) throw new FileNotFoundException(resourcePath);
+    InputStream resourceStream = KMLParser.class.getResourceAsStream(DEFAULT_FILE);
+
 
     BufferedInputStream inputStream = new BufferedInputStream(resourceStream);
 
@@ -45,7 +44,6 @@ public class CropZoneDataIO
         if (lastUnit != null && lastUnit.containsMapPoint(tile.getCenter()))
         {
           lastUnit.addLandTile(tile);
-          dataSet.registerCountryTile(tile);
           continue;
         }
 
@@ -54,7 +52,6 @@ public class CropZoneDataIO
           if (agriculturalUnit.containsMapPoint(tile.getCenter()))
           {
             agriculturalUnit.addLandTile(tile);
-            dataSet.registerCountryTile(tile);
             lastUnit = agriculturalUnit;
           }
         }
@@ -70,24 +67,5 @@ public class CropZoneDataIO
     return dataSet;
   }
 
-  public static void writeCropZoneData(TileManager data, String filename)
-  {
-    try (FileOutputStream out = new FileOutputStream(filename))
-    {
-      for (LandTile t : data.allTiles())
-      {
-        if (t == data.NO_DATA) continue;
-        byte[] array = t.toByteBuffer().array();
-        out.write(array);
-      }
-    }
-    catch (FileNotFoundException e)
-    {
-      e.printStackTrace();
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace();
-    }
-  }
+
 }

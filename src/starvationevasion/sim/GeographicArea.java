@@ -18,23 +18,16 @@ import java.util.List;
  */
 public class GeographicArea
 {
-  //todo someday make the mapconverter a singleton class.
   public final static MapConverter mapConverter = new EquirectangularConverter();
-  //private Territory agriculturalUnit;
   private List<MapPoint> perimeter;
   private String name;
   private String type;
 
   private Polygon mapSpacePoly;
 
-  //public AbstractTerritory getAgriculturalUnit()
-  //{
-  //  return agriculturalUnit;
-  //}
 
   public void setTerritory(Territory agriculturalUnit)
   {
-    //this.agriculturalUnit = agriculturalUnit;
     agriculturalUnit.addRegion(this);
   }
 

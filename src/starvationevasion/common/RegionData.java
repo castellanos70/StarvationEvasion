@@ -121,38 +121,26 @@ public class RegionData implements Serializable
   public JSONDocument toJSON()
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
+    json.setNumber("region", region.ordinal());
     json.setNumber("revenueBalance", revenueBalance);
     json.setNumber("population", population);
     json.setNumber("undernourished", undernourished);
     json.setNumber("humanDevelopmentIndex", humanDevelopmentIndex);
 
-    //JSONDocument foodProduced = JSONDocument.createArray();
-    //foodProduced.set(0, foodProduced.get(0));
-    //json.set("foodProduced", foodProduced);
-
     JSONDocument jProducedArray =  JSONDocument.createArray();
     for(int i = 0; i < EnumFood.SIZE; i++)
       jProducedArray.setNumber(i, foodProduced[i]);
-    json.set("regionData", jProducedArray);
-    //JSONDocument foodProduced = JSONDocument.createArray();
-    //foodProduced.set(0, foodProduced.get(0));
-    //json.set("foodProduced", foodProduced);
+    json.set("foodProduced", jProducedArray);
 
     JSONDocument jIncomeArray =  JSONDocument.createArray();
     for(int i = 0; i < EnumFood.SIZE; i++)
       jIncomeArray.setNumber(i, foodIncome[i]);
     json.set("foodIncome", jIncomeArray);
-    //JSONDocument foodIncome = JSONDocument.createArray();
-    //foodIncome.set(0, foodIncome.get(0));
-    //json.set("foodIncome", foodIncome);
 
     JSONDocument jExportArray = JSONDocument.createArray();
     for(int i = 0; i < EnumFood.SIZE; i++)
       jExportArray.setNumber(i, foodExported[i]);
     json.set("foodExported", jExportArray);
-    //JSONDocument foodExported = JSONDocument.createArray();
-    //foodExported.set(0, foodExported.get(0));
-    //json.set("foodExported", foodExported);
 
     json.setNumber("ethanol", ethanolProducerTaxCredit);
 
@@ -160,10 +148,32 @@ public class RegionData implements Serializable
     for(int i = 0; i < EnumFood.SIZE; i++)
       jFarmArray.setNumber(i, farmArea[i]);
     json.set("farmArea", jFarmArray);
-    //JSONDocument farmArea = JSONDocument.createArray();
-    //farmArea.set(0, farmArea.get(0));
-    //json.set("farmArea", farmArea);
 
     return json;
+  }
+  RegionData(JSONDocument json){
+    region = EnumRegion.values()[(int) json.getNumber("region")];
+    revenueBalance = (int) json.getNumber("revenueBalance");
+    population = (int) json.getNumber("population");
+    undernourished = (double) json.getNumber("undernourished");
+    humanDevelopmentIndex = (double) json.getNumber("humanDevelopmentIndex");
+
+    JSONDocument jProducedParse =  json.get("foodProduced");
+    for(int i = 0; i < EnumFood.SIZE; i++)
+      foodProduced[i] = (int) jProducedParse.getNumber(i);
+
+    JSONDocument jIncomeParse = json.get("foodIncome");
+    for(int i = 0; i < EnumFood.SIZE; i++)
+      foodIncome[i] = (int) jIncomeParse.getNumber(i);
+
+    JSONDocument jExportParse = json.get("foodExported");
+    for(int i = 0; i < EnumFood.SIZE; i++)
+      foodExported[i] = (int) jExportParse.getNumber(i);
+
+    ethanolProducerTaxCredit = (int) json.getNumber("ethanol");
+
+    JSONDocument jFarmParse =  json.get("farmArea");
+    for(int i = 0; i < EnumFood.SIZE; i++)
+      farmArea[i] = (int) jFarmParse.getNumber(i);
   }
 }

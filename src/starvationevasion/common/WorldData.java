@@ -4,6 +4,7 @@ import com.oracle.javafx.jmx.json.JSONDocument;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This structure is populated and returned by the
@@ -86,28 +87,38 @@ public class WorldData implements Serializable
     for(int i = 0; i < eventList.size(); i++) //event List iteration
       jEventArray.set(i, eventList.get(i).toJSON());
     json.set("eventList", jEventArray);
-    //JSONDocument eventList = JSONDocument.createArray();
-    //eventList.set(0, eventList.get(0));
-    //json.set("eventList", eventList);
-
 
     JSONDocument jRegionArray =  JSONDocument.createArray();
-    for(int i = 0; i < EnumRegion.SIZE; i++)
+    for(int i = 0; i < EnumRegion.SIZE; i++) //region Data iteration
         jRegionArray.set(i, regionData[i].toJSON());
     json.set("regionData", jRegionArray);
-    //JSONDocument regionData = JSONDocument.createArray();
-    //regionData.set(0, regionData.get(0));
-    //json.set("regionData", regionData);
 
     JSONDocument jPriceArray = JSONDocument.createArray();
     for(int i = 0; i < EnumFood.SIZE; i++) //food Price iteration
       jPriceArray.setNumber(i, foodPrice[i]);
     json.set("foodPrice", jPriceArray);
-    //JSONDocument foodPrice = JSONDocument.createArray();
-    //foodPrice.set(0, foodPrice.get(0));
-    //json.set("foodPrice", foodPrice);
 
     //TODO Make clear JSON arrays work
     return json;
+  }
+  WorldData(JSONDocument json)
+  {
+    year = (int)json.getNumber("year");
+    seaLevel = (double)json.getNumber("seaLevel");
+
+    //This should be converting the JSONDocument 'jEventArray' from before to a list of SpecialEventData JSONDocuments
+    List<Object> jEventParse = json.get("eventList").array();
+    for(int i = 0; i < jEventParse.size(); i++)
+      eventList.add(new SpecialEventData((JSONDocument)jEventParse.get(i)));
+
+    JSONDocument jRegionParse = json.get("regionData");
+    for(int i = 0; i < EnumRegion.SIZE; i++)
+      regionData[i] = new RegionData(jRegionParse.get(i));
+
+    JSONDocument jPriceParse = json.get("foodPrice");
+    for(int i = 0; i < EnumFood.SIZE; i++)
+      foodPrice[i] = (double)jPriceParse.getNumber(i);
+
+
   }
 }

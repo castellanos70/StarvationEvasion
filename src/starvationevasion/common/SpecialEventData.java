@@ -134,7 +134,7 @@ public class SpecialEventData implements Serializable
     return json;
   }
 
-  SpecialEventData(JSONDocument json)
+  public SpecialEventData(JSONDocument json)
   {
     eventName = json.getString("eventName");
     latitude = (float) json.getNumber("latitude");

@@ -101,7 +101,7 @@ public class WorldData implements Serializable
     //TODO Make clear JSON arrays work
     return json;
   }
-  WorldData(JSONDocument json)
+  public WorldData(JSONDocument json)
   {
     year = (int)json.getNumber("year");
     seaLevel = (double)json.getNumber("seaLevel");

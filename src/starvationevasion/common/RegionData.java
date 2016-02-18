@@ -151,7 +151,8 @@ public class RegionData implements Serializable
 
     return json;
   }
-  RegionData(JSONDocument json){
+  public RegionData(JSONDocument json)
+  {
     region = EnumRegion.values()[(int) json.getNumber("region")];
     revenueBalance = (int) json.getNumber("revenueBalance");
     population = (int) json.getNumber("population");

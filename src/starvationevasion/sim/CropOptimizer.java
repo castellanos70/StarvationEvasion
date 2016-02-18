@@ -14,7 +14,7 @@ import starvationevasion.sim.CropZoneData.EnumCropZone;
  * We conceived of the problem as the Generalized Assignment Problem, with each
  * crop being a 0-1 Knapsack Problem. Our approach was inspired by:
  * http://www.cs.technion.ac.il/~lirank/pubs/2006-IPL-Generalized-Assignment-Problem.pdf
- * 
+ *
  * Since all the items (land Tiles) are of identical size, we start with the largest knapsack
  * (crop with largest area allocated to it) and sort the tiles by their yield for that crop.
  * We proceed to the other crops in descending order of area allocated, resorting the tiles
@@ -29,7 +29,7 @@ public class CropOptimizer
   private final List<CropBin> cropBins;
   private final List<TileYield> tileYields;
   private final double[] cropYields;
-  
+
   /**
    * @param year      year of planting
    * @param territory   territory to plant
@@ -63,12 +63,12 @@ public class CropOptimizer
       Logger.getGlobal().log(Level.FINEST, "Territory {0} has nil crop yields.",  territory.getName());
     }
   }
-  
+
   /**
    * Plant all the crops
    */
   public void optimizeCrops()
-  { 
+  {
     plantingSetup();
     // plant crops
     for (CropBin bin:cropBins)
@@ -90,29 +90,29 @@ public class CropOptimizer
       CropBin bin = new CropBin(crop, (int) cropLand/100);
       cropBins.add(bin);
     }
-    
+
     // calculate yield for each tile for each crop
     for (LandTile tile: territory.getLandTiles())
     {
       TileYield tYield = new TileYield(tile, territory);
       tileYields.add(tYield);
     }
-    
+
     // sort crops by tiles needed, most to least
     Collections.sort(cropBins, Collections.reverseOrder());
   }
-  
+
   /**
    * Plant a given crop
    * @param bin   CropBin with crop to plant and tiles to plant
    */
   private void plantCrop(CropBin bin)
-  { 
+  {
     EnumFood crop = bin.crop;
     int tilesToPlant = bin.tilesNeeded;
     int production = 0;
-    Comparator reverseComparator = Collections.reverseOrder(new TileYieldComparator(crop)); 
-    Collections.sort(tileYields, reverseComparator);                     // sort tiles by descending yield 
+    Comparator reverseComparator = Collections.reverseOrder(new TileYieldComparator(crop));
+    Collections.sort(tileYields, reverseComparator);                     // sort tiles by descending yield
     while (tilesToPlant > 0 && tileYields.isEmpty() == false)            // for top n tiles, where n = tilesNeeded for crop
     {
       TileYield tYield = tileYields.get(0);
@@ -129,7 +129,7 @@ public class CropOptimizer
       territory.setCropProduction(crop, production);
     }
   }
-  
+
   /**
    * If we are not using a tile this year, we need to make sure its currCrop field is set to null.
    */
@@ -143,7 +143,7 @@ public class CropOptimizer
   }
 
   /**
-   * Class containing a LandTile and the amount that tile will yield of 
+   * Class containing a LandTile and the amount that tile will yield of
    * each crop for the current year (uses tile's currCrop for land use
    * penalty calculation).
    * @author jessica
@@ -152,7 +152,7 @@ public class CropOptimizer
   {
     private LandTile tile;
     private double[] yields;
-    
+
     private TileYield(LandTile tile, Territory agriculturalUnit)
     {
       this.tile = tile;
@@ -197,9 +197,9 @@ public class CropOptimizer
         yields[crop.ordinal()] = percentYield * ctryYield;
       }
     }
-    
+
   }
-  
+
   /**
    * Comparator for TileYield class; compares based on their yield for the
    * crop given in the comparator's initializer.
@@ -208,7 +208,7 @@ public class CropOptimizer
   private class TileYieldComparator implements Comparator<TileYield>
   {
     EnumFood crop;
-    
+
     private TileYieldComparator(EnumFood crop)
     {
       this.crop = crop;
@@ -225,7 +225,7 @@ public class CropOptimizer
       else return 0;
     }
   }
-  
+
   /**
    * Class that allows us to sort crops by number of tiles needed.
    * Note: this class has a natural ordering that is inconsistent with equals.
@@ -235,7 +235,7 @@ public class CropOptimizer
   {
     private EnumFood crop;
     private int tilesNeeded;
-    
+
     CropBin(EnumFood crop, int tilesNeeded)
     {
       this.crop = crop;

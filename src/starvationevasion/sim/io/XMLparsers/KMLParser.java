@@ -21,14 +21,14 @@ import java.util.List;
 public class KMLParser extends RegionParserHandler
 {
   private List<GeographicArea> regions;
-  
+
   private String regName;
   private String cleanCoordString;
-  
+
   private boolean nameTag;
   private boolean coordTag;
-  
-  
+
+
   @Override
   public List<GeographicArea> getRegionList()
   {
@@ -85,11 +85,11 @@ public class KMLParser extends RegionParserHandler
         regions.add(r);
     }
   }
-  
+
   private List<MapPoint> parseCoordString()
   {
     List <MapPoint> l = new ArrayList<>();
-    
+
     for(String s : cleanCoordString.trim().split("\\s+"))
     {
       String nums[] = s.split(",");
@@ -113,8 +113,8 @@ public class KMLParser extends RegionParserHandler
 
       kmlReader.parse(new InputSource(inputStream));
       return kmlParser.getRegionList();
-      
-    } 
+
+    }
     /* I had no idea this was legal.
      * Bad form, but works for proof of kml parsing *  */
     catch (SAXException | ParserConfigurationException | IOException e)

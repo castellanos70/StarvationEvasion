@@ -637,7 +637,7 @@ public class Model
       }
     }
   }
-  
+
   public void printData(AbstractTerritory unit, int year, String prefix)
   {
     Simulator.dbg.println(prefix + "Data for " + unit.getName() + " in year " + year);

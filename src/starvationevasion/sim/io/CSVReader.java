@@ -46,7 +46,7 @@ public class CSVReader
     { // Process the line.
       //
       String[] tokens = line.split(",");
-      if (lineNo == 0) 
+      if (lineNo == 0)
       { // The first line contains the column names.
         //
         columns = tokens;

@@ -18,7 +18,7 @@ public class SimulationRegionData
   public int[] foodExported = new int[EnumFood.values().length];
   public int ethanolProducerTaxCredit;
   public int[] farmArea = new int[EnumFood.values().length];
-  
+
   public SimulationRegionData(EnumRegion region, WorldData data)
   {
     this.region = region;

@@ -20,7 +20,7 @@ public class EquirectangularConverter extends MapConverter
 
   private static final MapPoint DEFAULT_REF = new MapPoint(0, 0);
   private static final double SCALING_FACTOR = 10;
-  
+
   public static final double PROJECTION_HEIGHT = 180 * SCALING_FACTOR;
   public static final double PROJECTION_WIDTH = 360 * SCALING_FACTOR;
   public static final Dimension2D DIMENSION = new Dimension2D()
@@ -39,7 +39,7 @@ public class EquirectangularConverter extends MapConverter
 
     @Override
     public void setSize(double width, double height)
-    { 
+    {
       throw new UnsupportedOperationException("setSize not supported");
     }
   };
@@ -89,7 +89,7 @@ public class EquirectangularConverter extends MapConverter
   {
     return lon * Math.cos(Math.toRadians(refPoint.latitude)) * SCALING_FACTOR;
   }
-  
+
   /**
    Convert longitude to graphics X, assuming a reference point of (0,0) in
    spherical coords
@@ -122,9 +122,9 @@ public class EquirectangularConverter extends MapConverter
     return new Point(x, y);
   }
 
-  
+
   /**
-   Convert a Point in graphics-space to a MapPoint assuming the parallel of no 
+   Convert a Point in graphics-space to a MapPoint assuming the parallel of no
    distortion is  the equator.  This converts from a Plate-Caree projection back
    to lat and lon
    @return
@@ -139,7 +139,7 @@ public class EquirectangularConverter extends MapConverter
     //
     return new MapPoint(-p.getY() / SCALING_FACTOR, p.getX() / SCALING_FACTOR);
   }
-  
+
 
   /**
    Converts a GeographicArea to a Polygon in graphics-space

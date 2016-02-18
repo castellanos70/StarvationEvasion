@@ -1,6 +1,10 @@
 package starvationevasion.common;
+
+import com.oracle.javafx.jmx.json.JSONDocument;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+
 /**
  * This structure is populated and returned by the
  * {@link starvationevasion.sim.Simulator#nextTurn(ArrayList)} method.
@@ -42,13 +46,11 @@ public class WorldData implements Serializable
 
   public WorldData()
   {
-    for (int i=0; i<EnumRegion.SIZE; i++)
+    for (int i = 0; i < EnumRegion.SIZE; i++)
     {
       regionData[i] = new RegionData(EnumRegion.values()[i]);
     }
   }
-
-
 
 
   /**
@@ -57,10 +59,10 @@ public class WorldData implements Serializable
   public String toString()
   {
     String msg = "WorldData[" + year + "] =====================================\n     price: [";
-    for (EnumFood food :EnumFood.values())
+    for (EnumFood food : EnumFood.values())
     {
-      msg += String.format("%s:%.0f", food, foodPrice[food.ordinal()]);
-      if (food != EnumFood.DAIRY) msg += ", "; else msg += "]\n";
+      msg += String.format("%s:%.0f", food, foodPrice[food.ordinal()]); if (food != EnumFood.DAIRY) msg += ", ";
+    else msg += "]\n";
     }
 
     for (RegionData region : regionData)
@@ -71,7 +73,34 @@ public class WorldData implements Serializable
     for (SpecialEventData event : eventList)
     {
       msg += "     " + event + "\n";
-    }
-    return msg;
+    } return msg;
+  }
+
+  public JSONDocument toJSON()
+  {
+    JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
+    json.setNumber("year", year);
+    json.setNumber("seaLevel", seaLevel);
+
+    //for(int i = 0; i < eventList.size(); i++) //event List iteration
+    //  json.set(i, eventList.get(i).toJSON());
+    JSONDocument eventList = JSONDocument.createArray();
+    eventList.set(0, eventList.get(0));
+    json.set("eventList", eventList);
+
+    //for(int i = 0; i < EnumRegion.SIZE; i++)
+    //  json.set(i, regionData[i].toJSON());
+    JSONDocument regionData = JSONDocument.createArray();
+    regionData.set(0, regionData.get(0));
+    json.set("regionData", regionData);
+
+
+    //for(int i = 0; i < EnumFood.SIZE; i++) //food Price iteration
+    //  json.setNumber(i, foodPrice[i]);
+    JSONDocument foodPrice = JSONDocument.createArray();
+    foodPrice.set(0, foodPrice.get(0));
+    json.set("foodPrice", foodPrice);
+    //TODO Make clear JSON arrays work
+    return json;
   }
 }

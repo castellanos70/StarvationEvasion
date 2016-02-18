@@ -1,4 +1,7 @@
 package starvationevasion.common;
+
+import com.oracle.javafx.jmx.json.JSONDocument;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -13,7 +16,8 @@ public class SpecialEventData implements Serializable
   }
 
   public enum EnumMonth
-  { January, February, March, April, May, June,
+  {
+    January, February, March, April, May, June,
     July, August, September, October, November, December
   }
 
@@ -22,19 +26,18 @@ public class SpecialEventData implements Serializable
   public float longitude;
 
   /**
-   *  This value describes the severity of the event on a continuous
-   *  interval [0.0, 1.0]. The severity of the event increases approaching 1.0.
-   *
+   * This value describes the severity of the event on a continuous
+   * interval [0.0, 1.0]. The severity of the event increases approaching 1.0.
    */
   public float severity;
-  public long   dollarsInDamage;
+  public long dollarsInDamage;
   public EnumSpecialEvent type;
   public String eventName;
   public int year;
   public EnumMonth month;
   public int durationInMonths;
   public ArrayList<MapPoint> locationList = new ArrayList<>();
-  public ArrayList<EnumRegion> regions    = new ArrayList<>();
+  public ArrayList<EnumRegion> regions = new ArrayList<>();
 
   public SpecialEventData(String name)
   {
@@ -91,9 +94,9 @@ public class SpecialEventData implements Serializable
   public String toString()
   {
     String str = "";
-    str += "Event "+ eventName + "\n";
-    str += "\tYear   : "+year+"\n";
-    str += "\tActionType   : "+type.name()+"\n";
+    str += "Event " + eventName + "\n";
+    str += "\tYear   : " + year + "\n";
+    str += "\tActionType   : " + type.name() + "\n";
     str += "\tRegions: \n";
     for (EnumRegion region : regions)
     {
@@ -102,4 +105,31 @@ public class SpecialEventData implements Serializable
 
     return str;
   }
+
+  public JSONDocument toJSON()
+  { //TODO Match all enum formats together
+    JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
+    json.setString("eventName", eventName);
+    json.setNumber("latitude", latitude);
+    json.setNumber("longitude", longitude);
+    json.setNumber("severity", severity);
+    json.setNumber("dollarsInDamage", dollarsInDamage);
+    json.setNumber("enumSpecialEvent", type.ordinal());
+    json.setNumber("year", year);
+    json.setNumber("enumMonth", month.ordinal());
+    json.setNumber("durationInMonths", durationInMonths);
+
+    JSONDocument locationList = JSONDocument.createArray();
+    locationList.set(0, locationList.get(0));
+    json.set("locationList", locationList);
+
+    JSONDocument regions = JSONDocument.createArray();
+    regions.set(0, regions.get(0));
+    json.set("regions", regions);
+
+    //TODO Make clear JSON arrays work
+    return json;
+  }
+
+
 }

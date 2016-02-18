@@ -10,14 +10,14 @@ import java.util.*;
  @author david
  created: 2015-04-05
 
- description: 
+ description:
  TradingOptimizer casts the import-export problem as something akin to the
  Generalized Assignment Problem, wherein either the importers or exporters
  may be conceptualized as the bins or knapsacks.
  The algorithm follows the ideas outlined at:
  http://www.cs.technion.ac.il/~lirank/pubs/2006-IPL-Generalized-Assignment-Problem.pdf
 
- The strategy is to to look at each bin as an individual knapsack problem 
+ The strategy is to to look at each bin as an individual knapsack problem
  (in this case, the fractional knapsack) with a set of shared resources to place
  in that knapsack, and run them in an arbitrary order until the resources to
  place have been exhausted.
@@ -37,7 +37,7 @@ public class TradingOptimizer
     new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(), new ArrayList(),
     new ArrayList(), new ArrayList(), new ArrayList()
   };
-  
+
   private List<SingleCropTrader> traders;
 
   /**
@@ -68,13 +68,13 @@ public class TradingOptimizer
     }
     for(SingleCropTrader trader : traders) trader.start();
   }
-  
+
   public boolean doneTrading()
   {
     for(SingleCropTrader t : traders) if (!t.isDone()) return false;
     return true;
   }
-  
+
   public List<TradePair>[] getAllTrades(){ return allTrades; }
 
   /**
@@ -141,7 +141,7 @@ public class TradingOptimizer
 
         // exporter.setCropExport(year, crop, toGive + curExport);
         // importer.setCropImport(year, crop, toReceive + curImport);
-        
+
         return true;
       }
       return false;
@@ -221,7 +221,7 @@ public class TradingOptimizer
       tradeProbablistic();
       isDone = true;
     }
-    
+
     public boolean isDone() { return isDone; }
 
     private void tradeDeterministic()

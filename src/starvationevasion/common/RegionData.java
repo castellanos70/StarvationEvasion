@@ -1,5 +1,7 @@
 package starvationevasion.common;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
+
 import java.io.Serializable;
 
 /**
@@ -114,5 +116,34 @@ public class RegionData implements Serializable
     }
 
     return msg;
+  }
+
+  public JSONDocument toJSON()
+  {
+    JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
+    json.setNumber("revenueBalance", revenueBalance);
+    json.setNumber("population", population);
+    json.setNumber("undernourished", undernourished);
+    json.setNumber("humanDevelopmentIndex", humanDevelopmentIndex);
+
+    JSONDocument foodProduced = JSONDocument.createArray();
+    foodProduced.set(0, foodProduced.get(0));
+    json.set("foodProduced", foodProduced);
+
+    JSONDocument foodIncome = JSONDocument.createArray();
+    foodIncome.set(0, foodIncome.get(0));
+    json.set("foodIncome", foodIncome);
+
+    JSONDocument foodExported = JSONDocument.createArray();
+    foodExported.set(0, foodExported.get(0));
+    json.set("foodExported", foodExported);
+
+    json.setNumber("ethanol", ethanolProducerTaxCredit);
+
+    JSONDocument farmArea = JSONDocument.createArray();
+    farmArea.set(0, farmArea.get(0));
+    json.set("farmArea", farmArea);
+
+    return json;
   }
 }

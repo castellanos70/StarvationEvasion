@@ -409,8 +409,8 @@ public class Region extends AbstractTerritory
       double cropExport = (double) initialExports1981[crop.ordinal()] / population[0];
 
       for (Territory t : territories)
-      { 
-        if (t.getName().startsWith("US-") == false) 
+      {
+        if (t.getName().startsWith("US-") == false)
         {
           t.setCropNeedPerCapita(crop, need);
           t.setCropProduction(crop, (long) (cropProduction * t.getPopulation(Constant.FIRST_YEAR)));

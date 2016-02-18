@@ -126,23 +126,43 @@ public class RegionData implements Serializable
     json.setNumber("undernourished", undernourished);
     json.setNumber("humanDevelopmentIndex", humanDevelopmentIndex);
 
-    JSONDocument foodProduced = JSONDocument.createArray();
-    foodProduced.set(0, foodProduced.get(0));
-    json.set("foodProduced", foodProduced);
+    //JSONDocument foodProduced = JSONDocument.createArray();
+    //foodProduced.set(0, foodProduced.get(0));
+    //json.set("foodProduced", foodProduced);
 
-    JSONDocument foodIncome = JSONDocument.createArray();
-    foodIncome.set(0, foodIncome.get(0));
-    json.set("foodIncome", foodIncome);
+    JSONDocument jProducedArray =  JSONDocument.createArray();
+    for(int i = 0; i < EnumFood.SIZE; i++)
+      jProducedArray.setNumber(i, foodProduced[i]);
+    json.set("regionData", jProducedArray);
+    //JSONDocument foodProduced = JSONDocument.createArray();
+    //foodProduced.set(0, foodProduced.get(0));
+    //json.set("foodProduced", foodProduced);
 
-    JSONDocument foodExported = JSONDocument.createArray();
-    foodExported.set(0, foodExported.get(0));
-    json.set("foodExported", foodExported);
+    JSONDocument jIncomeArray =  JSONDocument.createArray();
+    for(int i = 0; i < EnumFood.SIZE; i++)
+      jIncomeArray.setNumber(i, foodIncome[i]);
+    json.set("foodIncome", jIncomeArray);
+    //JSONDocument foodIncome = JSONDocument.createArray();
+    //foodIncome.set(0, foodIncome.get(0));
+    //json.set("foodIncome", foodIncome);
+
+    JSONDocument jExportArray = JSONDocument.createArray();
+    for(int i = 0; i < EnumFood.SIZE; i++)
+      jExportArray.setNumber(i, foodExported[i]);
+    json.set("foodExported", jExportArray);
+    //JSONDocument foodExported = JSONDocument.createArray();
+    //foodExported.set(0, foodExported.get(0));
+    //json.set("foodExported", foodExported);
 
     json.setNumber("ethanol", ethanolProducerTaxCredit);
 
-    JSONDocument farmArea = JSONDocument.createArray();
-    farmArea.set(0, farmArea.get(0));
-    json.set("farmArea", farmArea);
+    JSONDocument jFarmArray =  JSONDocument.createArray();
+    for(int i = 0; i < EnumFood.SIZE; i++)
+      jFarmArray.setNumber(i, farmArea[i]);
+    json.set("farmArea", jFarmArray);
+    //JSONDocument farmArea = JSONDocument.createArray();
+    //farmArea.set(0, farmArea.get(0));
+    //json.set("farmArea", farmArea);
 
     return json;
   }

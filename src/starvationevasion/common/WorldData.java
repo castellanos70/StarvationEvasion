@@ -82,24 +82,31 @@ public class WorldData implements Serializable
     json.setNumber("year", year);
     json.setNumber("seaLevel", seaLevel);
 
-    //for(int i = 0; i < eventList.size(); i++) //event List iteration
-    //  json.set(i, eventList.get(i).toJSON());
-    JSONDocument eventList = JSONDocument.createArray();
-    eventList.set(0, eventList.get(0));
-    json.set("eventList", eventList);
-
-    //for(int i = 0; i < EnumRegion.SIZE; i++)
-    //  json.set(i, regionData[i].toJSON());
-    JSONDocument regionData = JSONDocument.createArray();
-    regionData.set(0, regionData.get(0));
-    json.set("regionData", regionData);
+    JSONDocument jEventArray = JSONDocument.createArray();
+    for(int i = 0; i < eventList.size(); i++) //event List iteration
+      jEventArray.set(i, eventList.get(i).toJSON());
+    json.set("eventList", jEventArray);
+    //JSONDocument eventList = JSONDocument.createArray();
+    //eventList.set(0, eventList.get(0));
+    //json.set("eventList", eventList);
 
 
-    //for(int i = 0; i < EnumFood.SIZE; i++) //food Price iteration
-    //  json.setNumber(i, foodPrice[i]);
-    JSONDocument foodPrice = JSONDocument.createArray();
-    foodPrice.set(0, foodPrice.get(0));
-    json.set("foodPrice", foodPrice);
+    JSONDocument jRegionArray =  JSONDocument.createArray();
+    for(int i = 0; i < EnumRegion.SIZE; i++)
+        jRegionArray.set(i, regionData[i].toJSON());
+    json.set("regionData", jRegionArray);
+    //JSONDocument regionData = JSONDocument.createArray();
+    //regionData.set(0, regionData.get(0));
+    //json.set("regionData", regionData);
+
+    JSONDocument jPriceArray = JSONDocument.createArray();
+    for(int i = 0; i < EnumFood.SIZE; i++) //food Price iteration
+      jPriceArray.setNumber(i, foodPrice[i]);
+    json.set("foodPrice", jPriceArray);
+    //JSONDocument foodPrice = JSONDocument.createArray();
+    //foodPrice.set(0, foodPrice.get(0));
+    //json.set("foodPrice", foodPrice);
+
     //TODO Make clear JSON arrays work
     return json;
   }

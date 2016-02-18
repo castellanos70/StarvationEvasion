@@ -114,22 +114,43 @@ public class SpecialEventData implements Serializable
     json.setNumber("longitude", longitude);
     json.setNumber("severity", severity);
     json.setNumber("dollarsInDamage", dollarsInDamage);
-    json.setNumber("enumSpecialEvent", type.ordinal());
+    json.setNumber("enumType", type.ordinal());
     json.setNumber("year", year);
     json.setNumber("enumMonth", month.ordinal());
     json.setNumber("durationInMonths", durationInMonths);
 
-    JSONDocument locationList = JSONDocument.createArray();
-    locationList.set(0, locationList.get(0));
-    json.set("locationList", locationList);
+    JSONDocument jLocArray =  JSONDocument.createArray();
+    for(int i = 0; i < locationList.size(); i++)
+      jLocArray.set(i, locationList.get(i).toJSON());
+    json.set("locationList", jLocArray);
+//    JSONDocument locationList = JSONDocument.createArray();
+//    locationList.set(0, locationList.get(0));
+//    json.set("locationList", locationList);
 
-    JSONDocument regions = JSONDocument.createArray();
-    regions.set(0, regions.get(0));
-    json.set("regions", regions);
+    JSONDocument jRegionArray = JSONDocument.createArray();
+    for(int i = 0; i < regions.size(); i++)
+      jRegionArray.setNumber(i, regions.get(i).ordinal());
+    json.set("regions", jRegionArray);
+//    JSONDocument regions = JSONDocument.createArray();
+//    regions.set(0, regions.get(0));
+//    json.set("regions", regions);
 
     //TODO Make clear JSON arrays work
     return json;
   }
 
+  SpecialEventData(JSONDocument json)
+  {
+    eventName = json.getString("eventName");
+    latitude = (float)json.getNumber("latitude");
+    longitude = (float)json.getNumber("longitude");
+    severity = (float)json.getNumber("severity");
+    dollarsInDamage = (long)json.getNumber("dollarsInDamage");
+    type = EnumSpecialEvent.values()[(int)json.getNumber("enumType")];
+    year = (int)json.getNumber("year");
+    month = EnumMonth.values()[(int)json.getNumber("enumMonth")];
+    durationInMonths = (int)json.getNumber("durationInMonths");
 
+    //TODO not clear how array implementation works, need recursive array JSONDOC?
+  }
 }

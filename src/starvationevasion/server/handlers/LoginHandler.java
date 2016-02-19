@@ -3,7 +3,6 @@ package starvationevasion.server.handlers;
 
 import starvationevasion.server.Worker;
 import starvationevasion.server.Server;
-import starvationevasion.server.model.Request;
 
 public class LoginHandler extends AbstractHandler
 {

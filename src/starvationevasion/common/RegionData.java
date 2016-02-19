@@ -97,7 +97,7 @@ public class RegionData implements Serializable
   }
 
   /**
-   * @return Data stored in this structure as a formatted String.
+   * @return Request stored in this structure as a formatted String.
    */
   public String toString()
   {

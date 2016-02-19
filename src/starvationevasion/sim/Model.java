@@ -269,7 +269,7 @@ public class Model
     }
 
 
-    //Region Data
+    //Region Request
     for (int i=0; i<EnumRegion.SIZE; i++)
     {
       RegionData region = threeYearData.regionData[i];
@@ -601,7 +601,7 @@ public class Model
   
   public void printData(AbstractTerritory unit, int year, String prefix)
   {
-    Simulator.dbg.println(prefix + "Data for " + unit.getName() + " in year " + year);
+    Simulator.dbg.println(prefix + "Request for " + unit.getName() + " in year " + year);
     Simulator.dbg.print(prefix + prefix + "\t");
     if (unit instanceof Region) Simulator.dbg.print("sum ");
 

@@ -3,8 +3,6 @@ package starvationevasion.server.handlers;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.*;
-import starvationevasion.server.model.Request;
-import starvationevasion.server.model.User;
 
 public class UserHandler extends AbstractHandler
 {

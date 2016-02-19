@@ -6,7 +6,7 @@ package starvationevasion.server;
 
 
 import starvationevasion.server.handlers.Handler;
-import starvationevasion.server.model.Data;
+import starvationevasion.server.model.Request;
 import starvationevasion.sim.Simulator;
 
 import java.io.BufferedReader;
@@ -104,7 +104,7 @@ public class Worker extends Thread
 
         System.out.println(s);
 
-        Data r = new Data();
+        Request r = new Request();
 //
 //        if (r.getRequest() == ActionType.QUIT)
 //        {

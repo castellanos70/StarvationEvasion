@@ -29,7 +29,7 @@ public class WorldData implements Serializable
 
 
   /**
-   * Data for each of the player and non-player world regions.
+   * Request for each of the player and non-player world regions.
    */
   public RegionData[] regionData = new RegionData[EnumRegion.SIZE];
 
@@ -52,7 +52,7 @@ public class WorldData implements Serializable
 
 
   /**
-   * @return Data stored in this structure as a formatted String.
+   * @return Request stored in this structure as a formatted String.
    */
   public String toString()
   {

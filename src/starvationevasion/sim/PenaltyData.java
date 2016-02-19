@@ -7,7 +7,7 @@ import java.util.List;
 
 
 /**
- * Data structure for holding penalty function data.
+ * Request structure for holding penalty function data.
  */
 public class PenaltyData
 {

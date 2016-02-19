@@ -1,4 +1,4 @@
-package starvationevasion.server;
+package starvationevasion.server.model;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import com.oracle.javafx.jmx.json.JSONWriter;

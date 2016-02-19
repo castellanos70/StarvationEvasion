@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 
 /**
- * Data structure for fertilizer data
+ * Request structure for fertilizer data
  */
 public class FertilizerData
 {

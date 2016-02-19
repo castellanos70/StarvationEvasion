@@ -1,6 +1,6 @@
 package starvationevasion.client.Logic;
 
-import starvationevasion.client.GUI.Graphs.GraphManager;
+import starvationevasion.client.GUIOrig.Graphs.GraphManager;
 import javafx.application.Platform;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
@@ -8,8 +8,8 @@ import starvationevasion.common.RegionData;
 import starvationevasion.common.WorldData;
 import starvationevasion.common.messages.ActionResponse;
 import starvationevasion.common.messages.GameState;
-import starvationevasion.client.GUI.GUI;
-import starvationevasion.client.GUI.SummaryBar;
+import starvationevasion.client.GUIOrig.GUI;
+import starvationevasion.client.GUIOrig.SummaryBar;
 
 import java.util.HashMap;
 

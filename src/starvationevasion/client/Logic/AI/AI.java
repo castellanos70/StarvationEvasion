@@ -3,9 +3,9 @@ package starvationevasion.client.Logic.AI;
 /**
  * This is the prototype for the main AI
  */
-import starvationevasion.client.GUI.DraftLayout.hand.ClientPolicyCard;
-import starvationevasion.client.GUI.DraftLayout.hand.Hand;
-import starvationevasion.client.GUI.GUI;
+import starvationevasion.client.GUIOrig.DraftLayout.hand.ClientPolicyCard;
+import starvationevasion.client.GUIOrig.DraftLayout.hand.Hand;
+import starvationevasion.client.GUIOrig.GUI;
 import starvationevasion.client.Logic.Client;
 import starvationevasion.client.Networking.Messenger;
 import javafx.application.Application;
@@ -48,7 +48,7 @@ public class AI extends Application
     client = new Client(true);
     client.init();
     messenger = client.messenger;
-    //hand=GUI.getDraftLayout().getHand();
+    //hand=GUIOrig.getDraftLayout().getHand();
   }
 
   public void start(Stage stage){}

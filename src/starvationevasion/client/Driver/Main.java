@@ -1,6 +1,6 @@
 package starvationevasion.client.Driver;
 
-import starvationevasion.client.GUI.GUI;
+import starvationevasion.client.GUIOrig.GUI;
 
 public class Main
 {

@@ -1,9 +1,9 @@
 package starvationevasion.client.Logic;
 
 import starvationevasion.client.Driver.RegionChooser;
-import starvationevasion.client.GUI.DraftLayout.DraftTimer;
-import starvationevasion.client.GUI.GUI;
-import starvationevasion.client.GUI.VotingLayout.VotingTimer;
+import starvationevasion.client.GUIOrig.DraftLayout.DraftTimer;
+import starvationevasion.client.GUIOrig.GUI;
+import starvationevasion.client.GUIOrig.VotingLayout.VotingTimer;
 import starvationevasion.client.Networking.ClientListener;
 import starvationevasion.client.Networking.MessageContainer;
 import starvationevasion.client.Networking.Messenger;
@@ -269,7 +269,7 @@ public class Client
   /**
    * Called whenever a new phase starts. The Client uses this
    * method to restart the appropriate timer as well as changing
-   * the GUI's main Scene.
+   * the GUIOrig's main Scene.
    * @param newPhaseInfo The info corresponding to the change of
    *                     phase.
    */

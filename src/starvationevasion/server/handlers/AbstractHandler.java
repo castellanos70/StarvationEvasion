@@ -4,8 +4,8 @@ package starvationevasion.server.handlers;
 
 import starvationevasion.server.Server;
 import starvationevasion.server.Worker;
-import starvationevasion.server.Request;
-import starvationevasion.server.Response;
+import starvationevasion.server.model.Request;
+import starvationevasion.server.model.Response;
 
 public abstract class AbstractHandler
 {

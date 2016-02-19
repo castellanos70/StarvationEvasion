@@ -1,4 +1,4 @@
-package starvationevasion.server;
+package starvationevasion.server.model;
 
 /**
  * @author Javier Chavez
@@ -10,9 +10,6 @@ import com.oracle.javafx.jmx.json.JSONDocument;
 import com.oracle.javafx.jmx.json.impl.JSONStreamReaderImpl;
 
 import java.io.StringReader;
-import java.lang.reflect.Array;
-import java.nio.charset.Charset;
-import java.util.Arrays;
 
 
 /**
@@ -20,12 +17,9 @@ import java.util.Arrays;
  *
  * @param <T> class extending tcp
  */
-public abstract class TCP<T extends TCP>
+public abstract class TCP<T extends TCP> implements TCPI
 {
-  public static String DELIMITER="\\n";
-  private ActionType request;
-  private int quantityData;
-  private float monetaryData;
+  public static String DELIMITER=" ";
   private double time;
   private String msg = " ";
   private String path = "";
@@ -36,17 +30,17 @@ public abstract class TCP<T extends TCP>
 
 
 
-  public TCP(ActionType type, double time, String data)
+  public TCP(double time, String data)
   {
-    this.request = type;
+
     this.msg = data;
     this.time = time;
   }
 
 
-  public TCP(ActionType type, double time, JSONDocument payload)
+  public TCP(double time, JSONDocument payload)
   {
-    this.request = type;
+
     this.payload = payload;
     this.time = time;
   }
@@ -68,18 +62,6 @@ public abstract class TCP<T extends TCP>
       throw new Exception("Improper format");
     }
 
-    // action
-    String[] _requestData = _dataArray[0].split(" ");
-
-    if (_requestData.length < 2)
-    {
-      throw new Exception("Improper format");
-    }
-
-
-    request = ActionType.valueOf(_requestData[0]);
-
-    path = _requestData[1];
 
     // payload may bot be avail
     if (_dataArray.length == 1)
@@ -93,81 +75,55 @@ public abstract class TCP<T extends TCP>
 
   }
 
-  public void setTime(double time)
+  @Override
+  public void setTime (double time)
   {
     this.time = time;
   }
 
-  public void setMsg(String msg)
+  @Override
+  public void setMsg (String msg)
   {
     this.msg = msg;
   }
 
-  public void setRequest(ActionType request)
-  {
-    this.request = request;
-  }
-
-  public String getMsg()
+  @Override
+  public String getMsg ()
   {
     return msg;
   }
 
-  public ActionType getRequest()
-  {
-    return request;
-  }
-
-  public int getQuantityData()
-  {
-    return quantityData;
-  }
-
-  public float getMonetaryData()
-  {
-    return monetaryData;
-  }
-
-  public double getTime()
+  @Override
+  public double getTime ()
   {
     return time;
   }
 
-  public String getStringTime()
+  @Override
+  public String getStringTime ()
   {
     return String.format("%.3f", time);
   }
 
-  public String getStringMonetaryData()
-  {
-    return String.format("%01.02f", monetaryData);
-  }
-
-  public String getPath ()
-  {
-    return path;
-  }
-
-  public void setPath (String path)
-  {
-    this.path = path;
-  }
-
+  @Override
   public String getFrom ()
   {
     return from;
   }
 
+  @Override
   public void setFrom (String from)
   {
     this.from = from;
   }
 
+  @Override
   public JSONDocument getPayload ()
   {
     return payload;
   }
 
+  @Override
   public void setPayload (JSONDocument payload)
   {
     this.payload = payload;

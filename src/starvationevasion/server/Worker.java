@@ -6,6 +6,7 @@ package starvationevasion.server;
 
 
 import starvationevasion.server.handlers.Handler;
+import starvationevasion.server.model.Data;
 import starvationevasion.sim.Simulator;
 
 import java.io.BufferedReader;
@@ -83,18 +84,6 @@ public class Worker extends Thread
 
   }
 
-  /**
-   * Send message to client.
-   *
-   * @param msg string containing message to be sent.
-   */
-  public void send (Response msg)
-  {
-    System.out.println("ServerWorker.send(" + msg + ")");
-    clientWriter.println(msg);
-
-  }
-
 
   public void run ()
   {
@@ -115,17 +104,17 @@ public class Worker extends Thread
 
         System.out.println(s);
 
-        Request r = new Request(s);
+        Data r = new Data();
+//
+//        if (r.getRequest() == ActionType.QUIT)
+//        {
+//          // client gracefully closed.
+//          client.close();
+//          isRunning = false;
+//          break;
+//        }
 
-        if (r.getRequest() == ActionType.QUIT)
-        {
-          // client gracefully closed.
-          client.close();
-          isRunning = false;
-          break;
-        }
-
-        handler.handle(r);
+        // handler.handle(r);
 
       }
       catch(Exception e)

@@ -5,6 +5,8 @@ package starvationevasion.server;
  * @author Javier Chavez
  */
 
+import starvationevasion.server.model.Response;
+import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
 
 import java.io.IOException;

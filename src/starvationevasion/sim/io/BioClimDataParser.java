@@ -70,7 +70,7 @@ public class BioClimDataParser
   /* raster data is little-endian, two-byte signed ints */
     return (short) ((second << 8) | (first & 0xff));
   }
-
+/*
   public void writeAll()
   {
     int count = 0;
@@ -137,6 +137,8 @@ public class BioClimDataParser
     System.out.printf("setting data took: %dms%n", System.currentTimeMillis() - start);
     CropZoneDataIO.writeCropZoneData(dataSet, "c:/temp/tiledata.bil");
   }
+
+  */
 
   public void readMaxTemps()
   {
@@ -263,6 +265,6 @@ public class BioClimDataParser
   {
     BioClimDataParser parser = new BioClimDataParser("c:/Users/peter/Documents/NetBeansProjects/cs351/StarvationEvasion/data/sim/climate", null);
     parser.readAll();
-    parser.writeAll();
+    //parser.writeAll();
   }
 }

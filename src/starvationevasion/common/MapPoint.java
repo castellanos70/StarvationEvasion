@@ -1,5 +1,7 @@
 package starvationevasion.common;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
+
 import java.io.Serializable;
 
 /**
@@ -32,9 +34,25 @@ public class MapPoint implements Serializable
     this.longitude = longitude;
   }
 
+  
   @Override
   public String toString()
   {
     return String.format("Location{%.2f, %.2f}", latitude, longitude);
+  }
+
+  public JSONDocument toJSON()
+  {
+    JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
+    json.setNumber("latitude", latitude);
+    json.setNumber("longitude", longitude);
+
+    return json;
+  }
+
+  public MapPoint(JSONDocument json)
+  {
+    latitude = (double) json.getNumber("latitude");
+    longitude = (double) json.getNumber("longitude");
   }
 }

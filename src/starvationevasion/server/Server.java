@@ -5,6 +5,9 @@ package starvationevasion.server;
  * @author Javier Chavez
  */
 
+import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.server.model.Response;
 import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
@@ -28,9 +31,11 @@ public class Server
   private final Timer timer = new Timer();
   private Simulator simulator;
   private HashMap<String, User> users = new HashMap<>();
+  private ArrayList<User> userList = new ArrayList<>(7);
 
   public Server (int portNumber)
   {
+    userList.add(new User("admin", "admin", EnumRegion.CALIFORNIA, new ArrayList<>()));
     startNanoSec = System.nanoTime();
     //    simulator = new Simulator(Constant.FIRST_YEAR);
     ////    for (EnumRegion region : EnumRegion.US_REGIONS)
@@ -194,14 +199,27 @@ public class Server
     return simulator;
   }
 
-  public User getUser (String worker)
+  public User getUserByUsername (String username)
   {
-    return users.get(worker);
+    for (User user : userList)
+    {
+      if (user.getUsername().equals(username))
+      {
+        return user;
+      }
+    }
+
+    return null;
+  }
+
+  public User getUserByWorker (String worker)
+  {
+    return new User(new JSONDocument(JSONDocument.Type.OBJECT));//users.get(worker);
   }
 
   public boolean addUser (User u, Worker client)
   {
-    users.put(client.getName(), u);
+    // users.put(client.getName(), u);
     // get available regions
     // check if region is available
     // if username and region available

@@ -10,11 +10,11 @@ import java.util.List;
 
 public class User
 {
-  String username;
-  String password;
-  EnumRegion region;
+  private String username;
+  private String password;
+  private EnumRegion region;
 
-  ArrayList<EnumPolicy> hand = new ArrayList<>();
+  private ArrayList<EnumPolicy> hand = new ArrayList<>();
 
   public User (JSONDocument json)
   {
@@ -46,5 +46,45 @@ public class User
     json.set("hand", hand);
 
     return json;
+  }
+
+  public String getUsername ()
+  {
+    return username;
+  }
+
+  public void setUsername (String username)
+  {
+    this.username = username;
+  }
+
+  public String getPassword ()
+  {
+    return password;
+  }
+
+  public void setPassword (String password)
+  {
+    this.password = password;
+  }
+
+  public EnumRegion getRegion ()
+  {
+    return region;
+  }
+
+  public void setRegion (EnumRegion region)
+  {
+    this.region = region;
+  }
+
+  public ArrayList<EnumPolicy> getHand ()
+  {
+    return hand;
+  }
+
+  public void setHand (ArrayList<EnumPolicy> hand)
+  {
+    this.hand = hand;
   }
 }

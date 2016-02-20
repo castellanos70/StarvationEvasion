@@ -7,6 +7,7 @@ package starvationevasion.server;
 
 import starvationevasion.server.handlers.Handler;
 import starvationevasion.server.model.Request;
+import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
 
 import java.io.BufferedReader;
@@ -20,7 +21,7 @@ import java.net.Socket;
  */
 public class Worker extends Thread
 {
-
+  private User cred;
   private Socket client;
   private PrintWriter clientWriter;
   private BufferedReader clientReader;
@@ -79,9 +80,7 @@ public class Worker extends Thread
   public void send (String msg)
   {
     System.out.println("ServerWorker.send(" + msg + ")");
-
     clientWriter.println(msg);
-
   }
 
 
@@ -102,9 +101,10 @@ public class Worker extends Thread
           break;
         }
 
-        System.out.println(s);
+        // notice I am expecting only requests from a client... Not supporting responses from client.
+        Request r = new Request(s.split("\\s+"));
+        handler.handle(r);
 
-        Request r = new Request();
 //
 //        if (r.getRequest() == ActionType.QUIT)
 //        {
@@ -114,7 +114,6 @@ public class Worker extends Thread
 //          break;
 //        }
 
-        // handler.handle(r);
 
       }
       catch(Exception e)
@@ -192,5 +191,10 @@ public class Worker extends Thread
     }
 
     return "";
+  }
+
+  public User getUser ()
+  {
+    return cred;
   }
 }

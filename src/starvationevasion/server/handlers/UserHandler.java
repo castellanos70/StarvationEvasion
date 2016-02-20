@@ -3,6 +3,7 @@ package starvationevasion.server.handlers;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.*;
+import starvationevasion.server.model.Request;
 
 public class UserHandler extends AbstractHandler
 {
@@ -15,11 +16,6 @@ public class UserHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-    if (request.toString().contains("user"))
-    {
-
-      return true;
-    }
 
 //    if (request.getPath().contains("user/login"))
 //    {
@@ -29,7 +25,7 @@ public class UserHandler extends AbstractHandler
 //        System.out.println("getting");
 //        m_response = new Response(ActionType.SUCCESS,
 //                                  server.uptime(),
-//                                  server.getUser(getClient().getName()).toJSON());
+//                                  server.getUserByUsername(getClient().getName()).toJSON());
 //        return true;
 //      }
 //      // update a user
@@ -69,11 +65,11 @@ public class UserHandler extends AbstractHandler
 //        if (server.addUser(new User(request.getPayload()), getClient()))
 //        {
 //
-//          m_response = new Response(ActionType.SUCCESS, server.uptime(), getUser());
+//          m_response = new Response(ActionType.SUCCESS, server.uptime(), getUserByUsername());
 //        }
 //        else
 //        {
-//          m_response = new Response(ActionType.FAIL, server.uptime(), getUser());
+//          m_response = new Response(ActionType.FAIL, server.uptime(), getUserByUsername());
 //
 //        }
 //        return true;
@@ -82,13 +78,5 @@ public class UserHandler extends AbstractHandler
     return false;
   }
 
-  JSONDocument getUser ()
-  {
-    JSONDocument obj = new JSONDocument(JSONDocument.Type.OBJECT);
-    obj.setString("username", "admin");
-    obj.setString("password", "hi");
-    obj.setString("region", "Eastern");
 
-    return obj;
-  }
 }

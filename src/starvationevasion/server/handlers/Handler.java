@@ -22,12 +22,7 @@ public class Handler
 
   public void handle (Request request)
   {
-//    request.setFrom(worker.getName());
-//    handler.handleRequest(request);
-//    Response s = handler.getResponse();
-//    if (s != null)
-//    {
-//      worker.send(s);
-//    }
+    // request.setFrom(worker.getName());
+    handler.handleRequest(request);
   }
 }

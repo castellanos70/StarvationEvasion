@@ -7,7 +7,7 @@ import starvationevasion.client.net.common.NetworkStatus;
 import starvationevasion.client.model.Player;
 import starvationevasion.client.model.GameStateData;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.messages.*;
+
 import starvationevasion.server.ServerState;
 
 import java.io.IOException;
@@ -87,13 +87,13 @@ public abstract class AbstractClient extends Thread
    */
   public void requestRegion(String region)
   {
-    for (EnumRegion USRegion : EnumRegion.US_REGIONS)
-    {
-      if (USRegion.toString().equals(region))
-      {
-        send(new RegionChoice(USRegion));
-      }
-    }
+//    for (EnumRegion USRegion : EnumRegion.US_REGIONS)
+//    {
+//      if (USRegion.toString().equals(region))
+//      {
+//        send(new RegionChoice(USRegion));
+//      }
+//    }
   }
 
   /**
@@ -124,7 +124,7 @@ public abstract class AbstractClient extends Thread
   {
     System.out.println("Closing client");
 
-    send(new Goodbye("Client(" + playerString + ") disconnecting."));
+    // send(new Goodbye("Client(" + playerString + ") disconnecting."));
 
     if (write != null)
     {
@@ -167,7 +167,7 @@ public abstract class AbstractClient extends Thread
       return;
     }
     player.setStatus(NetworkStatus.TRYING);
-    send(new Login(player.getUsername(), options.getLoginNonce(), player.getPassword()));
+    // send(new Login(player.getUsername(), options.getLoginNonce(), player.getPassword()));
   }
 
   /**

@@ -6,6 +6,7 @@ public enum Endpoint
   USER_CREATE("user_create"),
   USER_READ("user_read"),
   USER_UPDATE("user_update"),
+  USERS("users"),
 
   LOGIN("login"),
 

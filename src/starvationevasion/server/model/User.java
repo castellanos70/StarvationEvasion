@@ -25,6 +25,18 @@ public class User
     hand.add(EnumPolicy.Clean_River_Incentive);
   }
 
+  public User (String[] raw)
+  {
+    username = raw[0];
+    password = raw[1];
+    if (raw.length == 3)
+    {
+      region = EnumRegion.valueOf(raw[2]);
+    }
+
+    hand.add(EnumPolicy.Clean_River_Incentive);
+  }
+
   public User (String username, String password, EnumRegion region, ArrayList<EnumPolicy> hand)
   {
     this.hand = hand;
@@ -86,5 +98,11 @@ public class User
   public void setHand (ArrayList<EnumPolicy> hand)
   {
     this.hand = hand;
+  }
+
+  @Override
+  public String toString ()
+  {
+    return region.toString();
   }
 }

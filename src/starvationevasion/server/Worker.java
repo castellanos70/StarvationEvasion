@@ -197,4 +197,9 @@ public class Worker extends Thread
   {
     return cred;
   }
+
+  public void setUser (User user)
+  {
+    this.cred = user;
+  }
 }

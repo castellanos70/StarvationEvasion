@@ -32,10 +32,14 @@ public class Server
   private Simulator simulator;
   private HashMap<String, User> users = new HashMap<>();
   private ArrayList<User> userList = new ArrayList<>(7);
+  private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
 
   public Server (int portNumber)
   {
-    userList.add(new User("admin", "admin", EnumRegion.CALIFORNIA, new ArrayList<>()));
+
+    Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
+
+    addUser(new User("admin", "admin", EnumRegion.CALIFORNIA, new ArrayList<>()));
     startNanoSec = System.nanoTime();
     //    simulator = new Simulator(Constant.FIRST_YEAR);
     ////    for (EnumRegion region : EnumRegion.US_REGIONS)
@@ -217,15 +221,36 @@ public class Server
     return new User(new JSONDocument(JSONDocument.Type.OBJECT));//users.get(worker);
   }
 
-  public boolean addUser (User u, Worker client)
+  public Iterable<User> getUserList ()
+  {
+    return userList;
+  }
+
+  public boolean addUser (User u)
   {
     // users.put(client.getName(), u);
-    // get available regions
-    // check if region is available
+    EnumRegion _region = u.getRegion();
+
+    if (_region != null)
+    {
+      int loc = availableRegions.lastIndexOf(_region);
+      if (loc == -1)
+      {
+        return false;
+      }
+      availableRegions.remove(loc);
+    }
+    else
+    {
+      u.setRegion(availableRegions.remove(0));
+    }
+
+    userList.add(u);
+
+
     // if username and region available
     // return true
     // else return region taken
-    // else return username taken
 
     return true;
   }

@@ -40,7 +40,12 @@ public class LoginHandler extends AbstractHandler
   private boolean authenticate(String username, String password)
   {
     User s = server.getUserByUsername(username);
-    return s != null && s.getPassword().equals(password);
+    if (s != null && s.getPassword().equals(password))
+    {
+      getClient().setUser(s);
+      return true;
+    }
 
+    return false;
   }
 }

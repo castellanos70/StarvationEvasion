@@ -70,7 +70,7 @@ public class BioClimDataParser
   /* raster data is little-endian, two-byte signed ints */
     return (short) ((second << 8) | (first & 0xff));
   }
-
+/*
   public void writeAll()
   {
     int count = 0;
@@ -130,13 +130,15 @@ public class BioClimDataParser
 
       float p_precip = FIELDS.SCALE * p.getData(FIELDS.PROJ_ANL_PRECIP.ind());
       t.setProj2050Rainfall(p_precip);
-      
+
       float elev = p.getData(FIELDS.ELEVATION.ind());
       t.setElev(elev);
     }
     System.out.printf("setting data took: %dms%n", System.currentTimeMillis() - start);
     CropZoneDataIO.writeCropZoneData(dataSet, "c:/temp/tiledata.bil");
   }
+
+  */
 
   public void readMaxTemps()
   {
@@ -158,7 +160,7 @@ public class BioClimDataParser
           byte first = (byte) in.read();
           byte second = (byte) in.read();
           float data = twoByteToSignedInt(first, second);
-          
+
           if(!(data == FIELDS.MAX_TEMP.noData))
             point.putData(FIELDS.MAX_TEMP.ind(), data);
         }
@@ -183,7 +185,7 @@ public class BioClimDataParser
       for (int row = 0; row < DATA_ROWS; row++)
       {
         if(row%100 == 0) System.out.println("row: " + row);
-        
+
         for (int col = 0; col < DATA_COLS; col++)
         {
           double lat = 90 - row * STEP;
@@ -250,7 +252,7 @@ public class BioClimDataParser
     {
       return (points[i] > 0 ? fields[i] : -Float.MAX_VALUE);
     }
-    
+
     public boolean hasAllData()
     {
       boolean val = true;
@@ -263,6 +265,6 @@ public class BioClimDataParser
   {
     BioClimDataParser parser = new BioClimDataParser("c:/Users/peter/Documents/NetBeansProjects/cs351/StarvationEvasion/data/sim/climate", null);
     parser.readAll();
-    parser.writeAll();
+    //parser.writeAll();
   }
 }

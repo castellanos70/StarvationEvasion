@@ -127,16 +127,24 @@ public class GeographyXMLparser extends DefaultHandler
 
   @Override
   public void endElement(String uri, String localName, String qName)
-  throws SAXException
   {
-    if (qName.equals("area"))
+    try
     {
-      // save and reset....
-      tmpRegion.setPerimeter(new ArrayList<>(tmpPerimeterSet));
+      if (qName.equals("area"))
+      {
+        // save and reset....
+        tmpRegion.setPerimeter(new ArrayList<>(tmpPerimeterSet));
 
-      if (REGION_VALIDATION) regionValidator.validate(tmpRegion);
-      regionList.add(tmpRegion);
-      tmpPerimeterSet.clear();
+        if (REGION_VALIDATION) regionValidator.validate(tmpRegion);
+        regionList.add(tmpRegion);
+        tmpPerimeterSet.clear();
+      }
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+      Logger.getGlobal().log(Level.SEVERE, "Error parsing region list", ex);
+      System.exit(0);
     }
   }
 
@@ -150,39 +158,44 @@ public class GeographyXMLparser extends DefaultHandler
         //
         generateRegions();
       }
-      catch (ParserConfigurationException | SAXException | IOException ex)
+      catch (Exception ex)
       {
+        ex.printStackTrace();
         Logger.getGlobal().log(Level.SEVERE, "Error parsing region list", ex);
+        System.exit(0);
       }
     }
     return regionList;
   }
 
-  /* private method to generate the set of geographical regions
-  */
-  private void generateRegions() throws FileNotFoundException, ParserConfigurationException, SAXException, IOException
+  /**
+  * private method to generate the set of geographical regions
+  **/
+  private void generateRegions()
   {
-    regionList = new ArrayList<>();
-    XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-    xmlReader.setContentHandler(this);
-
-    // List<String> filesToRead = getFilesInDir(BORDERS_DIR);
-    List<String> filesToRead = readIndex(BORDERS_INDEX);
-    while (!filesToRead.isEmpty())
+    try
     {
-      String file = filesToRead.remove(0);
-      try
+      regionList = new ArrayList<>();
+      XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+      xmlReader.setContentHandler(this);
+
+      // List<String> filesToRead = getFilesInDir(BORDERS_DIR);
+      List<String> filesToRead = readIndex(BORDERS_INDEX);
+      while (!filesToRead.isEmpty())
       {
+        String file = filesToRead.remove(0);
+
         String resourcePath = BORDERS_DIR + '/' + file;
         InputStream resourceStream = KMLParser.class.getResourceAsStream(resourcePath);
-        if (resourceStream == null) throw new FileNotFoundException(resourcePath);
 
         BufferedInputStream inputStream = new BufferedInputStream(resourceStream);
         xmlReader.parse(new InputSource(inputStream));
-      } catch (SAXException | IOException e)
-      {
-        e.printStackTrace();
       }
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
     }
   }
 }
+

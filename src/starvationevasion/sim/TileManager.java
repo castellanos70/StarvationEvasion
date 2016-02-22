@@ -12,9 +12,9 @@ import java.util.*;
  @author: david
  cs351
  WorldFoodGame project
- 
+
  description:
- 
+
  TileManager wraps the collection of LandTiles and encapsulates the
  equal area projection used to define the tile space.
  It provides an interface for mutating the climate data in the tiles by year and
@@ -44,22 +44,22 @@ public class TileManager
   public static final int ROWS = 1500;
   public static final int COLS = 4000;
 
-  
+
   public static final double MIN_LAT = -90;
   public static final double MAX_LAT = 90;
   public static final double MIN_LON = -180;
   public static final double MAX_LON = 180;
   public static final double LAT_RANGE = MAX_LAT - MIN_LAT;
   public static final double LON_RANGE = MAX_LON - MIN_LON;
-  
+
   public static final double DLON = LON_RANGE/COLS;
   public static final double DLAT = LAT_RANGE/ROWS;
-  
+
   /* these are fairly rough estimates for the distance between two tiles on the
    X and Y axes.  Should be acceptable for our purposes */
   public static final double DX_KM = 20.; // Constant.EARTH_CIRCUMFERENCE / COLS;
   public static final double DY_KM = 20.; // Constant.EARTH_CIRCUMFERENCE / ROWS * 0.5;
-  
+
   /* max radius from selected tiles to add noise to each year */
   public static final double NOISE_RADIUS = 100; /* in km */
 
@@ -78,13 +78,13 @@ public class TileManager
     for(LandTile[] arr : tiles) Arrays.fill(arr, NO_DATA);
   }
 
-  
+
   public TileManager()
   {this(null);}
 
   /**
    Get the max temperature at a location in the current simulation year.
-   
+
    @param lat [-90.0 to 90.0], South latitudes are less than 0.
    @param lon [-180.0 to 180.0], West longitudes are less than 0.
    @return  the max temperature at the coordinates, either estimated or exact,
@@ -144,7 +144,7 @@ public class TileManager
 
    @param lat [-90.0 to 90.0], South latitudes are less than 0.
    @param lon [-180.0 to 180.0], West longitudes are less than 0.
-   @return  the average night temperature at the coordinates, either estimated 
+   @return  the average night temperature at the coordinates, either estimated
    or exact, depending on the year
    */
   public float getTemperatureNight(float lat, float lon)
@@ -174,7 +174,7 @@ public class TileManager
       throw new NoDataException(
         String.format("No data for longitude: %f, latitude: %f)", lon, lat));
     }
-      
+
     return tile.getRainfall();
   }
 
@@ -206,7 +206,7 @@ public class TileManager
 //    }
   }
 
-  /* adds noise to the parameters of all the tiles within the NOISE_RADIUS of 
+  /* adds noise to the parameters of all the tiles within the NOISE_RADIUS of
     a given tile */
   private void addNoiseByTile(LandTile tile)
   {
@@ -232,13 +232,13 @@ public class TileManager
     (generated once per source?) */
     double r1 = Util.rand.nextDouble();
     double r2 = Util.rand.nextDouble();
-    
+
     float dMaxMinTemp = calcTileDelta(minTemp, maxTemp, r1, r2);
     float dAMPMTemp = calcTileDelta(pmTemp, amTemp, r1, r2);
     float dRainfall = calcTileDelta(0, rain, r1, r2);
-    
+
     LandTile neighbor;
-    
+
     for (int r = minRow; r < maxRow; r++)
     {
       for (int c = minCol; c < maxCol; c++)
@@ -251,23 +251,23 @@ public class TileManager
           System.out.printf("c: %d, colIndex: %d, r: %d, rowIndex: %d", c, colIndex, r, rowIndex);
         }
         if(tiles[colIndex][rowIndex] == NO_DATA) continue;
-        
+
         neighbor = tiles[colIndex][rowIndex];
 
         double xDist = DX_KM * (centerCol - c);
         double yDist = DY_KM * (centerRow - r);
-        
+
         double dist = Math.sqrt(xDist * xDist + yDist * yDist);
-        
+
         if(dist < NOISE_RADIUS)
         {
-          
+
           double r3 = Util.rand.nextDouble()*2;
-          
+
           float toAddMaxMin = scaleDeltaByDistance(dMaxMinTemp, dist, r3);
           float toAddAMPM = scaleDeltaByDistance(dAMPMTemp, dist, r3);
           float toAddRain = scaleDeltaByDistance(dRainfall, dist, r3);
-          
+
           neighbor.setMaxAnnualTemp(neighbor.getMaxAnnualTemp() + toAddMaxMin);
           neighbor.setMinAnnualTemp(neighbor.getMinAnnualTemp() + toAddMaxMin);
           neighbor.setAvgDayTemp(neighbor.getAvgDayTemp() + toAddAMPM);
@@ -311,7 +311,7 @@ public class TileManager
 
   /**
    Get a tile by longitude and latitude
-   
+
    @param lon degrees longitude
    @param lat degrees latitude
    @return the tile into which the specified longitude and latitude coordinates
@@ -338,7 +338,7 @@ public class TileManager
    Add a given tile to the data set.
    This should really only be used when reading in a new set of tiles from
    a file.
-   
+
    @param tile  LandTile to add
    */
   public void putTile(LandTile tile)
@@ -364,7 +364,7 @@ public class TileManager
    Returns a Collection of tiles that have been registered with a country.
    This is dependent on the usage of registerCountryTile() at initial data
    creation. (Also maybe should be refactored to another location?)
-   
+
    @return Collection of those LandTiles that have been registered with a Territory
    */
   public List<LandTile> countryTiles()
@@ -376,7 +376,7 @@ public class TileManager
    Returns a Collection of the tiles held by this TileManager that actually
    contain data.  This, in effect, excludes tiles that would be over ocean and
    those at the extremes of latitude.  For all tiles, use allTiles();
-   
+
    @return  a Collection holding only those tiles for which there exists raster
             data.
    */
@@ -462,7 +462,7 @@ public class TileManager
   {
     this.world = world;
   }
-  
+
   /* check given row and column indices for validity */
   private boolean indicesInBounds(int row, int col)
   {
@@ -472,7 +472,7 @@ public class TileManager
   /* check given longitude and latitude coordinates for validity */
   private boolean coordsInBounds(double lon, double lat)
   {
-    return lon >= MIN_LON && lon <= MAX_LON && lat >= MIN_LAT && lat <= MAX_LAT; 
+    return lon >= MIN_LON && lon <= MAX_LON && lat >= MIN_LAT && lat <= MAX_LAT;
   }
 
   /* given a longitude line, return the column index corresponding to tiles
@@ -494,7 +494,7 @@ public class TileManager
   {
     return (int)Math.min((COLS * (lon + MAX_LON) / LON_RANGE), COLS - 1);
   }
-  
+
   /* return the theoretical center latitude line of tiles in a given row */
   public static double rowToLat(int row)
   {
@@ -537,7 +537,7 @@ public class TileManager
   {
     TileManager data = new TileManager();
     initTiles(data.tiles);
-    
+
     try(FileOutputStream out = new FileOutputStream(filePath))
     {
       for(LandTile t : data.allTiles())

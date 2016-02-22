@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class CropCSVLoader
 {
-  private final static Logger LOGGER = Logger.getLogger(CountryCSVLoader.class.getName());
+  private final static Logger LOGGER = Logger.getLogger(CropCSVLoader.class.getName());
   private static final String PATH = "/sim/CropData.csv";
   private ArrayList<CropZoneData> categoryData;
 

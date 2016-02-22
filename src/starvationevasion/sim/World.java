@@ -144,7 +144,7 @@ public class World
     if (DEBUG) System.out.println("Mutating climate data...");
     // updateEcoSystems();
     if (DEBUG) System.out.printf("climate data mutated in %dms%n", System.currentTimeMillis() - start);
-    
+
     currentDate.add(Calendar.YEAR, 1);
     start = System.currentTimeMillis();
     if (DEBUG) System.out.println("Planting tiles...");
@@ -178,7 +178,7 @@ public class World
     lastTrades = optimizer.getAllTrades();
   }
 
-  
+
   private void plantAndHarvestCrops()
   {
     final int year = getCurrentYear();
@@ -198,7 +198,7 @@ public class World
     return tileManager.allTiles();
   }
 
-  
+
   /**
    * Returns a Collection of the tiles held by this TileManager that actually
    * contain data.  This, in effect, excludes tiles that would be over ocean and

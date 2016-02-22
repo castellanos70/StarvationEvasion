@@ -16,21 +16,21 @@ public class CropZoneData
     {
       public double productionRate() {return 1.0;}
     },
-    
-    ACCEPTABLE 
+
+    ACCEPTABLE
     {
       public double productionRate() {return 0.60;}
     },
-    
-    POOR  
+
+    POOR
     {
       public double productionRate() {return 0.25;}
     };
-    
+
     public static final int SIZE = values().length;
     public abstract double productionRate();
-  } 
-  
+  }
+
   public static final double ACCEPTABLE_THRESHOLD = 0.30;
 
   public int    pricePerMetricTon;

@@ -202,7 +202,7 @@ public class CountryCSVLoader
       territory.setPopulation(i, (int) y);
     }
   }
-  
+
   private void copyCropValues(Territory countryFinal, Territory agriculturalUnitTemp)
   {
     for (EnumFood crop:EnumFood.values())

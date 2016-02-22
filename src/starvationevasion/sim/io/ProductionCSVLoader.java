@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 public class ProductionCSVLoader
 {
   private final static Logger LOGGER = Logger.getLogger(FertilizerCSVLoader.class.getName());
-  private static final String PATH = "/sim/WorldData/WorldFoodProduction.csv";
+  private static final String PATH = "/sim/WorldFoodProduction_1981.csv";
 
 
   private enum EnumHeader
@@ -25,8 +25,9 @@ public class ProductionCSVLoader
     public static final int SIZE = values().length;
   };
 
-  public ProductionCSVLoader(Region[] regions) throws FileNotFoundException
+  public ProductionCSVLoader(Region[] regions)
   {
+
     CSVReader fileReader = new CSVReader(PATH, 0);
 
     //Check header
@@ -46,6 +47,7 @@ public class ProductionCSVLoader
     // read until end of file is found
     while ((fieldList = fileReader.readRecord(EnumHeader.SIZE)) != null)
     {
+      System.out.println("ProductionCSVLoader(): record="+fieldList[0]+", "+fieldList[2]+", len="+fieldList.length);
       EnumFood food = null;
       EnumRegion region = null;
       int year = 0;
@@ -67,6 +69,7 @@ public class ProductionCSVLoader
             food = EnumFood.valueOf(fieldList[i]);
             break;
           case region:
+            //TODO: divide US data into states
             if (!fieldList[i].equals("UNITED_STATES"))
             {
               region = EnumRegion.valueOf(fieldList[i]);
@@ -85,17 +88,15 @@ public class ProductionCSVLoader
       }
 
       Region r;
-      if (region == null)
+      if (region != null)
       {
-        r = regions[regions.length-1];
-      }
-      else
-      {
+
         r = regions[region.ordinal()];
-      }
+
       r.setInitialProduction(food, r.getInitialProduction(food, year) + production, year);
       r.setInitialImports(food, r.getInitialImports(food, year) + imports, year);
       r.setInitialExports(food, r.getInitialExports(food, year) + exports, year);
+      }
     }
   }
 }

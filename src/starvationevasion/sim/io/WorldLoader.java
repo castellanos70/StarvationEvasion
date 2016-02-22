@@ -37,7 +37,7 @@ public class WorldLoader
     try {
       geography = new GeographyXMLparser().getGeography();
       territories = Territory.parseTerritories(geography);
-      tileManager = CropZoneDataIO.parseFile(CropZoneDataIO.DEFAULT_FILE, territories);
+      tileManager = CropZoneDataIO.parseFile(territories);
     } catch (Exception ex)
     {
       // TODO : Throw some kind of error for the calling object.

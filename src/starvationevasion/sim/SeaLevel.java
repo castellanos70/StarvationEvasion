@@ -18,7 +18,7 @@ import java.util.Random;
  * LAST_HISTORICAL_DATA_YEAR.<br>
  * These constant values are stored in an array. When the class is queried for
  * the MSL for a year during that historical period, a simple table lookup is returned.<br>
- * Request Source: https://www.ipcc.ch/pdf/assessment-report/ar5/wg1/WG1AR5_Chapter13_FINAL.pdf
+ * Data Source: https://www.ipcc.ch/pdf/assessment-report/ar5/wg1/WG1AR5_Chapter13_FINAL.pdf
  * <br><br>
  *
  * For future values of MSL, For future years, projected values reported

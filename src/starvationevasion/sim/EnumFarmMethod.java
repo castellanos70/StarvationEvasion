@@ -6,17 +6,17 @@ public enum EnumFarmMethod
   {
     public String toString() {return "Conventional";}
   },
-  
-  
-  ORGANIC  
+
+
+  ORGANIC
   {
     public String toString() {return "Organic";}
   },
-  
-  GMO  
+
+  GMO
   {
     public String toString() {return "GMO";}
   };
-  
+
   public static final int SIZE = values().length;
 }

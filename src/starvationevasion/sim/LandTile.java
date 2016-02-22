@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
  @author david
  created: 2015-03-21
 
- description: 
+ description:
  LandTile class describes a single section of the equal area projection of the
  world map.  It holds y0Elevation, climate and climate projection data found
  at www.worldclim.org.  The class also describes a ByteBuffer format for a
@@ -22,12 +22,12 @@ import java.nio.ByteBuffer;
 
 public class LandTile
 {
-  
+
   // PAB 12/15 - The data is divided into 3 sets :
-  // 1. The 'year 0' data points.  The Fall 2015 project has a longer timeline 
-  //    than the Spring 2015 team, but the Spring teams were working with 2014 
-  //    data points.  Rather than try to extrapolate back to 1981, 2014 is 
-  //    considered 'year 0' for the purposes of land climate data.  
+  // 1. The 'year 0' data points.  The Fall 2015 project has a longer timeline
+  //    than the Spring 2015 team, but the Spring teams were working with 2014
+  //    data points.  Rather than try to extrapolate back to 1981, 2014 is
+  //    considered 'year 0' for the purposes of land climate data.
   //
   private float y0Elevation = 0;     /* in meters above sea level */
   private float y0MaxAnnualTemp = 0; /* in degrees Celsius. */
@@ -35,7 +35,7 @@ public class LandTile
   private float y0AvgDayTemp = 0;    /* in degrees Celsius. */
   private float y0AvgNightTemp = 0;  /* in degrees Celsius. */
   private float y0Rainfall = 0;      /* in cm */
-  
+
   // 2. The 2050 data points necessary to interpolate the values between the
   //    years.  Both the Spring and Fall 2015 projects use 2050 as the end year.
   //
@@ -120,7 +120,7 @@ public class LandTile
    Find an interpolated value given extremes of the range across which to
    interpolate, the number of steps to divide that range into and the step of
    the range to find.
-   
+
    @param start   beginning (min) of the range
    @param end     end (max) of the range
    @param slices  slices to divide range into
@@ -134,7 +134,7 @@ public class LandTile
     return n * stepSize + start;
   }
 
-  
+
   /**
    * @param elev  tile's y0Elevation
    */
@@ -216,7 +216,7 @@ public class LandTile
 
       return;
     }
-    
+
     int yearsRemaining = Constant.LAST_YEAR - year;
 
     maxAnnualTemp = interpolate(y0MaxAnnualTemp, proj2050MaxAnnualTemp, yearsRemaining, 1);
@@ -337,7 +337,7 @@ public class LandTile
   }
 
   /**
-   * Rates tile's suitability for a particular crop. 
+   * Rates tile's suitability for a particular crop.
    * @param crop  crop for which we want rating (wheat, corn, rice, or soy)
    * @return EnumCropZone (IDEAL, ACCEPTABLE, or POOR)
    * @throws NullPointerException if called with argument EnumFood.OTHER_CROPS, will throw an
@@ -359,7 +359,7 @@ public class LandTile
     int cropMinT = data.minTemp;
     int cropMaxR = data.maxRain;
     int cropMinR = data.minRain;
-    
+
     double tRange = cropDayT - cropNightT;                               // tempRange is crop's optimum day-night temp range
     double rRange = cropMaxR - cropMinR;                                 // rainRange is crop's optimum Rainfall range
     if (isBetween(avgDayTemp, cropNightT, cropDayT) &&
@@ -373,9 +373,9 @@ public class LandTile
       isBetween(avgNightTemp, cropNightT - 0.3 * tRange, cropDayT + 0.3 * tRange) &&
       isBetween(rainfall, cropMinR - 0.3 * rRange, cropMaxR + 0.3 * rRange) &&
       maxAnnualTemp <= cropMaxT && minAnnualTemp >= cropMinT)
-    {                                                                                 
-      return EnumCropZone.ACCEPTABLE;                                            
-    }                                                                            
+    {
+      return EnumCropZone.ACCEPTABLE;
+    }
     else
     {
       return EnumCropZone.POOR;                                               // otherwise tile is POOR for crop
@@ -489,7 +489,7 @@ public class LandTile
     }
 
   }
-  
+
   @Override
   public String toString()
   {

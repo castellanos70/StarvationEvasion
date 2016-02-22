@@ -38,14 +38,9 @@ public class CropData
   {
     final String PATH = "/sim/CropData.csv";
     CSVReader fileReader;
-    try {
+
       fileReader = new CSVReader(PATH, 2);
-    } catch (FileNotFoundException ex)
-    {
-      LOGGER.severe("**ERROR** Resource does not exist     " + PATH);
-      LOGGER.severe("**ERROR** Check your class path or IDE resource settings");
-      return;
-    }
+
 
     for (int i=0; i< EnumFood.SIZE; i++)
     {

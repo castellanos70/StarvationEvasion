@@ -31,7 +31,7 @@ public class CSVReader
   ** with the Apache reader.
   ** @param stream An input stream.
   */
-  public void read(final InputStream stream) throws IOException
+  public void read(final InputStream stream)
   {
     this.stream = stream;
     this.reader = new BufferedReader(new InputStreamReader(stream));
@@ -39,11 +39,14 @@ public class CSVReader
 
     int lineNo = 0;
     String line;
+    try
+    {
+
     while ((line = reader.readLine()) != null)
     { // Process the line.
       //
       String[] tokens = line.split(",");
-      if (lineNo == 0) 
+      if (lineNo == 0)
       { // The first line contains the column names.
         //
         columns = tokens;
@@ -61,6 +64,12 @@ public class CSVReader
 
       lineNo += 1;
     }
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+
   }
 
 
@@ -71,10 +80,10 @@ public class CSVReader
    * @param resource Path to resource.
    * @param headerLines Numer of lines to skip.
    */
-  public CSVReader(String resource, int headerLines) throws FileNotFoundException
+  public CSVReader(String resource, int headerLines)
   {
     InputStream inputStream = getClass().getResourceAsStream(resource);
-    if (inputStream == null) throw new FileNotFoundException(resource);
+    if (inputStream == null)
     this.path = resource;
     try
     {
@@ -84,7 +93,7 @@ public class CSVReader
       }
     }
     catch (IOException e)
-    { throw new IllegalArgumentException(e.getMessage());
+    { e.printStackTrace();
     }
   }
 
@@ -157,9 +166,15 @@ public class CSVReader
   /**
    * Closes the reader.
   */
-  public void close() throws IOException
+  public void close()
   {
-    reader.close();;
+    try {
+    reader.close();
+    }
+    catch (IOException e)
+    {
+      e.printStackTrace();
+    }
     stream.hashCode();
   }
 

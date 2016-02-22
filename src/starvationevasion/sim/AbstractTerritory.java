@@ -11,6 +11,11 @@ public abstract class AbstractTerritory implements Comparable<Territory>
 
   protected GeographicArea border;
 
+  //AbstractTerritory is extended by Territory and by Region.
+  //A Territory is the base political unit in the simulator.
+  //   Each modeled country and each US state is a Territory.
+  //A Region is the base political unit exposed to the player.
+  //   A region a set of territories. Each territory is assigned to one region.
 
   //Note: Values below that are, in the countryData.cvs file, defined as type int
   //      should be displayed to the user as type int. However, as some of these

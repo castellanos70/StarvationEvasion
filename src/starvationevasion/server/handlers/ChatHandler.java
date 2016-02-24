@@ -1,5 +1,8 @@
 package starvationevasion.server.handlers;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
+import com.oracle.javafx.jmx.json.impl.JSONStreamReaderImpl;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.server.Worker;
 import starvationevasion.server.Server;
 import starvationevasion.server.model.Endpoint;
@@ -17,14 +20,22 @@ public class ChatHandler extends AbstractHandler
     if (request.getDestination().equals(Endpoint.CHAT))
     {
 
-      String destination = request.getData()[0];
+      EnumRegion destination = EnumRegion.valueOf(request.getData()[0]);
+
+      // need to parse into JSONDocument
       String data = request.getData()[1];
+
       String from = getClient().getUser().getRegion().name();
 
       // Determine if the destination is by username or by region
 
-      // get the worker for that destination
-      // send data.
+      Worker worker = server.getWorkerByRegion(destination);
+      if (worker != null)
+      {
+        JSONDocument _msg = JSONDocument.createObject();
+        _msg.setString("from", from);
+        _msg.setString("message", "what the...");
+      }
 
       return true;
     }

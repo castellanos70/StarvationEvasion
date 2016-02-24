@@ -15,12 +15,10 @@ public class Request
    */
   public Request (String ...data) throws Exception
   {
-    // get the time
     this.time = Double.parseDouble(data[0]);
     this.destination = Endpoint.valueOf(data[1].toUpperCase());
     data[2] = data[2].replace(data[0] + " ", "");
     data[2] = data[2].replace(data[1] + " ", "");
-    System.out.println(data[2]);
 
     this.data = data[2];
 

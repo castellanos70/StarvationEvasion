@@ -115,7 +115,7 @@ public abstract class AbstractClient extends Thread
 
   /**
    * Disconnects the client from the server. Closes both reader and writer and sets the player
-   * that is with the client to disconnected. We also send the server a {@link Goodbye} message.
+
    */
   public void disconnect()
   {
@@ -279,8 +279,12 @@ public abstract class AbstractClient extends Thread
         typeOfMSG(msg);//has all the type of instances from the Message package
 
       }
-      catch (IOException | ClassNotFoundException ignored)
+      catch (IOException e)
       {
+      }
+      catch(ClassNotFoundException e)
+      {
+
       }
     }
 

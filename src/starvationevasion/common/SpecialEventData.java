@@ -2,6 +2,7 @@ package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.io.JSON;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,8 +39,8 @@ public class SpecialEventData implements Serializable, JSON
   public int year;
   public EnumMonth month;
   public int durationInMonths;
-  public ArrayList<MapPoint> locationList = new ArrayList<>();
-  public ArrayList<EnumRegion> regions = new ArrayList<>();
+  public ArrayList<MapPoint> locationList = new ArrayList<MapPoint>();
+  public ArrayList<EnumRegion> regions = new ArrayList<EnumRegion>();
 
   public SpecialEventData (String name)
   {
@@ -142,27 +143,6 @@ public class SpecialEventData implements Serializable, JSON
 
   public SpecialEventData (JSONDocument json)
   {
-    eventName = json.getString("eventName");
-    latitude = (float) json.getNumber("latitude");
-    longitude = (float) json.getNumber("longitude");
-    severity = (float) json.getNumber("severity");
-    dollarsInDamage = (long) json.getNumber("dollarsInDamage");
-    type = EnumSpecialEvent.values()[(int) json.getNumber("enumType")];
-    year = (int) json.getNumber("year");
-    month = EnumMonth.values()[(int) json.getNumber("enumMonth")];
-    durationInMonths = (int) json.getNumber("durationInMonths");
-
-    List<Object> jLocParse = json.get("locationList").array();
-    for (int i = 0; i < jLocParse.size(); i++)
-    {
-      locationList.add(new MapPoint((JSONDocument) jLocParse.get(i)));
-    }
-
-    //This should produce a list of the ordinals  of EnumRegions for the region list
-    List<Object> jRegionParse = json.get("regions").array();
-    for (int i = 0; i < jRegionParse.size(); i++)
-    {
-      regions.add(EnumRegion.values()[(int) jRegionParse.get(i)]);
-    }
+    throw new NotImplementedException();
   }
 }

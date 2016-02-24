@@ -18,7 +18,7 @@ public class GameOptions
   private NetworkStatus networkStatus = NetworkStatus.NOT_CONNECTED;
   private String loginNonce;
 
-  private Queue<String> mainFeed = new ConcurrentLinkedQueue<>();
+  private Queue<String> mainFeed = new ConcurrentLinkedQueue<String>();
 
   private boolean updateHand = false;
 

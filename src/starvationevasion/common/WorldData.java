@@ -30,7 +30,7 @@ public class WorldData implements Serializable, JSON
   /**
    * List of special world events (if any) that occurred during the past turn (3 years).
    */
-  public ArrayList<SpecialEventData> eventList = new ArrayList<>();
+  public ArrayList<SpecialEventData> eventList = new ArrayList<SpecialEventData>();
 
 
   /**

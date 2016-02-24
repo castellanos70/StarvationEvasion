@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Created by MohammadR on 2/3/2016.
@@ -31,11 +32,7 @@ public class FrameController extends GuiController
 
   private void setBackButtonEventHandler()
   {
-    EventHandler<ActionEvent> evh = event -> {
-      if (mainStage.getChildren().size() > 1) popOffMainStage();
-    };
-
-    backButton.addEventHandler(ActionEvent.ACTION, evh);
+    throw new NotImplementedException();
   }
 
   public void putOnMainStage(Node node)

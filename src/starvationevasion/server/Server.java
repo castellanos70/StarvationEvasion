@@ -30,13 +30,13 @@ import java.util.*;
 public class Server
 {
   private ServerSocket serverSocket;
-  private LinkedList<Worker> allConnections = new LinkedList<>();
+  private LinkedList<Worker> allConnections = new LinkedList<Worker>();
   private long startNanoSec = 0l;
   private final Timer timer = new Timer();
   private Simulator simulator;
-  private HashMap<String, User> users = new HashMap<>();
-  private ArrayList<User> userList = new ArrayList<>();
-  private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
+  private HashMap<String, User> users = new HashMap<String, User>();
+  private ArrayList<User> userList = new ArrayList<User>();
+  private ArrayList<EnumRegion> availableRegions = new ArrayList<EnumRegion>();
   private State currentState = State.LOGIN;
 
   public Server (int portNumber)
@@ -44,7 +44,7 @@ public class Server
 
     Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
 
-    addUser(new User("admin", "admin", EnumRegion.CALIFORNIA, new ArrayList<>()));
+    addUser(new User("admin", "admin", EnumRegion.CALIFORNIA, new ArrayList<EnumPolicy>()));
     startNanoSec = System.nanoTime();
     simulator = new Simulator(Constant.FIRST_YEAR);
 
@@ -272,7 +272,7 @@ public class Server
       for (Worker workers : allConnections)
       {
         EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
-        workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
+        workers.getUser().setHand(new ArrayList<EnumPolicy>(Arrays.asList(_hand)));
 
         // NOTE: can either send it as soon as we get it or have client request it.
 

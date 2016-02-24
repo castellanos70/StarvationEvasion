@@ -29,7 +29,7 @@ public class UserHandler extends AbstractHandler
       String uname = request.chomp();
       String pwd = request.chomp();
 
-      if (server.addUser(new User(uname, pwd, null, new ArrayList<>())))
+      if (server.addUser(new User(uname, pwd, null, new ArrayList<EnumPolicy>())))
       {
         m_response = new Response(server.timeDiff(), "SUCCESS");
       }

@@ -43,7 +43,7 @@ public class HandController implements Initializable
 
   private void initHandMap()
   {
-    handMap = new HashMap<>();
+    handMap = new HashMap<ImageView, EnumPolicy>();
     handMap.put(cardOne, null);
     handMap.put(cardTwo, null);
     handMap.put(cardThree, null);

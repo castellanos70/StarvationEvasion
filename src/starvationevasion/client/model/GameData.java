@@ -22,7 +22,7 @@ public class GameData
   private NetworkStatus networkStatus = NetworkStatus.NOT_CONNECTED;
   private String loginNonce;
 
-  private Queue<String> mainFeed = new ConcurrentLinkedQueue<>();
+  private Queue<String> mainFeed = new ConcurrentLinkedQueue<String>();
 
 
 
@@ -52,7 +52,6 @@ public class GameData
 
   /**
    * Returns the client's login nonce for logging in. The nonce is received from the server in a
-   * {@link starvationevasion.common.messages.Hello} message upon successful connection to the server.
    *
    * @return the client's login nonce, as a String.
    */
@@ -103,7 +102,6 @@ public class GameData
 
   /**
    * Set's the client's login nonce. This is done after the client has received a
-   * {@link starvationevasion.common.messages.Hello} message from the server upon successful connection.
    *
    * @param loginNonce the client's login nonce, as a String.
    */
@@ -192,7 +190,7 @@ public class GameData
 
   /**
    * Sets the available {@link EnumRegion}s for player selection during the pre-game phase.
-   * This is received from the server in the form of an {@link starvationevasion.common.messages.AvailableRegions}
+
    * message, and then set here by the client.
    *
    * @param availableRegions the set of regions not yet assigned to any players.

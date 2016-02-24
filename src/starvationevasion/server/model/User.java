@@ -20,7 +20,7 @@ public class User implements Serializable, JSON
   private boolean isActive = false;
 
   @Jsonify(type = Jsonify.JsonType.LIST)
-  private ArrayList<EnumPolicy> hand = new ArrayList<>();
+  private ArrayList<EnumPolicy> hand = new ArrayList<EnumPolicy>();
 
   public User (JSONDocument json)
   {

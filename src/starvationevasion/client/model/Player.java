@@ -23,7 +23,7 @@ public class Player
 
 
   //The player's hand
-  private ArrayList<PolicyCard> hand = new ArrayList<>();
+  private ArrayList<PolicyCard> hand = new ArrayList<PolicyCard>();
 
   public Player(String value, EnumRegion region)
   {

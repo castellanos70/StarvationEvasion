@@ -48,9 +48,9 @@ public class Earth {
   private Group earthHeatMap = new Group();
 
 
-  private HashMap<EnumRegion, int[]> foodProduced = new HashMap<>();
-  private ArrayList<SpecialEventData> specialEventDatas =  new ArrayList<>();
-  private ArrayList<LandTile> landTiles = new ArrayList<>();
+  private HashMap<EnumRegion, int[]> foodProduced = new HashMap<EnumRegion, int[]>();
+  private ArrayList<SpecialEventData> specialEventDatas =  new ArrayList<SpecialEventData>();
+  private ArrayList<LandTile> landTiles = new ArrayList<LandTile>();
   /**
    * Earth constructor
    *
@@ -135,7 +135,7 @@ public class Earth {
     Color orange = new Color(255,100,10,alpha);
 
 
-    ArrayList<Color> colors = new ArrayList<>();
+    ArrayList<Color> colors = new ArrayList<Color>();
     colors.add(white);
     colors.add(blue);
     colors.add(yellow);
@@ -284,7 +284,7 @@ public class Earth {
    * @param lon longitude of the given point given by starvationevasion.client.Aegislash.GUI
    * @return float value of temperature
    */
-  public float getTemperature(double lat, double lon) {
+  public float getTemperature(final double lat, final double lon) {
     Collections.sort(landTiles, new Comparator<LandTile>()
     {
       public int compare(LandTile t1, LandTile t2)
@@ -387,7 +387,7 @@ public class Earth {
     g.dispose();
 
 
-    HashMap<MapPoint, Float> data = new HashMap<>();
+    HashMap<MapPoint, Float> data = new HashMap<MapPoint, Float>();
     for (double lat = -90; lat < 90; lat += 1) {
       for (double lon = -180; lon < 180; lon += 1) {
         data.put(new MapPoint(lat, lon), Util.rand.nextFloat() * 100);
@@ -409,7 +409,7 @@ public class Earth {
     Color orange = new Color(255,100,10,75);
 
 
-    ArrayList<Color> colors = new ArrayList<>();
+    ArrayList<Color> colors = new ArrayList<Color>();
     colors.add(white);
     colors.add(blue);
     colors.add(yellow);

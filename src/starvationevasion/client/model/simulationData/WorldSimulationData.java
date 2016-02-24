@@ -30,7 +30,7 @@ public class WorldSimulationData
   {
     this.startYear = startYear;
     this.period = period;
-    this.worldData = new ArrayList<>();
+    this.worldData = new ArrayList<SimulationAnnualData>();
     updateCount = 0;
   }
 
@@ -60,13 +60,13 @@ public class WorldSimulationData
 
   public XYChart.Series<String, Integer> getRevenueChart(EnumRegion region)
   {
-    XYChart.Series<String, Integer> dataSeries = new XYChart.Series<>();
+    XYChart.Series<String, Integer> dataSeries = new XYChart.Series<String, Integer>();
     int year = startYear;
     for (int i = 0; i < updateCount; i++)
     {
       assert year == worldData.get(i).year;
       SimulationAnnualData data = worldData.get(i);
-      dataSeries.getData().add(new XYChart.Data<>(String.format("%d", year), data.getRegionData(region)
+      dataSeries.getData().add(new XYChart.Data<String, Integer>(String.format("%d", year), data.getRegionData(region)
           .revenueBalance));
       year += i * period;
     }
@@ -75,13 +75,13 @@ public class WorldSimulationData
 
   public XYChart.Series<String, Integer> getPopulationChart(EnumRegion region)
   {
-    XYChart.Series<String, Integer> dataSeries = new XYChart.Series<>();
+    XYChart.Series<String, Integer> dataSeries = new XYChart.Series<String, Integer>();
     int year = startYear;
     for (int i = 0; i < updateCount; i++)
     {
       assert year == worldData.get(i).year;
       SimulationAnnualData data = worldData.get(i);
-      dataSeries.getData().add(new XYChart.Data<>(String.format("%d", year), data.getRegionData(region).population));
+      dataSeries.getData().add(new XYChart.Data<String, Integer>(String.format("%d", year), data.getRegionData(region).population));
       year += i * period;
     }
     return dataSeries;
@@ -89,13 +89,13 @@ public class WorldSimulationData
 
   public XYChart.Series<String, Double> getHumanDevelopementIndexChart(EnumRegion region)
   {
-    XYChart.Series<String, Double> dataSeries = new XYChart.Series<>();
+    XYChart.Series<String, Double> dataSeries = new XYChart.Series<String, Double>();
     int year = startYear;
     for (int i = 0; i < updateCount; i++)
     {
       assert year == worldData.get(i).year;
       SimulationAnnualData data = worldData.get(i);
-      dataSeries.getData().add(new XYChart.Data<>(String.format("%d", year), data.getRegionData(region)
+      dataSeries.getData().add(new XYChart.Data<String, Double>(String.format("%d", year), data.getRegionData(region)
           .humanDevelopmentIndex));
       year += i * period;
     }
@@ -104,13 +104,13 @@ public class WorldSimulationData
 
   public XYChart.Series<String, Double> getUndernourishedChart(EnumRegion region)
   {
-    XYChart.Series<String, Double> dataSeries = new XYChart.Series<>();
+    XYChart.Series<String, Double> dataSeries = new XYChart.Series<String, Double>();
     int year = startYear;
     for (int i = 0; i < updateCount; i++)
     {
       assert year == worldData.get(i).year;
       SimulationAnnualData data = worldData.get(i);
-      dataSeries.getData().add(new XYChart.Data<>(String.format("%d", year), data.getRegionData(region)
+      dataSeries.getData().add(new XYChart.Data<String, Double>(String.format("%d", year), data.getRegionData(region)
           .undernourished));
       year += i * period;
     }
@@ -119,12 +119,12 @@ public class WorldSimulationData
 
   public XYChart.Series<String, Integer> getFoodIncome(EnumRegion region, EnumFood crop)
   {
-    XYChart.Series<String, Integer> dataSeries = new XYChart.Series<>();
+    XYChart.Series<String, Integer> dataSeries = new XYChart.Series<String, Integer>();
     int year = startYear;
     for (int i = 0; i < updateCount; i++)
     {
       assert year == worldData.get(i).year;
-      dataSeries.getData().add(new XYChart.Data<>(String.format("%d", year), worldData.get(i).getRegionData(region)
+      dataSeries.getData().add(new XYChart.Data<String, Integer>(String.format("%d", year), worldData.get(i).getRegionData(region)
           .foodIncome[crop.ordinal()]));
       year += i * period;
     }

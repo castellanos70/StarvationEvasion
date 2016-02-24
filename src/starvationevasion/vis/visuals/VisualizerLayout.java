@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import starvationevasion.common.EnumFood;
 import starvationevasion.vis.controller.EarthViewer;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.swing.*;
 
@@ -181,20 +182,21 @@ public class VisualizerLayout extends BorderPane
    */
   private void initEventHandling(int largeRadius)
   {
-    userEventHandler = new UserEventHandler(earth, this);
-    userEventHandler.setLargeEarthRadius(largeRadius);
-    earthGroup.addEventFilter(MouseDragEvent.DRAG_DETECTED, event -> userEventHandler.handle(event));
-    earthGroup.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> userEventHandler.handle(event));
-    earthGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> userEventHandler.handle(event));
-    earthGroup.addEventFilter(MouseEvent.MOUSE_MOVED, event -> userEventHandler.handle(event));
-
-    earthGroup.addEventFilter(ScrollEvent.ANY, event -> userEventHandler.handle(event));
-    earthGroup.addEventFilter(ZoomEvent.ANY, event -> userEventHandler.handle(event));
-    weather.setOnAction(event -> handleWeather(event));
-    heatMap.setOnAction(event -> handleHeatMap(event));
-    regionOverlay.setOnAction(event -> handleOverlay(event));
-    rotate.setOnAction(event -> handleRotate(event));
-    nextEffect.setOnAction(event -> handleNextEffect(event));
+    throw new NotImplementedException();
+//    userEventHandler = new UserEventHandler(earth, this);
+//    userEventHandler.setLargeEarthRadius(largeRadius);
+//    earthGroup.addEventFilter(MouseDragEvent.DRAG_DETECTED, event -> userEventHandler.handle(event));
+//    earthGroup.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> userEventHandler.handle(event));
+//    earthGroup.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> userEventHandler.handle(event));
+//    earthGroup.addEventFilter(MouseEvent.MOUSE_MOVED, event -> userEventHandler.handle(event));
+//
+//    earthGroup.addEventFilter(ScrollEvent.ANY, event -> userEventHandler.handle(event));
+//    earthGroup.addEventFilter(ZoomEvent.ANY, event -> userEventHandler.handle(event));
+//    weather.setOnAction(event -> handleWeather(event));
+//    heatMap.setOnAction(event -> handleHeatMap(event));
+//    regionOverlay.setOnAction(event -> handleOverlay(event));
+//    rotate.setOnAction(event -> handleRotate(event));
+//    nextEffect.setOnAction(event -> handleNextEffect(event));
 
   }
 

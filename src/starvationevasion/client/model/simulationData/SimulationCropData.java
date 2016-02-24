@@ -7,6 +7,7 @@
 package starvationevasion.client.model.simulationData;
 
 import starvationevasion.common.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
@@ -35,25 +36,27 @@ public class SimulationCropData
 
   private void processData(WorldData worldData)
   {
-    LinkedList<SortingData> cropList = new LinkedList<>();
-    for (int i = 0; i < EnumRegion.values().length; i++)
-    {
-      cropList.add(new SortingData(EnumRegion.values()[i], worldData.regionData[i].foodProduced[crop.ordinal()],
-          worldData.regionData[i].foodExported[crop.ordinal()]));
-    }
-    Collections.sort(cropList, Comparator.comparing(SortingData::getProduction).reversed());
-    Iterator<SortingData> iterator = cropList.iterator();
-    for (int i = 0; i < EnumRegion.values().length; i++)
-    {
-      sortedProducers[i] = iterator.next().region;
-    }
+    throw new NotImplementedException();
 
-    Collections.sort(cropList, Comparator.comparing(SortingData::getConsumption).reversed());
-    iterator = cropList.iterator();
-    for (int i = 0; i < EnumRegion.values().length; i++)
-    {
-      sortedProducers[i] = iterator.next().region;
-    }
+//    LinkedList<SortingData> cropList = new LinkedList<>();
+//    for (int i = 0; i < EnumRegion.values().length; i++)
+//    {
+//      cropList.add(new SortingData(EnumRegion.values()[i], worldData.regionData[i].foodProduced[crop.ordinal()],
+//          worldData.regionData[i].foodExported[crop.ordinal()]));
+//    }
+//    Collections.sort(cropList, Comparator.comparing(SortingData::getProduction).reversed());
+//    Iterator<SortingData> iterator = cropList.iterator();
+//    for (int i = 0; i < EnumRegion.values().length; i++)
+//    {
+//      sortedProducers[i] = iterator.next().region;
+//    }
+//
+//    Collections.sort(cropList, Comparator.comparing(SortingData::getConsumption).reversed());
+//    iterator = cropList.iterator();
+//    for (int i = 0; i < EnumRegion.values().length; i++)
+//    {
+//      sortedProducers[i] = iterator.next().region;
+//    }
   }
 
   /**

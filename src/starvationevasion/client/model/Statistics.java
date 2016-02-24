@@ -3,6 +3,7 @@ package starvationevasion.client.model;
 
 import starvationevasion.common.RegionData;
 import starvationevasion.common.WorldData;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Arrays;
 
@@ -21,10 +22,12 @@ public class Statistics
     this.worldData = worldData;
   }
 
+
   public RegionData getRegionByPlayer(Player player)
   {
-    return Arrays.asList(worldData.regionData).stream().filter(regionData -> {
-      return regionData.region == player.getRegion();
-    }).findFirst().get();
+    throw new NotImplementedException();
+//    return Arrays.asList(worldData.regionData).stream().filter(regionData -> {
+//      return regionData.region == player.getRegion();
+//    }).findFirst().get();
   }
 }

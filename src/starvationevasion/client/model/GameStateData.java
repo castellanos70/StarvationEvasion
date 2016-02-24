@@ -21,7 +21,7 @@ public class GameStateData
 
   private Set<EnumRegion> availableRegions;
   private Map<EnumRegion, String> takenRegions;
-  private ArrayList<Player> players = new ArrayList<>();
+  private ArrayList<Player> players = new ArrayList<Player>();
 
   /**
    * Returns the current {@link State}, used to modify client behavior based on current game phase/connectivity.
@@ -85,7 +85,7 @@ public class GameStateData
 
   /**
    * Sets the available {@link EnumRegion}s for player selection during the pre-game phase.
-   * This is received from the server in the form of an {@link starvationevasion.common.messages.AvailableRegions}
+   
    * message, and then set here by the client.
    *
    * @param availableRegions the set of regions not yet assigned to any players.

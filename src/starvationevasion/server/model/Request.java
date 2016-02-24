@@ -1,8 +1,6 @@
 package starvationevasion.server.model;
 
 
-import java.util.Arrays;
-
 public class Request
 {
   private String data;

@@ -130,7 +130,13 @@ public class Worker extends Thread
         }
 
         // notice I am expecting only requests from a client... Not supporting responses from client.
-        Request r = new Request(s.split("\\s+"));
+        String[] arr = s.split("\\s+");
+        if (arr.length < 2)
+        {
+          throw new Exception("Not enough data");
+        }
+
+        Request r = new Request(arr[0], arr[1], s);
         handler.handle(r);
 
 //

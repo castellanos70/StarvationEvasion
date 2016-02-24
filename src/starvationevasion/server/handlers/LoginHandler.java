@@ -20,7 +20,10 @@ public class LoginHandler extends AbstractHandler
   {
     if (request.getDestination() == Endpoint.LOGIN)
     {
-      boolean auth = authenticate(request.getData()[0], request.getData()[1]);
+      String uname = request.chomp();
+      String pwd = request.chomp();
+
+      boolean auth = authenticate(uname, pwd);
       if (auth)
       {
         m_response = new Response(server.timeDiff(), "SUCCESS");

@@ -35,6 +35,7 @@ chat CALIFORNIA {"card":null,"text":"normal text"}
 ```
 
 Here are some example of JSON. These are examples, *the actual data you are sending might be different!!*
+
 Sending a card
 ```json
 {"card":{"name":"name"},"text":"text"}

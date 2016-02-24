@@ -22,7 +22,11 @@ on success true is returned else false
 * ```login username pwd```
 
 ## Chat
-Chat data will need to be formatted carefully ```chat username data```. Data is a JSON
+Chat data will need to be formatted carefully ```chat region data```. Data is a JSON
+Example command
+```
+chat CALIFORNIA {"card":null,"text":"normal text"}
+```
 
 ```
 {

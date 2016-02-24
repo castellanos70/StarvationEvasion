@@ -1,32 +1,37 @@
-#StarvationEvasion Server
+# StarvationEvasion Server
+I have supplied a ```Client.java``` file. Run it and try out some of these commands.
 
-commands are issued as
 
+# Commands
+Commands shall be formatted as:
 ```
 time command args
 ```
 
-CRUD (create read update delete)
+# CRUD
+(create read update delete)
 
-# Client Commands
+## Client Commands
 
-## User
+### User
 
 * ```user_create username pwd [region]``` if region is supplied it will try to create a user in that region
 on success true is returned else false
 * ```user_read username```  returns the region of that user
 * ```user_update ```
 
-## Login
+### Login
 
 * ```login username pwd```
 
-## Chat
-Chat data will need to be formatted carefully ```chat region data```. Data is a JSON
-Example command
+### Chat
+Chat data will need to be formatted carefully ```chat region json```.
+
+#### Example command.
 ```
 chat CALIFORNIA {"card":null,"text":"normal text"}
 ```
+
 
 ```
 {

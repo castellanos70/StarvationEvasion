@@ -11,6 +11,7 @@ import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
 import starvationevasion.server.model.Response;
+import starvationevasion.server.model.State;
 import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
 
@@ -35,6 +36,7 @@ public class Server
   private HashMap<String, User> users = new HashMap<>();
   private ArrayList<User> userList = new ArrayList<>();
   private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
+  private State currentState = State.LOGIN;
 
   public Server (int portNumber)
   {
@@ -250,26 +252,26 @@ public class Server
 
     userList.add(u);
 
-    if (userList.size() == 7)
+    if (userList.size() == 2)
     {
+      currentState = State.DRAWING;
 
       for (Worker workers : allConnections)
       {
         EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
         workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
+
+        // NOTE: can either send it as soon as we get it or have client request it.
+        workers.send(workers.getUser());
       }
 
       WorldData currentWorldData = simulator.init();
       for (Worker workers : allConnections)
       {
+        // NOTE: can either send it as soon as we get it or have client request it.
         workers.send(currentWorldData);
       }
     }
-
-
-    // if username and region available
-    // return true
-    // else return region taken
 
     return true;
   }

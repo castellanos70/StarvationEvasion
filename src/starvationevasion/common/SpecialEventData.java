@@ -1,10 +1,8 @@
 package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-<<<<<<< HEAD
-=======
 import starvationevasion.server.io.JSON;
->>>>>>> server
+
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -111,36 +109,6 @@ public class SpecialEventData implements Serializable, JSON
     return str;
   }
 
-<<<<<<< HEAD
-  public JSONDocument toJSON()
-  { //TODO Match all enum formats together
-    JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
-    json.setString("eventName", eventName);
-    json.setNumber("latitude", latitude);
-    json.setNumber("longitude", longitude);
-    json.setNumber("severity", severity);
-    json.setNumber("dollarsInDamage", dollarsInDamage);
-    json.setNumber("enumType", type.ordinal());
-    json.setNumber("year", year);
-    json.setNumber("enumMonth", month.ordinal());
-    json.setNumber("durationInMonths", durationInMonths);
-
-    JSONDocument jLocArray =  JSONDocument.createArray();
-    for(int i = 0; i < locationList.size(); i++)
-      jLocArray.set(i, locationList.get(i).toJSON());
-    json.set("locationList", jLocArray);
-
-    JSONDocument jRegionArray = JSONDocument.createArray();
-    for(int i = 0; i < regions.size(); i++)
-      jRegionArray.setNumber(i, regions.get(i).ordinal());
-    json.set("regions", jRegionArray);
-
-    //TODO Make clear JSON arrays work
-    return json;
-  }
-
-  public SpecialEventData(JSONDocument json)
-=======
   @Override
   public JSONDocument toJSON ()
   {
@@ -173,38 +141,4 @@ public class SpecialEventData implements Serializable, JSON
     return json;
   }
 
-  public SpecialEventData (JSONDocument json)
->>>>>>> server
-  {
-    eventName = json.getString("eventName");
-    latitude = (float) json.getNumber("latitude");
-    longitude = (float) json.getNumber("longitude");
-    severity = (float) json.getNumber("severity");
-    dollarsInDamage = (long) json.getNumber("dollarsInDamage");
-    type = EnumSpecialEvent.values()[(int) json.getNumber("enumType")];
-    year = (int) json.getNumber("year");
-    month = EnumMonth.values()[(int) json.getNumber("enumMonth")];
-    durationInMonths = (int) json.getNumber("durationInMonths");
-
-    List<Object> jLocParse = json.get("locationList").array();
-    for (int i = 0; i < jLocParse.size(); i++)
-<<<<<<< HEAD
-      locationList.add(new MapPoint((JSONDocument) jLocParse.get(i)));
-=======
-    {
-      locationList.add(new MapPoint((JSONDocument) jLocParse.get(i)));
-    }
->>>>>>> server
-
-    //This should produce a list of the ordinals  of EnumRegions for the region list
-    List<Object> jRegionParse = json.get("regions").array();
-    for (int i = 0; i < jRegionParse.size(); i++)
-<<<<<<< HEAD
-      regions.add(EnumRegion.values()[(int) jRegionParse.get(i)]);
-=======
-    {
-      regions.add(EnumRegion.values()[(int) jRegionParse.get(i)]);
-    }
->>>>>>> server
-  }
 }

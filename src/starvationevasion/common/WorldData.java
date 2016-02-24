@@ -1,17 +1,15 @@
 package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-<<<<<<< HEAD
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-=======
+
 import starvationevasion.server.io.JSON;
 
 import java.io.Serializable;
 import java.util.ArrayList;
->>>>>>> server
 
 /**
  * This structure is populated and returned by the
@@ -69,10 +67,6 @@ public class WorldData implements Serializable, JSON
     String msg = "WorldData[" + year + "] =====================================\n     price: [";
     for (EnumFood food : EnumFood.values())
     {
-<<<<<<< HEAD
-      msg += String.format("%s:%.0f", food, foodPrice[food.ordinal()]); if (food != EnumFood.DAIRY) msg += ", ";
-    else msg += "]\n";
-=======
       msg += String.format("%s:%.0f", food, foodPrice[food.ordinal()]);
       if (food != EnumFood.DAIRY)
       {
@@ -82,7 +76,6 @@ public class WorldData implements Serializable, JSON
       {
         msg += "]\n";
       }
->>>>>>> server
     }
 
     for (RegionData region : regionData)
@@ -96,50 +89,6 @@ public class WorldData implements Serializable, JSON
     } return msg;
   }
 
-  public JSONDocument toJSON()
-  {
-    JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
-    json.setNumber("year", year);
-    json.setNumber("seaLevel", seaLevel);
-
-    JSONDocument jEventArray = JSONDocument.createArray();
-    for(int i = 0; i < eventList.size(); i++) //event List iteration
-      jEventArray.set(i, eventList.get(i).toJSON());
-    json.set("eventList", jEventArray);
-
-    JSONDocument jRegionArray =  JSONDocument.createArray();
-    for(int i = 0; i < EnumRegion.SIZE; i++) //region Data iteration
-        jRegionArray.set(i, regionData[i].toJSON());
-    json.set("regionData", jRegionArray);
-
-    JSONDocument jPriceArray = JSONDocument.createArray();
-    for(int i = 0; i < EnumFood.SIZE; i++) //food Price iteration
-      jPriceArray.setNumber(i, foodPrice[i]);
-    json.set("foodPrice", jPriceArray);
-
-    //TODO Make clear JSON arrays work
-    return json;
-  }
-  public WorldData(JSONDocument json)
-  {
-    year = (int)json.getNumber("year");
-    seaLevel = (double)json.getNumber("seaLevel");
-
-    //This should be converting the JSONDocument 'jEventArray' from before to a list of SpecialEventData JSONDocuments
-    List<Object> jEventParse = json.get("eventList").array();
-    for(int i = 0; i < jEventParse.size(); i++)
-      eventList.add(new SpecialEventData((JSONDocument)jEventParse.get(i)));
-
-    JSONDocument jRegionParse = json.get("regionData");
-    for(int i = 0; i < EnumRegion.SIZE; i++)
-      regionData[i] = new RegionData(jRegionParse.get(i));
-
-    JSONDocument jPriceParse = json.get("foodPrice");
-    for(int i = 0; i < EnumFood.SIZE; i++)
-      foodPrice[i] = (double)jPriceParse.getNumber(i);
-
-
-  }
 
   @Override
   public JSONDocument toJSON ()
@@ -175,30 +124,4 @@ public class WorldData implements Serializable, JSON
     return json;
   }
 
-  public WorldData (JSONDocument json)
-  {
-//    year = (int) json.getNumber("year");
-//    seaLevel = (double) json.getNumber("seaLevel");
-//
-//    //This should be converting the JSONDocument 'jEventArray' from before to a list of SpecialEventData JSONDocuments
-//    List<Object> jEventParse = json.get("eventList").array();
-//    for (int i = 0; i < jEventParse.size(); i++)
-//    {
-//      eventList.add(new SpecialEventData((JSONDocument) jEventParse.get(i)));
-//    }
-//
-//    JSONDocument jRegionParse = json.get("regionData");
-//    for (int i = 0; i < EnumRegion.SIZE; i++)
-//    {
-//      regionData[i] = new RegionData(jRegionParse.get(i));
-//    }
-//
-//    JSONDocument jPriceParse = json.get("foodPrice");
-//    for (int i = 0; i < EnumFood.SIZE; i++)
-//    {
-//      foodPrice[i] = (double) jPriceParse.getNumber(i);
-//    }
-//
-
-  }
 }

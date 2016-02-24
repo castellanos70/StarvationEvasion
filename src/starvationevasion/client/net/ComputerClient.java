@@ -8,7 +8,7 @@ import starvationevasion.client.model.GameStateData;
 
 /**
  * The ComputerClient is used by an AI player running the game in headless mode to interact with the server. Based on
- * changes to {@link starvationevasion.server.ServerState}, namely current game phase, the ComputerClient modifies its
+ * changes to {@link starvationevasion.server.model.State}, namely current game phase, the ComputerClient modifies its
  * behavior.
  */
 public class ComputerClient extends AbstractClient

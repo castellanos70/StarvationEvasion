@@ -6,9 +6,6 @@ import starvationevasion.client.model.GameOptions;
 import starvationevasion.client.net.common.NetworkStatus;
 import starvationevasion.client.model.Player;
 import starvationevasion.client.model.GameStateData;
-import starvationevasion.common.EnumRegion;
-
-import starvationevasion.server.ServerState;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -48,7 +45,7 @@ public abstract class AbstractClient extends Thread
   /**
    * Creates a new generic client (for either a human or AI connection to the server) with the given options, state, and
    * a controller. {@link GameOptions} are used for the player's login credentials, as well as the information we'll need
-   * to connect to the server. {@link GameStateData} allows the client to respond to changes in {@link ServerState}. The
+   * to connect to the server. {@link GameStateData} allows the client to respond to changes in {@link starvationevasion.server.model.State}. The
    * {@link AbstractPlayerController} allows us to get/set player state information based on messages from the server.
    *
    * @param options   GameOptions to reference for server location/login credentials.

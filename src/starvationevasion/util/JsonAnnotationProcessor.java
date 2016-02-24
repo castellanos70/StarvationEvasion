@@ -1,14 +1,12 @@
 package starvationevasion.util;
 
 
-import starvationevasion.common.EnumRegion;
 import starvationevasion.server.io.JSON;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 public class JsonAnnotationProcessor
 {

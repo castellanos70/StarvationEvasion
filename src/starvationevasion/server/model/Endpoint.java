@@ -13,7 +13,12 @@ public enum Endpoint
   HAND_READ("hand_read"),
   HAND_UPDATE("hand_update"),
 
+  VOTE_UP("vote_up"),
+  VOTE_DOWN("vote_down"),
 
+  DRAFT_CARD("draft_card"),
+
+  //draft can you draft, have you drafted you can onyl draft one voting card.
 
   CHAT("chat"),
   CARD("card");

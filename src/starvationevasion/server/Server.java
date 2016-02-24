@@ -6,8 +6,10 @@ package starvationevasion.server;
  */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.common.Constant;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.WorldData;
 import starvationevasion.server.model.Response;
 import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
@@ -31,7 +33,7 @@ public class Server
   private final Timer timer = new Timer();
   private Simulator simulator;
   private HashMap<String, User> users = new HashMap<>();
-  private ArrayList<User> userList = new ArrayList<>(7);
+  private ArrayList<User> userList = new ArrayList<>();
   private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
 
   public Server (int portNumber)
@@ -41,13 +43,8 @@ public class Server
 
     addUser(new User("admin", "admin", EnumRegion.CALIFORNIA, new ArrayList<>()));
     startNanoSec = System.nanoTime();
-    //    simulator = new Simulator(Constant.FIRST_YEAR);
-    ////    for (EnumRegion region : EnumRegion.US_REGIONS)
-    ////    {
-    ////      playerHands.put(region, new ArrayList<>(Arrays.asList(simulator.drawCards(region))));
-    ////    }
-    //
-    //    WorldData currentWorldData = simulator.init();
+    simulator = new Simulator(Constant.FIRST_YEAR);
+
 
     try
     {
@@ -158,6 +155,8 @@ public class Server
     }
   }
 
+
+
   public static void main (String args[])
   {
     //Valid port numbers are Port numbers are 1024 through 65535.
@@ -228,6 +227,10 @@ public class Server
 
   public boolean addUser (User u)
   {
+    if (userList.size() == 7)
+    {
+      return false;
+    }
     // users.put(client.getName(), u);
     EnumRegion _region = u.getRegion();
 
@@ -246,6 +249,22 @@ public class Server
     }
 
     userList.add(u);
+
+    if (userList.size() == 7)
+    {
+
+      for (Worker workers : allConnections)
+      {
+        EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
+        workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
+      }
+
+      WorldData currentWorldData = simulator.init();
+      for (Worker workers : allConnections)
+      {
+        workers.send(currentWorldData);
+      }
+    }
 
 
     // if username and region available

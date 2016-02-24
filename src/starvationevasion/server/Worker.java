@@ -6,14 +6,12 @@ package starvationevasion.server;
 
 
 import starvationevasion.server.handlers.Handler;
+import starvationevasion.server.io.JSON;
 import starvationevasion.server.model.Request;
 import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 /**
@@ -31,6 +29,7 @@ public class Worker extends Thread
   private Handler handler;
   private long serverStartTime;
   private boolean sent = false;
+  private ObjectOutputStream clientObjectWriter;
 
   public Worker (Socket client, Server server)
   {
@@ -43,6 +42,7 @@ public class Worker extends Thread
     try
     {
       clientWriter = new PrintWriter(client.getOutputStream(), true);
+      clientObjectWriter = new ObjectOutputStream(client.getOutputStream());
     }
     catch(IOException e)
     {
@@ -82,6 +82,34 @@ public class Worker extends Thread
     System.out.println("ServerWorker.send(" + msg + ")");
     clientWriter.println(msg);
   }
+
+  /**
+   * Send message to client.
+   *
+   */
+  public <T extends JSON & Serializable> void send (T data)
+  {
+    System.out.println("ServerWorker.send(" + data.toJSON() + ")");
+    clientWriter.println(data.toJSON());
+  }
+
+
+  /**
+   * Send message to client.
+   *
+   */
+//  public <T extends Serializable> void send (T data)
+//  {
+//    System.out.println("ServerWorker.send(" + data.toString() + ")");
+//    try
+//    {
+//      clientObjectWriter.writeObject(data);
+//    }
+//    catch(IOException e)
+//    {
+//      e.printStackTrace();
+//    }
+//  }
 
 
   public void run ()

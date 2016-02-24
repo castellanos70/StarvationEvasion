@@ -146,8 +146,8 @@ public enum EnumRegion
     RUSSIA, CENTRAL_ASIA, SOUTH_ASIA, EAST_ASIA, SOUTHEAST_ASIA, OCEANIA
   };
 
-  private final ResourceBundle res = ResourceBundle.getBundle("starvationevasion.common.strings_enum");
-  private final String shortName = res.getString("EnumRegion." + name() + ".shortName");
+//  private final ResourceBundle res = ResourceBundle.getBundle("strings_enum");
+//  private final String shortName = res.getString("EnumRegion." + name() + ".shortName");
 
   /**
    * @return true if and only of the region is a player region of the United States of America.
@@ -165,7 +165,7 @@ public enum EnumRegion
     else return 0;
   }
 
-  public String toString() { return shortName; }
+//  public String toString() { return shortName; }
 
   public static int allUSRegionBits()
   {

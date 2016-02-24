@@ -14,8 +14,11 @@ build () {
     rm -rf dist/
     mkdir dist
     make_sources
+    mkdir dist/data
+    cp -rf data/* dist/
+
     javac -classpath ".:libs/javafx-mx.jar" @files.txt -d ./dist
-    # rm files.txt
+    rm files.txt
 }
 
 run () {

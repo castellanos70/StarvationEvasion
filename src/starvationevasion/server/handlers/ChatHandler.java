@@ -8,6 +8,8 @@ import starvationevasion.server.Server;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Request;
 
+import java.io.StringReader;
+
 public class ChatHandler extends AbstractHandler
 {
   public ChatHandler (Server server, Worker client)
@@ -22,8 +24,10 @@ public class ChatHandler extends AbstractHandler
 
       EnumRegion destination = EnumRegion.valueOf(request.getData()[0]);
 
-      // need to parse into JSONDocument
       String data = request.getData()[1];
+      StringReader stringReader = new StringReader(data);
+      JSONStreamReaderImpl s = new JSONStreamReaderImpl(stringReader);
+      JSONDocument _json = s.build();
 
       String from = getClient().getUser().getRegion().name();
 
@@ -34,7 +38,8 @@ public class ChatHandler extends AbstractHandler
       {
         JSONDocument _msg = JSONDocument.createObject();
         _msg.setString("from", from);
-        _msg.setString("message", "what the...");
+        _msg.set("message", _json);
+        worker.send(_msg.toString());
       }
 
       return true;

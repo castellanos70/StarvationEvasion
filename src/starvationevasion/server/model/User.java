@@ -1,22 +1,25 @@
 package starvationevasion.server.model;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-import com.oracle.javafx.jmx.json.JSONWriter;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.server.io.JSON;
+import starvationevasion.util.Jsonify;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class User implements Serializable, JSON
 {
+  @Jsonify
   private String username;
   private String password;
+
+  @Jsonify
   private EnumRegion region;
   private boolean isActive = false;
 
+  @Jsonify(type = Jsonify.JsonType.LIST)
   private ArrayList<EnumPolicy> hand = new ArrayList<>();
 
   public User (JSONDocument json)

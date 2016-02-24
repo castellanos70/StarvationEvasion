@@ -14,6 +14,7 @@ import starvationevasion.server.model.Response;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
+import starvationevasion.util.JsonAnnotationProcessor;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -274,6 +275,8 @@ public class Server
         workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
 
         // NOTE: can either send it as soon as we get it or have client request it.
+
+        System.out.println(JsonAnnotationProcessor.gets(workers.getUser()));
         workers.send(workers.getUser());
       }
 

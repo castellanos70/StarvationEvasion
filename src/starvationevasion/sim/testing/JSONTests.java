@@ -10,6 +10,12 @@ public class JSONTests
 {
   static void main()
   {
+
+  }
+  private static EnumRegion randomRegion()
+  {
+    int ordinal = (int)Math.floor(Math.random()*EnumRegion.SIZE);
+    return EnumRegion.values()[ordinal];
     //    //Adding a change
     //    WorldData testData = new WorldData();
     //    testData.year = 1984;

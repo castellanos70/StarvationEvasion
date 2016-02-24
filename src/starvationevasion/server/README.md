@@ -4,7 +4,7 @@ I have supplied a ```Client.java``` file. Run it and try out some of these comma
 
 # Commands
 Commands shall be formatted as:
-```
+```bash
 time command args
 ```
 
@@ -36,11 +36,11 @@ chat CALIFORNIA {"card":null,"text":"normal text"}
 
 Here are some example of JSON.
 Sending a card
-```
+```json
 {"card":data,"text":"text"}
 ```
 Sending not sending a card, only sending text
-```
+```json
 {"card":null,"text":"text"}
 ```
 

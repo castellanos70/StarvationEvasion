@@ -4,15 +4,18 @@ import com.oracle.javafx.jmx.json.JSONDocument;
 import com.oracle.javafx.jmx.json.JSONWriter;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.server.io.JSON;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User
+public class User implements Serializable, JSON
 {
   private String username;
   private String password;
   private EnumRegion region;
+  private boolean isActive = false;
 
   private ArrayList<EnumPolicy> hand = new ArrayList<>();
 
@@ -45,17 +48,21 @@ public class User
     this.region = region;
   }
 
+  @Override
   public JSONDocument toJSON ()
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
 
-    json.setString("username", username);
-    json.setString("password", password);
+     json.setString("username", username);
+    // json.setString("password", password);
     json.setString("region", region.toString());
-    JSONDocument hand = JSONDocument.createArray(this.hand.size());
-    hand.set(0, hand.get(0));
+    JSONDocument _hand = JSONDocument.createArray(this.hand.size());
+    for (int i = 0; i < this.hand.size(); i++)
+    {
+      _hand.setString(i, hand.get(i).toString());
+    }
 
-    json.set("hand", hand);
+    json.set("hand", _hand);
 
     return json;
   }
@@ -98,6 +105,16 @@ public class User
   public void setHand (ArrayList<EnumPolicy> hand)
   {
     this.hand = hand;
+  }
+
+  public boolean isActive ()
+  {
+    return isActive;
+  }
+
+  public void setActive (boolean active)
+  {
+    isActive = active;
   }
 
   @Override

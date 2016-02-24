@@ -34,13 +34,13 @@ Chat data will need to be formatted carefully ```chat region json```.
 chat CALIFORNIA {"card":null,"text":"normal text"}
 ```
 
-Here are some example of JSON. These are examples, *the actual data you are sending might be different!!*
+Here are some examples of JSON. These are examples, *the actual data you are sending might be different!!*
 
-Sending a card
+###### Sending a card, with text
 ```json
 {"card":{"name":"name"},"text":"text"}
 ```
-Sending not sending a card, only sending text
+###### Sending only text
 ```json
 {"card":null,"text":"text"}
 ```

@@ -7,14 +7,16 @@ public enum Endpoint
   USER_READ("user_read"),
   USER_UPDATE("user_update"),
   USERS("users"),
-
   LOGIN("login"),
 
 
-  HAND("hand"),
+  HAND_READ("hand_read"),
+  HAND_UPDATE("hand_update"),
+
+
 
   CHAT("chat"),
-  CARD("card?");
+  CARD("card");
 
 
   private String url;

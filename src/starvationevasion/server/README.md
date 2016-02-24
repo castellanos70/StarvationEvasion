@@ -27,7 +27,7 @@ on success true is returned else false
 ### Chat
 Chat data will need to be formatted carefully ```chat region json```.
 
-#### Example command.
+##### Example command.
 ```
 chat CALIFORNIA {"card":null,"text":"normal text"}
 ```

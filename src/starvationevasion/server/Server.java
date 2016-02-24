@@ -222,6 +222,18 @@ public class Server
     return new User(new JSONDocument(JSONDocument.Type.OBJECT));//users.get(worker);
   }
 
+  public Worker getWorkerByRegion(EnumRegion region)
+  {
+    for (Worker worker : allConnections)
+    {
+      if (worker.getUser().getRegion() == region)
+      {
+        return worker;
+      }
+    }
+    return null;
+  }
+
   public Iterable<User> getUserList ()
   {
     return userList;

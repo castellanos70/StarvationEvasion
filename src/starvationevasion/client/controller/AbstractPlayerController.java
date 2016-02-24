@@ -7,7 +7,7 @@ import starvationevasion.client.net.AbstractClient;
 import starvationevasion.client.model.GameStateData;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
-import starvationevasion.common.messages.*;
+
 
 import java.util.Iterator;
 
@@ -131,7 +131,7 @@ public abstract class AbstractPlayerController implements GameController
    */
   public void selectRegion(EnumRegion region)
   {
-    client.send(new RegionChoice(region));
+    // client.send(new RegionChoice(region));
     player.setRegion(region);
   }
 

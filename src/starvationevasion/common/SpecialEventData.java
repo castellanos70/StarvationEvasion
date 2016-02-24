@@ -1,13 +1,17 @@
 package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+<<<<<<< HEAD
+=======
+import starvationevasion.server.io.JSON;
+>>>>>>> server
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class SpecialEventData implements Serializable
+public class SpecialEventData implements Serializable, JSON
 {
 
   public enum EnumSpecialEvent
@@ -40,59 +44,59 @@ public class SpecialEventData implements Serializable
   public ArrayList<MapPoint> locationList = new ArrayList<>();
   public ArrayList<EnumRegion> regions = new ArrayList<>();
 
-  public SpecialEventData(String name)
+  public SpecialEventData (String name)
   {
     eventName = name;
   }
 
 
-  public void setType(EnumSpecialEvent type)
+  public void setType (EnumSpecialEvent type)
   {
     this.type = type;
   }
 
-  public void setYear(int year)
+  public void setYear (int year)
   {
     this.year = year;
   }
 
-  public void setDollarsInDamage(long dollarsInDamage)
+  public void setDollarsInDamage (long dollarsInDamage)
   {
     this.dollarsInDamage = dollarsInDamage;
   }
 
-  public void setSeverity(float severity)
+  public void setSeverity (float severity)
   {
     this.severity = severity;
   }
 
-  public void setDurationInMonths(int durationInMonths)
+  public void setDurationInMonths (int durationInMonths)
   {
     this.durationInMonths = durationInMonths;
   }
 
-  public void setLatitude(float latitude)
+  public void setLatitude (float latitude)
   {
     this.latitude = latitude;
   }
 
-  public void setLongitude(float longitude)
+  public void setLongitude (float longitude)
   {
     this.longitude = longitude;
   }
 
-  public void addRegion(EnumRegion region)
+  public void addRegion (EnumRegion region)
   {
     regions.add(region);
   }
 
-  public int regionsAffected()
+  public int regionsAffected ()
   {
     return regions.size();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
     String str = "";
     str += "Event " + eventName + "\n";
@@ -107,6 +111,7 @@ public class SpecialEventData implements Serializable
     return str;
   }
 
+<<<<<<< HEAD
   public JSONDocument toJSON()
   { //TODO Match all enum formats together
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
@@ -135,6 +140,41 @@ public class SpecialEventData implements Serializable
   }
 
   public SpecialEventData(JSONDocument json)
+=======
+  @Override
+  public JSONDocument toJSON ()
+  {
+
+    JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
+    json.setString("event-name", eventName);
+    json.setNumber("latitude", latitude);
+    json.setNumber("longitude", longitude);
+    json.setNumber("severity", severity);
+    json.setNumber("damage-in-dollars", dollarsInDamage);
+    json.setString("type", type.toString());
+    json.setNumber("year", year);
+    json.setString("month", month.toString());
+    json.setNumber("duration-in-months", durationInMonths);
+
+    JSONDocument _locationArray = JSONDocument.createArray(locationList.size());
+    for (int i = 0; i < locationList.size(); i++)
+    {
+      _locationArray.set(i, locationList.get(i).toJSON());
+    }
+    json.set("locationList", _locationArray);
+
+    JSONDocument _regionsArray = JSONDocument.createArray(regions.size());
+    for (int i = 0; i < regions.size(); i++)
+    {
+      _regionsArray.setString(i, regions.get(i).toString());
+    }
+    json.set("regions", _regionsArray);
+
+    return json;
+  }
+
+  public SpecialEventData (JSONDocument json)
+>>>>>>> server
   {
     eventName = json.getString("eventName");
     latitude = (float) json.getNumber("latitude");
@@ -148,11 +188,23 @@ public class SpecialEventData implements Serializable
 
     List<Object> jLocParse = json.get("locationList").array();
     for (int i = 0; i < jLocParse.size(); i++)
+<<<<<<< HEAD
       locationList.add(new MapPoint((JSONDocument) jLocParse.get(i)));
+=======
+    {
+      locationList.add(new MapPoint((JSONDocument) jLocParse.get(i)));
+    }
+>>>>>>> server
 
     //This should produce a list of the ordinals  of EnumRegions for the region list
     List<Object> jRegionParse = json.get("regions").array();
     for (int i = 0; i < jRegionParse.size(); i++)
+<<<<<<< HEAD
       regions.add(EnumRegion.values()[(int) jRegionParse.get(i)]);
+=======
+    {
+      regions.add(EnumRegion.values()[(int) jRegionParse.get(i)]);
+    }
+>>>>>>> server
   }
 }

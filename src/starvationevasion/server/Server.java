@@ -5,7 +5,16 @@ package starvationevasion.server;
  * @author Javier Chavez
  */
 
+import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.common.Constant;
+import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.WorldData;
+import starvationevasion.server.model.Response;
+import starvationevasion.server.model.State;
+import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
+import starvationevasion.util.JsonAnnotationProcessor;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -26,17 +35,19 @@ public class Server
   private final Timer timer = new Timer();
   private Simulator simulator;
   private HashMap<String, User> users = new HashMap<>();
+  private ArrayList<User> userList = new ArrayList<>();
+  private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
+  private State currentState = State.LOGIN;
 
   public Server (int portNumber)
   {
+
+    Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
+
+    addUser(new User("admin", "admin", EnumRegion.CALIFORNIA, new ArrayList<>()));
     startNanoSec = System.nanoTime();
-    //    simulator = new Simulator(Constant.FIRST_YEAR);
-    ////    for (EnumRegion region : EnumRegion.US_REGIONS)
-    ////    {
-    ////      playerHands.put(region, new ArrayList<>(Arrays.asList(simulator.drawCards(region))));
-    ////    }
-    //
-    //    WorldData currentWorldData = simulator.init();
+    simulator = new Simulator(Constant.FIRST_YEAR);
+
 
     try
     {
@@ -147,6 +158,8 @@ public class Server
     }
   }
 
+
+
   public static void main (String args[])
   {
     //Valid port numbers are Port numbers are 1024 through 65535.
@@ -192,20 +205,88 @@ public class Server
     return simulator;
   }
 
-  public User getUser (String worker)
+  public User getUserByUsername (String username)
   {
-    return users.get(worker);
+    for (User user : userList)
+    {
+      if (user.getUsername().equals(username))
+      {
+        return user;
+      }
+    }
+
+    return null;
   }
 
-  public boolean addUser (User u, Worker client)
+  public User getUserByWorker (String worker)
   {
-    users.put(client.getName(), u);
-    // get available regions
-    // check if region is available
-    // if username and region available
-    // return true
-    // else return region taken
-    // else return username taken
+    return new User(new JSONDocument(JSONDocument.Type.OBJECT));//users.get(worker);
+  }
+
+  public Worker getWorkerByRegion(EnumRegion region)
+  {
+    for (Worker worker : allConnections)
+    {
+      if (worker.getUser().getRegion() == region)
+      {
+        return worker;
+      }
+    }
+    return null;
+  }
+
+  public Iterable<User> getUserList ()
+  {
+    return userList;
+  }
+
+  public boolean addUser (User u)
+  {
+    if (userList.size() == 7)
+    {
+      return false;
+    }
+    // users.put(client.getName(), u);
+    EnumRegion _region = u.getRegion();
+
+    if (_region != null)
+    {
+      int loc = availableRegions.lastIndexOf(_region);
+      if (loc == -1)
+      {
+        return false;
+      }
+      availableRegions.remove(loc);
+    }
+    else
+    {
+      u.setRegion(availableRegions.remove(0));
+    }
+
+    userList.add(u);
+
+    if (userList.size() == 2)
+    {
+      currentState = State.DRAWING;
+
+      for (Worker workers : allConnections)
+      {
+        EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
+        workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
+
+        // NOTE: can either send it as soon as we get it or have client request it.
+
+        System.out.println(JsonAnnotationProcessor.gets(workers.getUser()));
+        workers.send(workers.getUser());
+      }
+
+      WorldData currentWorldData = simulator.init();
+      for (Worker workers : allConnections)
+      {
+        // NOTE: can either send it as soon as we get it or have client request it.
+        workers.send(currentWorldData);
+      }
+    }
 
     return true;
   }

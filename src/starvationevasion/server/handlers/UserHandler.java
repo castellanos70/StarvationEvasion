@@ -1,8 +1,12 @@
 package starvationevasion.server.handlers;
 
 
-import com.oracle.javafx.jmx.json.JSONDocument;
+
 import starvationevasion.server.*;
+import starvationevasion.server.model.Endpoint;
+import starvationevasion.server.model.Request;
+import starvationevasion.server.model.Response;
+import starvationevasion.server.model.User;
 
 public class UserHandler extends AbstractHandler
 {
@@ -16,74 +20,33 @@ public class UserHandler extends AbstractHandler
   protected boolean handleRequestImpl (Request request)
   {
 
-    if (request.getPath().contains("user/login"))
+    if (request.getDestination().equals(Endpoint.USER_CREATE))
     {
-      // get the user info
-      if (request.getRequest() == ActionType.GET)
+      if (server.addUser(new User(request.getData())))
       {
-        System.out.println("getting");
-        m_response = new Response(ActionType.SUCCESS,
-                                  server.uptime(),
-                                  server.getUser(getClient().getName()).toJSON());
-        return true;
+        m_response = new Response(server.timeDiff(), "SUCCESS");
       }
-      // update a user
-      else if (request.getRequest() == ActionType.PUT)
+      else
       {
-        System.out.println("updated user");
+        m_response = new Response(server.timeDiff(), "FAIL");
       }
-
+      getClient().send(m_response.toString());
+      return true;
     }
-    else if (request.getPath().contains("user/hand"))
+    else if (request.getDestination().equals(Endpoint.USERS))
     {
-      // get the user info
-      if (request.getRequest() == ActionType.GET)
+      StringBuilder stringBuilder = new StringBuilder();
+      for (User user : server.getUserList())
       {
-        // server.getHand()
-        // m_response = new Response(ActionType.SUCCESS, server.uptime(), new JSONDocument(JSONDocument.Type.OBJECT));
-        // parse the hand and create rsponse
-        return true;
+        stringBuilder.append(user.toString()).append(" ");
       }
-      // create a user hand
-      else if (request.getRequest() == ActionType.POST)
-      {
-
-      }
-      // update a user hand
-      else if (request.getRequest() == ActionType.PUT)
-      {
-
-      }
+      m_response = new Response(server.timeDiff(), stringBuilder.toString());
+      getClient().send(m_response.toString());
+      return true;
     }
-    else if (request.getPath().contains("users"))
-    {
-      // create a user
-      if (request.getRequest() == ActionType.POST)
-      {
-        System.out.println("new user");
-        if (server.addUser(new User(request.getPayload()), getClient()))
-        {
 
-          m_response = new Response(ActionType.SUCCESS, server.uptime(), getUser());
-        }
-        else
-        {
-          m_response = new Response(ActionType.FAIL, server.uptime(), getUser());
-
-        }
-        return true;
-      }
-    }
     return false;
   }
 
-  JSONDocument getUser ()
-  {
-    JSONDocument obj = new JSONDocument(JSONDocument.Type.OBJECT);
-    obj.setString("username", "admin");
-    obj.setString("password", "hi");
-    obj.setString("region", "Eastern");
 
-    return obj;
-  }
 }

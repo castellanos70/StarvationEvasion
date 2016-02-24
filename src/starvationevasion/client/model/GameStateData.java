@@ -2,7 +2,7 @@ package starvationevasion.client.model;
 
 
 import starvationevasion.common.EnumRegion;
-import starvationevasion.server.ServerState;
+import starvationevasion.server.model.State;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -17,18 +17,18 @@ public class GameStateData
   private long serverStartTime;
   private long phaseEndTime;//I think it's already calculated by the server. serverStartTime + length of phase
   private long phaseTime;
-  private ServerState serverState;
+  private State serverState;
 
   private Set<EnumRegion> availableRegions;
   private Map<EnumRegion, String> takenRegions;
   private ArrayList<Player> players = new ArrayList<>();
 
   /**
-   * Returns the current {@link ServerState}, used to modify client behavior based on current game phase/connectivity.
+   * Returns the current {@link State}, used to modify client behavior based on current game phase/connectivity.
    *
-   * @return the current ServerState.
+   * @return the current State.
    */
-  public ServerState getServerState()
+  public State getServerState()
   {
     return serverState;
   }
@@ -63,9 +63,9 @@ public class GameStateData
   /**
    * Changes the current server state. Used to handle client-side behavior in response to changes in server state.
    *
-   * @param serverState the {@link ServerState} to change to.
+   * @param serverState the {@link State} to change to.
    */
-  public void setServerState(ServerState serverState)
+  public void setServerState(State serverState)
   {
     this.serverState = serverState;
   }

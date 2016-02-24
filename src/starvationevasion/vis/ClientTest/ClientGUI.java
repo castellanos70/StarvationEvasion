@@ -63,7 +63,7 @@ public class ClientGUI extends Application implements EventHandler<KeyEvent> {
       }
 //      case ENTER:
 //      {
-//        //World Data..
+//        //World Request..
 //        /* client passes in crop and temperature data, expecting MapPoints to be whole degrees */
 //        HashMap<MapPoint, Float> tempData = new HashMap<>();
 //        for (double lat = -90; lat < 90; lat += 1) {

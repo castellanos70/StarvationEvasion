@@ -1,0 +1,69 @@
+#!/bin/bash
+#
+# Perform build, run, clean.
+# author: Javier Chavez
+# email: javierc@cs.unm.edu
+
+make_sources () {
+    # find all the files but exclude emacs backup files
+    find . ! -name "*#*" -name "*.java" > files.txt
+
+}
+
+build () {
+    rm -rf dist/
+    mkdir dist
+    make_sources
+    javac -classpath ".:libs/javafx-mx.jar" @files.txt -d ./dist
+    # rm files.txt
+}
+
+run () {
+    build
+    java -classpath ./dist starvationevasion/server/Server
+    # java -classpath ./dist Client
+}
+
+run_opt_server () {
+    # java -XX:+AggressiveOpts -XX:+UseFastAccessorMethods -Xms128m -Xmx2g -Xcomp -classpath ./dist ServerMaster "$1"
+    run
+}
+
+run_opt_client () {
+    java -XX:+AggressiveOpts -XX:+UseFastAccessorMethods -Xms128m -Xmx2g -Xcomp -classpath ./dist Client "$1" "$2"
+}
+clean () {
+    rm -rf dist/
+}
+
+if [ "$1" == "build" ]
+then
+    build
+elif [ "$1" == "test_run" ]
+then
+    run
+elif [ "$1" == "server" ]
+then
+    if [ "$#" -eq 2 ]
+    then
+        run_opt_server "$2"
+    else
+        run_opt_server 5555
+    fi
+
+elif [ "$1" == "client" ]
+then
+    if [ "$#" -eq 3 ]
+    then
+        run_opt_client "$2" "$3"
+    else
+        run_opt_client localhost 5555
+    fi
+
+elif [ "$1" == "clean" ]
+then
+    clean
+else
+    echo "Command not found"
+fi
+

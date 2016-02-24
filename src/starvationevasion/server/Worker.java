@@ -6,12 +6,12 @@ package starvationevasion.server;
 
 
 import starvationevasion.server.handlers.Handler;
+import starvationevasion.server.io.JSON;
+import starvationevasion.server.model.Request;
+import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 /**
@@ -19,7 +19,7 @@ import java.net.Socket;
  */
 public class Worker extends Thread
 {
-
+  private User cred;
   private Socket client;
   private PrintWriter clientWriter;
   private BufferedReader clientReader;
@@ -29,6 +29,7 @@ public class Worker extends Thread
   private Handler handler;
   private long serverStartTime;
   private boolean sent = false;
+  private ObjectOutputStream clientObjectWriter;
 
   public Worker (Socket client, Server server)
   {
@@ -41,6 +42,7 @@ public class Worker extends Thread
     try
     {
       clientWriter = new PrintWriter(client.getOutputStream(), true);
+      clientObjectWriter = new ObjectOutputStream(client.getOutputStream());
     }
     catch(IOException e)
     {
@@ -78,22 +80,36 @@ public class Worker extends Thread
   public void send (String msg)
   {
     System.out.println("ServerWorker.send(" + msg + ")");
-
     clientWriter.println(msg);
-
   }
 
   /**
    * Send message to client.
    *
-   * @param msg string containing message to be sent.
    */
-  public void send (Response msg)
+  public <T extends JSON & Serializable> void send (T data)
   {
-    System.out.println("ServerWorker.send(" + msg + ")");
-    clientWriter.println(msg);
-
+    System.out.println("ServerWorker.send(" + data.toJSON() + ")");
+    clientWriter.println(data.toJSON());
   }
+
+
+  /**
+   * Send message to client.
+   *
+   */
+//  public <T extends Serializable> void send (T data)
+//  {
+//    System.out.println("ServerWorker.send(" + data.toString() + ")");
+//    try
+//    {
+//      clientObjectWriter.writeObject(data);
+//    }
+//    catch(IOException e)
+//    {
+//      e.printStackTrace();
+//    }
+//  }
 
 
   public void run ()
@@ -113,19 +129,19 @@ public class Worker extends Thread
           break;
         }
 
-        System.out.println(s);
-
-        Request r = new Request(s);
-
-        if (r.getRequest() == ActionType.QUIT)
-        {
-          // client gracefully closed.
-          client.close();
-          isRunning = false;
-          break;
-        }
-
+        // notice I am expecting only requests from a client... Not supporting responses from client.
+        Request r = new Request(s.split("\\s+"));
         handler.handle(r);
+
+//
+//        if (r.getRequest() == ActionType.QUIT)
+//        {
+//          // client gracefully closed.
+//          client.close();
+//          isRunning = false;
+//          break;
+//        }
+
 
       }
       catch(Exception e)
@@ -203,5 +219,15 @@ public class Worker extends Thread
     }
 
     return "";
+  }
+
+  public User getUser ()
+  {
+    return cred;
+  }
+
+  public void setUser (User user)
+  {
+    this.cred = user;
   }
 }

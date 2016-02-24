@@ -3,7 +3,7 @@ package starvationevasion.server.handlers;
 
 import starvationevasion.server.Server;
 import starvationevasion.server.Worker;
-import starvationevasion.server.Request;
+import starvationevasion.server.model.Request;
 
 public class DiscardHandler extends AbstractHandler
 {

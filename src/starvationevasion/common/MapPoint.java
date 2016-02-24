@@ -1,13 +1,17 @@
 package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+<<<<<<< HEAD
+=======
+import starvationevasion.server.io.JSON;
+>>>>>>> server
 
 import java.io.Serializable;
 
 /**
  * Simple data class for specifying a location on the Earth's Surface.
  */
-public class MapPoint implements Serializable
+public class MapPoint implements Serializable, JSON
 {
   /**
    * Specifies the north-south position of a point on the Earth's surface.
@@ -41,9 +45,16 @@ public class MapPoint implements Serializable
     return String.format("Location{%.2f, %.2f}", latitude, longitude);
   }
 
+<<<<<<< HEAD
   public JSONDocument toJSON()
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
+=======
+  @Override
+  public JSONDocument toJSON()
+  {
+    JSONDocument json = JSONDocument.createObject();
+>>>>>>> server
     json.setNumber("latitude", latitude);
     json.setNumber("longitude", longitude);
 

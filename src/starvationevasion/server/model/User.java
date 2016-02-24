@@ -52,7 +52,7 @@ public class User
     json.setString("username", username);
     json.setString("password", password);
     json.setString("region", region.toString());
-    JSONDocument hand = JSONDocument.createArray();
+    JSONDocument hand = JSONDocument.createArray(this.hand.size());
     hand.set(0, hand.get(0));
 
     json.set("hand", hand);

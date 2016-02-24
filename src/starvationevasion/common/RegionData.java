@@ -128,41 +128,41 @@ public class RegionData implements Serializable, JSON
   public JSONDocument toJSON ()
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
-    //json.setNumber("region", region.ordinal());
-    json.setNumber("revenueBalance", revenueBalance);
+    json.setString("region", region.toString());
+    json.setNumber("revenue-balance", revenueBalance);
     json.setNumber("population", population);
     json.setNumber("undernourished", undernourished);
-    json.setNumber("humanDevelopmentIndex", humanDevelopmentIndex);
+    json.setNumber("human-development-index", humanDevelopmentIndex);
+    json.setNumber("ethanol", ethanolProducerTaxCredit);
 
-//    JSONDocument jProducedArray = JSONDocument.createArray();
-//    for (int i = 0; i < foodProduced.length; i++)
-//    {
-//      jProducedArray.setNumber(i, foodProduced[i]);
-//    }
-//    json.set("foodProduced", jProducedArray);
-//
-//    JSONDocument jIncomeArray = JSONDocument.createArray();
-//    for (int i = 0; i < foodIncome.length; i++)
-//    {
-//      jIncomeArray.setNumber(i, foodIncome[i]);
-//    }
-//    json.set("foodIncome", jIncomeArray);
-//
-//    JSONDocument jExportArray = JSONDocument.createArray();
-//    for (int i = 0; i < foodExported.length; i++)
-//    {
-//      jExportArray.setNumber(i, foodExported[i]);
-//    }
-//    json.set("foodExported", jExportArray);
-//
-//    json.setNumber("ethanol", ethanolProducerTaxCredit);
-//
-//    JSONDocument jFarmArray = JSONDocument.createArray();
-//    for (int i = 0; i < farmArea.length; i++)
-//    {
-//      jFarmArray.setNumber(i, farmArea[i]);
-//    }
-//    json.set("farmArea", jFarmArray);
+    JSONDocument _producedArray = JSONDocument.createArray(foodProduced.length);
+    for (int i = 0; i < foodProduced.length; i++)
+    {
+      _producedArray .setNumber(i, foodProduced[i]);
+    }
+    json.set("food-produced", _producedArray );
+
+    JSONDocument _incomeArray = JSONDocument.createArray(foodIncome.length);
+    for (int i = 0; i < foodIncome.length; i++)
+    {
+      _incomeArray.setNumber(i, foodIncome[i]);
+    }
+    json.set("food-income", _incomeArray);
+
+    JSONDocument _exportArray = JSONDocument.createArray(foodExported.length);
+    for (int i = 0; i < foodExported.length; i++)
+    {
+      _exportArray .setNumber(i, foodExported[i]);
+    }
+    json.set("food-exported", _exportArray );
+
+
+    JSONDocument _farmArray = JSONDocument.createArray(farmArea.length);
+    for (int i = 0; i < farmArea.length; i++)
+    {
+      _farmArray.setNumber(i, farmArea[i]);
+    }
+    json.set("farmArea", _farmArray);
 
     return json;
   }

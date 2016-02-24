@@ -99,13 +99,10 @@ public class WorldData implements Serializable, JSON
     }
 
     JSONDocument _regionArray = JSONDocument.createArray(regionData.length);
-
     for (int i = 0; i < regionData.length; i++)
     {
-
       _regionArray.set(i, regionData[i].toJSON());
     }
-
 
     JSONDocument _foodPriceArray = JSONDocument.createArray(foodPrice.length);
     for (int i = 0; i < foodPrice.length; i++)

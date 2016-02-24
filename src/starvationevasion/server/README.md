@@ -1,4 +1,4 @@
-# StarvationEvasion Server
+# Server
 I have supplied a ```Client.java``` file. Run it and try out some of these commands.
 
 

@@ -8,11 +8,6 @@ Commands shall be formatted as:
 time command args
 ```
 
-# CRUD
-(create read update delete)
-
-## Client Commands
-
 ### User
 
 * ```user_create username pwd [region]``` Region is optional. If not supplied a region will be randomly chosen

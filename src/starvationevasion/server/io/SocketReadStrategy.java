@@ -1,25 +1,30 @@
 package starvationevasion.server.io;
 
 
-import starvationevasion.server.Worker;
-
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
 public class SocketReadStrategy implements ReadStrategy
 {
+  private BufferedReader reader;
 
-  private final Worker worker;
-
-  public SocketReadStrategy(Worker worker)
+  public SocketReadStrategy(Socket socket)
   {
-    this.worker = worker;
+    try
+    {
+      reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    }
+    catch(IOException e)
+    {
+      System.err.println("Server Worker: Could not open input stream");
+      e.printStackTrace();
+    }
   }
 
 
   @Override
   public String read () throws IOException
   {
-    return  worker.getClientReader().readLine();
+    return reader.readLine();
   }
 }

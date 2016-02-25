@@ -4,8 +4,8 @@ package starvationevasion.server.handlers;
 
 import starvationevasion.server.Server;
 import starvationevasion.server.Worker;
-import starvationevasion.server.Request;
-import starvationevasion.server.Response;
+import starvationevasion.server.model.Request;
+import starvationevasion.server.model.Response;
 
 public abstract class AbstractHandler
 {
@@ -43,10 +43,9 @@ public abstract class AbstractHandler
     if (m_response != null)
     {
       Response _sending = m_response;
-      _sending.setFrom(client.getName());
+      // _sending.setFrom(client.getName());
       m_response = null;
       return _sending;
-
     }
     return null;
   }

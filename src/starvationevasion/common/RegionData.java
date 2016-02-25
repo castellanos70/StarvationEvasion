@@ -2,6 +2,9 @@ package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 
+import starvationevasion.server.io.JSON;
+
+
 import java.io.Serializable;
 
 /**
@@ -9,7 +12,7 @@ import java.io.Serializable;
  * each client via the Server.
  */
 
-public class RegionData implements Serializable
+public class RegionData implements Serializable, JSON
 {
   public final EnumRegion region;
 
@@ -20,7 +23,6 @@ public class RegionData implements Serializable
    * current turn of three years, minus expenses during the current turn of three years.
    */
   public int revenueBalance;
-
 
 
   /**
@@ -45,9 +47,6 @@ public class RegionData implements Serializable
    * Index by EnumFood.ordinal()
    */
   public int[] foodProduced = new int[EnumFood.SIZE];
-
-
-
 
 
   /**
@@ -77,7 +76,6 @@ public class RegionData implements Serializable
   public int[] foodExported = new int[EnumFood.SIZE];
 
 
-
   /**
    * This region's current ethanol producer tax credit as an
    * integer percentage from [0 through 100]. This percentage of all profits earned
@@ -93,7 +91,7 @@ public class RegionData implements Serializable
    */
   public int[] farmArea = new int[EnumFood.SIZE];
 
-  public RegionData(EnumRegion region)
+  public RegionData (EnumRegion region)
   {
     this.region = region;
   }
@@ -101,57 +99,78 @@ public class RegionData implements Serializable
   /**
    * @return Data stored in this structure as a formatted String.
    */
-  public String toString()
+  public String toString ()
   {
     String msg = region.toString();
-    if (region.isUS()) msg += "[$"+revenueBalance + "]";
+    if (region.isUS())
+    {
+      msg += "[$" + revenueBalance + "]";
+    }
 
-    msg += String.format(": pop=%d(%.1f), HDI=%.2f [",population, undernourished, humanDevelopmentIndex);
+    msg += String.format(": pop=%d(%.1f), HDI=%.2f [", population, undernourished, humanDevelopmentIndex);
 
-    for (EnumFood food :EnumFood.values())
+    for (EnumFood food : EnumFood.values())
     {
       msg += String.format("%s:%d+%d",
-        food, foodProduced[food.ordinal()], foodExported[food.ordinal()]);
-      if (food != EnumFood.DAIRY) msg += ", "; else msg += "]";
+                           food, foodProduced[food.ordinal()], foodExported[food.ordinal()]);
+      if (food != EnumFood.DAIRY)
+      {
+        msg += ", ";
+      }
+      else
+      {
+        msg += "]";
+      }
     }
 
     return msg;
   }
 
-  public JSONDocument toJSON()
+
+  @Override
+  public JSONDocument toJSON ()
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
-    json.setNumber("region", region.ordinal());
-    json.setNumber("revenueBalance", revenueBalance);
+    json.setString("region", region.toString());
+    json.setNumber("revenue-balance", revenueBalance);
     json.setNumber("population", population);
     json.setNumber("undernourished", undernourished);
-    json.setNumber("humanDevelopmentIndex", humanDevelopmentIndex);
-
-    JSONDocument jProducedArray =  JSONDocument.createArray();
-    for(int i = 0; i < EnumFood.SIZE; i++)
-      jProducedArray.setNumber(i, foodProduced[i]);
-    json.set("foodProduced", jProducedArray);
-
-    JSONDocument jIncomeArray =  JSONDocument.createArray();
-    for(int i = 0; i < EnumFood.SIZE; i++)
-      jIncomeArray.setNumber(i, foodIncome[i]);
-    json.set("foodIncome", jIncomeArray);
-
-    JSONDocument jExportArray = JSONDocument.createArray();
-    for(int i = 0; i < EnumFood.SIZE; i++)
-      jExportArray.setNumber(i, foodExported[i]);
-    json.set("foodExported", jExportArray);
-
+    json.setNumber("human-development-index", humanDevelopmentIndex);
     json.setNumber("ethanol", ethanolProducerTaxCredit);
 
-    JSONDocument jFarmArray =  JSONDocument.createArray();
-    for(int i = 0; i < EnumFood.SIZE; i++)
-      jFarmArray.setNumber(i, farmArea[i]);
-    json.set("farmArea", jFarmArray);
+    JSONDocument _producedArray = JSONDocument.createArray(foodProduced.length);
+    for (int i = 0; i < foodProduced.length; i++)
+    {
+      _producedArray .setNumber(i, foodProduced[i]);
+    }
+    json.set("food-produced", _producedArray );
+
+    JSONDocument _incomeArray = JSONDocument.createArray(foodIncome.length);
+    for (int i = 0; i < foodIncome.length; i++)
+    {
+      _incomeArray.setNumber(i, foodIncome[i]);
+    }
+    json.set("food-income", _incomeArray);
+
+    JSONDocument _exportArray = JSONDocument.createArray(foodExported.length);
+    for (int i = 0; i < foodExported.length; i++)
+    {
+      _exportArray .setNumber(i, foodExported[i]);
+    }
+    json.set("food-exported", _exportArray );
+
+
+    JSONDocument _farmArray = JSONDocument.createArray(farmArea.length);
+    for (int i = 0; i < farmArea.length; i++)
+    {
+      _farmArray.setNumber(i, farmArea[i]);
+    }
+    json.set("farmArea", _farmArray);
 
     return json;
   }
-  public RegionData(JSONDocument json)
+
+  public RegionData (JSONDocument json)
   {
     region = EnumRegion.values()[(int) json.getNumber("region")];
     revenueBalance = (int) json.getNumber("revenueBalance");
@@ -159,22 +178,5 @@ public class RegionData implements Serializable
     undernourished = (double) json.getNumber("undernourished");
     humanDevelopmentIndex = (double) json.getNumber("humanDevelopmentIndex");
 
-    JSONDocument jProducedParse =  json.get("foodProduced");
-    for(int i = 0; i < EnumFood.SIZE; i++)
-      foodProduced[i] = (int) jProducedParse.getNumber(i);
-
-    JSONDocument jIncomeParse = json.get("foodIncome");
-    for(int i = 0; i < EnumFood.SIZE; i++)
-      foodIncome[i] = (int) jIncomeParse.getNumber(i);
-
-    JSONDocument jExportParse = json.get("foodExported");
-    for(int i = 0; i < EnumFood.SIZE; i++)
-      foodExported[i] = (int) jExportParse.getNumber(i);
-
-    ethanolProducerTaxCredit = (int) json.getNumber("ethanol");
-
-    JSONDocument jFarmParse =  json.get("farmArea");
-    for(int i = 0; i < EnumFood.SIZE; i++)
-      farmArea[i] = (int) jFarmParse.getNumber(i);
   }
 }

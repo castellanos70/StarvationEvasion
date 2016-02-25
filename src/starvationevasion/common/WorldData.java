@@ -6,13 +6,18 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import starvationevasion.server.io.JSON;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  * This structure is populated and returned by the
  * {@link starvationevasion.sim.Simulator#nextTurn(ArrayList)} method.
  * It contains all world and region data to be returned to the client after each turn.
  * It does not contain high resolution location data possibly needed by the visualizer.
  */
-public class WorldData implements Serializable
+public class WorldData implements Serializable, JSON
 {
 
   /**
@@ -45,7 +50,7 @@ public class WorldData implements Serializable
   public double[] foodPrice = new double[EnumFood.SIZE];
 
 
-  public WorldData()
+  public WorldData ()
   {
     for (int i = 0; i < EnumRegion.SIZE; i++)
     {
@@ -57,13 +62,20 @@ public class WorldData implements Serializable
   /**
    * @return Data stored in this structure as a formatted String.
    */
-  public String toString()
+  public String toString ()
   {
     String msg = "WorldData[" + year + "] =====================================\n     price: [";
     for (EnumFood food : EnumFood.values())
     {
-      msg += String.format("%s:%.0f", food, foodPrice[food.ordinal()]); if (food != EnumFood.DAIRY) msg += ", ";
-    else msg += "]\n";
+      msg += String.format("%s:%.0f", food, foodPrice[food.ordinal()]);
+      if (food != EnumFood.DAIRY)
+      {
+        msg += ", ";
+      }
+      else
+      {
+        msg += "]\n";
+      }
     }
 
     for (RegionData region : regionData)
@@ -77,48 +89,39 @@ public class WorldData implements Serializable
     } return msg;
   }
 
-  public JSONDocument toJSON()
+
+  @Override
+  public JSONDocument toJSON ()
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
     json.setNumber("year", year);
-    json.setNumber("seaLevel", seaLevel);
+    json.setNumber("sealevel", seaLevel);
 
-    JSONDocument jEventArray = JSONDocument.createArray();
-    for(int i = 0; i < eventList.size(); i++) //event List iteration
-      jEventArray.set(i, eventList.get(i).toJSON());
-    json.set("eventList", jEventArray);
+    JSONDocument _eventArray = JSONDocument.createArray(eventList.size());
+    for (int i = 0; i < eventList.size(); i++)
+    {
+      _eventArray.set(i, eventList.get(i).toJSON());
+    }
 
-    JSONDocument jRegionArray =  JSONDocument.createArray();
-    for(int i = 0; i < EnumRegion.SIZE; i++) //region Data iteration
-        jRegionArray.set(i, regionData[i].toJSON());
-    json.set("regionData", jRegionArray);
+    JSONDocument _regionArray = JSONDocument.createArray(regionData.length);
+    for (int i = 0; i < regionData.length; i++)
+    {
+      _regionArray.set(i, regionData[i].toJSON());
+    }
 
-    JSONDocument jPriceArray = JSONDocument.createArray();
-    for(int i = 0; i < EnumFood.SIZE; i++) //food Price iteration
-      jPriceArray.setNumber(i, foodPrice[i]);
-    json.set("foodPrice", jPriceArray);
+    JSONDocument _foodPriceArray = JSONDocument.createArray(foodPrice.length);
+    for (int i = 0; i < foodPrice.length; i++)
+    {
+      _foodPriceArray.setNumber(i, foodPrice[i]);
+    }
 
-    //TODO Make clear JSON arrays work
+
+    json.set("events", _eventArray);
+    json.set("food-prices", _foodPriceArray);
+    json.set("regions", _regionArray);
+
+
     return json;
   }
-  public WorldData(JSONDocument json)
-  {
-    year = (int)json.getNumber("year");
-    seaLevel = (double)json.getNumber("seaLevel");
 
-    //This should be converting the JSONDocument 'jEventArray' from before to a list of SpecialEventData JSONDocuments
-    List<Object> jEventParse = json.get("eventList").array();
-    for(int i = 0; i < jEventParse.size(); i++)
-      eventList.add(new SpecialEventData((JSONDocument)jEventParse.get(i)));
-
-    JSONDocument jRegionParse = json.get("regionData");
-    for(int i = 0; i < EnumRegion.SIZE; i++)
-      regionData[i] = new RegionData(jRegionParse.get(i));
-
-    JSONDocument jPriceParse = json.get("foodPrice");
-    for(int i = 0; i < EnumFood.SIZE; i++)
-      foodPrice[i] = (double)jPriceParse.getNumber(i);
-
-
-  }
 }

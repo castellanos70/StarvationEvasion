@@ -1,17 +1,80 @@
-#StarvationEvasion Server
-##Readme for users
-This part of the project is probably not supposed to be invoked manually. If you **do** want to run it, run it with the following command line arguments:
+# Server
+I have supplied a ```Client.java``` file. Run it and try out some of these commands.
 
-    java -jar server.jar /path/to/password/file.tsv command to invoke AI
+# Run
 
-Password files are tab separated, with the first column being the user name, the second being the password, and the third (optional) column specifying a (case-sensitive, all caps) region from the US, as specified in the EnumRegion enumeration. The third column must be present in all rows, or absent in all rows.
+###### Local
+Run everything locally. Add execute permission to Game
+```bash
+chmod +x Game
+```
 
-The rest of the command line will be fed to the system shell, and be used to invoke an AI process. Note that you should ***not*** quote the command.
+**Server**
+```bash
+./Game server
+```
 
-##Readme for Developers
-###AI Processes
-The AI process part of the command line must be fully qualified (`path/to/java blah bah`), and the launched process will receive information via environment variables (see the comments on Server.main for details).
-###Protocol
-The server will communicate with the clients using Java's serialization capabilities, sending and receiving objects in starvationevasion.common.messages. See the documentation for those classes for more information.
-###State Diagram
-A state diagram exists in the doc/ subdirectory.
+**Client**
+```bash
+./Game client
+```
+
+
+###### Remote
+By remote I mean you connect a client to a remote server. Here is the
+code to connect to a **RUNNING** server. You need to change ```666```
+to the port that you plan on running your client on. So if your client
+is running on port 2020 then change 666 to 2020.
+
+This will create a SSH tunnel. It will hang so you can press CTRL-z to
+send it to the background and fg will bring it back so you can stop it.
+```bash
+ssh -N -L 666:localhost:5555 username@phoebe.cs.unm.edu
+```
+
+After you have your tunnel, you can start your client.
+
+
+# Invoking
+Commands shall be formatted as:
+```bash
+time command args
+```
+
+### User
+
+* ```user_create username pwd [region]``` Region is optional. If not supplied a region will be randomly chosen
+* ```user_read username```  returns the region of that user
+* ```user_update ``` Update your user (login is required)
+* ```users``` Get a list of all the users.
+
+
+### Login
+**NOTE** Default login is: admin admin
+
+* ```login username pwd```
+
+### Chat
+Chat data will need to be formatted carefully ```chat region json```.
+
+##### Example chat command
+```
+chat CALIFORNIA {"card":null,"text":"normal text"}
+```
+
+Here are some examples of JSON. These are examples, *the actual data you are sending might be different!!*
+
+###### Sending a card, with text
+```json
+{"card":{"name":"name"},"text":"text"}
+```
+###### Sending only text
+```json
+{"card":null,"text":"text"}
+```
+
+# Consuming
+
+Consuming data
+
+

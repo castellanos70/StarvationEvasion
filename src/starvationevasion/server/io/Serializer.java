@@ -2,11 +2,10 @@ package starvationevasion.server.io;
 
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-import starvationevasion.server.ActionType;
 
-public interface Serializer<T extends JSONDocument, V>
+public interface Serializer<T extends JSONDocument, V extends String>
 {
-  T encode (ActionType action, V data);
+  T encode (V data);
 
   V decode (T data);
 }

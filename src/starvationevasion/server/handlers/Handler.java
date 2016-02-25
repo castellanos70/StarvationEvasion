@@ -2,9 +2,8 @@ package starvationevasion.server.handlers;
 
 
 import starvationevasion.server.Worker;
-import starvationevasion.server.Request;
-import starvationevasion.server.Response;
 import starvationevasion.server.Server;
+import starvationevasion.server.model.Request;
 
 public class Handler
 {
@@ -23,12 +22,7 @@ public class Handler
 
   public void handle (Request request)
   {
-    request.setFrom(worker.getName());
+    // request.setFrom(worker.getName());
     handler.handleRequest(request);
-    Response s = handler.getResponse();
-    if (s != null)
-    {
-      worker.send(s);
-    }
   }
 }

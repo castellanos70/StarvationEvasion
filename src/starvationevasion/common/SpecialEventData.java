@@ -1,13 +1,15 @@
 package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.server.io.JSON;
+
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class SpecialEventData implements Serializable
+public class SpecialEventData implements Serializable, JSON
 {
 
   public enum EnumSpecialEvent
@@ -40,25 +42,25 @@ public class SpecialEventData implements Serializable
   public ArrayList<MapPoint> locationList = new ArrayList<>();
   public ArrayList<EnumRegion> regions = new ArrayList<>();
 
-  public SpecialEventData(String name)
+  public SpecialEventData (String name)
   {
     eventName = name;
   }
 
 
-  public void setType(EnumSpecialEvent type)
+  public void setType (EnumSpecialEvent type)
   {
     this.type = type;
   }
 
-  public void setYear(int year)
+  public void setYear (int year)
   {
     this.year = year;
   }
 
   public void setMonth(EnumMonth month) {this.month = month; }
 
-  public void setDollarsInDamage(long dollarsInDamage)
+  public void setDollarsInDamage (long dollarsInDamage)
   {
     this.dollarsInDamage = dollarsInDamage;
   }
@@ -122,13 +124,12 @@ public class SpecialEventData implements Serializable
     json.setNumber("enumMonth", month.ordinal());
     json.setNumber("durationInMonths", durationInMonths);
 
-    JSONDocument jLocArray =  JSONDocument.createArray(locationList.size());
-    //TODO if this method of array parsing works it needs to be reset for all other uses
-    System.out.println("size of list:" + locationList.size() +"\nsize of jArray" + jLocArray.array());
-    for(int i = 0; i < locationList.size(); i++)
-      jLocArray.array().add(locationList.get(i).toJSON());
-    json.set("locationList", jLocArray);
-    System.out.println(jLocArray+ " "+ jLocArray.array());
+    JSONDocument _locationArray = JSONDocument.createArray(locationList.size());
+    for (int i = 0; i < locationList.size(); i++)
+    {
+      _locationArray.set(i, locationList.get(i).toJSON());
+    }
+    json.set("locationList", _locationArray);
 
     JSONDocument jRegionArray = JSONDocument.createArray();
     for(int i = 0; i < regions.size(); i++)

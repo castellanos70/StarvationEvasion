@@ -35,8 +35,6 @@ public class Client
   private ClientListener listener;
 
 
-  private volatile int thneedsInStore;
-  private volatile float treasury;
   private volatile boolean isRunning = true;
 
 
@@ -126,8 +124,6 @@ public class Client
 
       String cmd = keyboard.nextLine();
 
-      // System.out.println(cmd);
-
 
       if (cmd == null || cmd.length() < 1)
       {
@@ -136,11 +132,9 @@ public class Client
 
       if (cmd.charAt(0) == 'q')
       {
-        //write.println(new Request(ActionType.QUIT, 0, 0, 0).toString());
         isRunning = false;
       }
-      // write.println(new Request(ActionType.QUIT, 0, 0, 0).toString());
-      write.println(cmd);
+      write.println(System.nanoTime() + " " + cmd);
     }
   }
 
@@ -236,40 +230,39 @@ public class Client
           isRunning = false;
           return;
         }
+        System.out.println(msg);
 
-        Response response = new Response(msg);
-        if (response.getRequest() == ActionType.CONNECT)
-        {
-          thneedsInStore = response.getQuantityData();
-          treasury = response.getMonetaryData();
-          startNanoSec = (long) response.getTime();
-          lastInventoryUpdate = System.nanoTime();
-
-          System.out.println("connected " + response.getMsg() + " uptime: " +
-                                     timeDiff() + "s");
-
-        }
-        else
-        {
-          if (response.getRequest() == ActionType.NOTIFY)
-          {
-            System.out.println(response.getMsg());
-          }
-          else
-          {
-            if (response.getRequest() == ActionType.SUCCESS)
-            {
-              thneedsInStore = response.getQuantityData();
-              treasury = response.getMonetaryData();
-              lastInventoryUpdate = System.nanoTime();
-            }
-            else
-            {
-              System.out.println("Unrecognized message from Server(" + timeDiff()
-                                         + ") = " + msg);
-            }
-          }
-        }
+//        Response response = new Response(msg);
+//        if (response.getRequest() == ActionType.CONNECT)
+//        {
+//
+//          startNanoSec = (long) response.getTime();
+//          lastInventoryUpdate = System.nanoTime();
+//
+//          System.out.println("connected " + response.getMsg() + " uptime: " +
+//                                     timeDiff() + "s");
+//
+//        }
+//        else
+//        {
+//          if (response.getRequest() == ActionType.NOTIFY)
+//          {
+//            System.out.println(response.getMsg());
+//          }
+//          else
+//          {
+//            if (response.getRequest() == ActionType.SUCCESS)
+//            {
+//
+//              lastInventoryUpdate = System.nanoTime();
+//            }
+//            else
+//            {
+//              System.out.println("Unrecognized message from Server(" + timeDiff()
+//                                         + ") = " + msg);
+//            }
+//          }
+//        }
 
       }
       catch (IOException e)

@@ -10,21 +10,21 @@ import starvationevasion.common.EnumRegion;
  */
 
 public class LocalizationTests {
-    public static void testDefaultLocale()
-    {
-        for (EnumFood food : EnumFood.values())
-        {
-            System.out.println(food.toString() + " : " + food.toLongString());
-        }
-
-        for (EnumRegion region : EnumRegion.values())
-        {
-            System.out.println(region.toString());
-        }
-    }
+//    public static void testDefaultLocale()
+//    {
+//        for (EnumFood food : EnumFood.values())
+//        {
+//            System.out.println(food.toString() + " : " + food.toLongString());
+//        }
+//
+//        for (EnumRegion region : EnumRegion.values())
+//        {
+//            System.out.println(region.toString());
+//        }
+//    }
 
     public static void main(String[] args)
     {
-        testDefaultLocale();
+
     }
 }

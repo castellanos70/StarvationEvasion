@@ -24,7 +24,7 @@ build () {
 
 run () {
     build
-    java -classpath ./dist starvationevasion/server/Server
+    java -classpath "./dist:./dist/libs/*" starvationevasion/server/Server
     # java -classpath ./dist Client
 }
 

@@ -242,7 +242,7 @@ public class Server
 
   public boolean addUser (User u)
   {
-    if (userList.size() == 7)
+    if (getActiveCount() == 7 )
     {
       return false;
     }
@@ -267,10 +267,15 @@ public class Server
 
     if (userList.size() == 2)
     {
-      currentState = State.DRAWING;
 
       for (Worker workers : allConnections)
       {
+        // Bug check if user is logged in... user is logged in when worker is associated with user
+        if (workers.getUser() == null)
+        {
+          return true;
+        }
+        currentState = State.DRAWING;
         EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
         workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
 
@@ -358,6 +363,8 @@ public class Server
     {
       if (!allConnections.get(i).isRunning())
       {
+        // no longer active
+        allConnections.get(i).getUser().setActive(false);
         // the worker is not running. remove it.
         allConnections.remove(i);
         con++;
@@ -370,4 +377,29 @@ public class Server
     }
   }
 
+  public int getActiveCount()
+  {
+    int i = 0;
+    for (User user : userList)
+    {
+      if (user.isActive())
+      {
+        i++;
+      }
+    }
+    return i;
+  }
+
+  public Iterable<User> getActiveUserList ()
+  {
+    ArrayList<User> _active = new ArrayList<>();
+    for (User user : userList)
+    {
+      if (user.isActive())
+      {
+        _active.add(user);
+      }
+    }
+    return _active;
+  }
 }

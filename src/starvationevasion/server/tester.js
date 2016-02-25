@@ -14,8 +14,8 @@ var TestApp = (function (window, $) {
             connectResult:      $('#connect-result'),
             loginBtn:           $('#login-btn'),
             loginResult:        $('#login-result'),
-            getAllUserBtn:        $('#get-all-users'),
-            getAllUserRslt:        $('#get-all-users-resp')
+            getAllUserBtn:      $('#get-all-users'),
+            getAllUserRslt:     $('#get-all-users-resp')
         };
 
         // If settings arg is valid object then merge.
@@ -25,8 +25,6 @@ var TestApp = (function (window, $) {
 
         _setup();
     };
-
-
 
 
     /**

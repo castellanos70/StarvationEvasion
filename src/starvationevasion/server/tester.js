@@ -43,7 +43,7 @@ var TestApp =(function (window, $) {
 
          */
         TestApp.config.connectBtn.click(function () {
-            TestApp.connection = new WebSocket('wss://'.concat(TestApp.config.address.val()));
+            TestApp.connection = new WebSocket('ws://'.concat(TestApp.config.address.val()));
 
             TestApp.connection.onopen = function (event) {
                 TestApp.config.connectResult.text(JSON.stringify(event));

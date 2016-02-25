@@ -18,7 +18,7 @@ build () {
     cp -rf data/* dist/
     cp -rf libs dist/
 
-    javac -classpath ".:libs/javafx-mx.jar" @files.txt -d ./dist
+    javac -classpath ".:libs/*" @files.txt -d ./dist
     rm files.txt
 }
 

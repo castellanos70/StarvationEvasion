@@ -22,6 +22,11 @@ public class ChatHandler extends AbstractHandler
     if (request.getDestination().equals(Endpoint.CHAT))
     {
 
+      if (getClient().getUser() == null)
+      {
+        getClient().send("login first");
+      }
+
       String arr = request.chomp();
       request.setData(request.getData().replace(arr, " "));
 

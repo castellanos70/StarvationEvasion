@@ -10,6 +10,7 @@ import starvationevasion.common.Constant;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
+import starvationevasion.server.io.WebSocketReadStrategy;
 import starvationevasion.server.model.Response;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.User;
@@ -117,6 +118,11 @@ public class Server
         Worker worker = new Worker(client, this);
         worker.setServerStartTime(startNanoSec);
 
+
+        if(websocketConnect(worker))
+        {
+          worker.setReader(new WebSocketReadStrategy(client));
+        }
         worker.start();
         worker.setName("worker" + timeDiff());
 
@@ -331,17 +337,19 @@ public class Server
 
   }
 
-  private void websocketConnect(Worker worker) throws IOException
+  private boolean websocketConnect(Worker worker) throws IOException
   {
     // Handling websocket
     StringBuilder reading = new StringBuilder();
     String line = "";
 
-    while((line = worker.getClientReader().readLine()) != null)
+    while(true)
     {
-      if (line.equals("") || line.isEmpty())
+      line = worker.getClientReader().readLine();
+
+      if (line == null || line.equals("client")|| line.equals("") || line.isEmpty())
       {
-        return;
+        return false;
       }
       reading.append(line);
       if (line.contains("Sec-WebSocket-Key:"))
@@ -352,6 +360,7 @@ public class Server
                             "Upgrade: websocket\n" +
                             "Connection: Upgrade\n" +
                             "Sec-WebSocket-Accept: " + socketKey + "\n");
+        return true;
       }
     }
   }

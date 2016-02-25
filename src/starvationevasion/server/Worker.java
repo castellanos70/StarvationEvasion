@@ -7,6 +7,8 @@ package starvationevasion.server;
 
 import starvationevasion.server.handlers.Handler;
 import starvationevasion.server.io.JSON;
+import starvationevasion.server.io.ReadStrategy;
+import starvationevasion.server.io.SocketReadStrategy;
 import starvationevasion.server.model.Request;
 import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
@@ -30,6 +32,7 @@ public class Worker extends Thread
   private long serverStartTime;
   private boolean sent = false;
   private ObjectOutputStream clientObjectWriter;
+  private ReadStrategy reader = new SocketReadStrategy(this);
 
   public Worker (Socket client, Server server)
   {
@@ -119,7 +122,8 @@ public class Worker extends Thread
     {
       try
       {
-        String s = clientReader.readLine();
+        String s = reader.read();
+        System.out.println(s);
 
         if (s == null || clientReader == null)
         {
@@ -133,6 +137,7 @@ public class Worker extends Thread
         String[] arr = s.split("\\s+");
         if (arr.length < 2)
         {
+          System.exit(1);
           throw new Exception("Not enough data");
         }
 
@@ -173,58 +178,9 @@ public class Worker extends Thread
     return clientWriter;
   }
 
-
-  private String decodeWebsocket () throws IOException
+  public void setReader (ReadStrategy reader)
   {
-    int len = 0;
-    byte[] b = new byte[140];
-    len = client.getInputStream().read(b);
-
-    if (len != -1)
-    {
-
-      byte rLength = 0;
-      int rMaskIndex = 2;
-      int rDataStart = 0;
-      //b[0] is always text in my case so no need to check;
-      byte data = b[1];
-      byte op = (byte) 127;
-      rLength = (byte) (data & op);
-
-      if (rLength == (byte) 126)
-      {
-        rMaskIndex = 4;
-      }
-      if (rLength == (byte) 127)
-      {
-        rMaskIndex = 10;
-      }
-
-      byte[] masks = new byte[4];
-
-      int j = 0;
-      int i = 0;
-      for (i = rMaskIndex; i < (rMaskIndex + 4); i++)
-      {
-        masks[j] = b[i];
-        j++;
-      }
-
-      rDataStart = rMaskIndex + 4;
-
-      int messLen = len - rDataStart;
-
-      byte[] message = new byte[messLen];
-
-      for (i = rDataStart, j = 0; i < len; i++, j++)
-      {
-        message[j] = (byte) (b[i] ^ masks[j % 4]);
-      }
-
-      return new String(message);
-    }
-
-    return "";
+    this.reader = reader;
   }
 
   public User getUser ()

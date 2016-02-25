@@ -18,7 +18,7 @@ public class LoginHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-    if (request.getDestination() == Endpoint.LOGIN)
+    if (request.getDestination().equals(Endpoint.LOGIN))
     {
       String uname = request.chomp();
       String pwd = request.chomp();

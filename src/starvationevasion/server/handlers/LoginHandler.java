@@ -45,6 +45,7 @@ public class LoginHandler extends AbstractHandler
     User s = server.getUserByUsername(username);
     if (s != null && s.getPassword().equals(password))
     {
+      s.setActive(true);
       getClient().setUser(s);
       return true;
     }

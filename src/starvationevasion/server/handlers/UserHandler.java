@@ -2,7 +2,6 @@ package starvationevasion.server.handlers;
 
 
 
-import starvationevasion.common.EnumPolicy;
 import starvationevasion.server.*;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Request;
@@ -44,6 +43,17 @@ public class UserHandler extends AbstractHandler
     {
       StringBuilder stringBuilder = new StringBuilder();
       for (User user : server.getUserList())
+      {
+        stringBuilder.append(user.toString()).append(" ");
+      }
+      m_response = new Response(server.timeDiff(), stringBuilder.toString());
+      getClient().send(m_response.toString());
+      return true;
+    }
+    else if (request.getDestination().equals(Endpoint.USERS_LOGGED_IN))
+    {
+      StringBuilder stringBuilder = new StringBuilder();
+      for (User user : server.getActiveUserList())
       {
         stringBuilder.append(user.toString()).append(" ");
       }

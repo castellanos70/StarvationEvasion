@@ -56,6 +56,8 @@ public class SpecialEventData implements Serializable
     this.year = year;
   }
 
+  public void setMonth(EnumMonth month) {this.month = month; }
+
   public void setDollarsInDamage(long dollarsInDamage)
   {
     this.dollarsInDamage = dollarsInDamage;
@@ -120,10 +122,13 @@ public class SpecialEventData implements Serializable
     json.setNumber("enumMonth", month.ordinal());
     json.setNumber("durationInMonths", durationInMonths);
 
-    JSONDocument jLocArray =  JSONDocument.createArray();
+    JSONDocument jLocArray =  JSONDocument.createArray(locationList.size());
+    //TODO if this method of array parsing works it needs to be reset for all other uses
+    System.out.println("size of list:" + locationList.size() +"\nsize of jArray" + jLocArray.array());
     for(int i = 0; i < locationList.size(); i++)
-      jLocArray.set(i, locationList.get(i).toJSON());
+      jLocArray.array().add(locationList.get(i).toJSON());
     json.set("locationList", jLocArray);
+    System.out.println(jLocArray+ " "+ jLocArray.array());
 
     JSONDocument jRegionArray = JSONDocument.createArray();
     for(int i = 0; i < regions.size(); i++)

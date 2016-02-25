@@ -8,7 +8,7 @@ import starvationevasion.common.*;
  */
 public class JSONTests
 {
-  static void main()
+  public static void main(String[] args)
   {
     //Adding a change
     WorldData testData = new WorldData();
@@ -27,9 +27,11 @@ public class JSONTests
     MapPoint seoulCopy = new MapPoint(seoulJSON);
     MapPoint pongyangCopy = new MapPoint(pongyangJSON);
 
-    assert(tokyoCopy == tokyo);
-    assert(seoulCopy == seoul);
-    assert(pongyangCopy == pongyang);
+    assert(tokyoCopy.equals(tokyo));
+    if(tokyoCopy.equals(tokyo)) System.out.println("tokyo copied");
+    else System.out.println("tokyo not copied");
+    assert(seoulCopy.equals(seoul));
+    assert(pongyangCopy.equals(pongyang));
 
     SpecialEventData first = new SpecialEventData("Oceania attacks");
     first.setDollarsInDamage(1420);
@@ -39,6 +41,7 @@ public class JSONTests
     first.setSeverity(85.72f);
     first.setType(SpecialEventData.EnumSpecialEvent.War);
     first.setYear(1983);
+    first.setMonth(SpecialEventData.EnumMonth.April);
     first.locationList.add(tokyo);
     first.addRegion(randomRegion());
     first.addRegion(randomRegion());
@@ -48,7 +51,7 @@ public class JSONTests
     SpecialEventData firstCopy = new SpecialEventData(firstJSON);
     assert(firstCopy == first);
 
-    SpecialEventData second = new SpecialEventData("Eurasia attacks");
+    SpecialEventData second = new SpecialEventData("Eurasia poisons crops");
     second.setDollarsInDamage(1340);
     second.setDurationInMonths(16);
     second.setLatitude(22.2783f);
@@ -56,6 +59,7 @@ public class JSONTests
     second.setSeverity(92.63f);
     second.setType(SpecialEventData.EnumSpecialEvent.Blight);
     second.setYear(1982);
+    second.setMonth(SpecialEventData.EnumMonth.August);
     second.locationList.add(pongyang);
     second.locationList.add(seoul);
     second.locationList.add(tokyo);

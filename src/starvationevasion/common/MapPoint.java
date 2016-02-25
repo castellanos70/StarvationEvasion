@@ -55,4 +55,19 @@ public class MapPoint implements Serializable
     latitude = (double) json.getNumber("latitude");
     longitude = (double) json.getNumber("longitude");
   }
+
+  @Override
+  public boolean equals(Object o)
+  {
+    if (o == this)
+      return true;
+    if(!(o instanceof MapPoint))
+      return false;
+    MapPoint map = (MapPoint) o;
+    if(Double.compare(map.longitude, this.longitude) != 0)
+      return false;
+    if(Double.compare(map.latitude, this.latitude) != 0)
+      return false;
+    return true;
+  }
 }

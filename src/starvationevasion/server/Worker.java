@@ -61,7 +61,7 @@ public class Worker extends Thread
    */
   public void send (String msg)
   {
-    System.out.println("ServerWorker.send(" + msg + ")");
+    System.out.println("STRING ServerWorker.send(" + msg + ")");
     try
     {
       writer.write(msg);
@@ -78,7 +78,7 @@ public class Worker extends Thread
    */
   public <T extends JSON & Serializable> void send (T data)
   {
-    System.out.println("ServerWorker.send(" + data.toJSON() + ")");
+    System.out.println("JSON ServerWorker.send(" + data.toJSON().toJSON() + ")");
     try
     {
       writer.write(data.toJSON().toJSON());

@@ -230,6 +230,7 @@ public class Client
           isRunning = false;
           return;
         }
+        System.out.println(msg);
 
 //        Response response = new Response(msg);
 //        if (response.getRequest() == ActionType.CONNECT)

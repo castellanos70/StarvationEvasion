@@ -1,7 +1,12 @@
 package starvationevasion.server.model;
 
 
-public class Response
+import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.server.io.JSON;
+
+import java.io.Serializable;
+
+public class Response implements JSON, Serializable
 {
 
   String data = "";
@@ -34,5 +39,15 @@ public class Response
   public String toString ()
   {
     return String.valueOf(time) + " " + data;
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    JSONDocument document = JSONDocument.createObject();
+    document.setNumber("time", time);
+    document.setString("data", data);
+
+    return document;
   }
 }

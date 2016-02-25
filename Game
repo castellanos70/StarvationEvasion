@@ -33,7 +33,9 @@ run_opt_server () {
 }
 
 run_opt_client () {
-    java -XX:+AggressiveOpts -XX:+UseFastAccessorMethods -Xms128m -Xmx2g -Xcomp -classpath ./dist Client "$1" "$2"
+    # java -XX:+AggressiveOpts -XX:+UseFastAccessorMethods -Xms128m -Xmx2g -Xcomp -classpath ./dist Client "$1" "$2"
+    build
+    java -classpath ./dist starvationevasion/server/Client "$1" "$2"
 }
 clean () {
     rm -rf dist/

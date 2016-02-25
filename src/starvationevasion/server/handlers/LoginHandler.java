@@ -18,9 +18,12 @@ public class LoginHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-    if (request.getDestination() == Endpoint.LOGIN)
+    if (request.getDestination().equals(Endpoint.LOGIN))
     {
-      boolean auth = authenticate(request.getData()[0], request.getData()[1]);
+      String uname = request.chomp();
+      String pwd = request.chomp();
+
+      boolean auth = authenticate(uname, pwd);
       if (auth)
       {
         m_response = new Response(server.timeDiff(), "SUCCESS");
@@ -42,6 +45,7 @@ public class LoginHandler extends AbstractHandler
     User s = server.getUserByUsername(username);
     if (s != null && s.getPassword().equals(password))
     {
+      s.setActive(true);
       getClient().setUser(s);
       return true;
     }

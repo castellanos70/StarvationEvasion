@@ -7,6 +7,7 @@ public enum Endpoint
   USER_READ("user_read"),
   USER_UPDATE("user_update"),
   USERS("users"),
+  USERS_LOGGED_IN("users_logged_in"),
   LOGIN("login"),
 
 

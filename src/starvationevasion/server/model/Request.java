@@ -1,11 +1,9 @@
 package starvationevasion.server.model;
 
 
-import java.util.Arrays;
-
 public class Request
 {
-  private String[] data;
+  private String data;
   private double time;
   private Endpoint destination;
 
@@ -17,21 +15,25 @@ public class Request
    */
   public Request (String ...data) throws Exception
   {
-    if (data.length < 2)
-    {
-      throw new Exception("Not enough data");
-    }
-
-    // get the time
     this.time = Double.parseDouble(data[0]);
     this.destination = Endpoint.valueOf(data[1].toUpperCase());
-    this.data = new String[data.length];
+    data[2] = data[2].replace(data[0] + " ", "");
+    data[2] = data[2].replace(data[1] + " ", "");
 
-    if (data.length >= 3)
-    {
-      System.arraycopy(data, 2, this.data, 0, data.length - 2);
-    }
+    this.data = data[2];
 
+  }
+
+  public String chomp()
+  {
+    String[] arr = getData().split("\\s+");
+    setData(getData().replace(arr[0] + " ", ""));
+    return arr[0];
+  }
+
+  public void setData (String data)
+  {
+    this.data = data;
   }
 
   public double getTime ()
@@ -39,7 +41,7 @@ public class Request
     return time;
   }
 
-  public String[] getData ()
+  public String getData ()
   {
     return data;
   }

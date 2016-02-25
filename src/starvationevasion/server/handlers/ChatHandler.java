@@ -22,9 +22,17 @@ public class ChatHandler extends AbstractHandler
     if (request.getDestination().equals(Endpoint.CHAT))
     {
 
-      EnumRegion destination = EnumRegion.valueOf(request.getData()[0]);
+      if (getClient().getUser() == null)
+      {
+        getClient().send("login first");
+      }
 
-      String data = request.getData()[1];
+      String arr = request.chomp();
+      request.setData(request.getData().replace(arr, " "));
+
+      EnumRegion destination = EnumRegion.valueOf(arr);
+
+      String data = request.getData();
       StringReader stringReader = new StringReader(data);
       JSONStreamReaderImpl s = new JSONStreamReaderImpl(stringReader);
       JSONDocument _json = s.build();

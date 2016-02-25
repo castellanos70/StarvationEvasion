@@ -30,20 +30,20 @@ public class JsonAnnotationProcessor
               f.setAccessible(true);
               if (an.type() == Jsonify.JsonType.ENUM)
               {
-                System.out.println((f.get(inst).toString()) + " " + an.type());
+                // System.out.println((f.get(inst).toString()) + " " + an.type());
               }
               else if (an.type() == Jsonify.JsonType.STRING)
               {
-                System.out.println(f.get(inst) + " " + an.type());
+                // System.out.println(f.get(inst) + " " + an.type());
               }
               else if (an.type() == Jsonify.JsonType.NUMBER)
               {
-                System.out.println(String.valueOf(f.get(inst)) + " " + an.type());
+                // System.out.println(String.valueOf(f.get(inst)) + " " + an.type());
               }
               else if (an.type() == Jsonify.JsonType.LIST)
               {
                 ArrayList s = (ArrayList) f.get(inst);
-                System.out.println(Arrays.toString(s.toArray()) + " " + an.type());
+                // System.out.println(Arrays.toString(s.toArray()) + " " + an.type());
               }
             }
             catch(IllegalAccessException e)

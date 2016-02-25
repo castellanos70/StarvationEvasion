@@ -1,4 +1,4 @@
-var TestApp =(function (window, $) {
+var TestApp = (function (window, $) {
 
     /**
      * start the app
@@ -35,23 +35,25 @@ var TestApp =(function (window, $) {
 
         /*
          set up all listeners for events
-
-         modal continue - what happens when user clicks cont in modal
-         modal restart - what happens when user clicks restart in modal
-         next - when user clicks next button
-         back - when user click back button
-
          */
         TestApp.config.connectBtn.click(function () {
             TestApp.connection = new WebSocket('ws://'.concat(TestApp.config.address.val()));
-
+            
             TestApp.connection.onopen = function (event) {
-                TestApp.config.connectResult.text(JSON.stringify(event));
+                TestApp.config.connectResult.text("Open:\n\n".concat(JSON.stringify(event)));
             };
+            
+            TestApp.connection.onclose = function (event) {
+                TestApp.config.connectResult.text("Closed:\n\n".concat(JSON.stringify(event)));
+            };
+
+            TestApp.connection.onerror = function (event) {
+                TestApp.config.connectResult.text("Error:\n\n".concat(JSON.stringify(event)));
+            };
+            
         });
 
         TestApp.config.loginBtn.click(function () {
-            
             TestApp.connection.send("34839489393 login admin admin");
         });
 

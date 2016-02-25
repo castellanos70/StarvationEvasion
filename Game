@@ -16,6 +16,7 @@ build () {
     make_sources
     mkdir dist/data
     cp -rf data/* dist/
+    cp -rf libs dist/
 
     javac -classpath ".:libs/javafx-mx.jar" @files.txt -d ./dist
     rm files.txt

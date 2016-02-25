@@ -11,6 +11,7 @@ import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
 import starvationevasion.server.io.WebSocketReadStrategy;
+import starvationevasion.server.io.WebSocketWriteStrategy;
 import starvationevasion.server.model.Response;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.User;
@@ -122,6 +123,7 @@ public class Server
         if(websocketConnect(worker))
         {
           worker.setReader(new WebSocketReadStrategy(client));
+          worker.setWriter(new WebSocketWriteStrategy(client));
         }
         worker.start();
         worker.setName("worker" + timeDiff());
@@ -346,7 +348,8 @@ public class Server
     String socketKey = "";
     while(true)
     {
-      line = worker.getClientReader().readLine();
+      line = worker.getReader().read();
+      System.out.println(line);
 
       if (line == null || line.equals("client")|| line.equals("\r\n") || line.isEmpty())
       {

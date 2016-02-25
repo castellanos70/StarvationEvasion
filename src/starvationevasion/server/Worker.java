@@ -6,9 +6,7 @@ package starvationevasion.server;
 
 
 import starvationevasion.server.handlers.Handler;
-import starvationevasion.server.io.JSON;
-import starvationevasion.server.io.ReadStrategy;
-import starvationevasion.server.io.SocketReadStrategy;
+import starvationevasion.server.io.*;
 import starvationevasion.server.model.Request;
 import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
@@ -23,45 +21,26 @@ public class Worker extends Thread
 {
   private User cred;
   private Socket client;
-  private PrintWriter clientWriter;
-  private BufferedReader clientReader;
   private boolean isRunning = true;
   private final Server server;
   private final Simulator simulator;
   private Handler handler;
   private long serverStartTime;
   private boolean sent = false;
-  private ObjectOutputStream clientObjectWriter;
-  private ReadStrategy reader = new SocketReadStrategy(this);
+
+  private WriteStrategy writer;
+  private ReadStrategy reader;
 
   public Worker (Socket client, Server server)
   {
+    this.writer = new SocketWriteStrategy(client);
+    this.reader = new SocketReadStrategy(client);
+
     this.client = client;
     this.simulator = server.getSimulator();
     this.server = server;
     this.handler = new Handler(server, this);
 
-
-    try
-    {
-      clientWriter = new PrintWriter(client.getOutputStream(), true);
-      clientObjectWriter = new ObjectOutputStream(client.getOutputStream());
-    }
-    catch(IOException e)
-    {
-      System.err.println("Server Worker: Could not open output stream");
-      e.printStackTrace();
-    }
-
-    try
-    {
-      clientReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-    }
-    catch(IOException e)
-    {
-      System.err.println("Server Worker: Could not open input stream");
-      e.printStackTrace();
-    }
   }
 
   /**
@@ -83,7 +62,14 @@ public class Worker extends Thread
   public void send (String msg)
   {
     System.out.println("ServerWorker.send(" + msg + ")");
-    clientWriter.println(msg);
+    try
+    {
+      writer.write(msg);
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -93,7 +79,14 @@ public class Worker extends Thread
   public <T extends JSON & Serializable> void send (T data)
   {
     System.out.println("ServerWorker.send(" + data.toJSON() + ")");
-    clientWriter.println(data.toJSON());
+    try
+    {
+      writer.write(data.toJSON().toJSON());
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
   }
 
 
@@ -123,9 +116,8 @@ public class Worker extends Thread
       try
       {
         String s = reader.read();
-        System.out.println(s);
 
-        if (s == null || clientReader == null)
+        if (s == null || reader == null)
         {
           // lost the client
           client.close();
@@ -167,20 +159,19 @@ public class Worker extends Thread
     this.serverStartTime = serverStartTime;
   }
 
-
-  public BufferedReader getClientReader ()
+  public ReadStrategy getReader ()
   {
-    return clientReader;
-  }
-
-  public PrintWriter getClientWriter ()
-  {
-    return clientWriter;
+    return reader;
   }
 
   public void setReader (ReadStrategy reader)
   {
     this.reader = reader;
+  }
+
+  public void setWriter (WriteStrategy writer)
+  {
+    this.writer = writer;
   }
 
   public User getUser ()

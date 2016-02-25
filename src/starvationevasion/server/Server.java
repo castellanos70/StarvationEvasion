@@ -342,25 +342,36 @@ public class Server
     // Handling websocket
     StringBuilder reading = new StringBuilder();
     String line = "";
-
+    String key = "";
+    String socketKey = "";
     while(true)
     {
       line = worker.getClientReader().readLine();
 
-      if (line == null || line.equals("client")|| line.equals("") || line.isEmpty())
+      if (line == null || line.equals("client")|| line.equals("\r\n") || line.isEmpty())
       {
-        return false;
+        if (socketKey.isEmpty())
+        {
+          return false;
+        }
+        else
+        {
+          System.out.println(reading);
+          worker.send("HTTP/1.1 101 Switching Protocols\n" +
+                      "Upgrade: websocket\n" +
+                      "Connection: Upgrade\n" +
+                      "Sec-WebSocket-Accept: " + socketKey + "\r\n");
+        
+          return true;
+        }
+        
       }
+
       reading.append(line);
       if (line.contains("Sec-WebSocket-Key:"))
       {
-        String key = line.replace("Sec-WebSocket-Key: ", "");
-        String socketKey = Server.handshake(key);
-        worker.send("HTTP/1.1 101 Switching Protocols\n" +
-                            "Upgrade: websocket\n" +
-                            "Connection: Upgrade\n" +
-                            "Sec-WebSocket-Accept: " + socketKey + "\n");
-        return true;
+        key = line.replace("Sec-WebSocket-Key: ", "");
+        socketKey = Server.handshake(key);
       }
     }
   }

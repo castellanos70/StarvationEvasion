@@ -11,7 +11,8 @@ var TestApp =(function (window, $) {
         TestApp.config = {
             address:            $('#address-in'),
             connectBtn:         $('#connect-btn'),
-            connectResult:      $('#connect-result')
+            connectResult:      $('#connect-result'),
+            loginBtn:           $('#login-btn')
         };
 
         // If settings arg is valid object then merge.
@@ -42,16 +43,16 @@ var TestApp =(function (window, $) {
 
          */
         TestApp.config.connectBtn.click(function () {
-            TestApp.connection = new WebSocket('ws://'.concat(TestApp.config.address.val()));
+            TestApp.connection = new WebSocket('wss://'.concat(TestApp.config.address.val()));
 
             TestApp.connection.onopen = function (event) {
                 TestApp.config.connectResult.text(JSON.stringify(event));
             };
-            //
-            //connection.onmessage = function (event) {
-            //    console.log(event);
-            //}
+        });
 
+        TestApp.config.loginBtn.click(function () {
+            
+            TestApp.connection.send("34839489393 login admin admin");
         });
 
     };

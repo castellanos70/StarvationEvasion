@@ -29,7 +29,7 @@ run () {
 }
 
 run_opt_server () {
-    # java -XX:+AggressiveOpts -XX:+UseFastAccessorMethods -Xms128m -Xmx2g -Xcomp -classpath ./dist ServerMaster "$1"
+    # java -XX:+AggressiveOpts -XX:+UseFastAccessorMethods -Xms128m -Xmx2g -Xcomp -classpath "./dist:./dist/libs/*" starvationevasion/server/Server
     run
 }
 

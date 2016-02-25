@@ -56,7 +56,6 @@ public class Client
 
   }
 
-
   private boolean openConnection(String host, int portNumber)
   {
 
@@ -107,15 +106,6 @@ public class Client
 
   }
 
-  private void showHelp()
-  {
-    System.out.println("Available commands:" +
-                               "\n\tbuy: quantity[integer] price[x.xx]" +
-                               "\n\tsell: quantity[integer] price[x.xx]" +
-                               "\n\tinventory" +
-                               "\n\tq");
-  }
-
   private void listenToUserRequests()
   {
 
@@ -161,13 +151,6 @@ public class Client
         e.printStackTrace();
       }
     }
-  }
-
-  private String inventoryUpdate()
-  {
-    long nanoSecDiff = System.nanoTime() - lastInventoryUpdate;
-    double secDiff = (double) nanoSecDiff / 1000000000.0;
-    return String.format("%.3f", secDiff);
   }
 
 
@@ -232,38 +215,6 @@ public class Client
           return;
         }
         System.out.println(msg);
-
-//        Response response = new Response(msg);
-//        if (response.getRequest() == ActionType.CONNECT)
-//        {
-//
-//          startNanoSec = (long) response.getTime();
-//          lastInventoryUpdate = System.nanoTime();
-//
-//          System.out.println("connected " + response.getMsg() + " uptime: " +
-//                                     timeDiff() + "s");
-//
-//        }
-//        else
-//        {
-//          if (response.getRequest() == ActionType.NOTIFY)
-//          {
-//            System.out.println(response.getMsg());
-//          }
-//          else
-//          {
-//            if (response.getRequest() == ActionType.SUCCESS)
-//            {
-//
-//              lastInventoryUpdate = System.nanoTime();
-//            }
-//            else
-//            {
-//              System.out.println("Unrecognized message from Server(" + timeDiff()
-//                                         + ") = " + msg);
-//            }
-//          }
-//        }
 
       }
       catch (IOException e)

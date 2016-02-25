@@ -9,13 +9,14 @@ var TestApp =(function (window, $) {
 
         // Config used as cache to prevent re traversal of DOM
         TestApp.config = {
+            address:            $('#address-in'),
             connectBtn:         $('#connect-btn'),
             connectResult:      $('#connect-result')
         };
 
         // If settings arg is valid object then merge.
         if(typeof settings === 'object'){
-            TestApp.config = $.extend(true, TestApp.config, settings);
+            TestApp.config = $.extend(true, TestApp.config);
         }
 
         _setup();
@@ -41,7 +42,7 @@ var TestApp =(function (window, $) {
 
          */
         TestApp.config.connectBtn.click(function () {
-            TestApp.connection = new WebSocket('ws://phoebe.cs.unm.edu:8003');
+            TestApp.connection = new WebSocket('ws://'.concat(TestApp.config.address.val()));
 
             TestApp.connection.onopen = function (event) {
                 TestApp.config.connectResult.text(JSON.stringify(event));

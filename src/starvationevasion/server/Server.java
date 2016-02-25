@@ -10,6 +10,8 @@ import starvationevasion.common.Constant;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
+import starvationevasion.server.io.WebSocketReadStrategy;
+import starvationevasion.server.io.WebSocketWriteStrategy;
 import starvationevasion.server.model.Response;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.User;
@@ -117,6 +119,12 @@ public class Server
         Worker worker = new Worker(client, this);
         worker.setServerStartTime(startNanoSec);
 
+
+        if(websocketConnect(worker))
+        {
+          worker.setReader(new WebSocketReadStrategy(client));
+          worker.setWriter(new WebSocketWriteStrategy(client));
+        }
         worker.start();
         worker.setName("worker" + timeDiff());
 
@@ -331,27 +339,42 @@ public class Server
 
   }
 
-  private void websocketConnect(Worker worker) throws IOException
+  private boolean websocketConnect(Worker worker) throws IOException
   {
     // Handling websocket
     StringBuilder reading = new StringBuilder();
     String line = "";
-
-    while((line = worker.getClientReader().readLine()) != null)
+    String key = "";
+    String socketKey = "";
+    while(true)
     {
-      if (line.equals("") || line.isEmpty())
+      line = worker.getReader().read();
+      System.out.println(line);
+
+      if (line == null || line.equals("client")|| line.equals("\r\n") || line.isEmpty())
       {
-        return;
+        if (socketKey.isEmpty())
+        {
+          return false;
+        }
+        else
+        {
+          System.out.println(reading);
+          worker.send("HTTP/1.1 101 Switching Protocols\n" +
+                      "Upgrade: websocket\n" +
+                      "Connection: Upgrade\n" +
+                      "Sec-WebSocket-Accept: " + socketKey + "\r\n");
+        
+          return true;
+        }
+        
       }
+
       reading.append(line);
       if (line.contains("Sec-WebSocket-Key:"))
       {
-        String key = line.replace("Sec-WebSocket-Key: ", "");
-        String socketKey = Server.handshake(key);
-        worker.send("HTTP/1.1 101 Switching Protocols\n" +
-                            "Upgrade: websocket\n" +
-                            "Connection: Upgrade\n" +
-                            "Sec-WebSocket-Accept: " + socketKey + "\n");
+        key = line.replace("Sec-WebSocket-Key: ", "");
+        socketKey = Server.handshake(key);
       }
     }
   }

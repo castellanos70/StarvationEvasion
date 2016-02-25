@@ -102,6 +102,7 @@ public class Client
       return false;
     }
     isRunning = true;
+    write.println("client");
     return true;
 
   }

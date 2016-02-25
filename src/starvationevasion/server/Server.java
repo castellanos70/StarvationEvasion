@@ -272,36 +272,53 @@ public class Server
     }
 
     userList.add(u);
-
-    if (userList.size() == 2)
-    {
-
-      for (Worker workers : allConnections)
+    /*
+      if (userList.size() == 2)
       {
-        // Bug check if user is logged in... user is logged in when worker is associated with user
-        if (workers.getUser() == null)
+
+        for (Worker workers : allConnections)
         {
-          return true;
+          // Bug check if user is logged in... user is logged in when worker is associated with user
+          if (workers.getUser() == null)
+          {
+            return true;
+          }
+          currentState = State.DRAWING;
+          EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
+          workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
+
+          // NOTE: can either send it as soon as we get it or have client request it.
+
+          System.out.println(JsonAnnotationProcessor.gets(workers.getUser()));
+          workers.send(workers.getUser());
         }
-        currentState = State.DRAWING;
-        EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
-        workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
 
-        // NOTE: can either send it as soon as we get it or have client request it.
-
-        System.out.println(JsonAnnotationProcessor.gets(workers.getUser()));
-        workers.send(workers.getUser());
+        WorldData currentWorldData = simulator.init();
+        for (Worker workers : allConnections)
+        {
+          // NOTE: can either send it as soon as we get it or have client request it.
+          workers.send(currentWorldData);
+        }
       }
-
-      WorldData currentWorldData = simulator.init();
-      for (Worker workers : allConnections)
-      {
-        // NOTE: can either send it as soon as we get it or have client request it.
-        workers.send(currentWorldData);
-      }
-    }
-
+    */
     return true;
+  }
+
+  public void draw()
+  {
+    for (Worker workers : allConnections)
+    {
+      // Bug check if user is logged in... user is logged in when worker is associated with user
+      if (workers.getUser() == null)
+      {
+        return;
+      }
+      currentState = State.DRAWING;
+      EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
+      workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
+      // NOTE: can either send it as soon as we get it or have client request it.
+      // System.out.println(JsonAnnotationProcessor.gets(workers.getUser()));
+    }
   }
 
   /**
@@ -386,8 +403,11 @@ public class Server
     {
       if (!allConnections.get(i).isRunning())
       {
-        // no longer active
-        allConnections.get(i).getUser().setActive(false);
+        if (allConnections.get(i).getUser() != null)
+        {
+          // no longer active
+          allConnections.get(i).getUser().setActive(false);
+        }
         // the worker is not running. remove it.
         allConnections.remove(i);
         con++;

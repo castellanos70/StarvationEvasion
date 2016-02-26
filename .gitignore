@@ -12,6 +12,7 @@ bin
 *.ipr
 *.iws
 
+dist/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/

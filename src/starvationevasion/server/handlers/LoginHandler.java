@@ -32,7 +32,7 @@ public class LoginHandler extends AbstractHandler
       {
         m_response = new Response(server.timeDiff(), "FAIL");
       }
-      getClient().send(m_response.toString());
+      getClient().send(m_response);
 
       return true;
     }

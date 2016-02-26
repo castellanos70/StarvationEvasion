@@ -36,7 +36,7 @@ public class UserHandler extends AbstractHandler
       {
         m_response = new Response(server.timeDiff(), "FAIL");
       }
-      getClient().send(m_response.toString());
+      getClient().send(m_response);
       return true;
     }
     else if (request.getDestination().equals(Endpoint.USERS))
@@ -47,7 +47,7 @@ public class UserHandler extends AbstractHandler
         stringBuilder.append(user.toString()).append(" ");
       }
       m_response = new Response(server.timeDiff(), stringBuilder.toString());
-      getClient().send(m_response.toString());
+      getClient().send(m_response);
       return true;
     }
     else if (request.getDestination().equals(Endpoint.USERS_LOGGED_IN))
@@ -58,7 +58,7 @@ public class UserHandler extends AbstractHandler
         stringBuilder.append(user.toString()).append(" ");
       }
       m_response = new Response(server.timeDiff(), stringBuilder.toString());
-      getClient().send(m_response.toString());
+      getClient().send(m_response);
       return true;
     }
 

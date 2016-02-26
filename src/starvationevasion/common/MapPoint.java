@@ -8,7 +8,7 @@ import java.io.Serializable;
 /**
  * Simple data class for specifying a location on the Earth's Surface.
  */
-public class MapPoint implements Serializable, JSON
+public class MapPoint implements JSON
 {
   /**
    * Specifies the north-south position of a point on the Earth's surface.
@@ -40,6 +40,12 @@ public class MapPoint implements Serializable, JSON
   public String toString()
   {
     return String.format("Location{%.2f, %.2f}", latitude, longitude);
+  }
+
+  @Override
+  public String toJSONString ()
+  {
+    return toJSON().toString();
   }
 
   @Override

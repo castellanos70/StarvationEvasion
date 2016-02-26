@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * It contains all world and region data to be returned to the client after each turn.
  * It does not contain high resolution location data possibly needed by the visualizer.
  */
-public class WorldData implements Serializable, JSON
+public class WorldData implements JSON
 {
 
   /**
@@ -83,6 +83,12 @@ public class WorldData implements Serializable, JSON
       msg += "     " + event + "\n";
     }
     return msg;
+  }
+
+  @Override
+  public String toJSONString ()
+  {
+    return toJSON().toString();
   }
 
   @Override

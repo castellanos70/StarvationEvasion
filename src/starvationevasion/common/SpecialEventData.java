@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class SpecialEventData implements Serializable, JSON
+public class SpecialEventData implements JSON
 {
 
   public enum EnumSpecialEvent
@@ -106,6 +106,12 @@ public class SpecialEventData implements Serializable, JSON
     }
 
     return str;
+  }
+
+  @Override
+  public String toJSONString ()
+  {
+    return toJSON().toString();
   }
 
   @Override

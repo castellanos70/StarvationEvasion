@@ -1,6 +1,8 @@
 # Server
 I have supplied a ```Client.java``` file. Run it and try out some of these commands.
 
+You can also use my hosted [web page](http://cs.unm.edu/~javierc/testing.html).
+
 # Run
 
 ###### Local
@@ -29,7 +31,7 @@ is running on port 2020 then change 666 to 2020.
 This will create a SSH tunnel. It will hang so you can press CTRL-z to
 send it to the background and fg will bring it back so you can stop it.
 ```bash
-ssh -N -L 666:localhost:5555 username@phoebe.cs.unm.edu
+ssh -N -L 666:localhost:5555 username@peterbilt.cs.unm.edu
 ```
 
 After you have your tunnel, you can start your client.

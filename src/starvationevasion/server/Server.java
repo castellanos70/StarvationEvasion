@@ -9,14 +9,12 @@ import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.WorldData;
 import starvationevasion.server.io.WebSocketReadStrategy;
 import starvationevasion.server.io.WebSocketWriteStrategy;
 import starvationevasion.server.model.Response;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
-import starvationevasion.util.JsonAnnotationProcessor;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -126,7 +124,7 @@ public class Server
           worker.setWriter(new WebSocketWriteStrategy(client));
         }
         worker.start();
-        worker.setName("worker" + timeDiff());
+        worker.setName("worker" + uptimeString());
 
         allConnections.add(worker);
 
@@ -194,11 +192,9 @@ public class Server
   }
 
 
-  public String timeDiff ()
+  public String uptimeString ()
   {
-    long nanoSecDiff = System.nanoTime() - startNanoSec;
-    double secDiff = nanoSecDiff / 1000000000.0;
-    return String.format("%.3f", secDiff);
+    return String.format("%.3f", uptime());
   }
 
   public double uptime ()
@@ -273,35 +269,56 @@ public class Server
 
     userList.add(u);
 
-    if (userList.size() == 2)
-    {
+    broadcastTransaction(new Response(uptime(), u.toJSON(), "user logged in"));
 
-      for (Worker workers : allConnections)
+
+    /*
+      if (userList.size() == 2)
       {
-        // Bug check if user is logged in... user is logged in when worker is associated with user
-        if (workers.getUser() == null)
+
+        for (Worker workers : allConnections)
         {
-          return true;
+          // Bug check if user is logged in... user is logged in when worker is associated with user
+          if (workers.getUser() == null)
+          {
+            return true;
+          }
+          currentState = State.DRAWING;
+          EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
+          workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
+
+          // NOTE: can either send it as soon as we get it or have client request it.
+
+          System.out.println(JsonAnnotationProcessor.gets(workers.getUser()));
+          workers.send(workers.getUser());
         }
-        currentState = State.DRAWING;
-        EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
-        workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
 
-        // NOTE: can either send it as soon as we get it or have client request it.
-
-        System.out.println(JsonAnnotationProcessor.gets(workers.getUser()));
-        workers.send(workers.getUser());
+        WorldData currentWorldData = simulator.init();
+        for (Worker workers : allConnections)
+        {
+          // NOTE: can either send it as soon as we get it or have client request it.
+          workers.send(currentWorldData);
+        }
       }
-
-      WorldData currentWorldData = simulator.init();
-      for (Worker workers : allConnections)
-      {
-        // NOTE: can either send it as soon as we get it or have client request it.
-        workers.send(currentWorldData);
-      }
-    }
-
+    */
     return true;
+  }
+
+  public void draw()
+  {
+    for (Worker workers : allConnections)
+    {
+      // Bug check if user is logged in... user is logged in when worker is associated with user
+      if (workers.getUser() == null)
+      {
+        return;
+      }
+      currentState = State.DRAWING;
+      EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
+      workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
+      // NOTE: can either send it as soon as we get it or have client request it.
+      // System.out.println(JsonAnnotationProcessor.gets(workers.getUser()));
+    }
   }
 
   /**
@@ -349,7 +366,6 @@ public class Server
     while(true)
     {
       line = worker.getReader().read();
-      System.out.println(line);
 
       if (line == null || line.equals("client")|| line.equals("\r\n") || line.isEmpty())
       {
@@ -359,7 +375,7 @@ public class Server
         }
         else
         {
-          System.out.println(reading);
+          // System.out.println(reading);
           worker.send("HTTP/1.1 101 Switching Protocols\n" +
                       "Upgrade: websocket\n" +
                       "Connection: Upgrade\n" +
@@ -386,8 +402,11 @@ public class Server
     {
       if (!allConnections.get(i).isRunning())
       {
-        // no longer active
-        allConnections.get(i).getUser().setActive(false);
+        if (allConnections.get(i).getUser() != null)
+        {
+          // no longer active
+          allConnections.get(i).getUser().setActive(false);
+        }
         // the worker is not running. remove it.
         allConnections.remove(i);
         con++;
@@ -424,5 +443,10 @@ public class Server
       }
     }
     return _active;
+  }
+
+  public int getUserCount ()
+  {
+    return userList.size();
   }
 }

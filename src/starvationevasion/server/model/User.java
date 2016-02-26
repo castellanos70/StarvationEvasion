@@ -9,7 +9,7 @@ import starvationevasion.util.Jsonify;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class User implements Serializable, JSON
+public class User implements JSON
 {
   @Jsonify
   private String username;
@@ -49,6 +49,12 @@ public class User implements Serializable, JSON
     this.username = username;
     this.password = password;
     this.region = region;
+  }
+
+  @Override
+  public String toJSONString ()
+  {
+    return toJSON().toString();
   }
 
   @Override

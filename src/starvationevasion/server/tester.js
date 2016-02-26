@@ -56,7 +56,7 @@ var TestApp = (function (window, $) {
 
         TestApp.config.loginBtn.click(function () {
             TestApp.connection.onmessage = function (event) {
-                TestApp.config.loginResult.text(JSON.stringify(event.data));
+                TestApp.config.loginResult.text(event.data);
             };
 
             TestApp.connection.send("34839489393.0 login admin admin");
@@ -64,7 +64,7 @@ var TestApp = (function (window, $) {
 
         TestApp.config.getAllUserBtn.click(function () {
             TestApp.connection.onmessage = function (event) {
-                TestApp.config.getAllUserRslt.text(JSON.stringify(event.data));
+                TestApp.config.getAllUserRslt.text(event.data);
             };
 
             TestApp.connection.send("34839489393.0 users");

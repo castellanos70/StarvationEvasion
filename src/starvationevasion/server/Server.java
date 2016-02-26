@@ -38,6 +38,7 @@ public class Server
   private ArrayList<User> userList = new ArrayList<>();
   private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
   private State currentState = State.LOGIN;
+  
 
   public Server (int portNumber)
   {
@@ -268,63 +269,96 @@ public class Server
     }
 
     userList.add(u);
-
     broadcastTransaction(new Response(uptime(), u.toJSON(), "user logged in"));
 
-
-    /*
-      if (userList.size() == 2)
-      {
-
-        for (Worker workers : allConnections)
-        {
-          // Bug check if user is logged in... user is logged in when worker is associated with user
-          if (workers.getUser() == null)
-          {
-            return true;
-          }
-          currentState = State.DRAWING;
-          EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
-          workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
-
-          // NOTE: can either send it as soon as we get it or have client request it.
-
-          System.out.println(JsonAnnotationProcessor.gets(workers.getUser()));
-          workers.send(workers.getUser());
-        }
-
-        WorldData currentWorldData = simulator.init();
-        for (Worker workers : allConnections)
-        {
-          // NOTE: can either send it as soon as we get it or have client request it.
-          workers.send(currentWorldData);
-        }
-      }
-    */
     return true;
   }
 
-  public void draw()
+  
+  public int getActiveCount()
+  {
+    int i = 0;
+    for (User user : userList)
+    {
+      if (user.isActive())
+      {
+        i++;
+      }
+    }
+    return i;
+  }
+
+  public Iterable<User> getActiveUserList ()
+  {
+    ArrayList<User> _active = new ArrayList<>();
+    for (User user : userList)
+    {
+      if (user.isActive())
+      {
+        _active.add(user);
+      }
+    }
+    return _active;
+  }
+
+  public int getUserCount ()
+  {
+    return userList.size();
+  }
+  
+  /**
+   * Tell the server that the player is ready
+   */
+  public void begin ()
+  {  
+    WorldData currentWorldData = simulator.init();
+    for (Worker workers : allConnections)
+    {
+      // NOTE: can either send it as soon as we get it or have client request it.
+      workers.send(currentWorldData);
+    }
+  }
+
+  public void vote ()
+  {
+    
+  }
+  
+
+  /**
+   * Draw new cards for a specific user
+   */
+  public void draw (Worker worker)
+  {
+    EnumPolicy[] _hand = simulator.drawCards(worker.getUser().getRegion());
+    worker.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
+  }
+
+  /**
+   * Draw cards for all users
+   */
+  public void draw ()
   {
     for (Worker workers : allConnections)
     {
+      // This will not happen when the API's are secured
       // Bug check if user is logged in... user is logged in when worker is associated with user
       if (workers.getUser() == null)
       {
         return;
       }
-      currentState = State.DRAWING;
       EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
       workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
       // NOTE: can either send it as soon as we get it or have client request it.
       // System.out.println(JsonAnnotationProcessor.gets(workers.getUser()));
     }
+    currentState = State.DRAWING;
   }
 
   /**
    * Handle a handshake with web client
-   * @param x
-   * @return
+   * @param x Key recieved from client
+   * @return Hashed key that is to be given back to client for auth check.
    */
   private static String handshake (String x)
   {
@@ -355,7 +389,7 @@ public class Server
     return new String(Base64.getEncoder().encode(digest.digest()));
 
   }
-
+  
   private boolean websocketConnect(Worker worker) throws IOException
   {
     // Handling websocket
@@ -419,34 +453,4 @@ public class Server
     }
   }
 
-  public int getActiveCount()
-  {
-    int i = 0;
-    for (User user : userList)
-    {
-      if (user.isActive())
-      {
-        i++;
-      }
-    }
-    return i;
-  }
-
-  public Iterable<User> getActiveUserList ()
-  {
-    ArrayList<User> _active = new ArrayList<>();
-    for (User user : userList)
-    {
-      if (user.isActive())
-      {
-        _active.add(user);
-      }
-    }
-    return _active;
-  }
-
-  public int getUserCount ()
-  {
-    return userList.size();
-  }
 }

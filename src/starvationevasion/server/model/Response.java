@@ -6,33 +6,25 @@ import starvationevasion.server.io.JSON;
 
 import java.io.Serializable;
 
-public class Response implements JSON, Serializable
+public class Response implements JSON
 {
 
-  String data = "";
+  Object data;
+  String message = "";
+  String type = "";
   double time = 0f;
 
 
-  public Response (String ...data)
+  public Response (double time, Object data, String message)
   {
+    this.time = time;
+    this.data = data;
+    this.message = message;
+  }
 
-
-//    if (data.length < 2)
-//    {
-//      throw new Exception("Not enough data");
-//    }
-//
-//    // get the time
-    this.time = Double.parseDouble(data[0]);
-    this.data = data[1];
-//    this.destination = Endpoint.valueOf(data[1].toUpperCase());
-//    this.data = new String[data.length];
-
-//    if (data.length >= 3)
-//    {
-//      System.arraycopy(data, 2, this.data, 0, data.length - 2);
-//    }
-
+  public Response (double time, Object data)
+  {
+    this(time, data, "");
   }
 
   @Override
@@ -42,11 +34,29 @@ public class Response implements JSON, Serializable
   }
 
   @Override
+  public String toJSONString ()
+  {
+    return toJSON().toString();
+  }
+
+  @Override
   public JSONDocument toJSON ()
   {
     JSONDocument document = JSONDocument.createObject();
     document.setNumber("time", time);
-    document.setString("data", data);
+    if (data instanceof JSONDocument)
+    {
+      document.set("data", ((JSONDocument) data));
+    }
+    else if (data instanceof String)
+    {
+      document.setString("data", ((String) data));
+    }
+
+    if (!message.isEmpty())
+    {
+      document.setString("message", message);
+    }
 
     return document;
   }

@@ -77,6 +77,32 @@ Here are some examples of JSON. These are examples, *the actual data you are sen
 
 # Consuming
 
-Consuming data
+Consuming data should be fairly simple.
+
+### Response
+The server will always respond with JSON.
+
+A reponse is layed out like this and will not change. 
+```json
+{
+"time": 2938293992.23,
+"message": "",
+"type": "",
+"data": null
+}
+```
+###### Data
+The key named ```data``` is special in that the value will either be a
+object or an array depending on the type.
+
+| Type  | data value type |
+|-------|-----------------|
+| chat  | object          |
+| user  | object          |
+| users | array           |
+
+
+
+
 
 

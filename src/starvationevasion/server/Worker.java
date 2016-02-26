@@ -76,12 +76,12 @@ public class Worker extends Thread
    * Send message to client.
    *
    */
-  public <T extends JSON & Serializable> void send (T data)
+  public <T extends JSON> void send (T data)
   {
     System.out.println("JSON ServerWorker.send(" + data.toJSON().toJSON() + ")");
     try
     {
-      writer.write(data.toJSON().toJSON());
+      writer.write(data.toJSONString());
     }
     catch(IOException e)
     {
@@ -116,8 +116,9 @@ public class Worker extends Thread
       try
       {
         String s = reader.read();
+        // System.out.println(s);
 
-        if (s == null || reader == null)
+        if (s == null || reader == null || s.equals("\u0003�"))
         {
           // lost the client
           client.close();
@@ -135,16 +136,6 @@ public class Worker extends Thread
 
         Request r = new Request(arr[0], arr[1], s);
         handler.handle(r);
-
-//
-//        if (r.getRequest() == ActionType.QUIT)
-//        {
-//          // client gracefully closed.
-//          client.close();
-//          isRunning = false;
-//          break;
-//        }
-
 
       }
       catch(Exception e)

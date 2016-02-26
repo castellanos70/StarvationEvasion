@@ -1,8 +1,8 @@
 package starvationevasion.client.Networking;
 
-import starvationevasion.client.Logic.Client;
 import javafx.concurrent.Task;
-import starvationevasion.common.messages.*;
+import starvationevasion.client.Logic.Client;
+
 import java.io.Serializable;
 
 /**
@@ -62,53 +62,53 @@ public class ClientListener extends Task
       throw new InterruptedException();
     }
 
-    if (response != null)
-    {
-      if (response instanceof Hello)
-      {
-        System.out.println("login nonce " + ((Hello) response).loginNonce +
-          " Server version " + ((Hello) response).serverVersion);
-        client.setLoginSalt(((Hello) response).loginNonce);
-        if(client.isAI) client.sendLogin(System.getenv("SEUSERNAME"),System.getenv("SEPASSWORD"));
-      }
-      else if (response instanceof LoginResponse)
-      {
-        System.out.println(((LoginResponse) response).responseType);
-        client.parseLoginMessage((LoginResponse) response);
-      }
-      else if(response instanceof AvailableRegions)
-      {
-        System.out.println("Available Regions: " + ((AvailableRegions) response).availableRegions);
-        client.setAvailableRegionInfo(((AvailableRegions) response));
-      }
-      else if(response instanceof GameState)
-      {
-        System.out.println("GameState updated");
-        client.localDataContainer.updateGameState((GameState) response);
-      }
-      else if(response instanceof BeginGame)
-      {
-        System.out.println("Beginning Game");
-        client.beginGame((BeginGame) response);
-      }
-      else if(response instanceof PhaseStart)
-      {
-        System.out.println("Phase start " + ((PhaseStart) response).currentGameState);
-        client.handlePhaseStart((PhaseStart) response);
-      }
-      else if(response instanceof ActionResponse)
-      {
-        client.localDataContainer.parseActionResponse((ActionResponse) response);
-      }
-      else if(response instanceof Response)
-      {
-        System.out.println("Response " + ((Response) response).isError());
-      }
-      else if(response instanceof VoteStatus)
-      {
-        client.HandleVoteStatus((VoteStatus) response);
-      }
-      else System.out.println("unknown response " + response.toString());
-    }
+//    if (response != null)
+//    {
+//      if (response instanceof Hello)
+//      {
+//        System.out.println("login nonce " + ((Hello) response).loginNonce +
+//          " Server version " + ((Hello) response).serverVersion);
+//        client.setLoginSalt(((Hello) response).loginNonce);
+//        if(client.isAI) client.sendLogin(System.getenv("SEUSERNAME"),System.getenv("SEPASSWORD"));
+//      }
+//      else if (response instanceof LoginResponse)
+//      {
+//        System.out.println(((LoginResponse) response).responseType);
+//        client.parseLoginMessage((LoginResponse) response);
+//      }
+//      else if(response instanceof AvailableRegions)
+//      {
+//        System.out.println("Available Regions: " + ((AvailableRegions) response).availableRegions);
+//        client.setAvailableRegionInfo(((AvailableRegions) response));
+//      }
+//      else if(response instanceof GameState)
+//      {
+//        System.out.println("GameState updated");
+//        client.localDataContainer.updateGameState((GameState) response);
+//      }
+//      else if(response instanceof BeginGame)
+//      {
+//        System.out.println("Beginning Game");
+//        client.beginGame((BeginGame) response);
+//      }
+//      else if(response instanceof PhaseStart)
+//      {
+//        System.out.println("Phase start " + ((PhaseStart) response).currentGameState);
+//        client.handlePhaseStart((PhaseStart) response);
+//      }
+//      else if(response instanceof ActionResponse)
+//      {
+//        client.localDataContainer.parseActionResponse((ActionResponse) response);
+//      }
+//      else if(response instanceof Response)
+//      {
+//        System.out.println("Response " + ((Response) response).isError());
+//      }
+//      else if(response instanceof VoteStatus)
+//      {
+//        client.HandleVoteStatus((VoteStatus) response);
+//      }
+//      else System.out.println("unknown response " + response.toString());
+//    }
   }
 }

@@ -1,7 +1,6 @@
 package starvationevasion.client.Networking;
 
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.messages.*;
 
 import java.io.Serializable;
 
@@ -16,19 +15,19 @@ public class MessageContainer
    * Constructor used to attempt to draft cards
    * @param cardToBeDrafted
    */
-  public MessageContainer(DraftCard cardToBeDrafted)
-  {
-    setContents(cardToBeDrafted);
-  }
+//  public MessageContainer(DraftCard cardToBeDrafted)
+//  {
+//    setContents(cardToBeDrafted);
+//  }
 
   /**
    * Constructor used to attempt to discard a card
    * @param discard
    */
-  public MessageContainer(Discard discard)
-  {
-    setContents(discard);
-  }
+//  public MessageContainer(Discard discard)
+//  {
+//    setContents(discard);
+//  }
 
   /**
    * This is a MessageContainer that contains a login with the plaintext username and password as well as the logingNonce
@@ -39,7 +38,7 @@ public class MessageContainer
    */
   public MessageContainer(String uname, String loginSalt, String passwd)
   {
-    setContents(new Login(uname, loginSalt, passwd));
+    //setContents(new Login(uname, loginSalt, passwd));
   }
 
   /**
@@ -49,7 +48,7 @@ public class MessageContainer
    */
   public MessageContainer(EnumRegion desiredRegion)
   {
-    setContents(new RegionChoice(desiredRegion));
+    //setContents(new RegionChoice(desiredRegion));
   }
 
   /**
@@ -57,10 +56,10 @@ public class MessageContainer
    * @param voteRegion the region who's card you would like to vote on
    * @param voteType The type of vote to apply to the region's card
    */
-  public MessageContainer(EnumRegion voteRegion, VoteType voteType)
-  {
-    setContents(new Vote(voteRegion, voteType));
-  }
+//  public MessageContainer(EnumRegion voteRegion, VoteType voteType)
+//  {
+//    setContents(new Vote(voteRegion, voteType));
+//  }
 
   /**
    * Gets the contents of the MessageContainer

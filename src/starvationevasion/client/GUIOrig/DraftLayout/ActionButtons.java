@@ -106,6 +106,6 @@ public class ActionButtons extends HBox
         gui.client.discard(card.getPolicy());
       }
     }
-
+    gui.switchScenes();
   }
 }

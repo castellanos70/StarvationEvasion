@@ -1,9 +1,5 @@
 package starvationevasion.client.GUIOrig.DraftLayout.map;
 
-import starvationevasion.client.Driver.RegionChooser;
-import starvationevasion.client.Logic.geography.MapConstants;
-import starvationevasion.client.Logic.geography.MapUtil;
-import starvationevasion.client.Logic.Client;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.effect.Effect;
@@ -11,11 +7,15 @@ import javafx.scene.effect.InnerShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import starvationevasion.client.Driver.RegionChooser;
+import starvationevasion.client.Logic.Client;
+import starvationevasion.client.Logic.geography.MapConstants;
+import starvationevasion.client.Logic.geography.MapUtil;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.messages.LoginResponse;
 
-import java.util.ArrayList;
 import java.util.TreeMap;
+
+//import starvationevasion.common.messages.LoginResponse;
 
 /**
  * Controller for handling interactivity with the US Region Map
@@ -120,19 +120,19 @@ public class MapController implements MapConstants
    * @param regions the specifies region to color as available
    * @param gameType the current game type (chosen vs. assigned
    */
-  public void colorAvailableRegions(Node mapNode, ArrayList<EnumRegion> regions, LoginResponse.ResponseType gameType)
-  {
-    for (EnumRegion region : regions)
-    {
-      if (gameType == LoginResponse.ResponseType.ASSIGNED_REGION)
-      {
-        styleRegion(mapNode, region, Color.GREY, new InnerShadow(UNSELECT_RADIUS, Color.BLACK));
-      } else if (gameType == LoginResponse.ResponseType.CHOOSE_REGION)
-      {
-        styleRegion(mapNode, region, MapUtil.getRegionColor(region), new InnerShadow(UNSELECT_RADIUS, Color.BLACK));
-      }
-    }
-  }
+//  public void colorAvailableRegions(Node mapNode, ArrayList<EnumRegion> regions, LoginResponse.ResponseType gameType)
+//  {
+//    for (EnumRegion region : regions)
+//    {
+//      if (gameType == LoginResponse.ResponseType.ASSIGNED_REGION)
+//      {
+//        styleRegion(mapNode, region, Color.GREY, new InnerShadow(UNSELECT_RADIUS, Color.BLACK));
+//      } else if (gameType == LoginResponse.ResponseType.CHOOSE_REGION)
+//      {
+//        styleRegion(mapNode, region, MapUtil.getRegionColor(region), new InnerShadow(UNSELECT_RADIUS, Color.BLACK));
+//      }
+//    }
+//  }
 
   /**
    * Colors a taken region red

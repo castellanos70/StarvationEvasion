@@ -1,17 +1,17 @@
 package starvationevasion.client.Logic;
 
+import starvationevasion.client.GUIOrig.GUI;
 import starvationevasion.client.GUIOrig.Graphs.GraphManager;
-import javafx.application.Platform;
+import starvationevasion.client.GUIOrig.SummaryBar;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.WorldData;
-import starvationevasion.common.messages.ActionResponse;
-import starvationevasion.common.messages.GameState;
-import starvationevasion.client.GUIOrig.GUI;
-import starvationevasion.client.GUIOrig.SummaryBar;
 
 import java.util.HashMap;
+
+//import starvationevasion.common.messages.ActionResponse;
+//import starvationevasion.common.messages.GameState;
 
 /**
  * It basically takes data from the server and uses a run later to change data in the GUi accordingly.
@@ -60,25 +60,25 @@ public class LocalDataContainer
     }
   }
 
-  public void parseActionResponse(ActionResponse response)
-  {
-    //TODO: Not sure if we want to do something with Server's response?
-    System.out.println(response.responseMessage);
-  }
+//  public void parseActionResponse(ActionResponse response)
+//  {
+//    //TODO: Not sure if we want to do something with Server's response?
+//    System.out.println(response.responseMessage);
+//  }
 
   /**
    * Called once per turn, this method gives the Client the
    * contents of his new hand as well as all data that does
    * not pertain to the Visualizer.
    */
-  public void updateGameState(GameState newGameState)
-  {
-    Platform.runLater(() ->
-    {
-      gui.getDraftLayout().getHand().setHand(newGameState.hand);
-      parseNewRoundData(newGameState.worldData);
-    });
-  }
+//  public void updateGameState(GameState newGameState)
+//  {
+//    Platform.runLater(() ->
+//    {
+//      gui.getDraftLayout().getHand().setHand(newGameState.hand);
+//      parseNewRoundData(newGameState.worldData);
+//    });
+//  }
 
   private void parseNewRoundData(WorldData newData)
   {

@@ -1,21 +1,16 @@
 package starvationevasion.client.Logic;
 
+import javafx.application.Application;
+import javafx.stage.Stage;
 import starvationevasion.client.Driver.RegionChooser;
-import starvationevasion.client.GUIOrig.DraftLayout.DraftTimer;
 import starvationevasion.client.GUIOrig.GUI;
-import starvationevasion.client.GUIOrig.VotingLayout.VotingTimer;
 import starvationevasion.client.Networking.ClientListener;
 import starvationevasion.client.Networking.MessageContainer;
 import starvationevasion.client.Networking.Messenger;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.stage.Stage;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
-import starvationevasion.common.messages.*;
 import starvationevasion.server.ServerConstants;
-import starvationevasion.server.ServerState;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -24,6 +19,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
+
+//import starvationevasion.common.messages.*;
+//import starvationevasion.server.ServerState;
 
 /**
  * Created by arirappaport on 11/19/15.
@@ -47,7 +45,7 @@ public class Client
   private boolean readyToStart;
   private ArrayList<EnumRegion> availableRegions;
   private TreeMap<EnumRegion, String> takenRegions;
-  private LoginResponse.ResponseType gameConfigurationType;
+  //private LoginResponse.ResponseType gameConfigurationType;
   private boolean madeConnection;
   private boolean firstDraft = true;
 
@@ -91,20 +89,20 @@ public class Client
    * Begins the game
    * @param response Response to determine if the game should begin
    */
-  public void beginGame(BeginGame response)
-  {
-    synchronized (this)
-    {
-      regionToUser  = response.finalRegionChoices;
-      readyToStart = true;
-    }
-    Platform.runLater(() ->
-    {
-        Stage guiStage = new Stage();
-        gui.start(guiStage);
-        if(!isAI) regionChooser.primaryStage.close();
-    });
-  }
+//  public void beginGame(BeginGame response)
+//  {
+//    synchronized (this)
+//    {
+//      regionToUser  = response.finalRegionChoices;
+//      readyToStart = true;
+//    }
+//    Platform.runLater(() ->
+//    {
+//        Stage guiStage = new Stage();
+//        gui.start(guiStage);
+//        if(!isAI) regionChooser.primaryStage.close();
+//    });
+//  }
 
   /**
    * Sets/initializes the loginSalt with the Hello loginNonce recieved upon opening the client.
@@ -146,10 +144,10 @@ public class Client
    * Getter for the game configuration type - either choose region or assigned region
    * @return the game configuration type
    */
-  public LoginResponse.ResponseType getGameConfigurationType()
-  {
-    return gameConfigurationType;
-  }
+//  public LoginResponse.ResponseType getGameConfigurationType()
+//  {
+//    return gameConfigurationType;
+//  }
 
   /**
    * Retrieves the region choose associated with the client
@@ -209,7 +207,7 @@ public class Client
    */
   public void draftCard(PolicyCard cardToBeDrafted)
   {
-    messenger.send(new MessageContainer(new DraftCard(cardToBeDrafted)));
+  //  messenger.send(new MessageContainer(new DraftCard(cardToBeDrafted)));
   }
 
   /**
@@ -219,7 +217,7 @@ public class Client
    */
   public void discard(EnumPolicy cardToDiscard)
   {
-    messenger.send(new MessageContainer(new Discard(cardToDiscard)));
+    //messenger.send(new MessageContainer(new Discard(cardToDiscard)));
   }
 
   /**
@@ -227,10 +225,10 @@ public class Client
    * @param region the region who's card you would like to vote for
    * @param type the type of vote to apply to the card
    */
-  public void vote(EnumRegion region, VoteType type)
-  {
-    messenger.send( new MessageContainer(region, type));
-  }
+//  public void vote(EnumRegion region, VoteType type)
+//  {
+//    messenger.send( new MessageContainer(region, type));
+//  }
 
   /**
    * Upon receiving a LoginResponse object from the server
@@ -240,31 +238,31 @@ public class Client
    * LandingPage doesn't hang.
    * @param response The response given by the server.
    */
-  public void parseLoginMessage(LoginResponse response)
-  {
-    synchronized (this)
-    {
-      receivedLoginAttempt = true;
-      if(!(response.responseType == LoginResponse.ResponseType.ACCESS_DENIED))
-      {
-        loginSuccessful = true;
-        if (response.responseType == LoginResponse.ResponseType.ASSIGNED_REGION)
-        {
-          gameConfigurationType = LoginResponse.ResponseType.ASSIGNED_REGION;
-          this.assignedRegion = response.assignedRegion;
-          Platform.runLater(() ->
-          {
-            gui.updateAssignedRegion(response.assignedRegion);
-          });
-          System.out.println(assignedRegion);
-        }
-        else if (response.responseType == LoginResponse.ResponseType.CHOOSE_REGION)
-        {
-          gameConfigurationType = LoginResponse.ResponseType.CHOOSE_REGION;
-        }
-      }
-    }
-  }
+//  public void parseLoginMessage(LoginResponse response)
+//  {
+//    synchronized (this)
+//    {
+//      receivedLoginAttempt = true;
+//      if(!(response.responseType == LoginResponse.ResponseType.ACCESS_DENIED))
+//      {
+//        loginSuccessful = true;
+//        if (response.responseType == LoginResponse.ResponseType.ASSIGNED_REGION)
+//        {
+//          gameConfigurationType = LoginResponse.ResponseType.ASSIGNED_REGION;
+//          this.assignedRegion = response.assignedRegion;
+//          Platform.runLater(() ->
+//          {
+//            gui.updateAssignedRegion(response.assignedRegion);
+//          });
+//          System.out.println(assignedRegion);
+//        }
+//        else if (response.responseType == LoginResponse.ResponseType.CHOOSE_REGION)
+//        {
+//          gameConfigurationType = LoginResponse.ResponseType.CHOOSE_REGION;
+//        }
+//      }
+//    }
+//  }
 
   /**
    * Called whenever a new phase starts. The Client uses this
@@ -273,31 +271,31 @@ public class Client
    * @param newPhaseInfo The info corresponding to the change of
    *                     phase.
    */
-  public void handlePhaseStart(PhaseStart newPhaseInfo)
-  {
-    if(newPhaseInfo.currentGameState.equals(ServerState.DRAFTING))
-    {
-      if(isAI)
-      {
-        Platform.runLater(() ->
-        {
-          gui.getDraftLayout().getHand().playRandomCard();
-          gui.getDraftLayout().getHand().playRandomCard();
-        });
-      }
-      if(!firstDraft)
-      {
-        gui.switchScenes();
-      }
-      firstDraft = false;
-      DraftTimer.draftTimer.start();
-    }
-    if(newPhaseInfo.currentGameState.equals(ServerState.VOTING))
-    {
-      VotingTimer.voteTimer.start();
-      gui.switchScenes();
-    }
-  }
+//  public void handlePhaseStart(PhaseStart newPhaseInfo)
+//  {
+//   // if(newPhaseInfo.currentGameState.equals(ServerState.DRAFTING))
+//    {
+//      if(isAI)
+//      {
+//        Platform.runLater(() ->
+//        {
+//          gui.getDraftLayout().getHand().playRandomCard();
+//          gui.getDraftLayout().getHand().playRandomCard();
+//        });
+//      }
+//      if(!firstDraft)
+//      {
+//        gui.switchScenes();
+//      }
+//      firstDraft = false;
+//      DraftTimer.draftTimer.start();
+//    }
+//    //if(newPhaseInfo.currentGameState.equals(ServerState.VOTING))
+//    {
+//      VotingTimer.voteTimer.start();
+//      gui.switchScenes();
+//    }
+//  }
 
   /**
    * Gets the region assigned to the client by the server
@@ -361,19 +359,19 @@ public class Client
    * @param availableRegionInfo The info in the form of an Available
    *                            Region object.
    */
-  public void setAvailableRegionInfo(AvailableRegions availableRegionInfo)
-  {
-    synchronized (this)
-    {
-      availableRegions = new ArrayList<>(availableRegionInfo.availableRegions);
-      takenRegions = new TreeMap<>(availableRegionInfo.takenRegions);
-      if (regionChooser != null)
-      {
-        // if we have a region chooser, access the map and it's controller
-        ((RegionChooser) regionChooser).map.updateStyling(availableRegions, takenRegions, gameConfigurationType);
-      }
-    }
-  }
+//  public void setAvailableRegionInfo(AvailableRegions availableRegionInfo)
+//  {
+//    synchronized (this)
+//    {
+//      availableRegions = new ArrayList<>(availableRegionInfo.availableRegions);
+//      takenRegions = new TreeMap<>(availableRegionInfo.takenRegions);
+//      if (regionChooser != null)
+//      {
+//        // if we have a region chooser, access the map and it's controller
+//        ((RegionChooser) regionChooser).map.updateStyling(availableRegions, takenRegions, gameConfigurationType);
+//      }
+//    }
+//  }
 
   /**
    * Sets the local instance bookkeeping receivedLoginAttempt
@@ -429,11 +427,11 @@ public class Client
     return true;
   }
 
-  public void HandleVoteStatus(VoteStatus response)
-  {
-    Platform.runLater(() ->
-    {
-      //ArrayList card = rhesponse.currentCards;
-    });
-  }
+//  public void HandleVoteStatus(VoteStatus response)
+//  {
+//    Platform.runLater(() ->
+//    {
+//      //ArrayList card = rhesponse.currentCards;
+//    });
+//  }
 }

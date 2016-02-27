@@ -132,7 +132,7 @@ public class Worker extends Thread
         if (arr.length < 2)
         {
           System.out.println(s);
-          continue;
+          break;
         }
 
         Request r = new Request(arr[0], arr[1], s);

@@ -39,16 +39,20 @@ var TestApp = (function (window, $) {
          */
         TestApp.config.connectBtn.click(function () {
             TestApp.connection = new WebSocket('ws://'.concat(TestApp.config.address.val()));
+
             
             TestApp.connection.onopen = function (event) {
                 TestApp.config.connectResult.text("Open:\n\n".concat(JSON.stringify(event)));
+                TestApp.config.connectBtn.prop('disabled', true);
             };
             
             TestApp.connection.onclose = function (event) {
                 TestApp.config.connectResult.text("Closed:\n\n".concat(JSON.stringify(event)));
+                TestApp.config.connectBtn.prop('disabled', false);
             };
 
             TestApp.connection.onerror = function (event) {
+                TestApp.config.connectBtn.prop('disabled', false);
                 TestApp.config.connectResult.text("Error:\n\n".concat(JSON.stringify(event)));
             };
             
@@ -57,6 +61,14 @@ var TestApp = (function (window, $) {
         TestApp.config.loginBtn.click(function () {
             TestApp.connection.onmessage = function (event) {
                 TestApp.config.loginResult.text(event.data);
+                if(event.data.message == "SUCCESS")
+                {
+                    TestApp.config.connectBtn.prop('disabled', false);
+                }
+                else
+                {
+                    TestApp.config.connectBtn.prop('disabled', true);
+                }
             };
 
             TestApp.connection.send("34839489393.0 login admin admin");
@@ -64,7 +76,8 @@ var TestApp = (function (window, $) {
 
         TestApp.config.getAllUserBtn.click(function () {
             TestApp.connection.onmessage = function (event) {
-                TestApp.config.getAllUserRslt.text(event.data);
+                // TestApp.config.getAllUserRslt.text(event.data);
+                TestApp.connnection.onmessage = null;
             };
 
             TestApp.connection.send("34839489393.0 users");

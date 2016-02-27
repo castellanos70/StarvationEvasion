@@ -131,7 +131,8 @@ public class Worker extends Thread
         String[] arr = s.split("\\s+");
         if (arr.length < 2)
         {
-          throw new Exception("Not enough data");
+          System.out.println(s);
+          continue;
         }
 
         Request r = new Request(arr[0], arr[1], s);

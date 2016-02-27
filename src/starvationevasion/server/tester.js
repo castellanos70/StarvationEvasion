@@ -121,7 +121,7 @@ var TestApp = (function (window, $) {
                 TestApp.config.chatRsp.text(event.data);
             };
             var _chat_text = TestApp.config.chatInput.val();
-            var _dest = TestApp.config.chatDestSelect.text().toUpperCase();
+            var _dest = TestApp.config.chatDestSelect.val().toUpperCase();
             var _json = {
                 "card": null,
                 "text": _chat_text

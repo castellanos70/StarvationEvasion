@@ -61,13 +61,14 @@ var TestApp = (function (window, $) {
         TestApp.config.loginBtn.click(function () {
             TestApp.connection.onmessage = function (event) {
                 TestApp.config.loginResult.text(event.data);
-                if(event.data.message == "SUCCESS")
+                var _resp = JSON.parse(event.data);
+                if(_resp.message == "SUCCESS")
                 {
-                    TestApp.config.connectBtn.prop('disabled', false);
+                    TestApp.config.loginBtn.prop('disabled', true);
                 }
                 else
                 {
-                    TestApp.config.connectBtn.prop('disabled', true);
+                    TestApp.config.loginBtn.prop('disabled', false);
                 }
             };
 

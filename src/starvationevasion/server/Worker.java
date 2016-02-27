@@ -8,6 +8,7 @@ package starvationevasion.server;
 import starvationevasion.server.handlers.Handler;
 import starvationevasion.server.io.*;
 import starvationevasion.server.model.Request;
+import starvationevasion.server.model.Response;
 import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
 
@@ -130,9 +131,8 @@ public class Worker extends Thread
         // notice I am expecting only requests from a client... Not supporting responses from client.
         String[] arr = s.split("\\s+");
         if (arr.length < 2)
-        {
-          System.out.println(s);
-          break;
+        {          
+          send(new Response(server.uptime(), "invalid"));
         }
 
         Request r = new Request(arr[0], arr[1], s);

@@ -22,7 +22,11 @@ public class WebSocketReadStrategy implements ReadStrategy
     byte[] b = new byte[140];
 
     len = socket.getInputStream().read(b);
-
+    if (len == -1)
+    {
+      return null;
+    }
+    
     if (len != -1)
     {
 

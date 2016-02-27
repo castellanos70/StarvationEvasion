@@ -16,7 +16,10 @@ var TestApp = (function (window, $) {
             loginBtn:           $('#login-btn'),
             loginResult:        $('#login-result'),
             getAllUserBtn:      $('#get-all-users'),
-            getAllUserRslt:     $('#get-all-users-resp')
+            getAllUserRslt:     $('#get-all-users-resp'),
+            usernameInput:      $('#username'),
+            pwdInput:           $('#pwd'),
+            createUsrBtn        $('#create-btn')
         };
 
         // If settings arg is valid object then merge.
@@ -89,6 +92,17 @@ var TestApp = (function (window, $) {
             TestApp.connection.send(_getTime() + " users");
         });
 
+        TestApp.config.createUsrBtn.click(function () {
+            TestApp.connection.onmessage = function (event) {
+                TestApp.config.getAllUserRslt.text(event.data);
+            };
+            var _uname = TestApp.config.usernameInput.val();
+            var _pwd = TestApp.config.pwdInput.val();
+            
+            TestApp.connection.send(_getTime() + " user_create " + _uname + " " + _pwd);
+        });
+
+        
     };
 
     var _getTime = function ()

@@ -19,7 +19,7 @@ var TestApp = (function (window, $) {
             getAllUserRslt:     $('#get-all-users-resp'),
             usernameInput:      $('#username'),
             pwdInput:           $('#pwd'),
-            createUsrBtn        $('#create-btn')
+            createUsrBtn:       $('#create-btn')
         };
 
         // If settings arg is valid object then merge.
@@ -108,7 +108,7 @@ var TestApp = (function (window, $) {
     var _getTime = function ()
     {
         return (new Date).getTime();
-    }
+    };
 
 
     return {

@@ -19,7 +19,13 @@ var TestApp = (function (window, $) {
             getAllUserRslt:     $('#get-all-users-resp'),
             usernameInput:      $('#username'),
             pwdInput:           $('#pwd'),
-            createUsrBtn:       $('#create-btn')
+            createUsrBtn:       $('#create-btn'),
+            gamestateBtn:       $('#gamestate-btn'),
+            gamestateRsp:       $('#gamestate-rsp'),
+            createChatBtn:      $('#chat-send-btn'),
+            chatRsp:            $('#chat-send-rsp'),
+            chatInput:          $('#chat-text'),
+            chatDestSelect:     $('#chat-dest')
         };
 
         // If settings arg is valid object then merge.
@@ -92,6 +98,14 @@ var TestApp = (function (window, $) {
             TestApp.connection.send(_getTime() + " users");
         });
 
+        TestApp.config.gamestateBtn.click(function () {
+            TestApp.connection.onmessage = function (event) {
+                TestApp.config.gamestateRsp.text(event.data);
+            };
+
+            TestApp.connection.send(_getTime() + " game_state");
+        });
+
         TestApp.config.createUsrBtn.click(function () {
             TestApp.connection.onmessage = function (event) {
                 TestApp.config.getAllUserRslt.text(event.data);
@@ -102,7 +116,20 @@ var TestApp = (function (window, $) {
             TestApp.connection.send(_getTime() + " user_create " + _uname + " " + _pwd);
         });
 
-        
+        TestApp.config.createChatBtn.click(function () {
+            TestApp.connection.onmessage = function (event) {
+                TestApp.config.chatRsp.text(event.data);
+            };
+            var _chat_text = TestApp.config.chatInput.val();
+            var _dest = TestApp.config.chatDestSelect.text().toUpperCase();
+            var _json = {
+                "card": null,
+                "text": _chat_text
+            }
+            
+            TestApp.connection.send(_getTime() + " chat " + _dest + " " + JSON.stringify(_json, null, " "));
+        });
+
     };
 
     var _getTime = function ()

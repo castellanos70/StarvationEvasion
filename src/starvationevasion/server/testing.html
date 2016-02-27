@@ -117,7 +117,7 @@
                 </div>
 
                 <div class="form-group">
-                    <select class="form-control">
+                    <select id="chat-dest" class="form-control">
                         <option>All</option>
                         <option>California</option>
                         <option>Heartlands</option>
@@ -125,10 +125,10 @@
                         <option>5</option>
                     </select>
                 </div>
-                <button class="btn btn-default" type="submit">Send</button>
+                <button class="btn btn-default" id="chat-send-btn">Send</button>
             </div>
             <div class="col-md-6">
-                <pre></pre>
+                <pre id="chat-send-rsp"></pre>
             </div>
         </div>
         <hr>
@@ -145,7 +145,7 @@
         <div class="row ">
             <div class="col-xs-6 col-md-4">
                 <p class="lead">Read <small>the game state</small></p>
-                <button class="btn btn-default" type="submit">Get</button>
+                <button class="btn btn-default" id="gamestate-btn">Get</button>
             </div>
             <div class="col-md-6">
                 <pre id="gamestate-rsp"></pre>

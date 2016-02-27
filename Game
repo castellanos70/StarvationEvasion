@@ -52,7 +52,7 @@ then
     else
         run_server 5555
     fi
-elif [ "$1" == "nb_server"] 
+elif [ "$1" == "nb_server" ] 
 then
     if [ "$#" -eq 2 ]
     then

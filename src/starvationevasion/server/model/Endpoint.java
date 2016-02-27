@@ -18,12 +18,16 @@ public enum Endpoint
   VOTE_DOWN("vote_down"),
 
   DRAFT_CARD("draft_card"),
+  DRAW_CARD("draw_card"),
 
   //draft can you draft, have you drafted you can onyl draft one voting card.
 
   CHAT("chat"),
-  CARD("card");
+  CARD("card"),
+  SERVER_STATE("server_state"),
 
+  // after ready is sent you cannot change regions
+  READY("ready");
 
   private String url;
 

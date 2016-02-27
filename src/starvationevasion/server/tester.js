@@ -9,6 +9,7 @@ var TestApp = (function (window, $) {
 
         // Config used as cache to prevent re traversal of DOM
         TestApp.config = {
+            loginRqDivs:        $('.login-req'),
             address:            $('#address-in'),
             connectBtn:         $('#connect-btn'),
             connectResult:      $('#connect-result'),
@@ -42,6 +43,7 @@ var TestApp = (function (window, $) {
 
             
             TestApp.connection.onopen = function (event) {
+                TestApp.config.loginRqDivs.fadeIn();
                 TestApp.config.connectResult.text("Open:\n\n".concat(JSON.stringify(event)));
                 TestApp.config.connectBtn.prop('disabled', true);
             };
@@ -52,6 +54,7 @@ var TestApp = (function (window, $) {
             };
 
             TestApp.connection.onerror = function (event) {
+                TestApp.config.loginRqDivs.fadeOut();
                 TestApp.config.connectBtn.prop('disabled', false);
                 TestApp.config.connectResult.text("Error:\n\n".concat(JSON.stringify(event)));
             };

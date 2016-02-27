@@ -20,8 +20,12 @@
 
 <style>
  pre {
-  height: 250px;
-  overflow-x: auto;
+   height: 250px;
+   overflow-x: auto;
+ }
+
+ login-req {
+   display: none;
  }
 </style>
 </head>
@@ -101,7 +105,7 @@
                 <pre></pre>
             </div>
         </div>
-        <div class="row">
+        <div class="row login-req">
             <h1>Game CRUD</h1>
             <div class="col-xs-6 col-md-4">
                 <p class="lead">Chat <small>send a chat</small></p>
@@ -128,7 +132,7 @@
             </div>
         </div>
         <hr>
-        <div class="row">
+        <div class="row login-req">
             <div class="col-xs-6 col-md-4">
                 <p class="lead">Read <small>simulate receiving a chat</small></p>
                 <button class="btn btn-default" type="submit">Get</button>

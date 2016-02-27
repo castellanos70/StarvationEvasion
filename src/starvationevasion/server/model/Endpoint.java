@@ -8,6 +8,7 @@ public enum Endpoint
   USER_UPDATE("user_update"),
   USERS("users"),
   USERS_LOGGED_IN("users_logged_in"),
+  USERS_READY("users_ready"),
   LOGIN("login"),
 
 
@@ -19,13 +20,14 @@ public enum Endpoint
 
   DRAFT_CARD("draft_card"),
   DRAW_CARD("draw_card"),
+  DELETE_CARD("delete_card"),
 
   //draft can you draft, have you drafted you can onyl draft one voting card.
 
   CHAT("chat"),
   CARD("card"),
   
-  SERVER_STATE("server_state"),
+  GAME_STATE("game_state"),
 
   // after ready is sent you cannot change regions
   READY("ready");

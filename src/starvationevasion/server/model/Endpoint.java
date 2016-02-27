@@ -24,6 +24,7 @@ public enum Endpoint
 
   CHAT("chat"),
   CARD("card"),
+  
   SERVER_STATE("server_state"),
 
   // after ready is sent you cannot change regions

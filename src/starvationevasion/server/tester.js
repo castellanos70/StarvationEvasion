@@ -43,7 +43,7 @@ var TestApp = (function (window, $) {
 
             
             TestApp.connection.onopen = function (event) {
-                TestApp.config.loginRqDivs.fadeIn();
+
                 TestApp.config.connectResult.text("Open:\n\n".concat(JSON.stringify(event)));
                 TestApp.config.connectBtn.prop('disabled', true);
             };
@@ -67,6 +67,7 @@ var TestApp = (function (window, $) {
                 var _resp = JSON.parse(event.data);
                 if(_resp.message == "SUCCESS")
                 {
+                    TestApp.config.loginRqDivs.fadeIn();
                     TestApp.config.loginBtn.prop('disabled', true);
                 }
                 else

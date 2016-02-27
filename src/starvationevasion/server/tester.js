@@ -64,9 +64,11 @@ var TestApp = (function (window, $) {
         TestApp.config.loginBtn.click(function () {
             TestApp.connection.onmessage = function (event) {
                 TestApp.config.loginResult.text(event.data);
+                // parse the json
                 var _resp = JSON.parse(event.data);
                 if(_resp.message == "SUCCESS")
                 {
+                    // show all the divs that require login
                     TestApp.config.loginRqDivs.fadeIn();
                     TestApp.config.loginBtn.prop('disabled', true);
                 }
@@ -75,20 +77,24 @@ var TestApp = (function (window, $) {
                     TestApp.config.loginBtn.prop('disabled', false);
                 }
             };
-
-            TestApp.connection.send("34839489393.0 login admin admin");
+            // onclick send the command
+            TestApp.connection.send(_getTime() + " login admin admin");
         });
 
         TestApp.config.getAllUserBtn.click(function () {
             TestApp.connection.onmessage = function (event) {
-                // TestApp.config.getAllUserRslt.text(event.data);
-                TestApp.connnection.onmessage = null;
+                TestApp.config.getAllUserRslt.text(event.data);
             };
 
-            TestApp.connection.send("34839489393.0 users");
+            TestApp.connection.send(_getTime() + " users");
         });
 
     };
+
+    var _getTime = function ()
+    {
+        return (new Date).getTime();
+    }
 
 
     return {

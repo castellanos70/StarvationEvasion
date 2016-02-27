@@ -115,6 +115,7 @@ public class Worker extends Thread
     {
       try
       {
+        
         String s = reader.read();
         // System.out.println(s);
 
@@ -130,7 +131,6 @@ public class Worker extends Thread
         String[] arr = s.split("\\s+");
         if (arr.length < 2)
         {
-          System.exit(1);
           throw new Exception("Not enough data");
         }
 

@@ -15,6 +15,7 @@ import starvationevasion.server.model.Response;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
+import starvationevasion.common.WorldData;
 
 import java.io.IOException;
 import java.net.InetAddress;

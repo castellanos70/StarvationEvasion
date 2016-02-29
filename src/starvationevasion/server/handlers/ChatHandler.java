@@ -7,6 +7,7 @@ import starvationevasion.server.Worker;
 import starvationevasion.server.Server;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Request;
+import starvationevasion.server.model.Response;
 
 import java.io.StringReader;
 
@@ -29,25 +30,27 @@ public class ChatHandler extends AbstractHandler
 
       String arr = request.chomp();
       request.setData(request.getData().replace(arr, " "));
-
-      EnumRegion destination = EnumRegion.valueOf(arr);
-
       String data = request.getData();
       StringReader stringReader = new StringReader(data);
       JSONStreamReaderImpl s = new JSONStreamReaderImpl(stringReader);
       JSONDocument _json = s.build();
 
+      // Determine if the destination is by username or by region
       String from = getClient().getUser().getRegion().name();
 
-      // Determine if the destination is by username or by region
+      JSONDocument _msg = JSONDocument.createObject();
+      _msg.setString("from", from);
+      _msg.set("message", _json);
 
-      Worker worker = server.getWorkerByRegion(destination);
-      if (worker != null)
+      if (arr.equals("ALL"))
       {
-        JSONDocument _msg = JSONDocument.createObject();
-        _msg.setString("from", from);
-        _msg.set("message", _json);
-        worker.send(_msg.toString());
+        server.broadcast(new Response(server.uptime(), _msg));
+      }
+      else
+      {
+        EnumRegion destination = EnumRegion.valueOf(arr);
+        Worker worker = server.getWorkerByRegion(destination);
+        worker.send(new Response(server.uptime(), _msg));
       }
 
       return true;

@@ -3,6 +3,8 @@ I have supplied a ```Client.java``` file. Run it and try out some of these comma
 
 You can also use my hosted [web page](http://cs.unm.edu/~javierc/testing.html).
 
+Client that is more like the ```Client.java``` can be found [here](http://cs.unm.edu/~javierc/client.html)
+
 # Run
 
 ###### Local

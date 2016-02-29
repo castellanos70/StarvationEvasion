@@ -140,34 +140,6 @@ public class Server
   }
 
 
-  /**
-   * Send a response of a transaction to all listening workers.
-   *
-   * @param response a response to be send globally.
-   */
-  public void broadcastTransaction (Response response)
-  {
-    for (Worker workers : allConnections)
-    {
-      workers.send(response.toString());
-    }
-  }
-
-  /**
-   * Send a message to all workers.
-   *
-   * @param s string containing a message.
-   */
-  public void broadcast (String s)
-  {
-    for (Worker workers : allConnections)
-    {
-      workers.send(s);
-    }
-  }
-
-
-
   public static void main (String args[])
   {
     //Valid port numbers are Port numbers are 1024 through 65535.
@@ -270,7 +242,7 @@ public class Server
     }
 
     userList.add(u);
-    broadcastTransaction(new Response(uptime(), u.toJSON(), "user logged in"));
+    broadcast(new Response(uptime(), u.toJSON(), "user logged in"));
 
     return true;
   }
@@ -454,4 +426,11 @@ public class Server
     }
   }
 
+  public void broadcast (Response response)
+  {
+    for (Worker worker : allConnections)
+    {
+      worker.send(response);
+    }
+  }
 }

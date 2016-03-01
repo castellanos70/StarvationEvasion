@@ -383,10 +383,10 @@ public class Server
         else
         {
           // System.out.println(reading);
-          worker.send("HTTP/1.1 101 Switching Protocols\n" +
-                      "Upgrade: websocket\n" +
-                      "Connection: Upgrade\n" +
-                      "Sec-WebSocket-Accept: " + socketKey + "\r\n");
+          worker.send("HTTP/1.1 101 Switching Protocols\r" +
+                      "Upgrade: websocket\r" +
+                      "Connection: Upgrade\r" +
+                      "Sec-WebSocket-Accept: " + socketKey + "\r\r");
         
           return true;
         }

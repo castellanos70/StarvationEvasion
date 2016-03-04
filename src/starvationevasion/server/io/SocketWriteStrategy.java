@@ -9,9 +9,11 @@ import java.net.Socket;
 public class SocketWriteStrategy implements WriteStrategy
 {
   private PrintWriter writer;
-
+  private final Socket socket;
+  
   public SocketWriteStrategy(Socket socket)
   {
+    this.socket = socket;
     try
     {
       writer = new PrintWriter(socket.getOutputStream(), true);
@@ -29,5 +31,11 @@ public class SocketWriteStrategy implements WriteStrategy
   public void write (String s) throws IOException
   {
     writer.println(s);
+  }
+  
+  @Override
+  public void close () throws IOException
+  {
+    socket.shutdownOutput();
   }
 }

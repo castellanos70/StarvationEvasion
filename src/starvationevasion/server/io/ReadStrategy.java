@@ -6,4 +6,5 @@ import java.io.IOException;
 public interface ReadStrategy
 {
   String read () throws IOException;
+  void close () throws IOException;
 }

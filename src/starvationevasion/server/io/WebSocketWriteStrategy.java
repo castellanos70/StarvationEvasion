@@ -71,4 +71,10 @@ public class WebSocketWriteStrategy implements WriteStrategy
     socket.getOutputStream().flush();
 
   }
+  
+  @Override
+  public void close () throws IOException
+  {
+    socket.shutdownOutput();
+  }
 }

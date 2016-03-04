@@ -7,9 +7,11 @@ import java.net.Socket;
 public class SocketReadStrategy implements ReadStrategy
 {
   private BufferedReader reader;
+  private final Socket socket;
 
   public SocketReadStrategy(Socket socket)
   {
+    this.socket = socket;
     try
     {
       reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -26,5 +28,11 @@ public class SocketReadStrategy implements ReadStrategy
   public String read () throws IOException
   {
     return reader.readLine();
+  }
+
+  @Override
+  public void close () throws IOException
+  {
+    socket.shutdownInput();
   }
 }

@@ -69,4 +69,10 @@ public class WebSocketReadStrategy implements ReadStrategy
 
     return new String(message);
   }
+
+  @Override
+  public void close () throws IOException
+  {
+    socket.shutdownInput();
+  }
 }

@@ -25,6 +25,8 @@ import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 
 /**
  */
@@ -39,7 +41,8 @@ public class Server
   private ArrayList<User> userList = new ArrayList<>();
   private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
   private State currentState = State.LOGIN;
-  
+  private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+  private  Date date = new Date();  
 
   public Server (int portNumber)
   {
@@ -115,7 +118,8 @@ public class Server
       try
       {
         Socket client = serverSocket.accept();
-        System.out.println("Server: *********** new Connection");
+        System.out.println(dateFormat.format(date) + " Server: new Connection request recieved.");
+        System.out.println(dateFormat.format(date) + " Server " + client.getRemoteSocketAddress());
         Worker worker = new Worker(client, this);
         worker.setServerStartTime(startNanoSec);
 
@@ -126,6 +130,7 @@ public class Server
           worker.setWriter(new WebSocketWriteStrategy(client));
         }
         worker.start();
+        System.out.println(dateFormat.format(date) + " Server: Connected to ");
         worker.setName("worker" + uptimeString());
 
         allConnections.add(worker);
@@ -133,7 +138,7 @@ public class Server
       }
       catch(IOException e)
       {
-        System.err.println("Server error: Failed to connect to client.");
+        System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
         e.printStackTrace();
       }
     }
@@ -414,6 +419,7 @@ public class Server
           // no longer active
           allConnections.get(i).getUser().setActive(false);
         }
+        allConnections.get(i).shutdown();
         // the worker is not running. remove it.
         allConnections.remove(i);
         con++;
@@ -422,7 +428,7 @@ public class Server
     // check if any removed. Show removed count
     if (con > 0)
     {
-      System.out.println("Removed " + con + " connection workers.");
+        System.out.println(dateFormat.format(date) + " Removed " + con + " connection workers.");
     }
   }
 

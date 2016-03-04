@@ -22,7 +22,7 @@ public class Worker extends Thread
 {
   private User cred;
   private Socket client;
-  private boolean isRunning = true;
+  private volatile boolean isRunning = true;
   private final Server server;
   private final Simulator simulator;
   private Handler handler;
@@ -62,7 +62,7 @@ public class Worker extends Thread
    */
   public void send (String msg)
   {
-    System.out.println("STRING ServerWorker.send(" + msg + ")");
+    // System.out.println("STRING ServerWorker.send(" + msg + ")");
     try
     {
       writer.write(msg);
@@ -79,7 +79,7 @@ public class Worker extends Thread
    */
   public <T extends JSON> void send (T data)
   {
-    System.out.println("JSON ServerWorker.send(" + data.toJSON().toJSON() + ")");
+    // System.out.println("JSON ServerWorker.send(" + data.toJSON().toJSON() + ")");
     try
     {
       writer.write(data.toJSONString());
@@ -109,6 +109,22 @@ public class Worker extends Thread
 //  }
 
 
+  public void shutdown()
+  {
+    isRunning = false;
+    try
+    {
+      reader.close();
+      writer.close();
+      client.close();
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+    
+  }
+  
   public void run ()
   {
 
@@ -118,14 +134,12 @@ public class Worker extends Thread
       {
         
         String s = reader.read();
-        // System.out.println(s);
 
         if (s == null || reader == null || s.equals("\u0003�"))
         {
           // lost the client
-          client.close();
           isRunning = false;
-          break;
+          return;
         }
 
         // notice I am expecting only requests from a client... Not supporting responses from client.

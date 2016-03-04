@@ -61,8 +61,8 @@ public class User implements JSON
   public JSONDocument toJSON ()
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
-
-     json.setString("username", username);
+    
+    json.setString("username", username);
     // json.setString("password", password);
     json.setString("region", region.toString());
     JSONDocument _hand = JSONDocument.createArray(this.hand.size());

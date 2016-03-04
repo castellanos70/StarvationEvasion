@@ -8,6 +8,19 @@ import java.util.Random;
 
 public interface Encryptable
 {
+  /**
+   * I would like to use a asymmetric encryption
+   * client generates a pair of public/private keys and sends the public key to the server
+   * more info here https://docs.oracle.com/javase/tutorial/security/apisign/step2.html
+   * 
+   * server uses the public key to encrypt some secret key and sends it back to the client (secrete is generated in this class as well as encry. decrpt)
+   *
+   * client uses his private key to decrypt the secret
+   *
+   * client uses algo with the secret key to encrypt the message
+   * server uses the secret key to decrypt the message
+   */
+  
   String[] nonceAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".split("(?!^)");
   int NONCE_SIZE = 32;
 

@@ -155,7 +155,9 @@ public class Worker extends Thread
       }
       catch(Exception e)
       {
+        isRunning = false;
         e.printStackTrace();
+        return;
       }
     }
   }

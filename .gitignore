@@ -11,6 +11,7 @@ bin
 ## File-based project format:
 *.ipr
 *.iws
+notes_joel.txt
 
 dist/
 

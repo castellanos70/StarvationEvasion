@@ -179,7 +179,6 @@ public class GeographyXMLparser extends DefaultHandler
       XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
       xmlReader.setContentHandler(this);
 
-      // List<String> filesToRead = getFilesInDir(BORDERS_DIR);
       List<String> filesToRead = readIndex(BORDERS_INDEX);
       while (!filesToRead.isEmpty())
       {

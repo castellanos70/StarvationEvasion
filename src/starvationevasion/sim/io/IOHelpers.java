@@ -52,8 +52,9 @@ public class IOHelpers
     return files;
   }
 
-  public static List<String> readIndex(String indexPath) throws FileNotFoundException, IOException
+  public static List<String> readIndex(String indexPath) throws IOException
   {
+    System.out.println("IOHelpers.readIndex("+indexPath+")");
     InputStream resourceStream = IOHelpers.class.getResourceAsStream(indexPath);
     if (resourceStream == null) throw new FileNotFoundException(indexPath);
 
@@ -67,6 +68,7 @@ public class IOHelpers
       while ((entry = reader.readLine()) != null)
       {
         files.add(entry);
+        System.out.println("      "+entry);
       }
     } catch (IOException ex)
     {
@@ -76,6 +78,8 @@ public class IOHelpers
 
     reader.close();
     resourceStream.close();
+
+
 
     return files;
   }

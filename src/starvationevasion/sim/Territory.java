@@ -511,7 +511,6 @@ public class Territory extends AbstractTerritory
     // It is an int percentage to be multiplied onto the 2014 production and income by to get
     // the corrosponding value for 1981.  For example CA is 61, so in 1981 they had 61% of
     // their current production and income.
-    //
     /*
     for (int k=0; k<territoryList.length; k++)
     {

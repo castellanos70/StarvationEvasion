@@ -2,13 +2,13 @@
 
 #### Table of Contents
 
-1. [Overview](#Overview)
-2. [Compilation and Project Configuration](#Config)
-3. [Server](#Server)
-4. [Client Aegislash](#ClientAegislash)
-5. [Client Mega Mawile](#ClientMegaMawile)
-6. [Simulator](#Simulator)
-7. [Visualizer](#Visualizer)
+1. [Overview](#overview)
+2. [Compilation and Project Configuration](#config)
+3. [Server](#server)
+4. [Client Aegislash](#clientAegislash)
+5. [Client Mega Mawile](#clientMegaMawile)
+6. [Simulator](#simulator)
+7. [Visualizer](#visualizer)
 
 ## Overview
 
@@ -31,10 +31,10 @@ Search path must have the following roots:
 </ul>
 
 ## Server
+* Javier Chavez - javierc@cs.unm.edu
 
-Sever:
-* Shea Polansky - spolansky@unm.edu
-* Usage:
+Take a look at it [here](https://github.com/castellanos70/StarvationEvasion/tree/master/src/starvationevasion/server).
+
 
 ## Simulator
 * Joel Castellanos - joel@unm.edu

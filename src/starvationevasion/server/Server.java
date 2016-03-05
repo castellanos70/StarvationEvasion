@@ -35,14 +35,13 @@ public class Server
   private ServerSocket serverSocket;
   private LinkedList<Worker> allConnections = new LinkedList<>();
   private long startNanoSec = 0l;
-  private final Timer timer = new Timer();
   private Simulator simulator;
   private HashMap<String, User> users = new HashMap<>();
   private ArrayList<User> userList = new ArrayList<>();
   private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
   private State currentState = State.LOGIN;
   private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-  private  Date date = new Date();  
+  private Date date = new Date();
 
   public Server (int portNumber)
   {
@@ -66,7 +65,7 @@ public class Server
     }
 
     // Mimic a chron-job that every half sec. it deletes stale workers.
-    timer.schedule(new TimerTask()
+    new Timer().schedule(new TimerTask()
     {
       @Override
       public void run ()
@@ -124,7 +123,7 @@ public class Server
         worker.setServerStartTime(startNanoSec);
 
 
-        if(websocketConnect(worker))
+        if (websocketConnect(worker))
         {
           worker.setReader(new WebSocketReadStrategy(client));
           worker.setWriter(new WebSocketWriteStrategy(client));
@@ -206,7 +205,7 @@ public class Server
     return new User(new JSONDocument(JSONDocument.Type.OBJECT));//users.get(worker);
   }
 
-  public Worker getWorkerByRegion(EnumRegion region)
+  public Worker getWorkerByRegion (EnumRegion region)
   {
     for (Worker worker : allConnections)
     {
@@ -225,7 +224,7 @@ public class Server
 
   public boolean addUser (User u)
   {
-    if (getActiveCount() == 7 )
+    if (getActiveCount() == 7)
     {
       return false;
     }
@@ -252,8 +251,8 @@ public class Server
     return true;
   }
 
-  
-  public int getActiveCount()
+
+  public int getActiveCount ()
   {
     int i = 0;
     for (User user : userList)
@@ -283,12 +282,12 @@ public class Server
   {
     return userList.size();
   }
-  
+
   /**
    * Tell the server that the player is ready
    */
   public void begin ()
-  {  
+  {
     WorldData currentWorldData = simulator.init();
     for (Worker workers : allConnections)
     {
@@ -299,9 +298,9 @@ public class Server
 
   public void vote ()
   {
-    
+
   }
-  
+
 
   /**
    * Draw new cards for a specific user
@@ -335,7 +334,9 @@ public class Server
 
   /**
    * Handle a handshake with web client
+   *
    * @param x Key recieved from client
+   *
    * @return Hashed key that is to be given back to client for auth check.
    */
   private static String handshake (String x)
@@ -367,8 +368,8 @@ public class Server
     return new String(Base64.getEncoder().encode(digest.digest()));
 
   }
-  
-  private boolean websocketConnect(Worker worker) throws IOException
+
+  private boolean websocketConnect (Worker worker) throws IOException
   {
     // Handling websocket
     StringBuilder reading = new StringBuilder();
@@ -379,7 +380,7 @@ public class Server
     {
       line = worker.getReader().read();
 
-      if (line == null || line.equals("client")|| line.equals("\r\n") || line.isEmpty())
+      if (line == null || line.equals("client") || line.equals("\r\n") || line.isEmpty())
       {
         if (socketKey.isEmpty())
         {
@@ -389,13 +390,13 @@ public class Server
         {
           // System.out.println(reading);
           worker.send("HTTP/1.1 101 Switching Protocols\n" +
-                      "Upgrade: websocket\n" +
-                      "Connection: Upgrade\n" +
-                      "Sec-WebSocket-Accept: " + socketKey + "\r\n" );
-          
+                              "Upgrade: websocket\n" +
+                              "Connection: Upgrade\n" +
+                              "Sec-WebSocket-Accept: " + socketKey + "\r\n");
+
           return true;
         }
-        
+
       }
 
       reading.append(line);
@@ -428,7 +429,7 @@ public class Server
     // check if any removed. Show removed count
     if (con > 0)
     {
-        System.out.println(dateFormat.format(date) + " Removed " + con + " connection workers.");
+      System.out.println(dateFormat.format(date) + " Removed " + con + " connection workers.");
     }
   }
 
@@ -438,5 +439,30 @@ public class Server
     {
       worker.send(response);
     }
+  }
+
+  public void killServer ()
+  {
+    System.out.println(dateFormat.format(date) + " Killing server.");
+    for (Worker connection : allConnections)
+    {
+      connection.send(new Response(uptime(), "Server will shutdown in 3 seconds"));
+    }
+
+    try
+    {
+      Thread.sleep(3100);
+      for (Worker connection : allConnections)
+      {
+        connection.shutdown();
+      }
+
+    }
+    catch(InterruptedException ex)
+    {
+      Thread.currentThread().interrupt();
+    }
+
+    System.exit(1);
   }
 }

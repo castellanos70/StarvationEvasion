@@ -36,7 +36,8 @@ public enum Endpoint
   GAME_STATE("game_state"),
 
   // after ready is sent you cannot change regions
-  READY("ready");
+  READY("ready"),
+  KILL("kill");
 
   private String url;
 

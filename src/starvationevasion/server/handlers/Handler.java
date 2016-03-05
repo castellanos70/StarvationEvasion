@@ -17,7 +17,9 @@ public class Handler
             new VoteHandler(server, worker).setSuccessor(
                     new ChatHandler(server, worker).setSuccessor(
                             new CardHandler(server, worker).setSuccessor(
-                                    new LoginHandler(server, worker)))));
+                                    new LoginHandler(server, worker).setSuccessor(
+                                            new AdminTaskHandler(server, worker)
+                                    )))));
   }
 
   public void handle (Request request)

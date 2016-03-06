@@ -31,7 +31,7 @@ public interface Encryptable
 
   void encrypt (String msg, String key);
 
-  String decrypt (String msg, String key);
+  <T> T decrypt (String msg, String key);
 
 
   static String xorEncrypt (String message, String key)

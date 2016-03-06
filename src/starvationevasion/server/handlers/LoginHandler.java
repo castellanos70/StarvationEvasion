@@ -3,10 +3,7 @@ package starvationevasion.server.handlers;
 
 import starvationevasion.server.Worker;
 import starvationevasion.server.Server;
-import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Request;
-import starvationevasion.server.model.Response;
-import starvationevasion.server.model.User;
+import starvationevasion.server.model.*;
 
 public class LoginHandler extends AbstractHandler
 {
@@ -43,11 +40,16 @@ public class LoginHandler extends AbstractHandler
   private boolean authenticate(String username, String password)
   {
     User s = server.getUserByUsername(username);
-    if (s != null && s.getPassword().equals(password))
+    if (s != null)
     {
-      s.setActive(true);
-      getClient().setUser(s);
-      return true;
+      String salt = s.getSalt();
+      String hash = Encryptable.generateHashedPassword(salt, password);
+      if (s.getPassword().equals(hash))
+      {
+        s.setActive(true);
+        getClient().setUser(s);
+        return true;
+      }
     }
 
     return false;

@@ -5,15 +5,17 @@ import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.server.io.JSON;
 import starvationevasion.util.Jsonify;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class User implements JSON
+public class User implements JSON, Encryptable
 {
   @Jsonify
   private String username;
   private String password;
+  private String salt;
 
   @Jsonify
   private EnumRegion region;
@@ -47,7 +49,7 @@ public class User implements JSON
   {
     this.hand = hand;
     this.username = username;
-    this.password = password;
+    encrypt(password, null);
     this.region = region;
   }
 
@@ -93,7 +95,13 @@ public class User implements JSON
 
   public void setPassword (String password)
   {
+    encrypt(password, null);
+  }
+
+  public void setEncryptedPassword (String password, String salt)
+  {
     this.password = password;
+    this.salt = salt;
   }
 
   public EnumRegion getRegion ()
@@ -130,5 +138,26 @@ public class User implements JSON
   public String toString ()
   {
     return region.toString();
+  }
+
+  @Override
+  public void encrypt (String pwd, String key)
+  {
+    if (key == null || key.isEmpty())
+    {
+      salt = Encryptable.generateKey();
+    }
+    password = Encryptable.generateHashedPassword(salt, pwd);
+  }
+
+  @Override
+  public <T> T decrypt (String msg, String key)
+  {
+    throw new NotImplementedException();
+  }
+
+  public String getSalt ()
+  {
+    return salt;
   }
 }

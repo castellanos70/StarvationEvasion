@@ -4,7 +4,7 @@ package starvationevasion.client.Driver;
 import starvationevasion.client.GUIOrig.DraftLayout.map.ConfigPhaseMapController;
 import starvationevasion.client.GUIOrig.DraftLayout.map.Map;
 import starvationevasion.client.GUIOrig.DraftLayout.map.MapController;
-import starvationevasion.client.Logic.Client;
+import starvationevasion.client.Client;
 import starvationevasion.client.Logic.LocalDataContainer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;

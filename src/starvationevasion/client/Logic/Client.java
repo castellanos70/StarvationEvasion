@@ -55,7 +55,7 @@ public class Client
    */
   public Client(boolean isAI)
   {
-    gui = new GUI(this, localDataContainer);
+   // gui = new GUI(this, localDataContainer);
     listener = new ClientListener(this);
     availableRegions = new ArrayList<>();
     takenRegions = new TreeMap<>();
@@ -168,7 +168,7 @@ public class Client
   {
     try
     {
-      regionChooser = new RegionChooser(this, localDataContainer);
+      //regionChooser = new RegionChooser(this, localDataContainer);
       Stage regionStage = new Stage();
       regionChooser.start(regionStage);
     }

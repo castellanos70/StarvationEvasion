@@ -1,16 +1,16 @@
 package starvationevasion.client.GUIOrig.DraftLayout;
 
+import javafx.scene.Node;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import starvationevasion.client.GUIOrig.DraftLayout.ProductBar.ProductBar;
 import starvationevasion.client.GUIOrig.DraftLayout.hand.Hand;
 import starvationevasion.client.GUIOrig.DraftLayout.map.Map;
 import starvationevasion.client.GUIOrig.GUI;
 import starvationevasion.client.GUIOrig.Popups.DiscardDisplay;
-import starvationevasion.client.GUIOrig.SummaryBar;
 import starvationevasion.client.GUIOrig.Popups.GraphDisplay;
 import starvationevasion.client.GUIOrig.Popups.ProductBarDataDisplay;
-import javafx.scene.Node;
-import javafx.scene.layout.*;
-import javafx.stage.Stage;
+import starvationevasion.client.GUIOrig.SummaryBar;
 
 import java.util.ArrayList;
 
@@ -28,6 +28,7 @@ public class DraftLayout extends GridPane
   Stage primaryStage;
 
   //nodes and their relatively self-evident function in the DraftLayout scene
+  ChatNode chatNode;
   VisNode visNode;
   GraphNode graphNode;
   ProductBar productBar;
@@ -45,6 +46,7 @@ public class DraftLayout extends GridPane
   Map map;
   //pointer to the main GUIOrig
   GUI gui;
+
 
   final boolean TESTING_MODE=true;
 
@@ -68,6 +70,8 @@ public class DraftLayout extends GridPane
 
     //node to let the user access the visualizer
 
+    chatNode=new ChatNode(gui);
+    this.add(chatNode,0,0,1,3);
     //visNode = new VisNode(primaryStage,GUIOrig,this);
     //this.add(visNode, 0,0,1,3);
 

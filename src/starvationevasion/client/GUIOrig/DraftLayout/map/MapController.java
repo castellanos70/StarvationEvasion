@@ -8,7 +8,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import starvationevasion.client.Driver.RegionChooser;
-import starvationevasion.client.Logic.Client;
+import starvationevasion.client.Client;
 import starvationevasion.client.Logic.geography.MapConstants;
 import starvationevasion.client.Logic.geography.MapUtil;
 import starvationevasion.common.EnumRegion;
@@ -144,12 +144,12 @@ public class MapController implements MapConstants
     for (java.util.Map.Entry<EnumRegion, String> regionEntry : regions.entrySet())
     {
       Color styleColor;
-      if (regionEntry.getValue().equals(client.getUsername()))
+     // if (regionEntry.getValue().equals(client.getUsername()))
       {
         styleColor = Color.GREEN;
         RegionChooser.selectionText.setText("Selected:\n\n" + regionEntry.getKey().toString());
       }
-      else styleColor = Color.RED;
+     // else styleColor = Color.RED;
       styleRegion(mapNode, regionEntry.getKey(), styleColor, new InnerShadow(SELECT_RADIUS, Color.BLACK));
     }
   }

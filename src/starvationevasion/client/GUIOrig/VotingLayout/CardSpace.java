@@ -33,13 +33,6 @@ public class CardSpace extends StackPane
     this.setAlignment(Pos.TOP_LEFT);
     this.getChildren().add(label);
     this.loader = new FXMLLoader(getClass().getResource("/starvationevasion/client/GUIOrig/VotingLayout/VotePopup.fxml"));
-//    try
-//    {
-//      this.loader.load();
-//    } catch (IOException e)
-//    {
-//      e.printStackTrace();
-//    }
   }
   private void initializeLabel(EnumRegion region, int cardNumber)
   {

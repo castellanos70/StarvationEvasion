@@ -37,13 +37,14 @@ public class LandingPage extends Application
   Label selectAHost = new Label("Please Enter the Name of The Host Machine");
   TextField hostName = new TextField();
   Button createUser=new Button("Create new User");
-
+  Button seeUsers=new Button("Users");
+  Button createUserWithRegion=new Button("Create with Region");
   @Override
   public void start(final Stage stage) throws Exception
   {
     stage.setTitle("Starvation Evasion");
-    confirm.setText("Confirm");
-    multiConfirm.setText("Confirm");
+    confirm.setText("Login");
+    multiConfirm.setText("Login");
     singlePlayer.setText("Single Player");
     multiPlayer.setText("MultiPlayer");
 
@@ -76,15 +77,32 @@ public class LandingPage extends Application
          dialog.close();
        });
      }else{
-       GUI gui=new GUI();
+       GUI gui=new GUI(client,null);
        Stage guiStage=new Stage();
        gui.start(guiStage);
        stage.close();
      }
     });
+    seeUsers.setOnAction(event1 ->
+    {
+      client.writeToServer("users");
+    });
     createUser.setOnAction(event ->
     {
       client.writeToServer("user_create "+uname.getText()+" "+passwd.getText());
+    });
+    createUserWithRegion.setOnAction(event ->
+    {
+      Stage regionStage=new Stage();
+      RegionChooser regionChooser=new RegionChooser(client,null);
+      try
+      {
+        regionChooser.start(regionStage);
+      } catch (Exception e)
+      {
+        e.printStackTrace();
+      }
+      stage.close();
     });
     root.setAlignment(Pos.CENTER);
     root.setHgap(10);
@@ -100,8 +118,10 @@ public class LandingPage extends Application
     root.add(uname, 0, 2);
     root.add(passwdLabel, 0, 3);
     root.add(passwd, 0, 4);
-    root.add(confirm,0,5);
-    root.add(createUser,0,6);
+    root.add(confirm,1,1);
+    root.add(createUser,1,2);
+    root.add(seeUsers,1,3);
+    root.add(createUserWithRegion,1,4);
   }
   @Override
   public void stop(){

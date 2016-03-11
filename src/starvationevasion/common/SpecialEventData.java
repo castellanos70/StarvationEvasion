@@ -3,8 +3,6 @@ package starvationevasion.common;
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.io.JSON;
 
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -169,5 +167,43 @@ public class SpecialEventData implements JSON
     List<Object> jRegionParse = json.get("regions").array();
     for (int i = 0; i < jRegionParse.size(); i++)
       regions.add(EnumRegion.values()[(int) jRegionParse.get(i)]);
+  }
+  @Override
+  public boolean equals(Object o)
+  {
+    if (o == this)
+      return true;
+    if(!(o instanceof MapPoint))
+      return false;
+    SpecialEventData comp = (SpecialEventData) o;
+    if(!comp.eventName.equals(this.eventName))
+      return false;
+    if(Float.compare(comp.latitude, this.latitude) != 0)
+      return false;
+    if(Float.compare(comp.longitude, this.longitude) != 0)
+      return false;
+    if(Float.compare(comp.severity, this.severity) != 0)
+      return false;
+    if(comp.dollarsInDamage != this.dollarsInDamage)
+      return false;
+    if(comp.type.ordinal()!= this.type.ordinal())
+      return false;
+    if(comp.year != this.year)
+      return false;
+    if(comp.month.ordinal()!= this.month.ordinal())
+      return false;
+    if(comp.durationInMonths != this.durationInMonths)
+      return false;
+    if(comp.locationList.size() != this.locationList.size())
+      return false;
+    for(int i = 0; i < this.locationList.size(); i++)
+      if(!comp.locationList.get(i).equals(this.locationList.get(i)))
+        return false;
+    if(comp.regions.size() != this.regions.size())
+      return false;
+    for(int i = 0; i < this.regions.size(); i++)
+      if(comp.regions.get(i).ordinal() != this.regions.get(i).ordinal())
+        return false;
+    return true;
   }
 }

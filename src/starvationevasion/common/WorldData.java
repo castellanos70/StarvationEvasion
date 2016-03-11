@@ -51,8 +51,8 @@ public class WorldData implements JSON
       regionData[i] = new RegionData(EnumRegion.values()[i]);
     }
   }
-
-
+  
+  
   /**
    * @return Data stored in this structure as a formatted String.
    */
@@ -124,4 +124,9 @@ public class WorldData implements JSON
     return json;
   }
 
+  public WorldData(String JSONString)
+  {
+    //Find string to JSON bit again.
+
+  }
 }

@@ -3,9 +3,6 @@ package starvationevasion.common;
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.io.JSON;
 
-
-import java.io.Serializable;
-
 /**
  * Simple data class for specifying a location on the Earth's Surface.
  */
@@ -68,17 +65,17 @@ public class MapPoint implements JSON
   }
 
   @Override
-  public boolean equals(Object o)
-  {
-    if (o == this)
-      return true;
-    if(!(o instanceof MapPoint))
-      return false;
-    MapPoint map = (MapPoint) o;
-    if(Double.compare(map.longitude, this.longitude) != 0)
-      return false;
-    if(Double.compare(map.latitude, this.latitude) != 0)
-      return false;
+public boolean equals(Object o)
+{
+  if (o == this)
     return true;
-  }
+  if(!(o instanceof MapPoint))
+    return false;
+  MapPoint map = (MapPoint) o;
+  if(Double.compare(map.longitude, this.longitude) != 0)
+    return false;
+  if(Double.compare(map.latitude, this.latitude) != 0)
+    return false;
+  return true;
+}
 }

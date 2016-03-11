@@ -110,9 +110,9 @@ public class JSONTests
       System.out.println();
       assert (regionCopy.equals(temp));
     }
-
+    System.out.println("\nTesting World Data:");
     JSONDocument testJSON = testData.toJSON();
-    WorldData testCopy = new WorldData(testJSON.toString());
+    WorldData testCopy = new WorldData(testJSON);
     assert (testData.equals(testCopy));
   }
 

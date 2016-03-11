@@ -5,9 +5,9 @@ import starvationevasion.server.Server;
 import starvationevasion.server.Worker;
 import starvationevasion.server.model.Request;
 
-public class DiscardHandler extends AbstractHandler
+public class CardHandler extends AbstractHandler
 {
-  public DiscardHandler (Server server, Worker client)
+  public CardHandler (Server server, Worker client)
   {
     super(server, client);
   }

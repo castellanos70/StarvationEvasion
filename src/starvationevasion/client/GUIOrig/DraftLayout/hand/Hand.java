@@ -178,7 +178,7 @@ public class Hand extends GridPane
           if (numberOfActionsUsed == 2) gui.getDraftLayout().getActionButtons().setDisableOnBigDiscardButton(true);
           card.setSelectedFood(gui.getDraftLayout().getProductBar().getSelectedElement());
 
-          if(!gui.client.isAI&&Map.currentlySelectedRegion.isPresent())card.setSelectedRegion(Map.currentlySelectedRegion.get());
+          //if(!gui.client.isAI&&Map.currentlySelectedRegion.isPresent())card.setSelectedRegion(Map.currentlySelectedRegion.get());
         }
       }
     }
@@ -298,7 +298,7 @@ public class Hand extends GridPane
     {
       Collections.shuffle(validCards);
       draftCard(validCards.get(0));
-      gui.client.draftCard(validCards.get(0).getPolicyCard());
+     // gui.client.draftCard(validCards.get(0).getPolicyCard());
     }
   }
 

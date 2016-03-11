@@ -2,6 +2,7 @@ package starvationevasion.server.handlers;
 
 
 
+import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.*;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Request;
@@ -30,35 +31,36 @@ public class UserHandler extends AbstractHandler
 
       if (server.addUser(new User(uname, pwd, null, new ArrayList<>())))
       {
-        m_response = new Response(server.timeDiff(), "SUCCESS");
+        m_response = new Response(server.uptime(), "", "SUCCESS");
       }
       else
       {
-        m_response = new Response(server.timeDiff(), "FAIL");
+        m_response = new Response(server.uptime(), "", "Authentication failed.");
       }
-      getClient().send(m_response.toString());
+      getClient().send(m_response);
       return true;
     }
     else if (request.getDestination().equals(Endpoint.USERS))
     {
-      StringBuilder stringBuilder = new StringBuilder();
+      JSONDocument doc = JSONDocument.createArray(server.getUserCount());
+
       for (User user : server.getUserList())
       {
-        stringBuilder.append(user.toString()).append(" ");
+        doc.array().add(user.toJSON());
       }
-      m_response = new Response(server.timeDiff(), stringBuilder.toString());
-      getClient().send(m_response.toString());
+      m_response = new Response(server.uptime(), doc);
+      getClient().send(m_response);
       return true;
     }
     else if (request.getDestination().equals(Endpoint.USERS_LOGGED_IN))
     {
-      StringBuilder stringBuilder = new StringBuilder();
+      JSONDocument doc = JSONDocument.createArray(server.getActiveCount());
       for (User user : server.getActiveUserList())
       {
-        stringBuilder.append(user.toString()).append(" ");
+        doc.array().add(user.toJSON());
       }
-      m_response = new Response(server.timeDiff(), stringBuilder.toString());
-      getClient().send(m_response.toString());
+      m_response = new Response(server.uptime(), doc);
+      getClient().send(m_response);
       return true;
     }
 

@@ -6,6 +6,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
+import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 
@@ -78,6 +79,7 @@ public class VotingLayout extends GridPane
     {
       CardSpace firstNewCardSpace = new CardSpace(gui, EnumRegion.US_REGIONS[i], 1);
       CardSpace secondNewCardSpace = new CardSpace(gui, EnumRegion.US_REGIONS[i], 2);
+      firstNewCardSpace.setCard(EnumRegion.US_REGIONS[i], EnumPolicy.Clean_River_Incentive,gui);
       cardSpaces.add(firstNewCardSpace);
       cardSpaces.add(secondNewCardSpace);
       this.add(firstNewCardSpace, i, 10, 1, 4);

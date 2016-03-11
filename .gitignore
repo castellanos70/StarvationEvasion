@@ -11,7 +11,16 @@ bin
 ## File-based project format:
 *.ipr
 *.iws
+notes_joel.txt
 
+# ignore class files
+*.class
+
+# emacs temp files
+\#*\#
+.\#*
+
+dist/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/

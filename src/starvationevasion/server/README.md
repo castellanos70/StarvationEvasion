@@ -1,6 +1,10 @@
 # Server
 I have supplied a ```Client.java``` file. Run it and try out some of these commands.
 
+You can also use my hosted [web page](http://cs.unm.edu/~javierc/testing.html).
+
+Client that is more like the ```Client.java``` can be found [here](http://cs.unm.edu/~javierc/client.html)
+
 # Run
 
 ###### Local
@@ -29,7 +33,7 @@ is running on port 2020 then change 666 to 2020.
 This will create a SSH tunnel. It will hang so you can press CTRL-z to
 send it to the background and fg will bring it back so you can stop it.
 ```bash
-ssh -N -L 666:localhost:5555 username@phoebe.cs.unm.edu
+ssh -N -L 666:localhost:5555 username@peterbilt.cs.unm.edu
 ```
 
 After you have your tunnel, you can start your client.
@@ -75,6 +79,32 @@ Here are some examples of JSON. These are examples, *the actual data you are sen
 
 # Consuming
 
-Consuming data
+Consuming data should be fairly simple.
+
+### Response
+The server will always respond with JSON.
+
+A reponse is layed out like this and will not change. 
+```json
+{
+"time": 2938293992.23,
+"message": "",
+"type": "",
+"data": null
+}
+```
+###### Data
+The key named ```data``` is special in that the value will either be a
+object or an array depending on the type.
+
+| Type  | data value type |
+|-------|-----------------|
+| chat  | object          |
+| user  | object          |
+| users | array           |
+
+
+
+
 
 

@@ -6,8 +6,9 @@ package starvationevasion.server;
 
 
 import starvationevasion.server.handlers.Handler;
-import starvationevasion.server.io.JSON;
+import starvationevasion.server.io.*;
 import starvationevasion.server.model.Request;
+import starvationevasion.server.model.Response;
 import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
 
@@ -21,44 +22,26 @@ public class Worker extends Thread
 {
   private User cred;
   private Socket client;
-  private PrintWriter clientWriter;
-  private BufferedReader clientReader;
-  private boolean isRunning = true;
+  private volatile boolean isRunning = true;
   private final Server server;
   private final Simulator simulator;
   private Handler handler;
   private long serverStartTime;
   private boolean sent = false;
-  private ObjectOutputStream clientObjectWriter;
+
+  private WriteStrategy writer;
+  private ReadStrategy reader;
 
   public Worker (Socket client, Server server)
   {
+    this.writer = new SocketWriteStrategy(client);
+    this.reader = new SocketReadStrategy(client);
+
     this.client = client;
     this.simulator = server.getSimulator();
     this.server = server;
     this.handler = new Handler(server, this);
 
-
-    try
-    {
-      clientWriter = new PrintWriter(client.getOutputStream(), true);
-      clientObjectWriter = new ObjectOutputStream(client.getOutputStream());
-    }
-    catch(IOException e)
-    {
-      System.err.println("Server Worker: Could not open output stream");
-      e.printStackTrace();
-    }
-
-    try
-    {
-      clientReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-    }
-    catch(IOException e)
-    {
-      System.err.println("Server Worker: Could not open input stream");
-      e.printStackTrace();
-    }
   }
 
   /**
@@ -79,18 +62,32 @@ public class Worker extends Thread
    */
   public void send (String msg)
   {
-    System.out.println("ServerWorker.send(" + msg + ")");
-    clientWriter.println(msg);
+    // System.out.println("STRING ServerWorker.send(" + msg + ")");
+    try
+    {
+      writer.write(msg);
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
   }
 
   /**
    * Send message to client.
    *
    */
-  public <T extends JSON & Serializable> void send (T data)
+  public <T extends JSON> void send (T data)
   {
-    System.out.println("ServerWorker.send(" + data.toJSON() + ")");
-    clientWriter.println(data.toJSON());
+    // System.out.println("JSON ServerWorker.send(" + data.toJSON().toJSON() + ")");
+    try
+    {
+      writer.write(data.toJSONString());
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
   }
 
 
@@ -112,6 +109,22 @@ public class Worker extends Thread
 //  }
 
 
+  public void shutdown()
+  {
+    isRunning = false;
+    try
+    {
+      reader.close();
+      writer.close();
+      client.close();
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+    
+  }
+  
   public void run ()
   {
 
@@ -119,40 +132,32 @@ public class Worker extends Thread
     {
       try
       {
-        String s = clientReader.readLine();
+        
+        String s = reader.read();
 
-        if (s == null || clientReader == null)
+        if (s == null || reader == null || s.equals("\u0003�"))
         {
           // lost the client
-          client.close();
           isRunning = false;
-          break;
+          return;
         }
 
         // notice I am expecting only requests from a client... Not supporting responses from client.
         String[] arr = s.split("\\s+");
         if (arr.length < 2)
-        {
-          throw new Exception("Not enough data");
+        {          
+          send(new Response(server.uptime(), "invalid"));
         }
 
         Request r = new Request(arr[0], arr[1], s);
         handler.handle(r);
 
-//
-//        if (r.getRequest() == ActionType.QUIT)
-//        {
-//          // client gracefully closed.
-//          client.close();
-//          isRunning = false;
-//          break;
-//        }
-
-
       }
       catch(Exception e)
       {
+        isRunning = false;
         e.printStackTrace();
+        return;
       }
     }
   }
@@ -162,69 +167,19 @@ public class Worker extends Thread
     this.serverStartTime = serverStartTime;
   }
 
-
-  public BufferedReader getClientReader ()
+  public ReadStrategy getReader ()
   {
-    return clientReader;
+    return reader;
   }
 
-  public PrintWriter getClientWriter ()
+  public void setReader (ReadStrategy reader)
   {
-    return clientWriter;
+    this.reader = reader;
   }
 
-
-  private String decodeWebsocket () throws IOException
+  public void setWriter (WriteStrategy writer)
   {
-    int len = 0;
-    byte[] b = new byte[140];
-    len = client.getInputStream().read(b);
-
-    if (len != -1)
-    {
-
-      byte rLength = 0;
-      int rMaskIndex = 2;
-      int rDataStart = 0;
-      //b[0] is always text in my case so no need to check;
-      byte data = b[1];
-      byte op = (byte) 127;
-      rLength = (byte) (data & op);
-
-      if (rLength == (byte) 126)
-      {
-        rMaskIndex = 4;
-      }
-      if (rLength == (byte) 127)
-      {
-        rMaskIndex = 10;
-      }
-
-      byte[] masks = new byte[4];
-
-      int j = 0;
-      int i = 0;
-      for (i = rMaskIndex; i < (rMaskIndex + 4); i++)
-      {
-        masks[j] = b[i];
-        j++;
-      }
-
-      rDataStart = rMaskIndex + 4;
-
-      int messLen = len - rDataStart;
-
-      byte[] message = new byte[messLen];
-
-      for (i = rDataStart, j = 0; i < len; i++, j++)
-      {
-        message[j] = (byte) (b[i] ^ masks[j % 4]);
-      }
-
-      return new String(message);
-    }
-
-    return "";
+    this.writer = writer;
   }
 
   public User getUser ()

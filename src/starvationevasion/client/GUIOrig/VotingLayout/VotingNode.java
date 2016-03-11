@@ -1,12 +1,15 @@
 package starvationevasion.client.GUIOrig.VotingLayout;
 
-import starvationevasion.client.GUIOrig.GUI;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import starvationevasion.client.GUIOrig.GUI;
 import starvationevasion.common.EnumRegion;
 
-public class VotingNode extends StackPane
+public class VotingNode extends BorderPane
 {
   GUI gui;
 
@@ -25,9 +28,16 @@ public class VotingNode extends StackPane
     this.getStylesheets().add("/starvationevasion/client/GUIOrig/VotingLayout/style.css");
     this.getStyleClass().add("votingnode");
 
+    Button voteFor=new Button("Yes");
+    Button voteAgainst=new Button("No");
+    HBox buttons=new HBox();
+    buttons.getChildren().add(voteFor);
+    buttons.getChildren().add(voteAgainst);
     initializeLabel(region, cardNumber);
     label.setTextFill(Color.WHITE);
-    this.getChildren().add(label);
+    //this.setTop(label);
+    this.setBottom(buttons);
+    this.setAlignment(buttons, Pos.CENTER);
   }
 
   private void initializeLabel(EnumRegion region, int cardNumber)

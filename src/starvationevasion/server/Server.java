@@ -9,12 +9,13 @@ import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.WorldData;
+import starvationevasion.server.io.WebSocketReadStrategy;
+import starvationevasion.server.io.WebSocketWriteStrategy;
 import starvationevasion.server.model.Response;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
-import starvationevasion.util.JsonAnnotationProcessor;
+import starvationevasion.common.WorldData;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -24,6 +25,8 @@ import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 
 /**
  */
@@ -32,12 +35,13 @@ public class Server
   private ServerSocket serverSocket;
   private LinkedList<Worker> allConnections = new LinkedList<>();
   private long startNanoSec = 0l;
-  private final Timer timer = new Timer();
   private Simulator simulator;
   private HashMap<String, User> users = new HashMap<>();
   private ArrayList<User> userList = new ArrayList<>();
   private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
   private State currentState = State.LOGIN;
+  private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+  private Date date = new Date();
 
   public Server (int portNumber)
   {
@@ -61,7 +65,7 @@ public class Server
     }
 
     // Mimic a chron-job that every half sec. it deletes stale workers.
-    timer.schedule(new TimerTask()
+    new Timer().schedule(new TimerTask()
     {
       @Override
       public void run ()
@@ -113,51 +117,31 @@ public class Server
       try
       {
         Socket client = serverSocket.accept();
-        System.out.println("Server: *********** new Connection");
+        System.out.println(dateFormat.format(date) + " Server: new Connection request recieved.");
+        System.out.println(dateFormat.format(date) + " Server " + client.getRemoteSocketAddress());
         Worker worker = new Worker(client, this);
         worker.setServerStartTime(startNanoSec);
 
+
+        if (websocketConnect(worker))
+        {
+          worker.setReader(new WebSocketReadStrategy(client));
+          worker.setWriter(new WebSocketWriteStrategy(client));
+        }
         worker.start();
-        worker.setName("worker" + timeDiff());
+        System.out.println(dateFormat.format(date) + " Server: Connected to ");
+        worker.setName("worker" + uptimeString());
 
         allConnections.add(worker);
 
       }
       catch(IOException e)
       {
-        System.err.println("Server error: Failed to connect to client.");
+        System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
         e.printStackTrace();
       }
     }
   }
-
-
-  /**
-   * Send a response of a transaction to all listening workers.
-   *
-   * @param response a response to be send globally.
-   */
-  public void broadcastTransaction (Response response)
-  {
-    for (Worker workers : allConnections)
-    {
-      workers.send(response.toString());
-    }
-  }
-
-  /**
-   * Send a message to all workers.
-   *
-   * @param s string containing a message.
-   */
-  public void broadcast (String s)
-  {
-    for (Worker workers : allConnections)
-    {
-      workers.send(s);
-    }
-  }
-
 
 
   public static void main (String args[])
@@ -186,11 +170,9 @@ public class Server
   }
 
 
-  public String timeDiff ()
+  public String uptimeString ()
   {
-    long nanoSecDiff = System.nanoTime() - startNanoSec;
-    double secDiff = nanoSecDiff / 1000000000.0;
-    return String.format("%.3f", secDiff);
+    return String.format("%.3f", uptime());
   }
 
   public double uptime ()
@@ -223,7 +205,7 @@ public class Server
     return new User(new JSONDocument(JSONDocument.Type.OBJECT));//users.get(worker);
   }
 
-  public Worker getWorkerByRegion(EnumRegion region)
+  public Worker getWorkerByRegion (EnumRegion region)
   {
     for (Worker worker : allConnections)
     {
@@ -242,7 +224,7 @@ public class Server
 
   public boolean addUser (User u)
   {
-    if (getActiveCount() == 7 )
+    if (getActiveCount() == 7)
     {
       return false;
     }
@@ -264,42 +246,98 @@ public class Server
     }
 
     userList.add(u);
-
-    if (userList.size() == 2)
-    {
-
-      for (Worker workers : allConnections)
-      {
-        // Bug check if user is logged in... user is logged in when worker is associated with user
-        if (workers.getUser() == null)
-        {
-          return true;
-        }
-        currentState = State.DRAWING;
-        EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
-        workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
-
-        // NOTE: can either send it as soon as we get it or have client request it.
-
-        System.out.println(JsonAnnotationProcessor.gets(workers.getUser()));
-        workers.send(workers.getUser());
-      }
-
-      WorldData currentWorldData = simulator.init();
-      for (Worker workers : allConnections)
-      {
-        // NOTE: can either send it as soon as we get it or have client request it.
-        workers.send(currentWorldData);
-      }
-    }
+    broadcast(new Response(uptime(), u.toJSON(), "user logged in"));
 
     return true;
   }
 
+
+  public int getActiveCount ()
+  {
+    int i = 0;
+    for (User user : userList)
+    {
+      if (user.isActive())
+      {
+        i++;
+      }
+    }
+    return i;
+  }
+
+  public Iterable<User> getActiveUserList ()
+  {
+    ArrayList<User> _active = new ArrayList<>();
+    for (User user : userList)
+    {
+      if (user.isActive())
+      {
+        _active.add(user);
+      }
+    }
+    return _active;
+  }
+
+  public int getUserCount ()
+  {
+    return userList.size();
+  }
+
+  /**
+   * Tell the server that the player is ready
+   */
+  public void begin ()
+  {
+    WorldData currentWorldData = simulator.init();
+    for (Worker workers : allConnections)
+    {
+      // NOTE: can either send it as soon as we get it or have client request it.
+      workers.send(currentWorldData);
+    }
+  }
+
+  public void vote ()
+  {
+
+  }
+
+
+  /**
+   * Draw new cards for a specific user
+   */
+  public void draw (Worker worker)
+  {
+    EnumPolicy[] _hand = simulator.drawCards(worker.getUser().getRegion());
+    worker.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
+  }
+
+  /**
+   * Draw cards for all users
+   */
+  public void draw ()
+  {
+    for (Worker workers : allConnections)
+    {
+      // This will not happen when the API's are secured
+      // Bug check if user is logged in... user is logged in when worker is associated with user
+      if (workers.getUser() == null)
+      {
+        return;
+      }
+      EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
+      workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
+      // NOTE: can either send it as soon as we get it or have client request it.
+      // System.out.println(JsonAnnotationProcessor.gets(workers.getUser()));
+    }
+    currentState = State.DRAWING;
+  }
+
   /**
    * Handle a handshake with web client
-   * @param x
-   * @return
+   *
+   * @param x Key recieved from client
+   *
+   * @return Hashed key that is to be given back to client for auth check.
    */
   private static String handshake (String x)
   {
@@ -331,27 +369,41 @@ public class Server
 
   }
 
-  private void websocketConnect(Worker worker) throws IOException
+  private boolean websocketConnect (Worker worker) throws IOException
   {
     // Handling websocket
     StringBuilder reading = new StringBuilder();
     String line = "";
-
-    while((line = worker.getClientReader().readLine()) != null)
+    String key = "";
+    String socketKey = "";
+    while(true)
     {
-      if (line.equals("") || line.isEmpty())
+      line = worker.getReader().read();
+
+      if (line == null || line.equals("client") || line.equals("\r\n") || line.isEmpty())
       {
-        return;
+        if (socketKey.isEmpty())
+        {
+          return false;
+        }
+        else
+        {
+          // System.out.println(reading);
+          worker.send("HTTP/1.1 101 Switching Protocols\n" +
+                              "Upgrade: websocket\n" +
+                              "Connection: Upgrade\n" +
+                              "Sec-WebSocket-Accept: " + socketKey + "\r\n");
+
+          return true;
+        }
+
       }
+
       reading.append(line);
       if (line.contains("Sec-WebSocket-Key:"))
       {
-        String key = line.replace("Sec-WebSocket-Key: ", "");
-        String socketKey = Server.handshake(key);
-        worker.send("HTTP/1.1 101 Switching Protocols\n" +
-                            "Upgrade: websocket\n" +
-                            "Connection: Upgrade\n" +
-                            "Sec-WebSocket-Accept: " + socketKey + "\n");
+        key = line.replace("Sec-WebSocket-Key: ", "");
+        socketKey = Server.handshake(key);
       }
     }
   }
@@ -363,8 +415,12 @@ public class Server
     {
       if (!allConnections.get(i).isRunning())
       {
-        // no longer active
-        allConnections.get(i).getUser().setActive(false);
+        if (allConnections.get(i).getUser() != null)
+        {
+          // no longer active
+          allConnections.get(i).getUser().setActive(false);
+        }
+        allConnections.get(i).shutdown();
         // the worker is not running. remove it.
         allConnections.remove(i);
         con++;
@@ -373,33 +429,40 @@ public class Server
     // check if any removed. Show removed count
     if (con > 0)
     {
-      System.out.println("Removed " + con + " connection workers.");
+      System.out.println(dateFormat.format(date) + " Removed " + con + " connection workers.");
     }
   }
 
-  public int getActiveCount()
+  public void broadcast (Response response)
   {
-    int i = 0;
-    for (User user : userList)
+    for (Worker worker : allConnections)
     {
-      if (user.isActive())
-      {
-        i++;
-      }
+      worker.send(response);
     }
-    return i;
   }
 
-  public Iterable<User> getActiveUserList ()
+  public void killServer ()
   {
-    ArrayList<User> _active = new ArrayList<>();
-    for (User user : userList)
+    System.out.println(dateFormat.format(date) + " Killing server.");
+    for (Worker connection : allConnections)
     {
-      if (user.isActive())
-      {
-        _active.add(user);
-      }
+      connection.send(new Response(uptime(), "Server will shutdown in 3 seconds"));
     }
-    return _active;
+
+    try
+    {
+      Thread.sleep(3100);
+      for (Worker connection : allConnections)
+      {
+        connection.shutdown();
+      }
+
+    }
+    catch(InterruptedException ex)
+    {
+      Thread.currentThread().interrupt();
+    }
+
+    System.exit(1);
   }
 }

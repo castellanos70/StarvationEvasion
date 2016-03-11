@@ -6,6 +6,9 @@ import com.oracle.javafx.jmx.json.JSONDocument;
 public interface JSON
 {
 
-  JSONDocument toJSON();
+  String toJSONString();
+
+
+  JSONDocument toJSON ();
 
 }

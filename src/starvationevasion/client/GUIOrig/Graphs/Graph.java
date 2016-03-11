@@ -39,7 +39,6 @@ public class Graph
     lineChart.getStylesheets().add("/starvationevasion/client/GUIOrig/Graphs/style.css");
     lineChart.getStyleClass().addAll("chart-title", "axis-label");
     lineChart.setLegendVisible(false);
-
     series.setData(dataset);
     lineChart.getData().add(series);
   }

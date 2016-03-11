@@ -120,7 +120,15 @@ public class Model
     year = startYear;
 
     geography = new GeographyXMLparser().getGeography();
-    //territories = Territory.territoryLoader(geography);
+    System.out.println("geography.size()="+geography.size());
+    //for (int i=0; i<geography.size(); i++)
+    //{
+    //  System.out.println("     " + geography.get(i).getName());
+    //}
+
+    territories = Territory.territoryLoader(geography);
+
+    //System.out.println("territories.size()="+territories.length);
     //tileManager = CropZoneDataIO.parseFile(territories);
 
     //instantiateRegions();

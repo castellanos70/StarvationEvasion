@@ -87,7 +87,7 @@ public enum EnumFood
 
 
   /** Resources for the default locale */
-  private final ResourceBundle res = ResourceBundle.getBundle("starvationevasion.common.strings_enum");
+  private final ResourceBundle res = ResourceBundle.getBundle("starvationevasion.common.locales.strings");
   private final String shortName = res.getString("EnumFood." + name() + ".shortName"); // E.g. "Citrus Fruits"
   private final String longName = res.getString("EnumFood." + name() + ".longName"); // E.g. "Grapefruit, Lemons, Oranges, Tangerines, ...)"
 

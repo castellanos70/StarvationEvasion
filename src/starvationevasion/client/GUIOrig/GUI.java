@@ -1,21 +1,18 @@
 package starvationevasion.client.GUIOrig;
 
-import starvationevasion.client.GUIOrig.DraftLayout.*;
-import starvationevasion.client.GUIOrig.DraftLayout.map.GamePhaseMapController;
-import starvationevasion.client.GUIOrig.DraftLayout.map.MapController;
-
-import starvationevasion.client.GUIOrig.Graphs.GraphManager;
-import starvationevasion.client.GUIOrig.Popups.PopupManager;
-import starvationevasion.client.GUIOrig.VotingLayout.VotingLayout;
-import starvationevasion.client.GUIOrig.images.ImageGetter;
-import starvationevasion.client.Logic.Client;
-
-
-import starvationevasion.client.Logic.LocalDataContainer;
 import javafx.application.Application;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import starvationevasion.client.Client;
+import starvationevasion.client.GUIOrig.DraftLayout.DraftLayout;
+import starvationevasion.client.GUIOrig.DraftLayout.map.GamePhaseMapController;
+import starvationevasion.client.GUIOrig.DraftLayout.map.MapController;
+import starvationevasion.client.GUIOrig.Graphs.GraphManager;
+import starvationevasion.client.GUIOrig.Popups.PopupManager;
+import starvationevasion.client.GUIOrig.VotingLayout.VotingLayout;
+import starvationevasion.client.GUIOrig.images.ImageGetter;
+import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 
@@ -36,7 +33,7 @@ public class GUI extends Application
 {
   private Stage primaryStage;
   private LocalDataContainer localDataContainer;
-  public Client client;
+  public starvationevasion.client.Logic.Client client;
 
   private double boxHeight;
   private double boxWidth;
@@ -83,14 +80,16 @@ public class GUI extends Application
    * @param client reference to the client
    * @param localDataContainer reference to the local data the client stores
    */
+  private Client client2;
   public GUI(Client client, LocalDataContainer localDataContainer)
   {
     super();
-    this.client = client;
+    client2=client;
+   // this.client = client;
     this.localDataContainer = localDataContainer;
-    assignedRegion = client.getAssignedRegion();
+    assignedRegion = client.getRegion();
   }
-
+  public Client getClient(){return client2;}
   /**
    * Main function which launches the GUIOrig thread
    * @param args

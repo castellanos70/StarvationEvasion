@@ -1,10 +1,11 @@
 package starvationevasion.client.GUIOrig.VotingLayout;
 
-import starvationevasion.client.GUIOrig.DraftLayout.hand.ClientPolicyCard;
-import starvationevasion.client.GUIOrig.GUI;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
+import starvationevasion.client.GUIOrig.DraftLayout.hand.ClientPolicyCard;
+import starvationevasion.client.GUIOrig.GUI;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 
@@ -13,6 +14,7 @@ import starvationevasion.common.EnumRegion;
  */
 public class CardSpace extends StackPane
 {
+  private final FXMLLoader loader;
   GUI gui;
   Label label;
 
@@ -30,8 +32,8 @@ public class CardSpace extends StackPane
     initializeLabel(region, cardNumber);
     this.setAlignment(Pos.TOP_LEFT);
     this.getChildren().add(label);
+    this.loader = new FXMLLoader(getClass().getResource("/starvationevasion/client/GUIOrig/VotingLayout/VotePopup.fxml"));
   }
-
   private void initializeLabel(EnumRegion region, int cardNumber)
   {
     switch (region)

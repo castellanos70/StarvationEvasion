@@ -1,19 +1,18 @@
 package starvationevasion.client.GUIOrig.DraftLayout.map;
 
-import starvationevasion.client.Logic.geography.MapConstants;
-import starvationevasion.client.Logic.Client;
-import starvationevasion.client.Logic.geography.MapUtil;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.paint.Color;
+import starvationevasion.client.Client;
+import starvationevasion.client.Logic.geography.MapConstants;
+import starvationevasion.client.Logic.geography.MapUtil;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.messages.LoginResponse;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Optional;
-import java.util.TreeMap;
+
+//import starvationevasion.common.messages.LoginResponse;
 
 /**
  * Class containing the USA map Node
@@ -69,7 +68,7 @@ public class Map implements MapConstants
   {
     this.mapNode.setTranslateY(-40);
     loader.<MapController>getController().setClient(client);
-    updateStyling(client.getAvailableRegions(), client.getTakenRegions(), client.getGameConfigurationType());
+   // updateStyling(client.getAvailableRegions(), client.getTakenRegions(), client.getGameConfigurationType());
     return mapNode;
   }
 
@@ -77,17 +76,17 @@ public class Map implements MapConstants
    * Updates the styling for the map with a new set of region data
    * @param availableRegions list of currently available regions
    * @param takenRegions list of taken regions
-   * @param gameConfigurationType type of game configuration (chosen vs. assigned)
+   *  gameConfigurationType type of game configuration (chosen vs. assigned)
    */
-  public void updateStyling(
-      ArrayList<EnumRegion> availableRegions,
-      TreeMap<EnumRegion, String> takenRegions,
-      LoginResponse.ResponseType gameConfigurationType)
-  {
-    // color available and taken regions
-    loader.<MapController>getController().colorAvailableRegions(mapNode, availableRegions, gameConfigurationType);
-    loader.<MapController>getController().colorTakenRegions(mapNode, takenRegions);
-  }
+//  public void updateStyling(
+//      ArrayList<EnumRegion> availableRegions,
+//      TreeMap<EnumRegion, String> takenRegions,
+//    //  LoginResponse.ResponseType gameConfigurationType)
+//  {
+//    // color available and taken regions
+//    //loader.<MapController>getController().colorAvailableRegions(mapNode, availableRegions, gameConfigurationType);
+//    loader.<MapController>getController().colorTakenRegions(mapNode, takenRegions);
+//  }
 
   /**
    * Unselects the currently selected region, if it exists

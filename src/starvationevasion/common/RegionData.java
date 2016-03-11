@@ -12,7 +12,7 @@ import java.io.Serializable;
  * each client via the Server.
  */
 
-public class RegionData implements Serializable, JSON
+public class RegionData implements JSON
 {
   public final EnumRegion region;
 
@@ -126,6 +126,12 @@ public class RegionData implements Serializable, JSON
     return msg;
   }
 
+
+  @Override
+  public String toJSONString ()
+  {
+    return toJSON().toString();
+  }
 
   @Override
   public JSONDocument toJSON ()

@@ -1,7 +1,11 @@
-package starvationevasion.server;
+package starvationevasion.client;
 /**
  * @author Javier Chavez
  */
+
+import com.oracle.javafx.jmx.json.JSONReader;
+import starvationevasion.client.Logic.ChatManager;
+import starvationevasion.common.EnumRegion;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,8 +14,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Client
@@ -34,28 +36,54 @@ public class Client
   // writes to user
   private ClientListener listener;
 
+  private ChatManager chatManager;
+  private EnumRegion region;
+  private JSONReader jsonReader;
+
+
+  private String currentOutput="";
 
   private volatile boolean isRunning = true;
 
 
   public Client(String host, int portNumber)
   {
+
+
+    chatManager=new ChatManager(this);
     keyboard = new Scanner(System.in);
 
     while (!openConnection(host, portNumber))
     {
     }
-
+    //jsonReader=new JSONStreamReaderImpl(reader);
     listener = new ClientListener();
     System.out.println("Client(): Starting listener = : " + listener);
     listener.start();
 
-    listenToUserRequests();
+    //listenToUserRequests();
 
-    closeAll();
+    //closeAll();
 
   }
+  public ChatManager getChatManager(){return chatManager;}
+  public boolean writeToServer(String message){
+    currentOutput="";
+    write.println(System.nanoTime() + " " + message);
 
+    System.out.println((System.nanoTime() + " " + message));
+    //System.out.println(currentOutput);
+    while(message.contains("login"))
+    {
+      if (currentOutput.contains("SUCCESS"))return true;
+      if(currentOutput.contains("FAIL"))return false;
+    }
+
+      return false;
+  }
+  private void output(String msg){
+    currentOutput+=msg;
+  }
   private boolean openConnection(String host, int portNumber)
   {
 
@@ -73,7 +101,7 @@ public class Client
     catch (IOException e)
     {
       System.err.println("Client Error: Could not open connection to " + host
-                                 + " on port " + portNumber);
+              + " on port " + portNumber);
       e.printStackTrace();
       isRunning = false;
       return false;
@@ -108,14 +136,9 @@ public class Client
 
   private void listenToUserRequests()
   {
-
-
     while (isRunning)
     {
-
       String cmd = keyboard.nextLine();
-
-
       if (cmd == null || cmd.length() < 1)
       {
         continue;
@@ -132,7 +155,7 @@ public class Client
   public void closeAll()
   {
     System.out.println("Closing client");
-
+    isRunning=false;
     if (write != null)
     {
       write.close();
@@ -153,6 +176,7 @@ public class Client
     }
   }
 
+  public EnumRegion getRegion(){return region;}
 
   private String timeDiff()
   {
@@ -160,31 +184,10 @@ public class Client
     double secDiff = (double) nanoSecDiff / 1000000000.0;
     return String.format("%.3f", secDiff);
   }
-
-  public static void main(String[] args)
+  private void setRegion(String regionString)
   {
-
-    String host = null;
-    int port = 0;
-
-    try
-    {
-      host = args[0];
-      port = Integer.parseInt(args[1]);
-      if (port < 1)
-      {
-        throw new Exception();
-      }
-    }
-    catch (Exception e)
-    {
-      System.out.println("Usage: Client hostname portNumber");
-      System.exit(0);
-    }
-    new Client(host, port);
-
+    region=EnumRegion.valueOf(regionString);
   }
-
 
   /**
    * ClientListener
@@ -202,20 +205,30 @@ public class Client
         read();
       }
     }
-
     private void read()
     {
       try
       {
         String msg = reader.readLine();
+        output(msg);
         if (msg == null)
         {
           System.out.println("Lost server, press enter to shutdown.");
           isRunning = false;
           return;
         }
+        if(msg.contains("text"))
+        {
+          String message=msg.substring(msg.indexOf("text") + 3);
+          message=message.substring(msg.indexOf('"'));
+          chatManager.sendChatToClient(message);
+        }
+        if(region==null&&msg.contains("region"))
+        {
+          String halfMsg=msg.substring((msg.indexOf("region") +9 ));
+          setRegion(halfMsg.substring(0, halfMsg.indexOf("\",")));
+        }
         System.out.println(msg);
-
       }
       catch (IOException e)
       {

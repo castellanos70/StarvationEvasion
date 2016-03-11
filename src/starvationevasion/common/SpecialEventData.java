@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class SpecialEventData implements Serializable, JSON
+public class SpecialEventData implements JSON
 {
 
   public enum EnumSpecialEvent
@@ -111,18 +111,26 @@ public class SpecialEventData implements Serializable, JSON
     return str;
   }
 
-  public JSONDocument toJSON()
-  { //TODO Match all enum formats together
+  @Override
+  public String toJSONString ()
+  {
+    return toJSON().toString();
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
-    json.setString("eventName", eventName);
+    json.setString("event-name", eventName);
     json.setNumber("latitude", latitude);
     json.setNumber("longitude", longitude);
     json.setNumber("severity", severity);
-    json.setNumber("dollarsInDamage", dollarsInDamage);
-    json.setNumber("enumType", type.ordinal());
+    json.setNumber("damage-in-dollars", dollarsInDamage);
+    json.setString("type", type.toString());
     json.setNumber("year", year);
-    json.setNumber("enumMonth", month.ordinal());
-    json.setNumber("durationInMonths", durationInMonths);
+    json.setString("month", month.toString());
+    json.setNumber("duration-in-months", durationInMonths);
 
     JSONDocument _locationArray = JSONDocument.createArray(locationList.size());
     for (int i = 0; i < locationList.size(); i++)
@@ -131,12 +139,13 @@ public class SpecialEventData implements Serializable, JSON
     }
     json.set("locationList", _locationArray);
 
-    JSONDocument jRegionArray = JSONDocument.createArray();
-    for(int i = 0; i < regions.size(); i++)
-      jRegionArray.setNumber(i, regions.get(i).ordinal());
-    json.set("regions", jRegionArray);
+    JSONDocument _regionsArray = JSONDocument.createArray(regions.size());
+    for (int i = 0; i < regions.size(); i++)
+    {
+      _regionsArray.setString(i, regions.get(i).toString());
+    }
+    json.set("regions", _regionsArray);
 
-    //TODO Make clear JSON arrays work
     return json;
   }
 

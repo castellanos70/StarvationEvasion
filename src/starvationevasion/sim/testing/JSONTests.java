@@ -8,7 +8,7 @@ import starvationevasion.common.*;
  */
 public class JSONTests
 {
-  static void main()
+  public static void main(String[] args)
   {
     //Adding a change
     WorldData testData = new WorldData();
@@ -37,8 +37,10 @@ public class JSONTests
     first.setLatitude(33.8650f);
     first.setLongitude(151.2094f);
     first.setSeverity(85.72f);
+    first.setDollarsInDamage(((long) Math.floor(1000*Math.random())));
     first.setType(SpecialEventData.EnumSpecialEvent.War);
     first.setYear(1983);
+    first.setMonth(SpecialEventData.EnumMonth.August);
     first.locationList.add(tokyo);
     first.addRegion(randomRegion());
     first.addRegion(randomRegion());
@@ -46,6 +48,8 @@ public class JSONTests
 
     JSONDocument firstJSON = first.toJSON();
     SpecialEventData firstCopy = new SpecialEventData(firstJSON);
+    boolean firstVal = firstCopy.equals(first);
+    System.out.println("first is " + firstVal);
     assert (firstCopy.equals(first));
 
     SpecialEventData second = new SpecialEventData("Eurasia attacks");
@@ -54,19 +58,27 @@ public class JSONTests
     second.setLatitude(22.2783f);
     second.setLongitude(114.1747f);
     second.setSeverity(92.63f);
+    first.setDollarsInDamage(((long) Math.floor(2000*Math.random())));
     second.setType(SpecialEventData.EnumSpecialEvent.Blight);
     second.setYear(1982);
+    second.setMonth(SpecialEventData.EnumMonth.December);
     second.locationList.add(pongyang);
     second.locationList.add(seoul);
     second.locationList.add(tokyo);
-    first.addRegion(randomRegion());
-    first.addRegion(randomRegion());
-    first.addRegion(randomRegion());
-    first.addRegion(randomRegion());
+    second.addRegion(randomRegion());
+    second.addRegion(randomRegion());
+    second.addRegion(randomRegion());
+    second.addRegion(randomRegion());
 
-    JSONDocument secondJSON = first.toJSON();
+    JSONDocument secondJSON = second.toJSON();
     SpecialEventData secondCopy = new SpecialEventData(secondJSON);
-    assert (secondCopy.equals(second));
+    System.out.println(second.toString());
+    System.out.println(secondCopy.toString());
+    boolean equality = secondCopy.equals(second);
+    System.out.println(equality);
+    boolean transitive = second.equals(secondCopy);
+    System.out.println(transitive);
+    assert(secondCopy.equals(second));
 
     testData.eventList.add(first);
     testData.eventList.add(second);
@@ -92,6 +104,10 @@ public class JSONTests
 
       JSONDocument regionJSON = temp.toJSON();
       RegionData regionCopy = new RegionData(regionJSON);
+      System.out.println(temp.equals(regionCopy));
+      System.out.println();
+      System.out.println();
+      System.out.println();
       assert (regionCopy.equals(temp));
     }
 

@@ -1,14 +1,8 @@
 package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import starvationevasion.server.io.JSON;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**

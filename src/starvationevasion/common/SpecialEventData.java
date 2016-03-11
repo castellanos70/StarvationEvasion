@@ -170,69 +170,39 @@ public class SpecialEventData implements JSON
   @Override
   public boolean equals(Object o)
   {
-    int stepval = 0;
-    System.out.print("Testing SpecialEventData equality " + stepval + " ");
-    stepval++;
     if (o == this)
       return true;
     if(!(o instanceof SpecialEventData))
       return false;
-    System.out.print(stepval + " ");
-    stepval++;
     SpecialEventData comp = (SpecialEventData) o;
     if(!comp.eventName.equals(this.eventName))
       return false;
-    System.out.print(stepval + " ");
-    stepval++;
     if(Float.compare(comp.latitude, this.latitude) != 0)
       return false;
-    System.out.print(stepval + " ");
-    stepval++;
     if(Float.compare(comp.longitude, this.longitude) != 0)
       return false;
-    System.out.print(stepval + " ");
-    stepval++;
     if(Float.compare(comp.severity, this.severity) != 0)
       return false;
-    System.out.print(stepval + " ");
-    stepval++;
     if(comp.dollarsInDamage != this.dollarsInDamage)
       return false;
-    System.out.print(stepval + " ");
-    stepval++;
     if(comp.type.ordinal()!= this.type.ordinal())
       return false;
-    System.out.print(stepval + " ");
-    stepval++;
     if(comp.year != this.year)
       return false;
-    System.out.print(stepval + " ");
-    stepval++;
     if(comp.month.ordinal()!= this.month.ordinal())
       return false;
-    System.out.print(stepval + " ");
-    stepval++;
     if(comp.durationInMonths != this.durationInMonths)
       return false;
-    System.out.print(stepval + " ");
-    stepval++;
     if(comp.locationList.size() != this.locationList.size())
       return false;
-    System.out.print(stepval + " ");
-    stepval++;
     for(int i = 0; i < this.locationList.size(); i++)
       if(!comp.locationList.get(i).equals(this.locationList.get(i)))
         return false;
-    System.out.print(stepval + " ");
-    stepval++;
     if(comp.regions.size() != this.regions.size())
       return false;
-    System.out.print(stepval + " ");
-    stepval++;
     for(int i = 0; i < this.regions.size(); i++)
       if(comp.regions.get(i).ordinal() != this.regions.get(i).ordinal())
         return false;
-    System.out.println("Finished");
     return true;
   }
 }

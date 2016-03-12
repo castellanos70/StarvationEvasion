@@ -1,11 +1,7 @@
 package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-
 import starvationevasion.server.io.JSON;
-
-
-import java.io.Serializable;
 
 /**
  * This structure contains all data of a particular region that the simulator shares with
@@ -185,4 +181,24 @@ public class RegionData implements JSON
     humanDevelopmentIndex = (double) json.getNumber("humanDevelopmentIndex");
 
   }
+  @Override
+public boolean equals(Object o)
+{
+  if (o == this)
+    return true;
+  if(!(o instanceof MapPoint))
+    return false;
+  RegionData comp = (RegionData) o;
+  if(comp.region.ordinal()!= this.region.ordinal())
+    return false;
+  if(comp.revenueBalance != this.revenueBalance)
+    return false;
+  if(comp.population != this.population)
+    return false;
+  if(Double.compare(comp.undernourished, this.undernourished) != 0)
+    return false;
+  if(Double.compare(comp.humanDevelopmentIndex, this.humanDevelopmentIndex) != 0)
+    return false;
+  return true;
+}
 }

@@ -1,14 +1,8 @@
 package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import starvationevasion.server.io.JSON;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -57,8 +51,8 @@ public class WorldData implements JSON
       regionData[i] = new RegionData(EnumRegion.values()[i]);
     }
   }
-
-
+  
+  
   /**
    * @return Data stored in this structure as a formatted String.
    */
@@ -130,4 +124,9 @@ public class WorldData implements JSON
     return json;
   }
 
+  public WorldData(String JSONString)
+  {
+    //Find string to JSON bit again.
+
+  }
 }

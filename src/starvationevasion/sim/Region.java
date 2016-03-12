@@ -18,7 +18,7 @@ import java.lang.IllegalStateException;
  * Region class extends AbstractAgriculturalUnit, includes methods for accessing its
  * fields.
  */
-public class Region extends AbstractTerritory
+public class Region extends Territory
 {
   private static final int PLAYER_START_REVENUE = 50; //million dollars
   private static final boolean VERBOSE = false;

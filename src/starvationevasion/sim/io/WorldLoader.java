@@ -47,14 +47,9 @@ public class WorldLoader
     }
 
     // add data from csv to agricultureUnits
-    CountryCSVLoader csvLoader;
     ProductionCSVLoader csvProduction;
-    try {
-      csvLoader = new CountryCSVLoader(territories, regionList);
-      csvProduction = new ProductionCSVLoader(regionList);
-    } catch (FileNotFoundException e) {
-      throw new IllegalStateException("The world model can not be populated.");
-    }
+    csvProduction = new ProductionCSVLoader(regionList);
+
 
     Calendar startingDate = Calendar.getInstance();
     startingDate.set(Calendar.YEAR,  2014);
@@ -82,7 +77,7 @@ public class WorldLoader
       for (Territory unit : region.getTerritories())
       {
         System.out.println("\t" + unit.toString());
-		if (verbose == false) continue;
+		    if (verbose == false) continue;
 
         for (LandTile tile : unit.getLandTiles())
         {

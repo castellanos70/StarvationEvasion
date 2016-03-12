@@ -95,7 +95,7 @@ public class Model
 
   private TileManager tileManager;
   private List<GeographicArea> geography;
-  private Territory[]  territories;
+  private ArrayList<Territory> territories;
 
   // The set of world regions includes all of the regions in the enum, plus an
   // extra United States region aggregating all of the US states for book keeping
@@ -646,7 +646,7 @@ public class Model
     }
   }
 
-  public void printData(AbstractTerritory unit, int year, String prefix)
+  public void printData(Territory unit, int year, String prefix)
   {
     Simulator.dbg.println(prefix + "Data for " + unit.getName() + " in year " + year);
     Simulator.dbg.print(prefix + prefix + "\t");

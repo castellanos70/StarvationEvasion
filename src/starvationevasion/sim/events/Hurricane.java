@@ -9,7 +9,7 @@ import starvationevasion.sim.Territory;
 /**
  * A hurricane special event
  */
-public class Hurricane extends AbstractEvent<Territory>
+public class Hurricane extends AbstractEvent
 {
   public Hurricane(Territory landArea)
   {
@@ -18,6 +18,7 @@ public class Hurricane extends AbstractEvent<Territory>
 
   public void applyEffects()
   {
+    Territory landArea = getLandArea();
     for (LandTile tile : landArea.getLandTiles())
     {
       tile.setRainfall(tile.getRainfall()*3);
@@ -27,6 +28,6 @@ public class Hurricane extends AbstractEvent<Territory>
 
   public MapPoint getLocation()
   {
-    return landArea.getCapitolLocation();
+    return getLandArea().getCapitolLocation();
   }
 }

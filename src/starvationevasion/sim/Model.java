@@ -94,8 +94,8 @@ public class Model
 
 
   private TileManager tileManager;
-  private List<GeographicArea> geography;
-  private ArrayList<Territory> territories;
+
+  private ArrayList<Territory> territoryList;
 
   // The set of world regions includes all of the regions in the enum, plus an
   // extra United States region aggregating all of the US states for book keeping
@@ -119,24 +119,66 @@ public class Model
     this.startYear = startYear;
     year = startYear;
 
-    geography = new GeographyXMLparser().getGeography();
+    ArrayList<GeographicArea> geography = new GeographyXMLparser().getGeography();
     System.out.println("geography.size()="+geography.size());
     //for (int i=0; i<geography.size(); i++)
     //{
     //  System.out.println("     " + geography.get(i).getName());
     //}
 
-    territories = Territory.territoryLoader(geography);
+    territoryList = Territory.territoryLoader();
 
-    //System.out.println("territories.size()="+territories.length);
-    //tileManager = CropZoneDataIO.parseFile(territories);
+    System.out.println("territoryList.size()=" + territoryList.size());
+
+    addGeographyToTerritories(geography);
+
+    //tileManager = CropZoneDataIO.parseFile(territoryList);
 
     //instantiateRegions();
+
+    // add data from csv to agricultureUnits
+    //ProductionCSVLoader csvProduction;
+    //csvProduction = new ProductionCSVLoader(regionList);
+
+
+    //Calendar startingDate = Calendar.getInstance();
+    //startingDate.set(Calendar.YEAR,  2014);
+
+    //world = World.makeWorld(geography, territoryList, tileManager, startingDate);
+
+    //tileManager.setWorld(world);
+
+
+
+
     //seaLevel = new SeaLevel();
 
     //load any special events
     //loadExistingSpecialEvents();
   }
+
+  private void addGeographyToTerritories(ArrayList<GeographicArea> geography)
+  {
+     // Collections.sort(geography, new Comparator<GeographicArea>() {
+     //   @Override
+     //   public int compare(GeographicArea a1, GeographicArea a2) {
+     //     return a1.getName().compareTo(a2.getName());
+     //   }
+     // });
+
+      for (GeographicArea area : geography)
+      {
+        for (Territory territory : territoryList)
+        {
+          if (territory.getName().equals(area.getName()))
+          {
+          territory.addGeographicArea(area);
+        }
+      }
+      }
+  }
+
+
 
   public Region getRegion(EnumRegion r)
   {
@@ -152,7 +194,7 @@ public class Model
 
   /**
    * A Region is the base political unit exposed to the player.
-   * A region a set of territories. Each territory is assigned to one region.
+   * A region a set of territoryList. Each territory is assigned to one region.
    */
   private void instantiateRegions()
   {
@@ -530,7 +572,7 @@ public class Model
   }
 
   private void updateHumanDevelopmentIndex(){
-    // TODO: HDI is updated in the roll-up of the territories into regions, based on the
+    // TODO: HDI is updated in the roll-up of the territoryList into regions, based on the
     // undernourished factor.
     //
   }

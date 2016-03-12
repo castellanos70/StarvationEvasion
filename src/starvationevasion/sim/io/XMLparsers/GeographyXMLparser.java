@@ -6,11 +6,8 @@ import starvationevasion.sim.io.GeographyValidator;
 import starvationevasion.sim.GeographicArea;
 import starvationevasion.common.MapPoint;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.logging.Level;
@@ -33,7 +30,7 @@ public class GeographyXMLparser extends DefaultHandler
   private static String BORDERS_DIR = "/sim/geography";
   private static String BORDERS_INDEX = BORDERS_DIR + "/PolygonBoarders.txt";
 
-  private List<GeographicArea> regionList;
+  private ArrayList<GeographicArea> regionList;
   private Locator locator;
   private String regionName;
   private String regionType;
@@ -148,7 +145,7 @@ public class GeographyXMLparser extends DefaultHandler
     }
   }
 
-  public List<GeographicArea> getGeography()
+  public ArrayList<GeographicArea> getGeography()
   {
     if (regionList == null)
     {

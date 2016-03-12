@@ -26,11 +26,6 @@ public class GeographicArea
   private Polygon mapSpacePoly;
 
 
-  public void setTerritory(Territory agriculturalUnit)
-  {
-    agriculturalUnit.addRegion(this);
-  }
-
   public boolean containsMapPoint(MapPoint mapPoint)
   {
     if (mapSpacePoly == null) mapSpacePoly = mapConverter.regionToPolygon(this);

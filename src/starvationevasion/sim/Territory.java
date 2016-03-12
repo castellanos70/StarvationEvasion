@@ -156,8 +156,8 @@ public class Territory
 
   final public static MapConverter converter = new EquirectangularConverter();
 
-  private final Area area = new Area();
-  private final Collection<GeographicArea> regions = new ArrayList<>();
+  private final Area totalArea = new Area();
+  private final ArrayList<GeographicArea> geographicAreaList = new ArrayList<>();
   private Collection<LandTile> landTiles  = new ArrayList<>();;
   private MapPoint capitolLocation;
 
@@ -554,7 +554,7 @@ public class Territory
    */
   final public Area getArea()
   {
-    return area;
+    return totalArea;
   }
 
 
@@ -829,20 +829,20 @@ public class Territory
   //
   private MapPoint calCapitolLocation()
   {
-    if (regions == null) throw new RuntimeException("(!) regions not set!");
-    if (regions.isEmpty()) throw new RuntimeException("(!) no regions !");
+    if (geographicAreaList== null) throw new RuntimeException("(!) regions not set!");
+    if (geographicAreaList.isEmpty()) throw new RuntimeException("(!) no regions !");
 
     int maxArea = 0;
     Polygon largest = null;
 
-    for (GeographicArea region : regions)
+    for (GeographicArea area : geographicAreaList)
     {
-      Polygon poly = converter.regionToPolygon(region);
-      int area = (int) (poly.getBounds().getWidth() * poly.getBounds().getHeight());
-      if (area >= maxArea)
+      Polygon poly = converter.regionToPolygon(area);
+      int landArea = (int) (poly.getBounds().getWidth() * poly.getBounds().getHeight());
+      if (landArea >= maxArea)
       {
         largest = poly;
-        maxArea = area;
+        maxArea = landArea;
       }
     }
 
@@ -876,25 +876,23 @@ public class Territory
    */
   public boolean containsMapPoint(MapPoint mapPoint)
   {
-    if (regions == null)
+    if (geographicAreaList == null)
     {
       throw new RuntimeException("(!)REGIONS NOT SET YET");
     }
 
-    for (GeographicArea region : regions)
+    for (GeographicArea area : geographicAreaList)
     {
-      if (region.containsMapPoint(mapPoint)) return true;
+      if (area.containsMapPoint(mapPoint)) return true;
     }
     return false;
   }
 
-  /**
-   * @param region region (i.e., area contained in vertices) to add to country
-   */
-  public void addRegion(GeographicArea region)
+
+  public void addGeographicArea(GeographicArea area)
   {
-    regions.add(region);
-    area.add(new Area(converter.regionToPolygon(region)));
+    geographicAreaList.add(area);
+    totalArea.add(new Area(converter.regionToPolygon(area)));
   }
 
   /**
@@ -902,7 +900,7 @@ public class Territory
    */
   final public Collection<GeographicArea> getRegions()
   {
-    return regions;
+    return geographicAreaList;
   }
 
   public String toString()
@@ -915,39 +913,8 @@ public class Territory
     return territoryName.compareTo(name);
   }
 
-  /**
-   * Parses the geographic data and generates a unified set of Territory objects from the
-   * list of cartagraphic regions.
-   * @return collection of countries created form the given regions.
-   */
-  public static Territory[] parseTerritories(List<GeographicArea> geography)
-  {
-    Collections.sort(geography, new Comparator<GeographicArea>() {
-      @Override
-      public int compare(GeographicArea a1, GeographicArea a2) {
-        return a1.getName().compareTo(a2.getName());
-      }
-    });
-
-    ArrayList<Territory> territoryList = new ArrayList<>(geography.size());
-    Territory territory = null;
-    for (GeographicArea region : geography)
-    {
-      if (territory != null && territory.getName().equals(region.getName()))
-      {
-        region.setTerritory(territory);
-        territory.addRegion(region);
-      }
-      else {
-        territory = new Territory(region.getName());
-        territory.addRegion(region);
-        territoryList.add(territory);
-      }
-    }
 
 
-    return territoryList.toArray(new Territory[territoryList.size()]);
-  }
 
 
 
@@ -958,7 +925,7 @@ public class Territory
    * Constructor takes list of country objects that need data from csv file
    */
 
-  public static ArrayList<Territory> territoryLoader(List<GeographicArea> geography)
+  public static ArrayList<Territory> territoryLoader()
   {
     CSVReader fileReader = new CSVReader(TERRITORY_DATA_PATH, 0);
     ArrayList<Territory> territoryList = new ArrayList<>();

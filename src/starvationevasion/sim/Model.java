@@ -132,6 +132,28 @@ public class Model
 
     addGeographyToTerritories(geography);
 
+    Territory NewMexico = null, China = null, UnitedKingdom = null;
+    for (Territory territory : territoryList)
+    {
+      if (territory.getName().equals("US-NewMexico"))
+      {
+        NewMexico = territory;
+      }
+      else if (territory.getName().equals("China"))
+      {
+        China = territory;
+      }
+      else if (territory.getName().equals("United Kingdom"))
+      {
+        UnitedKingdom = territory;
+      }
+    }
+    assert (NewMexico != null);
+    assert (China != null);
+    assert (UnitedKingdom != null);
+
+    containsMapPoint(MapPoint mapPoint)
+
     //tileManager = CropZoneDataIO.parseFile(territoryList);
 
     //instantiateRegions();

@@ -27,7 +27,7 @@ public class MapPoint implements JSON
    */
   public double longitude;
 
-  public MapPoint(double latitude, double longitude)
+  public MapPoint(double longitude, double latitude)
   {
     this.latitude = latitude;
     this.longitude = longitude;

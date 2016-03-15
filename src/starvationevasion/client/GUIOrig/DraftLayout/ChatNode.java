@@ -17,8 +17,6 @@ import starvationevasion.common.EnumRegion;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 /**
@@ -33,8 +31,7 @@ public class ChatNode extends BorderPane
   private HBox usersChat=new HBox();
   private Client client;
   private ChatManager chatManager;
-  private Timer timer;
-  private TimerTask timerTask;
+
   private ComboBox comboBox;
 
   public ChatNode(GUI gui)
@@ -42,16 +39,8 @@ public class ChatNode extends BorderPane
     ArrayList<EnumRegion> regions=new ArrayList<>(Arrays.asList(EnumRegion.values()));
     ObservableList<EnumRegion> regionList= FXCollections.observableArrayList(regions);
     comboBox=new ComboBox(regionList);
-    timer=new Timer();
-    timerTask=new TimerTask()
-    {
-      @Override
-      public void run()
-      {
-        chatMessages.setText(chatManager.getChat());
-      }
-    };
-    timer.schedule(timerTask,100,100);
+
+
 
     client=gui.getClient();
     chatManager=client.getChatManager();
@@ -78,5 +67,9 @@ public class ChatNode extends BorderPane
       inputMessage.clear();
     });
 
+  }
+  public void setChatMessages(String messages)
+  {
+    chatMessages.setText(messages);
   }
 }

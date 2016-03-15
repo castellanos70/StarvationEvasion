@@ -13,6 +13,7 @@ import starvationevasion.client.GUIOrig.Popups.PopupManager;
 import starvationevasion.client.GUIOrig.VotingLayout.VotingLayout;
 import starvationevasion.client.GUIOrig.images.ImageGetter;
 import starvationevasion.client.Logic.LocalDataContainer;
+import starvationevasion.client.Logic.MainGameLoop;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 
@@ -81,6 +82,7 @@ public class GUI extends Application
    * @param localDataContainer reference to the local data the client stores
    */
   private Client client2;
+  private MainGameLoop mainGameLoop;
   public GUI(Client client, LocalDataContainer localDataContainer)
   {
     super();
@@ -88,6 +90,7 @@ public class GUI extends Application
    // this.client = client;
     this.localDataContainer = localDataContainer;
     assignedRegion = client.getRegion();
+
   }
   public Client getClient(){return client2;}
   /**
@@ -131,11 +134,18 @@ public class GUI extends Application
     currentRoot = draftLayout;
     primaryStage.setScene(gameScene);
 
+    mainGameLoop=new MainGameLoop(this);
     //if(!client.isAI)
     {
       primaryStage.show();
     }
+    primaryStage.setOnCloseRequest(event2 ->
+    {
+      primaryStage.close();
+      mainGameLoop.stop();
+    });
   }
+
 
   /**
    * Simple getter in case any node needs to get the stage

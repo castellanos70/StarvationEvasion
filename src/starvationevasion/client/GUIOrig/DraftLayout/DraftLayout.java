@@ -210,4 +210,7 @@ public class DraftLayout extends GridPane
    */
   public Hand getHand(){return hand;}
 
+
+  public ChatNode getChatNode(){return chatNode;}
+
 }

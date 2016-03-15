@@ -210,6 +210,7 @@ public class Client
       try
       {
         String msg = reader.readLine();
+
         output(msg);
         if (msg == null)
         {
@@ -217,6 +218,16 @@ public class Client
           isRunning = false;
           return;
         }
+        //TODO Implement JSON Parser
+//        StringReader stringReader=new StringReader(msg);
+//        JSONStreamReaderImpl jsonStreamReader=new JSONStreamReaderImpl(stringReader);
+//        JSONDocument json=jsonStreamReader.build();
+//        String data=json.getString("time");
+////
+//        if(data.contains("chat"))
+//        {
+//         chatManager.sendChatToClient(json.getString("data"));
+//        }
         if(msg.contains("text"))
         {
           String message=msg.substring(msg.indexOf("text") + 3);

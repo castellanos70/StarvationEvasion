@@ -42,6 +42,7 @@ public class LandingPage extends Application
   @Override
   public void start(final Stage stage) throws Exception
   {
+
     stage.setTitle("Starvation Evasion");
     confirm.setText("Login");
     multiConfirm.setText("Login");
@@ -60,27 +61,19 @@ public class LandingPage extends Application
 
     confirm.setOnAction(e ->
     {
-     if(!client.writeToServer("login " + uname.getText() + " " + passwd.getText()))
+      if(uname.getText().equals("")||passwd.getText().equals(""))
+      {
+        errorMessage();
+      }
+     else if(!client.writeToServer("login " + uname.getText() + " " + passwd.getText()))
      {
-       final Stage dialog = new Stage();
-       VBox dialogVbox = new VBox(20);
-       dialogVbox.getChildren().add(new Label("Wrong username/password combo"));
-       Scene dialogScene = new Scene(dialogVbox, 300, 80);
-       dialog.setScene(dialogScene);
-       dialog.setTitle("ERROR");
-       dialog.show();
-       Button btn = new Button();
-       btn.setText("Ok");
-       dialogVbox.getChildren().addAll(btn);
-       btn.setOnAction(event ->
-       {
-         dialog.close();
-       });
-     }else{
-       GUI gui=new GUI(client,null);
-       Stage guiStage=new Stage();
-       gui.start(guiStage);
-       stage.close();
+        errorMessage();
+     }else
+      {
+        GUI gui=new GUI(client,null);
+        Stage guiStage=new Stage();
+        gui.start(guiStage);
+        stage.close();
      }
     });
     seeUsers.setOnAction(event1 ->
@@ -89,7 +82,10 @@ public class LandingPage extends Application
     });
     createUser.setOnAction(event ->
     {
-      client.writeToServer("user_create "+uname.getText()+" "+passwd.getText());
+      if(!(uname.getText().equals(""))||!passwd.getText().equals(""))
+      {
+        client.writeToServer("user_create " + uname.getText() + " " + passwd.getText());
+      }else errorMessage();
     });
     createUserWithRegion.setOnAction(event ->
     {
@@ -126,6 +122,23 @@ public class LandingPage extends Application
   @Override
   public void stop(){
     client.closeAll();
+  }
+  private void errorMessage()
+  {
+    final Stage dialog = new Stage();
+    VBox dialogVbox = new VBox(20);
+    dialogVbox.getChildren().add(new Label("Wrong username/password combo"));
+    Scene dialogScene = new Scene(dialogVbox, 300, 80);
+    dialog.setScene(dialogScene);
+    dialog.setTitle("ERROR");
+    dialog.show();
+    Button btn = new Button();
+    btn.setText("Ok");
+    dialogVbox.getChildren().addAll(btn);
+    btn.setOnAction(event ->
+    {
+      dialog.close();
+    });
   }
   public class ServerThread extends Thread{
     boolean singlePlayer=true;

@@ -1,7 +1,6 @@
 package starvationevasion.sim;
 
 
-import starvationevasion.sim.util.EquirectangularConverter;
 import starvationevasion.sim.util.MapConverter;
 import starvationevasion.common.MapPoint;
 
@@ -18,7 +17,7 @@ import java.util.List;
  */
 public class GeographicArea
 {
-  public final static MapConverter mapConverter = new EquirectangularConverter();
+  public final static MapConverter mapConverter = new MapConverter();
   private List<MapPoint> perimeter;
   private String name;
   private String type;

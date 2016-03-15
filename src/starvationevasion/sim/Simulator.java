@@ -61,13 +61,13 @@ public class Simulator
 
 
   /**
-   * The Server should call init() at the start of the game before dealing cards to
+   * The Server should call getWorldData() at the start of the game before dealing cards to
    * players.
    *
    * @return data structure populated with all game state data needed by the client
    * except high resolution data that might be needed by the visualizer.
    */
-  public WorldData init()
+  public WorldData getWorldData()
   {
     WorldData startWorldData = new WorldData();
     //model.appendWorldData(startWorldData);
@@ -220,6 +220,24 @@ public class Simulator
   }
 
   /**
+   *
+   * @param latitude Latitude ranges from -90 to 90. North latitude is positive.
+   * @param longitude Longitude ranges from -180 to 180. East longitude is positive.
+   * @return The region containing the given latitude and longitude or null if the given location
+   * is not within a game region.
+   */
+  public EnumRegion getRegion(double latitude, double longitude)
+  {
+    MapPoint mapPoint = new MapPoint(latitude, longitude);
+    for (EnumRegion regionEnum : EnumRegion.values())
+    {
+      Region region = model.getRegion(regionEnum);
+      if (region.containsMapPoint(mapPoint)) return regionEnum;
+    }
+    return null;
+  }
+
+  /**
    * This entry point is for testing only. <br><br>
    *
    * This test shows how to instantiate the simulator and how to tell it
@@ -270,7 +288,7 @@ public class Simulator
       msg+='\n';
     }
 
-    WorldData worldData = sim.init();
+    WorldData worldData = sim.getWorldData();
     LOGGER.info(worldData.toString());
 
     // Now step through the simulation years for debugging

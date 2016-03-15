@@ -65,7 +65,7 @@ public class Client
   }
 
   /**
-   * Called from LandingPage, init creates a socket
+   * Called from LandingPage, getWorldData creates a socket
    * connection with the server and assigns its
    * messenger object that socket.
    */

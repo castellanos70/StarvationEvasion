@@ -288,7 +288,7 @@ public class Server
    */
   public void begin ()
   {
-    WorldData currentWorldData = simulator.init();
+    WorldData currentWorldData = simulator.getWorldData();
     for (Worker workers : allConnections)
     {
       // NOTE: can either send it as soon as we get it or have client request it.

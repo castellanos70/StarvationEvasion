@@ -2,9 +2,19 @@ package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.io.JSON;
+import starvationevasion.sim.Simulator;
 
 /**
  * Simple data class for specifying a location on the Earth's Surface.
+ * The ISO 6709 Standard representation of geographic point location by coordinates is the international
+ * standard for representation of latitude, longitude and altitude for geographic point locations.<br>
+ * The ISO 6709 Standard follows the conventions:
+ * <ol>
+ * <li> Latitude comes before longitude (Latitude, Longitude).</li>
+ * <li> Latitude ranges from -90 to 90. North latitude is positive.</li>
+ * <li> Longitude ranges from -180 to 180. East longitude is positive.</li>
+ * <li> Fraction of degrees is preferred in digital data exchange</li>
+ * </ol>
  */
 public class MapPoint implements JSON
 {
@@ -27,13 +37,13 @@ public class MapPoint implements JSON
    */
   public double longitude;
 
-  public MapPoint(double longitude, double latitude)
+  public MapPoint(double latitude, double longitude)
   {
     this.latitude = latitude;
     this.longitude = longitude;
   }
 
-  
+
   @Override
   public String toString()
   {
@@ -42,7 +52,7 @@ public class MapPoint implements JSON
 
 
   @Override
-  public String toJSONString ()
+  public String toJSONString()
   {
     return toJSON().toString();
   }
@@ -55,6 +65,7 @@ public class MapPoint implements JSON
     json.setNumber("latitude", latitude);
     json.setNumber("longitude", longitude);
 
+
     return json;
   }
 
@@ -65,17 +76,41 @@ public class MapPoint implements JSON
   }
 
   @Override
-public boolean equals(Object o)
-{
-  if (o == this)
+  public boolean equals(Object o)
+  {
+    if (o == this)
+    { return true; }
+    if (!(o instanceof MapPoint))
+    { return false; }
+    MapPoint map = (MapPoint) o;
+    if (Double.compare(map.longitude, this.longitude) != 0)
+    { return false; }
+    if (Double.compare(map.latitude, this.latitude) != 0)
+    { return false; }
     return true;
-  if(!(o instanceof MapPoint))
-    return false;
-  MapPoint map = (MapPoint) o;
-  if(Double.compare(map.longitude, this.longitude) != 0)
-    return false;
-  if(Double.compare(map.latitude, this.latitude) != 0)
-    return false;
-  return true;
+  }
+
+
+  /**
+   *
+   * Test example that starts the simulator then asks of lat, long points are within a region
+   */
+  public static void main(String[] args)
+  {
+    Simulator sim = new Simulator(Constant.FIRST_YEAR);
+
+
+    System.out.println("MatPoint.main(): Testing Map points:" );
+    System.out.println("   Albuquerque(35,-106): " + sim.getRegion(35,-106));
+    System.out.println("   Beijing(40,116): " + sim.getRegion(40,116));
+    System.out.println("   Belfast, Northern Ireland(54.5970, -5.93): " + sim.getRegion(54.5970, -5.93));
+    System.out.println("   Irish Sea(53.347309, -5.681383): " + sim.getRegion(53.347309, -5.681383));
+    System.out.println("   English Channel(50.39, -1.7): " + sim.getRegion(50.39, -1.7));
+    System.out.println("   Greenland(75.833995, -43.088791): " + sim.getRegion(75.833995, -43.088791));
+    System.out.println("   Reykjavik, Iceland(64.107676, -21.812973): " + sim.getRegion(64.107676, -21.812973));
+    System.out.println("   Antarctica(-84, 51): " + sim.getRegion(-84, 51));
+
+
+  }
 }
-}
+

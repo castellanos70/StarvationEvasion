@@ -4,7 +4,6 @@ import starvationevasion.sim.GeographicArea;
 import starvationevasion.common.MapPoint;
 
 import java.awt.*;
-import java.awt.geom.Dimension2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -17,33 +16,11 @@ import java.util.List;
  */
 public class MapConverter
 {
-
   private static final MapPoint DEFAULT_REF = new MapPoint(0, 0);
   private static final double SCALING_FACTOR = 10;
 
   public static final double PROJECTION_HEIGHT = 180 * SCALING_FACTOR;
   public static final double PROJECTION_WIDTH = 360 * SCALING_FACTOR;
-  public static final Dimension2D DIMENSION = new Dimension2D()
-  {
-    @Override
-    public double getWidth()
-    {
-      return PROJECTION_WIDTH;
-    }
-
-    @Override
-    public double getHeight()
-    {
-      return PROJECTION_HEIGHT;
-    }
-
-    @Override
-    public void setSize(double width, double height)
-    {
-      throw new UnsupportedOperationException("setSize not supported");
-    }
-  };
-
 
 
 
@@ -197,10 +174,6 @@ public class MapConverter
     return lines;
   }
 
-  public Dimension2D getProjectionDimensions()
-  {
-    return DIMENSION;
-  }
 
   public double getWidth()
   {

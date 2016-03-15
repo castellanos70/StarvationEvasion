@@ -172,9 +172,9 @@ public class Model
         {
           if (territory.getName().equals(area.getName()))
           {
-          territory.addGeographicArea(area);
+            territory.addGeographicArea(area);
+          }
         }
-      }
       }
   }
 

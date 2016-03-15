@@ -1,12 +1,10 @@
 package starvationevasion.server.io;
 
-import starvationevasion.server.Worker;
-
 import java.io.IOException;
 import java.net.Socket;
 
 
-public class WebSocketReadStrategy implements ReadStrategy
+public class WebSocketReadStrategy implements ReadStrategy<String>
 {
   private final Socket socket;
 

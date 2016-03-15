@@ -6,9 +6,10 @@ import starvationevasion.server.model.Encryptable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StreamCorruptedException;
 import java.net.Socket;
 
-public class SecureSocketReadStrategy implements ReadStrategy, Encryptable
+public class SecureSocketReadStrategy implements ReadStrategy<String>, Encryptable
 {
   private final String key;
   private BufferedReader reader;

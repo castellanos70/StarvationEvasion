@@ -3,8 +3,8 @@ package starvationevasion.server.io;
 
 import java.io.IOException;
 
-public interface ReadStrategy
+public interface ReadStrategy<Result>
 {
-  String read () throws IOException;
+  Result read () throws IOException, Exception;
   void close () throws IOException;
 }

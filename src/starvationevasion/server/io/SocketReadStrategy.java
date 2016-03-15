@@ -4,7 +4,7 @@ package starvationevasion.server.io;
 import java.io.*;
 import java.net.Socket;
 
-public class SocketReadStrategy implements ReadStrategy
+public class SocketReadStrategy implements ReadStrategy<String>
 {
   private BufferedReader reader;
   private final Socket socket;

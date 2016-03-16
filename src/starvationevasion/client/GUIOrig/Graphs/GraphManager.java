@@ -59,30 +59,30 @@ public class GraphManager
 
     switch (region)
     {
-      case CALIFORNIA:
+      case USA_CALIFORNIA:
         g = californiaGraphs[graphNumber];
         g.addDataPoint(year, dataValue);
         break;
-      case MOUNTAIN:
+      case USA_MOUNTAIN:
         g= mountainGraphs[graphNumber];
         g.addDataPoint(year, dataValue);
         break;
-      case HEARTLAND:
+      case USA_HEARTLAND:
         g = heartlandGraphs[graphNumber];
         g.addDataPoint(year, dataValue);
         break;
-      case NORTHERN_PLAINS:
+      case USA_NORTHERN_PLAINS:
         g = northernPlainsGraphs[graphNumber];
         break;
-      case SOUTHERN_PLAINS:
+      case USA_SOUTHERN_PLAINS:
         g = southernPlainsGraphs[graphNumber];
         g.addDataPoint(year, dataValue);
         break;
-      case NORTHERN_CRESCENT:
+      case USA_NORTHERN_CRESCENT:
         g = northernCresentGraphs[graphNumber];
         g.addDataPoint(year, dataValue);
         break;
-      case SOUTHEAST:
+      case USA_SOUTHEAST:
         g = southeastGraphs[graphNumber];
         g.addDataPoint(year, dataValue);
         break;
@@ -97,31 +97,31 @@ public class GraphManager
 
     switch (region)
     {
-      case CALIFORNIA:
+      case USA_CALIFORNIA:
         g = californiaGraphs[3];
         g.addDataPoint(year, grossIncome, foodProduced, foodConsumed);
         break;
-      case MOUNTAIN:
+      case USA_MOUNTAIN:
         g= mountainGraphs[3];
         g.addDataPoint(year, grossIncome, foodProduced, foodConsumed);
         break;
-      case HEARTLAND:
+      case USA_HEARTLAND:
         g = heartlandGraphs[3];
         g.addDataPoint(year, grossIncome, foodProduced, foodConsumed);
         break;
-      case NORTHERN_PLAINS:
+      case USA_NORTHERN_PLAINS:
         g = northernPlainsGraphs[3];
         g.addDataPoint(year, grossIncome, foodProduced, foodConsumed);
         break;
-      case SOUTHERN_PLAINS:
+      case USA_SOUTHERN_PLAINS:
         g = southernPlainsGraphs[3];
         g.addDataPoint(year, grossIncome, foodProduced, foodConsumed);
         break;
-      case NORTHERN_CRESCENT:
+      case USA_NORTHERN_CRESCENT:
         g = northernCresentGraphs[3];
         g.addDataPoint(year, grossIncome, foodProduced, foodConsumed);
         break;
-      case SOUTHEAST:
+      case USA_SOUTHEAST:
         g = southeastGraphs[3];
         g.addDataPoint(year, grossIncome, foodProduced, foodConsumed);
         break;
@@ -142,25 +142,25 @@ public class GraphManager
 
     switch (region)
     {
-      case CALIFORNIA:
+      case USA_CALIFORNIA:
         g = californiaGraphs[number];
         break;
-      case MOUNTAIN:
+      case USA_MOUNTAIN:
         g= mountainGraphs[number];
         break;
-      case HEARTLAND:
+      case USA_HEARTLAND:
         g = heartlandGraphs[number];
         break;
-      case NORTHERN_PLAINS:
+      case USA_NORTHERN_PLAINS:
         g = northernPlainsGraphs[number];
         break;
-      case SOUTHERN_PLAINS:
+      case USA_SOUTHERN_PLAINS:
         g = southernPlainsGraphs[number];
         break;
-      case NORTHERN_CRESCENT:
+      case USA_NORTHERN_CRESCENT:
         g = northernCresentGraphs[number];
         break;
-      case SOUTHEAST:
+      case USA_SOUTHEAST:
         g = southeastGraphs[number];
         break;
       default:
@@ -202,63 +202,63 @@ public class GraphManager
   private void initCaliGraph()
   {
     californiaGraphs = new Graph[3];
-    californiaGraphs[0] = new GraphPopulation(EnumRegion.CALIFORNIA);
-    californiaGraphs[1] = new GraphHDI(EnumRegion.CALIFORNIA);
-    californiaGraphs[2] = new GraphFarmingBalance(EnumRegion.CALIFORNIA);
-    //californiaGraphs[3] = new GraphProductsDollars(EnumRegion.CALIFORNIA);
+    californiaGraphs[0] = new GraphPopulation(EnumRegion.USA_CALIFORNIA);
+    californiaGraphs[1] = new GraphHDI(EnumRegion.USA_CALIFORNIA);
+    californiaGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_CALIFORNIA);
+    //californiaGraphs[3] = new GraphProductsDollars(EnumRegion.USA_CALIFORNIA);
   }
 
   private void initMntGraph()
   {
     mountainGraphs = new Graph[3];
-    mountainGraphs[0] = new GraphPopulation(EnumRegion.MOUNTAIN);
-    mountainGraphs[1] = new GraphHDI(EnumRegion.MOUNTAIN);
-    mountainGraphs[2] = new GraphFarmingBalance(EnumRegion.MOUNTAIN);
-    //mountainGraphs[3] = new GraphProductsDollars(EnumRegion.MOUNTAIN);
+    mountainGraphs[0] = new GraphPopulation(EnumRegion.USA_MOUNTAIN);
+    mountainGraphs[1] = new GraphHDI(EnumRegion.USA_MOUNTAIN);
+    mountainGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_MOUNTAIN);
+    //mountainGraphs[3] = new GraphProductsDollars(EnumRegion.USA_MOUNTAIN);
   }
 
   private void initHrtGraph()
   {
     heartlandGraphs = new Graph[3];
-    heartlandGraphs[0] = new GraphPopulation(EnumRegion.HEARTLAND);
-    heartlandGraphs[1] = new GraphHDI(EnumRegion.HEARTLAND);
-    heartlandGraphs[2] = new GraphFarmingBalance(EnumRegion.HEARTLAND);
-    //heartlandGraphs[3] = new GraphProductsDollars(EnumRegion.HEARTLAND);
+    heartlandGraphs[0] = new GraphPopulation(EnumRegion.USA_HEARTLAND);
+    heartlandGraphs[1] = new GraphHDI(EnumRegion.USA_HEARTLAND);
+    heartlandGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_HEARTLAND);
+    //heartlandGraphs[3] = new GraphProductsDollars(EnumRegion.USA_HEARTLAND);
   }
 
   private void initSEGraph()
   {
     southeastGraphs = new Graph[3];
-    southeastGraphs[0] = new GraphPopulation(EnumRegion.SOUTHEAST);
-    southeastGraphs[1] = new GraphHDI(EnumRegion.SOUTHEAST);
-    southeastGraphs[2] = new GraphFarmingBalance(EnumRegion.SOUTHEAST);
-    //southeastGraphs[3] = new GraphProductsDollars(EnumRegion.SOUTHEAST);
+    southeastGraphs[0] = new GraphPopulation(EnumRegion.USA_SOUTHEAST);
+    southeastGraphs[1] = new GraphHDI(EnumRegion.USA_SOUTHEAST);
+    southeastGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_SOUTHEAST);
+    //southeastGraphs[3] = new GraphProductsDollars(EnumRegion.USA_SOUTHEAST);
   }
 
   private void initSPGraph()
   {
     southernPlainsGraphs = new Graph[3];
-    southernPlainsGraphs[0] = new GraphPopulation(EnumRegion.SOUTHERN_PLAINS);
-    southernPlainsGraphs[1] = new GraphHDI(EnumRegion.SOUTHERN_PLAINS);
-    southernPlainsGraphs[2] = new GraphFarmingBalance(EnumRegion.SOUTHERN_PLAINS);
-    //southernPlainsGraphs[3] = new GraphProductsDollars(EnumRegion.SOUTHERN_PLAINS);
+    southernPlainsGraphs[0] = new GraphPopulation(EnumRegion.USA_SOUTHERN_PLAINS);
+    southernPlainsGraphs[1] = new GraphHDI(EnumRegion.USA_SOUTHERN_PLAINS);
+    southernPlainsGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_SOUTHERN_PLAINS);
+    //southernPlainsGraphs[3] = new GraphProductsDollars(EnumRegion.USA_SOUTHERN_PLAINS);
   }
 
   private void initNCGraph()
   {
     northernCresentGraphs = new Graph[3];
-    northernCresentGraphs[0] = new GraphPopulation(EnumRegion.NORTHERN_CRESCENT);
-    northernCresentGraphs[1] = new GraphHDI(EnumRegion.NORTHERN_CRESCENT);
-    northernCresentGraphs[2] = new GraphFarmingBalance(EnumRegion.NORTHERN_CRESCENT);
-    //northernCresentGraphs[3] = new GraphProductsDollars(EnumRegion.NORTHERN_CRESCENT);
+    northernCresentGraphs[0] = new GraphPopulation(EnumRegion.USA_NORTHERN_CRESCENT);
+    northernCresentGraphs[1] = new GraphHDI(EnumRegion.USA_NORTHERN_CRESCENT);
+    northernCresentGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_NORTHERN_CRESCENT);
+    //northernCresentGraphs[3] = new GraphProductsDollars(EnumRegion.USA_NORTHERN_CRESCENT);
   }
 
   private void initNPGraph()
   {
     northernPlainsGraphs = new Graph[3];
-    northernPlainsGraphs[0] = new GraphPopulation(EnumRegion.NORTHERN_PLAINS);
-    northernPlainsGraphs[1] = new GraphHDI(EnumRegion.NORTHERN_PLAINS);
-    northernPlainsGraphs[2] = new GraphFarmingBalance(EnumRegion.NORTHERN_PLAINS);
-    //northernPlainsGraphs[3] = new GraphProductsDollars(EnumRegion.NORTHERN_PLAINS);
+    northernPlainsGraphs[0] = new GraphPopulation(EnumRegion.USA_NORTHERN_PLAINS);
+    northernPlainsGraphs[1] = new GraphHDI(EnumRegion.USA_NORTHERN_PLAINS);
+    northernPlainsGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_NORTHERN_PLAINS);
+    //northernPlainsGraphs[3] = new GraphProductsDollars(EnumRegion.USA_NORTHERN_PLAINS);
   }
 }

@@ -11,7 +11,7 @@
 <Group stylesheets="" id='mapnode' xmlns:fx="http://javafx.com/fxml" xmlns:fxsvg="http://efxclipse.org/fxml-svg" fx:controller="starvationevasion.client.GUIOrig.DraftLayout.map.MapController">
 	<children>
 
-<!-- PACIFIC NORTHWEST & MOUNTAIN STATES -->
+<!-- PACIFIC NORTHWEST & USA_MOUNTAIN STATES -->
 		<Group
 		  opacity="1.0"
 		  id="mtn"
@@ -615,7 +615,7 @@
 			</SVGPath>
 		</Group>
 
-<!-- SOUTHEAST-->
+<!-- USA_SOUTHEAST-->
 		<Group
 		  opacity="1.0"
 		  id="soea"
@@ -891,7 +891,7 @@
 			</SVGPath>
 		</Group>
 
-<!-- HEARTLAND -->
+<!-- USA_HEARTLAND -->
 		<Group
 		  opacity="1.0"
 		  id="heart"
@@ -969,7 +969,7 @@
 			</SVGPath>
 		</Group>
 
-<!-- CALIFORNIA -->
+<!-- USA_CALIFORNIA -->
 		<Group
 		  opacity="1.0"
 		  id="cali"

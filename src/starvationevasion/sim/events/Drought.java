@@ -19,7 +19,7 @@ public class Drought extends AbstractEvent
 
   public void applyEffects()
   {
-    for (Territory territory : region.getTerritories())
+    for (Territory territory : region.getTerritoryList())
     {
       for (starvationevasion.sim.LandTile tile : territory.getLandTiles())
       {

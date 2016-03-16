@@ -9,7 +9,7 @@
 <Group stylesheets="" id='mapnode' xmlns:fx="http://javafx.com/fxml" xmlns:fxsvg="http://efxclipse.org/fxml-svg" >
     <children>
 
-        <!-- HEARTLAND -->
+        <!-- USA_HEARTLAND -->
         <Group
                 opacity="1.0"
                 id="heart"

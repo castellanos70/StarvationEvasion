@@ -68,7 +68,7 @@ public class IOHelpers
       while ((entry = reader.readLine()) != null)
       {
         files.add(entry);
-        System.out.println("      "+entry);
+        //System.out.println("      "+entry);
       }
     } catch (IOException ex)
     {

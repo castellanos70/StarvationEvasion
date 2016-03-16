@@ -30,10 +30,10 @@ public class  DeckNode extends VBox
    */
   public DeckNode(GUI gui)
   {
-    deck=new ClientPolicyCard(EnumRegion.CALIFORNIA, EnumPolicy.Clean_River_Incentive, gui);
+    deck=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA, EnumPolicy.Clean_River_Incentive, gui);
     deck.backOfCard();
     discardPile=new StackPane();
-    ClientPolicyCard firstCard=new ClientPolicyCard(EnumRegion.CALIFORNIA,EnumPolicy.Educate_the_Women_Campaign,gui);
+    ClientPolicyCard firstCard=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA,EnumPolicy.Educate_the_Women_Campaign,gui);
     firstCard.discardPile();
     discardPile.getChildren().add(firstCard);
 

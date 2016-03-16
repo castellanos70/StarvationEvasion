@@ -4,7 +4,6 @@ import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.sim.io.CSVReader;
-import starvationevasion.sim.util.EquirectangularConverter;
 import starvationevasion.sim.util.MapConverter;
 import starvationevasion.common.MapPoint;
 
@@ -154,7 +153,7 @@ public class Territory
   };
 
 
-  final public static MapConverter converter = new EquirectangularConverter();
+  final public static MapConverter converter = new MapConverter();
 
   private final Area totalArea = new Area();
   private final ArrayList<GeographicArea> geographicAreaList = new ArrayList<>();

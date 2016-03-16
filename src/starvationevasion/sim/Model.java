@@ -80,7 +80,7 @@ public class Model
   public static double EVENT_CHANCE = 0.02;
   public static final String BG_DATA_PATH = "/sim/geography/ne_50m_land.kml";
 
-  EnumRegion debugRegion = EnumRegion.CALIFORNIA;
+  EnumRegion debugRegion = EnumRegion.USA_CALIFORNIA;
   private final static Logger LOGGER = Logger.getGlobal(); // getLogger(Model.class.getName())
 
   // Verbosity of debug information during startup

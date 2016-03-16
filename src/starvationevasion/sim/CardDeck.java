@@ -155,7 +155,7 @@ public class CardDeck
    */
   public static void main(String[] args)
   {
-    CardDeck deck = new CardDeck(EnumRegion.CALIFORNIA);
+    CardDeck deck = new CardDeck(EnumRegion.USA_CALIFORNIA);
 
     // Draw cards, instantiating each.
     //
@@ -165,7 +165,7 @@ public class CardDeck
     {
       String name = card.name();
 
-      PolicyCard policy = PolicyCard.create(EnumRegion.CALIFORNIA, card);
+      PolicyCard policy = PolicyCard.create(EnumRegion.USA_CALIFORNIA, card);
       System.out.println("Policy: " + policy);
     }
   }

@@ -48,7 +48,7 @@ public class Server
 
     Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
 
-    addUser(new User("admin", "admin", EnumRegion.CALIFORNIA, new ArrayList<>()));
+    addUser(new User("admin", "admin", EnumRegion.USA_CALIFORNIA, new ArrayList<>()));
     startNanoSec = System.nanoTime();
     simulator = new Simulator(Constant.FIRST_YEAR);
 

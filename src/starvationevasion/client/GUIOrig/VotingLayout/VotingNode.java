@@ -44,25 +44,25 @@ public class VotingNode extends BorderPane
   {
     switch (region)
     {
-      case CALIFORNIA:
+      case USA_CALIFORNIA:
         label = new Label("VOTE CARD:" + cardNumber);
         break;
-      case MOUNTAIN:
+      case USA_MOUNTAIN:
         label = new Label("VOTE CARD: " + cardNumber);
         break;
-      case SOUTHERN_PLAINS:
+      case USA_SOUTHERN_PLAINS:
         label = new Label("VOTE CARD: " + cardNumber);
         break;
-      case NORTHERN_PLAINS:
+      case USA_NORTHERN_PLAINS:
         label =  new Label("VOTE CARD: " + cardNumber);
         break;
-      case HEARTLAND:
+      case USA_HEARTLAND:
         label = new Label("VOTE CARD: " + cardNumber);
         break;
-      case SOUTHEAST:
+      case USA_SOUTHEAST:
         label = new Label("VOTE CARD: " + cardNumber);
         break;
-      case NORTHERN_CRESCENT:
+      case USA_NORTHERN_CRESCENT:
         label = new Label("VOTE CARD: " + cardNumber);
         break;
       default:

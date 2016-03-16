@@ -81,7 +81,7 @@ public class Hand extends GridPane
     {
       //Needs working connection
      // ClientPolicyCard clientPolicyCard=new ClientPolicyCard(GUIOrig.client.getAssignedRegion(),hand[i],GUIOrig);
-      ClientPolicyCard clientPolicyCard=new ClientPolicyCard(EnumRegion.CALIFORNIA,hand[i],gui);
+      ClientPolicyCard clientPolicyCard=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA,hand[i],gui);
       clientPolicyCard.setHandIndex(i);
       elements.add(clientPolicyCard);
       add(clientPolicyCard,i,0);
@@ -307,7 +307,7 @@ public class Hand extends GridPane
    */
   public void dealRandomHand()
   {
-    CardDeck deck =new CardDeck(EnumRegion.CALIFORNIA);
+    CardDeck deck =new CardDeck(EnumRegion.USA_CALIFORNIA);
     setHand(deck.drawCards());
   }
   private boolean isLegal(ClientPolicyCard card)

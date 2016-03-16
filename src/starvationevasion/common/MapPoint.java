@@ -109,8 +109,6 @@ public class MapPoint implements JSON
     System.out.println("   Greenland(75.833995, -43.088791): " + sim.getRegion(75.833995, -43.088791));
     System.out.println("   Reykjavik, Iceland(64.107676, -21.812973): " + sim.getRegion(64.107676, -21.812973));
     System.out.println("   Antarctica(-84, 51): " + sim.getRegion(-84, 51));
-
-
   }
 }
 

@@ -41,7 +41,7 @@ public class GraphDisplay extends BorderPane
     this.getStyleClass().add("graphdisplay");
     this.setVisible(false);
 
-    currentRegion = EnumRegion.CALIFORNIA;//GUIOrig.getAssignedRegion();
+    currentRegion = EnumRegion.USA_CALIFORNIA;//GUIOrig.getAssignedRegion();
     graphDisplay = gui.getGraphManager().getGraphNodeGraph(currentRegion, graphIndex);
 
     initializeComboBox();
@@ -126,37 +126,37 @@ public class GraphDisplay extends BorderPane
   {
     String s = (String) o;
 
-    if (s.equalsIgnoreCase(EnumRegion.CALIFORNIA.toString()))
+    if (s.equalsIgnoreCase(EnumRegion.USA_CALIFORNIA.toString()))
     {
-      return EnumRegion.CALIFORNIA;
+      return EnumRegion.USA_CALIFORNIA;
     }
-    else if (s.equalsIgnoreCase(EnumRegion.MOUNTAIN.toString()))
+    else if (s.equalsIgnoreCase(EnumRegion.USA_MOUNTAIN.toString()))
     {
-      return EnumRegion.MOUNTAIN;
+      return EnumRegion.USA_MOUNTAIN;
     }
-    else if (s.equalsIgnoreCase(EnumRegion.HEARTLAND.toString()))
+    else if (s.equalsIgnoreCase(EnumRegion.USA_HEARTLAND.toString()))
     {
-      return EnumRegion.HEARTLAND;
+      return EnumRegion.USA_HEARTLAND;
     }
-    else if (s.equalsIgnoreCase(EnumRegion.SOUTHEAST.toString()))
+    else if (s.equalsIgnoreCase(EnumRegion.USA_SOUTHEAST.toString()))
     {
-      return EnumRegion.SOUTHEAST;
+      return EnumRegion.USA_SOUTHEAST;
     }
-    else if (s.equalsIgnoreCase(EnumRegion.SOUTHERN_PLAINS.toString()))
+    else if (s.equalsIgnoreCase(EnumRegion.USA_SOUTHERN_PLAINS.toString()))
     {
-      return EnumRegion.SOUTHERN_PLAINS;
+      return EnumRegion.USA_SOUTHERN_PLAINS;
     }
-    else if (s.equalsIgnoreCase(EnumRegion.NORTHERN_PLAINS.toString()))
+    else if (s.equalsIgnoreCase(EnumRegion.USA_NORTHERN_PLAINS.toString()))
     {
-      return EnumRegion.NORTHERN_PLAINS;
+      return EnumRegion.USA_NORTHERN_PLAINS;
     }
-    else if (s.equalsIgnoreCase(EnumRegion.NORTHERN_CRESCENT.toString()))
+    else if (s.equalsIgnoreCase(EnumRegion.USA_NORTHERN_CRESCENT.toString()))
     {
-      return EnumRegion.NORTHERN_CRESCENT;
+      return EnumRegion.USA_NORTHERN_CRESCENT;
     }
     else
     {
-      return EnumRegion.CALIFORNIA;
+      return EnumRegion.USA_CALIFORNIA;
     }
   }
 

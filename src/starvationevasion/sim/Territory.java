@@ -4,7 +4,6 @@ import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.sim.io.CSVReader;
-import starvationevasion.sim.util.EquirectangularConverter;
 import starvationevasion.sim.util.MapConverter;
 import starvationevasion.common.MapPoint;
 
@@ -23,28 +22,142 @@ import java.util.logging.Logger;
  * Edited by Jessica on 3/14/15: getName, setLandTotal, methodPercentage methods
  * Edited by Peter November 2015 to make the class more abstract.
  *
+ * TERRITORY_DATA_PATH defines the territory names and spellings used in the game.
+ *
  * @version 22-Mar-2015
  */
-public class Territory extends AbstractTerritory
+public class Territory
 {
-  private static final String PATH = "/sim/TerritoryPopulationAndLandUse.csv";
+  private static final String TERRITORY_DATA_PATH = "/sim/TerritoryPopulationAndLandUse.csv";
+
+  protected String name;
+
+  protected static final int YEARS_OF_SIM = 1+Constant.LAST_YEAR - Constant.FIRST_YEAR;
+
+  protected GeographicArea border;
+
+  //AbstractTerritory is extended by Territory and by Region.
+  //A Territory is the base political unit in the simulator.
+  //   Each modeled country and each US state is a Territory.
+  //A Region is the base political unit exposed to the player.
+  //   A region a set of territories. Each territory is assigned to one region.
+
+  //Note: Values below that are, in the countryData.cvs file, defined as type int
+  //      should be displayed to the user as type int. However, as some of these
+  //      values may be adjusted from year-to-year by continuous functions, it
+  //      is useful to maintain their internal representations as doubles.
+
+  //Note: As the start of milestone II, births and migration are assumed constant
+  //      for each year of the model and medianAge is not used at all.
+  //      However, it might be that before the end of milestone II, we are given simple functions
+  //      for these quantities: such as a constant rate of change of birth rate replacing the
+  //      constant birth rate or a data lookup table that has predefined values for each year.
+  //      The development team should expect and plan for such mid-milestone updates.
+  protected int[] population = new int[YEARS_OF_SIM];       // in people
+  protected int medianAge;  // in years
+  protected int births;  // number of live births x 1,000 per year.
+  protected int mortality;   // number of deaths x 1,000 per year.
+  protected int migration;   // immigration - emigration x 1,000 individuals.
+  protected int undernourished;  // number of undernourished x 1,000 per year.
+
+  // The Fall 2015 spec on pg19 defines Human Development Index (HDI) as a function
+  // of undernourishment in two categories; Protien Energy and Micronutrient.
+  //
+  protected float humanDevelopmentIndex;
+
+  /**
+   * The territory's crop income is the gross farm income less
+   * farm expenses. <br><br>
+   *
+   * The Total income includes farm income from food consumed within the
+   * territory as well as food exported. Food imported is not a farm expense.
+   */
+  protected long[] cropIncome = new long[EnumFood.SIZE]; // in $1000s
+  protected long[] cropProduction = new long[EnumFood.SIZE]; //in metric tons.
+
+  protected int landTotal;  //in square kilometers
+
+  /**
+   * Agricultural land refers to the share of land area that is arable,
+   * under permanent crops, and under permanent pastures. Arable land includes
+   * land defined by the FAO as land under temporary crops (double-cropped
+   * areas are counted once), temporary meadows for mowing or for pasture, land
+   * under market or kitchen gardens, and land temporarily fallow. land abandoned
+   * as a result of shifting cultivation is excluded. land under permanent crops
+   * is land cultivated with crops that occupy the land for long periods and need
+   * not be replanted after each harvest, such as cocoa, coffee, and rubber.
+   * This category includes land under flowering shrubs, fruit trees, nut trees,
+   * and vines, but excludes land under trees grown for wood or timber. Permanent
+   * pasture is land used for five or more years for forage, including natural and
+   * cultivated crops.
+   */
+
+  protected int farmLand1981, farmLand2014, totalFarmLand;
+  protected int[] landCrop = new int[EnumFood.SIZE];  // in square kilometers
+  protected long[] cropImport = new long[EnumFood.SIZE];  //in metric tons.
+  protected long[] cropExport = new long[EnumFood.SIZE];  //in metric tons.
+
+  protected int[] cultivationMethod = new int[EnumFarmMethod.SIZE]; //percentage [0,100]
+
+  //In Milestone II, crop yield and per capita need are defined in the first year and assumed constant
+  //    throughout each year of the simulation.
+  //    This will NOT be changed before the end of milestone II as it would require redefining the core of
+  //    the model's calculations.
+  protected double[] cropYield = new double[EnumFood.SIZE]; //metric tons per square kilometer
+  protected double[] cropNeedPerCapita = new double[EnumFood.SIZE]; //metric tons per person per year.
+
+  protected double penaltyValue = -1;
+
+  /**
+   * Average conversion factor, this is set by the Simulator.
+   */
+  private float averageConversionFactor;
+
+  /**
+   * Amount of fertilizer in Kg the states uses in a year.
+   */
+  private float kgPerAcreFertilizer;
+
+  /**
+   * The states income as it corresponds to category.
+   */
+  private int[]   incomePerCategory;
+
+  /**
+   * The states adjustment factors, twelve in total, one per category
+   */
+  private float[] adjustmentFactors;
+
+  /**
+   * The states ratios of it's category income to total income.
+   */
+  private float[] incomeToCategoryPercentages;
+
+  /**
+   * The states percentages of land dedicated to each category
+   */
+  private float[] landPerCategory;
+
+
+
+
+
 
   private enum EnumHeader
-  { territory, region, population1981, population1990, population2000,
-    population2010, population2014, population2025, population2050,
-    averageAge, undernourished, births, migration, mortality,
-    landArea, farmLand1981, farmLand2014,
-    organic, gmo;
+  { territory,	region,	population1981,	population1990,	population2000,
+    population2010,	population2014,	population2025,	population2050,
+    averageAge,	undernourished,	births,	migration,	mortality,
+    landArea,	farmLand1981,	farmLand2014,	organic,	gmo;
 
     public static final int SIZE = values().length;
   };
 
 
-  final public static MapConverter converter = new EquirectangularConverter();
+  final public static MapConverter converter = new MapConverter();
 
-  private final Area area = new Area();
-  private final Collection<GeographicArea> regions = new ArrayList<>();
-  private Collection<LandTile> landTiles;
+  private final Area totalArea = new Area();
+  private final ArrayList<GeographicArea> geographicAreaList = new ArrayList<>();
+  private Collection<LandTile> landTiles  = new ArrayList<>();;
   private MapPoint capitolLocation;
 
   /* The region to which this country belongs.
@@ -62,26 +175,387 @@ public class Territory extends AbstractTerritory
    */
   public Territory(String name)
   {
-    super(name);
-
-    landTiles = new ArrayList<>();
+    this.name = name;
   }
+
+
+  /**
+   * @return country name
+   */
+  final public String getName()
+  {
+    return name;
+  }
+
+  /**
+   * @param year year in question
+   * @return population in that year
+   */
+  final public int getPopulation(int year)
+  {
+    return population[year - Constant.FIRST_YEAR];
+  }
+
+  /**
+   * @return median age
+   */
+  final public double getMedianAge()
+  {
+    return medianAge;
+  }
+
+  /**
+   * @return birth rate at end of the current year of the simulation.
+   */
+  final public int getBirths()
+  {
+    return births;
+  }
+
+  final public int getMortality()
+  {
+    return mortality;
+  }
+
+  final public int getMigration()
+  {
+    return migration;
+  }
+
+  /**
+   * @return % undernourished at end of the current year of the simulation.
+   */
+  final public int getUndernourished()
+  {
+    return undernourished;
+  }
+
+  /**
+   * @return % human development index at end of the current year of the simulation.
+   */
+  final public float getHumanDevelopmentIndex()
+  {
+    return humanDevelopmentIndex;
+  }
+
+  final public double getPenaltyValue()
+  {
+    return penaltyValue;
+  }
+
+  final public void setPenaltyValue(double penaltyValue)
+  {
+    this.penaltyValue = penaltyValue;
+  }
+
+  /**
+   * Populate medianAge array with given age; assumes median age remains constant.
+   *
+   */
+  final public void setMedianAge(int age)
+  {
+    medianAge = age;
+  }
+
+  /**
+   * Populate births array with given rate; assumes rate remains constant.
+   *
+   * @param numberOfBirths in people.
+   */
+  final public void setBirths(int numberOfBirths)
+  {
+    births = numberOfBirths;
+  }
+
+
+
+
+  final public void setMortality(int year, int deaths)
+  {
+    mortality = deaths;
+  }
+
+
+
+  final public void setMigration(int people)
+  {
+    migration = people;
+  }
+
+
+
+
+  final public void setUndernourished(int people)
+  {
+    undernourished = people;
+  }
+
+  final public void setTotalFarmLand(int squareKm) { totalFarmLand = squareKm;}
+
+  final public void setFarmLand1981(int squareKm)
+  {
+    farmLand1981 = squareKm;
+    totalFarmLand = farmLand1981;
+  }
+
+  final public void setFarmLand2014(int squareKm) { farmLand2014 = squareKm;}
+
+  /**
+   * @param crop    crop in question
+   * @param metTons tons produced
+   */
+  public void setCropProduction(EnumFood crop, long metTons)
+  {
+    cropProduction[crop.ordinal()] = metTons;
+  }
+
+  /**
+   * @param crop    crop in question
+   * @param value Income in $1,000
+   */
+  final public void setCropIncome(EnumFood crop, long value)
+  {
+    cropIncome[crop.ordinal()] = value;
+  }
+
+  /**
+   * @param crop    crop in question
+   * @param metTons tons exported
+   */
+
+  final public void setCropExport(EnumFood crop, long metTons)
+  {
+    cropExport[crop.ordinal()] = metTons;
+  }
+
+  /**
+   * @param crop    crop in question
+   * @param metTons tons imported
+   */
+  final public void setCropImport(EnumFood crop, long metTons)
+  {
+    cropImport[crop.ordinal()] = metTons;
+  }
+
+
+  final public void setLandTotal(int kilomsq)
+  {
+    landTotal = kilomsq;
+  }
+
+
+
+  /**
+   * Set crop land value; use this method when initializing
+   *
+   * @param crop    crop in question
+   * @param kilomsq area to set
+   */
+  final public void setCropLand(EnumFood crop, int kilomsq)
+  {
+    landCrop[crop.ordinal()] = Math.min(kilomsq, getLandTotal());
+  }
+
+
+  /**
+   * @param method     cultivation method (Conventional, Organic or GMO)
+   * @param percentage percentage [0, 100] of land cultivated by the given method.
+   */
+  final public void setMethod(EnumFarmMethod method, int percentage)
+  {
+    cultivationMethod[method.ordinal()] = percentage;
+  }
+  /**
+   * Method for calculating and setting crop need
+   *
+   * @param crop                  EnumFood
+   * @param tonsConsumed          2014 production + imports - exports
+   * @param percentUndernourished 2014 % of population undernourished
+   */
+  public void setCropNeedPerCapita(EnumFood crop, double tonsConsumed, double percentUndernourished)
+  {
+    double population = getPopulation(Constant.FIRST_YEAR);
+    double tonPerPerson = tonsConsumed / (population - 0.5 * percentUndernourished * population);
+    cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
+  }
+
+  /**
+   * Method for setting crop need when already known (e.g., when copying).
+   *
+   * @param crop         EnumFood
+   * @param tonPerPerson 2014 ton/person
+   */
+  public void setCropNeedPerCapita(EnumFood crop, double tonPerPerson)
+  {
+    cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
+  }
+
+  /**
+   * @param crop
+   * @param tonPerSqKilom yield for crop
+   */
+  final public void setCropYield(EnumFood crop, double tonPerSqKilom)
+  {
+    cropYield[crop.ordinal()] = tonPerSqKilom;
+  }
+
+  /**
+   * @param crop crop in question
+   * @return tons produced  at end of the current year of the simulation.
+   */
+  final public long getCropProduction(EnumFood crop)
+  {
+    return cropProduction[crop.ordinal()];
+  }
+
+  /**
+   * @param crop crop in question
+   * @return tons produced at end of the current year of the simulation.
+   */
+  final public long getCropIncome(EnumFood crop)
+  {
+    return cropIncome[crop.ordinal()];
+  }
+
+  /**
+   * @param crop crop in question
+   * @return tons exported
+   */
+  final public long getCropExport(EnumFood crop)
+  {
+    return cropExport[crop.ordinal()];
+  }
+
+  /**
+   * @param crop crop in question
+   * @return tons imported
+   */
+  final public long getCropImport(EnumFood crop)
+  {
+    return cropImport[crop.ordinal()];
+  }
+
+
+  final public int getLandTotal()
+  {
+    return landTotal;
+  }
+
+
+  /**
+   * @param crop crop in question
+   * @return square km planted with crop
+   */
+  final public int getCropLand(EnumFood crop)
+  {
+    return landCrop[crop.ordinal()];
+  }
+
+  /**
+   * @param method cultivation method (Conventional, Organic or GMO)
+   * @return percentage [0, 100] of land cultivated by the given method.
+   */
+  final public int getMethod(EnumFarmMethod method)
+  {
+    return cultivationMethod[method.ordinal()];
+  }
+
+  /**
+   * @param crop
+   * @return yield for crop
+   */
+  final public double getCropYield(EnumFood crop)
+  {
+    return cropYield[crop.ordinal()];
+  }
+
+  /**
+   * @param crop
+   * @return tons of crop needed per person
+   */
+  final public double getCropNeedPerCapita(EnumFood crop)
+  {
+    return cropNeedPerCapita[crop.ordinal()];
+  }
+
+
+  /**
+   * Returns difference between country's production and need for a crop for the specified year.
+   * If a positive value is returned, country has a surplus available for export.
+   * If a negative value is returned, country has unmet need to be satisfied by imports.
+   *
+   * @param year year in question
+   * @param type type of crop
+   * @return surplus/shortfall of crop
+   */
+  final public double getSurplus(int year, EnumFood type)
+  {
+    return this.getCropProduction(type) - getTotalCropNeed(year, type);
+  }
+
+  /**
+   * Returns how many tons of crop country needs for specified year
+   *
+   * @param year year in question
+   * @param crop crop in question
+   * @return total tons needed to meet population's need
+   */
+  final public double getTotalCropNeed(int year, EnumFood crop)
+  {
+    double tonsPerPerson = getCropNeedPerCapita(crop);
+    int population = getPopulation(year);
+    return tonsPerPerson * population;
+  }
+
+  /**
+   * Calculates net crop available using formula from p. 15 of spec 1.7
+   *
+   * @param crop crop in question
+   * @return metric tons available
+   */
+  final public double getNetCropAvailable(EnumFood crop)
+  {
+    double available = getCropProduction(crop) + getCropImport(crop) - getCropExport(crop);
+    return available;
+  }
+
+  /**
+   * This Method calculates the initial category adjustment factors
+   * along with setting the average conversion factor.
+   *
+   * @param acf
+   */
+  public void setAverageConversionFactor(float acf)
+  {
+    averageConversionFactor = acf;
+    for (int i = 0; i < EnumFood.SIZE; i++)
+    {
+      adjustmentFactors[i] = incomeToCategoryPercentages[i] - averageConversionFactor;
+      //System.out.println(name + " Adj Factors "+adjustmentFactors[i]);
+    }
+  }
+
+
+
+
+  /**
+   * @param year year in question
+   * @param n    population in that year
+   */
+  public void setPopulation(int year, int n)
+  {
+    population[year - Constant.FIRST_YEAR] = n;
+  }
+
 
   /**
    * @return country's collection of 100km2 tiles
    */
   final public Area getArea()
   {
-    return area;
+    return totalArea;
   }
 
-  /**
-   * Sets the game region for this unit.
-   */
-  public void setGameRegion(EnumRegion region)
-  {
-    this.region = region;
-  }
 
   /**
    * @return Sets the game region for this unit.
@@ -354,20 +828,20 @@ public class Territory extends AbstractTerritory
   //
   private MapPoint calCapitolLocation()
   {
-    if (regions == null) throw new RuntimeException("(!) regions not set!");
-    if (regions.isEmpty()) throw new RuntimeException("(!) no regions !");
+    if (geographicAreaList== null) throw new RuntimeException("(!) regions not set!");
+    if (geographicAreaList.isEmpty()) throw new RuntimeException("(!) no regions !");
 
     int maxArea = 0;
     Polygon largest = null;
 
-    for (GeographicArea region : regions)
+    for (GeographicArea area : geographicAreaList)
     {
-      Polygon poly = converter.regionToPolygon(region);
-      int area = (int) (poly.getBounds().getWidth() * poly.getBounds().getHeight());
-      if (area >= maxArea)
+      Polygon poly = converter.regionToPolygon(area);
+      int landArea = (int) (poly.getBounds().getWidth() * poly.getBounds().getHeight());
+      if (landArea >= maxArea)
       {
         largest = poly;
-        maxArea = area;
+        maxArea = landArea;
       }
     }
 
@@ -399,27 +873,25 @@ public class Territory extends AbstractTerritory
    * @param mapPoint mapPoint that is being testing for inclusing
    * @return true is mapPoint is found inside country.
    */
-  final public boolean containsMapPoint(MapPoint mapPoint)
+  public boolean containsMapPoint(MapPoint mapPoint)
   {
-    if (regions == null)
+    if (geographicAreaList == null)
     {
       throw new RuntimeException("(!)REGIONS NOT SET YET");
     }
 
-    for (GeographicArea region : regions)
+    for (GeographicArea area : geographicAreaList)
     {
-      if (region.containsMapPoint(mapPoint)) return true;
+      if (area.containsMapPoint(mapPoint)) return true;
     }
     return false;
   }
 
-  /**
-   * @param region region (i.e., area contained in vertices) to add to country
-   */
-  final public void addRegion(GeographicArea region)
+
+  public void addGeographicArea(GeographicArea area)
   {
-    regions.add(region);
-    area.add(new Area(converter.regionToPolygon(region)));
+    geographicAreaList.add(area);
+    totalArea.add(new Area(converter.regionToPolygon(area)));
   }
 
   /**
@@ -427,7 +899,7 @@ public class Territory extends AbstractTerritory
    */
   final public Collection<GeographicArea> getRegions()
   {
-    return regions;
+    return geographicAreaList;
   }
 
   public String toString()
@@ -440,44 +912,8 @@ public class Territory extends AbstractTerritory
     return territoryName.compareTo(name);
   }
 
-  /**
-   * Parses the geographic data and generates a unified set of Territory objects from the
-   * list of cartagraphic regions.
-   * @return collection of countries created form the given regions.
-   */
-  public static Territory[] parseTerritories(List<GeographicArea> geography)
-  {
-    Collections.sort(geography, new Comparator<GeographicArea>() {
-      @Override
-      public int compare(GeographicArea a1, GeographicArea a2) {
-        return a1.getName().compareTo(a2.getName());
-      }
-    });
 
-    ArrayList<Territory> territoryList = new ArrayList<>(geography.size());
-    Territory territory = null;
-    for (GeographicArea region : geography)
-    {
-      if (territory != null && territory.getName().equals(region.getName()))
-      {
-        region.setTerritory(territory);
-        territory.addRegion(region);
-      }
-      else {
-        territory = new Territory(region.getName());
-        territory.addRegion(region);
-        territoryList.add(territory);
-      }
-    }
 
-    // We may not have a territory for the United States.
-    //
-    Territory us = new Territory("United States");
-    Collections.sort(territoryList);
-    if (Collections.binarySearch(territoryList, us) < 0) territoryList.add(us);
-
-    return territoryList.toArray(new Territory[territoryList.size()]);
-  }
 
 
 
@@ -488,9 +924,10 @@ public class Territory extends AbstractTerritory
    * Constructor takes list of country objects that need data from csv file
    */
 
-  public static Territory[] territoryLoader(List<GeographicArea> geography)
+  public static ArrayList<Territory> territoryLoader()
   {
-    CSVReader fileReader = new CSVReader(PATH, 0);
+    CSVReader fileReader = new CSVReader(TERRITORY_DATA_PATH, 0);
+    ArrayList<Territory> territoryList = new ArrayList<>();
 
     //Check header
     String[] fieldList = fileReader.readRecord(EnumHeader.SIZE);
@@ -499,7 +936,7 @@ public class Territory extends AbstractTerritory
       int i = header.ordinal();
       if (!header.name().equals(fieldList[i]))
       {
-        System.out.println("**ERROR** Reading " + PATH +
+        System.out.println("**ERROR** Reading " + TERRITORY_DATA_PATH +
           "Expected header[" + i + "]=" + header + ", Found: " + fieldList[i]);
         System.exit(0);
       }
@@ -511,14 +948,14 @@ public class Territory extends AbstractTerritory
     // It is an int percentage to be multiplied onto the 2014 production and income by to get
     // the corrosponding value for 1981.  For example CA is 61, so in 1981 they had 61% of
     // their current production and income.
-    /*
-    for (int k=0; k<territoryList.length; k++)
-    {
-      Territory territory = null;
-      fieldList = fileReader.readRecord(EnumHeader.SIZE);
-      if (fieldList == null) break;
 
-      double foodFactor = 1.;
+    fieldList = fileReader.readRecord(EnumHeader.SIZE);
+    while (fieldList != null)
+    //for (int k=0; k<territoryList.size(); k++)
+    {
+      Territory territory = new Territory(fieldList[EnumHeader.territory.ordinal()]);
+      territoryList.add(territory);
+
       for (EnumHeader header : EnumHeader.values())
       {
         int i = header.ordinal();
@@ -531,19 +968,11 @@ public class Territory extends AbstractTerritory
           }
           catch (Exception e) {} //Default empty cell, and text to 0
         }
+
+
         switch (header)
         {
           case territory:
-            Territory tmp = new Territory(fieldList[i]);
-            int idx = Arrays.binarySearch(territoryList, tmp);
-            if (idx < 0)
-            {
-              System.out.println("Territory.territoryLoader(): **ERROR** Reading " + PATH +
-                "Territory=" + fieldList[i] + " not found in territory list.  Check the XML.");
-              System.exit(0);
-            }
-
-            territory = territoryList[idx];
             break;
 
           case region:
@@ -551,32 +980,18 @@ public class Territory extends AbstractTerritory
             {
               if (enumRegion.name().equals(fieldList[i]))
               {
-                // System.out.println("Territory " + territory.getName() + " region " + enumRegion);
-
-                territory.setGameRegion(enumRegion);
-                regionList[enumRegion.ordinal()].addTerritory(territory);
+                territory.region = enumRegion;
                 break;
               }
             }
 
-            if (territory.getGameRegion() == null)
-            { // Handle special case book-keeping regions.
-              //
-              int r;
-              for (r = EnumRegion.SIZE ; r < regionList.length ; r += 1)
-              {
-                if (regionList[r].getName().equals(fieldList[i]))
-                {
-                  regionList[r].addTerritory(territory);
-                  break;
-                }
-              }
+            if (territory.region == null)
+            {
+              System.out.println("**ERROR** Reading " + TERRITORY_DATA_PATH + " in Territory.territoryLoader");
+              System.out.println("          Reading Record#" + territoryList.size() + " Territory="+territory.name);
 
-              if (r == regionList.length)
-              {
-                LOGGER.severe("**ERROR** Reading " + PATH + "Game Region not recognized: " + fieldList[i]);
-                return;
-              }
+              System.out.println("          Game Region not recognized: " + fieldList[i]);
+              System.exit(0);
             }
             break;
 
@@ -605,9 +1020,11 @@ public class Territory extends AbstractTerritory
       int conventional = 100 -
         (territory.getMethod(EnumFarmMethod.GMO) + territory.getMethod(EnumFarmMethod.ORGANIC));
       territory.setMethod(EnumFarmMethod.CONVENTIONAL, conventional);
-*/
-    return null;
-    }
 
+      //Read next record
+      fieldList = fileReader.readRecord(EnumHeader.SIZE);
+    }
+    return territoryList;
   }
+}
 

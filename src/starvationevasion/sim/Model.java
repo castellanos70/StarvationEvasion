@@ -80,7 +80,7 @@ public class Model
   public static double EVENT_CHANCE = 0.02;
   public static final String BG_DATA_PATH = "/sim/geography/ne_50m_land.kml";
 
-  EnumRegion debugRegion = EnumRegion.CALIFORNIA;
+  EnumRegion debugRegion = EnumRegion.USA_CALIFORNIA;
   private final static Logger LOGGER = Logger.getGlobal(); // getLogger(Model.class.getName())
 
   // Verbosity of debug information during startup
@@ -94,14 +94,14 @@ public class Model
 
 
   private TileManager tileManager;
-  private List<GeographicArea> geography;
-  private Territory[]  territories;
+
+  private ArrayList<Territory> territoryList;
 
   // The set of world regions includes all of the regions in the enum, plus an
   // extra United States region aggregating all of the US states for book keeping
   // purposes.
   //
-  private Region[] regionList = new Region[EnumRegion.SIZE + 1];
+  private Region[] regionList = new Region[EnumRegion.SIZE];
 
   private SeaLevel seaLevel;
   private CropCSVLoader cropLoader = null;
@@ -119,24 +119,108 @@ public class Model
     this.startYear = startYear;
     year = startYear;
 
-    geography = new GeographyXMLparser().getGeography();
-    System.out.println("geography.size()="+geography.size());
+    ArrayList<GeographicArea> geography = new GeographyXMLparser().getGeography();
+    //System.out.println("geography.size()="+geography.size());
     //for (int i=0; i<geography.size(); i++)
     //{
     //  System.out.println("     " + geography.get(i).getName());
     //}
 
-    territories = Territory.territoryLoader(geography);
+    territoryList = Territory.territoryLoader();
 
-    //System.out.println("territories.size()="+territories.length);
-    //tileManager = CropZoneDataIO.parseFile(territories);
+    //System.out.println("territoryList.size()=" + territoryList.size());
 
-    //instantiateRegions();
-    //seaLevel = new SeaLevel();
+    addGeographyToTerritories(geography);
 
-    //load any special events
-    //loadExistingSpecialEvents();
+    assert (assertTerritories());
+
+    instantiateRegions();
+
+      //tileManager = CropZoneDataIO.parseFile(territoryList);
+
+      //instantiateRegions();
+
+      // add data from csv to agricultureUnits
+      //ProductionCSVLoader csvProduction;
+      //csvProduction = new ProductionCSVLoader(regionList);
+
+
+      //Calendar startingDate = Calendar.getInstance();
+      //startingDate.set(Calendar.YEAR,  2014);
+
+      //world = World.makeWorld(geography, territoryList, tileManager, startingDate);
+
+      //tileManager.setWorld(world);
+
+
+      //seaLevel = new SeaLevel();
+
+      //load any special events
+      //loadExistingSpecialEvents();
   }
+
+  private boolean assertTerritories()
+  {
+    Territory NewMexico = null, China = null, UnitedKingdom = null, Ireland = null;
+    for (Territory territory : territoryList)
+    {
+      if (territory.getName().equals("US-NewMexico"))
+      {
+        NewMexico = territory;
+      }
+      else if (territory.getName().equals("China"))
+      {
+        China = territory;
+      }
+      else if (territory.getName().equals("United Kingdom"))
+      {
+        UnitedKingdom = territory;
+      }
+      else if (territory.getName().equals("Ireland"))
+      {
+        Ireland = territory;
+      }
+
+    }
+    assert (NewMexico != null);
+    assert (China != null);
+    assert (UnitedKingdom != null);
+    assert (NewMexico.containsMapPoint(new MapPoint(35,-106))); //Albuquerque
+    assert (!China.containsMapPoint(new MapPoint(35,-106))); //Albuquerque
+    assert (China.containsMapPoint(new MapPoint(40,116))); //Beijing
+    assert (China.containsMapPoint(new MapPoint(31.2, 121.5))); //Shanghai
+    assert (UnitedKingdom.containsMapPoint(new MapPoint(51.5,-0.13))); //London
+    assert (UnitedKingdom.containsMapPoint(new MapPoint(54.5970, -5.93))); //Belfast, Northern Ireland
+    assert (!UnitedKingdom.containsMapPoint(new MapPoint(53.349925, -6.270475))); //Dublin, Ireland
+    assert (Ireland.containsMapPoint(new MapPoint(53.349925, -6.270475))); //Dublin, Ireland
+    assert (!UnitedKingdom.containsMapPoint(new MapPoint(53.347309, -5.681383))); //Irish Sea
+    assert (!Ireland.containsMapPoint(new MapPoint(53.347309, -5.681383))); //Irish Sea
+    assert (!UnitedKingdom.containsMapPoint(new MapPoint(50.39, -1.7))); //English Channel
+    return true;
+  }
+
+  private void addGeographyToTerritories(ArrayList<GeographicArea> geography)
+  {
+     // Collections.sort(geography, new Comparator<GeographicArea>() {
+     //   @Override
+     //   public int compare(GeographicArea a1, GeographicArea a2) {
+     //     return a1.getName().compareTo(a2.getName());
+     //   }
+     // });
+
+      for (GeographicArea area : geography)
+      {
+        for (Territory territory : territoryList)
+        {
+          if (territory.getName().equals(area.getName()))
+          {
+            territory.addGeographicArea(area);
+          }
+        }
+      }
+  }
+
+
 
   public Region getRegion(EnumRegion r)
   {
@@ -152,72 +236,80 @@ public class Model
 
   /**
    * A Region is the base political unit exposed to the player.
-   * A region a set of territories. Each territory is assigned to one region.
+   * A region a set of territoryList. Each territory is assigned to one region.
    */
   private void instantiateRegions()
   {
     if (DEBUG) System.out.println("Model.instantiateRegions() Enter");
-    new ProductionCSVLoader(regionList);
+    //new ProductionCSVLoader(regionList);
 
     for (int i=0; i<EnumRegion.SIZE; i++)
     {
       regionList[i] = new Region(EnumRegion.values()[i]);
     }
 
-    try{cropLoader = new CropCSVLoader();} catch (Throwable t){ System.out.println("CROP_LOADER "+t);}
-    cropZoneDatum = cropLoader.getCategoryData();
+
+    //Add each territory to its region
+    for (Territory territory : territoryList)
+    {
+      int regionIdx = territory.getGameRegion().ordinal();
+      regionList[regionIdx].addTerritory(territory);
+    }
+
+    //try{cropLoader = new CropCSVLoader();} catch (Throwable t){ System.out.println("CROP_LOADER "+t);}
+    //cropZoneDatum = cropLoader.getCategoryData();
 
 
-    if (DEBUG) System.out.println("Model.instantiateRegions() estimate initial yield.");
+    //if (DEBUG) System.out.println("Model.instantiateRegions() estimate initial yield.");
     // Traverse all of the regions, estimating the initial yield.
     // Note that this includes the book-keeping regions.
     //
-    for (Region region : regionList)
-    { // Roll up the population and undernourished for each region.
+    //for (Region region : regionList)
+    //{ // Roll up the population and undernourished for each region.
       //
-      region.updatePopulation(Constant.FIRST_YEAR);
+    //  region.updatePopulation(Constant.FIRST_YEAR);
 
       // Update the initial yield.
       //
-      region.estimateInitialYield();
-    }
+     // region.estimateInitialYield();
+    //}
 
-    for (Region region : regionList) region.estimateInitialBudget(cropLoader.getCategoryData());
-    for (Region region : regionList)
-    {
-      if (region.getRegionEnum() == null || !region.getRegionEnum().isUS())
-      {
-        region.estimateInitialCropLandArea(cropLoader.getCategoryData());
-      }
-    }
+    //for (Region region : regionList) region.estimateInitialBudget(cropLoader.getCategoryData());
+    //for (Region region : regionList)
+    //{
+    //  if (region.getRegionEnum() == null || !region.getRegionEnum().isUS())
+    // {
+    //    region.estimateInitialCropLandArea(cropLoader.getCategoryData());
+    //  }
+    //}
 
     // Now iterate over the enumeration to optimize planting for each game
     // region.
     //
-    for (EnumRegion region : EnumRegion.values())
-    {
+    //for (EnumRegion region : EnumRegion.values())
+    //{
       // TODO : The tile optimization function will only work if we have the
       // CropClimateData structure correctly populated for each of the crops.
       //
       // calculate OTHER_CROPS temp & rain requirements for each country
-      for (Territory state : regionList[region.ordinal()].getTerritories())
-      {
+    //  for (Territory state : regionList[region.ordinal()].getTerritoryList())
+    //  {
 
-        CropOptimizer optimizer = new CropOptimizer(Constant.FIRST_YEAR, state);
-        optimizer.optimizeCrops();
-      }
-    }
+    //    CropOptimizer optimizer = new CropOptimizer(Constant.FIRST_YEAR, state);
+    //    optimizer.optimizeCrops();
+    //  }
+    //}
 
     // Finally, aggregate the totals for all regions (including book keeping).
     //
-    if (debugLevel.intValue() < Level.INFO.intValue())
-    { Simulator.dbg.println("*** Initialized territory data .............");
-    }
+    //if (debugLevel.intValue() < Level.INFO.intValue())
+    //{ Simulator.dbg.println("*** Initialized territory data .............");
+    //}
 
-    for (Region region : regionList)
-    { region.aggregateTerritoryFields(Constant.FIRST_YEAR);
-      if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(region, Constant.FIRST_YEAR);
-    }
+    //for (Region region : regionList)
+    //{ region.aggregateTerritoryFields(Constant.FIRST_YEAR);
+    //  if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(region, Constant.FIRST_YEAR);
+    //}
   }
 
 
@@ -430,8 +522,8 @@ public class Model
         {
           // do a hurricane
           Region us = regionList[EnumRegion.SIZE];
-          int idx = rand.nextInt(us.getTerritories().size()-1) + 1;
-          for (Territory territory : us.getTerritories())
+          int idx = rand.nextInt(us.getTerritoryList().size()-1) + 1;
+          for (Territory territory : us.getTerritoryList())
           {
             if (idx == 0)
             {
@@ -530,7 +622,7 @@ public class Model
   }
 
   private void updateHumanDevelopmentIndex(){
-    // TODO: HDI is updated in the roll-up of the territories into regions, based on the
+    // TODO: HDI is updated in the roll-up of the territoryList into regions, based on the
     // undernourished factor.
     //
   }
@@ -552,7 +644,7 @@ public class Model
 
     // Print each territory.
     //
-    for (Territory territory : region.getTerritories())
+    for (Territory territory : region.getTerritoryList())
     { Simulator.dbg.print("\t" + territory.getName() + ": ");
       for (EnumFood food : EnumFood.values()) Simulator.dbg.print(" " + territory.getCropNeedPerCapita(food));
       Simulator.dbg.println();
@@ -573,7 +665,7 @@ public class Model
 
     // Print each territory.
     //
-    for (Territory territory : region.getTerritories())
+    for (Territory territory : region.getTerritoryList())
     { Simulator.dbg.print("\t" + territory.getName() + ": ");
       for (EnumFood food : EnumFood.values()) Simulator.dbg.print(" " + territory.getCropYield(food));
       Simulator.dbg.println();
@@ -584,7 +676,7 @@ public class Model
   {
     Simulator.dbg.println("Region " + region.getName() + " population " + region.getPopulation(year));
     Simulator.dbg.print("\tTerritories : ");
-    for (Territory territory : region.getTerritories())
+    for (Territory territory : region.getTerritoryList())
     {
       Simulator.dbg.print("\t" + territory.getPopulation(year));
     }
@@ -596,7 +688,7 @@ public class Model
     // Print just the cell at the capital.
     //
     Simulator.dbg.println("Region " + region.getName() + " climate : ");
-    for (Territory territory : region.getTerritories())
+    for (Territory territory : region.getTerritoryList())
     {
       MapPoint capitol = territory.getCapitolLocation();
       LandTile tile = tileManager.getTile(capitol.longitude, capitol.latitude);
@@ -610,7 +702,7 @@ public class Model
     for (Region region : regionList)
     {
       System.out.println("Region : " + region.getName());
-      for (Territory unit : region.getTerritories())
+      for (Territory unit : region.getTerritoryList())
       {
         System.out.println("\t" + unit.toString());
         if (verbose == false) continue;
@@ -628,14 +720,14 @@ public class Model
   {
     Simulator.dbg.println("Region : " + region.getName());
     Simulator.dbg.print("\tTerritories : ");
-    for (Territory territory : region.getTerritories()) {
+    for (Territory territory : region.getTerritoryList()) {
       Simulator.dbg.print("\t" + territory.getName());
     }
     Simulator.dbg.println();
 
     printData(region, year, "");
 
-    for (Territory territory : region.getTerritories()) {
+    for (Territory territory : region.getTerritoryList()) {
       if (debugLevel.intValue() <= Level.FINER.intValue()) printData(territory, year, "\t");
       if (debugLevel.intValue() <= Level.FINEST.intValue())
       {
@@ -646,7 +738,7 @@ public class Model
     }
   }
 
-  public void printData(AbstractTerritory unit, int year, String prefix)
+  public void printData(Territory unit, int year, String prefix)
   {
     Simulator.dbg.println(prefix + "Data for " + unit.getName() + " in year " + year);
     Simulator.dbg.print(prefix + prefix + "\t");

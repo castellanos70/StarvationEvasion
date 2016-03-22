@@ -18,14 +18,14 @@ import java.lang.IllegalStateException;
  * Region class extends AbstractAgriculturalUnit, includes methods for accessing its
  * fields.
  */
-public class Region extends AbstractTerritory
+public class Region extends Territory
 {
   private static final int PLAYER_START_REVENUE = 50; //million dollars
   private static final boolean VERBOSE = false;
 
   private EnumRegion region;
   private final Area area = new Area();
-  private final Collection<Territory> territories = new ArrayList<>();
+  private final ArrayList<Territory> territoryList = new ArrayList<>();
 
   private int revenue;
 
@@ -69,17 +69,17 @@ public class Region extends AbstractTerritory
   public int getRevenue() {return revenue;}
 
   /**
-   * @param tile Territory to add to country
+   * @param territory Territory to add to region
    */
-  public void addTerritory(Territory tile)
+  public void addTerritory(Territory territory)
   {
-    territories.add(tile);
-    area.add(tile.getArea());
+    territoryList.add(territory);
+    area.add(territory.getArea());
   }
 
   public void optimizeCrops(int year)
   {
-    for (Territory t : territories) {
+    for (Territory t : territoryList) {
       CropOptimizer optimizer = new CropOptimizer(year, t);
       optimizer.optimizeCrops();
     }
@@ -93,12 +93,12 @@ public class Region extends AbstractTerritory
    */
   public boolean containsMapPoint(MapPoint mapPoint)
   {
-    if (territories == null)
+    if (territoryList == null)
     {
       throw new RuntimeException("(!)REGIONS NOT SET YET");
     }
 
-    for (Territory t : territories)
+    for (Territory t : territoryList)
     {
       if (t.containsMapPoint(mapPoint)) return true;
     }
@@ -315,9 +315,9 @@ public class Region extends AbstractTerritory
   /**
    * @return regions
    */
-  public Collection<Territory> getTerritories()
+  public Collection<Territory> getTerritoryList()
   {
-    return territories;
+    return territoryList;
   }
 
   /**
@@ -332,7 +332,7 @@ public class Region extends AbstractTerritory
       // state incomes.
       //
       long income = 0;
-      for (Territory t : territories)
+      for (Territory t : territoryList)
       { if (t.getName().startsWith("US-")) income += t.getCropIncome(crop);
       }
 
@@ -347,7 +347,7 @@ public class Region extends AbstractTerritory
       double cropImport = (double) initialImports1981[crop.ordinal()] / population[0];
       double cropExport = (double) initialExports1981[crop.ordinal()] / population[0];
 
-      for (Territory t : territories)
+      for (Territory t : territoryList)
       { // Skip the umbrella 'Unitied States' territory object.
 	    //
         if (t.getName().startsWith("US-") == false) continue;
@@ -366,11 +366,11 @@ public class Region extends AbstractTerritory
       }
     }
 
-    for (Territory t : territories) t.updateYield();
+    for (Territory t : territoryList) t.updateYield();
   }
 
   /**
-   * Estimates the initial yield of all territories in the region.
+   * Estimates the initial yield of all territoryList in the region.
    */
   public void estimateInitialYield()
   {
@@ -408,7 +408,7 @@ public class Region extends AbstractTerritory
       double cropImport = (double) initialImports1981[crop.ordinal()] / population[0];
       double cropExport = (double) initialExports1981[crop.ordinal()] / population[0];
 
-      for (Territory t : territories)
+      for (Territory t : territoryList)
       {
         if (t.getName().startsWith("US-") == false)
         {
@@ -420,16 +420,16 @@ public class Region extends AbstractTerritory
       }
     }
 
-    for (Territory t : territories) t.updateYield();
+    for (Territory t : territoryList) t.updateYield();
   }
 
   /**
-   * Updates the yield of all territories in the region and aggregates the values for
+   * Updates the yield of all territoryList in the region and aggregates the values for
    * the entire region.
    */
   public void updateYield(int year)
   {
-    for (Territory t : territories)
+    for (Territory t : territoryList)
     {
       // replant crops based on the new land used for farming
       CropOptimizer cropOptimizer = new CropOptimizer(year, t);
@@ -466,7 +466,7 @@ public class Region extends AbstractTerritory
 
 
   /**
-   * Estimates the initial crop budget for a all of the territories in the region by multiplying the territory
+   * Estimates the initial crop budget for a all of the territoryList in the region by multiplying the territory
    * consumption of the crop by its cost.
    *
    * @param cropData crop data loaded from "/data/sim/CropData.csv"
@@ -477,7 +477,7 @@ public class Region extends AbstractTerritory
     {
       double cropConsumptionPerCapita = getInitialConsumption(zoneData.food, Constant.FIRST_YEAR) / getPopulation(Constant.FIRST_YEAR);
 
-      for (Territory t : getTerritories())
+      for (Territory t : getTerritoryList())
       {
         double territoryCropConsumption = cropConsumptionPerCapita * t.getPopulation(Constant.FIRST_YEAR);
         long budget = (long) territoryCropConsumption * zoneData.pricePerMetricTon;
@@ -494,7 +494,7 @@ public class Region extends AbstractTerritory
       landCrop[food.ordinal()] = 0;
     }
 
-    for (Territory t : getTerritories())
+    for (Territory t : getTerritoryList())
     {
       if (t.getGameRegion() != null)
       {
@@ -535,7 +535,7 @@ public class Region extends AbstractTerritory
   {
     landTotal = 0;
     totalFarmLand = 0;
-    for (Territory t : getTerritories())
+    for (Territory t : getTerritoryList())
     {
       if (t.getGameRegion() != null)
       {
@@ -547,11 +547,11 @@ public class Region extends AbstractTerritory
   }
 
   /**
-   * A region is a collection of one or more territories.
+   * A region is a collection of one or more territoryList.
    */
   public void aggregateTerritoryFields(int year)
   {
-    if (VERBOSE) System.out.println("========> aggregateTerritoryFields("+year+")  territories="+ territories.size());
+    if (VERBOSE) System.out.println("========> aggregateTerritoryFields(" + year + ")  territoryList=" + territoryList.size());
 
     population[year - Constant.FIRST_YEAR] = 0;
     births = 0;
@@ -568,7 +568,7 @@ public class Region extends AbstractTerritory
       cropExport[i] = 0;
     }
 
-    for (Territory part : territories)
+    for (Territory part : territoryList)
     {
       population[year - Constant.FIRST_YEAR] += part.getPopulation(year);
       births          += part.births;
@@ -603,7 +603,7 @@ public class Region extends AbstractTerritory
    */
   public void setCropNeedPerCapita(EnumFood crop, double tonsConsumed, double percentUndernourished)
   {
-    for (Territory unit : territories)
+    for (Territory unit : territoryList)
     {
       unit.setCropNeedPerCapita(crop, tonsConsumed, percentUndernourished);
     }
@@ -628,9 +628,9 @@ public class Region extends AbstractTerritory
 
     // Divide it up amongst the units.
     //
-    //double perUnit = tonPerPerson / territories.size();
-    //double remainder = tonPerPerson % (territories.size() * perUnit);
-    for (Territory unit : territories)
+    //double perUnit = tonPerPerson / territoryList.size();
+    //double remainder = tonPerPerson % (territoryList.size() * perUnit);
+    for (Territory unit : territoryList)
     {
       unit.setCropNeedPerCapita(crop, tonPerPerson);
       //remainder = 0;
@@ -651,7 +651,7 @@ public class Region extends AbstractTerritory
     //
     boolean updateTerritories = region != null && year != Constant.FIRST_YEAR;
     int people = 0, underfed = 0;
-    for (Territory t : territories)
+    for (Territory t : territoryList)
     { // Territory.updatePopulation because it updates internal state variables related
       // to production.
       //

@@ -59,7 +59,7 @@ public class SummaryBar extends GridPane
     //set assignedRegion to whatever the GUIOrig was passed
     if (gui.assignedRegion == null)
     {
-      region = EnumRegion.CALIFORNIA;
+      region = EnumRegion.USA_CALIFORNIA;
     }
     else
     {

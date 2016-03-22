@@ -3,7 +3,7 @@ package starvationevasion.sim.events;
 
 import starvationevasion.common.EnumSpecialEvent;
 import starvationevasion.common.MapPoint;
-import starvationevasion.sim.AbstractTerritory;
+import starvationevasion.sim.Territory;
 
 
 /**
@@ -11,11 +11,11 @@ import starvationevasion.sim.AbstractTerritory;
  *
  * T is the type of area the event effects (territory, region, etc...)
  */
-public abstract class AbstractEvent<T extends AbstractTerritory>
+public abstract class AbstractEvent
 {
   private EnumSpecialEvent eventType;
   private int duration;
-  T landArea;
+  private Territory landArea;
 
   /**
    * Creates a special event object
@@ -24,7 +24,7 @@ public abstract class AbstractEvent<T extends AbstractTerritory>
    * @param landArea The land area (Territory, Region, etc...) this event effects
    * @param duration How many simulator years this event lasts
    */
-  public AbstractEvent(EnumSpecialEvent eventType, T landArea, int duration)
+  public AbstractEvent(EnumSpecialEvent eventType, Territory landArea, int duration)
   {
     this.eventType = eventType;
     this.landArea = landArea;
@@ -57,7 +57,7 @@ public abstract class AbstractEvent<T extends AbstractTerritory>
     return duration;
   }
 
-  public T getLandArea()
+  public Territory getLandArea()
   {
     return landArea;
   }

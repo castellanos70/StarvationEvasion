@@ -81,7 +81,7 @@ public class Hand extends GridPane
     {
       //Needs working connection
      // ClientPolicyCard clientPolicyCard=new ClientPolicyCard(GUIOrig.client.getAssignedRegion(),hand[i],GUIOrig);
-      ClientPolicyCard clientPolicyCard=new ClientPolicyCard(EnumRegion.CALIFORNIA,hand[i],gui);
+      ClientPolicyCard clientPolicyCard=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA,hand[i],gui);
       clientPolicyCard.setHandIndex(i);
       elements.add(clientPolicyCard);
       add(clientPolicyCard,i,0);
@@ -178,7 +178,7 @@ public class Hand extends GridPane
           if (numberOfActionsUsed == 2) gui.getDraftLayout().getActionButtons().setDisableOnBigDiscardButton(true);
           card.setSelectedFood(gui.getDraftLayout().getProductBar().getSelectedElement());
 
-          if(!gui.client.isAI&&Map.currentlySelectedRegion.isPresent())card.setSelectedRegion(Map.currentlySelectedRegion.get());
+          //if(!gui.client.isAI&&Map.currentlySelectedRegion.isPresent())card.setSelectedRegion(Map.currentlySelectedRegion.get());
         }
       }
     }
@@ -298,7 +298,7 @@ public class Hand extends GridPane
     {
       Collections.shuffle(validCards);
       draftCard(validCards.get(0));
-      gui.client.draftCard(validCards.get(0).getPolicyCard());
+     // gui.client.draftCard(validCards.get(0).getPolicyCard());
     }
   }
 
@@ -307,7 +307,7 @@ public class Hand extends GridPane
    */
   public void dealRandomHand()
   {
-    CardDeck deck =new CardDeck(EnumRegion.CALIFORNIA);
+    CardDeck deck =new CardDeck(EnumRegion.USA_CALIFORNIA);
     setHand(deck.drawCards());
   }
   private boolean isLegal(ClientPolicyCard card)

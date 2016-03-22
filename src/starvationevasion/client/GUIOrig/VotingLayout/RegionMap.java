@@ -37,37 +37,37 @@ public class RegionMap extends Group
     float xOffset;
     switch (region)
     {
-      case CALIFORNIA:
+      case USA_CALIFORNIA:
         fxmlRegionFileName = "California.fxml";
         scale = 0.6f;
         xOffset = 40;
         break;
-      case MOUNTAIN:
+      case USA_MOUNTAIN:
         fxmlRegionFileName = "Mountain.fxml";
         scale = 0.35f;
         xOffset = 20;
         break;
-      case SOUTHERN_PLAINS:
+      case USA_SOUTHERN_PLAINS:
         fxmlRegionFileName = "Southern_Plains.fxml";
         scale = 0.525f;
         xOffset = 0;
         break;
-      case NORTHERN_PLAINS:
+      case USA_NORTHERN_PLAINS:
         fxmlRegionFileName = "Northern_Plains.fxml";
         scale = 0.5f;
         xOffset = 40;
         break;
-      case HEARTLAND:
+      case USA_HEARTLAND:
         fxmlRegionFileName = "Heartland.fxml";
         scale = 0.8f;
         xOffset = 10;
         break;
-      case SOUTHEAST:
+      case USA_SOUTHEAST:
         fxmlRegionFileName = "Southeast.fxml";
         scale = 0.49f;
         xOffset = 20;
         break;
-      case NORTHERN_CRESCENT:
+      case USA_NORTHERN_CRESCENT:
         fxmlRegionFileName = "Northern_Crescent.fxml";
         scale = 0.45f;
         xOffset = 0;

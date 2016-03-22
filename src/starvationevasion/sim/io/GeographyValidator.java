@@ -2,7 +2,6 @@ package starvationevasion.sim.io;
 
 import org.xml.sax.SAXException;
 import starvationevasion.sim.GeographicArea;
-import starvationevasion.sim.util.EquirectangularConverter;
 import starvationevasion.sim.util.MapConverter;
 import starvationevasion.common.MapPoint;
 
@@ -16,7 +15,7 @@ import java.awt.geom.Area;
  */
 public class GeographyValidator
 {
-  private static final  MapConverter CONVERTER = new EquirectangularConverter();
+  private static final  MapConverter CONVERTER = new MapConverter();
 
   public boolean validate(GeographicArea region) throws SAXException
   {

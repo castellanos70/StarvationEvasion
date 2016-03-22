@@ -17,8 +17,8 @@ build () {
     cp -rf data/* dist/
     cp -rf libs dist/
     if [[ -n $(groups $(whoami) | grep foodgame) ]]; then
-	chgrp -R foodgame dist
-	chmod -R g+rwx dist
+	    chgrp -R foodgame dist
+	    chmod -R g+rwx dist
     fi
 
     javac -classpath ".:libs/*" @files.txt -d ./dist

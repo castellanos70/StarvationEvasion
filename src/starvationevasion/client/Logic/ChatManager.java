@@ -1,6 +1,7 @@
 package starvationevasion.client.Logic;
 
 import starvationevasion.client.Client;
+import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 
 /**
@@ -14,7 +15,7 @@ public class ChatManager
   {
   this.client=client;
   }
-  public void sendChatToServer(String message,EnumRegion region)
+  public void sendChatToServer(String message,EnumRegion region,EnumPolicy card)
   {
     String msg="chat " +region.toString()+" {\"card\":null,\"text\":\""+client.getRegion().toString()+": "+message+"\"}";
     client.writeToServer(msg);

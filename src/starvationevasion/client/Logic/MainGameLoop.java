@@ -38,6 +38,7 @@ public class MainGameLoop
       public void run()
       {
         chatNode.setChatMessages(chatManager.getChat());
+        chatNode.setHand(gui.getDraftLayout().getHand().getHand());
       }
     };
     timer.schedule(timerTask,100,100);

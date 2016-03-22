@@ -70,8 +70,6 @@ public class DraftLayout extends GridPane
 
     //node to let the user access the visualizer
 
-    chatNode=new ChatNode(gui);
-    this.add(chatNode,0,0,1,3);
     //visNode = new VisNode(primaryStage,GUIOrig,this);
     //this.add(visNode, 0,0,1,3);
 
@@ -127,6 +125,9 @@ public class DraftLayout extends GridPane
 
     discardDisplay = new DiscardDisplay(gui);
     this.add(discardDisplay,1, 5, 3, 4);
+
+    chatNode=new ChatNode(gui);
+    this.add(chatNode,0,0,1,3);
 
     this.setBackground(new Background(new BackgroundImage(
       gui.getImageGetter().getBackground(),

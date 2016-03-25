@@ -1,5 +1,8 @@
 package starvationevasion.client.GUIOrig.DraftLayout.hand;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ComboBox;
 import starvationevasion.client.GUIOrig.GUI;
 
 import starvationevasion.common.EnumFood;
@@ -23,6 +26,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 
@@ -234,8 +239,8 @@ public class ClientPolicyCard extends VBox
    */
   public void setBasicCard()
   {
-    double cardHeight=gui.getBoxHeight()*2;
-    double cardWidth=gui.getBoxWidth()*(1.33);
+    double cardHeight=gui.getBoxHeight()*4;
+    double cardWidth=gui.getBoxWidth()*(3);
     this.getChildren().clear();
     this.setPrefSize(cardWidth,cardHeight);
     setMaxSize(cardWidth,cardHeight);
@@ -486,6 +491,56 @@ public class ClientPolicyCard extends VBox
     selected=!selected;
   }
 
+  public void setVeryDetailed(){
+    isFlipped=false;
+    this.setFocused(true);
+    this.getChildren().clear();
+    Label title=new Label(policy.getTitle());
+    Label gameText=new Label(policy.getGameText());
+    Label cost=new Label(String.valueOf(policy.votesRequired()));
+    gameText.setWrapText(true);
+
+    //title.setFont(Font.font("helvetica",FontWeight.BOLD,9));
+    title.setWrapText(true);
+    title.setTextFill(Color.ALICEBLUE);
+    title.setAlignment(Pos.CENTER);
+    title.setTextAlignment(TextAlignment.CENTER);
+    if(policy.getGameText().length()<=180)
+    {
+      //gameText.setFont(Font.font("helvetica", FontWeight.THIN, 8));
+    }//else gameText.setFont(Font.font("helvetica", FontWeight.THIN, 6));
+    gameText.setStyle("-fx-background-color: #91A7AD;"+" -fx-border-radius: 3 3 3 3;\n" +
+            "  -fx-background-radius: 3 3 3 3;"+"-fx-border-style:solid;");
+    gameText.autosize();
+    view= gui.getImageGetter().getImageForCard(enumPolicy);
+    view.setFitHeight(100);
+    view.setFitWidth(100);
+    //setPrefSize(750, 250);
+    setAlignment(Pos.CENTER);
+    getChildren().add(title);
+    getChildren().add(view);
+    getChildren().add(gameText);
+    addSliderFromText("");
+    if(needsRegion())
+    {
+      ArrayList<EnumRegion> regions=new ArrayList<>(Arrays.asList(EnumRegion.US_REGIONS));
+      //regions.add(null);
+      ObservableList<EnumRegion> regionList= FXCollections.observableArrayList(regions);
+      ComboBox<EnumRegion>regionSelection =new ComboBox<>(regionList);
+      getChildren().add(regionSelection);
+    }
+    if(needsFood())
+    {
+      ArrayList<EnumFood> regions=new ArrayList<>(Arrays.asList(EnumFood.values()));
+     // regions.add(null);
+      ObservableList<EnumFood> regionList= FXCollections.observableArrayList(regions);
+      ComboBox<EnumFood>regionSelection =new ComboBox<>(regionList);
+      getChildren().add(regionSelection);
+    }
+//    this.setScaleX(2);
+//    this.setScaleY(2);
+//    this.setTranslateY(-80);
+  }
 
 //For parsing game text to find X,Y, and Z and swaping with the XValue,YValue, and ZValue
   private void addSliderFromText(String gameText)

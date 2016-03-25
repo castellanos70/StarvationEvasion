@@ -72,7 +72,10 @@ public class GUI extends Application
    */
   public GUI()
   {
-
+      super();
+    client2=new Client("Nathan", 2020);
+    this.localDataContainer = localDataContainer;
+    assignedRegion = client2.getRegion();
   }
 
   /**
@@ -145,8 +148,11 @@ public class GUI extends Application
       mainGameLoop.stop();
     });
   }
-
-
+  @Override
+  public void stop()
+  {
+    client2.closeAll();
+  }
   /**
    * Simple getter in case any node needs to get the stage
    * @return

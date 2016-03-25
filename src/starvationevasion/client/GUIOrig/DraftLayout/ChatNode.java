@@ -44,14 +44,14 @@ public class ChatNode extends BorderPane
     ArrayList<EnumRegion> regions=new ArrayList<>(Arrays.asList(EnumRegion.US_REGIONS));
     regions.add(null);
     ObservableList<EnumRegion> regionList= FXCollections.observableArrayList(regions);
-    regionSelection =new ComboBox(regionList);
+    regionSelection =new ComboBox<>(regionList);
 
     if(gui.getDraftLayout()!=null)
     {
       currentHand=gui.getDraftLayout().getHand().getHand();
       ArrayList<EnumPolicy> hand = new ArrayList<>(Arrays.asList(currentHand));
       ObservableList<EnumPolicy> handList= FXCollections.observableArrayList(hand);
-      cardSelection =new ComboBox(handList);
+      cardSelection =new ComboBox<>(handList);
     }else cardSelection=new ComboBox();
 
 
@@ -74,17 +74,13 @@ public class ChatNode extends BorderPane
         sendMessage();
       }
     });
-    confirm.setOnAction(event ->
-    {
-      sendMessage();
-    });
+    confirm.setOnAction(event -> sendMessage());
 
   }
   public void setHand(EnumPolicy[] newHand)
   {
     if(currentHand!=null&&!currentHand.equals(newHand))
     {
-      System.out.println("hell0"+newHand.toString());
       ArrayList<EnumPolicy> hand = new ArrayList<>(Arrays.asList(newHand));
       ObservableList<EnumPolicy> handList = FXCollections.observableArrayList(hand);
       cardSelection.setItems(handList);
@@ -93,7 +89,7 @@ public class ChatNode extends BorderPane
   }
   private void sendMessage()
   {
-    if(inputMessage.getText()!="")
+    if(!inputMessage.getText().equals(""))
     {
       if(regionSelection.getValue()==null)
       {

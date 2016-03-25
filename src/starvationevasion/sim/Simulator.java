@@ -69,9 +69,8 @@ public class Simulator
    */
   public WorldData getWorldData()
   {
-    WorldData startWorldData = new WorldData();
-    //model.appendWorldData(startWorldData);
-    return startWorldData;
+
+    return model.populateWorldData(model.getCurrentYear());
   }
 
   /**

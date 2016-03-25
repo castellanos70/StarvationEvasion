@@ -32,8 +32,6 @@ public class Territory
 
   protected String name;
 
-  protected static final int YEARS_OF_SIM = 1+Constant.LAST_YEAR - Constant.FIRST_YEAR;
-
   protected GeographicArea border;
 
   //AbstractTerritory is extended by Territory and by Region.
@@ -53,7 +51,7 @@ public class Territory
   //      for these quantities: such as a constant rate of change of birth rate replacing the
   //      constant birth rate or a data lookup table that has predefined values for each year.
   //      The development team should expect and plan for such mid-milestone updates.
-  protected int[] population = new int[YEARS_OF_SIM];       // in people
+  protected int[] population = new int[Model.YEARS_OF_SIM];       // in people
   protected int medianAge;  // in years
   protected int births;  // number of live births x 1,000 per year.
   protected int mortality;   // number of deaths x 1,000 per year.
@@ -181,6 +179,7 @@ public class Territory
 
   private void init()
   {
+    //System.out.println("*******Territory.init(): " + name);
     cultivationMethod[EnumFarmMethod.CONVENTIONAL.ordinal()] =
       100 - (cultivationMethod[EnumFarmMethod.GMO.ordinal()]
           +  cultivationMethod[EnumFarmMethod.ORGANIC.ordinal()]);
@@ -189,7 +188,7 @@ public class Territory
     //  are obtained from 3rd party historical or simulation results.
     //Also at the start of the game, the in between years are estimated using linear interpolation (this code is done here).
 
-    /*
+
     int lastIdx = 0;
     int i = 1;
     while(i<population.length)
@@ -197,6 +196,8 @@ public class Territory
       if (population[i] > 0)
       {
         lastIdx = i;
+        //System.out.println("population["+i+"]="+ population[i]+"xxxxx");
+        i++;
         continue;
       }
 
@@ -211,12 +212,13 @@ public class Territory
       }
       for (int k=lastIdx+1; k<nextIdx; k++)
       {
-        double w = (k-lastIdx)/(nextIdx-lastIdx);
+        double w = (double)(k-lastIdx)/(double)(nextIdx-lastIdx);
         population[k] = (int)(population[lastIdx]*w + population[nextIdx]*(1.0-w) );
+        //System.out.println("population["+k+"]="+ population[k]);
       }
-      i++;
+      i = nextIdx;
     }
-    */
+
   }
 
 

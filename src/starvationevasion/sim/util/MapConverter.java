@@ -70,10 +70,9 @@ public class MapConverter
 
   /**
    Convert longitude to graphics X, assuming a reference point of (0,0) in
-   spherical coords
+   spherical coords.
 
-   @param lon
-   decimal longitude to convert
+   @param lon decimal longitude to convert
 
    @return longitude, scaled and projected in X
    */

@@ -1,5 +1,7 @@
 package starvationevasion.common;
 
+import java.util.ResourceBundle;
+
 /**
  * Enumerates each of the geographic regions used in the game: both Player
  * and non-Player regions.<br><br>
@@ -64,9 +66,8 @@ public enum EnumRegion
     RUSSIA, CENTRAL_ASIA, SOUTH_ASIA, EAST_ASIA, SOUTHEAST_ASIA, OCEANIA
   };
 
-//  private final ResourceBundle res = ResourceBundle.getBundle("strings_enum");
-//  private final String shortName = res.getString("EnumRegion." + name() + ".shortName");
-
+  //private final ResourceBundle res = ResourceBundle.getBundle("strings_enum");
+  //private final String shortName = res.getString("EnumRegion." + name() + ".shortName");
 
 
   /**

@@ -179,6 +179,47 @@ public class Territory
   }
 
 
+  private void init()
+  {
+    cultivationMethod[EnumFarmMethod.CONVENTIONAL.ordinal()] =
+      100 - (cultivationMethod[EnumFarmMethod.GMO.ordinal()]
+          +  cultivationMethod[EnumFarmMethod.ORGANIC.ordinal()]);
+
+    //At the start of the game, populations for each territory for 1981, 1990, 2000, 2010, 2014, 2025, and 2050
+    //  are obtained from 3rd party historical or simulation results.
+    //Also at the start of the game, the in between years are estimated using linear interpolation (this code is done here).
+
+    /*
+    int lastIdx = 0;
+    int i = 1;
+    while(i<population.length)
+    {
+      if (population[i] > 0)
+      {
+        lastIdx = i;
+        continue;
+      }
+
+      int nextIdx = i+1;
+      while (nextIdx<population.length)
+      {
+        if (population[nextIdx] > 0)
+        {
+          break;
+        }
+        nextIdx++;
+      }
+      for (int k=lastIdx+1; k<nextIdx; k++)
+      {
+        double w = (k-lastIdx)/(nextIdx-lastIdx);
+        population[k] = (int)(population[lastIdx]*w + population[nextIdx]*(1.0-w) );
+      }
+      i++;
+    }
+    */
+  }
+
+
   /**
    * @return country name
    */
@@ -191,7 +232,7 @@ public class Territory
    * @param year year in question
    * @return population in that year
    */
-  final public int getPopulation(int year)
+  public int getPopulation(int year)
   {
     return population[year - Constant.FIRST_YEAR];
   }
@@ -1016,10 +1057,7 @@ public class Territory
           case gmo: territory.setMethod(EnumFarmMethod.GMO, (int) value); break;
         }
       }
-
-      int conventional = 100 -
-        (territory.getMethod(EnumFarmMethod.GMO) + territory.getMethod(EnumFarmMethod.ORGANIC));
-      territory.setMethod(EnumFarmMethod.CONVENTIONAL, conventional);
+      territory.init();
 
       //Read next record
       fieldList = fileReader.readRecord(EnumHeader.SIZE);

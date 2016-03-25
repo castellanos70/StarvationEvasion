@@ -66,8 +66,8 @@ public enum EnumRegion
     RUSSIA, CENTRAL_ASIA, SOUTH_ASIA, EAST_ASIA, SOUTHEAST_ASIA, OCEANIA
   };
 
-  //private final ResourceBundle res = ResourceBundle.getBundle("strings_enum");
-  //private final String shortName = res.getString("EnumRegion." + name() + ".shortName");
+  private final ResourceBundle res = ResourceBundle.getBundle("strings_enum");
+  private final String shortName = res.getString("EnumRegion." + name() + ".shortName");
 
 
   /**
@@ -79,7 +79,7 @@ public enum EnumRegion
     return 1 << ordinal();
   }
 
-//  public String toString() { return shortName; }
+  public String toString() { return shortName; }
 
   public static int allUSRegionBits()
   {

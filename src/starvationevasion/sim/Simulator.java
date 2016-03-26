@@ -60,7 +60,7 @@ public class Simulator
   }
 
 
-  boolean assertSimulator()
+  private boolean assertSimulator()
   {
     WorldData world = getWorldData();
     assert((world.year != 0));
@@ -69,7 +69,7 @@ public class Simulator
       assert(world.foodPrice[i] != 0);
     for(RegionData region : world.regionData)
     {
-      assert(region.ethanolProducerTaxCredit != 0);
+//      assert(region.ethanolProducerTaxCredit != 0);
       assert(region.population != 0);
       assert(region.undernourished != 0);
       assert(region.humanDevelopmentIndex != 0);

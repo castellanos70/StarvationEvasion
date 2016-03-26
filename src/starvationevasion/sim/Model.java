@@ -86,8 +86,11 @@ public class Model
   // Verbosity of debug information during startup
   //
   private final static Level debugLevel = Level.FINE;
+  public static final int YEARS_OF_SIM = 1+Constant.LAST_YEAR - Constant.FIRST_YEAR;
 
   private final static boolean DEBUG = true;
+
+  private WorldData[] worldDataAllYears = new WorldData[YEARS_OF_SIM];
 
   private final int startYear;
   private int year;
@@ -157,6 +160,12 @@ public class Model
 
       //load any special events
       //loadExistingSpecialEvents();
+
+    for (int i=0; i<YEARS_OF_SIM; i++)
+    {
+      worldDataAllYears[i] = new WorldData();
+    }
+    populateWorldData(startYear);
   }
 
   private boolean assertTerritories()
@@ -220,7 +229,7 @@ public class Model
       }
   }
 
-
+  public int getCurrentYear() {return year;}
 
   public Region getRegion(EnumRegion r)
   {
@@ -254,7 +263,13 @@ public class Model
     {
       int regionIdx = territory.getGameRegion().ordinal();
       regionList[regionIdx].addTerritory(territory);
+
+      for (int i=0; i<YEARS_OF_SIM; i++)
+      {
+        regionList[regionIdx].population[i] += territory.population[i];
+      }
     }
+
 
     //try{cropLoader = new CropCSVLoader();} catch (Throwable t){ System.out.println("CROP_LOADER "+t);}
     //cropZoneDatum = cropLoader.getCategoryData();
@@ -352,7 +367,7 @@ public class Model
 
     updateHumanDevelopmentIndex(); // Done.
 
-    appendWorldData(threeYearData); // Done
+    //appendWorldData(threeYearData); // Done
 
     if (debugLevel.intValue() < Level.INFO.intValue())
     { Simulator.dbg.println("******************************************* FINAL Stats for " + debugRegion + " in " + year);
@@ -362,23 +377,26 @@ public class Model
     return year;
   }
 
-  protected void appendWorldData(WorldData threeYearData)
+  protected WorldData populateWorldData(int year)
   {
-    ArrayList<CropZoneData> categoryData = cropLoader.getCategoryData();
+    //ArrayList<CropZoneData> categoryData = cropLoader.getCategoryData();
 
-    threeYearData.year = year;
-    threeYearData.seaLevel = seaLevel.getSeaLevel(year);
-    for (int i=0; i< EnumFood.SIZE; i++)
-    {
-      CropZoneData currentZone   = categoryData.get(i);
-      threeYearData.foodPrice[i] = currentZone.pricePerMetricTon;
-    }
+    int yearIdx = year - Constant.FIRST_YEAR;
+    WorldData data = worldDataAllYears[yearIdx];
+    data.year = year;
+
+    //threeYearData.seaLevel = seaLevel.getSeaLevel(year);
+    //for (int i=0; i< EnumFood.SIZE; i++)
+    //{
+    //  CropZoneData currentZone   = categoryData.get(i);
+    //  threeYearData.foodPrice[i] = currentZone.pricePerMetricTon;
+    //}
 
 
     //Region Data
     for (int i=0; i<EnumRegion.SIZE; i++)
     {
-      RegionData region = threeYearData.regionData[i];
+      RegionData region = data.regionData[i];
       region.population = regionList[i].getPopulation(year);
       region.undernourished = regionList[i].getUndernourished();
       region.humanDevelopmentIndex = regionList[i].getHumanDevelopmentIndex();
@@ -401,6 +419,7 @@ public class Model
         region.farmArea[food.ordinal()] = regionList[i].getCropLand(food);
       }
     }
+    return data;
   }
 
   /**

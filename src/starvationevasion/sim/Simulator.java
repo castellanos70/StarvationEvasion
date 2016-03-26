@@ -56,10 +56,57 @@ public class Simulator
     {
       playerDeck[playerRegion.ordinal()] = new CardDeck(playerRegion);
     }
+    assert(assertSimulator());
   }
 
 
+  private boolean assertSimulator()
+  {
+    WorldData world = getWorldData();
+    assert((world.year != 0));
+    assert(world.seaLevel != 0);
+    for(int i = 0; i < EnumFood.SIZE; i++)
+      assert(world.foodPrice[i] != 0);
+    for(RegionData region : world.regionData)
+    {
+//      assert(region.ethanolProducerTaxCredit != 0);
+      assert(region.population != 0);
+      assert(region.undernourished != 0);
+      assert(region.humanDevelopmentIndex != 0);
 
+      for(int i = 0; i < EnumFood.SIZE; i++)
+        if(region.farmArea[i] != 0)
+        {
+          assert(region.foodProduced[i] != 0);
+          assert(region.foodIncome[i] != 0);
+        }
+    } //Check that WorldData is properly instantiated
+    EnumRegion player = EnumRegion.USA_CALIFORNIA;
+    EnumPolicy[] hand = drawCards(player);
+    assert(hand.length == Constant.MAX_HAND_SIZE);
+    //Check that hand is empty at beginning of game, all cards have been drawn,
+    assert(drawCards(player) == null);
+    //Constant check of enum value, hand should be full so nothing happens
+    for(int i = 0; i < Constant.MAX_HAND_SIZE; i++){}
+      //validate cards, doesn't do anything if they are enums
+
+    Boolean ex = false;
+    discard(player, hand[0]);
+    try
+    {
+      discard(player, hand[0]);
+    }
+    catch(IllegalArgumentException e)
+    {
+      ex = true;
+    }
+    assert(ex);
+    //Assuring that cards are being removed from the hand
+
+    WorldData turnWorld = nextTurn(null);
+    assert(!world.equals(turnWorld));
+    return true;
+  }
   /**
    * The Server should call getWorldData() at the start of the game before dealing cards to
    * players.
@@ -69,9 +116,8 @@ public class Simulator
    */
   public WorldData getWorldData()
   {
-    WorldData startWorldData = new WorldData();
-    //model.appendWorldData(startWorldData);
-    return startWorldData;
+
+    return model.populateWorldData(model.getCurrentYear());
   }
 
   /**

@@ -52,8 +52,8 @@ public class WorldData implements JSON
       regionData[i] = new RegionData(EnumRegion.values()[i]);
     }
   }
-  
-  
+
+
   /**
    * @return Data stored in this structure as a formatted String.
    */
@@ -133,40 +133,38 @@ public class WorldData implements JSON
 
     List<Object> eventArray = json.get("events").array();
     for (int i = 0; i < eventArray.size(); i++)
-      eventList.add(new SpecialEventData((JSONDocument) eventArray.get(i)));
+    { eventList.add(new SpecialEventData((JSONDocument) eventArray.get(i))); }
 
     List<Object> foodPriceArray = json.get("food-prices").array();
     for (int i = 0; i < foodPriceArray.size(); i++)
-      foodPrice[i] = (double) foodPriceArray.get(i);
+    { foodPrice[i] = (double) foodPriceArray.get(i); }
 
     List<Object> regionArray = json.get("regions").array();
     for (int i = 0; i < regionArray.size(); i++)
-      regionData[i] = new RegionData((JSONDocument) regionArray.get(i));
+    { regionData[i] = new RegionData((JSONDocument) regionArray.get(i)); }
   }
 
   @Override
   public boolean equals(Object o)
   {
-    if (o == this)
-      return true;
-    if (!(o instanceof WorldData))
-      return false;
+    if (o == this) return true;
+    if (!(o instanceof WorldData)) return false;
     WorldData comp = (WorldData) o;
-    if(comp.year != this.year)
-      return false;
-    if(Double.compare(comp.seaLevel, this.seaLevel) != 0)
-      return false;
-    if(comp.eventList.size() != this.eventList.size())
-      return false;
-    for(int i = 0; i < eventList.size(); i++)
-      if(!comp.eventList.get(i).equals(this.eventList.get(i)))
-        return false;
-    for(int i =0; i < foodPrice.length; i++)
-      if(Double.compare(comp.foodPrice[i],this.foodPrice[i]) != 0)
-        return false;
-    for(int i = 0; i < regionData.length; i++)
-      if(!comp.regionData[i].equals(this.regionData[i]))
-        return false;
+    if (comp.year != this.year) return false;
+    if (Double.compare(comp.seaLevel, this.seaLevel) != 0) return false;
+    if (comp.eventList.size() != this.eventList.size()) return false;
+    for (int i = 0; i < eventList.size(); i++)
+    {
+      if (!comp.eventList.get(i).equals(this.eventList.get(i))) return false;
+    }
+    for (int i = 0; i < foodPrice.length; i++)
+    {
+      if (Double.compare(comp.foodPrice[i], this.foodPrice[i]) != 0) return false;
+    }
+    for (int i = 0; i < regionData.length; i++)
+    {
+      if (!comp.regionData[i].equals(this.regionData[i])) return false;
+    }
     return true;
   }
 }

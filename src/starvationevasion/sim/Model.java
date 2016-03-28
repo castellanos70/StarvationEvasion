@@ -107,8 +107,6 @@ public class Model
   private Region[] regionList = new Region[EnumRegion.SIZE];
 
   private SeaLevel seaLevel;
-  private CropCSVLoader cropLoader = null;
-
 
   private ArrayList<CropZoneData>     cropZoneDatum;
   private ArrayList<SpecialEventData> specialEventDatum;
@@ -134,8 +132,10 @@ public class Model
     //System.out.println("territoryList.size()=" + territoryList.size());
 
     addGeographyToTerritories(geography);
+    assert (assertTerritoryGeography());
 
-    assert (assertTerritories());
+    //new ProductionCSVLoader(regionList);
+
 
     instantiateRegions();
 
@@ -168,7 +168,7 @@ public class Model
     populateWorldData(startYear);
   }
 
-  private boolean assertTerritories()
+  private boolean assertTerritoryGeography()
   {
     Territory NewMexico = null, China = null, UnitedKingdom = null, Ireland = null;
     for (Territory territory : territoryList)
@@ -250,7 +250,7 @@ public class Model
   private void instantiateRegions()
   {
     if (DEBUG) System.out.println("Model.instantiateRegions() Enter");
-    //new ProductionCSVLoader(regionList);
+
 
     for (int i=0; i<EnumRegion.SIZE; i++)
     {
@@ -263,12 +263,13 @@ public class Model
     {
       int regionIdx = territory.getGameRegion().ordinal();
       regionList[regionIdx].addTerritory(territory);
-
-      for (int i=0; i<YEARS_OF_SIM; i++)
-      {
-        regionList[regionIdx].population[i] += territory.population[i];
-      }
     }
+
+    for (int i=0; i<EnumRegion.SIZE; i++)
+    {
+      regionList[i].aggregateTerritoryData(Constant.FIRST_YEAR);
+    }
+
 
 
     //try{cropLoader = new CropCSVLoader();} catch (Throwable t){ System.out.println("CROP_LOADER "+t);}
@@ -347,7 +348,7 @@ public class Model
 
     updateLandUse(); // Not started.
 
-    updatePopulation(); // Done.
+    //updatePopulation(); // Done.
 
     updateClimate(); // Done.
 
@@ -398,11 +399,13 @@ public class Model
     {
       RegionData region = data.regionData[i];
       region.population = regionList[i].getPopulation(year);
-      region.undernourished = regionList[i].getUndernourished();
+      region.undernourished = regionList[i].getUndernourished(year);
       region.humanDevelopmentIndex = regionList[i].getHumanDevelopmentIndex();
 
       region.revenueBalance = regionList[i].getRevenue();
+      region.landArea = regionList[i].getLandTotal();
 
+      /*
       for (EnumFood food : EnumFood.values())
       {
         region.foodProduced[food.ordinal()] += regionList[i].getCropProduction(food);
@@ -418,6 +421,7 @@ public class Model
 
         region.farmArea[food.ordinal()] = regionList[i].getCropLand(food);
       }
+      */
     }
     return data;
   }
@@ -460,28 +464,6 @@ public class Model
     }
   }
 
-  /**
-   * Updates the population of each region.
-   */
-  private void updatePopulation()
-  {
-    if (debugLevel.intValue() < Level.INFO.intValue())
-    { Simulator.dbg.println("******************************************* Updating population");
-    }
-
-    // Iterate over all of the regions, including the book keeping regions
-    //
-    // Note : The total population for the region is updated in region.aggregateTerritoryFields().
-    //
-    for (int i=0; i<EnumRegion.SIZE; i++)
-    {
-      regionList[i].updatePopulation(year);
-    }
-
-    if (debugLevel.intValue() < Level.INFO.intValue())
-    { printCurrentPopulation(regionList[debugRegion.ordinal()], year);
-    }
-  }
 
   private void updateClimate()
   {
@@ -653,19 +635,20 @@ public class Model
     specialEventDatum = loader.getEventData();
   }
 
+
   public void printCropNeed(Region region, int year)
   {
     // Print just the cell at the capital.
     //
     Simulator.dbg.println("Region " + region.getName() + " crop need per capita : ");
-    for (EnumFood food : EnumFood.values()) Simulator.dbg.print(" " + region.getCropNeedPerCapita(food));
+    //for (EnumFood food : EnumFood.values()) Simulator.dbg.print(" " + region.getCropNeedPerCapita(food));
     Simulator.dbg.println();
 
     // Print each territory.
     //
     for (Territory territory : region.getTerritoryList())
     { Simulator.dbg.print("\t" + territory.getName() + ": ");
-      for (EnumFood food : EnumFood.values()) Simulator.dbg.print(" " + territory.getCropNeedPerCapita(food));
+      //for (EnumFood food : EnumFood.values()) Simulator.dbg.print(" " + territory.getCropNeedPerCapita(food));
       Simulator.dbg.println();
     }
 
@@ -679,14 +662,14 @@ public class Model
     // Print just the cell at the capital.
     //
     Simulator.dbg.println("Region " + region.getName() + " crop yield : ");
-    for (EnumFood food : EnumFood.values()) Simulator.dbg.print(" " + region.getCropYield(food));
+    //for (EnumFood food : EnumFood.values()) Simulator.dbg.print(" " + region.getCropYield(food));
     Simulator.dbg.println();
 
     // Print each territory.
     //
     for (Territory territory : region.getTerritoryList())
     { Simulator.dbg.print("\t" + territory.getName() + ": ");
-      for (EnumFood food : EnumFood.values()) Simulator.dbg.print(" " + territory.getCropYield(food));
+      //for (EnumFood food : EnumFood.values()) Simulator.dbg.print(" " + territory.getCropYield(food));
       Simulator.dbg.println();
     }
   }
@@ -770,12 +753,7 @@ public class Model
       if (unit instanceof Region) Simulator.dbg.print("sum ");
     }
     else Simulator.dbg.print(" population : " + unit.getPopulation(year));
-
-    Simulator.dbg.print(", medianAge : " + unit.getMedianAge());
-    Simulator.dbg.print(", births : " + unit.getBirths());
-    Simulator.dbg.print(", mortality : " + unit.getMortality());
-    Simulator.dbg.print(", migration : " + unit.getMigration());
-    Simulator.dbg.print(", undernourished : " + unit.getUndernourished());
+    Simulator.dbg.print(", undernourished : " + unit.getUndernourished(year));
     Simulator.dbg.print(", landTotal : " + unit.getLandTotal());
     Simulator.dbg.println();
 
@@ -784,23 +762,23 @@ public class Model
     Simulator.dbg.println();
 
     Simulator.dbg.print(prefix + "\tcropYield : ");
-    for (EnumFood food : EnumFood.values()) Simulator.dbg.print("\t" + unit.getCropYield(food));
+    //for (EnumFood food : EnumFood.values()) Simulator.dbg.print("\t" + unit.getCropYield(food));
     Simulator.dbg.println();
 
     Simulator.dbg.print(prefix + "\tcropNeedPerCapita : ");
-    for (EnumFood food : EnumFood.values()) Simulator.dbg.print("\t" + unit.getCropNeedPerCapita(food));
+    //for (EnumFood food : EnumFood.values()) Simulator.dbg.print("\t" + unit.getCropNeedPerCapita(food));
     Simulator.dbg.println();
 
     Simulator.dbg.print(prefix + "\tcropProduction : ");
-    for (EnumFood food : EnumFood.values()) Simulator.dbg.print("\t" + unit.getCropProduction(food));
+    //for (EnumFood food : EnumFood.values()) Simulator.dbg.print("\t" + unit.getCropProduction(food));
     Simulator.dbg.println();
 
     Simulator.dbg.print(prefix + "\tcropIncome : ");
-    for (EnumFood food : EnumFood.values()) Simulator.dbg.print("\t" + unit.getCropIncome(food));
+    //for (EnumFood food : EnumFood.values()) Simulator.dbg.print("\t" + unit.getCropIncome(food));
     Simulator.dbg.println();
 
     Simulator.dbg.print(prefix + "\tlandCrop : ");
-    for (EnumFood food : EnumFood.values()) Simulator.dbg.print("\t" + unit.getCropLand(food)); // Yes, they named it backwards.
+    //for (EnumFood food : EnumFood.values()) Simulator.dbg.print("\t" + unit.getCropLand(food)); // Yes, they named it backwards.
     Simulator.dbg.println();
 
     if (unit instanceof Territory)
@@ -809,7 +787,7 @@ public class Model
       for (EnumFarmMethod method : EnumFarmMethod.values()) Simulator.dbg.print("\t" + method);
       Simulator.dbg.println();
       Simulator.dbg.print(prefix + "\tcultivationMethod : ");
-      for (EnumFarmMethod method : EnumFarmMethod.values()) Simulator.dbg.print("\t" + unit.getMethod(method));
+      //for (EnumFarmMethod method : EnumFarmMethod.values()) Simulator.dbg.print("\t" + unit.getMethod(method));
       Simulator.dbg.println();
     }
   }

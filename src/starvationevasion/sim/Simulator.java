@@ -70,17 +70,21 @@ public class Simulator
     {
       //    assert(region.ethanolProducerTaxCredit != 0);
       assert(region.population > 0);
-      assert(region.undernourished > 0);
+      assert((region.undernourished <= region.population) && (region.undernourished >= 0));
       //assert(region.humanDevelopmentIndex != 0);
+      assert(region.landArea > 0);
 
+      int totalFarmArea = 0;
       for(int i = 0; i < EnumFood.SIZE; i++)
       {
-        if(region.farmArea[i] != 0)
+        totalFarmArea += region.farmArea[i];
+        if(region.farmArea[i] > 0)
         {
           assert(region.foodProduced[i] > 0);
           assert(region.foodIncome[i] > 0);
         }
       }
+      assert((totalFarmArea < region.landArea) && (totalFarmArea >= 0));
     } //Check that WorldData is properly instantiated
     for(int i = 0; i < EnumFood.SIZE; i++)
     {

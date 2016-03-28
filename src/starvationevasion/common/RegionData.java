@@ -82,6 +82,10 @@ public class RegionData implements JSON
    */
   public int ethanolProducerTaxCredit;
 
+  /**
+   * This region's total land area (in square kilometers).
+   */
+  public int landArea;
 
   /**
    * This region's land area (in square kilometers)

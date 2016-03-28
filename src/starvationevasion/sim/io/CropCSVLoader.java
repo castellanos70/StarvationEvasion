@@ -149,7 +149,7 @@ public class CropCSVLoader
   }
 
   private void copyCropValues(Territory countryFinal, Territory agriculturalUnitTemp)
-  {
+  {/*
     for (EnumFood crop : EnumFood.values())
     {
       long imports = agriculturalUnitTemp.getCropImport(crop);
@@ -166,5 +166,6 @@ public class CropCSVLoader
       countryFinal.setCropYield(crop, yield);
       countryFinal.setCropNeedPerCapita(crop, need);
     }
+      */
   }
 }

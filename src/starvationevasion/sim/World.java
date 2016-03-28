@@ -30,7 +30,6 @@ public class World
   private Territory[] territoryList;
   private TileManager tileManager;
   private Calendar currentDate;
-  private List<TradingOptimizer.TradePair>[] lastTrades;
   private boolean DEBUG = false;
   private TileManager[] idealCropZone = new TileManager[EnumFood.SIZE];
 
@@ -154,9 +153,6 @@ public class World
 
 
     start = System.currentTimeMillis();
-    if (DEBUG) System.out.println("Shipping and recieving...");
-    shipAndReceive();
-    if (DEBUG) System.out.printf("Done shipping and receiving in: %dms%n", System.currentTimeMillis() - start);
 
     start = System.currentTimeMillis();
     if (DEBUG) System.out.println("Mutating country demographics...");
@@ -167,26 +163,19 @@ public class World
 
 
 
-  /*
-    implements the benevolent trading between regions with surpluses and
-    deficits by crop through the TradingOptimizer. */
-  private void shipAndReceive()
-  {
-    TradingOptimizer optimizer = new TradingOptimizer(territoryList, getCurrentYear());
-    optimizer.optimizeAndImplementTrades();
-    while(!optimizer.doneTrading());
-    lastTrades = optimizer.getAllTrades();
-  }
+
 
 
   private void plantAndHarvestCrops()
   {
+    /*
     final int year = getCurrentYear();
     for (final Territory state :territoryList)
     {
       CropOptimizer optimizer = new CropOptimizer(year, state);
       optimizer.optimizeCrops();
     }
+    */
   }
 
   /**
@@ -248,8 +237,4 @@ public class World
 
 
 
-  public List<TradingOptimizer.TradePair>[] getTrades()
-  {
-   return lastTrades;
-  }
 }

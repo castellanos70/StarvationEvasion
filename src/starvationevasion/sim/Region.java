@@ -338,7 +338,7 @@ public class Region extends Territory
       // the actual domestic consumption of the crop (excluding the underfed
       // people).
       //
-      double need = getInitialConsumption(crop, Constant.FIRST_YEAR) / (population[0] - undernourished);
+      double need = getInitialConsumption(crop, Constant.FIRST_YEAR) / (population[0] - undernourished[0]);
 
       // Imports & exports per capita for all regions.
       //
@@ -395,7 +395,7 @@ public class Region extends Territory
       // The 1981 need for each region and category of food per 1000 people is
       // the domestic consumption of the crop.
       //
-      double need = getInitialConsumption(crop, Constant.FIRST_YEAR) / (population[0] - undernourished);
+      double need = getInitialConsumption(crop, Constant.FIRST_YEAR) / (population[0] - undernourished[0]);
 
       // Production per capita for non-US regions.
       //
@@ -453,7 +453,7 @@ public class Region extends Territory
 
   public void updateCropNeed(int year)
   {
-    double undernourishedRatio = undernourished / getPopulation(year);
+    double undernourishedRatio = undernourished[year] / getPopulation(year);
     for (EnumFood crop : EnumFood.values())
     {
       int idx = crop.ordinal();
@@ -544,53 +544,6 @@ public class Region extends Territory
     totalFarmLand = (int) (((double) totalFarmLand / landTotal) * 100);
   }
 
-  /**
-   * A region is a collection of one or more territoryList.
-   */
-  public void aggregateTerritoryFields(int year)
-  {
-    if (VERBOSE) System.out.println("========> aggregateTerritoryFields(" + year + ")  territoryList=" + territoryList.size());
-
-    population[year - Constant.FIRST_YEAR] = 0;
-    births = 0;
-    mortality = 0;
-    migration = 0;
-    undernourished = 0;
-    landTotal = 0;
-    for (int i=0; i<EnumFood.SIZE; i++)
-    {
-      cropIncome[i] = 0;
-      cropProduction[i] = 0;
-      landCrop[i] = 0;
-      cropImport[i] = 0;
-      cropExport[i] = 0;
-    }
-
-    for (Territory part : territoryList)
-    {
-      population[year - Constant.FIRST_YEAR] += part.getPopulation(year);
-      births          += part.births;
-      mortality       += part.mortality;
-      migration       += part.migration;
-      undernourished  += part.undernourished;
-      landTotal       += part.landTotal;
-      for (int i=0; i<EnumFood.SIZE; i++)
-      {
-        cropIncome[i]     += part.cropIncome[i];
-        cropProduction[i] += part.cropProduction[i];
-        if (VERBOSE && part.cropProduction[i] > 0)
-        { System.out.println("Region.aggregateTerritoryFields(): " + region +": cropProduction["+EnumFood.values()[i]+"] ="+cropProduction[i]);
-        }
-        landCrop[i]       += part.landCrop[i];
-        cropImport[i]     += part.cropImport[i];
-        cropExport[i]     += part.cropExport[i];
-      }
-    }
-
-    humanDevelopmentIndex  = (float)
-            (population[year - Constant.FIRST_YEAR] - undernourished) /
-            population[year - Constant.FIRST_YEAR];
-  }
 
   /**
    * Method for calculating and setting crop need
@@ -638,34 +591,7 @@ public class Region extends Territory
   }
 
 
-  /**
-   * Updates the region population for the year.
-   * @param year
-   */
-  public void updatePopulation(int year)
-  {
-    // Do not recompute territory undernourished statistics in the 1st year, or if
-    // this is a book-keeping region.
-    //
-    boolean updateTerritories = region != null && year != Constant.FIRST_YEAR;
-    int people = 0, underfed = 0;
-    for (Territory t : territoryList)
-    { // Territory.updatePopulation because it updates internal state variables related
-      // to production.
-      //
-      if (updateTerritories) t.updatePopulation(year);
 
-      people += t.getPopulation(year);
-      underfed += t.getUndernourished();
-    }
-
-    if (people == 0) throw new IllegalStateException("Region " + getName() + " has zero population.");
-
-    // Region population in year 0.
-    //
-    population[year - Constant.FIRST_YEAR] = people;
-    undernourished = underfed;
-  }
 
   public MapPoint getCenter()
   {

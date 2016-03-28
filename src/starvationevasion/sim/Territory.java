@@ -51,12 +51,8 @@ public class Territory
   //      for these quantities: such as a constant rate of change of birth rate replacing the
   //      constant birth rate or a data lookup table that has predefined values for each year.
   //      The development team should expect and plan for such mid-milestone updates.
-  protected int[] population = new int[Model.YEARS_OF_SIM];       // in people
-  protected int medianAge;  // in years
-  protected int births;  // number of live births x 1,000 per year.
-  protected int mortality;   // number of deaths x 1,000 per year.
-  protected int migration;   // immigration - emigration x 1,000 individuals.
-  protected int undernourished;  // number of undernourished x 1,000 per year.
+  protected int[] population = new int[Model.YEARS_OF_SIM];       // in 1,000 people
+  protected int[] undernourished = new int[Model.YEARS_OF_SIM];  // number of undernourished x 1,000 per year.
 
   // The Fall 2015 spec on pg19 defines Human Development Index (HDI) as a function
   // of undernourishment in two categories; Protien Energy and Micronutrient.
@@ -144,8 +140,7 @@ public class Territory
   private enum EnumHeader
   { territory,	region,	population1981,	population1990,	population2000,
     population2010,	population2014,	population2025,	population2050,
-    averageAge,	undernourished,	births,	migration,	mortality,
-    landArea,	farmLand1981,	farmLand2014,	organic,	gmo;
+    undernourished, landArea,	farmLand1981,	farmLand2014,	organic,	gmo;
 
     public static final int SIZE = values().length;
   };
@@ -239,38 +234,14 @@ public class Territory
     return population[year - Constant.FIRST_YEAR];
   }
 
-  /**
-   * @return median age
-   */
-  final public double getMedianAge()
-  {
-    return medianAge;
-  }
 
-  /**
-   * @return birth rate at end of the current year of the simulation.
-   */
-  final public int getBirths()
-  {
-    return births;
-  }
-
-  final public int getMortality()
-  {
-    return mortality;
-  }
-
-  final public int getMigration()
-  {
-    return migration;
-  }
 
   /**
    * @return % undernourished at end of the current year of the simulation.
    */
-  final public int getUndernourished()
+  final public int getUndernourished(int year)
   {
-    return undernourished;
+    return undernourished[year - Constant.FIRST_YEAR];
   }
 
   /**
@@ -291,46 +262,12 @@ public class Territory
     this.penaltyValue = penaltyValue;
   }
 
-  /**
-   * Populate medianAge array with given age; assumes median age remains constant.
-   *
-   */
-  final public void setMedianAge(int age)
+
+
+
+  final public void setUndernourished(int people, int year)
   {
-    medianAge = age;
-  }
-
-  /**
-   * Populate births array with given rate; assumes rate remains constant.
-   *
-   * @param numberOfBirths in people.
-   */
-  final public void setBirths(int numberOfBirths)
-  {
-    births = numberOfBirths;
-  }
-
-
-
-
-  final public void setMortality(int year, int deaths)
-  {
-    mortality = deaths;
-  }
-
-
-
-  final public void setMigration(int people)
-  {
-    migration = people;
-  }
-
-
-
-
-  final public void setUndernourished(int people)
-  {
-    undernourished = people;
+    undernourished[year - Constant.FIRST_YEAR] = people;
   }
 
   final public void setTotalFarmLand(int squareKm) { totalFarmLand = squareKm;}
@@ -776,10 +713,6 @@ public class Territory
   public void copyInitialValuesFrom(final Territory fromTerritory)
   {
     int index = 0;
-    medianAge = fromTerritory.medianAge;
-    births = fromTerritory.births;
-    mortality = fromTerritory.mortality;
-    migration = fromTerritory.migration;
     undernourished = fromTerritory.undernourished;
 
     landTotal = fromTerritory.landTotal;
@@ -803,51 +736,6 @@ public class Territory
       population[index] = fromTerritory.population[index];
       index += 1;
     }
-  }
-
-  public void updatePopulation(int year)
-  {
-    int index = year - Constant.FIRST_YEAR;
-
-    // Population data is stored in a fixed array.
-    //
-    int netChange = 0;
-    if (index > 0) netChange = population[index] - population[index - 1];
-
-    // TODO: We need a way to take the net change in population and back that
-    // number out to birth rate, mortality rate, and undernourishment. This is
-    // the Spring code to update undernourishment, based on the Spring 2015
-    // spec. :
-    //
-    double numUndernourished;
-    double population = getPopulation(year);
-    double[] netCropsAvail = new double[EnumFood.SIZE];
-    int numCropsAvail = 0;
-    for (EnumFood crop : EnumFood.values())
-    {
-      double netAvail = getNetCropAvailable(crop);
-      netCropsAvail[crop.ordinal()] = netAvail;
-      if (netAvail >= 0) numCropsAvail++;
-    }
-
-    if (numCropsAvail == EnumFood.SIZE)
-    {
-      numUndernourished = 0;
-    }
-    else
-    {
-      double maxResult = 0;
-      for (EnumFood crop : EnumFood.values())
-      {
-        double need = getCropNeedPerCapita(crop);
-        double result = (netCropsAvail[crop.ordinal()]) / (0.5 * need * population);
-        if (result > maxResult) maxResult = result;
-      }
-
-      numUndernourished = Math.min(population, maxResult);
-    }
-
-    setUndernourished((int) numUndernourished);
   }
 
   /**
@@ -1002,12 +890,12 @@ public class Territory
       for (EnumHeader header : EnumHeader.values())
       {
         int i = header.ordinal();
-        long value = 0;
+        int value = 0;
         if ((i > 1) && (i < fieldList.length))
         {
           try
           {
-            value = Long.parseLong(fieldList[i]);
+            value = Integer.parseInt(fieldList[i]);
           }
           catch (Exception e) {} //Default empty cell, and text to 0
         }
@@ -1042,14 +930,10 @@ public class Territory
           case population2010:  case population2014:  case population2025:
           case population2050:
             int year = Integer.valueOf(header.name().substring(10));
-            territory.setPopulation(year, (int) value);
+            territory.setPopulation(year, value);
             break;
 
-          case averageAge: territory.setMedianAge((int) value); break;
-          case births: territory.setBirths((int) value); break;
-          case mortality: territory.setMortality(Constant.FIRST_YEAR, (int) value); break;
-          case migration: territory.setMigration((int) value); break;
-          case undernourished: territory.setUndernourished((int) value); break;
+          case undernourished: territory.undernourished[0] = value; break;
           case landArea: territory.setLandTotal((int) value); break;
 
           case farmLand1981: territory.setFarmLand1981((int) value); break;

@@ -39,10 +39,6 @@ public class GeographyXMLparser extends DefaultHandler
   private GeographyValidator regionValidator = new GeographyValidator();
   private boolean name;
 
-  public Locator getLocator()
-  {
-    return locator;
-  }
 
   @Override
   public void setDocumentLocator(Locator locator)
@@ -176,7 +172,7 @@ public class GeographyXMLparser extends DefaultHandler
       XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
       xmlReader.setContentHandler(this);
 
-      List<String> filesToRead = readIndex(BORDERS_INDEX);
+      ArrayList<String> filesToRead = readIndex(BORDERS_INDEX);
       while (!filesToRead.isEmpty())
       {
         String file = filesToRead.remove(0);
@@ -190,7 +186,9 @@ public class GeographyXMLparser extends DefaultHandler
     }
     catch (Exception e)
     {
+      System.out.println(e.getMessage());
       e.printStackTrace();
+      System.exit(1);
     }
   }
 }

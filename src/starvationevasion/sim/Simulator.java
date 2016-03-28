@@ -69,22 +69,22 @@ public class Simulator
     for(RegionData region : world.regionData)
     {
       //    assert(region.ethanolProducerTaxCredit != 0);
-      assert(region.population != 0);
-      assert(region.undernourished != 0);
+      assert(region.population > 0);
+      assert(region.undernourished > 0);
       //assert(region.humanDevelopmentIndex != 0);
 
       for(int i = 0; i < EnumFood.SIZE; i++)
       {
         if(region.farmArea[i] != 0)
         {
-          assert(region.foodProduced[i] != 0);
-          assert(region.foodIncome[i] != 0);
+          assert(region.foodProduced[i] > 0);
+          assert(region.foodIncome[i] > 0);
         }
       }
     } //Check that WorldData is properly instantiated
     for(int i = 0; i < EnumFood.SIZE; i++)
     {
-      assert(world.foodPrice[i] != 0);
+      assert(world.foodPrice[i] > 0);
     }
 
     EnumRegion player = EnumRegion.USA_CALIFORNIA;

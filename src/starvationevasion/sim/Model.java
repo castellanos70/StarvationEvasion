@@ -347,7 +347,7 @@ public class Model
 
     updateLandUse(); // Not started.
 
-    updatePopulation(); // Done.
+    //updatePopulation(); // Done.
 
     updateClimate(); // Done.
 
@@ -398,7 +398,7 @@ public class Model
     {
       RegionData region = data.regionData[i];
       region.population = regionList[i].getPopulation(year);
-      region.undernourished = regionList[i].getUndernourished();
+      region.undernourished = regionList[i].getUndernourished(year);
       region.humanDevelopmentIndex = regionList[i].getHumanDevelopmentIndex();
 
       region.revenueBalance = regionList[i].getRevenue();
@@ -460,28 +460,6 @@ public class Model
     }
   }
 
-  /**
-   * Updates the population of each region.
-   */
-  private void updatePopulation()
-  {
-    if (debugLevel.intValue() < Level.INFO.intValue())
-    { Simulator.dbg.println("******************************************* Updating population");
-    }
-
-    // Iterate over all of the regions, including the book keeping regions
-    //
-    // Note : The total population for the region is updated in region.aggregateTerritoryFields().
-    //
-    for (int i=0; i<EnumRegion.SIZE; i++)
-    {
-      regionList[i].updatePopulation(year);
-    }
-
-    if (debugLevel.intValue() < Level.INFO.intValue())
-    { printCurrentPopulation(regionList[debugRegion.ordinal()], year);
-    }
-  }
 
   private void updateClimate()
   {
@@ -770,12 +748,7 @@ public class Model
       if (unit instanceof Region) Simulator.dbg.print("sum ");
     }
     else Simulator.dbg.print(" population : " + unit.getPopulation(year));
-
-    Simulator.dbg.print(", medianAge : " + unit.getMedianAge());
-    Simulator.dbg.print(", births : " + unit.getBirths());
-    Simulator.dbg.print(", mortality : " + unit.getMortality());
-    Simulator.dbg.print(", migration : " + unit.getMigration());
-    Simulator.dbg.print(", undernourished : " + unit.getUndernourished());
+    Simulator.dbg.print(", undernourished : " + unit.getUndernourished(year));
     Simulator.dbg.print(", landTotal : " + unit.getLandTotal());
     Simulator.dbg.println();
 

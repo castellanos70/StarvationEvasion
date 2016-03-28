@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import starvationevasion.client.Client;
+import starvationevasion.client.GUIOrig.DraftLayout.ChatNode;
 import starvationevasion.client.GUIOrig.DraftLayout.DraftLayout;
 import starvationevasion.client.GUIOrig.DraftLayout.map.GamePhaseMapController;
 import starvationevasion.client.GUIOrig.DraftLayout.map.MapController;
@@ -61,7 +62,7 @@ public class GUI extends Application
 
   //The user's assigned region
   EnumRegion assignedRegion;
-
+  private ChatNode chatNode;
   //context variables
   boolean selectingRegion = false;
   boolean selectingProduct = false;
@@ -119,9 +120,9 @@ public class GUI extends Application
     boxHeight = maxHeight*.1;
     boxWidth = maxWidth*.07;
 
-    primaryStage.setMaxHeight(maxHeight);
-    primaryStage.setMinHeight(maxHeight);
-    primaryStage.setResizable(false);
+//    primaryStage.setMaxHeight(maxHeight);
+//    primaryStage.setMinHeight(maxHeight);
+    primaryStage.setResizable(true);
 
     //instantiate helper classes
     imageGetter = new ImageGetter();
@@ -129,6 +130,7 @@ public class GUI extends Application
     graphManager = new GraphManager(this);
 
     //instantiate the DraftLayout
+    chatNode=new ChatNode(this);
     draftLayout = new DraftLayout(this);
     votingLayout = new VotingLayout(this);
 
@@ -136,6 +138,7 @@ public class GUI extends Application
     gameScene = new Scene(draftLayout);
     currentRoot = draftLayout;
     primaryStage.setScene(gameScene);
+
 
     mainGameLoop=new MainGameLoop(this);
     //if(!client.isAI)
@@ -190,7 +193,7 @@ public class GUI extends Application
   {
     return productList;
   }
-
+  public ChatNode getChatNode(){return chatNode;}
   /**
    * Method which switches the which phase of the game is being displayed on the GUIOrig
    */
@@ -279,7 +282,7 @@ public class GUI extends Application
   {
     return draftLayout;
   }
-
+  public VotingLayout getVotingLayout(){return votingLayout;}
   /**
    * Returns the GraphManger. Used by nodes which displays graphs
    * @return GraphManager

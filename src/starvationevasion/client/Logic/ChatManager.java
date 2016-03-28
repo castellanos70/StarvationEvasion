@@ -17,7 +17,9 @@ public class ChatManager
   }
   public void sendChatToServer(String message,EnumRegion region,EnumPolicy card)
   {
-    String msg="chat " +region.toString()+" {\"card\":null,\"text\":\""+client.getRegion().toString()+": "+message+"\"}";
+
+   // String msg="chat " +region.name()+" {\"card\":null,\"text\":\""+client.getRegion().toString()+": "+message+"\"}";
+    String msg="chat " +region.name()+" {\"card\":null,\"text\":\""+"US_CALIFORNIA"+": "+message+"\"}";
     client.writeToServer(msg);
     chat+=message+"\n";
   }

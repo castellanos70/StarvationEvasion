@@ -4,6 +4,7 @@ import starvationevasion.client.Client;
 import starvationevasion.client.GUIOrig.DraftLayout.ChatNode;
 import starvationevasion.client.GUIOrig.DraftLayout.DraftLayout;
 import starvationevasion.client.GUIOrig.GUI;
+import starvationevasion.client.GUIOrig.VotingLayout.VotingLayout;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -17,7 +18,9 @@ public class MainGameLoop
   private GUI gui;
   private Client client;
   private DraftLayout draftLayout;
-  private ChatNode chatNode;
+  private VotingLayout votingLayout;
+  private ChatNode chatNodeDraft;
+  private ChatNode chatNodeVote;
   private Timer timer;
   private TimerTask timerTask;
   private ChatManager chatManager;
@@ -27,7 +30,9 @@ public class MainGameLoop
     client=gui.getClient();
     chatManager=client.getChatManager();
     draftLayout=gui.getDraftLayout();
-    chatNode=draftLayout.getChatNode();
+    votingLayout=gui.getVotingLayout();
+    chatNodeDraft=draftLayout.getChatNode();
+    chatNodeVote=votingLayout.getChatNode();
     run();
   }
   private void run()
@@ -37,8 +42,10 @@ public class MainGameLoop
       @Override
       public void run()
       {
-        chatNode.setChatMessages(chatManager.getChat());
-        chatNode.setHand(gui.getDraftLayout().getHand().getHand());
+        chatNodeDraft.setChatMessages(chatManager.getChat());
+        chatNodeDraft.setHand(gui.getDraftLayout().getHand().getHand());
+        chatNodeVote.setChatMessages(chatManager.getChat());
+        chatNodeVote.setHand(gui.getDraftLayout().getHand().getHand());
       }
     };
     timer.schedule(timerTask,100,100);

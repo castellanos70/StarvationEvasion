@@ -35,7 +35,7 @@ public class ChatNode extends BorderPane
   private Client client;
   private ChatManager chatManager;
 
-  private ComboBox regionSelection;
+  private ComboBox<EnumRegion> regionSelection;
   private ComboBox cardSelection;
   private EnumPolicy[] currentHand=new EnumPolicy[6];
 
@@ -100,7 +100,8 @@ public class ChatNode extends BorderPane
         }
       }else
       {
-        chatManager.sendChatToServer(inputMessage.getText(), EnumRegion.valueOf(regionSelection.getValue().toString()),
+        System.out.println(regionSelection.getValue().name());
+        chatManager.sendChatToServer(inputMessage.getText(), regionSelection.getValue(),
                 EnumPolicy.valueOf(cardSelection.getValue().toString()));
         chatMessages.setText(chatMessages.getText() + "\n" + inputMessage.getText());
       }

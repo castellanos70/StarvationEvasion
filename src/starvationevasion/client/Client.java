@@ -50,7 +50,7 @@ public class Client
   {
     chatManager=new ChatManager(this);
     keyboard = new Scanner(System.in);
-
+    region=EnumRegion.USA_CALIFORNIA;
     while (!openConnection(host, portNumber))
     {
     }
@@ -130,6 +130,7 @@ public class Client
       return false;
     }
     isRunning = true;
+    //ToDo JavaClient
     write.println("client");
     return true;
 
@@ -221,7 +222,8 @@ public class Client
         output(msg);
 
 
-        //TODO Implement JSON Parser
+        //TODO Implement JSON Parser    // instanceOf
+        //
 //        StringReader stringReader=new StringReader(msg);
 //        JSONStreamReaderImpl jsonStreamReader=new JSONStreamReaderImpl(stringReader);
 //        JSONDocument json=jsonStreamReader.build();

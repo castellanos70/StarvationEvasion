@@ -56,11 +56,11 @@ public class Simulator
     {
       playerDeck[playerRegion.ordinal()] = new CardDeck(playerRegion);
     }
-    assert(assertSimulator());
+    assert(assertSimulatorStartYear());
   }
 
 
-  private boolean assertSimulator()
+  private boolean assertSimulatorStartYear()
   {
     WorldData world = getWorldData();
     assert((world.year != 0));

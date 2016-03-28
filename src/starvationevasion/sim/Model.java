@@ -134,7 +134,7 @@ public class Model
     addGeographyToTerritories(geography);
     assert (assertTerritoryGeography());
 
-    new ProductionCSVLoader(regionList);
+    //new ProductionCSVLoader(regionList);
 
 
     instantiateRegions();

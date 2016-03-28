@@ -95,7 +95,7 @@ public class Region extends Territory
   public void addTerritory(Territory territory)
   {
     territoryList.add(territory);
-    area.add(territory.getArea());
+    //area.add(territory.getArea());
   }
 
 

@@ -107,8 +107,6 @@ public class Model
   private Region[] regionList = new Region[EnumRegion.SIZE];
 
   private SeaLevel seaLevel;
-  private CropCSVLoader cropLoader = null;
-
 
   private ArrayList<CropZoneData>     cropZoneDatum;
   private ArrayList<SpecialEventData> specialEventDatum;
@@ -134,8 +132,10 @@ public class Model
     //System.out.println("territoryList.size()=" + territoryList.size());
 
     addGeographyToTerritories(geography);
+    assert (assertTerritoryGeography());
 
-    assert (assertTerritories());
+    new ProductionCSVLoader(regionList);
+
 
     instantiateRegions();
 
@@ -168,7 +168,7 @@ public class Model
     populateWorldData(startYear);
   }
 
-  private boolean assertTerritories()
+  private boolean assertTerritoryGeography()
   {
     Territory NewMexico = null, China = null, UnitedKingdom = null, Ireland = null;
     for (Territory territory : territoryList)
@@ -250,7 +250,7 @@ public class Model
   private void instantiateRegions()
   {
     if (DEBUG) System.out.println("Model.instantiateRegions() Enter");
-    //new ProductionCSVLoader(regionList);
+
 
     for (int i=0; i<EnumRegion.SIZE; i++)
     {

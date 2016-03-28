@@ -10,8 +10,6 @@ import starvationevasion.common.MapPoint;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.util.*;
-import java.util.List;
-import java.util.logging.Logger;
 
 public class Territory
 {
@@ -40,6 +38,13 @@ public class Territory
   private String name;
 
 
+  /**
+   * Projected population read from data file for selected years.
+   * For the first year of the model, the simulation population is defined as the projected population for
+   * that year. For future years, the simulation population is a function of the projected population and
+   * the state of the model.
+   */
+  private int[] populationProjection = new int[Model.YEARS_OF_SIM];       // in 1,000 people
   private int[] population = new int[Model.YEARS_OF_SIM];       // in 1,000 people
   private int[] undernourished = new int[Model.YEARS_OF_SIM];  // number of undernourished x 1,000 per year.
 
@@ -139,7 +144,7 @@ public class Territory
 
   public static final MapConverter converter = new MapConverter();
 
-  private final Area totalArea = new Area();
+  //private final Area totalArea = new Area();
   private final ArrayList<GeographicArea> geographicAreaList = new ArrayList<>();
   private Collection<LandTile> landTiles  = new ArrayList<>();;
   private MapPoint capitolLocation;
@@ -174,20 +179,20 @@ public class Territory
 
     int lastIdx = 0;
     int i = 1;
-    while(i<population.length)
+    population[0] = populationProjection[0];
+    while(i< populationProjection.length)
     {
-      if (population[i] > 0)
+      if (populationProjection[i] > 0)
       {
         lastIdx = i;
-        //System.out.println("population["+i+"]="+ population[i]+"xxxxx");
         i++;
         continue;
       }
 
       int nextIdx = i+1;
-      while (nextIdx<population.length)
+      while (nextIdx< populationProjection.length)
       {
-        if (population[nextIdx] > 0)
+        if (populationProjection[nextIdx] > 0)
         {
           break;
         }
@@ -196,8 +201,7 @@ public class Territory
       for (int k=lastIdx+1; k<nextIdx; k++)
       {
         double w = (double)(k-lastIdx)/(double)(nextIdx-lastIdx);
-        population[k] = (int)(population[lastIdx]*w + population[nextIdx]*(1.0-w) );
-        //System.out.println("population["+k+"]="+ population[k]);
+        populationProjection[k] = (int)(populationProjection[lastIdx]*w + populationProjection[nextIdx]*(1.0-w) );
       }
       i = nextIdx;
     }
@@ -351,13 +355,13 @@ public class Territory
   }
 
 
-  /**
-   * @return country's collection of 100km2 tiles
-   */
-  public Area getArea()
-  {
-    return totalArea;
-  }
+  ///**
+  // * @return country's collection of 100km2 tiles
+  // */
+  //public Area getArea()
+  //{
+  //  return totalArea;
+  //}
 
 
   /**
@@ -555,7 +559,7 @@ public class Territory
   public void addGeographicArea(GeographicArea area)
   {
     geographicAreaList.add(area);
-    totalArea.add(new Area(converter.regionToPolygon(area)));
+    //totalArea.add(new Area(converter.regionToPolygon(area)));
   }
 
   /**
@@ -662,8 +666,8 @@ public class Territory
           case population1981:  case population1990:  case population2000:
           case population2010:  case population2014:  case population2025:
           case population2050:
-            int year = Integer.valueOf(header.name().substring(10));
-            territory.setPopulation(year, value);
+            int yearIdx = Integer.valueOf(header.name().substring(10)) - Constant.FIRST_YEAR;
+            territory.populationProjection[yearIdx] = value;
             break;
 
           case undernourished:

@@ -10,47 +10,65 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class User implements JSON, Encryptable
+public class User extends Payload<String, Object> implements Encryptable, Sendable
 {
-  @Jsonify
-  private String username;
-  private String password;
-  private String salt;
+  //make everthing implement sendable
+  // sendable will extend serializable and JSON
 
-  @Jsonify
-  private EnumRegion region;
+
+
+//  @Jsonify
+//  private String username;
+//  private String password;
+//  private String salt;
+
+//  @Jsonify
+//  private EnumRegion region;
   private boolean isActive = false;
 
-  @Jsonify(type = Jsonify.JsonType.LIST)
-  private ArrayList<EnumPolicy> hand = new ArrayList<>();
+//  @Jsonify(type = Jsonify.JsonType.LIST)
+//  private ArrayList<EnumPolicy> hand = new ArrayList<>();
 
-  public User (JSONDocument json)
+//  public User (JSONDocument json)
+//  {
+//    //username = json.getString("username");
+//    password = json.getString("password");
+//    json.getString("region");
+//
+//    hand.add(EnumPolicy.Clean_River_Incentive);
+//  }
+
+  public User()
   {
-    username = json.getString("username");
-    password = json.getString("password");
-    json.getString("region");
-
-    hand.add(EnumPolicy.Clean_River_Incentive);
+    setType("user");
   }
 
   public User (String[] raw)
   {
-    username = raw[0];
-    password = raw[1];
+    this();
+    this.put("username", raw[0]);
+    // username = raw[0];
+    this.put("password", raw[1]);
+    // password = raw[1];
     if (raw.length == 3)
     {
-      region = EnumRegion.valueOf(raw[2]);
+      // region = EnumRegion.valueOf(raw[2]);
+      this.put("region", EnumRegion.valueOf(raw[2]));
     }
+    this.put("hand", new ArrayList<>());
+    ((ArrayList<EnumPolicy>)this.get("hand")).add(EnumPolicy.Clean_River_Incentive);
 
-    hand.add(EnumPolicy.Clean_River_Incentive);
   }
 
   public User (String username, String password, EnumRegion region, ArrayList<EnumPolicy> hand)
   {
-    this.hand = hand;
-    this.username = username;
+    this();
+    this.put("hand", hand);
+    // this.username = username;
+    this.put("username", username);
     encrypt(password, null);
-    this.region = region;
+    // this.region = region;
+    this.put("region", region);
   }
 
   @Override
@@ -64,13 +82,14 @@ public class User implements JSON, Encryptable
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
     
-    json.setString("username", username);
+    json.setString("username", get("username").toString());
     // json.setString("password", password);
-    json.setString("region", region.toString());
-    JSONDocument _hand = JSONDocument.createArray(this.hand.size());
-    for (int i = 0; i < this.hand.size(); i++)
+    json.setString("region", get("region").toString());
+    ArrayList list = (ArrayList) this.get("hand");
+    JSONDocument _hand = JSONDocument.createArray(list.size());
+    for (int i = 0; i < list.size(); i++)
     {
-      _hand.setString(i, hand.get(i).toString());
+      _hand.setString(i, list.get(i).toString());
     }
 
     json.set("hand", _hand);
@@ -80,17 +99,20 @@ public class User implements JSON, Encryptable
 
   public String getUsername ()
   {
-    return username;
+    //return username;
+    return get("username").toString();
   }
 
   public void setUsername (String username)
   {
-    this.username = username;
+    //this.username = username;
+
   }
 
   public String getPassword ()
   {
-    return password;
+    // return password;
+    return get("password").toString();
   }
 
   public void setPassword (String password)
@@ -100,28 +122,32 @@ public class User implements JSON, Encryptable
 
   public void setEncryptedPassword (String password, String salt)
   {
-    this.password = password;
-    this.salt = salt;
+    this.put("password", password);
+    // this.password = password;
+    this.put("salt", salt);
+    // this.salt = salt;
   }
 
   public EnumRegion getRegion ()
   {
-    return region;
+    // return region;
+    return (EnumRegion) get("region");
   }
 
   public void setRegion (EnumRegion region)
   {
-    this.region = region;
+    // this.region = region;
+    this.put("region", region);
   }
 
   public ArrayList<EnumPolicy> getHand ()
   {
-    return hand;
+    return (ArrayList<EnumPolicy>) get("hand");
   }
 
   public void setHand (ArrayList<EnumPolicy> hand)
   {
-    this.hand = hand;
+    this.put("hand", hand);
   }
 
   public boolean isActive ()
@@ -137,17 +163,21 @@ public class User implements JSON, Encryptable
   @Override
   public String toString ()
   {
-    return region.toString();
+    // return region.toString();
+    return get("region").toString();
   }
 
   @Override
   public void encrypt (String pwd, String key)
   {
+    String salt = "";
     if (key == null || key.isEmpty())
     {
       salt = Encryptable.generateKey();
+      this.put("salt", salt);
     }
-    password = Encryptable.generateHashedPassword(salt, pwd);
+    this.put("password", Encryptable.generateHashedPassword(salt, pwd));
+    // password = Encryptable.generateHashedPassword(salt, pwd);
   }
 
   @Override
@@ -158,6 +188,12 @@ public class User implements JSON, Encryptable
 
   public String getSalt ()
   {
-    return salt;
+    return get("salt").toString();
+  }
+
+  @Override
+  public void setType (String type)
+  {
+    put("type", type);
   }
 }

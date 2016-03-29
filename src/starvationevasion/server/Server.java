@@ -6,16 +6,13 @@ package starvationevasion.server;
  */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-import starvationevasion.common.Constant;
-import starvationevasion.common.EnumPolicy;
-import starvationevasion.common.EnumRegion;
+import starvationevasion.common.*;
 import starvationevasion.server.io.WebSocketReadStrategy;
 import starvationevasion.server.io.WebSocketWriteStrategy;
 import starvationevasion.server.model.Response;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
-import starvationevasion.common.WorldData;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -50,7 +47,7 @@ public class Server
 
     addUser(new User("admin", "admin", EnumRegion.USA_CALIFORNIA, new ArrayList<>()));
     startNanoSec = System.nanoTime();
-    simulator = new Simulator(Constant.FIRST_YEAR);
+    simulator = new Simulator();
 
 
     try
@@ -288,11 +285,20 @@ public class Server
    */
   public void begin ()
   {
-    WorldData currentWorldData = simulator.getWorldData();
+    ArrayList<WorldData> worldDataList =
+      simulator.getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR-1);
+
     for (Worker workers : allConnections)
     {
+      //Each client needs its own copy since not all data is the same. For example, each
+      // client only gets its own hand of cards and should not be able to access cards
+      // dealt to other players.
+      ServerSendData data = new ServerSendData();
+      data.worldDataList = worldDataList;
+
       // NOTE: can either send it as soon as we get it or have client request it.
-      workers.send(currentWorldData);
+      //TODO: make send work with this ServerSendData.
+      //workers.send(data);
     }
   }
 

@@ -1,7 +1,4 @@
-package starvationevasion.sim.util;
-
-import starvationevasion.sim.GeographicArea;
-import starvationevasion.common.MapPoint;
+package starvationevasion.common;
 
 import java.awt.*;
 import java.awt.geom.Line2D;

@@ -3,7 +3,7 @@ package starvationevasion.sim.io.XMLparsers;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 import starvationevasion.sim.io.GeographyValidator;
-import starvationevasion.sim.GeographicArea;
+import starvationevasion.common.GeographicArea;
 import starvationevasion.common.MapPoint;
 
 import javax.xml.parsers.SAXParserFactory;

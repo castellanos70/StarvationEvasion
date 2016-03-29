@@ -312,7 +312,7 @@ public class Region extends Territory
    */
   public double getInitialConsumtionPerCapita(EnumFood food, int year)
   {
-    return getInitialConsumption(food, year) / getPopulation(Constant.FIRST_YEAR);
+    return getInitialConsumption(food, year) / getPopulation(Constant.FIRST_DATA_YEAR);
   }
 
   /**
@@ -323,7 +323,7 @@ public class Region extends Territory
    */
   public double getInitialConsumptionPerCapita(int year)
   {
-    return getInitialConsumption(year) / getPopulation(Constant.FIRST_YEAR);
+    return getInitialConsumption(year) / getPopulation(Constant.FIRST_DATA_YEAR);
   }
 
   /**

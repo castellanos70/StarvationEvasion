@@ -1,7 +1,7 @@
-package starvationevasion.sim;
+package starvationevasion.common;
 
 
-import starvationevasion.sim.util.MapConverter;
+import starvationevasion.common.MapConverter;
 import starvationevasion.common.MapPoint;
 
 import java.awt.*;

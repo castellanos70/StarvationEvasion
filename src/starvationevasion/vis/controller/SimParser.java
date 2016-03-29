@@ -3,7 +3,7 @@ package starvationevasion.vis.controller;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.MapPoint;
 import starvationevasion.sim.io.XMLparsers.GeographyXMLparser;
-import starvationevasion.sim.GeographicArea;
+import starvationevasion.common.GeographicArea;
 
 import java.util.*;
 

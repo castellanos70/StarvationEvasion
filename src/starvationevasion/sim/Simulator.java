@@ -29,68 +29,62 @@ public class Simulator
    * Initializes the model
    * Generates a random 80 card deck for each player (both
    * human and AI players)
-   *
-   * @param startYear year the game is starting. Generally this will be Constant.FIRST_YEAR.
    */
-  public Simulator(int startYear)
+  public Simulator()
   {
     // Model instantiation parses all of the XML and CSV.
     //
     LOGGER.info("Loading and initializing model");
-    model = new Model(startYear);
+    model = new Model();
 
-
-    LOGGER.info("Starting Simulator: year="+startYear);
-
-    if ((startYear < Constant.FIRST_YEAR || startYear > Constant.LAST_YEAR) ||
-      ((Constant.LAST_YEAR - startYear) % 3 != 0))
-    {
-      String errMsg = "Simulator(startYear=" + startYear +
-                      ") start year must be less than " + Constant.LAST_YEAR +
-        " and must be a non-negative integer multiple of 3 years after " + Constant.FIRST_YEAR;
-      LOGGER.severe(errMsg);
-      throw new IllegalArgumentException(errMsg);
-    }
+    LOGGER.info("Starting Simulator: year=" + Constant.FIRST_GAME_YEAR);
 
     for (EnumRegion playerRegion : EnumRegion.US_REGIONS)
     {
       playerDeck[playerRegion.ordinal()] = new CardDeck(playerRegion);
     }
-    assert(assertSimulatorStartYear());
+    assert (assertSimulatorPreGameData());
   }
 
 
-  private boolean assertSimulatorStartYear()
+  private boolean assertSimulatorPreGameData()
   {
-    WorldData world = getWorldData();
-    assert((world.year != 0));
-    assert(world.seaLevel == 0); //As seaLevel is defined as the difference from the 1981 level, the 1981 should always be 0.
-
-    for(RegionData region : world.regionData)
+    assert (model.getCurrentYear() == Constant.FIRST_GAME_YEAR);
+    for (int year = Constant.FIRST_DATA_YEAR; year < model.getCurrentYear(); year++)
     {
-      //    assert(region.ethanolProducerTaxCredit != 0);
-      assert(region.population > 0);
-      assert((region.undernourished <= region.population) && (region.undernourished >= 0));
-      //assert(region.humanDevelopmentIndex != 0);
-      assert(region.landArea > 0);
-
-      int totalFarmArea = 0;
-      for(int i = 0; i < EnumFood.SIZE; i++)
+      WorldData world = model.getWorldData(year);
+      assert ((world.year == year));
+      if (year == Constant.FIRST_DATA_YEAR)
       {
-        totalFarmArea += region.farmArea[i];
-        if(region.farmArea[i] > 0)
-        {
-          assert(region.foodProduced[i] > 0);
-          assert(region.foodIncome[i] > 0);
-        }
+        assert (world.seaLevel == 0); //As seaLevel is defined as the difference from the 1981 level, the 1981 should
+        // always be 0.
       }
-      assert((totalFarmArea < region.landArea) && (totalFarmArea >= 0));
-    } //Check that WorldData is properly instantiated
-    for(int i = 0; i < EnumFood.SIZE; i++)
-    {
-      assert(world.foodPrice[i] > 0);
-    }
+      for (RegionData region : world.regionData)
+      {
+        //    assert(region.ethanolProducerTaxCredit != 0);
+        assert (region.population > 0);
+        assert ((region.undernourished <= region.population) && (region.undernourished >= 0));
+        //assert(region.humanDevelopmentIndex != 0);
+        assert (region.landArea > 0);
 
+        int totalFarmArea = 0;
+        for (int i = 0; i < EnumFood.SIZE; i++)
+        {
+          totalFarmArea += region.farmArea[i];
+          if (region.farmArea[i] > 0)
+          {
+            assert (region.foodProduced[i] > 0);
+            assert (region.foodIncome[i] > 0);
+          }
+        }
+        assert ((totalFarmArea < region.landArea) && (totalFarmArea >= 0));
+      } //Check that WorldData is properly instantiated
+      for (int i = 0; i < EnumFood.SIZE; i++)
+      {
+        assert (world.foodPrice[i] > 0);
+      }
+    }
+      /*
     EnumRegion player = EnumRegion.USA_CALIFORNIA;
     EnumPolicy[] hand = drawCards(player);
     assert(hand.length == Constant.MAX_HAND_SIZE);
@@ -112,22 +106,39 @@ public class Simulator
     }
     assert(ex);
     //Assuring that cards are being removed from the hand
-
-    WorldData turnWorld = nextTurn(null);
-    assert(!world.equals(turnWorld));
+      */
     return true;
   }
+
   /**
-   * The Server should call getWorldData() at the start of the game before dealing cards to
-   * players.
+   * At the start of the game, before dealing cards to players, the Server should call:
+   *     getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR-1);
    *
    * @return data structure populated with all game state data needed by the client
    * except high resolution data that might be needed by the visualizer.
    */
-  public WorldData getWorldData()
+  public ArrayList<WorldData> getWorldData(int yearFrom, int yearThrough)
   {
+    if (yearFrom < Constant.FIRST_DATA_YEAR)
+    {
+      throw new IllegalArgumentException("Cannot Request WorldData before " + Constant.FIRST_DATA_YEAR);
+    }
+    if (yearThrough >= model.getCurrentYear())
+    {
+      throw new IllegalArgumentException("May only request WorldData from before the current year.");
+    }
+    if (yearFrom > yearThrough)
+    {
+      throw new IllegalArgumentException("yearFrom ("+yearFrom+
+        ") cannot be greater than yearThrough ("+yearFrom+").");
+    }
 
-    return model.populateWorldData(model.getCurrentYear());
+    ArrayList<WorldData> dataList = new ArrayList<>();
+    for (int year = yearFrom; year <= yearThrough; year++)
+    {
+      dataList.add(model.getWorldData(year));
+    }
+    return dataList;
   }
 
   /**
@@ -142,12 +153,12 @@ public class Simulator
    * <li>Call discard on each card that did not receive enough votes.</li>
    * <li>Call drawCards for each player and send them their new cards.</li>
    * </ol>
+   *
    * @param cards List of PolicyCards enacted this turn. Note: cards played but not
    *              enacted (did not get required votes) must NOT be in this list.
    *              Such cards must be discarded
    *              (call discard(EnumRegion playerRegion, PolicyCard card))
    *              <b>before</b> calling this method.
-   *
    * @return data structure populated with all game state data needed by the client
    * except high resolution data that might be needed by the visualizer.
    */
@@ -164,17 +175,16 @@ public class Simulator
   }
 
 
-
-
   /**
    * The server must call this for each playerRegion before the first turn
    * and during each turn's draw phase. This method will return the proper number of
    * cards from the top of the given playerRegion's deck taking into account cards played
    * and discarded by that player.
+   *
    * @param playerRegion region of player who id given the drawn cards.
    * @return collection of cards.
    */
-  public EnumPolicy[]  drawCards(EnumRegion playerRegion)
+  public EnumPolicy[] drawCards(EnumRegion playerRegion)
   {
     return playerDeck[playerRegion.ordinal()].drawCards();
   }
@@ -184,25 +194,25 @@ public class Simulator
    * The Server must call this for each card that is discarded <b>before</b> calling
    * nextTurn(). There are three different ways a card may be discarded:
    * <ol>
-   *   <li>During the draft phase, a player may use an action to discard up to
-   *   3 policy cards and <b>immediately</b> draw that many new cards. Using an action
-   *   means the player can draft one less policy that turn. What is meant by
-   *   immediately is that a player who does this and who still has a remaining
-   *   action, may draft one of the newly drawn cards during that same draft phase.</li>
-   *   <li>As part of each draft phase, each player may discard a single policy card. Cards
-   *   discarded this way are not replaced until the draw phase (after the voting phase).</li>
-   *   <li>A policy that is drafted, bt does not receive the required votes
-   *   is discarded.</li>
+   * <li>During the draft phase, a player may use an action to discard up to
+   * 3 policy cards and <b>immediately</b> draw that many new cards. Using an action
+   * means the player can draft one less policy that turn. What is meant by
+   * immediately is that a player who does this and who still has a remaining
+   * action, may draft one of the newly drawn cards during that same draft phase.</li>
+   * <li>As part of each draft phase, each player may discard a single policy card. Cards
+   * discarded this way are not replaced until the draw phase (after the voting phase).</li>
+   * <li>A policy that is drafted, bt does not receive the required votes
+   * is discarded.</li>
    * </ol>
    *
    * @param playerRegion player who owns the discarded card.
-   * @param card to be discarded.
+   * @param card         to be discarded.
    */
   public void discard(EnumRegion playerRegion, EnumPolicy card)
   {
     if (!playerRegion.isUS())
     {
-      throw new IllegalArgumentException("discard(="+playerRegion+", cards) must be " +
+      throw new IllegalArgumentException("discard(=" + playerRegion + ", cards) must be " +
         "a player region.");
     }
 
@@ -220,9 +230,11 @@ public class Simulator
   {
     Handler fh = new FileHandler(fileName);
 
-    Formatter formatter = new Formatter() {
+    Formatter formatter = new Formatter()
+    {
       @Override
-      public String format(LogRecord arg0) {
+      public String format(LogRecord arg0)
+      {
         StringBuilder b = new StringBuilder();
         b.append(new Date());
         b.append(" ");
@@ -244,7 +256,7 @@ public class Simulator
     //
     Logger globalLogger = Logger.getGlobal();
     Handler[] handlers = globalLogger.getHandlers();
-    for(Handler handler : handlers)
+    for (Handler handler : handlers)
     {
       globalLogger.removeHandler(handler);
     }
@@ -276,8 +288,7 @@ public class Simulator
   }
 
   /**
-   *
-   * @param latitude Latitude ranges from -90 to 90. North latitude is positive.
+   * @param latitude  Latitude ranges from -90 to 90. North latitude is positive.
    * @param longitude Longitude ranges from -180 to 180. East longitude is positive.
    * @return The region containing the given latitude and longitude or null if the given location
    * is not within a game region.
@@ -295,9 +306,10 @@ public class Simulator
 
   /**
    * This entry point is for testing only. <br><br>
-   *
+   * <p>
    * This test shows how to instantiate the simulator and how to tell it
    * to deal each player a hand of cards.
+   *
    * @param args ignored.
    */
   public static void main(String[] args)
@@ -314,9 +326,9 @@ public class Simulator
       fos = new FileOutputStream(new File(tmpfile));
       Simulator.dbg = new PrintStream(fos);
       System.err.println(debugLevel.getName() + " debug logging to '" + tmpfile + "'");
-      System.err.println("To increase (decrease) the verbosity of this output, change the debugLevel member of the Simulation class.");
-    }
-    catch (FileNotFoundException e)
+      System.err.println("To increase (decrease) the verbosity of this output, change the debugLevel member of the " +
+        "Simulation class.");
+    } catch (FileNotFoundException e)
     {
       System.err.println("Can't open log file '" + tmpfile + "'");
     }
@@ -329,23 +341,26 @@ public class Simulator
     //
     LOGGER.setLevel(Level.INFO);
 
-    Simulator sim = new Simulator(Constant.FIRST_YEAR);
+    Simulator sim = new Simulator();
 
     String msg = "Starting Hands: \n";
 
     for (EnumRegion playerRegion : EnumRegion.US_REGIONS)
     {
-      EnumPolicy[]  hand = sim.drawCards(playerRegion);
-      msg += playerRegion+": ";
-      for (EnumPolicy  card : hand)
+      EnumPolicy[] hand = sim.drawCards(playerRegion);
+      msg += playerRegion + ": ";
+      for (EnumPolicy card : hand)
       {
-        msg += card +", ";
+        msg += card + ", ";
       }
-      msg+='\n';
+      msg += '\n';
     }
 
-    WorldData worldData = sim.getWorldData();
-    LOGGER.info(worldData.toString());
+    ArrayList<WorldData> worldDataList = sim.getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR-1);
+    for (WorldData data : worldDataList)
+    {
+      LOGGER.info("==================================================\n"+data.toString()+"\n");
+    }
 
     // Now step through the simulation years for debugging
     //
@@ -357,9 +372,9 @@ public class Simulator
     try
     {
       fos.flush();
-      fos.close();;
-    }
-    catch (IOException e)
+      fos.close();
+      ;
+    } catch (IOException e)
     {
       e.printStackTrace();
     }

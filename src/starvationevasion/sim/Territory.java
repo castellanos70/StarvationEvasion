@@ -1,14 +1,9 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.Constant;
-import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumRegion;
+import starvationevasion.common.*;
 import starvationevasion.sim.io.CSVReader;
-import starvationevasion.sim.util.MapConverter;
-import starvationevasion.common.MapPoint;
 
 import java.awt.*;
-import java.awt.geom.Area;
 import java.util.*;
 
 public class Territory
@@ -44,9 +39,9 @@ public class Territory
    * that year. For future years, the simulation population is a function of the projected population and
    * the state of the model.
    */
-  private int[] populationProjection = new int[Model.YEARS_OF_SIM];       // in 1,000 people
-  private int[] population = new int[Model.YEARS_OF_SIM];       // in 1,000 people
-  private int[] undernourished = new int[Model.YEARS_OF_SIM];  // number of undernourished x 1,000 per year.
+  private int[] populationProjection = new int[Model.YEARS_OF_DATA];       // in 1,000 people
+  private int[] population = new int[Model.YEARS_OF_DATA];       // in 1,000 people
+  private int[] undernourished = new int[Model.YEARS_OF_DATA];  // number of undernourished x 1,000 per year.
 
   // The Fall 2015 spec on pg19 defines Human Development Index (HDI) as a function
   // of undernourishment in two categories; Protien Energy and Micronutrient.
@@ -72,8 +67,8 @@ public class Territory
    * cultivated crops.
    */
 
-  private int[] landFarm = new int[Model.YEARS_OF_SIM]; // in square kilometers
-  private int[][] landCrop = new int[Model.YEARS_OF_SIM][EnumFood.SIZE];  // in square kilometers
+  private int[] landFarm = new int[Model.YEARS_OF_DATA]; // in square kilometers
+  private int[][] landCrop = new int[Model.YEARS_OF_DATA][EnumFood.SIZE];  // in square kilometers
   /**
    * The territory's crop income is the gross farm income less
    * farm expenses. <br><br>
@@ -134,7 +129,7 @@ public class Territory
 
 
   private enum EnumHeader
-  { territory,	region,	population1981,	population1990,	population2000,
+  { territory,	region,	population2000,
     population2010,	population2014,	population2025,	population2050,
     undernourished, landArea,	farmLand1981,	farmLand2014,	organic,	gmo;
 
@@ -223,7 +218,7 @@ public class Territory
    */
   public int getPopulation(int year)
   {
-    return population[year - Constant.FIRST_YEAR];
+    return population[year - Constant.FIRST_DATA_YEAR];
   }
 
 
@@ -233,7 +228,7 @@ public class Territory
    */
   final public int getUndernourished(int year)
   {
-    return undernourished[year - Constant.FIRST_YEAR];
+    return undernourished[year - Constant.FIRST_DATA_YEAR];
   }
 
   /**
@@ -259,7 +254,7 @@ public class Territory
 
   final public void setUndernourished(int year, int people)
   {
-    undernourished[year - Constant.FIRST_YEAR] = people;
+    undernourished[year - Constant.FIRST_DATA_YEAR] = people;
   }
 
 
@@ -280,7 +275,7 @@ public class Territory
    */
   public void setCropNeedPerCapita(EnumFood crop, double tonsConsumed, double percentUndernourished)
   {
-    double population = getPopulation(Constant.FIRST_YEAR);
+    double population = getPopulation(Constant.FIRST_DATA_YEAR);
     double tonPerPerson = tonsConsumed / (population - 0.5 * percentUndernourished * population);
     cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
   }
@@ -351,7 +346,7 @@ public class Territory
    */
   public void setPopulation(int year, int n)
   {
-    population[year - Constant.FIRST_YEAR] = n;
+    population[year - Constant.FIRST_DATA_YEAR] = n;
   }
 
 
@@ -469,7 +464,14 @@ public class Territory
     landTotal = squareKm;
   }
 
-
+  public int getLandFarm(int year)
+  {
+    return landFarm[year-Constant.FIRST_DATA_YEAR];
+  }
+  public void setLandFarm(int year, int squareKm)
+  {
+    landFarm[year-Constant.FIRST_DATA_YEAR] = squareKm;
+  }
 
 
 
@@ -663,10 +665,9 @@ public class Territory
             }
             break;
 
-          case population1981:  case population1990:  case population2000:
-          case population2010:  case population2014:  case population2025:
-          case population2050:
-            int yearIdx = Integer.valueOf(header.name().substring(10)) - Constant.FIRST_YEAR;
+          case population2000:  case population2010:  case population2014:
+          case population2025:  case population2050:
+            int yearIdx = Integer.valueOf(header.name().substring(10)) - Constant.FIRST_DATA_YEAR;
             territory.populationProjection[yearIdx] = value;
             break;
 
@@ -679,7 +680,9 @@ public class Territory
             //Note: multiplying by value before division could cause integer overflow.
             territory.landFarm[0] = (int)(territory.landTotal * (value/100.0));
             break;
-          case farmLand2014: break;
+          case farmLand2014:
+            territory.setLandFarm(2015, (int)(territory.landTotal * (value/100.0)));
+            break;
 
           case organic: territory.setMethod(EnumFarmMethod.ORGANIC, (int) value); break;
           case gmo: territory.setMethod(EnumFarmMethod.GMO, (int) value); break;

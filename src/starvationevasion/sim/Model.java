@@ -15,13 +15,13 @@ import java.util.logging.Logger;
  * The Simulator class is the main API for the Server to interact with the simulator.
  * This Model class is home to the calculations supporting that API.
  *
- * Each year the model advances, the model applies:
+ * Each currentYear the model advances, the model applies:
  * <ol>
  * <li>Most Policy Card Effects: Any changes in land use, fertilizer use, and world
  * trade penalty functions are calculated and applied.</li>
- * <li>Changes in land use: At the start of each simulated year, it is assumed that
+ * <li>Changes in land use: At the start of each simulated currentYear, it is assumed that
  * farmers in each region of the world each adjust how they use land based on currently
- * enacted policies, the last year's crop yields and the last year's crop prices so as
+ * enacted policies, the last currentYear's crop yields and the last currentYear's crop prices so as
  * to maximize individual profit while staying within any enacted laws.</li>
  * <li>Population: In this model, each region's population is based only on data from
  * external population projections and a random number chosen at the start of the game.
@@ -30,13 +30,13 @@ import java.util.logging.Logger;
  * events such as hurricanes, typhoons, and political unrest are assumed to have
  * negligible effect on population.</li>
  * <li>Sea Level: This depends only on external model data, a random value chosen at the
- * start of the program and the year. Sea level only has two effects on the model:
+ * start of the program and the currentYear. Sea level only has two effects on the model:
  * higher sea level reduces costal farm productivity and increases damage probabilities
  * of special storm events (hurricane, and typhoons).</li>
  * <li>Climate: In this model, climate consists of annual participation, average annual
  * day and night temperatures and the annual number of frost free days on a 10 km x 10 km
  * grid across all arable land areas of the Earth.
- * <li>Occurrence of Special Events: Each year, there is a probability of each of many
+ * <li>Occurrence of Special Events: Each currentYear, there is a probability of each of many
  * random special events occurring. These include major storms, drought, floods,
  * unseasonable frost, a harsh winter, or out breaks of crop disease, blight, or insects.
  * Special events can also be positive the result in bumper crops in some areas. While
@@ -46,8 +46,8 @@ import java.util.logging.Logger;
  * effects of floods and major storms and policies that encourage / discourage
  * monocropping can increase / decrease the probability of crop disease, blight, or
  * insects problems.</li>
- * <li>Farm Product Yield: The current year's yield or each crop in each region is largely
- * a function of the current year's land use, climate and special events as already
+ * <li>Farm Product Yield: The current currentYear's yield or each crop in each region is largely
+ * a function of the current currentYear's land use, climate and special events as already
  * calculated.</li>
  * <li>Farm Product Need: This is based on each region's population, regional dietary
  * preferences, and required per capita caloric and nutritional needs.</li>
@@ -86,14 +86,13 @@ public class Model
   // Verbosity of debug information during startup
   //
   private final static Level debugLevel = Level.FINE;
-  public static final int YEARS_OF_SIM = 1+Constant.LAST_YEAR - Constant.FIRST_YEAR;
+  public static final int YEARS_OF_DATA = 1+Constant.LAST_YEAR - Constant.FIRST_DATA_YEAR;
 
   private final static boolean DEBUG = true;
 
-  private WorldData[] worldDataAllYears = new WorldData[YEARS_OF_SIM];
+  private WorldData[] worldDataAllYears = new WorldData[YEARS_OF_DATA];
 
-  private final int startYear;
-  private int year;
+  private int currentYear;
 
 
   private TileManager tileManager;
@@ -114,11 +113,9 @@ public class Model
   private List<AbstractEvent> specialEvents = new ArrayList<>();
 
 
-  public Model(int startYear)
+  public Model()
   {
-
-    this.startYear = startYear;
-    year = startYear;
+    currentYear = Constant.FIRST_GAME_YEAR;
 
     ArrayList<GeographicArea> geography = new GeographyXMLparser().getGeography();
     //System.out.println("geography.size()="+geography.size());
@@ -161,11 +158,12 @@ public class Model
       //load any special events
       //loadExistingSpecialEvents();
 
-    for (int i=0; i<YEARS_OF_SIM; i++)
+    for (int i = 0; i< YEARS_OF_DATA; i++)
     {
       worldDataAllYears[i] = new WorldData();
+      if (i<Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR)
+      populateWorldData(Constant.FIRST_DATA_YEAR+i);
     }
-    populateWorldData(startYear);
   }
 
   private boolean assertTerritoryGeography()
@@ -229,7 +227,7 @@ public class Model
       }
   }
 
-  public int getCurrentYear() {return year;}
+  public int getCurrentYear() {return currentYear;}
 
   public Region getRegion(EnumRegion r)
   {
@@ -267,7 +265,9 @@ public class Model
 
     for (int i=0; i<EnumRegion.SIZE; i++)
     {
-      regionList[i].aggregateTerritoryData(Constant.FIRST_YEAR);
+      for (int year=Constant.FIRST_DATA_YEAR; year<Constant.FIRST_GAME_YEAR; year++)
+      { regionList[i].aggregateTerritoryData(year);
+      }
     }
 
 
@@ -333,15 +333,15 @@ public class Model
 
   /**
    *
-   * @return the simulation year that has just finished.
+   * @return the simulation currentYear that has just finished.
    */
   protected int nextYear(ArrayList<PolicyCard> cards, WorldData threeYearData)
   {
-    year++;
-    LOGGER.info("Advancing year to " + year);
+    currentYear++;
+    LOGGER.info("Advancing currentYear to " + currentYear);
 
     if (debugLevel.intValue() < Level.INFO.intValue())
-    { Simulator.dbg.println("******************************************* SIMULATION YEAR " + year);
+    { Simulator.dbg.println("******************************************* SIMULATION YEAR " + currentYear);
     }
 
     applyPolicies(); // Not started.
@@ -371,22 +371,22 @@ public class Model
     //appendWorldData(threeYearData); // Done
 
     if (debugLevel.intValue() < Level.INFO.intValue())
-    { Simulator.dbg.println("******************************************* FINAL Stats for " + debugRegion + " in " + year);
-      printRegion(regionList[debugRegion.ordinal()], year);
+    { Simulator.dbg.println("******************************************* FINAL Stats for " + debugRegion + " in " + currentYear);
+      printRegion(regionList[debugRegion.ordinal()], currentYear);
     }
 
-    return year;
+    return currentYear;
   }
 
   protected WorldData populateWorldData(int year)
   {
     //ArrayList<CropZoneData> categoryData = cropLoader.getCategoryData();
 
-    int yearIdx = year - Constant.FIRST_YEAR;
+    int yearIdx = year - Constant.FIRST_DATA_YEAR;
     WorldData data = worldDataAllYears[yearIdx];
     data.year = year;
 
-    //threeYearData.seaLevel = seaLevel.getSeaLevel(year);
+    //threeYearData.seaLevel = seaLevel.getSeaLevel(currentYear);
     //for (int i=0; i< EnumFood.SIZE; i++)
     //{
     //  CropZoneData currentZone   = categoryData.get(i);
@@ -424,6 +424,14 @@ public class Model
       */
     }
     return data;
+  }
+
+
+
+  protected WorldData getWorldData(int year)
+  {
+    int yearIdx = year - Constant.FIRST_DATA_YEAR;
+    return worldDataAllYears[yearIdx];
   }
 
   /**
@@ -474,7 +482,7 @@ public class Model
     }
 
     if (debugLevel.intValue() < Level.INFO.intValue())
-    { printCurrentClimate(regionList[debugRegion.ordinal()], year);
+    { printCurrentClimate(regionList[debugRegion.ordinal()], currentYear);
     }
   }
 
@@ -486,17 +494,17 @@ public class Model
     { Simulator.dbg.println("******************************************* Generating special events");
     }
 
-    //check current year.
+    //check current currentYear.
     int CURRENT_YEAR = 2015;
-    if (year < CURRENT_YEAR)
+    if (currentYear < CURRENT_YEAR)
     {
       //Then there should be a pre-existing event to draw upon. Then
       //there ought to have been a process that loaded the events to draw from
       for (SpecialEventData event : specialEventDatum)
       {
-        if (event.year == year)
+        if (event.year == currentYear)
         {
-          //add current event to data structure of events for the year
+          //add current event to data structure of events for the currentYear
         }
       }
     }
@@ -576,11 +584,11 @@ public class Model
     //
     for (Region region : regionList)
     {
-        region.updateYield(year);
+        region.updateYield(currentYear);
     }
 
     if (debugLevel.intValue() < Level.INFO.intValue())
-    { printCropYield(regionList[debugRegion.ordinal()], year);
+    { printCropYield(regionList[debugRegion.ordinal()], currentYear);
     }
   }
 
@@ -594,11 +602,11 @@ public class Model
     //
     for (int i = 0; i < EnumRegion.SIZE; i++)
     {
-      regionList[i].updateCropNeed(year);
+      regionList[i].updateCropNeed(currentYear);
     }
 
     if (debugLevel.intValue() < Level.INFO.intValue())
-    { printCropNeed(regionList[debugRegion.ordinal()], year);
+    { printCropNeed(regionList[debugRegion.ordinal()], currentYear);
     }
   }
 
@@ -742,17 +750,11 @@ public class Model
 
   public void printData(Territory unit, int year, String prefix)
   {
-    Simulator.dbg.println(prefix + "Data for " + unit.getName() + " in year " + year);
+    Simulator.dbg.println(prefix + "Data for " + unit.getName() + " in currentYear " + year);
     Simulator.dbg.print(prefix + prefix + "\t");
     if (unit instanceof Region) Simulator.dbg.print("sum ");
 
-    if (year == Constant.FIRST_YEAR)
-    {
-      Simulator.dbg.println(" population : " + unit.getPopulation(year));
-      Simulator.dbg.print(prefix + prefix + "\t");
-      if (unit instanceof Region) Simulator.dbg.print("sum ");
-    }
-    else Simulator.dbg.print(" population : " + unit.getPopulation(year));
+    Simulator.dbg.print(" population : " + unit.getPopulation(year));
     Simulator.dbg.print(", undernourished : " + unit.getUndernourished(year));
     Simulator.dbg.print(", landTotal : " + unit.getLandTotal());
     Simulator.dbg.println();

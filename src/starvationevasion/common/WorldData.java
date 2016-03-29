@@ -16,7 +16,7 @@ public class WorldData implements JSON
 {
 
   /**
-   * Current simulation year. All other data in this structure valid only for this current year.
+   * Year to which this WorldData applies.
    */
   public int year;
 

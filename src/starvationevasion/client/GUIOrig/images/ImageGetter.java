@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
  */
 public class ImageGetter implements ImageConstants
 {
+  private static Image worldMap;
   private static Image citrus64;
   private static Image diary64;
   private static Image feed64;
@@ -63,7 +64,7 @@ public class ImageGetter implements ImageConstants
   {
     initialize64();
     initialize256();
-
+    worldMap=new Image("Mollweide_projection_SW.jpg");
     graphLeftArrowBig = new Image ("ActionButtons/leftArrowBig.png");
     graphRightArrowBig = new Image ("ActionButtons/rightArrowBig.png");
     discardLeftArrowSmall = new Image("ActionButtons/leftArrowSmall.png");
@@ -161,6 +162,11 @@ public class ImageGetter implements ImageConstants
       default:
         return citrus64;
     }
+  }
+
+  public Image getWorldMap()
+  {
+    return worldMap;
   }
 
   public Image getBackground()

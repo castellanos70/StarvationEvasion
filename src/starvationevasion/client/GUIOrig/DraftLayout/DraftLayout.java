@@ -44,6 +44,7 @@ public class DraftLayout extends GridPane
   Hand hand;
   DraftTimer draftTimer;
   Map map;
+  WorldMap worldMap;
   //pointer to the main GUIOrig
   GUI gui;
 
@@ -72,7 +73,7 @@ public class DraftLayout extends GridPane
   }
   private void testLayout()
   {
-
+    setGridLinesVisible(true);
     //node to let the user see graphs and region statistics
     graphNode = new GraphNode(gui);
     this.add(graphNode, 0, 4, 1, 2);
@@ -86,9 +87,11 @@ public class DraftLayout extends GridPane
     this.add(draftStatus, 11, 1, 2, 4);
 
     //node which lets the user select and view the map of the US
-//    map = new Map();
-//    Node mapNode = map.getGameMapNode();
-//    this.add(mapNode, 1, 1, 10, 6);
+    map = new Map();
+    Node mapNode = map.getGameMapNode();
+
+    worldMap=new WorldMap(gui);
+    this.add(worldMap, 1, 1, 10, 6);
 
     //node which holds the user's deck/discard pile information
     deckNode = new DeckNode(gui);
@@ -111,7 +114,7 @@ public class DraftLayout extends GridPane
 
     //node which allows the user to view the current cards in their hand
     hand = new Hand(gui, primaryStage);
-    this.add(hand, 1,1,10, 8);
+    this.add(hand, 1, 7, 10, 2);
 
     draftTimer = new DraftTimer();
     this.add(draftTimer, 11, 0, 2, 1);
@@ -126,14 +129,14 @@ public class DraftLayout extends GridPane
     this.add(discardDisplay,1, 5, 3, 4);
 
     chatNode=new ChatNode(gui);
-    this.add(chatNode,0,0,1,3);
+    this.add(chatNode,0,0,1,4);
 
-    this.setBackground(new Background(new BackgroundImage(
-            gui.getImageGetter().getBackground(),
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundPosition.CENTER,
-            BackgroundSize.DEFAULT)));
+//    this.setBackground(new Background(new BackgroundImage(
+//            gui.getImageGetter().getBackground(),
+//            BackgroundRepeat.NO_REPEAT,
+//            BackgroundRepeat.NO_REPEAT,
+//            BackgroundPosition.CENTER,
+//            BackgroundSize.DEFAULT)));
 
     gui.getPopupManager().setGraphDisplay(graphDisplay);
     gui.getPopupManager().setPbDataDisplay(pbDataDisplay);
@@ -155,6 +158,8 @@ public class DraftLayout extends GridPane
     //node to let the user see graphs and region statistics
     graphNode = new GraphNode(gui);
     this.add(graphNode, 0, 4, 1, 2);
+    chatNode=new ChatNode(gui);
+    this.add(chatNode,0,0,1,3);
 
     //node at the top of the screen to let the user know basic stats
     summaryBar = new SummaryBar(gui);
@@ -192,6 +197,7 @@ public class DraftLayout extends GridPane
 //    hand = new Hand(gui, primaryStage);
 //    this.add(hand, 1, 7, 10, 2);
 
+
     draftTimer = new DraftTimer();
     this.add(draftTimer, 11, 0, 2, 1);
 
@@ -204,8 +210,7 @@ public class DraftLayout extends GridPane
     discardDisplay = new DiscardDisplay(gui);
     this.add(discardDisplay,1, 5, 3, 4);
 
-    chatNode=new ChatNode(gui);
-    this.add(chatNode,0,0,1,3);
+
 
     this.setBackground(new Background(new BackgroundImage(
             gui.getImageGetter().getBackground(),

@@ -513,6 +513,7 @@ public class ClientPolicyCard extends VBox
             "  -fx-background-radius: 3 3 3 3;"+"-fx-border-style:solid;");
     gameText.autosize();
     view= gui.getImageGetter().getImageForCard(enumPolicy);
+    view.setPreserveRatio(true);
     view.setFitHeight(100);
     view.setFitWidth(100);
     //setPrefSize(750, 250);

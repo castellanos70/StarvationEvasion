@@ -1,8 +1,6 @@
 package starvationevasion.client.GUIOrig.VotingLayout;
 
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import starvationevasion.client.GUIOrig.DraftLayout.ChatNode;
 import starvationevasion.client.GUIOrig.GUI;
@@ -57,17 +55,23 @@ public class VotingLayout extends GridPane
     this.add(finishButton,7,20,1,1);
     summaryBar = new SummaryBar(this.gui);
     //this.setTop(summaryBar);
-    this.add(summaryBar,0,1,1,1);
+    this.add(summaryBar, 0, 1, 1, 1);
     timer = new VotingTimer(this.gui);
    // this.setRight(timer);
-    this.add(timer,6,0,1,1);
+    this.add(timer, 6, 0, 1, 1);
     initializeCardSpaces();
     initializeVotingNodes();
     initializeRegionMaps();
    // setCenter(centerPane);
     //setBottom(chatNode);
-    this.add(chatNode,0,20,7,6);
+    this.add(chatNode, 0, 20, 7, 6);
 
+    this.setBackground(new Background(new BackgroundImage(
+            gui.getImageGetter().getBackground(),
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundPosition.CENTER,
+            BackgroundSize.DEFAULT)));
   }
 
   public void setCards(PolicyCard[] cards)

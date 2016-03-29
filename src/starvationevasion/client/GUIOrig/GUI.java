@@ -130,7 +130,6 @@ public class GUI extends Application
     graphManager = new GraphManager(this);
 
     //instantiate the DraftLayout
-    chatNode=new ChatNode(this);
     draftLayout = new DraftLayout(this);
     votingLayout = new VotingLayout(this);
 

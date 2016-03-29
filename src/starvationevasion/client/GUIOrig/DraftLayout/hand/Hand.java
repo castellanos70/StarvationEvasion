@@ -1,6 +1,5 @@
 package starvationevasion.client.GUIOrig.DraftLayout.hand;
 
-import javafx.geometry.Pos;
 import starvationevasion.client.GUIOrig.DraftLayout.DeckNode;
 import starvationevasion.client.GUIOrig.DraftLayout.DraftedCards;
 import starvationevasion.client.GUIOrig.DraftLayout.map.Map;
@@ -47,7 +46,7 @@ public class Hand extends GridPane
   {
     this.gui = gui;
     primaryStage = gui.getPrimaryStage();
-    setAlignment(Pos.CENTER);
+
     //Just for testing
     dealRandomHand();
   }
@@ -81,15 +80,13 @@ public class Hand extends GridPane
     for (int i = 0; i <hand.length ; i++)
     {
       //Needs working connection
-     // ClientPolicyCard clientPolicyCard=new ClientPolicyCard(GUIOrig.client.getAssignedRegion(),hand[i],GUIOrig);
+      // ClientPolicyCard clientPolicyCard=new ClientPolicyCard(GUIOrig.client.getAssignedRegion(),hand[i],GUIOrig);
       ClientPolicyCard clientPolicyCard=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA,hand[i],gui);
       clientPolicyCard.setHandIndex(i);
-      clientPolicyCard.setVeryDetailed();
       elements.add(clientPolicyCard);
-      if(i<4)add(clientPolicyCard,i,0);
-      else add(clientPolicyCard,i-4,1);
+      add(clientPolicyCard, i, 0);
     }
-    //setListeners();
+    setListeners();
   }
 
   private void setListeners()
@@ -271,9 +268,9 @@ public class Hand extends GridPane
       }
       if(discardPile.contains(undoCard))
       { for(ClientPolicyCard card: elements)
-        {
+      {
         card.setDiscardButton(false);
-        }
+      }
         undoCard.setDiscarded(false);
         discardedSingleCard=false;
         discardPile.remove(undoCard);
@@ -301,7 +298,7 @@ public class Hand extends GridPane
     {
       Collections.shuffle(validCards);
       draftCard(validCards.get(0));
-     // gui.client.draftCard(validCards.get(0).getPolicyCard());
+      // gui.client.draftCard(validCards.get(0).getPolicyCard());
     }
   }
 

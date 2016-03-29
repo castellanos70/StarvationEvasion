@@ -1,18 +1,9 @@
-
-
-2000	0	(1000 MT)	NA
-2001	0	(1000 MT)	NA
-2002	0	(1000 MT)	NA
-2003	0	(1000 MT)	NA
-2004	0	(1000 MT)	NA
-2005	0	(1000 MT)	NA
-2006	0	(1000 MT)	NA
-2007	0	(1000 MT)	NA
-2008	0	(1000 MT)	NA
-2009	2	(1000 MT)	NA
-2010	2	(1000 MT)	0.00 %
-2011	2	(1000 MT)	0.00 %
-2012	1	(1000 MT)	-50.00 %
-2013	1	(1000 MT)	0.00 %
-2014	2	(1000 MT)	100.00 %
-2015	0	(1000 MT)	-100.00 %
+var table = document.getElementById('gvData');
+var rows = table.getElementsByTagName('tr');
+var rowList = [];
+for(row of rows)
+	rowList.push(row.getElementsByTagName('td'));
+while(rowList[0].length === 0) rowList.shift(); //There usually is an empty formatting cell
+while(Number.parseInt(rowList[0][0].textContent) < 2000) rowList.shift();
+for(var i = 0; i < rowList.length; i++)
+	rowList[0].pop(); //Remove growth rate

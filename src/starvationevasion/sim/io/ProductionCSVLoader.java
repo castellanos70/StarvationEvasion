@@ -20,7 +20,19 @@ public class ProductionCSVLoader
 
   private enum EnumHeader
   {
-    food, category, country, region, year, exports, imports, production;
+    food,     //Name of food product.
+    category, //EnumFood.
+    country,  //Territory name, except all USA territories are combined.
+    region,   //EnumRegion
+    year,     //Market Year
+    imports,  //Metric Tons
+    exports,  //Metric Tons
+    production,  //Domestic production. Does NOT include Beginning stocks
+    consumption, //Domestic consumption: Including all possible uses of the commodity:
+                 //           food, feed, seed, waste, and industrial processing.
+                 //           Does NOT include Ending stocks.
+    yield,       //Yield (MT/HA)
+    price;       //U.S. import price (12 month average, US dollars per MT)
 
     public static final int SIZE = values().length;
   };

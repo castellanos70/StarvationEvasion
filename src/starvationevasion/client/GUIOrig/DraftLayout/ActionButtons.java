@@ -69,7 +69,7 @@ public class ActionButtons extends HBox
 
     doneDiscarding.setOnMouseClicked(event ->
     {
-      Hand hand=gui.getDraftLayout().getHand();
+      Hand hand =gui.getDraftLayout().getHand();
       if(hand.getNumberOfActionsUsed()<1)bigDiscard.setDisable(false);
       else bigDiscard.setDisable(true);
       doneDiscarding.setDisable(true);

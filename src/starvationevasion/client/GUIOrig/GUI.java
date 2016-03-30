@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import starvationevasion.client.Client;
+import starvationevasion.client.GUIOrig.DraftLayout.ChatNode;
 import starvationevasion.client.GUIOrig.DraftLayout.DraftLayout;
 import starvationevasion.client.GUIOrig.DraftLayout.map.GamePhaseMapController;
 import starvationevasion.client.GUIOrig.DraftLayout.map.MapController;
@@ -13,6 +14,7 @@ import starvationevasion.client.GUIOrig.Popups.PopupManager;
 import starvationevasion.client.GUIOrig.VotingLayout.VotingLayout;
 import starvationevasion.client.GUIOrig.images.ImageGetter;
 import starvationevasion.client.Logic.LocalDataContainer;
+import starvationevasion.client.Logic.MainGameLoop;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 
@@ -60,7 +62,7 @@ public class GUI extends Application
 
   //The user's assigned region
   EnumRegion assignedRegion;
-
+  private ChatNode chatNode;
   //context variables
   boolean selectingRegion = false;
   boolean selectingProduct = false;
@@ -71,7 +73,10 @@ public class GUI extends Application
    */
   public GUI()
   {
-
+      super();
+    client2=new Client("Nathan", 2020);
+    this.localDataContainer = localDataContainer;
+    assignedRegion = client2.getRegion();
   }
 
   /**
@@ -81,6 +86,7 @@ public class GUI extends Application
    * @param localDataContainer reference to the local data the client stores
    */
   private Client client2;
+  private MainGameLoop mainGameLoop;
   public GUI(Client client, LocalDataContainer localDataContainer)
   {
     super();
@@ -88,6 +94,7 @@ public class GUI extends Application
    // this.client = client;
     this.localDataContainer = localDataContainer;
     assignedRegion = client.getRegion();
+
   }
   public Client getClient(){return client2;}
   /**
@@ -113,9 +120,9 @@ public class GUI extends Application
     boxHeight = maxHeight*.1;
     boxWidth = maxWidth*.07;
 
-    primaryStage.setMaxHeight(maxHeight);
-    primaryStage.setMinHeight(maxHeight);
-    primaryStage.setResizable(false);
+//    primaryStage.setMaxHeight(maxHeight);
+//    primaryStage.setMinHeight(maxHeight);
+    primaryStage.setResizable(true);
 
     //instantiate helper classes
     imageGetter = new ImageGetter();
@@ -131,12 +138,23 @@ public class GUI extends Application
     currentRoot = draftLayout;
     primaryStage.setScene(gameScene);
 
+
+    mainGameLoop=new MainGameLoop(this);
     //if(!client.isAI)
     {
       primaryStage.show();
     }
+    primaryStage.setOnCloseRequest(event2 ->
+    {
+      primaryStage.close();
+      mainGameLoop.stop();
+    });
   }
-
+  @Override
+  public void stop()
+  {
+    client2.closeAll();
+  }
   /**
    * Simple getter in case any node needs to get the stage
    * @return
@@ -174,7 +192,7 @@ public class GUI extends Application
   {
     return productList;
   }
-
+  public ChatNode getChatNode(){return chatNode;}
   /**
    * Method which switches the which phase of the game is being displayed on the GUIOrig
    */
@@ -263,7 +281,7 @@ public class GUI extends Application
   {
     return draftLayout;
   }
-
+  public VotingLayout getVotingLayout(){return votingLayout;}
   /**
    * Returns the GraphManger. Used by nodes which displays graphs
    * @return GraphManager

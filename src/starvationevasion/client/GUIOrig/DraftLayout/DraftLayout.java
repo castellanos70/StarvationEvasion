@@ -44,11 +44,12 @@ public class DraftLayout extends GridPane
   Hand hand;
   DraftTimer draftTimer;
   Map map;
+  WorldMap worldMap;
   //pointer to the main GUIOrig
   GUI gui;
 
 
-  final boolean TESTING_MODE=true;
+  final boolean TESTING_MODE=false;
 
   /**
    * Constructor for the DraftLayout scene
@@ -59,7 +60,7 @@ public class DraftLayout extends GridPane
     this.gui = gui;
     this.primaryStage = gui.getPrimaryStage();
 
-    //set the prefered size to the screen width and height
+    //set the preferred size to the screen width and height
     this.setMaxSize(gui.getMaxWidth(), gui.getMaxHeight());
     this.setMinSize(gui.getMaxWidth(), gui.getMaxHeight());
 
@@ -68,14 +69,11 @@ public class DraftLayout extends GridPane
     this.getColumnConstraints().addAll(colConstraintsList);
     this.getRowConstraints().addAll(rowConstraintsList);
 
-    //node to let the user access the visualizer
-
-    chatNode=new ChatNode(gui);
-    this.add(chatNode,0,0,1,3);
-    //visNode = new VisNode(primaryStage,GUIOrig,this);
-    //this.add(visNode, 0,0,1,3);
-
-
+   testLayout();
+  }
+  private void testLayout()
+  {
+    setGridLinesVisible(true);
     //node to let the user see graphs and region statistics
     graphNode = new GraphNode(gui);
     this.add(graphNode, 0, 4, 1, 2);
@@ -91,7 +89,9 @@ public class DraftLayout extends GridPane
     //node which lets the user select and view the map of the US
     map = new Map();
     Node mapNode = map.getGameMapNode();
-    this.add(mapNode, 1, 1, 10, 6);
+
+    worldMap=new WorldMap(gui);
+    this.add(worldMap, 1, 1, 10, 6);
 
     //node which holds the user's deck/discard pile information
     deckNode = new DeckNode(gui);
@@ -128,18 +128,101 @@ public class DraftLayout extends GridPane
     discardDisplay = new DiscardDisplay(gui);
     this.add(discardDisplay,1, 5, 3, 4);
 
-    this.setBackground(new Background(new BackgroundImage(
-      gui.getImageGetter().getBackground(),
-      BackgroundRepeat.NO_REPEAT,
-      BackgroundRepeat.NO_REPEAT,
-      BackgroundPosition.CENTER,
-      BackgroundSize.DEFAULT)));
+    chatNode=new ChatNode(gui);
+    this.add(chatNode,0,0,1,4);
+
+//    this.setBackground(new Background(new BackgroundImage(
+//            gui.getImageGetter().getBackground(),
+//            BackgroundRepeat.NO_REPEAT,
+//            BackgroundRepeat.NO_REPEAT,
+//            BackgroundPosition.CENTER,
+//            BackgroundSize.DEFAULT)));
 
     gui.getPopupManager().setGraphDisplay(graphDisplay);
     gui.getPopupManager().setPbDataDisplay(pbDataDisplay);
     gui.getPopupManager().setDiscardDisplay(discardDisplay);
   }
 
+
+
+
+
+  private void initDraftLayout()
+  {
+    //node to let the user access the visualizer
+
+    //visNode = new VisNode(primaryStage,GUIOrig,this);
+    //this.add(visNode, 0,0,1,3);
+
+
+    //node to let the user see graphs and region statistics
+    graphNode = new GraphNode(gui);
+    this.add(graphNode, 0, 4, 1, 2);
+    chatNode=new ChatNode(gui);
+    this.add(chatNode,0,0,1,3);
+
+    //node at the top of the screen to let the user know basic stats
+    summaryBar = new SummaryBar(gui);
+    this.add(summaryBar, 1, 0, 12, 1);
+
+    //node which lets the user see if other players have played cards/finished draft phase
+    draftStatus = new DraftStatus();
+    this.add(draftStatus, 11, 1, 2, 4);
+
+    //node which lets the user select and view the map of the US
+    map = new Map();
+    Node mapNode = map.getGameMapNode();
+    this.add(mapNode, 1, 1, 10, 6);
+
+    //node which holds the user's deck/discard pile information
+    deckNode = new DeckNode(gui);
+    this.add(deckNode, 0,6,1,3);
+
+    //node which holds the ProductBar
+    productBar = new ProductBar(gui);
+    int productBarSize = productBar.getElements().size();
+    for (int i = 0; i < productBarSize; ++i)
+    {
+      this.add(productBar.getElements().get(i), i+1, 9,1 ,1);
+    }
+
+    //node which allows the user to undo/discard cards with the click of a button
+    actionButtons = new ActionButtons(gui);
+    this.add(actionButtons, 11, 8, 2, 1);
+
+    draftedCards = new DraftedCards();
+    this.add(draftedCards, 11, 5, 2, 3);
+
+    //node which allows the user to view the current cards in their hand
+//    hand = new Hand(gui, primaryStage);
+//    this.add(hand, 1, 7, 10, 2);
+
+
+    draftTimer = new DraftTimer();
+    this.add(draftTimer, 11, 0, 2, 1);
+
+    pbDataDisplay = new ProductBarDataDisplay(gui);
+    this.add(pbDataDisplay, 0, 5, 13, 4);
+
+    graphDisplay = new GraphDisplay(gui);
+    this.add(graphDisplay, 1, 1, 10, 6);
+
+    discardDisplay = new DiscardDisplay(gui);
+    this.add(discardDisplay,1, 5, 3, 4);
+
+
+
+    this.setBackground(new Background(new BackgroundImage(
+            gui.getImageGetter().getBackground(),
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundRepeat.NO_REPEAT,
+            BackgroundPosition.CENTER,
+            BackgroundSize.DEFAULT)));
+
+    gui.getPopupManager().setGraphDisplay(graphDisplay);
+    gui.getPopupManager().setPbDataDisplay(pbDataDisplay);
+    gui.getPopupManager().setDiscardDisplay(discardDisplay);
+  }
   private void initializeGridSizes()
   {
     colConstraintsList = new ArrayList<>();
@@ -209,5 +292,8 @@ public class DraftLayout extends GridPane
    * @return hand node
    */
   public Hand getHand(){return hand;}
+
+
+  public ChatNode getChatNode(){return chatNode;}
 
 }

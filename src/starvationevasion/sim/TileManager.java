@@ -63,7 +63,6 @@ public class TileManager
   /* max radius from selected tiles to add noise to each year */
   public static final double NOISE_RADIUS = 100; /* in km */
 
-  private World world;
 
   private LandTile[][] tiles = new LandTile[COLS][ROWS];
 
@@ -72,15 +71,11 @@ public class TileManager
   private List<LandTile> allTiles;
   private LandTile[] dataTiles;
 
-  public TileManager(World world)
+  public TileManager()
   {
-    this.world = world;
     for(LandTile[] arr : tiles) Arrays.fill(arr, NO_DATA);
   }
 
-
-  public TileManager()
-  {this(null);}
 
   /**
    Get the max temperature at a location in the current simulation year.
@@ -193,7 +188,7 @@ public class TileManager
     //
     int count = tiles.length / 10;
     for (int i = 0; i < count; i += 1) {
-        int victim = world.getRandomGenerator().nextInt(count);
+        int victim = Util.rand.nextInt(count);
         addNoiseByTile(tiles[victim]);
     }
 
@@ -453,15 +448,7 @@ public class TileManager
   }
 
 
-  /**
-   set the World for this TileManager.  TileManager needs access to World-specific
-   data for current year and randomization percentages
-   @param world   world to set for the manager
-   */
-  public void setWorld(World world)
-  {
-    this.world = world;
-  }
+
 
   /* check given row and column indices for validity */
   private boolean indicesInBounds(int row, int col)

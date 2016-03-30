@@ -97,7 +97,7 @@ public class MapPoint implements JSON
    */
   public static void main(String[] args)
   {
-    Simulator sim = new Simulator(Constant.FIRST_YEAR);
+    Simulator sim = new Simulator();
 
 
     System.out.println("MatPoint.main(): Testing Map points:" );

@@ -13,13 +13,10 @@ import java.util.logging.Logger;
 /**
  * CropCSVLoader contains methods for parsing Crop data in csv file, creating a list
  * data objects.
- *
- * @author  jessica
- * @version Mar-21-2015
  */
 public class CropCSVLoader
 {
-  private final static Logger LOGGER = Logger.getLogger(CropCSVLoader.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(CropCSVLoader.class.getName());
   private static final String PATH = "/sim/CropData.csv";
   private ArrayList<CropZoneData> categoryData;
 
@@ -38,7 +35,7 @@ public class CropCSVLoader
   /**
    * Constructor takes list of country objects that need data from csv file (previously created from xml file)
    */
-  public CropCSVLoader() throws FileNotFoundException
+  public CropCSVLoader()
   {
     CSVReader fileReader = new CSVReader(PATH, 0);
 

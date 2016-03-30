@@ -26,7 +26,7 @@ import java.util.Stack;
  * Maybe on rightmouseclick, the player can set card variables
  *
  */
-public class Hand extends GridPane
+public class HandOrig extends GridPane
 {
   Stage primaryStage;
   GUI gui;
@@ -42,7 +42,7 @@ public class Hand extends GridPane
   boolean selectingCard=false;
   int numberOfActionsUsed=0;
   ArrayList<ClientPolicyCard> selectedCards=new ArrayList<>();
-  public Hand(GUI gui, Stage stage)
+  public HandOrig(GUI gui, Stage stage)
   {
     this.gui = gui;
     primaryStage = gui.getPrimaryStage();

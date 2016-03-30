@@ -48,11 +48,9 @@ public class Client
 
   public Client(String host, int portNumber)
   {
-
-
     chatManager=new ChatManager(this);
     keyboard = new Scanner(System.in);
-
+    region=EnumRegion.USA_CALIFORNIA;
     while (!openConnection(host, portNumber))
     {
     }
@@ -95,6 +93,7 @@ public class Client
     {
       System.err.println("Client Error: Unknown Host " + host);
       e.printStackTrace();
+
       isRunning = false;
       return false;
     }
@@ -102,6 +101,8 @@ public class Client
     {
       System.err.println("Client Error: Could not open connection to " + host
               + " on port " + portNumber);
+      if (true) throw new RuntimeException("");
+
       e.printStackTrace();
       isRunning = false;
       return false;
@@ -129,6 +130,7 @@ public class Client
       return false;
     }
     isRunning = true;
+    //ToDo JavaClient
     write.println("client");
     return true;
 
@@ -210,13 +212,27 @@ public class Client
       try
       {
         String msg = reader.readLine();
-        output(msg);
+
         if (msg == null)
         {
           System.out.println("Lost server, press enter to shutdown.");
           isRunning = false;
           return;
         }
+        output(msg);
+
+
+        //TODO Implement JSON Parser    // instanceOf
+        //
+//        StringReader stringReader=new StringReader(msg);
+//        JSONStreamReaderImpl jsonStreamReader=new JSONStreamReaderImpl(stringReader);
+//        JSONDocument json=jsonStreamReader.build();
+//        String data=json.getString("time");
+////
+//        if(data.contains("chat"))
+//        {
+//         chatManager.sendChatToClient(json.getString("data"));
+//        }
         if(msg.contains("text"))
         {
           String message=msg.substring(msg.indexOf("text") + 3);

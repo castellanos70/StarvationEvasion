@@ -90,7 +90,7 @@ public class Model
 
   private final static boolean DEBUG = true;
 
-  private WorldData[] worldDataAllYears = new WorldData[YEARS_OF_DATA];
+  private WorldData[] worldData = new WorldData[YEARS_OF_DATA];
 
   private int currentYear;
 
@@ -160,7 +160,7 @@ public class Model
 
     for (int i = 0; i< YEARS_OF_DATA; i++)
     {
-      worldDataAllYears[i] = new WorldData();
+      worldData[i] = new WorldData();
       if (i<Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR)
       populateWorldData(Constant.FIRST_DATA_YEAR+i);
     }
@@ -380,10 +380,11 @@ public class Model
 
   protected WorldData populateWorldData(int year)
   {
+    //System.out.println("Model.populateWorldData("+year+")");
     //ArrayList<CropZoneData> categoryData = cropLoader.getCategoryData();
 
     int yearIdx = year - Constant.FIRST_DATA_YEAR;
-    WorldData data = worldDataAllYears[yearIdx];
+    WorldData data = worldData[yearIdx];
     data.year = year;
 
     //threeYearData.seaLevel = seaLevel.getSeaLevel(currentYear);
@@ -431,7 +432,7 @@ public class Model
   protected WorldData getWorldData(int year)
   {
     int yearIdx = year - Constant.FIRST_DATA_YEAR;
-    return worldDataAllYears[yearIdx];
+    return worldData[yearIdx];
   }
 
   /**

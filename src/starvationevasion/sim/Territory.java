@@ -162,6 +162,8 @@ public class Territory
 
   private void init()
   {
+    int numYearsBeforeModel = Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR;
+
     //System.out.println("*******Territory.init(): " + name);
     cultivationMethod[EnumFarmMethod.CONVENTIONAL.ordinal()] =
       100 - (cultivationMethod[EnumFarmMethod.GMO.ordinal()]
@@ -173,12 +175,12 @@ public class Territory
 
 
     int lastIdx = 0;
-    int i = 1;
-    population[0] = populationProjection[0];
+    int i = 0;
     while(i< populationProjection.length)
     {
       if (populationProjection[i] > 0)
       {
+        population[i] = populationProjection[i];
         lastIdx = i;
         i++;
         continue;
@@ -197,10 +199,23 @@ public class Territory
       {
         double w = (double)(k-lastIdx)/(double)(nextIdx-lastIdx);
         populationProjection[k] = (int)(populationProjection[lastIdx]*w + populationProjection[nextIdx]*(1.0-w) );
+        if (k+Constant.FIRST_DATA_YEAR < Constant.FIRST_GAME_YEAR)
+        {
+          population[k] = populationProjection[k];
+        }
       }
       i = nextIdx;
     }
 
+
+
+    //Assume the first year undernourished data is for 2000 (which is false as it is for 1990).
+    //Assume the percentage of undernourished in each country remains unchanged from 2000 through 2015 (also false).
+    double undernourishedPercent = (double)undernourished[0]/(double)population[0];
+
+    for (i=1; i<=numYearsBeforeModel; i++)
+    { undernourished[i] = (int)(population[i]*undernourishedPercent);
+    }
   }
 
 

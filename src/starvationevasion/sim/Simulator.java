@@ -63,6 +63,7 @@ public class Simulator
       {
         //    assert(region.ethanolProducerTaxCredit != 0);
         assert (region.population > 0);
+        System.out.println(region.region+"("+year+"): pop="+region.population +", underfeed="+region.undernourished);
         assert ((region.undernourished <= region.population) && (region.undernourished >= 0));
         //assert(region.humanDevelopmentIndex != 0);
         assert (region.landArea > 0);
@@ -79,10 +80,10 @@ public class Simulator
         }
         assert ((totalFarmArea < region.landArea) && (totalFarmArea >= 0));
       } //Check that WorldData is properly instantiated
-      for (int i = 0; i < EnumFood.SIZE; i++)
-      {
-        assert (world.foodPrice[i] > 0);
-      }
+      //for (int i = 0; i < EnumFood.SIZE; i++)
+      //{
+      //  assert (world.foodPrice[i] > 0);
+      //}
     }
       /*
     EnumRegion player = EnumRegion.USA_CALIFORNIA;

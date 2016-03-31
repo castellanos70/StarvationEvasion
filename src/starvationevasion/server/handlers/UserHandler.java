@@ -26,8 +26,8 @@ public class UserHandler extends AbstractHandler
     if (request.getDestination().equals(Endpoint.USER_CREATE))
     {
 
-      String uname = request.chomp();
-      String pwd = request.chomp();
+      String uname = (String) request.getData().get("username");
+      String pwd = (String) request.getData().get("password");
 
       if (server.addUser(new User(uname, pwd, null, new ArrayList<>())))
       {

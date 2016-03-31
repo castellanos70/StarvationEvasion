@@ -32,10 +32,18 @@ public class Worker extends Thread
   private WriteStrategy writer;
   private ReadStrategy reader;
 
+  private final DataOutputStream outStream;
+  private final DataInputStream inStream;
+
+
   public Worker (Socket client, Server server)
   {
+
     this.writer = new SocketWriteStrategy(client);
     this.reader = new SocketReadStrategy(client);
+    this.outStream = writer.getStream();
+    this.inStream = reader.getStream();
+
 
     this.client = client;
     this.simulator = server.getSimulator();
@@ -132,25 +140,37 @@ public class Worker extends Thread
     {
       try
       {
-        
-        String s = reader.read();
 
-        if (s == null || reader == null || s.equals("\u0003�"))
+        Object _raw = reader.read();
+
+        Request request = null;
+
+        if (_raw == null || reader == null || _raw.equals("\u0003�"))
         {
           // lost the client
           isRunning = false;
           return;
         }
 
-        // notice I am expecting only requests from a client... Not supporting responses from client.
-        String[] arr = s.split("\\s+");
-        if (arr.length < 2)
-        {          
-          send(new Response(server.uptime(), "invalid"));
+        if (_raw instanceof Request)
+        {
+          request = (Request) _raw;
+        }
+        else if (_raw instanceof String)
+        {
+          String string = ((String) _raw);
+          // notice I am expecting only requests from a client... Not supporting responses from client.
+          String[] arr = string.split("\\s+");
+          if (arr.length < 2)
+          {
+            send(new Response(server.uptime(), "invalid"));
+          }
+
+          request = new Request(arr[0], arr[1], string);
         }
 
-        Request r = new Request(arr[0], arr[1], s);
-        handler.handle(r);
+
+        handler.handle(request);
 
       }
       catch(Exception e)
@@ -175,11 +195,13 @@ public class Worker extends Thread
   public void setReader (ReadStrategy reader)
   {
     this.reader = reader;
+    this.reader.setStream(inStream);
   }
 
   public void setWriter (WriteStrategy writer)
   {
     this.writer = writer;
+    this.writer.setStream(outStream);
   }
 
   public User getUser ()

@@ -5,16 +5,16 @@ package starvationevasion.server;
  * @author Javier Chavez
  */
 
-import com.oracle.javafx.jmx.json.JSONDocument;
-import com.sun.deploy.util.ArrayUtil;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
 import starvationevasion.server.io.*;
+import starvationevasion.server.io.strategies.JavaSocketReadStrategy;
+import starvationevasion.server.io.strategies.JavaSocketWriteStrategy;
 import starvationevasion.server.model.Encryptable;
-import starvationevasion.server.io.WebSocketReadStrategy;
-import starvationevasion.server.io.WebSocketWriteStrategy;
+import starvationevasion.server.io.strategies.WebSocketReadStrategy;
+import starvationevasion.server.io.strategies.WebSocketWriteStrategy;
 import starvationevasion.server.model.Response;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.User;

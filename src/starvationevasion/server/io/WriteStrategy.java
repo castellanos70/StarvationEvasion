@@ -1,10 +1,16 @@
 package starvationevasion.server.io;
 
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 
-public interface WriteStrategy
+public interface WriteStrategy<T>
 {
-  void write (String s) throws IOException;
+  // <T extends Sendable> void write (T s) throws IOException;
+  void write (T s) throws IOException;
   void close () throws IOException;
+
+  DataOutputStream getStream ();
+
+  void setStream (DataOutputStream outStream);
 }

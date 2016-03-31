@@ -6,7 +6,13 @@ package starvationevasion.server;
  */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-import starvationevasion.common.*;
+import com.sun.deploy.util.ArrayUtil;
+import starvationevasion.common.Constant;
+import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.WorldData;
+import starvationevasion.server.io.*;
+import starvationevasion.server.model.Encryptable;
 import starvationevasion.server.io.WebSocketReadStrategy;
 import starvationevasion.server.io.WebSocketWriteStrategy;
 import starvationevasion.server.model.Response;
@@ -120,10 +126,10 @@ public class Server
         worker.setServerStartTime(startNanoSec);
 
 
-        if (websocketConnect(worker))
+        if (secureConnection(worker, client))
         {
-          worker.setReader(new WebSocketReadStrategy(client));
-          worker.setWriter(new WebSocketWriteStrategy(client));
+          worker.setReader(new WebSocketReadStrategy(client, null));
+          worker.setWriter(new WebSocketWriteStrategy(client, null));
         }
         worker.start();
         System.out.println(dateFormat.format(date) + " Server: Connected to ");
@@ -135,6 +141,10 @@ public class Server
       catch(IOException e)
       {
         System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
+        e.printStackTrace();
+      }
+      catch(Exception e)
+      {
         e.printStackTrace();
       }
     }
@@ -197,10 +207,10 @@ public class Server
     return null;
   }
 
-  public User getUserByWorker (String worker)
-  {
-    return new User(new JSONDocument(JSONDocument.Type.OBJECT));//users.get(worker);
-  }
+  //  public User getUserByWorker (String worker)
+  //  {
+  //    return new User(new JSONDocument(JSONDocument.Type.OBJECT));//users.get(worker);
+  //  }
 
   public Worker getWorkerByRegion (EnumRegion region)
   {
@@ -288,13 +298,20 @@ public class Server
     ArrayList<WorldData> worldDataList =
       simulator.getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR-1);
 
-    for (Worker workers : allConnections)
+    for (Worker worker : allConnections)
     {
       //Each client needs its own copy since not all data is the same. For example, each
       // client only gets its own hand of cards and should not be able to access cards
       // dealt to other players.
-      ServerSendData data = new ServerSendData();
-      data.worldDataList = worldDataList;
+      //ServerSendData data = new ServerSendData();
+      //data.worldDataList = worldDataList;
+      EnumPolicy[] _hand = simulator.drawCards(worker.getUser().getRegion());
+      ArrayList<EnumPolicy> handList= new ArrayList<>();
+      Collections.addAll(handList, _hand);
+
+      worker.getUser().setHand(handList);
+      worker.send(worker.getUser());
+      worker.send(new Response(uptime(), worldDataList));
 
       // NOTE: can either send it as soon as we get it or have client request it.
       //TODO: make send work with this ServerSendData.
@@ -375,19 +392,40 @@ public class Server
 
   }
 
-  private boolean websocketConnect (Worker worker) throws IOException
+  private boolean secureConnection (Worker worker, Socket s)
   {
     // Handling websocket
     StringBuilder reading = new StringBuilder();
     String line = "";
     String key = "";
     String socketKey = "";
+    ReadStrategy<String> reader = worker.getReader();
+
     while(true)
     {
-      line = worker.getReader().read();
-
-      if (line == null || line.equals("client") || line.equals("\r\n") || line.isEmpty())
+      try
       {
+        line = reader.read();
+      }
+      catch(Exception e)
+      {
+        e.printStackTrace();
+        return false;
+      }
+
+      System.out.println(line);
+
+      // check if the end of line or if data was found.
+      if (line == null || line.equals("client") || line.equals("\r\n") || line.equals("JavaClient"))
+      {
+        if (line != null && line.equals("JavaClient"))
+        {
+          System.out.println("setting the read style");
+          worker.setReader(new JavaSocketReadStrategy(s, null));
+          worker.setWriter(new JavaSocketWriteStrategy(s, null));
+          return false;
+        }
+
         if (socketKey.isEmpty())
         {
           return false;
@@ -405,11 +443,17 @@ public class Server
 
       }
 
+
       reading.append(line);
       if (line.contains("Sec-WebSocket-Key:"))
       {
         key = line.replace("Sec-WebSocket-Key: ", "");
         socketKey = Server.handshake(key);
+      }
+      if (line.contains("Sec-Socket-Key: "))
+      {
+        key = line.replace("Sec-Socket-Key: ", "");
+        socketKey = Encryptable.generateKey();
       }
     }
   }

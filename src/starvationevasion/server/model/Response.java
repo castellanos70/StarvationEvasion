@@ -2,17 +2,14 @@ package starvationevasion.server.model;
 
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-import starvationevasion.server.io.JSON;
 
-import java.io.Serializable;
-
-public class Response implements JSON
+public class Response implements Sendable
 {
 
-  Object data;
-  String message = "";
-  String type = "";
-  double time = 0f;
+  private Object data;
+  private String message = "";
+  private String type = "";
+  private double time = 0f;
 
 
   public Response (double time, Object data, String message)
@@ -59,5 +56,17 @@ public class Response implements JSON
     }
 
     return document;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+    this.type = type;
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
   }
 }

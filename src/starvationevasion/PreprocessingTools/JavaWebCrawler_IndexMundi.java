@@ -36,6 +36,7 @@ public class JavaWebCrawler_IndexMundi
         String starter = food + ",," + region.name + ",,"; //Category and Region are parsed empty
         for(int i = 0; i < 1+(endYear-startYear); i++)
           strBuilder[i] = starter + String.valueOf(startYear+i);
+        boolean dataFlag = false;
         for (String value : Graphs)
         {
 
@@ -47,11 +48,13 @@ public class JavaWebCrawler_IndexMundi
             if (tds.size() > 2 && Integer.parseInt(tds.get(0).text()) >= startYear)
             {
               strBuilder[Integer.parseInt(tds.get(0).text())-startYear] += "," + tds.get(1).text() + "," + tds.get(2).text();
+              dataFlag = true;
             }
           }
         }
-        for(int i = 0; i < 1+(endYear-startYear); i++)
-          writer.println(strBuilder[i]);
+        if(dataFlag)
+          for(int i = 0; i < 1+(endYear-startYear); i++)
+            writer.println(strBuilder[i]);
         System.out.println(strBuilder[15]);
       }
     writer.flush();

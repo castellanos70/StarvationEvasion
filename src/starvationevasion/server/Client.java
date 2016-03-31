@@ -10,15 +10,13 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Client
  *
  * UX/UI. This is the interface that handles user input
  */
-public class Client
+class Client
 {
   private Socket clientSocket;
 

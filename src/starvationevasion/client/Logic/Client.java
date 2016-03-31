@@ -55,7 +55,7 @@ public class Client
    */
   public Client(boolean isAI)
   {
-    gui = new GUI(this, localDataContainer);
+   // gui = new GUI(this, localDataContainer);
     listener = new ClientListener(this);
     availableRegions = new ArrayList<>();
     takenRegions = new TreeMap<>();
@@ -65,7 +65,7 @@ public class Client
   }
 
   /**
-   * Called from LandingPage, init creates a socket
+   * Called from LandingPage, getWorldData creates a socket
    * connection with the server and assigns its
    * messenger object that socket.
    */
@@ -168,7 +168,7 @@ public class Client
   {
     try
     {
-      regionChooser = new RegionChooser(this, localDataContainer);
+      //regionChooser = new RegionChooser(this, localDataContainer);
       Stage regionStage = new Stage();
       regionChooser.start(regionStage);
     }

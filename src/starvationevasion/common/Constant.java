@@ -1,6 +1,8 @@
 package starvationevasion.common;
 
 
+import java.util.Random;
+
 /**
  * This class contains all constant values used throughout the Starvation Evasion game.
  */
@@ -8,11 +10,21 @@ public class Constant
 {
 
   /**
-   * This is the first year for which simulation data has been gathered.
-   * Note: (LAST_YEAR - FIRST_YEAR) % 3 must equal zero.
+   * Each game turn advances the simulator by YEARS_PER_TURN years.
    */
-  public static final int FIRST_YEAR = 1981;
+  public static final int YEARS_PER_TURN = 2;
 
+  /**
+   * This is the first year for which simulation data has been gathered.
+   */
+  public static final int FIRST_DATA_YEAR = 2000;
+
+
+  /**
+   * This is the year for of the first turn in the simulation.
+   * Note: (LAST_YEAR - FIRST_GAME_YEAR) % YEARS_PER_TURN must equal zero.
+   */
+  public static final int FIRST_GAME_YEAR = 2016;
 
   /**
    * This is the last year for which simulation data projections are approximated.
@@ -21,9 +33,10 @@ public class Constant
 
 
   /**
-   * Each game turn advances the simulator by YEARS_PER_TURN years.
+   * This is the total number of game turns.
    */
-  public static final int YEARS_PER_TURN = 3;
+  public static final int GAME_TOTAL_TURNS = (LAST_YEAR - FIRST_GAME_YEAR) % YEARS_PER_TURN;
+
 
   /**
    * Maximum number of cards that a player may have in his, her or its hand.
@@ -38,6 +51,5 @@ public class Constant
     */
 
   public static final double EARTH_CIRCUMFERENCE = 40075;
-
 
 }

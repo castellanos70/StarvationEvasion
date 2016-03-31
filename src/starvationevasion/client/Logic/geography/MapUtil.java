@@ -16,13 +16,13 @@ public class MapUtil implements MapConstants
    */
   public static EnumRegion regionIdToEnumRegion(String id)
   {
-    if (id.equals(CALIFORNIA)) return EnumRegion.CALIFORNIA;
-    else if (id.equals(SOUTHEAST)) return EnumRegion.SOUTHEAST;
-    else if (id.equals(SOUTHERN_PLAINS)) return EnumRegion.SOUTHERN_PLAINS;
-    else if (id.equals(NORTHERN_PLAINS)) return EnumRegion.NORTHERN_PLAINS;
-    else if (id.equals(NORTHERN_CRESCENT)) return EnumRegion.NORTHERN_CRESCENT;
-    else if (id.equals(MOUNTAIN)) return EnumRegion.MOUNTAIN;
-    else if (id.equals(HEARTLAND)) return EnumRegion.HEARTLAND;
+    if (id.equals(CALIFORNIA)) return EnumRegion.USA_CALIFORNIA;
+    else if (id.equals(SOUTHEAST)) return EnumRegion.USA_SOUTHEAST;
+    else if (id.equals(SOUTHERN_PLAINS)) return EnumRegion.USA_SOUTHERN_PLAINS;
+    else if (id.equals(NORTHERN_PLAINS)) return EnumRegion.USA_NORTHERN_PLAINS;
+    else if (id.equals(NORTHERN_CRESCENT)) return EnumRegion.USA_NORTHERN_CRESCENT;
+    else if (id.equals(MOUNTAIN)) return EnumRegion.USA_MOUNTAIN;
+    else if (id.equals(HEARTLAND)) return EnumRegion.USA_HEARTLAND;
     else return null;
   }
 
@@ -33,13 +33,13 @@ public class MapUtil implements MapConstants
    */
   public static String enumRegionToRegionId(EnumRegion enumRegion)
   {
-    if (enumRegion == EnumRegion.CALIFORNIA) return CALIFORNIA;
-    else if (enumRegion == EnumRegion.SOUTHEAST) return SOUTHEAST;
-    else if (enumRegion == EnumRegion.SOUTHERN_PLAINS) return SOUTHERN_PLAINS;
-    else if (enumRegion == EnumRegion.NORTHERN_PLAINS) return NORTHERN_PLAINS;
-    else if (enumRegion == EnumRegion.NORTHERN_CRESCENT) return NORTHERN_CRESCENT;
-    else if (enumRegion == EnumRegion.MOUNTAIN) return MOUNTAIN;
-    else if (enumRegion == EnumRegion.HEARTLAND) return HEARTLAND;
+    if (enumRegion == EnumRegion.USA_CALIFORNIA) return CALIFORNIA;
+    else if (enumRegion == EnumRegion.USA_SOUTHEAST) return SOUTHEAST;
+    else if (enumRegion == EnumRegion.USA_SOUTHERN_PLAINS) return SOUTHERN_PLAINS;
+    else if (enumRegion == EnumRegion.USA_NORTHERN_PLAINS) return NORTHERN_PLAINS;
+    else if (enumRegion == EnumRegion.USA_NORTHERN_CRESCENT) return NORTHERN_CRESCENT;
+    else if (enumRegion == EnumRegion.USA_MOUNTAIN) return MOUNTAIN;
+    else if (enumRegion == EnumRegion.USA_HEARTLAND) return HEARTLAND;
     else return null;
   }
 
@@ -50,13 +50,13 @@ public class MapUtil implements MapConstants
    */
   public static Color getRegionColor(EnumRegion enumRegion)
   {
-    if (enumRegion == EnumRegion.CALIFORNIA) return CALIFORNIA_COLOR;
-    else if (enumRegion == EnumRegion.SOUTHEAST) return SOUTHEAST_COLOR;
-    else if (enumRegion == EnumRegion.SOUTHERN_PLAINS) return SOUTHERN_PLAINS_COLOR;
-    else if (enumRegion == EnumRegion.NORTHERN_PLAINS) return NORTHERN_PLAINS_COLOR;
-    else if (enumRegion == EnumRegion.NORTHERN_CRESCENT) return NORTHERN_CRESCENT_COLOR;
-    else if (enumRegion == EnumRegion.MOUNTAIN) return MOUNTAIN_COLOR;
-    else if (enumRegion == EnumRegion.HEARTLAND) return HEARTLAND_COLOR;
+    if (enumRegion == EnumRegion.USA_CALIFORNIA) return CALIFORNIA_COLOR;
+    else if (enumRegion == EnumRegion.USA_SOUTHEAST) return SOUTHEAST_COLOR;
+    else if (enumRegion == EnumRegion.USA_SOUTHERN_PLAINS) return SOUTHERN_PLAINS_COLOR;
+    else if (enumRegion == EnumRegion.USA_NORTHERN_PLAINS) return NORTHERN_PLAINS_COLOR;
+    else if (enumRegion == EnumRegion.USA_NORTHERN_CRESCENT) return NORTHERN_CRESCENT_COLOR;
+    else if (enumRegion == EnumRegion.USA_MOUNTAIN) return MOUNTAIN_COLOR;
+    else if (enumRegion == EnumRegion.USA_HEARTLAND) return HEARTLAND_COLOR;
     else return null;
   }
 }

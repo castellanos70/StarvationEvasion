@@ -13,6 +13,9 @@ bin
 *.iws
 notes_joel.txt
 
+# the dataSources folder is raw data not directly used by the project.
+dataSources
+
 # ignore class files
 *.class
 

@@ -4,7 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.paint.Color;
-import starvationevasion.client.Logic.Client;
+import starvationevasion.client.Client;
 import starvationevasion.client.Logic.geography.MapConstants;
 import starvationevasion.client.Logic.geography.MapUtil;
 import starvationevasion.common.EnumRegion;

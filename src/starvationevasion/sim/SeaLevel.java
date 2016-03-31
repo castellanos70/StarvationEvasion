@@ -41,7 +41,7 @@ public class SeaLevel
   /**
    * Last year of historical data.
    */
-  public int lastYearOfHistoricalData = annualMeanSeaLevel.length - 1 + Constant.FIRST_YEAR;
+  public int lastYearOfHistoricalData = annualMeanSeaLevel.length - 1 + Constant.FIRST_DATA_YEAR;
 
   /**
    * fields a, b and c are used to store
@@ -55,7 +55,7 @@ public class SeaLevel
 
   public SeaLevel()
   {
-    year0 = Constant.FIRST_YEAR;
+    year0 = Constant.FIRST_DATA_YEAR;
     year1 = 2014;
     year2 = Constant.LAST_YEAR;
 
@@ -117,7 +117,7 @@ public class SeaLevel
   {
 
     SeaLevel seaLevel = new SeaLevel();
-     for (int i=Constant.FIRST_YEAR; i<=Constant.LAST_YEAR; i=i+5)
+     for (int i=Constant.FIRST_DATA_YEAR; i<=Constant.LAST_YEAR; i=i+5)
      {
        System.out.println("Sea Level in " + i + " = " + seaLevel.getSeaLevel(i));
      }

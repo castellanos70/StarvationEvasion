@@ -1,11 +1,9 @@
 package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-
 import starvationevasion.server.io.JSON;
 
-
-import java.io.Serializable;
+import java.util.List;
 
 /**
  * This structure contains all data of a particular region that the simulator shares with
@@ -84,6 +82,10 @@ public class RegionData implements JSON
    */
   public int ethanolProducerTaxCredit;
 
+  /**
+   * This region's total land area (in square kilometers).
+   */
+  public int landArea;
 
   /**
    * This region's land area (in square kilometers)
@@ -178,11 +180,48 @@ public class RegionData implements JSON
 
   public RegionData (JSONDocument json)
   {
-    region = EnumRegion.values()[(int) json.getNumber("region")];
-    revenueBalance = (int) json.getNumber("revenueBalance");
+    region = EnumRegion.valueOf(json.getString("region"));
+    revenueBalance = (int) json.getNumber("revenue-balance");
     population = (int) json.getNumber("population");
     undernourished = (double) json.getNumber("undernourished");
-    humanDevelopmentIndex = (double) json.getNumber("humanDevelopmentIndex");
+    humanDevelopmentIndex = (double) json.getNumber("human-development-index");
+    ethanolProducerTaxCredit = (int) json.getNumber("ethanol");
 
+    List<Object> producedArray = json.get("food-produced").array();
+    for (int i = 0; i < producedArray.size(); i++)
+      foodProduced[i] = (int)producedArray.get(i);
+
+    List<Object> incomeArray = json.get("food-income").array();
+    for (int i = 0; i < incomeArray.size(); i++)
+      foodIncome[i] = (int)incomeArray.get(i);
+
+    List<Object> exportArray = json.get("food-exported").array();
+    for (int i = 0; i < exportArray.size(); i++)
+      foodExported[i] = (int)exportArray.get(i);
+
+    List<Object> farmArray = json.get("farmArea").array();
+    for (int i = 0; i < farmArray.size(); i++)
+      farmArea[i] = (int)farmArray.get(i);
   }
+  @Override
+public boolean equals(Object o)
+{
+  if (o == this)
+    return true;
+  if(!(o instanceof RegionData))
+    return false;
+  RegionData comp = (RegionData) o;
+  if(comp.region.ordinal()!= this.region.ordinal())
+    return false;
+  if(comp.revenueBalance != this.revenueBalance)
+    return false;
+  if(comp.population != this.population)
+    return false;
+  if(Double.compare(comp.undernourished, this.undernourished) != 0)
+    return false;
+  if(Double.compare(comp.humanDevelopmentIndex, this.humanDevelopmentIndex) != 0)
+    return false;
+
+  return true;
+}
 }

@@ -52,34 +52,34 @@ public class IOHelpers
     return files;
   }
 
-  public static List<String> readIndex(String indexPath) throws IOException
+  public static ArrayList<String> readIndex(String indexPath)
   {
-    System.out.println("IOHelpers.readIndex("+indexPath+")");
-    InputStream resourceStream = IOHelpers.class.getResourceAsStream(indexPath);
-    if (resourceStream == null) throw new FileNotFoundException(indexPath);
-
-    BufferedReader reader = new BufferedReader(new InputStreamReader(resourceStream));
-
-    List<String> files = new ArrayList<>();
+    ArrayList<String> files = new ArrayList<>();
 
     try
     {
+      System.out.println("IOHelpers.readIndex(" + indexPath + ")");
+      InputStream resourceStream = IOHelpers.class.getResourceAsStream(indexPath);
+      BufferedReader reader = new BufferedReader(new InputStreamReader(resourceStream));
+
+
       String entry;
       while ((entry = reader.readLine()) != null)
       {
         files.add(entry);
-        System.out.println("      "+entry);
+        //System.out.println("      "+entry);
       }
+
+
+      reader.close();
+      resourceStream.close();
+
     } catch (IOException ex)
     {
       Logger.getGlobal().log(Level.SEVERE, "Error parsing geography index", ex);
       ex.printStackTrace();
+      System.exit(1);
     }
-
-    reader.close();
-    resourceStream.close();
-
-
 
     return files;
   }

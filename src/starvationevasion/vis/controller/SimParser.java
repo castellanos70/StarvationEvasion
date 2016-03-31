@@ -3,7 +3,7 @@ package starvationevasion.vis.controller;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.MapPoint;
 import starvationevasion.sim.io.XMLparsers.GeographyXMLparser;
-import starvationevasion.sim.GeographicArea;
+import starvationevasion.common.GeographicArea;
 
 import java.util.*;
 
@@ -649,160 +649,160 @@ public class SimParser {
         //region: USA
         //region: California
         case "US-California":
-          regions.put(g, EnumRegion.CALIFORNIA);
+          regions.put(g, EnumRegion.USA_CALIFORNIA);
           break;
         //endregion
         //region: HeartLand
         case "US-Iowa":
-          regions.put(g, EnumRegion.HEARTLAND);
+          regions.put(g, EnumRegion.USA_HEARTLAND);
           break;
         case "US-Missouri":
-          regions.put(g, EnumRegion.HEARTLAND);
+          regions.put(g, EnumRegion.USA_HEARTLAND);
           break;
         case "US-Illinois":
-          regions.put(g, EnumRegion.HEARTLAND);
+          regions.put(g, EnumRegion.USA_HEARTLAND);
           break;
         case "US-Indiana":
-          regions.put(g, EnumRegion.HEARTLAND);
+          regions.put(g, EnumRegion.USA_HEARTLAND);
           break;
         //endregion
         //region: NORTHERN PLAINS
         case "US-SouthDakota":
-          regions.put(g, EnumRegion.NORTHERN_PLAINS);
+          regions.put(g, EnumRegion.USA_NORTHERN_PLAINS);
           break;
         case "US-NorthDakota":
-          regions.put(g, EnumRegion.NORTHERN_PLAINS);
+          regions.put(g, EnumRegion.USA_NORTHERN_PLAINS);
           break;
         case "US-Nebraska":
-          regions.put(g, EnumRegion.NORTHERN_PLAINS);
+          regions.put(g, EnumRegion.USA_NORTHERN_PLAINS);
           break;
         case "US-Minnesota":
-          regions.put(g, EnumRegion.NORTHERN_PLAINS);
+          regions.put(g, EnumRegion.USA_NORTHERN_PLAINS);
           break;
         case "US-Kansas":
-          regions.put(g, EnumRegion.NORTHERN_PLAINS);
+          regions.put(g, EnumRegion.USA_NORTHERN_PLAINS);
           break;
         //endregion
-        //region: SOUTHEAST
+        //region: USA_SOUTHEAST
         case "US-Mississippi":
-          regions.put(g, EnumRegion.SOUTHEAST);
+          regions.put(g, EnumRegion.USA_SOUTHEAST);
           break;
         case "US-Florida":
-          regions.put(g, EnumRegion.SOUTHEAST);
+          regions.put(g, EnumRegion.USA_SOUTHEAST);
           break;
         case "US-Georgia":
-          regions.put(g, EnumRegion.SOUTHEAST);
+          regions.put(g, EnumRegion.USA_SOUTHEAST);
           break;
         case "US-Alabama":
-          regions.put(g, EnumRegion.SOUTHEAST);
+          regions.put(g, EnumRegion.USA_SOUTHEAST);
           break;
         case "US-Tennessee":
-          regions.put(g, EnumRegion.SOUTHEAST);
+          regions.put(g, EnumRegion.USA_SOUTHEAST);
           break;
         case "US-NorthCarolina":
-          regions.put(g, EnumRegion.SOUTHEAST);
+          regions.put(g, EnumRegion.USA_SOUTHEAST);
           break;
         case "US-SouthCarolina":
-          regions.put(g, EnumRegion.SOUTHEAST);
+          regions.put(g, EnumRegion.USA_SOUTHEAST);
           break;
         case "US-Kentucky":
-          regions.put(g, EnumRegion.SOUTHEAST);
+          regions.put(g, EnumRegion.USA_SOUTHEAST);
           break;
         case "US-WestVirginia":
-          regions.put(g, EnumRegion.SOUTHEAST);
+          regions.put(g, EnumRegion.USA_SOUTHEAST);
           break;
         case "US-Virginia":
-          regions.put(g, EnumRegion.SOUTHEAST);
+          regions.put(g, EnumRegion.USA_SOUTHEAST);
           break;
         //endregion
-        //region: NORTHERN_CRESCENT
+        //region: USA_NORTHERN_CRESCENT
         case "US-Maine":
-          regions.put(g, EnumRegion.NORTHERN_CRESCENT);
+          regions.put(g, EnumRegion.USA_NORTHERN_CRESCENT);
           break;
         case "US-Vermont":
-          regions.put(g, EnumRegion.NORTHERN_CRESCENT);
+          regions.put(g, EnumRegion.USA_NORTHERN_CRESCENT);
           break;
         case "US-NewHampshire":
-          regions.put(g, EnumRegion.NORTHERN_CRESCENT);
+          regions.put(g, EnumRegion.USA_NORTHERN_CRESCENT);
           break;
         case "US-Massachusetts":
-          regions.put(g, EnumRegion.NORTHERN_CRESCENT);
+          regions.put(g, EnumRegion.USA_NORTHERN_CRESCENT);
           break;
         case "US-RhodeIsland":
-          regions.put(g, EnumRegion.NORTHERN_CRESCENT);
+          regions.put(g, EnumRegion.USA_NORTHERN_CRESCENT);
           break;
         case "US-Connecticut":
-          regions.put(g, EnumRegion.NORTHERN_CRESCENT);
+          regions.put(g, EnumRegion.USA_NORTHERN_CRESCENT);
           break;
         case "US-NewJersey":
-          regions.put(g, EnumRegion.NORTHERN_CRESCENT);
+          regions.put(g, EnumRegion.USA_NORTHERN_CRESCENT);
           break;
         case "US-NewYork":
-          regions.put(g, EnumRegion.NORTHERN_CRESCENT);
+          regions.put(g, EnumRegion.USA_NORTHERN_CRESCENT);
           break;
         case "US-Pennsylvania":
-          regions.put(g, EnumRegion.NORTHERN_CRESCENT);
+          regions.put(g, EnumRegion.USA_NORTHERN_CRESCENT);
           break;
         case "US-Delaware":
-          regions.put(g, EnumRegion.NORTHERN_CRESCENT);
+          regions.put(g, EnumRegion.USA_NORTHERN_CRESCENT);
           break;
         case "US-Maryland":
-          regions.put(g, EnumRegion.NORTHERN_CRESCENT);
+          regions.put(g, EnumRegion.USA_NORTHERN_CRESCENT);
           break;
         case "US-Ohio":
-          regions.put(g, EnumRegion.NORTHERN_CRESCENT);
+          regions.put(g, EnumRegion.USA_NORTHERN_CRESCENT);
           break;
         case "US-Wisconsin":
-          regions.put(g, EnumRegion.NORTHERN_CRESCENT);
+          regions.put(g, EnumRegion.USA_NORTHERN_CRESCENT);
           break;
         case "US-Michigan":
-          regions.put(g, EnumRegion.NORTHERN_CRESCENT);
+          regions.put(g, EnumRegion.USA_NORTHERN_CRESCENT);
           break;
         //endregion
-        //region: SOUTHERN_PLAINS
+        //region: USA_SOUTHERN_PLAINS
         case "US-Texas":
-          regions.put(g, EnumRegion.SOUTHERN_PLAINS);
+          regions.put(g, EnumRegion.USA_SOUTHERN_PLAINS);
           break;
         case "US-Louisiana":
-          regions.put(g, EnumRegion.SOUTHERN_PLAINS);
+          regions.put(g, EnumRegion.USA_SOUTHERN_PLAINS);
           break;
         case "US-Oklahoma":
-          regions.put(g, EnumRegion.SOUTHERN_PLAINS);
+          regions.put(g, EnumRegion.USA_SOUTHERN_PLAINS);
           break;
         case "US-Arkansas":
-          regions.put(g, EnumRegion.SOUTHERN_PLAINS);
+          regions.put(g, EnumRegion.USA_SOUTHERN_PLAINS);
           break;
         //endregion
-        //region: MOUNTAIN
+        //region: USA_MOUNTAIN
         case "US-Washington":
-          regions.put(g, EnumRegion.MOUNTAIN);
+          regions.put(g, EnumRegion.USA_MOUNTAIN);
           break;
         case "US-Oregon":
-          regions.put(g, EnumRegion.MOUNTAIN);
+          regions.put(g, EnumRegion.USA_MOUNTAIN);
           break;
         case "US-Idaho":
-          regions.put(g, EnumRegion.MOUNTAIN);
+          regions.put(g, EnumRegion.USA_MOUNTAIN);
           break;
         case "US-Nevada":
-          regions.put(g, EnumRegion.MOUNTAIN);
+          regions.put(g, EnumRegion.USA_MOUNTAIN);
           break;
         case "US-Montana":
-          regions.put(g, EnumRegion.MOUNTAIN);
+          regions.put(g, EnumRegion.USA_MOUNTAIN);
           break;
         case "US-Wyoming":
-          regions.put(g, EnumRegion.MOUNTAIN);
+          regions.put(g, EnumRegion.USA_MOUNTAIN);
           break;
         case "US-Utah":
-          regions.put(g, EnumRegion.MOUNTAIN);
+          regions.put(g, EnumRegion.USA_MOUNTAIN);
           break;
         case "US-Colorado":
-          regions.put(g, EnumRegion.MOUNTAIN);
+          regions.put(g, EnumRegion.USA_MOUNTAIN);
           break;
         case "US-Arizona":
-          regions.put(g, EnumRegion.MOUNTAIN);
+          regions.put(g, EnumRegion.USA_MOUNTAIN);
           break;
         case "US-NewMexico":
-          regions.put(g, EnumRegion.MOUNTAIN);
+          regions.put(g, EnumRegion.USA_MOUNTAIN);
           break;
         //endregion
         //endregion

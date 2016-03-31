@@ -127,12 +127,12 @@ public class CardDeck
       {
         //Note: it is important that a pointer to the local card is added to the discard
         //      pile and NOT a pointer to the card in the argument list.
-        drawPile.add(handCard);
+        drawPile.add(handCard); //TODO NOTE This does not add to discardPile. Either misaligned or discard pile is outdated
         cardsInHand.remove(i);
       }
 
       throw new IllegalArgumentException("discard(card="+card+") is not in " +
-        "this player's deck.");
+        "this player's hand.");
 
     }
   }
@@ -155,7 +155,7 @@ public class CardDeck
    */
   public static void main(String[] args)
   {
-    CardDeck deck = new CardDeck(EnumRegion.CALIFORNIA);
+    CardDeck deck = new CardDeck(EnumRegion.USA_CALIFORNIA);
 
     // Draw cards, instantiating each.
     //
@@ -165,7 +165,7 @@ public class CardDeck
     {
       String name = card.name();
 
-      PolicyCard policy = PolicyCard.create(EnumRegion.CALIFORNIA, card);
+      PolicyCard policy = PolicyCard.create(EnumRegion.USA_CALIFORNIA, card);
       System.out.println("Policy: " + policy);
     }
   }

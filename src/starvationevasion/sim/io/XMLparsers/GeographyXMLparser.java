@@ -3,14 +3,11 @@ package starvationevasion.sim.io.XMLparsers;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 import starvationevasion.sim.io.GeographyValidator;
-import starvationevasion.sim.GeographicArea;
+import starvationevasion.common.GeographicArea;
 import starvationevasion.common.MapPoint;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.logging.Level;
@@ -33,7 +30,7 @@ public class GeographyXMLparser extends DefaultHandler
   private static String BORDERS_DIR = "/sim/geography";
   private static String BORDERS_INDEX = BORDERS_DIR + "/PolygonBoarders.txt";
 
-  private List<GeographicArea> regionList;
+  private ArrayList<GeographicArea> regionList;
   private Locator locator;
   private String regionName;
   private String regionType;
@@ -42,10 +39,6 @@ public class GeographyXMLparser extends DefaultHandler
   private GeographyValidator regionValidator = new GeographyValidator();
   private boolean name;
 
-  public Locator getLocator()
-  {
-    return locator;
-  }
 
   @Override
   public void setDocumentLocator(Locator locator)
@@ -148,7 +141,7 @@ public class GeographyXMLparser extends DefaultHandler
     }
   }
 
-  public List<GeographicArea> getGeography()
+  public ArrayList<GeographicArea> getGeography()
   {
     if (regionList == null)
     {
@@ -179,7 +172,7 @@ public class GeographyXMLparser extends DefaultHandler
       XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
       xmlReader.setContentHandler(this);
 
-      List<String> filesToRead = readIndex(BORDERS_INDEX);
+      ArrayList<String> filesToRead = readIndex(BORDERS_INDEX);
       while (!filesToRead.isEmpty())
       {
         String file = filesToRead.remove(0);
@@ -193,7 +186,9 @@ public class GeographyXMLparser extends DefaultHandler
     }
     catch (Exception e)
     {
+      System.out.println(e.getMessage());
       e.printStackTrace();
+      System.exit(1);
     }
   }
 }

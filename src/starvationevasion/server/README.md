@@ -47,8 +47,8 @@ time command args
 
 ### User
 
-* ```user_create username pwd [region]``` Region is optional. If not supplied a region will be randomly chosen
-* ```user_read username```  returns the region of that user
+* ```user_create {"username":"","password":"", "region":"california"}``` Region is optional. If not supplied a region will be randomly chosen
+* ```user_read {"username":"user"}```  returns the region of that user
 * ```user_update ``` Update your user (login is required)
 * ```users``` Get a list of all the users.
 
@@ -56,14 +56,14 @@ time command args
 ### Login
 **NOTE** Default login is: admin admin
 
-* ```login username pwd```
+* ```login {"username":"admin", "password":"admin"}```
 
 ### Chat
 Chat data will need to be formatted carefully ```chat region json```.
 
 ##### Example chat command
 ```
-chat CALIFORNIA {"card":null,"text":"normal text"}
+chat {"to":"california",card":null,"text":"normal text"}
 ```
 
 Here are some examples of JSON. These are examples, *the actual data you are sending might be different!!*

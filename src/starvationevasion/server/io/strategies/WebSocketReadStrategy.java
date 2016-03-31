@@ -1,16 +1,24 @@
-package starvationevasion.server.io;
+package starvationevasion.server.io.strategies;
 
+import starvationevasion.server.io.strategies.AbstractReadStrategy;
+
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
 
 
-public class WebSocketReadStrategy implements ReadStrategy<String>
+public class WebSocketReadStrategy extends AbstractReadStrategy<String>
 {
-  private final Socket socket;
 
-  public WebSocketReadStrategy(Socket socket)
+
+  public WebSocketReadStrategy (Socket socket)
   {
-    this.socket = socket;
+    super(socket);
+  }
+
+  public WebSocketReadStrategy (Socket socket, DataInputStream stream)
+  {
+    super(socket, stream);
   }
 
   @Override
@@ -19,7 +27,7 @@ public class WebSocketReadStrategy implements ReadStrategy<String>
     int len = 0;
     byte[] b = new byte[140];
 
-    len = socket.getInputStream().read(b);
+    len = getStream().read(b);
 
     if (len == -1)
     {
@@ -71,6 +79,7 @@ public class WebSocketReadStrategy implements ReadStrategy<String>
   @Override
   public void close () throws IOException
   {
-    socket.shutdownInput();
+    // socket.shutdownInput();
   }
+
 }

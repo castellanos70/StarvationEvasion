@@ -1,18 +1,25 @@
-package starvationevasion.server.io;
+package starvationevasion.server.io.strategies;
 
 
+import starvationevasion.server.io.strategies.AbstractWriteStrategy;
+
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-public class WebSocketWriteStrategy implements WriteStrategy
+public class WebSocketWriteStrategy extends AbstractWriteStrategy<String>
 {
-  private final Socket socket;
 
-  public WebSocketWriteStrategy(Socket socket)
+
+  public WebSocketWriteStrategy (Socket socket)
   {
-    this.socket = socket;
+    super(socket);
   }
 
+  public WebSocketWriteStrategy (Socket socket, DataOutputStream stream)
+  {
+    super(socket, stream);
+  }
 
   @Override
   public void write (String s) throws IOException
@@ -67,14 +74,14 @@ public class WebSocketWriteStrategy implements WriteStrategy
       reply[bLim] = rawData[i];
       bLim++;
     }
-    socket.getOutputStream().write(reply);
-    socket.getOutputStream().flush();
+    getStream().write(reply);
+    getStream().flush();
 
   }
   
   @Override
   public void close () throws IOException
   {
-    socket.shutdownOutput();
+    // socket.shutdownOutput();
   }
 }

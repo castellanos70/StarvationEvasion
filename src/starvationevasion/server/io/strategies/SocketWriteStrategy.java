@@ -23,7 +23,7 @@ public class SocketWriteStrategy extends AbstractWriteStrategy<String>
   @Override
   public void write (String s) throws IOException
   {
-    getStream().write(s.getBytes());
+    getStream().writeUTF(s);
     getStream().flush();
   }
   

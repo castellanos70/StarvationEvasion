@@ -1,9 +1,15 @@
 package starvationevasion.server.model;
 
 
-public class Request
+import com.oracle.javafx.jmx.json.JSONDocument;
+import com.oracle.javafx.jmx.json.impl.JSONStreamReaderImpl;
+
+import java.io.Serializable;
+import java.io.StringReader;
+
+public class Request implements Serializable
 {
-  private String data;
+  private Payload data = new Payload();
   private double time;
   private Endpoint destination;
 
@@ -17,21 +23,27 @@ public class Request
   {
     this.time = Double.parseDouble(data[0]);
     this.destination = Endpoint.valueOf(data[1].toUpperCase());
+    System.out.println(data[2]);
     data[2] = data[2].replace(data[0] + " ", "");
-    data[2] = data[2].replace(data[1] + " ", "");
+    data[2] = data[2].replace(data[1], "");
+    data[2] = data[2].trim();
 
-    this.data = data[2];
-
+    if (!data[2].isEmpty())
+    {
+      StringReader stringReader = new StringReader(data[2]);
+      JSONStreamReaderImpl s = new JSONStreamReaderImpl(stringReader);
+      JSONDocument _json = s.build();
+      this.data.putAll(_json.object());
+    }
   }
 
-  public String chomp()
+  public Request (double time, Endpoint destination)
   {
-    String[] arr = getData().split("\\s+");
-    setData(getData().replace(arr[0] + " ", ""));
-    return arr[0];
+    this.time = time;
+    this.destination = destination;
   }
 
-  public void setData (String data)
+  public void setData (Payload data)
   {
     this.data = data;
   }
@@ -41,7 +53,7 @@ public class Request
     return time;
   }
 
-  public String getData ()
+  public Payload getData ()
   {
     return data;
   }
@@ -55,5 +67,4 @@ public class Request
   {
     this.time = time;
   }
-
 }

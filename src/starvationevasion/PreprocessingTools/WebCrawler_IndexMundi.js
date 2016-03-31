@@ -76,7 +76,7 @@ var objIntercept = [new country( "Afghanistan",	"af"),
                     new country( "Yugoslavia",	"yu"),
                     new country( "Zimbabwe",	"zw")];
 
-var Commodities = ["barley", "corn", "cotton"];
+var Commodities = ["barley"];
 var Graphs = ["exports", "imports", "yield"];
 for(var region of objIntercept)
 {

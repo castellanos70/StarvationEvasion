@@ -11,10 +11,7 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
 import starvationevasion.server.io.*;
 import starvationevasion.server.io.strategies.*;
-import starvationevasion.server.model.Encryptable;
-import starvationevasion.server.model.Response;
-import starvationevasion.server.model.State;
-import starvationevasion.server.model.User;
+import starvationevasion.server.model.*;
 import starvationevasion.sim.Simulator;
 
 import java.io.IOException;
@@ -250,7 +247,10 @@ public class Server
     }
 
     userList.add(u);
-    broadcast(new Response(uptime(), u.toJSON(), "user logged in"));
+    Payload data = new Payload();
+    data.put("message", "user logged in");
+    data.put("data", u);
+    broadcast(new Response(uptime(), data));
 
     return true;
   }
@@ -308,7 +308,9 @@ public class Server
 
       worker.getUser().setHand(handList);
       worker.send(worker.getUser());
-      worker.send(new Response(uptime(), worldDataList));
+      Payload data = new Payload();
+      data.put("world-data", worldDataList);
+      worker.send(new Response(uptime(), data));
 
       // NOTE: can either send it as soon as we get it or have client request it.
       //TODO: make send work with this ServerSendData.

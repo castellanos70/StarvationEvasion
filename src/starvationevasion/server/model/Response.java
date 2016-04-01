@@ -7,25 +7,25 @@ import starvationevasion.server.io.JSON;
 public class Response implements Sendable
 {
 
-  private Object data;
+  private Payload data = new Payload();
   private String message = "";
   private String type = "";
   private double time = 0f;
 
 
-  public Response (double time, Object data, String message)
+  public Response (double time, Payload data, String message)
   {
     this.time = time;
     this.data = data;
     this.message = message;
   }
 
-  public Response (double time, Object data)
+  public Response (double time, Payload data)
   {
     this(time, data, "");
   }
 
-  public Response (Object data)
+  public Response (Payload data)
   {
     this.data = data;
   }
@@ -33,34 +33,19 @@ public class Response implements Sendable
   @Override
   public String toString ()
   {
-    if (data instanceof String)
-    {
-      return data.toString();
-    }
     return String.valueOf(time) + " " + data;
-
   }
 
   @Override
   public JSONDocument toJSON ()
   {
-    JSONDocument document = JSONDocument.createObject();
-    document.setNumber("time", time);
-    if (data instanceof JSONDocument)
-    {
-      document.set("data", ((JSONDocument) data));
-    }
-    else if (data instanceof String)
-    {
-      document.setString("data", ((String) data));
-    }
+    JSONDocument _json = JSONDocument.createObject();
+    _json.setNumber("time", time);
+    _json.setString("message", message);
+    _json.setString("type", type);
+    _json.set("data", data.toJSON());
 
-    if (!message.isEmpty())
-    {
-      document.setString("message", message);
-    }
-
-    return document;
+    return _json;
   }
 
   @Override
@@ -70,9 +55,11 @@ public class Response implements Sendable
 
 
     time = (double) json.getNumber("time");
-    data = json.get("data");
     type = json.getString("type");
     message = json.getString("message");
+
+    JSONDocument _data = json.get("data");
+    data.fromJSON(_data);
   }
 
   @Override

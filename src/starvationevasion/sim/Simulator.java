@@ -32,6 +32,10 @@ public class Simulator
    */
   public Simulator()
   {
+    assert (Constant.FIRST_GAME_YEAR > Constant.FIRST_DATA_YEAR);
+    assert ((Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR) % Constant.YEARS_PER_TURN == 0);
+    assert ((Constant.LAST_YEAR - (Constant.FIRST_GAME_YEAR+1)) % Constant.YEARS_PER_TURN == 0);
+
     // Model instantiation parses all of the XML and CSV.
     //
     LOGGER.info("Loading and initializing model");

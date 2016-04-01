@@ -27,12 +27,5 @@ public class SimulationRegionData
     this.undernourished = data.regionData[region.ordinal()].undernourished;
     this.humanDevelopmentIndex = data.regionData[region.ordinal()].humanDevelopmentIndex;
     this.ethanolProducerTaxCredit = data.regionData[region.ordinal()].ethanolProducerTaxCredit;
-    for (int i = 0; i < EnumFood.values().length; i++)
-    {
-      foodProduced[i] = data.regionData[region.ordinal()].foodProduced[i];
-      foodExported[i] = data.regionData[region.ordinal()].foodExported[i];
-      foodProduced[i] = data.regionData[region.ordinal()].foodProduced[i];
-      farmArea[i] = data.regionData[region.ordinal()].farmArea[i];
-    }
   }
 }

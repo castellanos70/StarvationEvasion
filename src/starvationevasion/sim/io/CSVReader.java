@@ -181,7 +181,6 @@ public class CSVReader
       e.printStackTrace();
       System.exit(0);
     }
-    stream.hashCode();
   }
 
   /**

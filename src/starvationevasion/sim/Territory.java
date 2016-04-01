@@ -105,11 +105,6 @@ public class Territory
    */
   private float[] landPerCategory;
 
-
-
-
-
-
   private enum EnumHeader
   { territory,	region,	population2000,
     population2010,	population2014,	population2025,	population2050,
@@ -123,10 +118,11 @@ public class Territory
 
   //private final Area totalArea = new Area();
   private final ArrayList<GeographicArea> geographicAreaList = new ArrayList<>();
-  private Collection<LandTile> landTiles  = new ArrayList<>();;
+  private Collection<LandTile> landTiles  = new ArrayList<>();
   private MapPoint capitolLocation;
 
-  /* The region to which this country belongs.
+  /*
+   * The region to which this country belongs.
    */
   private EnumRegion region;
   private long[] cropBudget = new long[EnumFood.SIZE];
@@ -245,9 +241,6 @@ public class Territory
   {
     this.penaltyValue = penaltyValue;
   }
-
-
-
 
   final public void setUndernourished(int year, int people)
   {

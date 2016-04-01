@@ -51,7 +51,4 @@ public class Constant
     */
 
   public static final double EARTH_CIRCUMFERENCE = 40075;
-
-  public static final double HECTARE_TO_SQUARE_KILOMETER = 0.01;
-
 }

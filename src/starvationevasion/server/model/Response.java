@@ -2,6 +2,7 @@ package starvationevasion.server.model;
 
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.server.io.JSON;
 
 public class Response implements Sendable
 {
@@ -24,16 +25,20 @@ public class Response implements Sendable
     this(time, data, "");
   }
 
-  @Override
-  public String toString ()
+  public Response (Object data)
   {
-    return String.valueOf(time) + " " + data;
+    this.data = data;
   }
 
   @Override
-  public String toJSONString ()
+  public String toString ()
   {
-    return toJSON().toString();
+    if (data instanceof String)
+    {
+      return data.toString();
+    }
+    return String.valueOf(time) + " " + data;
+
   }
 
   @Override
@@ -56,6 +61,18 @@ public class Response implements Sendable
     }
 
     return document;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+    JSONDocument json = JSON.Parser.toJSON(data);
+
+
+    time = (double) json.getNumber("time");
+    data = json.get("data");
+    type = json.getString("type");
+    message = json.getString("message");
   }
 
   @Override

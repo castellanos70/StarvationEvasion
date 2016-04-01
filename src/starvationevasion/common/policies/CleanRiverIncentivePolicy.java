@@ -23,7 +23,7 @@ import java.io.Serializable;
  * pesticide and fertilizer use verses cost of alternative methods including
  * more expensive seeds,  natural pest controls, and landscape for reduced run-off.<br><br>
  * The Y% tax break is applied to the regions tax revenue on the next turn.
-*/
+ */
 public class CleanRiverIncentivePolicy extends PolicyCard implements Serializable
 {
   public static final String TITLE =

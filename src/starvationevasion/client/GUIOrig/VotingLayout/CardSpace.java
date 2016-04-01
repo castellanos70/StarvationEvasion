@@ -31,7 +31,7 @@ public class CardSpace extends StackPane
     this.getStyleClass().add("cardspace");
     initializeLabel(region, cardNumber);
     this.setAlignment(Pos.TOP_LEFT);
-    this.getChildren().add(label);
+    //this.getChildren().add(label);
     this.loader = new FXMLLoader(getClass().getResource("/starvationevasion/client/GUIOrig/VotingLayout/VotePopup.fxml"));
   }
   private void initializeLabel(EnumRegion region, int cardNumber)
@@ -67,6 +67,17 @@ public class CardSpace extends StackPane
   public void setCard(EnumRegion region,EnumPolicy card,GUI gui)
   {
     ClientPolicyCard clientPolicyCard=new ClientPolicyCard(region,card,gui);
+    clientPolicyCard.setBasicCard();
+    clientPolicyCard.setOnMouseEntered(event->
+    {
+      clientPolicyCard.setDetailedCard2();
+      toFront();
+    });
+    clientPolicyCard.setOnMouseExited(event ->
+    {
+      clientPolicyCard.setBasicCard();
+     // toBack();
+    });
     this.getChildren().add(clientPolicyCard);
   }
 

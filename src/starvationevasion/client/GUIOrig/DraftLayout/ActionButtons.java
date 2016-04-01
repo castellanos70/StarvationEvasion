@@ -98,12 +98,12 @@ public class ActionButtons extends HBox
     {
       for (ClientPolicyCard card : clientPolicyCards)
       {
-        gui.client.draftCard(card.getPolicyCard());
+        //gui.client.draftCard(card.getPolicyCard());
       }
       ArrayList<ClientPolicyCard> discardedCards = gui.getDraftLayout().getHand().getDiscardCards();
       for (ClientPolicyCard card : discardedCards)
       {
-        gui.client.discard(card.getPolicy());
+       // gui.client.discard(card.getPolicy());
       }
     }
     gui.switchScenes();

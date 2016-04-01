@@ -126,20 +126,20 @@ public class Hand extends GridPane
         {
           selectCard(card);
         }
-        else if (!card.getIsFlipped()&&!card.getDrafted()&&!card.isDiscarded())
-        {
-          for(ClientPolicyCard clientPolicyCard:elements)
-          {
-            if(!card.equals(clientPolicyCard)) clientPolicyCard.setBasicCard();
-            clientPolicyCard.setIsFlipped(false);
-            gui.setSelectingProduct(false);
-            gui.setSelectingRegion(false);
-          }
-          card.flipCardOver();
-          if(card.needsFood()) gui.setSelectingProduct(true);
-          if(card.needsRegion() && Map.currentlySelectedRegion.isPresent());
-        }
-        else if(!card.getDrafted()&&!card.isDiscarded()) card.setDetailedCard();
+//        else if (!card.getIsFlipped()&&!card.getDrafted()&&!card.isDiscarded())
+//        {
+//          for(ClientPolicyCard clientPolicyCard:elements)
+//          {
+//            if(!card.equals(clientPolicyCard)) clientPolicyCard.setBasicCard();
+//            clientPolicyCard.setIsFlipped(false);
+//            gui.setSelectingProduct(false);
+//            gui.setSelectingRegion(false);
+//          }
+//          card.flipCardOver();
+//          if(card.needsFood()) gui.setSelectingProduct(true);
+//          if(card.needsRegion() && Map.currentlySelectedRegion.isPresent());
+//        }
+//        else if(!card.getDrafted()&&!card.isDiscarded()) card.setDetailedCard();
       });
       //Checks for when player clicks drafted card
       card.getDraftButton().setOnMouseClicked(event -> {
@@ -168,12 +168,16 @@ public class Hand extends GridPane
           draftedCards = gui.getDraftLayout().getDraftedCards();
           usedCards.add(card);
           cardsPlayed.add(card);
-          card.setDrafted(true);
+         // card.setDrafted(true);
           card.setIsFlipped(false);
-          draftedCards.addCard(card);
-          elements.remove(card);
+          //draftedCards.addCard(card);
+          //elements.remove(card);
+          card.setDraftStyle();
+          card.setBasicCard();
           gui.setSelectingProduct(false);
           gui.getDraftLayout().unselectSelectedProduct();
+          card.getDraftButton().setDisable(true);
+          card.getDiscardButton().setDisable(true);
           if (card.isSupportCard()) playedSupportCard = true;
           if (numberOfActionsUsed == 2) gui.getDraftLayout().getActionButtons().setDisableOnBigDiscardButton(true);
           card.setSelectedFood(gui.getDraftLayout().getProductBar().getSelectedElement());
@@ -195,11 +199,14 @@ public class Hand extends GridPane
       deckNode = gui.getDraftLayout().getDeckNode();
       discardPile.add(card);
       usedCards.add(card);
-      card.setDiscarded(true);
-      card.setIsFlipped(false);
-      deckNode.discardCard(card);
-      elements.remove(card);
+     // card.setDiscarded(true);
+    //  card.setIsFlipped(false);
+      //deckNode.discardCard(card);
+      //elements.remove(card);
+      card.setDiscardStyle();
       discardedSingleCard = true;
+      card.getDraftButton().setDisable(true);
+      card.setBasicCard();
     }
   }
   private void selectCard(ClientPolicyCard clientPolicyCard)
@@ -247,8 +254,9 @@ public class Hand extends GridPane
       undoCard.setDrafted(false);
       undoCard.setDiscarded(false);
       undoCard.setIsFlipped(false);
+      undoCard.setBasicStyle();
       elements.add(undoCard);
-      add(undoCard,undoCard.getHandIndex(),0);
+      //add(undoCard,undoCard.getHandIndex(),0);
 
       if(undoCard.isSupportCard())
       {

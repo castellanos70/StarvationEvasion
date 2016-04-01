@@ -3,6 +3,7 @@ package starvationevasion.common;
 import starvationevasion.common.policies.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * PolicyCard is the structure used by the Client, Server and Simulator.
@@ -412,6 +413,15 @@ public abstract class PolicyCard  implements Serializable
 
   //=========================================================================================
   /**
+   * The default is null (no target region required).
+   * @return The regions valid as the target region of this policyCard.
+   * Returns null if this card does not require a region.
+   */
+  public EnumRegion getValidTargetRegion() {return null;}
+
+
+  //=========================================================================================
+  /**
    * The default is null (no target food required).
    * @return An array of food categories valid as the target food of this policyCard.
    * Returns null if this card does not require a region.
@@ -429,8 +439,15 @@ public abstract class PolicyCard  implements Serializable
    */
   public EnumVariableUnit getRequiredVariables(EnumVariable variable) {return null;}
 
+  //=========================================================================================
+  /**
+   * The default is null (the given variable is not required).
+   * @return Gives the options of available prices/percentages that correspond to card
+   */
+  public ArrayList<Integer> getOptionsOfVariable() {return null;}
 
 
+  //=========================================================================================
   public String toString()
   {
     String msg = getTitle() + ":\n" + getGameText() + "\n";

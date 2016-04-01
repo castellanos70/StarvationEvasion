@@ -29,12 +29,6 @@ public class SecureSocketReadStrategy extends AbstractReadStrategy<String> imple
   }
 
   @Override
-  public void close () throws IOException
-  {
-    // socket.shutdownInput();
-  }
-
-  @Override
   public void encrypt (String msg, String key)
   {
 

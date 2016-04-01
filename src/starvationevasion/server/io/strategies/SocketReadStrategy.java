@@ -41,12 +41,4 @@ public class SocketReadStrategy extends AbstractReadStrategy<String>
     return _sb.toString();
   }
 
-  @Override
-  public void close () throws IOException
-  {
-    // socket.shutdownInput();
-  }
-
-
-
 }

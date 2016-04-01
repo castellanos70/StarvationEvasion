@@ -32,12 +32,6 @@ public class SecureSocketWriteStrategy extends AbstractWriteStrategy<String> imp
   }
 
   @Override
-  public void close () throws IOException
-  {
-    // socket.shutdownOutput();
-  }
-
-  @Override
   public void encrypt (String msg, String key)
   {
 

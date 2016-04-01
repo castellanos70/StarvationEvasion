@@ -78,10 +78,4 @@ public class WebSocketWriteStrategy extends AbstractWriteStrategy<String>
     getStream().flush();
 
   }
-  
-  @Override
-  public void close () throws IOException
-  {
-    // socket.shutdownOutput();
-  }
 }

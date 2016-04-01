@@ -24,11 +24,5 @@ public class SocketWriteStrategy extends AbstractWriteStrategy<String>
     getStream().write(s.getBytes());
     getStream().flush();
   }
-  
-  @Override
-  public void close () throws IOException
-  {
-    // socket.shutdownOutput();
-  }
 
 }

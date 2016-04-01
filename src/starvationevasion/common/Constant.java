@@ -24,12 +24,12 @@ public class Constant
    * This is the year for of the first turn in the simulation.
    * Note: (LAST_YEAR - FIRST_GAME_YEAR) % YEARS_PER_TURN must equal zero.
    */
-  public static final int FIRST_GAME_YEAR = 2016;
+  public static final int FIRST_GAME_YEAR = 2010;
 
   /**
    * This is the last year for which simulation data projections are approximated.
    */
-  public static final int LAST_YEAR = 2050;
+  public static final int LAST_YEAR = 2049;
 
 
   /**
@@ -51,5 +51,7 @@ public class Constant
     */
 
   public static final double EARTH_CIRCUMFERENCE = 40075;
+
+  public static final double HECTARE_TO_SQUARE_KILOMETER = 0.01;
 
 }

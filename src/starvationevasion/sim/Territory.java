@@ -69,26 +69,8 @@ public class Territory
 
   private int[] landFarm = new int[Model.YEARS_OF_DATA]; // in square kilometers
   private int[][] landCrop = new int[Model.YEARS_OF_DATA][EnumFood.SIZE];  // in square kilometers
-  /**
-   * The territory's crop income is the gross farm income less
-   * farm expenses. <br><br>
-   *
-   * The Total income includes farm income from food consumed within the
-   * territory as well as food exported. Food imported is not a farm expense.
-   */
-  private int[] cropIncome = new int[EnumFood.SIZE]; // in $1000s
-  private int[] cropProduction = new int[EnumFood.SIZE]; //in metric tons.
-
-  private int[] cropImport = new int[EnumFood.SIZE];  //in metric tons.
-  private int[] cropExport = new int[EnumFood.SIZE];  //in metric tons.
 
   private int[] cultivationMethod = new int[EnumFarmMethod.SIZE]; //percentage [0,100]
-
-  //In Milestone II, crop yield and per capita need are defined in the first year and assumed constant
-  //    throughout each year of the simulation.
-  //    This will NOT be changed before the end of milestone II as it would require redefining the core of
-  //    the model's calculations.
-  private double[] cropYield = new double[EnumFood.SIZE]; //metric tons per square kilometer
   private double[] cropNeedPerCapita = new double[EnumFood.SIZE]; //metric tons per person per year.
 
   private double penaltyValue = -1;
@@ -683,6 +665,7 @@ public class Territory
           case population2000:  case population2010:  case population2014:
           case population2025:  case population2050:
             int yearIdx = Integer.valueOf(header.name().substring(10)) - Constant.FIRST_DATA_YEAR;
+            if (yearIdx >= Model.YEARS_OF_DATA) yearIdx = Model.YEARS_OF_DATA-1;
             territory.populationProjection[yearIdx] = value;
             break;
 

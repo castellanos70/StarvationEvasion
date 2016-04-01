@@ -131,11 +131,9 @@ public class Model
     addGeographyToTerritories(geography);
     assert (assertTerritoryGeography());
 
-    //new ProductionCSVLoader(regionList);
-
-
     instantiateRegions();
 
+    ProductionCSVLoader.load(regionList);
       //tileManager = CropZoneDataIO.parseFile(territoryList);
 
       //instantiateRegions();
@@ -406,23 +404,22 @@ public class Model
       region.revenueBalance = regionList[i].getRevenue();
       region.landArea = regionList[i].getLandTotal();
 
-      /*
       for (EnumFood food : EnumFood.values())
       {
-        region.foodProduced[food.ordinal()] += regionList[i].getCropProduction(food);
+        region.foodProduced[food.ordinal()] = regionList[i].getCropProduction(year, food);
+        region.foodImported[food.ordinal()] = regionList[i].getCropImport(year, food);
+        region.foodExported[food.ordinal()] = regionList[i].getCropExport(year, food);
 
         //Simulator keeps income in $1000s but client is given income in millions of dollars.
-        long thousandsOfDollars = regionList[i].getCropIncome(food);
+        //long thousandsOfDollars = regionList[i].getCropIncome(food);
 
         //If a very small amount, then make at least 1 million.
-        if ((thousandsOfDollars > 1) && (thousandsOfDollars<500)) thousandsOfDollars+= 500;
+        //if ((thousandsOfDollars > 1) && (thousandsOfDollars<500)) thousandsOfDollars+= 500;
 
         //Round up
-        region.foodIncome[food.ordinal()]   += ( thousandsOfDollars + 600)/1000;
-
-        region.farmArea[food.ordinal()] = regionList[i].getCropLand(food);
+        //region.foodIncome[food.ordinal()]   += ( thousandsOfDollars + 600)/1000;
+        //region.farmArea[food.ordinal()] = regionList[i].getCropLand(food);
       }
-      */
     }
     return data;
   }

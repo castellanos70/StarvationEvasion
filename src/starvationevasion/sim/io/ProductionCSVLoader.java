@@ -1,6 +1,7 @@
 package starvationevasion.sim.io;
 
 
+import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.sim.Region;
@@ -15,7 +16,7 @@ import java.util.logging.Logger;
 public class ProductionCSVLoader
 {
   private final static Logger LOGGER = Logger.getLogger(FertilizerCSVLoader.class.getName());
-  private static final String PATH = "/sim/WorldFoodProduction_1981.csv";
+  private static final String PATH = "/sim/WorldFoodProductionFake.csv";
 
 
   private enum EnumHeader
@@ -31,19 +32,18 @@ public class ProductionCSVLoader
     consumption, //Domestic consumption: Including all possible uses of the commodity:
                  //           food, feed, seed, waste, and industrial processing.
                  //           Does NOT include Ending stocks.
-    yield,       //Yield (MT/HA)
-    price;       //U.S. import price (12 month average, US dollars per MT)
+    yield;       //Yield (MT/HA)
 
     public static final int SIZE = values().length;
   };
 
-  public ProductionCSVLoader(Region[] regions)
+  public static void load(Region[] regionList)
   {
-
     CSVReader fileReader = new CSVReader(PATH, 0);
 
     //Check header
     String[] fieldList = fileReader.readRecord(EnumHeader.SIZE);
+
     for (EnumHeader header : EnumHeader.values())
     {
       int i = header.ordinal();
@@ -59,13 +59,15 @@ public class ProductionCSVLoader
     // read until end of file is found
     while ((fieldList = fileReader.readRecord(EnumHeader.SIZE)) != null)
     {
-      System.out.println("ProductionCSVLoader(): record="+fieldList[0]+", "+fieldList[2]+", len="+fieldList.length);
+      //System.out.println("ProductionCSVLoader(): record="+fieldList[0]+", "+fieldList[2]+", len="+fieldList.length);
       EnumFood food = null;
       EnumRegion region = null;
       int year = 0;
       long exports = 0;
       long imports = 0;
       long production = 0;
+      long consumption = 0;
+      double yield = 0.0;
 
       for (EnumHeader header : EnumHeader.values())
       {
@@ -76,39 +78,48 @@ public class ProductionCSVLoader
         {
           case year:
             year = Integer.parseInt(fieldList[i]);
+            //TODO: for now, data is 1981, but this should be changed
+            if (year < Constant.FIRST_DATA_YEAR) year = Constant.FIRST_DATA_YEAR;
             break;
           case category:
             food = EnumFood.valueOf(fieldList[i]);
             break;
           case region:
             //TODO: divide US data into states
-            if (!fieldList[i].equals("UNITED_STATES"))
+            if (fieldList[i].equals("UNITED_STATES"))
+            {
+              region = EnumRegion.USA_CALIFORNIA;
+            }
+            else
             {
               region = EnumRegion.valueOf(fieldList[i]);
             }
             break;
-          case exports:
-            exports = Long.parseLong(fieldList[i]);
-            break;
           case imports:
             imports = Long.parseLong(fieldList[i]);
             break;
+          case exports:
+            exports = Long.parseLong(fieldList[i]);
+            break;
+
           case production:
             production = Long.parseLong(fieldList[i]);
+            break;
+
+          case consumption:
+            consumption = Long.parseLong(fieldList[i]);
+            break;
+
+          case yield:
+            yield = Double.parseDouble(fieldList[i]);
             break;
         }
       }
 
-      Region r;
-      if (region != null)
-      {
+      int idx = region.ordinal();
+      //System.out.println("regionList["+idx+"]="+regionList[idx]);
 
-        r = regions[region.ordinal()];
-
-      r.setInitialProduction(food, r.getInitialProduction(food, year) + production, year);
-      r.setInitialImports(food, r.getInitialImports(food, year) + imports, year);
-      r.setInitialExports(food, r.getInitialExports(food, year) + exports, year);
-      }
+      regionList[idx].addProduction(year, food, imports, exports, production, consumption,yield);
     }
   }
 }

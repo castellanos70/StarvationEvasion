@@ -44,7 +44,7 @@ public class RegionData implements JSON
    * This region's production (in metric tons) of each foodType during the past turn (3 years).<br><br>
    * Index by EnumFood.ordinal()
    */
-  public int[] foodProduced = new int[EnumFood.SIZE];
+  public long[] foodProduced = new long[EnumFood.SIZE];
 
 
   /**
@@ -64,14 +64,24 @@ public class RegionData implements JSON
 
 
   /**
-   * This region's food exported (in metric tons) of each foodType during the past turn
-   * (3 years) Index by EnumFood.ordinal(). Positive indicates export, negative indicates
+   * This region's food exported (in metric tons) of each foodType during the current year
+   * indexed by EnumFood.ordinal(). Positive indicates export, negative indicates
    * import.<br><br>
    *
    * The region's consumption of for each foodType is:<br>
-   * {@link #foodProduced}[i]-{@link #foodExported}[i]
+   * {@link #foodProduced}[i]+@link #foodImported}[i]-{@link #foodExported}[i]
    */
-  public int[] foodExported = new int[EnumFood.SIZE];
+  public long[] foodImported = new long[EnumFood.SIZE];
+
+  /**
+   * This region's food exported (in metric tons) of each foodType during the current year
+   * indexed by EnumFood.ordinal(). Positive indicates export, negative indicates
+   * import.<br><br>
+   *
+   * The region's consumption of for each foodType is:<br>
+   * {@link #foodProduced}[i]+@link #foodImported}[i]-{@link #foodExported}[i]
+   */
+  public long[] foodExported = new long[EnumFood.SIZE];
 
 
   /**
@@ -109,19 +119,17 @@ public class RegionData implements JSON
       msg += "[$" + revenueBalance + "]";
     }
 
-    msg += String.format(": pop=%d(%.1f), HDI=%.2f [", population, undernourished, humanDevelopmentIndex);
+    msg += String.format(": pop=%d(%.1f), HDI=%.2f ", population, undernourished, humanDevelopmentIndex);
 
     for (EnumFood food : EnumFood.values())
     {
-      msg += String.format("%s:%d+%d",
-                           food, foodProduced[food.ordinal()], foodExported[food.ordinal()]);
+      msg += String.format("[%s:p=%d, i=%d, x=%d]",
+                           food,
+               foodProduced[food.ordinal()],
+               foodImported[food.ordinal()],foodExported[food.ordinal()]);
       if (food != EnumFood.DAIRY)
       {
         msg += ", ";
-      }
-      else
-      {
-        msg += "]";
       }
     }
 

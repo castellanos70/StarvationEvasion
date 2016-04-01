@@ -45,4 +45,10 @@ public abstract class AbstractWriteStrategy<T> implements WriteStrategy<T>
   {
     writer = dataOutputStream;
   }
+
+  @Override
+  public void close () throws IOException
+  {
+    getStream().close();
+  }
 }

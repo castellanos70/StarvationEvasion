@@ -2,8 +2,6 @@ package starvationevasion.server.io.strategies;
 
 
 
-import starvationevasion.server.io.strategies.AbstractWriteStrategy;
-
 import java.io.*;
 import java.net.Socket;
 
@@ -23,7 +21,7 @@ public class SocketWriteStrategy extends AbstractWriteStrategy<String>
   @Override
   public void write (String s) throws IOException
   {
-    getStream().writeUTF(s);
+    getStream().write(s.getBytes());
     getStream().flush();
   }
   

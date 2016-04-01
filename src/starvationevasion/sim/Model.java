@@ -225,11 +225,18 @@ public class Model
       }
   }
 
+
+
   public int getCurrentYear() {return currentYear;}
 
   public Region getRegion(EnumRegion r)
   {
     return regionList[r.ordinal()];
+  }
+
+  public ArrayList<GeographicArea> getGeographicBoundary(EnumRegion regionCode)
+  {
+    return regionList[regionCode.ordinal()].getGeographicBoundary();
   }
 
   public List<AbstractEvent> getSpecialEvents()

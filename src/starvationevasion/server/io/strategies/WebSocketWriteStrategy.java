@@ -2,12 +2,13 @@ package starvationevasion.server.io.strategies;
 
 
 import starvationevasion.server.io.strategies.AbstractWriteStrategy;
+import starvationevasion.server.model.Sendable;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-public class WebSocketWriteStrategy extends AbstractWriteStrategy<String>
+public class WebSocketWriteStrategy extends AbstractWriteStrategy
 {
 
 
@@ -22,9 +23,10 @@ public class WebSocketWriteStrategy extends AbstractWriteStrategy<String>
   }
 
   @Override
-  public void write (String s) throws IOException
+  public void write (Sendable s) throws IOException
   {
-    byte[] rawData = s.getBytes();
+    // Here I am going to assume if a client is using a websocket they want JSON
+    byte[] rawData = s.toJSON().toString().getBytes();
 
     int frameCount = 0;
     byte[] frame = new byte[10];
@@ -77,11 +79,5 @@ public class WebSocketWriteStrategy extends AbstractWriteStrategy<String>
     getStream().write(reply);
     getStream().flush();
 
-  }
-  
-  @Override
-  public void close () throws IOException
-  {
-    // socket.shutdownOutput();
   }
 }

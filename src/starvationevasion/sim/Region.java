@@ -33,7 +33,7 @@ public class Region extends Territory
   private long[][] cropExport = new long[Model.YEARS_OF_DATA][EnumFood.SIZE];  //in metric tons.
   private long[][] cropConsumption = new long[Model.YEARS_OF_DATA][EnumFood.SIZE]; // in metric tons.
   private long[][] cropProduction = new long[Model.YEARS_OF_DATA][EnumFood.SIZE]; //in metric tons.
-  private double[][] cropYield = new double[Model.YEARS_OF_DATA][EnumFood.SIZE]; //metric tons per square kilometer
+  private long[][] cropArea = new long[Model.YEARS_OF_DATA][EnumFood.SIZE]; //square kilometer planted.
 
   /**
    * Territory constructor
@@ -54,7 +54,7 @@ public class Region extends Territory
 
   public void addProduction(int year, EnumFood food,
                             long imports, long exports, long production, long consumption,
-                            double yield)
+                            long area)
   {
     int yearIdx = year - Constant.FIRST_DATA_YEAR;
     int cropIdx = food.ordinal();
@@ -62,7 +62,7 @@ public class Region extends Territory
     cropExport[yearIdx][cropIdx] += exports;
     cropConsumption[yearIdx][cropIdx] += production;
     cropProduction[yearIdx][cropIdx] += consumption;
-    cropYield[yearIdx][cropIdx] += yield/Constant.HECTARE_TO_SQUARE_KILOMETER;
+    cropArea[yearIdx][cropIdx] += area;
   }
 
   public long getCropProduction(int year, EnumFood food)

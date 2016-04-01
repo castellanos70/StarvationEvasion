@@ -42,4 +42,10 @@ public abstract class AbstractReadStrategy<T> implements ReadStrategy<T>
   {
     this.reader = inStream;
   }
+
+  @Override
+  public void close () throws IOException
+  {
+    getStream().close();
+  }
 }

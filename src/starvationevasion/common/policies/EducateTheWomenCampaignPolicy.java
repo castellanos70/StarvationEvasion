@@ -1,5 +1,6 @@
 package starvationevasion.common.policies;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 
@@ -20,7 +21,7 @@ import java.io.Serializable;
  * time spending permanently reduces the regions penalty function.<br><br>
  * If approved, each US region must pay X million.
 */
-public class EducateTheWomenCampaignPolicy extends PolicyCard implements Serializable
+public class EducateTheWomenCampaignPolicy extends PolicyCard
 {
 
   public static final String TITLE =
@@ -72,5 +73,29 @@ public class EducateTheWomenCampaignPolicy extends PolicyCard implements Seriali
   {
     if (variable == EnumVariable.X) return EnumVariableUnit.MILLION_DOLLAR;
     return null;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    return null;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
   }
 }

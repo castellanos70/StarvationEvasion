@@ -45,7 +45,7 @@ public class WorldData implements JSON
   public double[] foodPrice = new double[EnumFood.SIZE];
 
 
-  public WorldData()
+  public WorldData ()
   {
     for (int i = 0; i < EnumRegion.SIZE; i++)
     {
@@ -57,7 +57,7 @@ public class WorldData implements JSON
   /**
    * @return Data stored in this structure as a formatted String.
    */
-  public String toString()
+  public String toString ()
   {
     String msg = "WorldData[" + year + "] =====================================\n     price: [";
     for (EnumFood food : EnumFood.values())
@@ -85,15 +85,8 @@ public class WorldData implements JSON
     return msg;
   }
 
-
   @Override
-  public String toJSONString()
-  {
-    return toJSON().toString();
-  }
-
-  @Override
-  public JSONDocument toJSON()
+  public JSONDocument toJSON ()
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
     json.setNumber("year", year);
@@ -126,44 +119,81 @@ public class WorldData implements JSON
     return json;
   }
 
-  public WorldData(JSONDocument json)
+  @Override
+  public void fromJSON (Object doc)
   {
+    JSONDocument json = JSON.Parser.toJSON(doc);
+
     year = (int) json.getNumber("year");
     seaLevel = (double) json.getNumber("sealevel");
 
     List<Object> eventArray = json.get("events").array();
     for (int i = 0; i < eventArray.size(); i++)
-    { eventList.add(new SpecialEventData((JSONDocument) eventArray.get(i))); }
+    {
+      SpecialEventData data = new SpecialEventData(null);
+      data.fromJSON(eventArray.get(i));
+      eventList.add(data);
+    }
 
     List<Object> foodPriceArray = json.get("food-prices").array();
     for (int i = 0; i < foodPriceArray.size(); i++)
-    { foodPrice[i] = (double) foodPriceArray.get(i); }
+    {
+      foodPrice[i] = (double) foodPriceArray.get(i);
+    }
 
     List<Object> regionArray = json.get("regions").array();
     for (int i = 0; i < regionArray.size(); i++)
-    { regionData[i] = new RegionData((JSONDocument) regionArray.get(i)); }
+    {
+      RegionData data = new RegionData(null);
+      data.fromJSON(regionArray.get(i));
+      regionData[i] = data;
+    }
   }
 
   @Override
-  public boolean equals(Object o)
+  public boolean equals (Object o)
   {
-    if (o == this) return true;
-    if (!(o instanceof WorldData)) return false;
+    if (o == this)
+    {
+      return true;
+    }
+    if (!(o instanceof WorldData))
+    {
+      return false;
+    }
     WorldData comp = (WorldData) o;
-    if (comp.year != this.year) return false;
-    if (Double.compare(comp.seaLevel, this.seaLevel) != 0) return false;
-    if (comp.eventList.size() != this.eventList.size()) return false;
+    if (comp.year != this.year)
+    {
+      return false;
+    }
+    if (Double.compare(comp.seaLevel, this.seaLevel) != 0)
+    {
+      return false;
+    }
+    if (comp.eventList.size() != this.eventList.size())
+    {
+      return false;
+    }
     for (int i = 0; i < eventList.size(); i++)
     {
-      if (!comp.eventList.get(i).equals(this.eventList.get(i))) return false;
+      if (!comp.eventList.get(i).equals(this.eventList.get(i)))
+      {
+        return false;
+      }
     }
     for (int i = 0; i < foodPrice.length; i++)
     {
-      if (Double.compare(comp.foodPrice[i], this.foodPrice[i]) != 0) return false;
+      if (Double.compare(comp.foodPrice[i], this.foodPrice[i]) != 0)
+      {
+        return false;
+      }
     }
     for (int i = 0; i < regionData.length; i++)
     {
-      if (!comp.regionData[i].equals(this.regionData[i])) return false;
+      if (!comp.regionData[i].equals(this.regionData[i]))
+      {
+        return false;
+      }
     }
     return true;
   }

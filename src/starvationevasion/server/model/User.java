@@ -10,7 +10,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class User extends Payload<String, Object> implements Encryptable, Sendable
+public class User implements Encryptable, Sendable
 {
   //make everthing implement sendable
   // sendable will extend serializable and JSON
@@ -18,16 +18,16 @@ public class User extends Payload<String, Object> implements Encryptable, Sendab
 
 
 //  @Jsonify
-//  private String username;
-//  private String password;
-//  private String salt;
+  private String username;
+  private String password;
+  private String salt;
 
 //  @Jsonify
-//  private EnumRegion region;
+  private EnumRegion region;
   private boolean isActive = false;
 
 //  @Jsonify(type = Jsonify.JsonType.LIST)
-//  private ArrayList<EnumPolicy> hand = new ArrayList<>();
+  private ArrayList<EnumPolicy> hand = new ArrayList<>();
 
 //  public User (JSONDocument json)
 //  {
@@ -46,35 +46,31 @@ public class User extends Payload<String, Object> implements Encryptable, Sendab
   public User (String[] raw)
   {
     this();
-    this.put("username", raw[0]);
-    // username = raw[0];
-    this.put("password", raw[1]);
-    // password = raw[1];
+//    this.put("username", raw[0]);
+     username = raw[0];
+//    this.put("password", raw[1]);
+     password = raw[1];
     if (raw.length == 3)
     {
-      // region = EnumRegion.valueOf(raw[2]);
-      this.put("region", EnumRegion.valueOf(raw[2]));
+       region = EnumRegion.valueOf(raw[2]);
+//      this.put("region", EnumRegion.valueOf(raw[2]));
     }
-    this.put("hand", new ArrayList<>());
-    ((ArrayList<EnumPolicy>)this.get("hand")).add(EnumPolicy.Clean_River_Incentive);
+
+//    this.put("hand", new ArrayList<>());
+//    ((ArrayList<EnumPolicy>)this.get("hand")).add(EnumPolicy.Clean_River_Incentive);
+    hand.add(EnumPolicy.Clean_River_Incentive);
 
   }
 
   public User (String username, String password, EnumRegion region, ArrayList<EnumPolicy> hand)
   {
     this();
-    this.put("hand", hand);
-    // this.username = username;
-    this.put("username", username);
+//    this.put("hand", hand);
+     this.username = username;
+//    this.put("username", username);
     encrypt(password, null);
-    // this.region = region;
-    this.put("region", region);
-  }
-
-  @Override
-  public String toJSONString ()
-  {
-    return toJSON().toString();
+     this.region = region;
+//    this.put("region", region);
   }
 
   @Override
@@ -82,14 +78,15 @@ public class User extends Payload<String, Object> implements Encryptable, Sendab
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
     
-    json.setString("username", get("username").toString());
-    // json.setString("password", password);
-    json.setString("region", get("region").toString());
-    ArrayList list = (ArrayList) this.get("hand");
-    JSONDocument _hand = JSONDocument.createArray(list.size());
-    for (int i = 0; i < list.size(); i++)
+//    json.setString("username", get("username").toString());
+     json.setString("password", password);
+//    json.setString("region", get("region").toString());
+
+//    ArrayList list = (ArrayList) this.get("hand");
+    JSONDocument _hand = JSONDocument.createArray(hand.size());
+    for (int i = 0; i < hand.size(); i++)
     {
-      _hand.setString(i, list.get(i).toString());
+      _hand.setString(i, hand.get(i).toString());
     }
 
     json.set("hand", _hand);
@@ -97,22 +94,28 @@ public class User extends Payload<String, Object> implements Encryptable, Sendab
     return json;
   }
 
+  @Override
+  public void fromJSON (Object doc)
+  {
+
+  }
+
   public String getUsername ()
   {
-    //return username;
-    return get("username").toString();
+    return username;
+//    return get("username").toString();
   }
 
   public void setUsername (String username)
   {
-    //this.username = username;
+    this.username = username;
 
   }
 
   public String getPassword ()
   {
-    // return password;
-    return get("password").toString();
+     return password;
+//    return get("password").toString();
   }
 
   public void setPassword (String password)
@@ -122,32 +125,34 @@ public class User extends Payload<String, Object> implements Encryptable, Sendab
 
   public void setEncryptedPassword (String password, String salt)
   {
-    this.put("password", password);
-    // this.password = password;
-    this.put("salt", salt);
-    // this.salt = salt;
+//    this.put("password", password);
+     this.password = password;
+//    this.put("salt", salt);
+     this.salt = salt;
   }
 
   public EnumRegion getRegion ()
   {
-    // return region;
-    return (EnumRegion) get("region");
+     return region;
+//    return (EnumRegion) get("region");
   }
 
   public void setRegion (EnumRegion region)
   {
-    // this.region = region;
-    this.put("region", region);
+     this.region = region;
+//    this.put("region", region);
   }
 
   public ArrayList<EnumPolicy> getHand ()
   {
-    return (ArrayList<EnumPolicy>) get("hand");
+    return hand;
+    // return (ArrayList<EnumPolicy>) get("hand");
   }
 
   public void setHand (ArrayList<EnumPolicy> hand)
   {
-    this.put("hand", hand);
+//    this.put("hand", hand);
+    this.hand = hand;
   }
 
   public boolean isActive ()
@@ -163,21 +168,21 @@ public class User extends Payload<String, Object> implements Encryptable, Sendab
   @Override
   public String toString ()
   {
-    // return region.toString();
-    return get("region").toString();
+     return region.toString();
+//    return get("region").toString();
   }
 
   @Override
   public void encrypt (String pwd, String key)
   {
-    String salt = "";
+    // String salt = "";
     if (key == null || key.isEmpty())
     {
       salt = Encryptable.generateKey();
-      this.put("salt", salt);
+//      this.put("salt", salt);
     }
-    this.put("password", Encryptable.generateHashedPassword(salt, pwd));
-    // password = Encryptable.generateHashedPassword(salt, pwd);
+//    this.put("password", Encryptable.generateHashedPassword(salt, pwd));
+     password = Encryptable.generateHashedPassword(salt, pwd);
   }
 
   @Override
@@ -188,12 +193,20 @@ public class User extends Payload<String, Object> implements Encryptable, Sendab
 
   public String getSalt ()
   {
-    return get("salt").toString();
+//    return get("salt").toString();
+    return salt;
   }
 
   @Override
   public void setType (String type)
   {
-    put("type", type);
+//    put("type", type);
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
   }
 }

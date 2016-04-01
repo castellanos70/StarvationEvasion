@@ -1,6 +1,7 @@
 
 package starvationevasion.common.policies;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
@@ -25,7 +26,7 @@ import java.io.Serializable;
  * Benefit yield is an ease-in-out cubic bezier function of effective
  * dollars spent and target crop.
 */
-public class GMOSeedInsectResistanceResearchPolicy extends PolicyCard implements Serializable
+public class GMOSeedInsectResistanceResearchPolicy extends PolicyCard
 {
 
   public static final String TITLE =
@@ -84,5 +85,29 @@ public class GMOSeedInsectResistanceResearchPolicy extends PolicyCard implements
   {
     if (variable == EnumVariable.X) return EnumVariableUnit.MILLION_DOLLAR;
     return null;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    return null;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
   }
 }

@@ -3,11 +3,12 @@ package starvationevasion.server.model;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import com.oracle.javafx.jmx.json.impl.JSONStreamReaderImpl;
+import starvationevasion.server.io.JSON;
 
 import java.io.Serializable;
 import java.io.StringReader;
 
-public class Request implements Serializable
+public class Request implements Sendable
 {
   private Payload data = new Payload();
   private double time;
@@ -30,9 +31,7 @@ public class Request implements Serializable
 
     if (!data[2].isEmpty())
     {
-      StringReader stringReader = new StringReader(data[2]);
-      JSONStreamReaderImpl s = new JSONStreamReaderImpl(stringReader);
-      JSONDocument _json = s.build();
+      JSONDocument _json = JSON.Parser.toJSON(data[2]);
       this.data.putAll(_json.object());
     }
   }
@@ -67,4 +66,29 @@ public class Request implements Serializable
   {
     this.time = time;
   }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    return null;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
+  }
+
 }

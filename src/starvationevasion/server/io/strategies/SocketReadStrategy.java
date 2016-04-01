@@ -29,6 +29,10 @@ public class SocketReadStrategy extends AbstractReadStrategy<String>
     {
       if (i == -1 || i == 10)
       {
+        if (i >= 0)
+        {
+          _sb.append((char) i);
+        }
         break;
       }
       _sb.append((char) i);
@@ -36,13 +40,5 @@ public class SocketReadStrategy extends AbstractReadStrategy<String>
     }
     return _sb.toString();
   }
-
-  @Override
-  public void close () throws IOException
-  {
-    // socket.shutdownInput();
-  }
-
-
 
 }

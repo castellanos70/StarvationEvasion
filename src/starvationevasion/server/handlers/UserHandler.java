@@ -4,10 +4,7 @@ package starvationevasion.server.handlers;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.*;
-import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Request;
-import starvationevasion.server.model.Response;
-import starvationevasion.server.model.User;
+import starvationevasion.server.model.*;
 
 import java.util.ArrayList;
 
@@ -31,35 +28,46 @@ public class UserHandler extends AbstractHandler
 
       if (server.addUser(new User(uname, pwd, null, new ArrayList<>())))
       {
-        m_response = new Response(server.uptime(), "", "SUCCESS");
+        m_response = new Response(server.uptime(), "SUCCESS");
       }
       else
       {
-        m_response = new Response(server.uptime(), "", "Authentication failed.");
+        m_response = new Response(server.uptime(), "Authentication failed.");
       }
       getClient().send(m_response);
       return true;
     }
     else if (request.getDestination().equals(Endpoint.USERS))
     {
-      JSONDocument doc = JSONDocument.createArray(server.getUserCount());
+//      JSONDocument doc = JSONDocument.createArray(server.getUserCount());
 
-      for (User user : server.getUserList())
-      {
-        doc.array().add(user.toJSON());
-      }
-      m_response = new Response(server.uptime(), doc);
+//      for (User user : server.getUserList())
+//      {
+//        doc.array().add(user.toJSON());
+//      }
+
+      Payload data = new Payload();
+      data.put("data", server.getUserList());
+      // data.put("message", "SUCCESS");
+
+      m_response = new Response(server.uptime(), data);
       getClient().send(m_response);
       return true;
     }
     else if (request.getDestination().equals(Endpoint.USERS_LOGGED_IN))
     {
-      JSONDocument doc = JSONDocument.createArray(server.getActiveCount());
+      ArrayList list = new ArrayList<User>();
+
+      // JSONDocument doc = JSONDocument.createArray(server.getActiveCount());
       for (User user : server.getActiveUserList())
       {
-        doc.array().add(user.toJSON());
+        list.add(user);
       }
-      m_response = new Response(server.uptime(), doc);
+
+      Payload data = new Payload();
+      data.put("data", server.getActiveUserList());
+
+      m_response = new Response(server.uptime(), data);
       getClient().send(m_response);
       return true;
     }

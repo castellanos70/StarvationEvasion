@@ -1,6 +1,7 @@
 
 package starvationevasion.common.policies;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.*;
 
 import java.io.Serializable;
@@ -24,7 +25,7 @@ import java.io.Serializable;
  * more expensive seeds,  natural pest controls, and landscape for reduced run-off.<br><br>
  * The Y% tax break is applied to the regions tax revenue on the next turn.
 */
-public class CleanRiverIncentivePolicy extends PolicyCard implements Serializable
+public class CleanRiverIncentivePolicy extends PolicyCard
 {
   public static final String TITLE =
       "Clean River Incentive";
@@ -55,5 +56,29 @@ public class CleanRiverIncentivePolicy extends PolicyCard implements Serializabl
     if (variable == EnumVariable.X) return EnumVariableUnit.PERCENT;
     if (variable == EnumVariable.Y) return EnumVariableUnit.PERCENT;
     return null;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    return null;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
   }
 }

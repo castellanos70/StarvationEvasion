@@ -62,7 +62,7 @@ public class Region extends Territory
     cropExport[yearIdx][cropIdx] += exports;
     cropConsumption[yearIdx][cropIdx] += production;
     cropProduction[yearIdx][cropIdx] += consumption;
-    cropYield[yearIdx][cropIdx] += yield/Constant.HECTARE_TO_SQUARE_KILOMETER;
+    cropYield[yearIdx][cropIdx] += yield;
   }
 
   public long getCropProduction(int year, EnumFood food)

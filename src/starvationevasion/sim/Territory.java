@@ -564,7 +564,7 @@ public class Territory
   /**
    * @return regions
    */
-  final public Collection<GeographicArea> getRegions()
+  public ArrayList<GeographicArea> getGeographicBoundary()
   {
     return geographicAreaList;
   }

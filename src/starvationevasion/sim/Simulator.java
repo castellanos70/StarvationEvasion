@@ -146,6 +146,17 @@ public class Simulator
     return dataList;
   }
 
+  public  ArrayList<GeographicArea>[] getRegionBoundaries()
+  {
+    ArrayList<GeographicArea>[] boundaryList = new ArrayList[EnumRegion.SIZE];
+
+    for (EnumRegion region : EnumRegion.values())
+    {
+      boundaryList[region.ordinal()] = model.getGeographicBoundary(region);
+    }
+    return boundaryList;
+  }
+
   /**
    * The Server should call nextTurn(cards) when it is ready to advance the simulator
    * a turn (Constant.YEARS_PER_TURN years).<br><br>

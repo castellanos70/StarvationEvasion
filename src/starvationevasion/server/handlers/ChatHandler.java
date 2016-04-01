@@ -23,7 +23,7 @@ public class ChatHandler extends AbstractHandler
 
       if (getClient().getUser() == null)
       {
-        getClient().send("login first");
+        getClient().send(new Response(server.uptime(),"Error"));
         return true;
       }
       String to = ((String) request.getData().get("to")).toUpperCase();

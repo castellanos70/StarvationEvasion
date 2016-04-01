@@ -75,11 +75,4 @@ public class WebSocketReadStrategy extends AbstractReadStrategy<String>
 
     return new String(message);
   }
-
-  @Override
-  public void close () throws IOException
-  {
-    // socket.shutdownInput();
-  }
-
 }

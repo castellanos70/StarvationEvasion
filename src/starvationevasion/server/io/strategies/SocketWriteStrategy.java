@@ -2,12 +2,12 @@ package starvationevasion.server.io.strategies;
 
 
 
-import starvationevasion.server.io.strategies.AbstractWriteStrategy;
+import starvationevasion.server.model.Sendable;
 
 import java.io.*;
 import java.net.Socket;
 
-public class SocketWriteStrategy extends AbstractWriteStrategy<String>
+public class SocketWriteStrategy extends AbstractWriteStrategy
 {
 
   public SocketWriteStrategy (Socket socket)
@@ -21,16 +21,13 @@ public class SocketWriteStrategy extends AbstractWriteStrategy<String>
   }
 
   @Override
-  public void write (String s) throws IOException
+  public void write (Sendable s) throws IOException
   {
-    getStream().write(s.getBytes());
+    // Here I am going to assume if a client is using a standard socket they want JSON
+    byte[] rawData = s.toJSON().toString().getBytes();
+
+    getStream().write(rawData);
     getStream().flush();
-  }
-  
-  @Override
-  public void close () throws IOException
-  {
-    // socket.shutdownOutput();
   }
 
 }

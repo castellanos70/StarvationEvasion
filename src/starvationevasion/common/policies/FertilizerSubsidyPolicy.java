@@ -1,5 +1,6 @@
 package starvationevasion.common.policies;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
@@ -19,7 +20,7 @@ import java.io.Serializable;
  * the fertilizer on existing crops causing a change in yield and a change in
  * fertilizer run off.
 */
-public class FertilizerSubsidyPolicy extends PolicyCard implements Serializable
+public class FertilizerSubsidyPolicy extends PolicyCard
 {
 
   public static final String TITLE =
@@ -59,5 +60,29 @@ public class FertilizerSubsidyPolicy extends PolicyCard implements Serializable
   {
     if (variable == EnumVariable.X) return EnumVariableUnit.MILLION_DOLLAR;
     return null;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    return null;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
   }
 }

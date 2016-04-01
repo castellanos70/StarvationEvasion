@@ -2,26 +2,36 @@ package starvationevasion.server.model;
 
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.server.io.JSON;
 
 public class Response implements Sendable
 {
 
-  private Object data;
-  private String message = "";
+  private Payload data = new Payload();
   private String type = "";
   private double time = 0f;
 
 
-  public Response (double time, Object data, String message)
+  public Response (double time, Payload data)
   {
     this.time = time;
     this.data = data;
-    this.message = message;
   }
 
-  public Response (double time, Object data)
+  public Response (double time, String msg)
   {
-    this(time, data, "");
+    this.time = time;
+    this.data.put("message", msg);
+  }
+
+  public Response (Payload data)
+  {
+    this.data = data;
+  }
+
+  public Response (String data)
+  {
+    this.data.put("message", data);
   }
 
   @Override
@@ -31,31 +41,30 @@ public class Response implements Sendable
   }
 
   @Override
-  public String toJSONString ()
+  public JSONDocument toJSON ()
   {
-    return toJSON().toString();
+    JSONDocument _json = JSONDocument.createObject();
+    _json.setNumber("time", time);
+    // _json.setString("message", message);
+    _json.setString("type", type);
+    // this needs some fixing
+    _json.set("data", data.toJSON());
+
+    return _json;
   }
 
   @Override
-  public JSONDocument toJSON ()
+  public void fromJSON (Object doc)
   {
-    JSONDocument document = JSONDocument.createObject();
-    document.setNumber("time", time);
-    if (data instanceof JSONDocument)
-    {
-      document.set("data", ((JSONDocument) data));
-    }
-    else if (data instanceof String)
-    {
-      document.setString("data", ((String) data));
-    }
+    JSONDocument json = JSON.Parser.toJSON(data);
 
-    if (!message.isEmpty())
-    {
-      document.setString("message", message);
-    }
 
-    return document;
+    time = (double) json.getNumber("time");
+    type = json.getString("type");
+    // message = json.getString("message");
+
+    JSONDocument _data = json.get("data");
+    data.fromJSON(_data);
   }
 
   @Override

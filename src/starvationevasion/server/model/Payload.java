@@ -1,17 +1,37 @@
 package starvationevasion.server.model;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.server.io.JSON;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class Payload<K, V> extends HashMap<K, V> implements Sendable
+public class Payload<K extends String, V> extends HashMap<K, V> implements Sendable
 {
 
   @Override
   public V put (K key, V value)
   {
+    if (!(value instanceof Sendable || value instanceof Number || value instanceof String || value instanceof ArrayList))
+    {
+      System.out.println("NOT a valid payload FIst");
+      System.exit(0);
+      return value;
+    }
+    if (value instanceof ArrayList)
+    {
+      if(!((ArrayList) value).isEmpty())
+      {
+        if (!(((ArrayList) value).get(0) instanceof Sendable))
+        {
+          System.out.println("NOT a valid payload send");
+          System.exit(0);
+          return value;
+        }
+      }
+    }
     return super.put(key, value);
   }
 
@@ -52,14 +72,41 @@ public class Payload<K, V> extends HashMap<K, V> implements Sendable
   }
 
   @Override
-  public String toJSONString ()
+  public JSONDocument toJSON ()
   {
-    return null;
+    JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
+    Iterator<? extends K> iterator = keySet().iterator();
+    while(iterator.hasNext())
+    {
+      K key = iterator.next();
+
+      if (get(key) instanceof String)
+      {
+        json.setString(key, (String)get(key));
+      }
+      else if (get(key) instanceof Sendable)
+      {
+        json.set(key, ((JSON) get(key)).toJSON());
+      }
+      else if (get(key) instanceof ArrayList)
+      {
+         JSONDocument doc = JSONDocument.createArray(((ArrayList) get(key)).size());
+        int i = 0;
+        for (Object o : ((ArrayList) get(key)))
+        {
+          doc.set(i, ((JSON) o).toJSON());
+          i++;
+        }
+        json.set(key, doc);
+      }
+    }
+    return json;
   }
 
   @Override
-  public JSONDocument toJSON ()
+  public void fromJSON (Object doc)
   {
-    return null;
+    JSONDocument _json = JSON.Parser.toJSON(doc);
+    super.putAll((Map<? extends K, ? extends V>) _json.object());
   }
 }

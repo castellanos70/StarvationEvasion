@@ -23,7 +23,10 @@ public class LoginHandler extends AbstractHandler
       boolean auth = authenticate(uname, pwd);
       if (auth)
       {
-        m_response = new Response(server.uptime(), getClient().getUser().toJSON(), "SUCCESS");
+        Payload data = new Payload();
+        data.put("user", getClient().getUser());
+        data.put("message", "SUCCESS");
+        m_response = new Response(server.uptime(), data);
       }
       else
       {

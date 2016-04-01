@@ -1,10 +1,12 @@
 package starvationevasion.server.io.strategies;
 
 
+import starvationevasion.server.model.Sendable;
+
 import java.io.*;
 import java.net.Socket;
 
-public class JavaSocketWriteStrategy extends AbstractWriteStrategy<Serializable>
+public class JavaSocketWriteStrategy extends AbstractWriteStrategy
 {
 
   public JavaSocketWriteStrategy (Socket socket)
@@ -18,7 +20,7 @@ public class JavaSocketWriteStrategy extends AbstractWriteStrategy<Serializable>
   }
 
   @Override
-  public void write (Serializable s) throws IOException
+  public void write (Sendable s) throws IOException
   {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -31,9 +33,4 @@ public class JavaSocketWriteStrategy extends AbstractWriteStrategy<Serializable>
     getStream().flush();
   }
 
-  @Override
-  public void close () throws IOException
-  {
-
-  }
 }

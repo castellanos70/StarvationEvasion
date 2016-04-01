@@ -50,13 +50,6 @@ public class MapPoint implements JSON
     return String.format("Location{%.2f, %.2f}", latitude, longitude);
   }
 
-
-  @Override
-  public String toJSONString()
-  {
-    return toJSON().toString();
-  }
-
   @Override
   public JSONDocument toJSON()
   {
@@ -69,8 +62,10 @@ public class MapPoint implements JSON
     return json;
   }
 
-  public MapPoint(JSONDocument json)
+  @Override
+  public void fromJSON (Object doc)
   {
+    JSONDocument json = JSON.Parser.toJSON(doc);
     latitude = (double) json.getNumber("latitude");
     longitude = (double) json.getNumber("longitude");
   }

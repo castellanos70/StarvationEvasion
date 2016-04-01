@@ -1,5 +1,6 @@
 package starvationevasion.common.policies;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 
@@ -19,7 +20,7 @@ import java.io.Serializable;
  * effects world regions in direct proportion to that regions import levels of the
  * effected food categories.
 */
-public class MyPlatePromotionCampaignPolicy extends PolicyCard implements Serializable
+public class MyPlatePromotionCampaignPolicy extends PolicyCard
 {
   public static final String TITLE =
      "MyPlate Promotion Campaign";
@@ -50,5 +51,29 @@ public class MyPlatePromotionCampaignPolicy extends PolicyCard implements Serial
   {
     if (variable == EnumVariable.X) return EnumVariableUnit.MILLION_DOLLAR;
     return null;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    return null;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
   }
 }

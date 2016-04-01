@@ -1,5 +1,6 @@
 package starvationevasion.common.policies;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 
@@ -24,7 +25,7 @@ import java.io.Serializable;
  * Thus, the duration of the loan is 11 years (3 full turns plus the first
  * two years of a 4th turn.)
  */
-public class LoanPolicy extends PolicyCard implements Serializable
+public class LoanPolicy extends PolicyCard
 {
     public static final String TITLE = "Loan";
 
@@ -88,5 +89,29 @@ public class LoanPolicy extends PolicyCard implements Serializable
   {
     if (variable == EnumVariable.X) return EnumVariableUnit.MILLION_DOLLAR;
     return null;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    return null;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
   }
 }

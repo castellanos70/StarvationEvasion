@@ -1,5 +1,8 @@
 package starvationevasion.common;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.server.model.Sendable;
+
 import java.util.ResourceBundle;
 
 /**
@@ -8,7 +11,7 @@ import java.util.ResourceBundle;
  * feed and/or biofuel are modeled as belonging to one of the above 12 categories.<br><br>
  * Farm products not modeled include Lumber, Cotton, and Wool.
  */
-public enum EnumFood
+public enum EnumFood implements Sendable
 {
   CITRUS
   {
@@ -113,7 +116,29 @@ public enum EnumFood
    * @return file path of large icon.
    */
   public String getIconPath265() { return "assets/farmProductIcons"+name()+"_256x256.png";}
+  @Override
+  public JSONDocument toJSON ()
+  {
+    return null;
+  }
 
+  @Override
+  public void fromJSON (Object doc)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
   /**
    * Use when need to distinguish between crop and non-crop foods.
    * For example, it does not make sense to apply fertilizer to meat, poultry or dairy.

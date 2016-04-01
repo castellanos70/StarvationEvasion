@@ -1,6 +1,7 @@
 package starvationevasion.common;
 
 import starvationevasion.common.policies.*;
+import starvationevasion.server.model.Sendable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
  * Use the validate() method to verify all needed parameters of the policy
  * are defined in range.
  */
-public abstract class PolicyCard  implements Serializable
+public abstract class PolicyCard implements Sendable
 {
   public static final int MIN_PERCENT = 1;
   public static final int MAX_PERCENT = 100;

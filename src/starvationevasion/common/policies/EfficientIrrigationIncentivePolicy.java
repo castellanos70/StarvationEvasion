@@ -1,6 +1,7 @@
 
 package starvationevasion.common.policies;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
@@ -30,7 +31,7 @@ import java.io.Serializable;
  * X% of the money that the sim estimates is spent for improved irrigation
  * is deducted from the regions tax revenue at the start of the next turn.
 */
-public class EfficientIrrigationIncentivePolicy extends PolicyCard implements Serializable
+public class EfficientIrrigationIncentivePolicy extends PolicyCard
 {
   public static final String TITLE =
       "Efficient Irrigation Incentive";
@@ -64,5 +65,29 @@ public class EfficientIrrigationIncentivePolicy extends PolicyCard implements Se
   {
     if (variable == EnumVariable.X) return EnumVariableUnit.PERCENT;
     return null;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    return null;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
   }
 }

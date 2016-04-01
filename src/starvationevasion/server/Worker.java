@@ -11,6 +11,7 @@ import starvationevasion.server.io.strategies.SocketReadStrategy;
 import starvationevasion.server.io.strategies.SocketWriteStrategy;
 import starvationevasion.server.model.Request;
 import starvationevasion.server.model.Response;
+import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.User;
 import starvationevasion.sim.Simulator;
 
@@ -68,54 +69,18 @@ public class Worker extends Thread
   /**
    * Send message to client.
    *
-   * @param msg string containing message to be sent.
    */
-  public void send (String msg)
+  public <T extends Sendable> void send (T data)
   {
     try
     {
-      writer.write(msg);
+      writer.write(data);
     }
     catch(IOException e)
     {
       e.printStackTrace();
     }
   }
-
-  /**
-   * Send message to client.
-   *
-   */
-  public <T extends JSON> void send (T data)
-  {
-    // System.out.println("JSON ServerWorker.send(" + data.toJSON().toJSON() + ")");
-    try
-    {
-      writer.write(data.toJSONString());
-    }
-    catch(IOException e)
-    {
-      e.printStackTrace();
-    }
-  }
-
-
-  /**
-   * Send message to client.
-   *
-   */
-//  public <T extends Serializable> void send (T data)
-//  {
-//    System.out.println("ServerWorker.send(" + data.toString() + ")");
-//    try
-//    {
-//      clientObjectWriter.writeObject(data);
-//    }
-//    catch(IOException e)
-//    {
-//      e.printStackTrace();
-//    }
-//  }
 
 
   public void shutdown()

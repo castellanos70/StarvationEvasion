@@ -1,5 +1,9 @@
 package starvationevasion.common;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.server.io.JSON;
+import starvationevasion.server.model.Sendable;
+
 import java.util.ResourceBundle;
 
 /**
@@ -8,7 +12,7 @@ import java.util.ResourceBundle;
  * The ordinal of US regions are continuous and less than all non-Player world regions.
  */
 
-public enum EnumRegion
+public enum EnumRegion implements Sendable
 {
   /**
    *  The US states in this region are: CA
@@ -69,6 +73,29 @@ public enum EnumRegion
   private final ResourceBundle res = ResourceBundle.getBundle("strings_enum");
   private final String shortName = res.getString("EnumRegion." + name() + ".shortName");
 
+  @Override
+  public JSONDocument toJSON ()
+  {
+    return null;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
 
   /**
    * @return Returns an int with one bit set corresponding to the region's

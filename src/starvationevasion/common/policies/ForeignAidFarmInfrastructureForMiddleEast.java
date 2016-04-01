@@ -1,5 +1,6 @@
 package starvationevasion.common.policies;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 
@@ -66,6 +67,31 @@ public class ForeignAidFarmInfrastructureForMiddleEast extends PolicyCard implem
   public PolicyCard.EnumVariableUnit getRequiredVariables(PolicyCard.EnumVariable variable)
   {
     if (variable == PolicyCard.EnumVariable.X) return PolicyCard.EnumVariableUnit.MILLION_DOLLAR;
+    return null;
+  }
+
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
     return null;
   }
 }

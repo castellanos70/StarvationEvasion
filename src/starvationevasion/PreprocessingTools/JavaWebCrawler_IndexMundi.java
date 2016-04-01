@@ -1,5 +1,5 @@
-package starvationevasion.PreprocessingTools;
-
+//package starvationevasion.PreprocessingTools;
+//
 //import org.jsoup.Jsoup;
 //import org.jsoup.nodes.Document;
 //import org.jsoup.nodes.Element;
@@ -8,13 +8,13 @@ package starvationevasion.PreprocessingTools;
 //import java.io.IOException;
 //import java.io.PrintWriter;
 //import java.net.URL;
-
-/**
- * Created by James on 3/30/2016.
- */
-
-public class JavaWebCrawler_IndexMundi
-{
+//
+///**
+// * Created by James on 3/30/2016.
+// */
+//
+//public class JavaWebCrawler_IndexMundi
+//{
 //
 //  private final static Country[] objIntercept = new Country[]{new Country("Afghanistan", "af"), new Country("Albania", "al"), new Country("Algeria", "dz"), new Country("Argentina", "ar"), new Country("Armenia", "am"), new Country("Australia", "au"), new Country("Azerbaijan", "az"), new Country("Belarus", "by"), new Country("Bolivia", "bo"), new Country("Bosnia and Herzegovina", "ba"), new Country("Brazil", "br"), new Country("Bulgaria", "bg"), new Country("Canada", "ca"), new Country("Chile", "cl"), new Country("China", "cn"), new Country("Colombia", "co"), new Country("Croatia", "hr"), new Country("Cuba", "cu"), new Country("Cyprus", "cy"), new Country("Czech Republic", "cz"), new Country("Czechoslovakia", "c2"), new Country("Ecuador", "ec"), new Country("Egypt", "eg"), new Country("Estonia", "ee"), new Country("Ethiopia", "et"), new Country("Georgia", "ge"), new Country("Hungary", "hu"), new Country("India", "in"), new Country("Islamic Republic Of Iran", "ir"), new Country("Iraq", "iq"), new Country("Israel", "il"), new Country("Japan", "jp"), new Country("Kazakhstan", "kz"), new Country("Kenya", "ke"), new Country("Republic Of Korea", "kr"), new Country("Kyrgyzstan", "kg"), new Country("Latvia", "lv"), new Country("Lebanon", "lb"), new Country("Lithuania", "lt"), new Country("The Former Yugoslav Republic Of Macedonia", "mk"), new Country("Mexico", "mx"), new Country("Republic Of Moldova", "md"), new Country("Morocco", "ma"), new Country("Norway", "no"), new Country("Pakistan", "pk"), new Country("Peru", "pe"), new Country("Poland", "pl"), new Country("Romania", "ro"), new Country("Russian Federation", "ru"), new Country("Serbia", "rs"), new Country("Serbia and Montenegro", "cs"), new Country("Singapore", "sg"), new Country("Slovakia", "sk"), new Country("Slovenia", "si"), new Country("South Africa", "za"), new Country("Switzerland", "ch"), new Country("Syrian Arab Republic", "sy"), new Country("Province Of China Taiwan", "tw"), new Country("Tajikistan", "tj"), new Country("Tunisia", "tn"), new Country("Turkey", "tr"), new Country("Turkmenistan", "tm"), new Country("U.S.S.R.", "su"), new Country("Ukraine", "ua"), new Country("United States", "us"), new Country("Uruguay", "uy"), new Country("Uzbekistan", "uz"), new Country("Venezuela", "ve"), new Country("Yemen", "ye"), new Country("Yemen (Sanaa)", "ys"), new Country("Yugoslavia", "yu"), new Country("Zimbabwe", "zw")};
 //  private final static String[] Commodities = {"barley", "corn", "cotton"};
@@ -71,6 +71,4 @@ public class JavaWebCrawler_IndexMundi
 //        this.id = id;
 //      }
 //    }
-//
-//
-  }
+//  }

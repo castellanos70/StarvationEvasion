@@ -3,12 +3,13 @@ package starvationevasion.server.io.strategies;
 
 import starvationevasion.server.io.strategies.AbstractWriteStrategy;
 import starvationevasion.server.model.Encryptable;
+import starvationevasion.server.model.Sendable;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-public class SecureSocketWriteStrategy extends AbstractWriteStrategy<String> implements Encryptable
+public class SecureSocketWriteStrategy extends AbstractWriteStrategy implements Encryptable
 {
   private final String key;
 
@@ -26,9 +27,9 @@ public class SecureSocketWriteStrategy extends AbstractWriteStrategy<String> imp
 
 
   @Override
-  public void write (String s) throws IOException
+  public void write (Sendable s) throws IOException
   {
-    getStream().writeUTF(s);
+    getStream().writeUTF(s.toString());
   }
 
   @Override

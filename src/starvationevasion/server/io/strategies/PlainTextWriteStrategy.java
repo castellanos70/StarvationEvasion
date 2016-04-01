@@ -1,12 +1,14 @@
 package starvationevasion.server.io.strategies;
 
 
+import starvationevasion.server.model.Sendable;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class PlainTextWriteStrategy extends AbstractWriteStrategy<String>
+public class PlainTextWriteStrategy extends AbstractWriteStrategy
 {
   private PrintWriter writer;
 
@@ -29,9 +31,10 @@ public class PlainTextWriteStrategy extends AbstractWriteStrategy<String>
   }
 
   @Override
-  public void write (String s) throws IOException
+  public void write (Sendable s) throws IOException
   {
-    writer.println(s);
+    //
+    writer.println(s.toString());
     writer.flush();
   }
 

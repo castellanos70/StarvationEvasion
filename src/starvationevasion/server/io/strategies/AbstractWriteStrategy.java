@@ -2,13 +2,13 @@ package starvationevasion.server.io.strategies;
 
 
 import starvationevasion.server.io.WriteStrategy;
+import starvationevasion.server.model.Sendable;
 
-import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-public abstract class AbstractWriteStrategy<T> implements WriteStrategy<T>
+public abstract class AbstractWriteStrategy implements WriteStrategy
 {
 
   private final Socket socket;

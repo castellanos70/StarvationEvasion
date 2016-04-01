@@ -10,11 +10,8 @@ import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
 import starvationevasion.server.io.*;
-import starvationevasion.server.io.strategies.JavaSocketReadStrategy;
-import starvationevasion.server.io.strategies.JavaSocketWriteStrategy;
+import starvationevasion.server.io.strategies.*;
 import starvationevasion.server.model.Encryptable;
-import starvationevasion.server.io.strategies.WebSocketReadStrategy;
-import starvationevasion.server.io.strategies.WebSocketWriteStrategy;
 import starvationevasion.server.model.Response;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.User;
@@ -395,7 +392,7 @@ public class Server
   private boolean secureConnection (Worker worker, Socket s)
   {
     // Handling websocket
-    StringBuilder reading = new StringBuilder();
+    // StringBuilder reading = new StringBuilder();
     String line = "";
     String key = "";
     String socketKey = "";
@@ -413,14 +410,11 @@ public class Server
         return false;
       }
 
-      System.out.println(line);
-
       // check if the end of line or if data was found.
       if (line == null || line.equals("client") || line.equals("\r\n") || line.equals("JavaClient"))
       {
         if (line != null && line.equals("JavaClient"))
         {
-          System.out.println("setting the read style");
           worker.setReader(new JavaSocketReadStrategy(s, null));
           worker.setWriter(new JavaSocketWriteStrategy(s, null));
           return false;
@@ -432,7 +426,8 @@ public class Server
         }
         else
         {
-          // System.out.println(reading);
+          // use the plain text writer to send following data
+          worker.setWriter(new PlainTextWriteStrategy(s, null));
           worker.send("HTTP/1.1 101 Switching Protocols\n" +
                               "Upgrade: websocket\n" +
                               "Connection: Upgrade\n" +
@@ -444,15 +439,16 @@ public class Server
       }
 
 
-      reading.append(line);
+      // reading.append(line);
       if (line.contains("Sec-WebSocket-Key:"))
       {
-        key = line.replace("Sec-WebSocket-Key: ", "");
+        // removing whitespace (includes nl, cr)
+        key = line.replace("Sec-WebSocket-Key: ", "").trim();
         socketKey = Server.handshake(key);
       }
       if (line.contains("Sec-Socket-Key: "))
       {
-        key = line.replace("Sec-Socket-Key: ", "");
+        key = line.replace("Sec-Socket-Key: ", "").trim();
         socketKey = Encryptable.generateKey();
       }
     }

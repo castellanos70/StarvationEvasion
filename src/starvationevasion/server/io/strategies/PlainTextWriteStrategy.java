@@ -38,6 +38,6 @@ public class PlainTextWriteStrategy extends AbstractWriteStrategy<String>
   @Override
   public void close () throws IOException
   {
-
+    writer.close();
   }
 }

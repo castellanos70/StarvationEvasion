@@ -72,7 +72,6 @@ public class Worker extends Thread
    */
   public void send (String msg)
   {
-    // System.out.println("STRING ServerWorker.send(" + msg + ")");
     try
     {
       writer.write(msg);

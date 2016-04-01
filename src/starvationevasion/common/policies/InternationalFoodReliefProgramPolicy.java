@@ -1,5 +1,6 @@
 package starvationevasion.common.policies;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 
@@ -29,7 +30,7 @@ import java.io.Serializable;
  * direct reduction of supply without effect on demand (since those to whom the
  * relief is delivered are presumed to lack the resources to have been part of the demand).
 */
-public class InternationalFoodReliefProgramPolicy extends PolicyCard implements Serializable
+public class InternationalFoodReliefProgramPolicy extends PolicyCard
 {
 
   public static final String TITLE =
@@ -77,5 +78,29 @@ public class InternationalFoodReliefProgramPolicy extends PolicyCard implements 
   {
     if (variable == EnumVariable.X) return EnumVariableUnit.MILLION_DOLLAR;
     return null;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    return null;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
   }
 }

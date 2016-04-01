@@ -1,5 +1,6 @@
 package starvationevasion.common.policies;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 
@@ -15,7 +16,7 @@ import java.io.Serializable;
  * be set at the start of the game rather than cards being randomly picked at draw
  * time.
 */
-public class CovertIntelligencePolicy extends PolicyCard implements Serializable
+public class CovertIntelligencePolicy extends PolicyCard
 {
   public static final String TITLE =
       "Covert Intelligence";
@@ -74,5 +75,29 @@ public class CovertIntelligencePolicy extends PolicyCard implements Serializable
     }
 
     return null;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    return null;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
   }
 }

@@ -1,5 +1,6 @@
 package starvationevasion.common.policies;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 
@@ -16,7 +17,7 @@ import java.io.Serializable;
  *
  * Model Effects: <br><br>
  */
-public class EthanolTaxCreditChangePolicy extends PolicyCard implements Serializable
+public class EthanolTaxCreditChangePolicy extends PolicyCard
 {
 
   public static final String TITLE =
@@ -48,5 +49,29 @@ public class EthanolTaxCreditChangePolicy extends PolicyCard implements Serializ
   {
     if (variable == EnumVariable.X) return EnumVariableUnit.PERCENT;
     return null;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    return null;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
   }
 }

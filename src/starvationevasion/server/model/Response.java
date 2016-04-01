@@ -8,26 +8,30 @@ public class Response implements Sendable
 {
 
   private Payload data = new Payload();
-  private String message = "";
   private String type = "";
   private double time = 0f;
 
 
-  public Response (double time, Payload data, String message)
+  public Response (double time, Payload data)
   {
     this.time = time;
     this.data = data;
-    this.message = message;
   }
 
-  public Response (double time, Payload data)
+  public Response (double time, String msg)
   {
-    this(time, data, "");
+    this.time = time;
+    this.data.put("message", msg);
   }
 
   public Response (Payload data)
   {
     this.data = data;
+  }
+
+  public Response (String data)
+  {
+    this.data.put("message", data);
   }
 
   @Override
@@ -41,8 +45,9 @@ public class Response implements Sendable
   {
     JSONDocument _json = JSONDocument.createObject();
     _json.setNumber("time", time);
-    _json.setString("message", message);
+    // _json.setString("message", message);
     _json.setString("type", type);
+    // this needs some fixing
     _json.set("data", data.toJSON());
 
     return _json;
@@ -56,7 +61,7 @@ public class Response implements Sendable
 
     time = (double) json.getNumber("time");
     type = json.getString("type");
-    message = json.getString("message");
+    // message = json.getString("message");
 
     JSONDocument _data = json.get("data");
     data.fromJSON(_data);

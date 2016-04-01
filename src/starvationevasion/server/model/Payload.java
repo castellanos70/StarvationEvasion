@@ -52,14 +52,14 @@ public class Payload<K, V> extends HashMap<K, V> implements Sendable
   }
 
   @Override
-  public String toJSONString ()
+  public JSONDocument toJSON ()
   {
     return null;
   }
 
   @Override
-  public JSONDocument toJSON ()
+  public void fromJSON (Object doc)
   {
-    return null;
+
   }
 }

@@ -2,6 +2,7 @@ package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.io.JSON;
+import starvationevasion.server.model.Sendable;
 
 import java.util.List;
 
@@ -10,9 +11,10 @@ import java.util.List;
  * each client via the Server.
  */
 
-public class RegionData implements JSON
+public class RegionData implements Sendable
 {
-  public final EnumRegion region;
+  // removed final... with my reason being that if it is that important maybe we should use a getter....
+  public EnumRegion region;
 
   /**
    * This field is zero for non-player regions.
@@ -128,13 +130,6 @@ public class RegionData implements JSON
     return msg;
   }
 
-
-  @Override
-  public String toJSONString ()
-  {
-    return toJSON().toString();
-  }
-
   @Override
   public JSONDocument toJSON ()
   {
@@ -149,9 +144,9 @@ public class RegionData implements JSON
     JSONDocument _producedArray = JSONDocument.createArray(foodProduced.length);
     for (int i = 0; i < foodProduced.length; i++)
     {
-      _producedArray .setNumber(i, foodProduced[i]);
+      _producedArray.setNumber(i, foodProduced[i]);
     }
-    json.set("food-produced", _producedArray );
+    json.set("food-produced", _producedArray);
 
     JSONDocument _incomeArray = JSONDocument.createArray(foodIncome.length);
     for (int i = 0; i < foodIncome.length; i++)
@@ -163,9 +158,9 @@ public class RegionData implements JSON
     JSONDocument _exportArray = JSONDocument.createArray(foodExported.length);
     for (int i = 0; i < foodExported.length; i++)
     {
-      _exportArray .setNumber(i, foodExported[i]);
+      _exportArray.setNumber(i, foodExported[i]);
     }
-    json.set("food-exported", _exportArray );
+    json.set("food-exported", _exportArray);
 
 
     JSONDocument _farmArray = JSONDocument.createArray(farmArea.length);
@@ -178,8 +173,11 @@ public class RegionData implements JSON
     return json;
   }
 
-  public RegionData (JSONDocument json)
+  @Override
+  public void fromJSON (Object doc)
   {
+    JSONDocument json  = JSON.Parser.toJSON(doc);
+
     region = EnumRegion.valueOf(json.getString("region"));
     revenueBalance = (int) json.getNumber("revenue-balance");
     population = (int) json.getNumber("population");
@@ -189,39 +187,74 @@ public class RegionData implements JSON
 
     List<Object> producedArray = json.get("food-produced").array();
     for (int i = 0; i < producedArray.size(); i++)
-      foodProduced[i] = (int)producedArray.get(i);
+    {
+      foodProduced[i] = (int) producedArray.get(i);
+    }
 
     List<Object> incomeArray = json.get("food-income").array();
     for (int i = 0; i < incomeArray.size(); i++)
-      foodIncome[i] = (int)incomeArray.get(i);
+    {
+      foodIncome[i] = (int) incomeArray.get(i);
+    }
 
     List<Object> exportArray = json.get("food-exported").array();
     for (int i = 0; i < exportArray.size(); i++)
-      foodExported[i] = (int)exportArray.get(i);
+    {
+      foodExported[i] = (int) exportArray.get(i);
+    }
 
     List<Object> farmArray = json.get("farmArea").array();
     for (int i = 0; i < farmArray.size(); i++)
-      farmArea[i] = (int)farmArray.get(i);
+    {
+      farmArea[i] = (int) farmArray.get(i);
+    }
   }
-  @Override
-public boolean equals(Object o)
-{
-  if (o == this)
-    return true;
-  if(!(o instanceof RegionData))
-    return false;
-  RegionData comp = (RegionData) o;
-  if(comp.region.ordinal()!= this.region.ordinal())
-    return false;
-  if(comp.revenueBalance != this.revenueBalance)
-    return false;
-  if(comp.population != this.population)
-    return false;
-  if(Double.compare(comp.undernourished, this.undernourished) != 0)
-    return false;
-  if(Double.compare(comp.humanDevelopmentIndex, this.humanDevelopmentIndex) != 0)
-    return false;
 
-  return true;
-}
+  @Override
+  public boolean equals (Object o)
+  {
+    if (o == this)
+    {
+      return true;
+    }
+    if (!(o instanceof RegionData))
+    {
+      return false;
+    }
+    RegionData comp = (RegionData) o;
+    if (comp.region.ordinal() != this.region.ordinal())
+    {
+      return false;
+    }
+    if (comp.revenueBalance != this.revenueBalance)
+    {
+      return false;
+    }
+    if (comp.population != this.population)
+    {
+      return false;
+    }
+    if (Double.compare(comp.undernourished, this.undernourished) != 0)
+    {
+      return false;
+    }
+    if (Double.compare(comp.humanDevelopmentIndex, this.humanDevelopmentIndex) != 0)
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
 }

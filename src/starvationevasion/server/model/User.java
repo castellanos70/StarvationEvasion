@@ -72,12 +72,6 @@ public class User extends Payload<String, Object> implements Encryptable, Sendab
   }
 
   @Override
-  public String toJSONString ()
-  {
-    return toJSON().toString();
-  }
-
-  @Override
   public JSONDocument toJSON ()
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);

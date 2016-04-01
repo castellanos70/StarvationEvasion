@@ -56,45 +56,48 @@ public class SpecialEventData implements JSON
     this.year = year;
   }
 
-  public void setMonth(EnumMonth month) {this.month = month; }
+  public void setMonth (EnumMonth month)
+  {
+    this.month = month;
+  }
 
   public void setDollarsInDamage (long dollarsInDamage)
   {
     this.dollarsInDamage = dollarsInDamage;
   }
 
-  public void setSeverity(float severity)
+  public void setSeverity (float severity)
   {
     this.severity = severity;
   }
 
-  public void setDurationInMonths(int durationInMonths)
+  public void setDurationInMonths (int durationInMonths)
   {
     this.durationInMonths = durationInMonths;
   }
 
-  public void setLatitude(float latitude)
+  public void setLatitude (float latitude)
   {
     this.latitude = latitude;
   }
 
-  public void setLongitude(float longitude)
+  public void setLongitude (float longitude)
   {
     this.longitude = longitude;
   }
 
-  public void addRegion(EnumRegion region)
+  public void addRegion (EnumRegion region)
   {
     regions.add(region);
   }
 
-  public int regionsAffected()
+  public int regionsAffected ()
   {
     return regions.size();
   }
 
   @Override
-  public String toString()
+  public String toString ()
   {
     String str = "";
     str += "Event " + eventName + "\n";
@@ -107,12 +110,6 @@ public class SpecialEventData implements JSON
     }
 
     return str;
-  }
-
-  @Override
-  public String toJSONString ()
-  {
-    return toJSON().toString();
   }
 
   @Override
@@ -147,8 +144,11 @@ public class SpecialEventData implements JSON
     return json;
   }
 
-  public SpecialEventData(JSONDocument json)
+  @Override
+  public void fromJSON (Object doc)
   {
+    JSONDocument json = JSON.Parser.toJSON(doc);
+
     eventName = json.getString("event-name");
     latitude = (float) json.getNumber("latitude");
     longitude = (float) json.getNumber("longitude");
@@ -161,48 +161,90 @@ public class SpecialEventData implements JSON
 
     List<Object> jLocParse = json.get("locationList").array();
     for (int i = 0; i < jLocParse.size(); i++)
-      locationList.add(new MapPoint((JSONDocument) jLocParse.get(i)));
+    {
+      JSONDocument dt = JSON.Parser.toJSON(jLocParse.get(i));
+      MapPoint _point = new MapPoint(0f,0f);
+      _point.fromJSON(dt);
+      locationList.add(_point);
+    }
 
     List<Object> jRegionParse = json.get("regions").array();
     for (int i = 0; i < jRegionParse.size(); i++)
-      regions.add(EnumRegion.valueOf((String)jRegionParse.get(i)));
+    {
+      regions.add(EnumRegion.valueOf((String) jRegionParse.get(i)));
+    }
   }
+
   @Override
-  public boolean equals(Object o)
+  public boolean equals (Object o)
   {
     if (o == this)
+    {
       return true;
-    if(!(o instanceof SpecialEventData))
+    }
+    if (!(o instanceof SpecialEventData))
+    {
       return false;
+    }
     SpecialEventData comp = (SpecialEventData) o;
-    if(!comp.eventName.equals(this.eventName))
+    if (!comp.eventName.equals(this.eventName))
+    {
       return false;
-    if(Float.compare(comp.latitude, this.latitude) != 0)
+    }
+    if (Float.compare(comp.latitude, this.latitude) != 0)
+    {
       return false;
-    if(Float.compare(comp.longitude, this.longitude) != 0)
+    }
+    if (Float.compare(comp.longitude, this.longitude) != 0)
+    {
       return false;
-    if(Float.compare(comp.severity, this.severity) != 0)
+    }
+    if (Float.compare(comp.severity, this.severity) != 0)
+    {
       return false;
-    if(comp.dollarsInDamage != this.dollarsInDamage)
+    }
+    if (comp.dollarsInDamage != this.dollarsInDamage)
+    {
       return false;
-    if(comp.type.ordinal()!= this.type.ordinal())
+    }
+    if (comp.type.ordinal() != this.type.ordinal())
+    {
       return false;
-    if(comp.year != this.year)
+    }
+    if (comp.year != this.year)
+    {
       return false;
-    if(comp.month.ordinal()!= this.month.ordinal())
+    }
+    if (comp.month.ordinal() != this.month.ordinal())
+    {
       return false;
-    if(comp.durationInMonths != this.durationInMonths)
+    }
+    if (comp.durationInMonths != this.durationInMonths)
+    {
       return false;
-    if(comp.locationList.size() != this.locationList.size())
+    }
+    if (comp.locationList.size() != this.locationList.size())
+    {
       return false;
-    for(int i = 0; i < this.locationList.size(); i++)
-      if(!comp.locationList.get(i).equals(this.locationList.get(i)))
+    }
+    for (int i = 0; i < this.locationList.size(); i++)
+    {
+      if (!comp.locationList.get(i).equals(this.locationList.get(i)))
+      {
         return false;
-    if(comp.regions.size() != this.regions.size())
+      }
+    }
+    if (comp.regions.size() != this.regions.size())
+    {
       return false;
-    for(int i = 0; i < this.regions.size(); i++)
-      if(comp.regions.get(i).ordinal() != this.regions.get(i).ordinal())
+    }
+    for (int i = 0; i < this.regions.size(); i++)
+    {
+      if (comp.regions.get(i).ordinal() != this.regions.get(i).ordinal())
+      {
         return false;
+      }
+    }
     return true;
   }
 }

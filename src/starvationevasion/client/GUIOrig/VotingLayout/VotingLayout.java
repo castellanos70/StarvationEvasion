@@ -98,6 +98,7 @@ public class VotingLayout extends GridPane
     {
       CardSpace firstNewCardSpace = new CardSpace(gui, EnumRegion.US_REGIONS[i], 1);
       CardSpace secondNewCardSpace = new CardSpace(gui, EnumRegion.US_REGIONS[i], 2);
+
       firstNewCardSpace.setCard(EnumRegion.US_REGIONS[i], EnumPolicy.Clean_River_Incentive,gui);
       cardSpaces.add(firstNewCardSpace);
       cardSpaces.add(secondNewCardSpace);
@@ -114,6 +115,7 @@ public class VotingLayout extends GridPane
       VotingNode secondNewVotingNode = new VotingNode(gui, EnumRegion.US_REGIONS[i], 2);
       votingNodes.add(firstNewVotingNode);
       votingNodes.add(secondNewVotingNode);
+
       this.add(firstNewVotingNode, i+1, 14, 1, 1);
       this.add(secondNewVotingNode, i+1, 19, 1, 1);
     }

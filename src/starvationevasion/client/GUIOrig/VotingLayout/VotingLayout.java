@@ -1,8 +1,11 @@
 package starvationevasion.client.GUIOrig.VotingLayout;
 
-import javafx.scene.layout.*;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 import starvationevasion.client.GUIOrig.DraftLayout.ChatNode;
+import starvationevasion.client.GUIOrig.DraftLayout.GraphNode;
 import starvationevasion.client.GUIOrig.GUI;
 import starvationevasion.client.GUIOrig.SummaryBar;
 import starvationevasion.common.EnumPolicy;
@@ -38,7 +41,7 @@ public class VotingLayout extends GridPane
   public VotingLayout(GUI gui)
   {
     this.gui = gui;
-    chatNode=new ChatNode(gui);//gui.getChatNode();
+    //gui.getChatNode();
     primaryStage = this.gui.getPrimaryStage();
 
 
@@ -52,7 +55,7 @@ public class VotingLayout extends GridPane
 
     finishButton = new FinishButton(this.gui);
    // this.setLeft(finishButton);
-    this.add(finishButton,7,20,1,1);
+    this.add(finishButton,8,20,1,1);
     summaryBar = new SummaryBar(this.gui);
     //this.setTop(summaryBar);
     this.add(summaryBar, 0, 1, 1, 1);
@@ -64,14 +67,16 @@ public class VotingLayout extends GridPane
     initializeRegionMaps();
    // setCenter(centerPane);
     //setBottom(chatNode);
-    this.add(chatNode, 0, 20, 7, 6);
-
-    this.setBackground(new Background(new BackgroundImage(
-            gui.getImageGetter().getBackground(),
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundPosition.CENTER,
-            BackgroundSize.DEFAULT)));
+    chatNode=new ChatNode(gui);
+    this.add(chatNode, 0, 0, 1, 10);
+    GraphNode graphNode=new GraphNode(gui);
+    this.add(graphNode,0,10,1,5);
+//    this.setBackground(new Background(new BackgroundImage(
+//            gui.getImageGetter().getBackground(),
+//            BackgroundRepeat.NO_REPEAT,
+//            BackgroundRepeat.NO_REPEAT,
+//            BackgroundPosition.CENTER,
+//            BackgroundSize.DEFAULT)));
   }
 
   public void setCards(PolicyCard[] cards)
@@ -96,8 +101,8 @@ public class VotingLayout extends GridPane
       firstNewCardSpace.setCard(EnumRegion.US_REGIONS[i], EnumPolicy.Clean_River_Incentive,gui);
       cardSpaces.add(firstNewCardSpace);
       cardSpaces.add(secondNewCardSpace);
-      this.add(firstNewCardSpace, i, 10, 1, 4);
-      this.add(secondNewCardSpace, i, 15, 1, 4);
+      this.add(firstNewCardSpace, i+1, 10, 1, 4);
+      this.add(secondNewCardSpace, i+1, 15, 1, 4);
     }
   }
 
@@ -109,8 +114,8 @@ public class VotingLayout extends GridPane
       VotingNode secondNewVotingNode = new VotingNode(gui, EnumRegion.US_REGIONS[i], 2);
       votingNodes.add(firstNewVotingNode);
       votingNodes.add(secondNewVotingNode);
-      this.add(firstNewVotingNode, i, 14, 1, 1);
-      this.add(secondNewVotingNode, i, 19, 1, 1);
+      this.add(firstNewVotingNode, i+1, 14, 1, 1);
+      this.add(secondNewVotingNode, i+1, 19, 1, 1);
     }
   }
 
@@ -123,21 +128,22 @@ public class VotingLayout extends GridPane
     {
       RegionMap newRegionMap = new RegionMap(this.gui, EnumRegion.US_REGIONS[i]);
       regionMaps.add(newRegionMap);
-      this.add(newRegionMap, i, 1, 1, 8);
+      this.add(newRegionMap, i+1, 1, 1, 8);
     }
   }
 
   private void initializeGridSizes()
   {
     colConstraintsList = new ArrayList<>();
-
-    for (int i = 0; i < 7; ++i)
+    colConstraintsList.add(new ColumnConstraints());
+    colConstraintsList.get(0).setPercentWidth(20);
+    for (int i = 1; i < 8; ++i)
     {
       colConstraintsList.add(new ColumnConstraints());
       colConstraintsList.get(i).setPercentWidth(13);
     }
     colConstraintsList.add(new ColumnConstraints());
-    colConstraintsList.get(7).setPercentWidth(9);
+    colConstraintsList.get(8).setPercentWidth(9);
 
     rowConstraintsList = new ArrayList<>();
     for (int i = 0; i < 25; ++i)

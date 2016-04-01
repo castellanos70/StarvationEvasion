@@ -116,10 +116,13 @@ public class ProductionCSVLoader
         }
       }
 
-      int idx = region.ordinal();
-      //System.out.println("regionList["+idx+"]="+regionList[idx]);
-
-      regionList[idx].addProduction(year, food, imports, exports, production, consumption,yield);
+      //Usually, our game will start in 2010. Thus, we only want to load pre-game data
+      //  of productions up through 2009.
+      if (year < Constant.FIRST_GAME_YEAR)
+      { int idx = region.ordinal();
+        //System.out.println("regionList["+idx+"]="+regionList[idx]);
+        regionList[idx].addProduction(year, food, imports, exports, production, consumption,yield);
+      }
     }
   }
 }

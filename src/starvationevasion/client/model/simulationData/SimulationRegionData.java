@@ -27,6 +27,5 @@ public class SimulationRegionData
     this.undernourished = data.regionData[region.ordinal()].undernourished;
     this.humanDevelopmentIndex = data.regionData[region.ordinal()].humanDevelopmentIndex;
     this.ethanolProducerTaxCredit = data.regionData[region.ordinal()].ethanolProducerTaxCredit;
-
   }
 }

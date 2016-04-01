@@ -31,9 +31,4 @@ public class JavaSocketWriteStrategy extends AbstractWriteStrategy<Serializable>
     getStream().flush();
   }
 
-  @Override
-  public void close () throws IOException
-  {
-
-  }
 }

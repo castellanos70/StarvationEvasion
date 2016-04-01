@@ -43,11 +43,4 @@ public class JavaSocketReadStrategy extends AbstractReadStrategy<Object>
     ObjectInputStream is = new ObjectInputStream(in);
     return is.readObject();
   }
-
-  @Override
-  public void close () throws IOException
-  {
-
-  }
-
 }

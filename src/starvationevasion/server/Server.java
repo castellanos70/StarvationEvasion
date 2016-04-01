@@ -293,7 +293,7 @@ public class Server
   public void begin ()
   {
     ArrayList<WorldData> worldDataList =
-      simulator.getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR-1);
+            simulator.getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR - 1);
 
     for (Worker worker : allConnections)
     {
@@ -303,7 +303,7 @@ public class Server
       //ServerSendData data = new ServerSendData();
       //data.worldDataList = worldDataList;
       EnumPolicy[] _hand = simulator.drawCards(worker.getUser().getRegion());
-      ArrayList<EnumPolicy> handList= new ArrayList<>();
+      ArrayList<EnumPolicy> handList = new ArrayList<>();
       Collections.addAll(handList, _hand);
 
       worker.getUser().setHand(handList);
@@ -428,16 +428,15 @@ public class Server
         {
           // use the plain text writer to send following data
           worker.setWriter(new PlainTextWriteStrategy(s, null));
-          worker.send("HTTP/1.1 101 Switching Protocols\n" +
-                              "Upgrade: websocket\n" +
-                              "Connection: Upgrade\n" +
-                              "Sec-WebSocket-Accept: " + socketKey + "\r\n");
+          worker.send(new Response("HTTP/1.1 101 Switching Protocols\n" +
+                                           "Upgrade: websocket\n" +
+                                           "Connection: Upgrade\n" +
+                                           "Sec-WebSocket-Accept: " + socketKey + "\r\n"));
 
           return true;
         }
 
       }
-
 
       // reading.append(line);
       if (line.contains("Sec-WebSocket-Key:"))

@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 
-public class JavaSocketClient
+class JavaSocketClient
 {
   private Socket clientSocket;
 

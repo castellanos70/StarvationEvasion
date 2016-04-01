@@ -68,29 +68,32 @@ public class PopupManager
    */
   public void toggleGraphDisplay()
   {
-    if (currentlyOpen == null)
+    if(gui.isDraftingPhase())
     {
-      currentlyOpen = graphDisplay;
-      graphDisplay.open();
-    }
-    else if (currentlyOpen == graphDisplay)
+      if (currentlyOpen == null)
+      {
+        currentlyOpen = graphDisplay;
+        graphDisplay.open();
+      } else if (currentlyOpen == graphDisplay)
+      {
+        currentlyOpen = null;
+        graphDisplay.close();
+      } else if (currentlyOpen instanceof ProductBarDataDisplay)
+      {
+        pbDataDisplay.close();
+        pbDataDisplay.setDataNull();
+        graphDisplay.open();
+        currentlyOpen = graphDisplay;
+        gui.getDraftLayout().getProductBar().unselectSelected();
+      } else if (currentlyOpen instanceof DiscardDisplay)
+      {
+        discardDisplay.close();
+        graphDisplay.open();
+        currentlyOpen = graphDisplay;
+      }
+    }else
     {
-      currentlyOpen = null;
-      graphDisplay.close();
-    }
-    else if (currentlyOpen instanceof ProductBarDataDisplay)
-    {
-      pbDataDisplay.close();
-      pbDataDisplay.setDataNull();
-      graphDisplay.open();
-      currentlyOpen = graphDisplay;
-      gui.getDraftLayout().getProductBar().unselectSelected();
-    }
-    else if (currentlyOpen instanceof DiscardDisplay)
-    {
-      discardDisplay.close();
-      graphDisplay.open();
-      currentlyOpen = graphDisplay;
+
     }
   }
 

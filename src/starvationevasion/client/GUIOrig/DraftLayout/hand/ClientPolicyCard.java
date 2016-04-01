@@ -194,7 +194,7 @@ public class ClientPolicyCard extends VBox
    */
   public boolean needsRegion(){return needsRegion;}
   //Sets the css styling for each card depending on their type
-  private void setBasicStyle()
+  public void setBasicStyle()
   {
     if(this.policy.getValidTargetFoods()!=null&&this.policy.getValidTargetRegions()!=null)
     {
@@ -244,7 +244,6 @@ public class ClientPolicyCard extends VBox
     this.getChildren().clear();
     this.setPrefSize(cardWidth,cardHeight);
     setMaxSize(cardWidth,cardHeight);
-
     Label title=new Label(policy.getTitle());
     Label gameText=new Label(policy.getGameText());
     Label cost=new Label(String.valueOf(policy.votesRequired()));
@@ -281,7 +280,7 @@ public class ClientPolicyCard extends VBox
   /**
    * Sets card to have title, smaller picture, and card text
    */
-  public void setDetailedCard()
+  public void setDetailedCard2()
   {
     isFlipped=false;
     this.setFocused(true);
@@ -315,7 +314,97 @@ public class ClientPolicyCard extends VBox
     this.setScaleY(2);
     this.setTranslateY(-80);
   }
+  public void setDetailedCard()
+  {
+    isFlipped=false;
+    this.setFocused(true);
+    this.getChildren().clear();
+    Label title=new Label(policy.getTitle());
+    Label gameText=new Label(policy.getGameText());
+    Label cost=new Label(String.valueOf(policy.votesRequired()));
+    gameText.setWrapText(true);
 
+    title.setFont(Font.font("helvetica",FontWeight.BOLD,9));
+    title.setWrapText(true);
+    title.setTextFill(Color.ALICEBLUE);
+    title.setAlignment(Pos.CENTER);
+    title.setTextAlignment(TextAlignment.CENTER);
+    if(policy.getGameText().length()<=180)
+    {
+      gameText.setFont(Font.font("helvetica", FontWeight.THIN, 8));
+    }else gameText.setFont(Font.font("helvetica", FontWeight.THIN, 6));
+    gameText.setStyle("-fx-background-color: #91A7AD;"+" -fx-border-radius: 3 3 3 3;\n" +
+            "  -fx-background-radius: 3 3 3 3;"+"-fx-border-style:solid;");
+    gameText.autosize();
+    view= gui.getImageGetter().getImageForCard(enumPolicy);
+    view.setFitHeight(50);
+    view.setFitWidth(50);
+    setPrefSize(750, 250);
+    setAlignment(Pos.CENTER);
+    getChildren().add(title);
+    getChildren().add(view);
+    getChildren().add(gameText);
+    this.setScaleX(2.5);
+    this.setScaleY(2.5);
+    this.setTranslateY(-80);
+    HBox buttonBox=new HBox();
+    discardButton.setStyle("-fx-font-size: 6px;");
+    draftButton.setStyle("-fx-font-size: 6px;");
+    buttonBox.getChildren().add(draftButton);
+    buttonBox.getChildren().add(new Label(String.valueOf(policy.votesRequired())));
+    buttonBox.getChildren().add(discardButton);
+    buttonBox.setAlignment(Pos.CENTER);
+    buttonBox.setSpacing(20);
+    getChildren().add(buttonBox);
+  }
+  public void setDraftStyle()
+  {
+    setStyle("-fx-background-color: rgba(0, 100, 100, 0.5);");
+  }
+  public void setDiscardStyle()
+  {
+    setStyle("-fx-background-color: rgba(100, 0, 0, 0.5);");
+  }
+  public void setDrafted()
+  {
+    double cardHeight=gui.getBoxHeight()*4;
+    double cardWidth=gui.getBoxWidth()*(3);
+    this.getChildren().clear();
+    this.setPrefSize(cardWidth,cardHeight);
+    setMaxSize(cardWidth,cardHeight);
+
+    Label title=new Label(policy.getTitle());
+    Label gameText=new Label(policy.getGameText());
+    Label cost=new Label(String.valueOf(policy.votesRequired()));
+    cost.setFont(Font.font("Verdana", FontWeight.EXTRA_BOLD, 14));
+
+    ImageView costImage=gui.getImageGetter().getVoteIcon();
+    costImage.setFitHeight(20);
+    costImage.setFitWidth(20);
+    StackPane stackPane=new StackPane();
+    //stackPane.getChildren().add(costImage);
+    stackPane.getChildren().add(cost);
+    stackPane.setAlignment(Pos.CENTER);
+    gameText.setWrapText(true);
+    gameText.autosize();
+    title.setTextFill(Color.ALICEBLUE);
+    title.setFont(Font.font("Helvetica", FontWeight.BOLD,12));
+    title.setWrapText(true);
+    title.setAlignment(Pos.CENTER);
+    title.setTextAlignment(TextAlignment.CENTER);
+    view= gui.getImageGetter().getImageForCard(enumPolicy);
+    view.setFitHeight(gui.getBoxHeight()*1.33);
+    view.setFitWidth(gui.getBoxHeight()*1.33);
+    this.setAlignment(Pos.CENTER);
+    this.getChildren().add(title);
+    this.getChildren().add(view);
+    this.setScaleX(1);
+    this.setScaleY(1);
+    this.setScaleZ(1);
+    setTranslateY(10);
+    setStyle("-fx-background-color: rgba(0, 100, 100, 0.5);");
+    toBack();
+  }
   /**
    * sets the card to have sliders and input
    */
@@ -651,5 +740,6 @@ public class ClientPolicyCard extends VBox
   {
     return enumPolicy;
   }
+
 
 }

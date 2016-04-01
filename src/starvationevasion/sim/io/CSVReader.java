@@ -68,6 +68,7 @@ public class CSVReader
     catch (IOException e)
     {
       e.printStackTrace();
+      System.exit(0);
     }
 
   }
@@ -78,7 +79,7 @@ public class CSVReader
    * Opens the given file from the root data path. Sets class state variables.<br>
    * Then reads and trashes headerLines.<br>
    * @param resource Path to resource.
-   * @param headerLines Numer of lines to skip.
+   * @param headerLines Number of lines to skip.
    */
   public CSVReader(String resource, int headerLines)
   {
@@ -94,6 +95,7 @@ public class CSVReader
     }
     catch (IOException e)
     { e.printStackTrace();
+      System.exit(0);
     }
   }
 
@@ -117,16 +119,18 @@ public class CSVReader
       }
     }
     catch (IOException e)
-    { LOGGER.severe(e.getMessage());
+    {
       e.printStackTrace();
+      System.exit(0);
     }
 
     String[] fields = str.split(",");
     if (fields.length > fieldCount)
     {
       LOGGER.severe("****ERROR reading " + path + ": Expected " + fieldCount +
-        " fields but read "+ fields.length);
-      return null;
+        " fields but read "+ fields.length + "/ndata=["+str+"]");
+      Thread.dumpStack();
+      System.exit(0);
     }
     return fields;
   }
@@ -142,6 +146,7 @@ public class CSVReader
     catch (IOException e)
     { LOGGER.severe(e.getMessage());
       e.printStackTrace();
+      System.exit(0);
     }
   }
 
@@ -174,6 +179,7 @@ public class CSVReader
     catch (IOException e)
     {
       e.printStackTrace();
+      System.exit(0);
     }
     stream.hashCode();
   }

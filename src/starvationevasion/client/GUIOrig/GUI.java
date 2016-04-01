@@ -66,7 +66,7 @@ public class GUI extends Application
   //context variables
   boolean selectingRegion = false;
   boolean selectingProduct = false;
-
+  private boolean draftingPhase=true;
   /**
    * Default constructor for GUIOrig
    * Used for debugging the GUIOrig, cannot connect to a game
@@ -74,9 +74,9 @@ public class GUI extends Application
   public GUI()
   {
       super();
-    client2=new Client("Nathan", 2020);
+    //client2=new Client("Nathan", 2020);
     this.localDataContainer = localDataContainer;
-    assignedRegion = client2.getRegion();
+    //assignedRegion = client2.getRegion();
   }
 
   /**
@@ -153,7 +153,7 @@ public class GUI extends Application
   @Override
   public void stop()
   {
-    client2.closeAll();
+//    client2.closeAll();
   }
   /**
    * Simple getter in case any node needs to get the stage
@@ -202,14 +202,21 @@ public class GUI extends Application
     {
       primaryStage.getScene().setRoot(votingLayout);
       currentRoot = votingLayout;
+      draftingPhase=false;
     }
     else
     {
       primaryStage.getScene().setRoot(draftLayout);
       currentRoot = draftLayout;
+      draftingPhase=true;
     }
   }
 
+  /**
+   * Getter that returns whether it is the drafting phase or not
+   * @return boolean true is drafting phase, false if voting
+   */
+  public boolean isDraftingPhase(){return draftingPhase;}
   /**
    * sets the context that the user is selecting a region to draft a card to the passed in param
    * @param toSet

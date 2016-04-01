@@ -170,6 +170,23 @@ public class MapConverter
     return lines;
   }
 
+  /**
+   * This converts lat and long point into the mollweide projection
+   * http://mathworld.wolfram.com/MollweideProjection.html
+   * @param point
+   * @return
+   */
+  public Point mollweideProjection(Point point,double radius)
+  {
+    double lon=point.getX();
+    double lat=point.getY();
+    Point newPoint=new Point();
+    double theta=1;
+    double x=radius*(2*Math.sqrt(2)/Math.PI)*lon*Math.cos(lat);
+    double y=radius*(Math.sqrt(2)*Math.sin(lat));
+    newPoint.setLocation(x,y);
+    return newPoint;
+  }
 
   public double getWidth()
   {

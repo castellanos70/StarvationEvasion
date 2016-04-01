@@ -8,7 +8,6 @@ import starvationevasion.common.Util;
 
 import java.awt.geom.Area;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.lang.IllegalStateException;
 
@@ -30,13 +29,11 @@ public class Region extends Territory
 
   public int ethanolProducerTaxCredit = 0;
 
-  // all data in metric tons
-  private long[] initialProduction1981 = new long[EnumFood.SIZE];
-  private long[] initialImports1981 = new long[EnumFood.SIZE];
-  private long[] initialExports1981 = new long[EnumFood.SIZE];
-  private long[] initialProduction2014 = new long[EnumFood.SIZE];
-  private long[] initialImports2014 = new long[EnumFood.SIZE];
-  private long[] initialExports2014 = new long[EnumFood.SIZE];
+  private long[][] cropImport = new long[Model.YEARS_OF_DATA][EnumFood.SIZE];  //in metric tons.
+  private long[][] cropExport = new long[Model.YEARS_OF_DATA][EnumFood.SIZE];  //in metric tons.
+  private long[][] cropConsumption = new long[Model.YEARS_OF_DATA][EnumFood.SIZE]; // in metric tons.
+  private long[][] cropProduction = new long[Model.YEARS_OF_DATA][EnumFood.SIZE]; //in metric tons.
+  private double[][] cropYield = new double[Model.YEARS_OF_DATA][EnumFood.SIZE]; //metric tons per square kilometer
 
   /**
    * Territory constructor
@@ -53,6 +50,42 @@ public class Region extends Territory
       ethanolProducerTaxCredit = Util.rand.nextInt(15) + Util.rand.nextInt(15);
     }
   }
+
+
+  public void addProduction(int year, EnumFood food,
+                            long imports, long exports, long production, long consumption,
+                            double yield)
+  {
+    int yearIdx = year - Constant.FIRST_DATA_YEAR;
+    int cropIdx = food.ordinal();
+    cropImport[yearIdx][cropIdx] += imports;
+    cropExport[yearIdx][cropIdx] += exports;
+    cropConsumption[yearIdx][cropIdx] += production;
+    cropProduction[yearIdx][cropIdx] += consumption;
+    cropYield[yearIdx][cropIdx] += yield/Constant.HECTARE_TO_SQUARE_KILOMETER;
+  }
+
+  public long getCropProduction(int year, EnumFood food)
+  {
+    int yearIdx = year - Constant.FIRST_DATA_YEAR;
+    int cropIdx = food.ordinal();
+    return cropProduction[yearIdx][cropIdx];
+  }
+
+  public long getCropImport(int year, EnumFood food)
+  {
+    int yearIdx = year - Constant.FIRST_DATA_YEAR;
+    int cropIdx = food.ordinal();
+    return cropImport[yearIdx][cropIdx];
+  }
+
+  public long getCropExport(int year, EnumFood food)
+  {
+    int yearIdx = year - Constant.FIRST_DATA_YEAR;
+    int cropIdx = food.ordinal();
+    return cropExport[yearIdx][cropIdx];
+  }
+
 
   /**
    * Each region is composed of 1 or more territories. This method sets this regions data
@@ -119,217 +152,11 @@ public class Region extends Territory
     return false;
   }
 
-  /**
-   * Sets the food production for the year 2014 or 1981.
-   *
-   * @param food       type of food produced
-   * @param production production of food in metric tons
-   * @param year       either 1981 or 2014
-   */
-  public void setInitialProduction(EnumFood food, long production, int year)
-  {
-    if (year == 2014)
-    {
-      initialProduction2014[food.ordinal()] = production;
-    }
-    else
-    {
-      initialProduction1981[food.ordinal()] = production;
-    }
-  }
-
-  /**
-   * Sets the food imports for the year 2014 or 1981.
-   *
-   * @param food    type of food imported
-   * @param imports imports of food in metric tons
-   * @param year    either 1981 or 2014
-   */
-  public void setInitialImports(EnumFood food, long imports, int year)
-  {
-    if (year == 2014)
-    {
-      initialImports2014[food.ordinal()] = imports;
-    }
-    else
-    {
-      initialImports1981[food.ordinal()] = imports;
-    }
-  }
-
-  /**
-   * Sets the food exports for the year 2014 or 1981.
-   *
-   * @param food    type of food produced
-   * @param exports exports of food in metric tons
-   * @param year    either 1981 or 2014
-   */
-  public void setInitialExports(EnumFood food, long exports, int year)
-  {
-    if (year == 2014)
-    {
-      initialExports2014[food.ordinal()] = exports;
-    }
-    else
-    {
-      initialExports1981[food.ordinal()] = exports;
-    }
-  }
-
-  /**
-   * Get the initial production for the specified food. This is for data provided in
-   * "/data/sim/WorldData/WorldFoodProduction.csv" and is populated by io.ProductionCSVLoader
-   *
-   * @param food type of food to get production for
-   * @param year 1981 or 2014
-   * @return initial food production for type food for 1981 or 2014 (metic tons)
-   */
-  public long getInitialProduction(EnumFood food, int year)
-  {
-    if (year == 2014)
-    {
-      return initialProduction1981[food.ordinal()];
-    }
-    return initialProduction1981[food.ordinal()];
-  }
-
-  /**
-   * Get the total initial production for all food in the region. This is for data provided in
-   * "/data/sim/WorldData/WorldFoodProduction.csv" and is populated by io.ProductionCSVLoader
-   *
-   * @param year 1981 or 2014
-   * @return total food production for 1981 or 2014 (metric tons)
-   */
-  public long getInitialProduction(int year)
-  {
-    int totalProduction = 0;
-    long[] production = year == 2014 ? initialProduction2014 : initialProduction1981;
-    for (int i = 0; i < production.length; i++)
-    {
-      totalProduction += production[i];
-    }
-    return totalProduction;
-  }
-
-  /**
-   * Get the initial imports for the specified food. This is for data provided in
-   * "/data/sim/WorldData/WorldFoodProduction.csv" and is populated by io.ProductionCSVLoader
-   *
-   * @param food type of food to get imports for
-   * @param year 1981 or 2014
-   * @return initial food imports for type food for 1981 or 2014 (metric tons)
-   */
-  public long getInitialImports(EnumFood food, int year)
-  {
-    if (year == 2014)
-    {
-      return initialImports2014[food.ordinal()];
-    }
-    return initialImports1981[food.ordinal()];
-  }
-
-  /**
-   * Get the total initial imports for all food in the region. This is for data provided in
-   * "/data/sim/WorldData/WorldFoodProduction.csv" and is populated by io.ProductionCSVLoader
-   *
-   * @param year 1981 or 2014
-   * @return total food imports for 1981 or 2014 (metric tons)
-   */
-  public long getInitialImports(int year)
-  {
-    int totalImports = 0;
-    long[] imports = year == 2014 ? initialImports2014 : initialImports1981;
-    for (int i = 0; i < imports.length; i++)
-    {
-      totalImports += imports[i];
-    }
-    return totalImports;
-  }
-
-  /**
-   * Get the initial exports for the specified food. This is for data provided in
-   * "/data/sim/WorldData/WorldFoodProduction.csv" and is populated by io.ProductionCSVLoader
-   *
-   * @param food type of food to get exports for
-   * @param year 1981 or 2014
-   * @return initial food exports for type food for 1981 or 2014 (metric tons)
-   */
-  public long getInitialExports(EnumFood food, int year)
-  {
-    if (year == 2014)
-    {
-      return initialExports2014[food.ordinal()];
-    }
-    return initialExports1981[food.ordinal()];
-  }
-
-  /**
-   * Get the total initial exports for all food in the region. This is for data provided in
-   * "/data/sim/WorldData/WorldFoodProduction.csv" and is populated by io.ProductionCSVLoader
-   *
-   * @param year 1981 or 2014
-   * @return total food exports for 1981 or 2014 (metric tons)
-   */
-  public long getInitialExports(int year)
-  {
-    int totalExports = 0;
-    long[] exports = year == 2014 ? initialExports2014 : initialExports1981;
-    for (int i = 0; i < exports.length; i++)
-    {
-      totalExports += exports[i];
-    }
-    return totalExports;
-  }
-
-  /**
-   * Get the initial food consumption for the specified food. This is for 1981 or 2014 and uses data provided in
-   * "/data/sim/WorldData/WorldFoodProduction.csv" and is populated by io.ProductionCSVLoader
-   *
-   * @param food type of food to get consumption for
-   * @return initial food consumption for type food for 1981 or 2014
-   */
-  public long getInitialConsumption(EnumFood food, int year)
-  {
-    return getInitialProduction(food, year) + getInitialImports(food, year) - getInitialExports(food, year);
-  }
-
-  /**
-   * Get the initial total food consumption for the region. This is for 1981 data and uses data provided in
-   * "/data/sim/WorldData/WorldFoodProduction.csv" and is populated by io.ProductionCSVLoader
-   *
-   * @return initial total food consumption for 1981 or 2014 in the region
-   */
-  public long getInitialConsumption(int year)
-  {
-    return getInitialProduction(year) + getInitialImports(year) - getInitialExports(year);
-  }
-
-  /**
-   * Get the initial food consumption per capita for the region for the type food. This is for 1981 or 2014 and
-   * uses data provided in "/data/sim/WorldData/WorldFoodProduction.csv" and is populated by io.ProductionCSVLoader
-   *
-   * @return initial food consumption per capita in 1981 or 2014 for type food
-   */
-  public double getInitialConsumtionPerCapita(EnumFood food, int year)
-  {
-    return getInitialConsumption(food, year) / getPopulation(Constant.FIRST_DATA_YEAR);
-  }
-
-  /**
-   * Get the initial total food consumption per capita for the region. This is for 1981 or 2014 and uses data
-   * provided in "/data/sim/WorldData/WorldFoodProduction.csv" and is populated by io.ProductionCSVLoader
-   *
-   * @return initial total food consumption per capita for 1981 or 2014 in the region
-   */
-  public double getInitialConsumptionPerCapita(int year)
-  {
-    return getInitialConsumption(year) / getPopulation(Constant.FIRST_DATA_YEAR);
-  }
 
   /**
    * @return regions
    */
-  public Collection<Territory> getTerritoryList()
+  public ArrayList<Territory> getTerritoryList()
   {
     return territoryList;
   }

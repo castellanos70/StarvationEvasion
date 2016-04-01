@@ -28,7 +28,7 @@ public class MainGameLoop
   {
     this.gui=gui;
     client=gui.getClient();
-    chatManager=client.getChatManager();
+   // chatManager=client.getChatManager();
     draftLayout=gui.getDraftLayout();
     votingLayout=gui.getVotingLayout();
     chatNodeDraft=draftLayout.getChatNode();
@@ -42,10 +42,10 @@ public class MainGameLoop
       @Override
       public void run()
       {
-        chatNodeDraft.setChatMessages(chatManager.getChat());
-        chatNodeDraft.setHand(gui.getDraftLayout().getHand().getHand());
-        chatNodeVote.setChatMessages(chatManager.getChat());
-        chatNodeVote.setHand(gui.getDraftLayout().getHand().getHand());
+//        chatNodeDraft.setChatMessages(chatManager.getChat());
+//        chatNodeDraft.setHand(gui.getDraftLayout().getHand().getHand());
+//        chatNodeVote.setChatMessages(chatManager.getChat());
+//        chatNodeVote.setHand(gui.getDraftLayout().getHand().getHand());
       }
     };
     timer.schedule(timerTask,100,100);

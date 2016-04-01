@@ -56,7 +56,7 @@ public class ChatNode extends BorderPane
 
 
     client=gui.getClient();
-    chatManager=client.getChatManager();
+//    chatManager=client.getChatManager();
 
     usersChat.getChildren().add(confirm);
     usersChat.getChildren().add(regionSelection);

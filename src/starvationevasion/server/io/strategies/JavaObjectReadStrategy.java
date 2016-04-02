@@ -6,15 +6,15 @@ import starvationevasion.server.model.Request;
 import java.io.*;
 import java.net.Socket;
 
-public class JavaSocketReadStrategy extends AbstractReadStrategy<Request>
+public class JavaObjectReadStrategy extends AbstractReadStrategy<Request>
 {
 
-  public JavaSocketReadStrategy (Socket socket)
+  public JavaObjectReadStrategy (Socket socket)
   {
     super(socket);
   }
 
-  public JavaSocketReadStrategy (Socket socket, DataInputStream stream)
+  public JavaObjectReadStrategy (Socket socket, DataInputStream stream)
   {
     super(socket, stream);
   }

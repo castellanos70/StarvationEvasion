@@ -1,5 +1,6 @@
 package starvationevasion.server;
 
+import starvationevasion.common.WorldData;
 import starvationevasion.server.model.*;
 
 import java.io.*;
@@ -24,7 +25,7 @@ class JavaSocketClient
   private volatile boolean isRunning = true;
 
 
-  public JavaSocketClient (String host, int portNumber)
+  private JavaSocketClient (String host, int portNumber)
   {
 
     keyboard = new Scanner(System.in);
@@ -165,39 +166,22 @@ class JavaSocketClient
     {
       try
       {
-        int ch1 = reader.read();
-        if (ch1 == -1)
+        Response response = readObject();
+
+        System.out.println("Received a Response object.");
+        if (response.getData().get("data") instanceof User)
         {
-          return;
+          System.out.println("Response.data = User object.");
+
+          System.out.println(((User) response.getData().get("data")).getRegion());
         }
-
-        int ch2 = reader.read();
-        int ch3 = reader.read();
-        int ch4 = reader.read();
-        if ((ch1 | ch2 | ch3 | ch4) < 0)
+        else if (response.getData().get("data") instanceof WorldData)
         {
-          throw new EOFException();
-        }
-        int size  = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
-
-        byte[] object = new byte[size];
-
-        reader.readFully(object);
-
-        ByteArrayInputStream in = new ByteArrayInputStream(object);
-        ObjectInputStream is = new ObjectInputStream(in);
-        Response obj = (Response) is.readObject();
-        String type = (String) obj.getData().get("type");
-
-
-        if (obj.getData().get("data") instanceof User)
-        {
-          System.out.println(((User) obj.getData().get("data")).getRegion());
+          System.out.println("Response.data = WorldData object.");
         }
       }
       catch(EOFException e)
       {
-        e.printStackTrace();
         isRunning = false;
         System.out.println("Lost server, press enter to shutdown.");
         return;
@@ -210,7 +194,34 @@ class JavaSocketClient
       {
         e.printStackTrace();
       }
+      catch(Exception e)
+      {
+        e.printStackTrace();
+      }
     }
+  }
+
+  private Response readObject() throws Exception
+  {
+    int ch1 = reader.read();
+    int ch2 = reader.read();
+    int ch3 = reader.read();
+    int ch4 = reader.read();
+
+    if ((ch1 | ch2 | ch3 | ch4) < 0)
+    {
+      throw new EOFException();
+    }
+    int size  = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+
+    byte[] object = new byte[size];
+
+    reader.readFully(object);
+
+    ByteArrayInputStream in = new ByteArrayInputStream(object);
+    ObjectInputStream is = new ObjectInputStream(in);
+
+    return (Response) is.readObject();
   }
 
   private String timeDiff ()

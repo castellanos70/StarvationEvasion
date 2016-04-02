@@ -16,7 +16,7 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
   {
     if (!(value instanceof Sendable || value instanceof Number || value instanceof String || value instanceof ArrayList))
     {
-      System.out.println("NOT a valid payload FIst");
+      System.out.println("NOT a valid payload!");
       System.exit(0);
       return value;
     }
@@ -33,6 +33,16 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
       }
     }
     return super.put(key, value);
+  }
+
+  public V putData (V value)
+  {
+    return put((K) "data", value);
+  }
+
+  public V putMessage (V value)
+  {
+    return put((K) "message", value);
   }
 
   @Override
@@ -79,20 +89,31 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
     while(iterator.hasNext())
     {
       K key = iterator.next();
+      V value = get(key);
 
-      if (get(key) instanceof String)
+
+      if (value instanceof String)
       {
-        json.setString(key, (String) get(key));
+        json.setString(key, (String) value);
       }
-      else if (get(key) instanceof Sendable)
+      else if (value instanceof Sendable)
       {
-        json.set(key, ((JSON) get(key)).toJSON());
+        if (value instanceof Enum)
+        {
+          JSONDocument doc = JSONDocument.createObject();
+          doc.setString("name", ((Enum) value).name());
+          json.set(key, doc);
+        }
+        else
+        {
+          json.set(key, ((JSON) value).toJSON());
+        }
       }
-      else if (get(key) instanceof ArrayList)
+      else if (value instanceof ArrayList)
       {
-        JSONDocument doc = JSONDocument.createArray(((ArrayList) get(key)).size());
+        JSONDocument doc = JSONDocument.createArray(((ArrayList) value).size());
         int i = 0;
-        for (Object o : ((ArrayList) get(key)))
+        for (Object o : ((ArrayList) value))
         {
           doc.set(i, ((JSON) o).toJSON());
           i++;

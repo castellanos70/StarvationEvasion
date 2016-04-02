@@ -78,4 +78,9 @@ public class Response implements Sendable
   {
     return null;
   }
+
+  public Payload getData ()
+  {
+    return data;
+  }
 }

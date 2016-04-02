@@ -16,7 +16,7 @@ public abstract class AbstractReadStrategy<T> implements ReadStrategy<T>
     this.socket = socket;
     try
     {
-      reader = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+      reader = new DataInputStream(socket.getInputStream());
     }
     catch(IOException e)
     {

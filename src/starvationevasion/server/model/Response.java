@@ -9,6 +9,7 @@ public class Response implements Sendable
 
   private Payload data = new Payload();
   private String type = "";
+  private String message = "";
   private double time = 0f;
 
 
@@ -21,7 +22,7 @@ public class Response implements Sendable
   public Response (double time, String msg)
   {
     this.time = time;
-    this.data.put("message", msg);
+    this.message = msg;
   }
 
   public Response (Payload data)
@@ -29,9 +30,9 @@ public class Response implements Sendable
     this.data = data;
   }
 
-  public Response (String data)
+  public Response (String message)
   {
-    this.data.put("message", data);
+    this.message = message;
   }
 
   @Override
@@ -45,6 +46,7 @@ public class Response implements Sendable
   {
     data.put("time", time);
     data.put("type", type);
+    data.put("message", message);
 
     return data.toJSON();
   }
@@ -57,7 +59,7 @@ public class Response implements Sendable
 
     time = (double) json.getNumber("time");
     type = json.getString("type");
-    // message = json.getString("message");
+    message = json.getString("message");
 
     JSONDocument _data = json.get("data");
     data.fromJSON(_data);

@@ -47,7 +47,8 @@ public class UserHandler extends AbstractHandler
 //      }
 
       Payload data = new Payload();
-      data.put("data", server.getUserList());
+      data.putData(server.getUserList());
+
       // data.put("message", "SUCCESS");
 
       m_response = new Response(server.uptime(), data);
@@ -65,7 +66,7 @@ public class UserHandler extends AbstractHandler
       }
 
       Payload data = new Payload();
-      data.put("data", server.getActiveUserList());
+      data.putData(server.getActiveUserList());
 
       m_response = new Response(server.uptime(), data);
       getClient().send(m_response);
@@ -90,7 +91,7 @@ public class UserHandler extends AbstractHandler
       }
 
       Payload data = new Payload();
-      data.put("data", u);
+      data.putData(u);
 
       m_response = new Response(data);
       getClient().send(m_response);

@@ -24,8 +24,8 @@ public class CardHandler extends AbstractHandler
       server.draw(getClient());
       Payload data = new Payload();
 
-      data.put("data", getClient().getUser().getHand());
-      data.put("message", "SUCCESS");
+      data.putData(getClient().getUser().getHand());
+      data.putMessage("SUCCESS");
       m_response = new Response(server.uptime(), data);
       getClient().send(m_response);
 
@@ -49,7 +49,7 @@ public class CardHandler extends AbstractHandler
     {
       Payload data = new Payload();
 
-      data.put("data", getClient().getUser().getHand());
+      data.putData(getClient().getUser().getHand());
       m_response = new Response(server.uptime(), data);
 
       getClient().send(m_response);

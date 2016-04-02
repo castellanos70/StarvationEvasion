@@ -24,8 +24,8 @@ public class LoginHandler extends AbstractHandler
       if (auth)
       {
         Payload data = new Payload();
-        data.put("data", getClient().getUser());
-        data.put("message", "SUCCESS");
+        data.putData(getClient().getUser());
+        data.putMessage("SUCCESS");
         m_response = new Response(server.uptime(), data);
       }
       else

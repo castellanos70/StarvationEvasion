@@ -2,7 +2,7 @@ package starvationevasion.server;
 
 
 /**
- * @author Javier Chavez
+ * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
 import starvationevasion.common.Constant;

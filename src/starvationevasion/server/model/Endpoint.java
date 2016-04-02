@@ -1,5 +1,10 @@
 package starvationevasion.server.model;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ * All the endpoints to the api
+ */
+
 
 public enum Endpoint
 {

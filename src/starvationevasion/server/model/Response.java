@@ -1,5 +1,8 @@
 package starvationevasion.server.model;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.io.JSON;

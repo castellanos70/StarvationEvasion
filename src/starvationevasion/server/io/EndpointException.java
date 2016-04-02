@@ -1,5 +1,8 @@
 package starvationevasion.server.io;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 public class EndpointException extends Exception
 {

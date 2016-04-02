@@ -1,5 +1,8 @@
 package starvationevasion.server.handlers;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 import starvationevasion.server.Worker;
 import starvationevasion.server.Server;

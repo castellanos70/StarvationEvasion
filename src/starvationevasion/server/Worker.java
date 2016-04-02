@@ -1,9 +1,9 @@
 package starvationevasion.server;
 
-/**
- * @author Javier Chavez
- */
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 import starvationevasion.server.handlers.Handler;
 import starvationevasion.server.io.*;
@@ -19,7 +19,7 @@ import java.io.*;
 import java.net.Socket;
 
 /**
- * ServerWorker
+ *  Worker that holds connection, writer, reader, and user information
  */
 public class Worker extends Thread
 {

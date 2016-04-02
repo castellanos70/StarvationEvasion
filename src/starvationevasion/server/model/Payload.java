@@ -120,6 +120,10 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
         }
         json.set(key, doc);
       }
+      else if (value instanceof Number)
+      {
+        json.setNumber(key, (Number) value);
+      }
     }
     return json;
   }

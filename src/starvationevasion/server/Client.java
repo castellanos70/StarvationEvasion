@@ -100,7 +100,7 @@ class Client
     }
     isRunning = true;
     write.println("client");
-    write.print("\r\n");
+    //write.print("\r\n");
     write.flush();
     return true;
 

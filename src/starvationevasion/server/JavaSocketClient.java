@@ -186,14 +186,6 @@ class JavaSocketClient
         System.out.println("Lost server, press enter to shutdown.");
         return;
       }
-      catch(IOException e)
-      {
-        e.printStackTrace();
-      }
-      catch(ClassNotFoundException e)
-      {
-        e.printStackTrace();
-      }
       catch(Exception e)
       {
         e.printStackTrace();

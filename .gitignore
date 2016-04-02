@@ -1,0 +1,33 @@
+.git
+.idea
+out
+bin
+.settings
+*.iml
+.classpath
+.project
+*~
+.DS_Store
+## File-based project format:
+*.ipr
+*.iws
+notes_joel.txt
+
+# the dataSources folder is raw data not directly used by the project.
+dataSources
+
+# ignore class files
+*.class
+
+# emacs temp files
+\#*\#
+.\#*
+
+dist/
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+/Lab8JavaFx/nbproject/private/

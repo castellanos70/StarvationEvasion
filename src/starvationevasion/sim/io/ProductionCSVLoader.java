@@ -139,7 +139,7 @@ public class ProductionCSVLoader
       }
     }
     fileReader.close();
-/*
+
     fileReader = new CSVReader(PATH_USA_PRODUCTION_BY_STATE, 0);
     fileReader.trashRecord();
 
@@ -148,6 +148,8 @@ public class ProductionCSVLoader
 
     while ((fieldList = fileReader.readRecord(EnumFood.SIZE+2)) != null)
     {
+
+
       for (EnumHeader header : EnumHeader.values())
       {
         int i = header.ordinal();
@@ -204,6 +206,6 @@ public class ProductionCSVLoader
       }
     }
     fileReader.close();
-    */
+
   }
 }

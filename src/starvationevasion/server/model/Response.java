@@ -83,4 +83,9 @@ public class Response implements Sendable
   {
     return data;
   }
+
+  public double getTime ()
+  {
+    return time;
+  }
 }

@@ -17,18 +17,21 @@ public class Request implements Sendable
 
   /**
    * Expecting at least 2 args.
-   * @param data  data[0] shall be the time
-   *              data[1] shall be the rest of the data
-   * @throws Exception
+   *
+   * @param data is an array where data[0] time, data[1] endpoint, data[2] is not explicitly
+   * required but the endpoint might require it.
+   *
+   * @throws EndpointException when an endpoint is not found
    */
-  public Request (String ...data) throws EndpointException
+  public Request (String... data) throws EndpointException
   {
     this.time = Double.parseDouble(data[0]);
     try
     {
       this.destination = Endpoint.valueOf(data[1].toUpperCase());
 
-    } catch(EnumConstantNotPresentException e)
+    }
+    catch(IllegalArgumentException e)
     {
       throw new EndpointException("Endpoint for " + data[1] + " was not found.");
     }

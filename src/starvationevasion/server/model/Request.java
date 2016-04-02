@@ -3,6 +3,7 @@ package starvationevasion.server.model;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import com.oracle.javafx.jmx.json.impl.JSONStreamReaderImpl;
+import starvationevasion.server.io.EndpointException;
 import starvationevasion.server.io.JSON;
 
 import java.io.Serializable;
@@ -20,11 +21,18 @@ public class Request implements Sendable
    *              data[1] shall be the rest of the data
    * @throws Exception
    */
-  public Request (String ...data) throws Exception
+  public Request (String ...data) throws EndpointException
   {
     this.time = Double.parseDouble(data[0]);
-    this.destination = Endpoint.valueOf(data[1].toUpperCase());
-    System.out.println(data[2]);
+    try
+    {
+      this.destination = Endpoint.valueOf(data[1].toUpperCase());
+
+    } catch(EnumConstantNotPresentException e)
+    {
+      throw new EndpointException("Endpoint for " + data[1] + " was not found.");
+    }
+
     data[2] = data[2].replace(data[0] + " ", "");
     data[2] = data[2].replace(data[1], "");
     data[2] = data[2].trim();

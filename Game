@@ -82,6 +82,9 @@ then
 elif [ "$1" == "clean" ]
 then
     clean
+elif [ "$1" == "docs" ]
+then
+    make_javadoc
 else
     echo "Command not found"
 fi

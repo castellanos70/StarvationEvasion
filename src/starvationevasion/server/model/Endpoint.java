@@ -13,7 +13,7 @@ public enum Endpoint
   /**
    * Get more information about a user
    * Handled by {@link starvationevasion.server.handlers.UserHandler}
-   * Required Payload: username
+   * Required Payload: username or region
    */
   USER_READ("user_read"),
 

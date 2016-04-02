@@ -2,7 +2,7 @@ package starvationevasion.server.handlers;
 
 
 
-import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.server.*;
 import starvationevasion.server.model.*;
 
@@ -69,6 +69,32 @@ public class UserHandler extends AbstractHandler
 
       m_response = new Response(server.uptime(), data);
       getClient().send(m_response);
+      return true;
+    }
+    else if (request.getDestination().equals(Endpoint.READY))
+    {
+      // server.
+
+      return true;
+    }
+    else if (request.getDestination().equals(Endpoint.USER_READ))
+    {
+      User u = null;
+      if (request.getData().containsKey("username"))
+      {
+        u = server.getUserByUsername((String) request.getData().get("username"));
+      }
+      else if (request.getData().containsKey("region"))
+      {
+        u = server.getWorkerByRegion((EnumRegion) request.getData().get("region")).getUser();
+      }
+
+      Payload data = new Payload();
+      data.put("data", u);
+
+      m_response = new Response(data);
+      getClient().send(m_response);
+
       return true;
     }
 

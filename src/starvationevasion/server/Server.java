@@ -411,6 +411,8 @@ public class Server
         e.printStackTrace();
         return false;
       }
+      // trim line, note that there is a check for "\r\n"
+      line = line.trim();
 
       // check if the end of line or if data was found.
       if (line == null || line.equals("client") || line.equals("\r\n") || line.equals("JavaClient"))

@@ -514,4 +514,9 @@ public class Server
 
     System.exit(1);
   }
+
+  public State getGameState ()
+  {
+    return currentState;
+  }
 }

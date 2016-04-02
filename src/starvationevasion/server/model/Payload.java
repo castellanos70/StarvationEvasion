@@ -22,7 +22,7 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
     }
     if (value instanceof ArrayList)
     {
-      if(!((ArrayList) value).isEmpty())
+      if (!((ArrayList) value).isEmpty())
       {
         if (!(((ArrayList) value).get(0) instanceof Sendable))
         {
@@ -82,7 +82,7 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
 
       if (get(key) instanceof String)
       {
-        json.setString(key, (String)get(key));
+        json.setString(key, (String) get(key));
       }
       else if (get(key) instanceof Sendable)
       {
@@ -90,7 +90,7 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
       }
       else if (get(key) instanceof ArrayList)
       {
-         JSONDocument doc = JSONDocument.createArray(((ArrayList) get(key)).size());
+        JSONDocument doc = JSONDocument.createArray(((ArrayList) get(key)).size());
         int i = 0;
         for (Object o : ((ArrayList) get(key)))
         {
@@ -107,6 +107,6 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
   public void fromJSON (Object doc)
   {
     JSONDocument _json = JSON.Parser.toJSON(doc);
-    super.putAll((Map<? extends K, ? extends V>) _json.object());
+    this.putAll((Map<? extends K, ? extends V>) _json.object());
   }
 }

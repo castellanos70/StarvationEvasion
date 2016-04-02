@@ -43,14 +43,10 @@ public class Response implements Sendable
   @Override
   public JSONDocument toJSON ()
   {
-    JSONDocument _json = JSONDocument.createObject();
-    _json.setNumber("time", time);
-    // _json.setString("message", message);
-    _json.setString("type", type);
-    // this needs some fixing
-    _json.set("data", data.toJSON());
+    data.put("time", time);
+    data.put("type", type);
 
-    return _json;
+    return data.toJSON();
   }
 
   @Override

@@ -419,8 +419,8 @@ public class Server
       {
         if (line != null && line.equals("JavaClient"))
         {
-          worker.setReader(new JavaSocketReadStrategy(s, null));
-          worker.setWriter(new JavaSocketWriteStrategy(s, null));
+          worker.setReader(new JavaObjectReadStrategy(s, null));
+          worker.setWriter(new JavaObjectWriteStrategy(s, null));
           return false;
         }
 

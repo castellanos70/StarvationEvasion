@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public interface ReadStrategy<Result>
 {
-  Result read () throws IOException, Exception;
+  Result read () throws IOException, ClassNotFoundException;
   void close () throws IOException;
 
   DataInputStream getStream ();

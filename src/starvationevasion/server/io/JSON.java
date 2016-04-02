@@ -1,5 +1,8 @@
 package starvationevasion.server.io;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import com.oracle.javafx.jmx.json.impl.JSONStreamReaderImpl;
@@ -29,7 +32,15 @@ public interface JSON
     }
   }
 
+  /**
+   * Convert class into json
+   * @return JSON representation of class
+   */
   JSONDocument toJSON ();
 
+  /**
+   * Convert String into JSON
+   * @param doc object to be converted
+   */
   void fromJSON (Object doc);
 }

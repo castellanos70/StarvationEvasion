@@ -1,6 +1,8 @@
 package starvationevasion.server.io.strategies;
 
-import starvationevasion.server.io.strategies.AbstractReadStrategy;
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 import java.io.DataInputStream;
 import java.io.IOException;

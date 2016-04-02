@@ -1,7 +1,38 @@
 package starvationevasion.server.model;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
-public enum State
+import com.oracle.javafx.jmx.json.JSONDocument;
+
+public enum State implements Sendable
 {
-  LOGIN, BEGINNING, DRAWING, DRAFTING, VOTING, WIN, LOSE, END
+  LOGIN, BEGINNING, DRAWING, DRAFTING, VOTING, WIN, LOSE, END;
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    JSONDocument _json = JSONDocument.createObject();
+    _json.setString("name", name());
+    return _json;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
 }

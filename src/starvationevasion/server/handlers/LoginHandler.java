@@ -1,5 +1,8 @@
 package starvationevasion.server.handlers;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 import starvationevasion.server.Worker;
 import starvationevasion.server.Server;
@@ -24,8 +27,8 @@ public class LoginHandler extends AbstractHandler
       if (auth)
       {
         Payload data = new Payload();
-        data.put("user", getClient().getUser());
-        data.put("message", "SUCCESS");
+        data.putData(getClient().getUser());
+        data.putMessage("SUCCESS");
         m_response = new Response(server.uptime(), data);
       }
       else

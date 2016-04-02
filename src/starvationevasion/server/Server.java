@@ -2,7 +2,7 @@ package starvationevasion.server;
 
 
 /**
- * @author Javier Chavez
+ * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
 import starvationevasion.common.Constant;
@@ -411,14 +411,16 @@ public class Server
         e.printStackTrace();
         return false;
       }
+      // trim line, note that there is a check for "\r\n"
+      line = line.trim();
 
       // check if the end of line or if data was found.
       if (line == null || line.equals("client") || line.equals("\r\n") || line.equals("JavaClient"))
       {
         if (line != null && line.equals("JavaClient"))
         {
-          worker.setReader(new JavaSocketReadStrategy(s, null));
-          worker.setWriter(new JavaSocketWriteStrategy(s, null));
+          worker.setReader(new JavaObjectReadStrategy(s, null));
+          worker.setWriter(new JavaObjectWriteStrategy(s, null));
           return false;
         }
 
@@ -511,5 +513,10 @@ public class Server
     }
 
     System.exit(1);
+  }
+
+  public State getGameState ()
+  {
+    return currentState;
   }
 }

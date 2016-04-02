@@ -9,55 +9,32 @@ import starvationevasion.server.model.Sendable;
  */
 public enum EnumSpecialEvent implements Sendable
 {
-  HURRICANE
-          {
-            @Override
-            public JSONDocument toJSON ()
-            {
-              return null;
-            }
+  HURRICANE, DROUGHT;
 
-            @Override
-            public void fromJSON (Object doc)
-            {
+  @Override
+  public JSONDocument toJSON ()
+  {
+    JSONDocument _json = JSONDocument.createObject();
+    _json.setString("name", name());
+    return _json;
+  }
 
-            }
+  @Override
+  public void fromJSON (Object doc)
+  {
 
-            @Override
-            public void setType (String type)
-            {
+  }
 
-            }
+  @Override
+  public void setType (String type)
+  {
 
-            @Override
-            public String getType ()
-            {
-              return null;
-            }
-          }, DROUGHT
-        {
-          @Override
-          public JSONDocument toJSON ()
-          {
-            return null;
-          }
+  }
 
-          @Override
-          public void fromJSON (Object doc)
-          {
+  @Override
+  public String getType ()
+  {
+    return "EnumSpecialEvent";
+  }
 
-          }
-
-          @Override
-          public void setType (String type)
-          {
-
-          }
-
-          @Override
-          public String getType ()
-          {
-            return null;
-          }
-        };
 }

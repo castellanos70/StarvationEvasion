@@ -10,7 +10,9 @@ public enum State implements Sendable
   @Override
   public JSONDocument toJSON ()
   {
-    return null;
+    JSONDocument _json = JSONDocument.createObject();
+    _json.setString("name", name());
+    return _json;
   }
 
   @Override

@@ -16,7 +16,8 @@ public enum Endpoint
 
   // CardHandler
   HAND_READ("hand_read"),
-  HAND_UPDATE("hand_update"),
+  HAND_CREATE("hand_create"),
+  // HAND_UPDATE("hand_update"),
 
   // VoteHandler
   VOTE_UP("vote_up"),

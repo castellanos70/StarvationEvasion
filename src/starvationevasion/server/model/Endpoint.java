@@ -14,7 +14,7 @@ public enum Endpoint
   // LoginHandler
   LOGIN("login"),
 
-
+  // CardHandler
   HAND_READ("hand_read"),
   HAND_UPDATE("hand_update"),
 

@@ -44,7 +44,7 @@ public class ProductionCSVLoader
     long[][] usa_imports     = new long[preGameYears][EnumFood.SIZE];
     long[][] usa_production  = new long[preGameYears][EnumFood.SIZE];
     long[][] usa_consumption = new long[preGameYears][EnumFood.SIZE];
-    double[][] usa_yield     = new double[preGameYears][EnumFood.SIZE];
+    double[][] usa_area     = new double[preGameYears][EnumFood.SIZE];
 
     CSVReader fileReader = new CSVReader(PATH_WORLD_PRODUCTION, 0);
 
@@ -74,7 +74,7 @@ public class ProductionCSVLoader
       long imports = 0;
       long production = 0;
       long consumption = 0;
-      double yield = 0.0;
+      long area = 0;
 
       for (EnumHeader header : EnumHeader.values())
       {
@@ -113,7 +113,7 @@ public class ProductionCSVLoader
             break;
 
           case yield:
-            yield = Double.parseDouble(fieldList[i]);
+            area = (long)(production/Double.parseDouble(fieldList[i]));
             break;
         }
       }
@@ -124,18 +124,18 @@ public class ProductionCSVLoader
       {
         if (region != null)
         { int idx = region.ordinal();
-          regionList[idx].addProduction(year, food, imports, exports, production, consumption,yield);
+          regionList[idx].addProduction(year, food, imports, exports, production, consumption,area);
         }
-      }
-      else
-      {
-        int yearIdx = year-Constant.FIRST_DATA_YEAR;
-        int cropIdx = food.ordinal();
-        usa_imports[yearIdx][cropIdx]     += imports;
-        usa_exports[yearIdx][cropIdx]     += exports;
-        usa_production[yearIdx][cropIdx]  += production;
-        usa_consumption[yearIdx][cropIdx] += consumption;
-        usa_yield[yearIdx][cropIdx]       += yield;
+        else
+        {
+          int yearIdx = year-Constant.FIRST_DATA_YEAR;
+          int cropIdx = food.ordinal();
+          usa_imports[yearIdx][cropIdx]     += imports;
+          usa_exports[yearIdx][cropIdx]     += exports;
+          usa_production[yearIdx][cropIdx]  += production;
+          usa_consumption[yearIdx][cropIdx] += consumption;
+          usa_area[yearIdx][cropIdx]        += area;
+        }
       }
     }
     fileReader.close();

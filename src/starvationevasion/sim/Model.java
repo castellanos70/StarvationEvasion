@@ -133,7 +133,7 @@ public class Model
 
     instantiateRegions();
 
-    //ProductionCSVLoader.load(regionList);
+    ProductionCSVLoader.load(regionList);
       //tileManager = CropZoneDataIO.parseFile(territoryList);
 
       //instantiateRegions();

@@ -82,6 +82,7 @@ public class ForeignAidFarmInfrastructureForMiddleEast extends PolicyCard
   }
 
   @Override
+
   public JSONDocument toJSON ()
   {
     return null;

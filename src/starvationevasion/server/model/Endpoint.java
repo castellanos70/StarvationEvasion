@@ -33,8 +33,12 @@ public enum Endpoint
   // ChatHandler
   CHAT("chat"),
   CARD("card"),
-  
+
+  // DataHandler
   GAME_STATE("game_state"),
+  SERVER_UPTIME("server_uptime"),
+  AVAILABLE_REGIONS("available_regions"),
+
 
   // after ready is sent you cannot change regions
   READY("ready"),

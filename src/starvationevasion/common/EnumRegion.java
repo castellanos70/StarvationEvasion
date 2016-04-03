@@ -125,6 +125,16 @@ public enum EnumRegion implements Sendable
   }
 
 
+  public static EnumRegion getRegion(String name)
+  {
+    for (EnumRegion region : EnumRegion.values())
+    {
+      //System.out.println("region"+region + ", " + region.toString());
+      if (region.name().equals(name)) return region;
+    }
+    return null;
+  }
+
   /**
    * @return true if and only of the region is a player region of the United States of America.
    */

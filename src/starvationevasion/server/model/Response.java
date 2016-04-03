@@ -1,5 +1,8 @@
 package starvationevasion.server.model;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.io.JSON;
@@ -9,6 +12,7 @@ public class Response implements Sendable
 
   private Payload data = new Payload();
   private String type = "";
+  private String message = "";
   private double time = 0f;
 
 
@@ -21,7 +25,7 @@ public class Response implements Sendable
   public Response (double time, String msg)
   {
     this.time = time;
-    this.data.put("message", msg);
+    this.message = msg;
   }
 
   public Response (Payload data)
@@ -29,9 +33,9 @@ public class Response implements Sendable
     this.data = data;
   }
 
-  public Response (String data)
+  public Response (String message)
   {
-    this.data.put("message", data);
+    this.message = message;
   }
 
   @Override
@@ -43,14 +47,11 @@ public class Response implements Sendable
   @Override
   public JSONDocument toJSON ()
   {
-    JSONDocument _json = JSONDocument.createObject();
-    _json.setNumber("time", time);
-    // _json.setString("message", message);
-    _json.setString("type", type);
-    // this needs some fixing
-    _json.set("data", data.toJSON());
+    data.put("time", time);
+    data.put("type", type);
+    data.put("message", message);
 
-    return _json;
+    return data.toJSON();
   }
 
   @Override
@@ -61,7 +62,7 @@ public class Response implements Sendable
 
     time = (double) json.getNumber("time");
     type = json.getString("type");
-    // message = json.getString("message");
+    message = json.getString("message");
 
     JSONDocument _data = json.get("data");
     data.fromJSON(_data);
@@ -77,5 +78,15 @@ public class Response implements Sendable
   public String getType ()
   {
     return null;
+  }
+
+  public Payload getData ()
+  {
+    return data;
+  }
+
+  public double getTime ()
+  {
+    return time;
   }
 }

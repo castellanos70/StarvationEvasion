@@ -1,5 +1,6 @@
 package starvationevasion.common;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.policies.*;
 import starvationevasion.server.model.Sendable;
 
@@ -621,6 +622,45 @@ public abstract class PolicyCard implements Sendable
     if (getOwner() != that.getOwner()) return false;
     if (getTargetFood() != that.getTargetFood()) return false;
     return getTargetRegion() == that.getTargetRegion();
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    JSONDocument _json = JSONDocument.createObject();
+    _json.setNumber("x", getX());
+    _json.setNumber("y", getY());
+    _json.setNumber("z", getZ());
+    _json.setNumber("votes-required", votesRequired());
+
+    _json.setString("info-variables", validateVariables());
+    _json.setString("info-region", validateTargetRegion());
+    _json.setString("info-food", validateTargetFood());
+    _json.setString("owner", getOwner().name());
+    _json.setString("game-text", getGameText());
+    _json.setString("policy-name", getPolicyName());
+    _json.setString("title", getTitle());
+    _json.setString("card-type", getCardType().name());
+
+    return _json;
+  }
+
+  @Override
+  public void setType (String type)
+  {
+
+  }
+
+  @Override
+  public String getType ()
+  {
+    return null;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
   }
 }
 

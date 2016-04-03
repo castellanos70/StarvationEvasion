@@ -1,12 +1,12 @@
 package starvationevasion.server;
 
-import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Payload;
-import starvationevasion.server.model.Request;
+import starvationevasion.common.WorldData;
+import starvationevasion.server.model.*;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 
@@ -25,7 +25,7 @@ class JavaSocketClient
   private volatile boolean isRunning = true;
 
 
-  public JavaSocketClient (String host, int portNumber)
+  private JavaSocketClient (String host, int portNumber)
   {
 
     keyboard = new Scanner(System.in);
@@ -63,8 +63,8 @@ class JavaSocketClient
 
     try
     {
-      writer = new DataOutputStream(new BufferedOutputStream(clientSocket.getOutputStream()));
-      writer.writeBytes("JavaClient\n");
+      writer = new DataOutputStream(clientSocket.getOutputStream());
+      writer.write("JavaClient\n".getBytes());
       writer.flush();
     }
     catch(IOException e)
@@ -74,7 +74,7 @@ class JavaSocketClient
     }
     try
     {
-      reader = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
+      reader = new DataInputStream(clientSocket.getInputStream());
     }
     catch(IOException e)
     {
@@ -108,10 +108,9 @@ class JavaSocketClient
       }
       if (cmd.equals("login"))
       {
-
-        System.out.println("logging in");
+        // Create a request to login
         Request f = new Request(startNanoSec, Endpoint.LOGIN);
-
+        // Create a payload (this is the class that stores Sendable information)
         Payload data = new Payload();
 
         data.setType("user");
@@ -119,8 +118,8 @@ class JavaSocketClient
         data.put("username", "admin");
         data.put("password", "admin");
 
-
         f.setData(data);
+
         try
         {
 
@@ -131,7 +130,7 @@ class JavaSocketClient
 
 
           byte[] bytes = baos.toByteArray();
-          System.out.println(bytes.length);
+
           writer.writeInt(bytes.length);
           writer.write(bytes);
           writer.flush();
@@ -167,40 +166,54 @@ class JavaSocketClient
     {
       try
       {
-        // need to fix this so that objects can be read in....
-        int mc = reader.read();
-        while(mc > -1)
-        {
-          System.out.println(mc);
-          mc = reader.read();
-        }
-        Object msg = "";
+        Response response = readObject();
 
-        int sz = reader.readInt();
-        if (sz > 0)
+        System.out.println("Received a Response object.");
+        if (response.getData().get("data") instanceof User)
         {
-          byte[] obj = new byte[sz];
-          reader.readFully(obj);
-          System.out.println("read");
-        }
-        else
-        {
-          System.out.println("!read");
-        }
+          System.out.println("Response.data = User object.");
 
+          System.out.println(((User) response.getData().get("data")).getRegion());
+        }
+        else if (response.getData().get("data") instanceof WorldData)
+        {
+          System.out.println("Response.data = WorldData object.");
+        }
       }
       catch(EOFException e)
       {
-        e.printStackTrace();
         isRunning = false;
         System.out.println("Lost server, press enter to shutdown.");
         return;
       }
-      catch(IOException e)
+      catch(Exception e)
       {
         e.printStackTrace();
       }
     }
+  }
+
+  private Response readObject() throws Exception
+  {
+    int ch1 = reader.read();
+    int ch2 = reader.read();
+    int ch3 = reader.read();
+    int ch4 = reader.read();
+
+    if ((ch1 | ch2 | ch3 | ch4) < 0)
+    {
+      throw new EOFException();
+    }
+    int size  = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+
+    byte[] object = new byte[size];
+
+    reader.readFully(object);
+
+    ByteArrayInputStream in = new ByteArrayInputStream(object);
+    ObjectInputStream is = new ObjectInputStream(in);
+
+    return (Response) is.readObject();
   }
 
   private String timeDiff ()

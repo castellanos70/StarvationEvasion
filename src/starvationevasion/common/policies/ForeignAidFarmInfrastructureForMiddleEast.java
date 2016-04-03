@@ -4,13 +4,12 @@ import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by Dayloki on 4/1/2016.
  */
-public class ForeignAidFarmInfrastructureForMiddleEast extends PolicyCard implements Serializable
+public class ForeignAidFarmInfrastructureForMiddleEast extends PolicyCard
 {
 
   public static final String TITLE =
@@ -70,28 +69,4 @@ public class ForeignAidFarmInfrastructureForMiddleEast extends PolicyCard implem
     return null;
   }
 
-
-  @Override
-  public void setType (String type)
-  {
-
-  }
-
-  @Override
-  public String getType ()
-  {
-    return null;
-  }
-
-  @Override
-  public void fromJSON (Object doc)
-  {
-
-  }
-
-  @Override
-  public JSONDocument toJSON ()
-  {
-    return null;
-  }
 }

@@ -1,5 +1,8 @@
 package starvationevasion.server.io.strategies;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 import starvationevasion.server.io.strategies.AbstractReadStrategy;
 import starvationevasion.server.model.Encryptable;

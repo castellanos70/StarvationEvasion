@@ -1,9 +1,10 @@
 package starvationevasion.server.io.strategies;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
-import starvationevasion.server.io.strategies.AbstractWriteStrategy;
 import starvationevasion.server.model.Sendable;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;

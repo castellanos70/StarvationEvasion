@@ -1,9 +1,9 @@
 package starvationevasion.server;
 
-/**
- * @author Javier Chavez
- */
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 import starvationevasion.server.handlers.Handler;
 import starvationevasion.server.io.*;
@@ -19,7 +19,7 @@ import java.io.*;
 import java.net.Socket;
 
 /**
- * ServerWorker
+ *  Worker that holds connection, writer, reader, and user information
  */
 public class Worker extends Thread
 {
@@ -30,7 +30,6 @@ public class Worker extends Thread
   private final Simulator simulator;
   private Handler handler;
   private long serverStartTime;
-  private boolean sent = false;
 
   private WriteStrategy writer;
   private ReadStrategy reader;
@@ -78,7 +77,15 @@ public class Worker extends Thread
     }
     catch(IOException e)
     {
-      e.printStackTrace();
+      String u = "";
+      if (getUser() != null)
+      {
+        u = getUser().toString() + "\n";
+      }
+      System.out.println("There was an error trying to write to:\n\t"
+                                 + getName() + "\n\t"
+                                 + u);
+      shutdown();
     }
   }
 
@@ -129,7 +136,8 @@ public class Worker extends Thread
           String[] arr = string.split("\\s+");
           if (arr.length < 2)
           {
-            send(new Response(server.uptime(), "invalid"));
+            send(new Response(server.uptime(), "Invalid number of arguments"));
+            continue;
           }
 
           request = new Request(arr[0], arr[1], string);
@@ -139,11 +147,28 @@ public class Worker extends Thread
         handler.handle(request);
 
       }
-      catch(Exception e)
+      catch(EndpointException e)
+      {
+        System.out.println("Invalid endpoint!");
+        send(new Response(server.uptime(), e.getMessage()));
+      }
+      catch(IOException e)
       {
         isRunning = false;
-        e.printStackTrace();
+        String u = "";
+        if (getUser() != null)
+        {
+          u = getUser().toString() + "\n";
+        }
+        System.out.println("There was an error reading:\n\t"
+                                   + getName() + "\n\t"
+                                   + u);
         return;
+      }
+      catch(ClassNotFoundException e)
+      {
+        System.out.println("Invalid Class was received");
+        send(new Response(server.uptime(), e.getMessage()));
       }
     }
   }

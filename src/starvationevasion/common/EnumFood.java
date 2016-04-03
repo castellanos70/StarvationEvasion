@@ -116,10 +116,18 @@ public enum EnumFood implements Sendable
    * @return file path of large icon.
    */
   public String getIconPath265() { return "assets/farmProductIcons"+name()+"_256x256.png";}
+
+
   @Override
   public JSONDocument toJSON ()
   {
-    return null;
+    JSONDocument _json = JSONDocument.createObject();
+    _json.setString("name", name());
+    _json.setString("short-name", shortName);
+    _json.setString("long-name", longName);
+    _json.setBoolean("is-crop", isCrop());
+
+    return _json;
   }
 
   @Override
@@ -131,7 +139,7 @@ public enum EnumFood implements Sendable
   @Override
   public String getType ()
   {
-    return null;
+    return "EnumFood";
   }
 
   @Override

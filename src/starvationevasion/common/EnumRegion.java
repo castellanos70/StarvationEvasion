@@ -76,7 +76,12 @@ public enum EnumRegion implements Sendable
   @Override
   public JSONDocument toJSON ()
   {
-    return null;
+    JSONDocument _json = JSONDocument.createObject();
+    _json.setString("name", name());
+    _json.setString("short-name", shortName);
+    _json.setBoolean("is-us", isUS());
+
+    return _json;
   }
 
   @Override

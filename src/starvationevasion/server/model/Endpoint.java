@@ -1,42 +1,159 @@
 package starvationevasion.server.model;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ * All the endpoints to the api
+ */
+
 
 public enum Endpoint
 {
-  // UserHandler
+  /**
+   * Create a User
+   * Handled by {@link starvationevasion.server.handlers.UserHandler}
+   * Required Payload: username:string, password:string, region:EnumRegion
+   */
   USER_CREATE("user_create"),
+
+  /**
+   * Get more information about a user
+   * Handled by {@link starvationevasion.server.handlers.UserHandler}
+   * Required Payload: username:string or region:EnumRegion
+   */
   USER_READ("user_read"),
+
+  /**
+   * Update current user "profile"
+   * Handled by {@link starvationevasion.server.handlers.UserHandler}
+   * Required Payload: username:string, password:string, region:EnumRegion
+   */
   USER_UPDATE("user_update"),
+
+  /**
+   * Get a list of ALL the users
+   * Handled by {@link starvationevasion.server.handlers.UserHandler}
+   * No Payload
+   */
   USERS("users"),
+
+  /**
+   * Get a list of all the logged in users
+   * Handled by {@link starvationevasion.server.handlers.UserHandler}
+   * No Payload
+   */
   USERS_LOGGED_IN("users_logged_in"),
+
+  /**
+   * Get a list of all the users ready to play the game
+   * Handled by {@link starvationevasion.server.handlers.UserHandler}
+   * No Payload
+   */
   USERS_READY("users_ready"),
 
-  // LoginHandler
+  /**
+   * Login to the server
+   * Handled by {@link starvationevasion.server.handlers.LoginHandler}
+   * Required Payload: username:string, password:string
+   */
   LOGIN("login"),
 
-
+  /**
+   * Get current user hand
+   * Handled by {@link starvationevasion.server.handlers.CardHandler}
+   * No Payload
+   */
   HAND_READ("hand_read"),
-  HAND_UPDATE("hand_update"),
 
-  // VoteHandler
+  /**
+   * Create current user hand
+   * Handled by {@link starvationevasion.server.handlers.CardHandler}
+   * No Payload
+   */
+  HAND_CREATE("hand_create"),
+  // HAND_UPDATE("hand_update"),
+
+  /**
+   * Vote up on a card
+   * Handled by {@link starvationevasion.server.handlers.VoteHandler}
+   * Required Payload: card:PolicyCard
+   */
   VOTE_UP("vote_up"),
+
+  /**
+   * Vote down on a card
+   * Handled by {@link starvationevasion.server.handlers.VoteHandler}
+   * Required Payload: card:PolicyCard
+   */
   VOTE_DOWN("vote_down"),
 
-  // CardHandler
+  /**
+   * Draft a card
+   * Handled by {@link starvationevasion.server.handlers.VoteHandler}
+   * Required Payload: card:PolicyCard
+   */
   DRAFT_CARD("draft_card"),
+
+  /**
+   * Draw a card
+   * Handled by {@link starvationevasion.server.handlers.VoteHandler}
+   * No Payload
+   */
   DRAW_CARD("draw_card"),
+
+  /**
+   * Delete a card
+   * Handled by {@link starvationevasion.server.handlers.VoteHandler}
+   * Required Payload: card:PolicyCard
+   */
   DELETE_CARD("delete_card"),
 
-  //draft can you draft, have you drafted you can onyl draft one voting card.
+  //draft can you draft, have you drafted you can only draft one voting card.
 
-  // ChatHandler
+  /**
+   * Send a chat, card or both
+   * Handled by {@link starvationevasion.server.handlers.ChatHandler}
+   * Required Payload: to: username:string, card:EnumCard, text:string
+   */
   CHAT("chat"),
-  CARD("card"),
-  
+  // CARD("card"),
+
+  /**
+   * Get the game state
+   * Handled by {@link starvationevasion.server.handlers.DataHandler}
+   * No Payload
+   */
   GAME_STATE("game_state"),
 
+  /**
+   * Get the uptime of the server
+   * Handled by {@link starvationevasion.server.handlers.DataHandler}
+   * No Payload
+   */
+  SERVER_UPTIME("server_uptime"),
+
+  /**
+   * Get a list of all the available regions
+   * Handled by {@link starvationevasion.server.handlers.DataHandler}
+   * No Payload
+   */
+  AVAILABLE_REGIONS("available_regions"),
+
+
   // after ready is sent you cannot change regions
+
+  /**
+   * Tell the server that current user is ready to play game
+   * No Payload
+   */
   READY("ready"),
+
+  /**
+   * Turn off the server
+   * Handled by {@link starvationevasion.server.handlers.AdminTaskHandler}
+   * No Payload
+   *
+   * @apiNote Special permission required
+   */
   KILL("kill");
 
   private String url;

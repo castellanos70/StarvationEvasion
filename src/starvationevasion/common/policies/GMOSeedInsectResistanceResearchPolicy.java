@@ -87,27 +87,4 @@ public class GMOSeedInsectResistanceResearchPolicy extends PolicyCard
     return null;
   }
 
-  @Override
-  public void setType (String type)
-  {
-
-  }
-
-  @Override
-  public String getType ()
-  {
-    return null;
-  }
-
-  @Override
-  public JSONDocument toJSON ()
-  {
-    return null;
-  }
-
-  @Override
-  public void fromJSON (Object doc)
-  {
-
-  }
 }

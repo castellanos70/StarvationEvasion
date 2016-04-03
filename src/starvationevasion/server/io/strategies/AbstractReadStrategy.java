@@ -1,5 +1,8 @@
 package starvationevasion.server.io.strategies;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 import starvationevasion.server.io.ReadStrategy;
 
@@ -16,7 +19,7 @@ public abstract class AbstractReadStrategy<T> implements ReadStrategy<T>
     this.socket = socket;
     try
     {
-      reader = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+      reader = new DataInputStream(socket.getInputStream());
     }
     catch(IOException e)
     {

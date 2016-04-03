@@ -1,5 +1,8 @@
 package starvationevasion.server.model;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;

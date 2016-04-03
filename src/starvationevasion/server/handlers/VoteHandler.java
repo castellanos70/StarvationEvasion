@@ -1,7 +1,12 @@
 package starvationevasion.server.handlers;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
+
 import starvationevasion.server.Worker;
 import starvationevasion.server.Server;
+import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Request;
 
 public class VoteHandler extends AbstractHandler
@@ -14,7 +19,14 @@ public class VoteHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-
+    if (request.getDestination().equals(Endpoint.VOTE_UP))
+    {
+      return true;
+    }
+    else if (request.getDestination().equals(Endpoint.VOTE_DOWN))
+    {
+      return true;
+    }
     return false;
   }
 }

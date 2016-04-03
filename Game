@@ -4,6 +4,13 @@
 # author: Javier Chavez
 # email: javierc@cs.unm.edu
 
+
+make_javadoc () {
+    rm -rf doc/
+    mkdir doc
+    javadoc -d doc/ -sourcepath src/ -subpackages starvationevasion
+}
+
 make_sources () {
     # find all the files but exclude emacs backup files
     find . ! -name "*#*" -name "*.java" > files.txt
@@ -75,6 +82,9 @@ then
 elif [ "$1" == "clean" ]
 then
     clean
+elif [ "$1" == "docs" ]
+then
+    make_javadoc
 else
     echo "Command not found"
 fi

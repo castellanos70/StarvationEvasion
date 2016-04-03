@@ -1,20 +1,23 @@
 package starvationevasion.server.io.strategies;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 import starvationevasion.server.model.Sendable;
 
 import java.io.*;
 import java.net.Socket;
 
-public class JavaSocketWriteStrategy extends AbstractWriteStrategy
+public class JavaObjectWriteStrategy extends AbstractWriteStrategy
 {
 
-  public JavaSocketWriteStrategy (Socket socket)
+  public JavaObjectWriteStrategy (Socket socket)
   {
     super(socket);
   }
 
-  public JavaSocketWriteStrategy (Socket socket, DataOutputStream stream)
+  public JavaObjectWriteStrategy (Socket socket, DataOutputStream stream)
   {
     super(socket, stream);
   }

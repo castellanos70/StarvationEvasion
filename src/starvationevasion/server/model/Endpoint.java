@@ -11,63 +11,63 @@ public enum Endpoint
   /**
    * Create a User
    * Handled by {@link starvationevasion.server.handlers.UserHandler}
-   * Required Payload: username, password, region
+   * Required Payload: username:string, password:string, region:EnumRegion
    */
   USER_CREATE("user_create"),
 
   /**
    * Get more information about a user
    * Handled by {@link starvationevasion.server.handlers.UserHandler}
-   * Required Payload: username or region
+   * Required Payload: username:string or region:EnumRegion
    */
   USER_READ("user_read"),
 
   /**
    * Update current user "profile"
    * Handled by {@link starvationevasion.server.handlers.UserHandler}
-   * Required Payload: username, password, region
+   * Required Payload: username:string, password:string, region:EnumRegion
    */
   USER_UPDATE("user_update"),
 
   /**
    * Get a list of ALL the users
    * Handled by {@link starvationevasion.server.handlers.UserHandler}
-   * Required Payload: none
+   * No Payload
    */
   USERS("users"),
 
   /**
    * Get a list of all the logged in users
    * Handled by {@link starvationevasion.server.handlers.UserHandler}
-   * Required Payload: none
+   * No Payload
    */
   USERS_LOGGED_IN("users_logged_in"),
 
   /**
    * Get a list of all the users ready to play the game
    * Handled by {@link starvationevasion.server.handlers.UserHandler}
-   * Required Payload: none
+   * No Payload
    */
   USERS_READY("users_ready"),
 
   /**
    * Login to the server
    * Handled by {@link starvationevasion.server.handlers.LoginHandler}
-   * Required Payload: username, password
+   * Required Payload: username:string, password:string
    */
   LOGIN("login"),
 
   /**
    * Get current user hand
    * Handled by {@link starvationevasion.server.handlers.CardHandler}
-   * Required Payload: none
+   * No Payload
    */
   HAND_READ("hand_read"),
 
   /**
    * Create current user hand
    * Handled by {@link starvationevasion.server.handlers.CardHandler}
-   * Required Payload: none
+   * No Payload
    */
   HAND_CREATE("hand_create"),
   // HAND_UPDATE("hand_update"),
@@ -75,35 +75,35 @@ public enum Endpoint
   /**
    * Vote up on a card
    * Handled by {@link starvationevasion.server.handlers.VoteHandler}
-   * Required Payload: card
+   * Required Payload: card:PolicyCard
    */
   VOTE_UP("vote_up"),
 
   /**
    * Vote down on a card
    * Handled by {@link starvationevasion.server.handlers.VoteHandler}
-   * Required Payload: card
+   * Required Payload: card:PolicyCard
    */
   VOTE_DOWN("vote_down"),
 
   /**
    * Draft a card
    * Handled by {@link starvationevasion.server.handlers.VoteHandler}
-   * Required Payload: card
+   * Required Payload: card:PolicyCard
    */
   DRAFT_CARD("draft_card"),
 
   /**
    * Draw a card
    * Handled by {@link starvationevasion.server.handlers.VoteHandler}
-   * Required Payload: none
+   * No Payload
    */
   DRAW_CARD("draw_card"),
 
   /**
    * Delete a card
    * Handled by {@link starvationevasion.server.handlers.VoteHandler}
-   * Required Payload: card
+   * Required Payload: card:PolicyCard
    */
   DELETE_CARD("delete_card"),
 
@@ -112,7 +112,7 @@ public enum Endpoint
   /**
    * Send a chat, card or both
    * Handled by {@link starvationevasion.server.handlers.ChatHandler}
-   * Required Payload: to, card, text
+   * Required Payload: to: username:string, card:EnumCard, text:string
    */
   CHAT("chat"),
   // CARD("card"),
@@ -120,21 +120,21 @@ public enum Endpoint
   /**
    * Get the game state
    * Handled by {@link starvationevasion.server.handlers.DataHandler}
-   * Required Payload: none
+   * No Payload
    */
   GAME_STATE("game_state"),
 
   /**
    * Get the uptime of the server
    * Handled by {@link starvationevasion.server.handlers.DataHandler}
-   * Required Payload: none
+   * No Payload
    */
   SERVER_UPTIME("server_uptime"),
 
   /**
    * Get a list of all the available regions
    * Handled by {@link starvationevasion.server.handlers.DataHandler}
-   * Required Payload: none
+   * No Payload
    */
   AVAILABLE_REGIONS("available_regions"),
 
@@ -143,14 +143,14 @@ public enum Endpoint
 
   /**
    * Tell the server that current user is ready to play game
-   * Required Payload: none
+   * No Payload
    */
   READY("ready"),
 
   /**
    * Turn off the server
    * Handled by {@link starvationevasion.server.handlers.AdminTaskHandler}
-   * Required Payload: none
+   * No Payload
    *
    * @apiNote Special permission required
    */

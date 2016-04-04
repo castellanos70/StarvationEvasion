@@ -25,8 +25,8 @@ public class UserHandler extends AbstractHandler
     if (request.getDestination().equals(Endpoint.USER_CREATE))
     {
 
-      String uname = (String) request.getData().get("username");
-      String pwd = (String) request.getData().get("password");
+      String uname = (String) request.getPayload().get("username");
+      String pwd = (String) request.getPayload().get("password");
 
       if (server.addUser(new User(uname, pwd, null, new ArrayList<>())))
       {
@@ -83,13 +83,13 @@ public class UserHandler extends AbstractHandler
     else if (request.getDestination().equals(Endpoint.USER_READ))
     {
       User u = null;
-      if (request.getData().containsKey("username"))
+      if (request.getPayload().containsKey("username"))
       {
-        u = server.getUserByUsername((String) request.getData().get("username"));
+        u = server.getUserByUsername((String) request.getPayload().get("username"));
       }
-      else if (request.getData().containsKey("region"))
+      else if (request.getPayload().containsKey("region"))
       {
-        u = server.getWorkerByRegion((EnumRegion) request.getData().get("region")).getUser();
+        u = server.getWorkerByRegion((EnumRegion) request.getPayload().get("region")).getUser();
       }
 
       Payload data = new Payload();

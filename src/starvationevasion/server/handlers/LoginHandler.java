@@ -20,8 +20,8 @@ public class LoginHandler extends AbstractHandler
   {
     if (request.getDestination().equals(Endpoint.LOGIN))
     {
-      String uname = (String) request.getData().get("username");
-      String pwd = (String) request.getData().get("password");
+      String uname = (String) request.getPayload().get("username");
+      String pwd = (String) request.getPayload().get("password");
       Payload data = new Payload();
 
       boolean auth = authenticate(uname, pwd);

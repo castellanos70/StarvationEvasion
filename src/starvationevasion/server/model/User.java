@@ -7,81 +7,55 @@ package starvationevasion.server.model;
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.server.Worker;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 
 public class User implements Encryptable, Sendable
 {
-  private String username;
+  public transient int actionsRemaining = 2;
+  public transient Worker worker;
+  private transient String salt;
+
+  private String username = "Anon";
   private String password;
-  private String salt;
   private EnumRegion region;
-  private boolean isActive = false;
+  private boolean isLoggedIn = false;
+  private boolean isPlaying = false;
   private ArrayList<EnumPolicy> hand = new ArrayList<>();
 
   public User()
   {
-
   }
 
-  public User (String[] raw)
-  {
-    this();
-//    this.put("username", raw[0]);
-     username = raw[0];
-//    this.put("password", raw[1]);
-     password = raw[1];
-    if (raw.length == 3)
-    {
-       region = EnumRegion.valueOf(raw[2]);
-//      this.put("region", EnumRegion.valueOf(raw[2]));
-    }
-
-//    this.put("hand", new ArrayList<>());
-//    ((ArrayList<EnumPolicy>)this.get("hand")).add(EnumPolicy.Clean_River_Incentive);
-    hand.add(EnumPolicy.Clean_River_Incentive);
-
-  }
-
+//  public User (String[] raw)
+//  {
+//    this();
+////    this.put("username", raw[0]);
+//     username = raw[0];
+////    this.put("password", raw[1]);
+//     password = raw[1];
+//    if (raw.length == 3)
+//    {
+//       region = EnumRegion.valueOf(raw[2]);
+////      this.put("region", EnumRegion.valueOf(raw[2]));
+//    }
+//
+////    this.put("hand", new ArrayList<>());
+////    ((ArrayList<EnumPolicy>)this.get("hand")).add(EnumPolicy.Clean_River_Incentive);
+//    hand.add(EnumPolicy.Clean_River_Incentive);
+//
+//  }
+//
   public User (String username, String password, EnumRegion region, ArrayList<EnumPolicy> hand)
   {
-    this();
-//    this.put("hand", hand);
-     this.username = username;
-//    this.put("username", username);
+    this.username = username;
+    this.hand = hand;
+    this.region = region;
     encrypt(password, null);
-     this.region = region;
-//    this.put("region", region);
   }
 
-  @Override
-  public JSONDocument toJSON ()
-  {
-    JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
-    
-    json.setString("username", username);
-    json.setString("password", password);
-    json.setString("region", region.name());
-    json.setString("type", getType().name());
-
-//    ArrayList list = (ArrayList) this.get("hand");
-    JSONDocument _hand = JSONDocument.createArray(hand.size());
-    for (int i = 0; i < hand.size(); i++)
-    {
-      _hand.set(i, hand.get(i).toJSON());
-    }
-
-    json.set("hand", _hand);
-
-    return json;
-  }
-
-  @Override
-  public void fromJSON (Object doc)
-  {
-
-  }
 
   public String getUsername ()
   {
@@ -131,20 +105,46 @@ public class User implements Encryptable, Sendable
     this.hand = hand;
   }
 
-  public boolean isActive ()
+  public boolean isLoggedIn ()
   {
-    return isActive;
+    return isLoggedIn;
   }
 
-  public void setActive (boolean active)
+  public void setLoggedIn (boolean loggedIn)
   {
-    isActive = active;
+    isLoggedIn = loggedIn;
+  }
+
+  public boolean isPlaying ()
+  {
+    return isPlaying;
+  }
+
+  public void setPlaying (boolean playing)
+  {
+    isPlaying = playing;
+  }
+
+  public String getSalt ()
+  {
+    return salt;
+  }
+
+  public Worker getWorker ()
+  {
+    return worker;
+  }
+
+  public User setWorker (Worker worker)
+  {
+    this.worker = worker;
+    return this;
   }
 
   @Override
   public String toString ()
   {
-     return region.toString();
+    return region.toString();
   }
 
   @Override
@@ -154,10 +154,10 @@ public class User implements Encryptable, Sendable
     if (key == null || key.isEmpty())
     {
       salt = Encryptable.generateKey();
-//      this.put("salt", salt);
+      //      this.put("salt", salt);
     }
-//    this.put("password", Encryptable.generateHashedPassword(salt, pwd));
-     password = Encryptable.generateHashedPassword(salt, pwd);
+    //    this.put("password", Encryptable.generateHashedPassword(salt, pwd));
+    password = Encryptable.generateHashedPassword(salt, pwd);
   }
 
   @Override
@@ -166,14 +166,39 @@ public class User implements Encryptable, Sendable
     throw new NotImplementedException();
   }
 
-  public String getSalt ()
-  {
-    return salt;
-  }
 
   @Override
   public Type getType ()
   {
     return Type.USER;
   }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
+
+    json.setString("username", username);
+    json.setString("password", password);
+    json.setString("region", region.name());
+    json.setString("type", getType().name());
+
+    //    ArrayList list = (ArrayList) this.get("hand");
+    JSONDocument _hand = JSONDocument.createArray(hand.size());
+    for (int i = 0; i < hand.size(); i++)
+    {
+      _hand.set(i, hand.get(i).toJSON());
+    }
+
+    json.set("hand", _hand);
+
+    return json;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
+  }
+
 }

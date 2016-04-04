@@ -149,6 +149,7 @@ public class RegionData implements Sendable
     json.setNumber("undernourished", undernourished);
     json.setNumber("human-development-index", humanDevelopmentIndex);
     json.setNumber("ethanol", ethanolProducerTaxCredit);
+    json.setString("type", getType().name());
 
     JSONDocument _producedArray = JSONDocument.createArray(foodProduced.length);
     for (int i = 0; i < foodProduced.length; i++)

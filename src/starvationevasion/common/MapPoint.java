@@ -2,6 +2,8 @@ package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.io.JSON;
+import starvationevasion.server.model.Sendable;
+import starvationevasion.server.model.Type;
 import starvationevasion.sim.Simulator;
 
 /**
@@ -16,7 +18,7 @@ import starvationevasion.sim.Simulator;
  * <li> Fraction of degrees is preferred in digital data exchange</li>
  * </ol>
  */
-public class MapPoint implements JSON
+public class MapPoint implements Sendable
 {
   /**
    * Specifies the north-south position of a point on the Earth's surface.
@@ -104,6 +106,12 @@ public class MapPoint implements JSON
     System.out.println("   Greenland(75.833995, -43.088791): " + sim.getRegion(75.833995, -43.088791));
     System.out.println("   Reykjavik, Iceland(64.107676, -21.812973): " + sim.getRegion(64.107676, -21.812973));
     System.out.println("   Antarctica(-84, 51): " + sim.getRegion(-84, 51));
+  }
+
+  @Override
+  public Type getType ()
+  {
+    return null;
   }
 }
 

@@ -2,6 +2,8 @@ package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.io.JSON;
+import starvationevasion.server.model.Sendable;
+import starvationevasion.server.model.Type;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.List;
  * It contains all world and region data to be returned to the client after each turn.
  * It does not contain high resolution location data possibly needed by the visualizer.
  */
-public class WorldData implements JSON
+public class WorldData implements Sendable
 {
 
   /**
@@ -90,7 +92,8 @@ public class WorldData implements JSON
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
     json.setNumber("year", year);
-    json.setNumber("sealevel", seaLevel);
+    json.setNumber("sea-level", seaLevel);
+    json.setString("type", getType().name());
 
     JSONDocument _eventArray = JSONDocument.createArray(eventList.size());
     for (int i = 0; i < eventList.size(); i++)
@@ -125,7 +128,7 @@ public class WorldData implements JSON
     JSONDocument json = JSON.Parser.toJSON(doc);
 
     year = (int) json.getNumber("year");
-    seaLevel = (double) json.getNumber("sealevel");
+    seaLevel = (double) json.getNumber("sea-level");
 
     List<Object> eventArray = json.get("events").array();
     for (int i = 0; i < eventArray.size(); i++)
@@ -196,5 +199,11 @@ public class WorldData implements JSON
       }
     }
     return true;
+  }
+
+  @Override
+  public Type getType ()
+  {
+    return Type.WORLD_DATA;
   }
 }

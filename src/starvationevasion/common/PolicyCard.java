@@ -641,6 +641,7 @@ public abstract class PolicyCard implements Sendable
     _json.setString("policy-name", getPolicyName());
     _json.setString("title", getTitle());
     _json.setString("card-type", getCardType().name());
+    _json.setString("type", getType().name());
 
     return _json;
   }

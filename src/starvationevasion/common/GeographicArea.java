@@ -1,8 +1,9 @@
 package starvationevasion.common;
 
 
-import starvationevasion.common.MapConverter;
-import starvationevasion.common.MapPoint;
+import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.server.model.Sendable;
+import starvationevasion.server.model.Type;
 
 import java.awt.*;
 import java.util.List;
@@ -15,12 +16,11 @@ import java.util.List;
  *
  * @author winston riley
  */
-public class GeographicArea
+public class GeographicArea implements Sendable
 {
   public final static MapConverter mapConverter = new MapConverter();
   private List<MapPoint> perimeter;
   private String name;
-  private String type;
 
   private Polygon mapSpacePoly;
 
@@ -44,14 +44,9 @@ public class GeographicArea
     this.name = name;
   }
 
-  public String getType()
+  public Type getType()
   {
-    return type;
-  }
-
-  public void setType(String type)
-  {
-    this.type = type;
+    return Type.AREA;
   }
 
   public List<MapPoint> getPerimeter()
@@ -69,5 +64,28 @@ public class GeographicArea
     return "GeographicArea{" +
       "name='" + name + '\'' +
       '}';
+  }
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    JSONDocument json = JSONDocument.createObject();
+    json.setString("name", name);
+    JSONDocument jsonPerim = JSONDocument.createArray(perimeter.size());
+    int i =0;
+    for (MapPoint mapPoint : perimeter)
+    {
+      jsonPerim.set(i, mapPoint.toJSON());
+      i++;
+    }
+    json.set("perimeter", jsonPerim);
+
+    return json;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
   }
 }

@@ -24,7 +24,7 @@ public class CardHandler extends AbstractHandler
   {
     if (request.getDestination().equals(Endpoint.HAND_CREATE))
     {
-      server.draw(getClient());
+      server.drawByWorker(getClient());
       Payload data = new Payload();
 
       data.putData(getClient().getUser().getHand());

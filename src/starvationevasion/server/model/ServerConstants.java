@@ -1,4 +1,4 @@
-package starvationevasion.server;
+package starvationevasion.server.model;
 
 /**
  * Shea Polansky

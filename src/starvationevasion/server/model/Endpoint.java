@@ -154,7 +154,25 @@ public enum Endpoint
    *
    * @apiNote Special permission required
    */
-  KILL("kill");
+  KILL("kill"),
+
+  /**
+   * Stop the current game
+   * Handled by {@link starvationevasion.server.handlers.AdminTaskHandler}
+   * No Payload
+   *
+   * @apiNote Special permission required
+   */
+  STOP_GAME("stop_game"),
+
+  /**
+   * Restart the current game
+   * Handled by {@link starvationevasion.server.handlers.AdminTaskHandler}
+   * No Payload
+   *
+   * @apiNote Special permission required
+   */
+  RESTART_GAME("restart_game");
 
   private String url;
 

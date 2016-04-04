@@ -20,7 +20,7 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
   {
     if (!(value instanceof Sendable || value instanceof Number || value instanceof String || value instanceof ArrayList))
     {
-      System.out.println("NOT a valid payload!");
+      System.out.println(value + " is NOT a valid Payload");
       System.exit(0);
       return value;
     }
@@ -55,6 +55,16 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
     return super.get(key);
   }
 
+  public V getData()
+  {
+    return get("data");
+  }
+
+  public String getMessage ()
+  {
+    return (String) get("message");
+  }
+
   @Override
   public void putAll (Map<? extends K, ? extends V> m)
   {
@@ -74,15 +84,9 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
   }
 
   @Override
-  public void setType (String type)
+  public Type getType ()
   {
-
-  }
-
-  @Override
-  public String getType ()
-  {
-    return (String) get("type");
+    return (Type) get("type");
   }
 
   @Override
@@ -102,16 +106,18 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
       }
       else if (value instanceof Sendable)
       {
-        if (value instanceof Enum)
-        {
-          JSONDocument doc = JSONDocument.createObject();
-          doc.setString("name", ((Enum) value).name());
-          json.set(key, doc);
-        }
-        else
-        {
+//        json.setString("type", ((Sendable) value).getType().name());
+//
+//        if (value instanceof Enum)
+//        {
+//          JSONDocument doc = JSONDocument.createObject();
+//          doc.setString("name", ((Enum) value).name());
+//          json.set(key, doc);
+//        }
+//        else
+//        {
           json.set(key, ((JSON) value).toJSON());
-        }
+//        }
       }
       else if (value instanceof ArrayList)
       {

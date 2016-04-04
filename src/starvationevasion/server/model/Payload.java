@@ -30,7 +30,7 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
       {
         if (!(((ArrayList) value).get(0) instanceof Sendable))
         {
-          System.out.println("NOT a valid payload send");
+          System.out.println(((ArrayList) value).get(0) + " NOT a valid payload send");
           System.exit(0);
           return value;
         }
@@ -106,18 +106,7 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
       }
       else if (value instanceof Sendable)
       {
-//        json.setString("type", ((Sendable) value).getType().name());
-//
-//        if (value instanceof Enum)
-//        {
-//          JSONDocument doc = JSONDocument.createObject();
-//          doc.setString("name", ((Enum) value).name());
-//          json.set(key, doc);
-//        }
-//        else
-//        {
           json.set(key, ((JSON) value).toJSON());
-//        }
       }
       else if (value instanceof ArrayList)
       {

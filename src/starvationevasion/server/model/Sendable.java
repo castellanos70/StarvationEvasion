@@ -14,7 +14,5 @@ import java.io.Serializable;
  */
 public interface Sendable extends Serializable, JSON
 {
-  void setType(String type);
-
-  String getType();
+  Type getType();
 }

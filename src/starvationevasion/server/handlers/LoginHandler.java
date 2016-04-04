@@ -22,19 +22,20 @@ public class LoginHandler extends AbstractHandler
     {
       String uname = (String) request.getData().get("username");
       String pwd = (String) request.getData().get("password");
+      Payload data = new Payload();
 
       boolean auth = authenticate(uname, pwd);
       if (auth)
       {
-        Payload data = new Payload();
         data.putData(getClient().getUser());
         data.putMessage("SUCCESS");
-        m_response = new Response(server.uptime(), data);
       }
       else
       {
-        m_response = new Response(server.uptime(), "FAIL");
+        data.putMessage("FAIL");
       }
+      m_response = new Response(server.uptime(), data);
+      m_response.setType(Type.AUTH);
       getClient().send(m_response);
 
       return true;

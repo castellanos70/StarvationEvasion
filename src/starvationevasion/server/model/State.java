@@ -25,14 +25,9 @@ public enum State implements Sendable
   }
 
   @Override
-  public String getType ()
+  public Type getType ()
   {
-    return null;
+    return Type.GAME;
   }
 
-  @Override
-  public void setType (String type)
-  {
-
-  }
 }

@@ -2,12 +2,14 @@ package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.io.JSON;
+import starvationevasion.server.model.Sendable;
+import starvationevasion.server.model.Type;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class SpecialEventData implements JSON
+public class SpecialEventData implements Sendable
 {
 
   public enum EnumSpecialEvent
@@ -126,6 +128,7 @@ public class SpecialEventData implements JSON
     json.setNumber("year", year);
     json.setString("month", month.toString());
     json.setNumber("duration-in-months", durationInMonths);
+    json.setString("type", getType().name());
 
     JSONDocument _locationArray = JSONDocument.createArray(locationList.size());
     for (int i = 0; i < locationList.size(); i++)
@@ -246,5 +249,11 @@ public class SpecialEventData implements JSON
       }
     }
     return true;
+  }
+
+  @Override
+  public Type getType ()
+  {
+    return Type.SPECIAL_EVENT;
   }
 }

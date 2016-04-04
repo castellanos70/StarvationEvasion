@@ -28,7 +28,16 @@ public class AdminTaskHandler extends AbstractHandler
         server.killServer();
         return true;
       }
-
+      else if (request.getDestination().equals(Endpoint.STOP_GAME))
+      {
+        server.stopGame();
+        return true;
+      }
+      else if (request.getDestination().equals(Endpoint.RESTART_GAME))
+      {
+        server.restartGame();
+        return true;
+      }
 
     }
 

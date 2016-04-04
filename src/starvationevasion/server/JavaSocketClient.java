@@ -113,8 +113,6 @@ class JavaSocketClient
         // Create a payload (this is the class that stores Sendable information)
         Payload data = new Payload();
 
-        data.setType("user");
-
         data.put("username", "admin");
         data.put("password", "admin");
 
@@ -169,13 +167,13 @@ class JavaSocketClient
         Response response = readObject();
 
         System.out.println("Received a Response object.");
-        if (response.getData().get("data") instanceof User)
+        if (response.getPayload().get("data") instanceof User)
         {
           System.out.println("Response.data = User object.");
 
-          System.out.println(((User) response.getData().get("data")).getRegion());
+          System.out.println(((User) response.getPayload().get("data")).getRegion());
         }
-        else if (response.getData().get("data") instanceof WorldData)
+        else if (response.getPayload().get("data") instanceof WorldData)
         {
           System.out.println("Response.data = WorldData object.");
         }

@@ -2,6 +2,7 @@ package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.model.Sendable;
+import starvationevasion.server.model.Type;
 
 public enum EnumPolicy implements Sendable
 {
@@ -32,15 +33,10 @@ public enum EnumPolicy implements Sendable
   }
 
   @Override
-  public String getType ()
+  public Type getType ()
   {
-    return null;
+    return Type.POLICY;
   }
 
-  @Override
-  public void setType (String type)
-  {
-
-  }
   public static final int SIZE = values().length;
 }

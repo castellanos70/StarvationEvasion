@@ -7,44 +7,22 @@ package starvationevasion.server.model;
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.server.io.JSON;
-import starvationevasion.util.Jsonify;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class User implements Encryptable, Sendable
 {
-  //make everthing implement sendable
-  // sendable will extend serializable and JSON
-
-
-
-//  @Jsonify
   private String username;
   private String password;
   private String salt;
-
-//  @Jsonify
   private EnumRegion region;
   private boolean isActive = false;
-
-//  @Jsonify(type = Jsonify.JsonType.LIST)
   private ArrayList<EnumPolicy> hand = new ArrayList<>();
-
-//  public User (JSONDocument json)
-//  {
-//    //username = json.getString("username");
-//    password = json.getString("password");
-//    json.getString("region");
-//
-//    hand.add(EnumPolicy.Clean_River_Incentive);
-//  }
 
   public User()
   {
-    setType("user");
+
   }
 
   public User (String[] raw)
@@ -82,15 +60,16 @@ public class User implements Encryptable, Sendable
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
     
-//    json.setString("username", get("username").toString());
-     json.setString("password", password);
-//    json.setString("region", get("region").toString());
+    json.setString("username", username);
+    json.setString("password", password);
+    json.setString("region", region.name());
+    json.setString("type", getType().name());
 
 //    ArrayList list = (ArrayList) this.get("hand");
     JSONDocument _hand = JSONDocument.createArray(hand.size());
     for (int i = 0; i < hand.size(); i++)
     {
-      _hand.setString(i, hand.get(i).toString());
+      _hand.set(i, hand.get(i).toJSON());
     }
 
     json.set("hand", _hand);
@@ -107,19 +86,16 @@ public class User implements Encryptable, Sendable
   public String getUsername ()
   {
     return username;
-//    return get("username").toString();
   }
 
   public void setUsername (String username)
   {
     this.username = username;
-
   }
 
   public String getPassword ()
   {
      return password;
-//    return get("password").toString();
   }
 
   public void setPassword (String password)
@@ -138,24 +114,20 @@ public class User implements Encryptable, Sendable
   public EnumRegion getRegion ()
   {
      return region;
-//    return (EnumRegion) get("region");
   }
 
   public void setRegion (EnumRegion region)
   {
      this.region = region;
-//    this.put("region", region);
   }
 
   public ArrayList<EnumPolicy> getHand ()
   {
     return hand;
-    // return (ArrayList<EnumPolicy>) get("hand");
   }
 
   public void setHand (ArrayList<EnumPolicy> hand)
   {
-//    this.put("hand", hand);
     this.hand = hand;
   }
 
@@ -173,7 +145,6 @@ public class User implements Encryptable, Sendable
   public String toString ()
   {
      return region.toString();
-//    return get("region").toString();
   }
 
   @Override
@@ -197,20 +168,12 @@ public class User implements Encryptable, Sendable
 
   public String getSalt ()
   {
-//    return get("salt").toString();
     return salt;
   }
 
   @Override
-  public void setType (String type)
+  public Type getType ()
   {
-//    put("type", type);
-
-  }
-
-  @Override
-  public String getType ()
-  {
-    return null;
+    return Type.USER;
   }
 }

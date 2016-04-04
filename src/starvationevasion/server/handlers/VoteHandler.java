@@ -4,10 +4,10 @@ package starvationevasion.server.handlers;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import starvationevasion.common.PolicyCard;
 import starvationevasion.server.Worker;
 import starvationevasion.server.Server;
-import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Request;
+import starvationevasion.server.model.*;
 
 public class VoteHandler extends AbstractHandler
 {
@@ -19,12 +19,25 @@ public class VoteHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-    if (request.getDestination().equals(Endpoint.VOTE_UP))
+    if (server.getGameState().equals(State.VOTING))
     {
-      return true;
-    }
-    else if (request.getDestination().equals(Endpoint.VOTE_DOWN))
-    {
+      Payload data = new Payload();
+      m_response = new Response("Not eligible to vote.");
+      if (request.getDestination().equals(Endpoint.VOTE_UP))
+      {
+        PolicyCard card = (PolicyCard) request.getPayload().getData();
+        if (!card.isEligibleToVote(getClient().getUser().getRegion()))
+        {
+          // send to client.
+          getClient().send(m_response);
+        }
+
+
+      }
+      else if (request.getDestination().equals(Endpoint.VOTE_DOWN))
+      {
+      }
+
       return true;
     }
     return false;

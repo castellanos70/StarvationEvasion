@@ -2,6 +2,7 @@ package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.model.Sendable;
+import starvationevasion.server.model.Type;
 
 import java.util.ResourceBundle;
 
@@ -137,16 +138,11 @@ public enum EnumFood implements Sendable
   }
 
   @Override
-  public String getType ()
+  public Type getType ()
   {
-    return "EnumFood";
+    return Type.FOOD;
   }
 
-  @Override
-  public void setType (String type)
-  {
-
-  }
   /**
    * Use when need to distinguish between crop and non-crop foods.
    * For example, it does not make sense to apply fertilizer to meat, poultry or dairy.

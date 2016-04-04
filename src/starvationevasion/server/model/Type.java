@@ -1,22 +1,31 @@
-package starvationevasion.common;
+package starvationevasion.server.model;
 
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-import starvationevasion.server.model.Sendable;
-import starvationevasion.server.model.Type;
 
-/**
- * Defines types of possible special events.
- */
-public enum EnumSpecialEvent implements Sendable
+public enum Type implements Sendable
 {
-  HURRICANE, DROUGHT;
+  CHAT,
+
+  AUTH,
+
+  GAME,
+
+  USER_DATA,
+
+  USER,
+
+  FOOD,
+
+  BROADCAST, POLICY, REGION, SPECIAL_EVENT, POLICY_CARD, REGION_DATA, WORLD_DATA;
+
 
   @Override
   public JSONDocument toJSON ()
   {
     JSONDocument _json = JSONDocument.createObject();
     _json.setString("name", name());
+    _json.setString("type", "TYPE");
     return _json;
   }
 
@@ -29,7 +38,6 @@ public enum EnumSpecialEvent implements Sendable
   @Override
   public Type getType ()
   {
-    return Type.SPECIAL_EVENT;
+    return this;
   }
-
 }

@@ -112,7 +112,7 @@ public enum Endpoint
   /**
    * Send a chat, card or both
    * Handled by {@link starvationevasion.server.handlers.ChatHandler}
-   * Required Payload: to: username:string, card:EnumCard, text:string
+   * Required Payload: to-region:EnumRegion or to-username:string, card:EnumCard, text:string
    */
   CHAT("chat"),
   // CARD("card"),
@@ -172,7 +172,14 @@ public enum Endpoint
    *
    * @apiNote Special permission required
    */
-  RESTART_GAME("restart_game");
+  RESTART_GAME("restart_game"),
+
+  /**
+   * Get world data
+   * Handled by {@link starvationevasion.server.handlers.UserHandler}
+   * Required Payload: client-done:boolean, region-polygons:boolean, data-start:int, data-end:int
+   */
+  WORLD_DATA("world_data");
 
   private String url;
 

@@ -1,7 +1,9 @@
 package starvationevasion.server.model;
 
 
-public enum Type
+import com.oracle.javafx.jmx.json.JSONDocument;
+
+public enum Type implements Sendable
 {
   CHAT,
 
@@ -15,6 +17,27 @@ public enum Type
 
   FOOD,
 
-  BROADCAST, POLICY, REGION, SPECIAL_EVENT, POLICY_CARD, REGION_DATA;
+  BROADCAST, POLICY, REGION, SPECIAL_EVENT, POLICY_CARD, REGION_DATA, WORLD_DATA;
 
+
+  @Override
+  public JSONDocument toJSON ()
+  {
+    JSONDocument _json = JSONDocument.createObject();
+    _json.setString("name", name());
+    _json.setString("type", "TYPE");
+    return _json;
+  }
+
+  @Override
+  public void fromJSON (Object doc)
+  {
+
+  }
+
+  @Override
+  public Type getType ()
+  {
+    return this;
+  }
 }

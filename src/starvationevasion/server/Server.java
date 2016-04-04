@@ -5,10 +5,7 @@ package starvationevasion.server;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
-import starvationevasion.common.Constant;
-import starvationevasion.common.EnumPolicy;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.WorldData;
+import starvationevasion.common.*;
 import starvationevasion.server.io.*;
 import starvationevasion.server.io.strategies.*;
 import starvationevasion.server.model.*;
@@ -24,6 +21,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 
 /**
  */
@@ -35,10 +37,15 @@ public class Server
   private Simulator simulator;
   private HashMap<String, User> users = new HashMap<>();
   private ArrayList<User> userList = new ArrayList<>();
-  private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
   private State currentState = State.LOGIN;
   private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
   private Date date = new Date();
+
+  private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
+  private ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>(), draftedPolicyCards = new ArrayList<>();
+
+  private ScheduledFuture<?> phase;
+  private ScheduledExecutorService advancer = Executors.newSingleThreadScheduledExecutor();
 
   public Server (int portNumber)
   {
@@ -67,13 +74,29 @@ public class Server
       @Override
       public void run ()
       {
-        cleanConnectionList();
+        update();
       }
     }, 500, 500);
 
     waitForConnection(portNumber);
 
 
+  }
+
+  private void update ()
+  {
+    cleanConnectionList();
+
+    if (getActiveCount() == 1 && currentState == State.LOGIN)
+    {
+      currentState = State.BEGINNING;
+      Payload data = new Payload();
+      data.putData(currentState);
+      data.putMessage("Game will begin in 10s");
+
+      broadcast(new Response(uptime(), data));
+      phase = advancer.schedule(this::begin, ServerConstants.GAME_START_WAIT_TIME, TimeUnit.MILLISECONDS);
+    }
   }
 
 
@@ -183,6 +206,14 @@ public class Server
     return secDiff;
   }
 
+  public double getCurrentTime ()
+  {
+    long nanoSecDiff = System.nanoTime() - startNanoSec;
+    double secDiff = nanoSecDiff / 1000000000.0;
+    return secDiff;
+  }
+
+
   public Simulator getSimulator ()
   {
     return simulator;
@@ -248,8 +279,7 @@ public class Server
 
     userList.add(u);
     Payload data = new Payload();
-    data.put("message", "user logged in");
-    data.put("data", u);
+    data.putData(u);
     broadcast(new Response(uptime(), data));
 
     return true;
@@ -292,34 +322,63 @@ public class Server
    */
   public void begin ()
   {
-    ArrayList<WorldData> worldDataList =
-            simulator.getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR - 1);
+    currentState = State.BEGINNING;
+    Payload _data = new Payload();
+    _data.putData(currentState);
+    _data.putMessage("Get data");
+    broadcast(new Response(uptime(), _data));
+
+    ArrayList<WorldData> worldDataList = simulator.getWorldData(Constant.FIRST_DATA_YEAR,
+                                                                Constant.FIRST_GAME_YEAR - 1);
 
     for (Worker worker : allConnections)
     {
-      //Each client needs its own copy since not all data is the same. For example, each
-      // client only gets its own hand of cards and should not be able to access cards
-      // dealt to other players.
-      //ServerSendData data = new ServerSendData();
-      //data.worldDataList = worldDataList;
       EnumPolicy[] _hand = simulator.drawCards(worker.getUser().getRegion());
       ArrayList<EnumPolicy> handList = new ArrayList<>();
       Collections.addAll(handList, _hand);
-
-      worker.getUser().setHand(handList);
-      worker.send(worker.getUser());
       Payload data = new Payload();
-      data.put("world-data", worldDataList);
+      worker.getUser().setHand(handList);
+
+      data.putData(worker.getUser());
+      worker.send(worker.getUser());
+      data.clear();
+
+      data.putData(worldDataList);
       worker.send(new Response(uptime(), data));
 
       // NOTE: can either send it as soon as we get it or have client request it.
       //TODO: make send work with this ServerSendData.
       //workers.send(data);
     }
+
+    draft();
+  }
+
+  private void draft ()
+  {
+    currentState = State.DRAFTING;
+    enactedPolicyCards.clear();
+    Payload _data = new Payload();
+    _data.putData(currentState);
+    // _data.putMessage("Currently in " + currentState.name());
+    System.out.println(currentState.name());
+    broadcast(new Response(uptime(), _data));
+
+
+    phase = advancer.schedule(this::vote, currentState.getDuration(), TimeUnit.MILLISECONDS);
+
   }
 
   public void vote ()
   {
+    currentState = State.VOTING;
+    Payload _data = new Payload();
+    _data.putData(currentState);
+    broadcast(new Response(uptime(), _data));
+    System.out.println(currentState.name());
+
+
+    phase = advancer.schedule(this::draw, currentState.getDuration(), TimeUnit.MILLISECONDS);
 
   }
 
@@ -327,7 +386,7 @@ public class Server
   /**
    * Draw new cards for a specific user
    */
-  public void draw (Worker worker)
+  public void drawByWorker (Worker worker)
   {
     EnumPolicy[] _hand = simulator.drawCards(worker.getUser().getRegion());
     worker.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
@@ -344,14 +403,23 @@ public class Server
       // Bug check if user is logged in... user is logged in when worker is associated with user
       if (workers.getUser() == null)
       {
+        System.out.println("worker user is null: " + workers.getName());
         return;
       }
-      EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
-      workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
+      // EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
+      //workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
       // NOTE: can either send it as soon as we get it or have client request it.
       // System.out.println(JsonAnnotationProcessor.gets(workers.getUser()));
     }
+
     currentState = State.DRAWING;
+    Payload _data = new Payload();
+    _data.putData(currentState);
+
+    System.out.println(currentState.name());
+    broadcast(new Response(uptime(), _data));
+
+    phase = advancer.schedule(this::draft, currentState.getDuration(), TimeUnit.MILLISECONDS);
   }
 
   /**

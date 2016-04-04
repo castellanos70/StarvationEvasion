@@ -53,7 +53,7 @@ public class Region extends Territory
 
 
   public void addProduction(int year, EnumFood food,
-                            long imports, long exports, long production, long consumption,
+                            long imports, long exports, long production,
                             long area)
   {
     int yearIdx = year - Constant.FIRST_DATA_YEAR;
@@ -61,7 +61,7 @@ public class Region extends Territory
     cropImport[yearIdx][cropIdx] += imports;
     cropExport[yearIdx][cropIdx] += exports;
     cropConsumption[yearIdx][cropIdx] += production;
-    cropProduction[yearIdx][cropIdx] += consumption;
+    cropProduction[yearIdx][cropIdx] += (production + imports - exports);
     cropArea[yearIdx][cropIdx] += area;
   }
 

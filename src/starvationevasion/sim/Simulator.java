@@ -67,7 +67,7 @@ public class Simulator
       {
         //    assert(region.ethanolProducerTaxCredit != 0);
         assert (region.population > 0);
-        System.out.println(region.region+"("+year+"): pop="+region.population +", underfeed="+region.undernourished);
+        //System.out.println(region.region+"("+year+"): pop="+region.population +", underfeed="+region.undernourished);
         assert ((region.undernourished <= region.population) && (region.undernourished >= 0));
         //assert(region.humanDevelopmentIndex != 0);
         assert (region.landArea > 0);

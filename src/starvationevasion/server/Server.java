@@ -95,7 +95,7 @@ public class Server
       data.putMessage("Game will begin in 10s");
 
       broadcast(new Response(uptime(), data));
-      phase = advancer.schedule(this::begin, ServerConstants.GAME_START_WAIT_TIME, TimeUnit.MILLISECONDS);
+      phase = advancer.schedule(this::begin, currentState.getDuration(), TimeUnit.MILLISECONDS);
     }
   }
 

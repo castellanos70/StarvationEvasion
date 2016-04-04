@@ -19,13 +19,14 @@ public class ChatManager
   {
 
    // String msg="chat " +region.name()+" {\"card\":null,\"text\":\""+client.getRegion().toString()+": "+message+"\"}";
-    String msg="chat " +region.name()+" {\"card\":null,\"text\":\""+"US_CALIFORNIA"+": "+message+"\"}";
-    client.writeToServer(msg);
+    //String msg="chat " +region.name()+" {\"card\":null,\"text\":\""+"US_CALIFORNIA"+": "+message+"\"}";
+    client.sendChatMessage(client.getRegion().toString()+": "+message,region);
     chat+=message+"\n";
   }
   public void sendChatToClient(String message)
   {
     chat+=message+"\n";
+
   }
   public String getChat()
   {

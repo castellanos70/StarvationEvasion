@@ -359,17 +359,17 @@ public class Simulator
 
     Simulator sim = new Simulator();
 
-    String msg = "Starting Hands: \n";
+    String startingHandMsg = "Starting Hands: \n";
 
     for (EnumRegion playerRegion : EnumRegion.US_REGIONS)
     {
       EnumPolicy[] hand = sim.drawCards(playerRegion);
-      msg += playerRegion + ": ";
+      startingHandMsg += playerRegion + ": ";
       for (EnumPolicy card : hand)
       {
-        msg += card + ", ";
+        startingHandMsg += card + ", ";
       }
-      msg += '\n';
+      startingHandMsg += '\n';
     }
 
     ArrayList<WorldData> worldDataList = sim.getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR-1);
@@ -377,6 +377,7 @@ public class Simulator
     {
       LOGGER.info("==================================================\n"+data.toString()+"\n");
     }
+    System.out.println(startingHandMsg);
 
     // Now step through the simulation years for debugging
     //
@@ -389,8 +390,8 @@ public class Simulator
     {
       fos.flush();
       fos.close();
-      ;
-    } catch (IOException e)
+    }
+    catch (IOException e)
     {
       e.printStackTrace();
     }

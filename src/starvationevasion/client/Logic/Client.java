@@ -10,7 +10,6 @@ import starvationevasion.client.Networking.Messenger;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
-import starvationevasion.server.ServerConstants;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -19,9 +18,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
-
-//import starvationevasion.common.messages.*;
-//import starvationevasion.server.ServerState;
 
 /**
  * Created by arirappaport on 11/19/15.
@@ -75,7 +71,7 @@ public class Client
     {
       if(!madeConnection)
       {
-        while(!openConnection("localhost", ServerConstants.DEFAULT_PORT));
+        //while(!openConnection("localhost", ServerConstants.DEFAULT_PORT));
       }
       messenger = new Messenger(clientSocket);
     }

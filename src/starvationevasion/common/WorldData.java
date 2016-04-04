@@ -42,9 +42,9 @@ public class WorldData implements Sendable
 
   /**
    * Sell foodPrice in US Dollars for one metric ton (1000 kg) of each food category on
-   * the world market at the start of the current year.
+   * the world market at the end of the current year.
    */
-  public double[] foodPrice = new double[EnumFood.SIZE];
+  public int[] foodPrice = new int[EnumFood.SIZE];
 
 
   public WorldData ()
@@ -64,7 +64,7 @@ public class WorldData implements Sendable
     String msg = "WorldData[" + year + "] =====================================\n     price: [";
     for (EnumFood food : EnumFood.values())
     {
-      msg += String.format("%s:%.0f", food, foodPrice[food.ordinal()]);
+      msg += String.format("%s:%d", food, foodPrice[food.ordinal()]);
       if (food != EnumFood.DAIRY)
       {
         msg += ", ";
@@ -141,7 +141,7 @@ public class WorldData implements Sendable
     List<Object> foodPriceArray = json.get("food-prices").array();
     for (int i = 0; i < foodPriceArray.size(); i++)
     {
-      foodPrice[i] = (double) foodPriceArray.get(i);
+      foodPrice[i] = (int)foodPriceArray.get(i);
     }
 
     List<Object> regionArray = json.get("regions").array();

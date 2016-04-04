@@ -587,4 +587,23 @@ public class Server
   {
     return currentState;
   }
+
+  public void restartGame ()
+  {
+    stopGame();
+    simulator = new Simulator();
+    // TODO clear all hands and cards
+
+    // There is a loop constantly checking if state is login...
+    currentState = State.LOGIN;
+
+  }
+
+  public void stopGame ()
+  {
+    phase.cancel(true);
+    advancer.shutdownNow();
+    advancer = Executors.newSingleThreadScheduledExecutor();
+    currentState = State.END;
+  }
 }

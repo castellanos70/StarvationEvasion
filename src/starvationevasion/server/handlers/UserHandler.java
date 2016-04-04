@@ -41,17 +41,8 @@ public class UserHandler extends AbstractHandler
     }
     else if (request.getDestination().equals(Endpoint.USERS))
     {
-//      JSONDocument doc = JSONDocument.createArray(server.getUserCount());
-
-//      for (User user : server.getUserList())
-//      {
-//        doc.array().add(user.toJSON());
-//      }
-
       Payload data = new Payload();
       data.putData(server.getUserList());
-
-      // data.put("message", "SUCCESS");
 
       m_response = new Response(server.uptime(), data);
       getClient().send(m_response);
@@ -60,8 +51,6 @@ public class UserHandler extends AbstractHandler
     else if (request.getDestination().equals(Endpoint.USERS_LOGGED_IN))
     {
       ArrayList list = new ArrayList<User>();
-
-      // JSONDocument doc = JSONDocument.createArray(server.getActiveCount());
       for (User user : server.getActiveUserList())
       {
         list.add(user);
@@ -76,7 +65,13 @@ public class UserHandler extends AbstractHandler
     }
     else if (request.getDestination().equals(Endpoint.READY))
     {
-      // server.
+      User _u = getClient().getUser();
+      if (_u != null && _u.getRegion() != null)
+      {
+        _u.setPlaying(true);
+        m_response = new Response(server.uptime(), "SUCCESS");
+        getClient().send(m_response);
+      }
 
       return true;
     }

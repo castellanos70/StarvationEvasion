@@ -48,8 +48,8 @@ public class Response implements Sendable
   public JSONDocument toJSON ()
   {
     data.put("time", time);
-    data.put("type", type);
-    data.put("message", message);
+    data.put("type", data.getOrDefault("type", type));
+    data.put("message", data.getOrDefault("message", message));
 
     return data.toJSON();
   }
@@ -79,7 +79,6 @@ public class Response implements Sendable
     return type;
   }
 
-  //change to payload
   public Payload getPayload ()
   {
     return data;

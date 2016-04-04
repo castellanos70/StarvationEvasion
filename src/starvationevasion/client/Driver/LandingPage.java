@@ -88,7 +88,7 @@ public class LandingPage extends Application
       {
         errorMessage(WRONG_COMBO);
       }
-     else if(!client.writeToServer("login " + uname.getText() + " " + passwd.getText()))
+     else if(!client.loginToServer(uname.getText(),passwd.getText()))
      {
         errorMessage(WRONG_COMBO);
      }else
@@ -102,7 +102,7 @@ public class LandingPage extends Application
 
     seeUsers.setOnAction(event1 ->
     {
-      client.writeToServer("users");
+      client.getUsers();
     });
 
     createUser.setOnAction(event ->
@@ -111,10 +111,12 @@ public class LandingPage extends Application
       {
         if(comboBox.getValue()!=null)
         {
-          client.writeToServer("user_create " + uname.getText() + " " + passwd.getText()+" "+comboBox.getValue().toString());
+          client.createUser(uname.getText(),passwd.getText());
+         // client.writeToServer("user_create " + uname.getText() + " " + passwd.getText()+" "+comboBox.getValue().toString());
         }else
         {
-          client.writeToServer("user_create " + uname.getText() + " " + passwd.getText());
+          client.createUser(uname.getText(),passwd.getText());
+          //client.writeToServer("user_create " + uname.getText() + " " + passwd.getText());
         }
       }else errorMessage(WRONG_COMBO);
     });

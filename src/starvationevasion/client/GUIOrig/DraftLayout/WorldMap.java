@@ -14,7 +14,7 @@ import javafx.scene.transform.Scale;
 import starvationevasion.client.GUIOrig.GUI;
 import starvationevasion.common.GeographicArea;
 import starvationevasion.common.MapConverter;
-import starvationevasion.sim.io.XMLparsers.GeographyXMLparser;
+import starvationevasion.sim.Simulator;
 
 import java.util.ArrayList;
 
@@ -56,7 +56,7 @@ public class WorldMap extends ScrollPane
     setContent(zoomGroup);
     canvas=new Canvas(imageMap.getWidth(),imageMap.getHeight());
     zoomGroup.getChildren().add(canvas);
-   // drawOnMap();
+    //drawOnMap();
     //drawOutline();
     addEventFilter(ScrollEvent.SCROLL, event -> {
 
@@ -102,35 +102,42 @@ public class WorldMap extends ScrollPane
   }
   public void drawOutline()
   {
-
-    MapConverter mapConverter=new MapConverter();
-    GeographyXMLparser geographyXMLparser=new GeographyXMLparser();
-    ArrayList<GeographicArea> borders= geographyXMLparser.getGeography();
+    Simulator simulator = new Simulator();
+    ArrayList<GeographicArea>[] simBorders = simulator.getRegionBoundaries();
+    MapConverter mapConverter = new MapConverter();
+    //GeographyXMLparser geographyXMLparser = new GeographyXMLparser();
+    //ArrayList<GeographicArea> borders = geographyXMLparser.getGeography();
     //Polygon map=new Polygon();
     final GraphicsContext gc = canvas.getGraphicsContext2D();
     gc.setFill(Color.RED);
-    int length=0;
-    for(GeographicArea geographicArea:borders)
+    int length = 0;
+    System.out.println("HERE");
+    for (ArrayList<GeographicArea> borders : simBorders )
     {
-      java.awt.Polygon country=mapConverter.regionToPolygon(geographicArea);
-      double[] nLat=new double[country.xpoints.length];
-      double[] nLon=new double[country.ypoints.length];
-      for (int i = 0; i < country.xpoints.length; i++)
+      for (GeographicArea geographicArea : borders)
       {
+        java.awt.Polygon country = mapConverter.regionToPolygon(geographicArea);
+        double[] nLat = new double[country.xpoints.length];
+        double[] nLon = new double[country.ypoints.length];
+        for (int i = 0; i < country.xpoints.length; i++)
+        {
 
-        if (country.xpoints[i] != 0&&country.ypoints[i]!=0)
-        {
-          nLat[i] = canvas.getWidth()/2+country.xpoints[i]/2;
-          nLon[i] = canvas.getHeight()/2+country.ypoints[i]/2;
-        }else if (country.xpoints[i]==0&&country.ypoints[i]==0)
-        {
-          length = i;
-          break;
-        }if(i==country.xpoints.length-1) length=i;
+          if (country.xpoints[i] != 0 && country.ypoints[i] != 0)
+          {
+            System.out.println(country.xpoints[i] + " " + country.ypoints[i]);
+            nLat[i] = canvas.getWidth() / 2 + country.xpoints[i] / 2;
+            nLon[i] = canvas.getHeight() / 2 + country.ypoints[i] / 2;
+          } else if (country.xpoints[i] == 0 && country.ypoints[i] == 0)
+          {
+            length = i;
+            break;
+          }
+          if (i == country.xpoints.length - 1) length = i;
+        }
+        // System.out.println(Arrays.toString(nLat) + " \n" + Arrays.toString(nLon) + "\n" + length);
+        if (length != 0) gc.strokePolygon(nLat, nLon, length);
+
       }
-     // System.out.println(Arrays.toString(nLat) + " \n" + Arrays.toString(nLon) + "\n" + length);
-      if(length!=0)gc.strokePolygon(nLat, nLon, length);
-
     }
   }
 }

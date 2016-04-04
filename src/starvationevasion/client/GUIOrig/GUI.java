@@ -16,6 +16,7 @@ import starvationevasion.client.GUIOrig.images.ImageGetter;
 import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.client.Logic.MainGameLoop;
 import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 
 import java.util.ArrayList;
@@ -33,10 +34,9 @@ import java.util.ArrayList;
  */
 public class GUI extends Application
 {
+  final int STARTING_HAND=7;
   private Stage primaryStage;
   private LocalDataContainer localDataContainer;
-  public starvationevasion.client.Logic.Client client;
-
   private double boxHeight;
   private double boxWidth;
 
@@ -63,6 +63,8 @@ public class GUI extends Application
   //The user's assigned region
   EnumRegion assignedRegion;
   private ChatNode chatNode;
+
+  private ArrayList<EnumPolicy> cardsInHand=new ArrayList<>();
   //context variables
   boolean selectingRegion = false;
   boolean selectingProduct = false;
@@ -149,16 +151,37 @@ public class GUI extends Application
       primaryStage.close();
       mainGameLoop.stop();
     });
+    initGame();
   }
   @Override
   public void stop()
   {
-//    client2.closeAll();
+    client2.closeAll();
   }
   /**
    * Simple getter in case any node needs to get the stage
    * @return
    */
+  public void initGame()
+  {
+    //client2.getHand();
+    cardsInHand=client2.getHand();
+    if(cardsInHand!=null)
+    {
+      getDraftLayout().getHand().setHand(cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]));
+    }
+    assignedRegion=client2.getRegion();
+  }
+  public ArrayList<EnumPolicy> getCardsInHand() {return cardsInHand;}
+  public void setCardsInHand(ArrayList<EnumPolicy> cards)
+  {
+    cardsInHand=cards;
+    cardsInHand=client2.getHand();
+    if(cardsInHand!=null)
+    {
+      getDraftLayout().getHand().setHand(cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]));
+    }
+  }
   public Stage getPrimaryStage()
   {
     return primaryStage;

@@ -1,14 +1,14 @@
-category,price,land,water,fertilizerN,fertilizerP2O5,fertilizerK2O,growing,temperature,ideal,high,max;
-Category,Price (In 2014 : Dollars per Metric Ton),Land Yield in 2014 USA (Metric Tons / Square Kilometer),Water (liters per kilogram),FertilizerN (kg per Metric ton),FertilizerP2O5 (kg per Metric ton),FertilizerK2O (kg per Metric ton),Growing Period (days/year),Temperature Min (Deg C),Temperature Ideal Low (Deg C),Temperature Ideal High (Deg C),Temperature Max (Deg C)
-CITRUS,700,3000,560,,,,365,-2,12,32,48
-FRUIT,1060,4000,500,,,,365,-40,-1,32,45
-NUT,1200,340,14000,,,,365,-40,10,35,45
-GRAIN,200,900,2000,,,,100,5,20,30,45
-OIL,500,150,21000,,,,75,5,25,30,37
-VEGGIES,500,2000,250,,,,80,5,15,26,35
-SPECIAL,7000,13,1000,,,,80,-40,10,35,50
-FEED,250,2000,3000,,,,80,0,20,30,45
-FISH,1200,560,100,,,,365,-20,10,40,50
-MEAT,4034,8,15415,,,,365,5,20,30,45
-POULTRY,2491,25,4325,,,,365,0,20,30,50
-DAIRY,3681,40,3178,,,,365,5,20,30,45
+category,price,water,fertilizerN,fertilizerP2O5,fertilizerK2O,growDays,tempMin,TempIdealLow,TempIdealHigh,TempMax
+Category,Price (In 2014 : Dollars per Metric Ton),Water (Cubic meters per Metric Ton),FertilizerN (kg per Metric ton),FertilizerP2O5 (kg per Metric ton),FertilizerK2O (kg per Metric ton),Growing Period (days/year),Temperature Min (Deg C),Temperature Ideal Low (Deg C),Temperature Ideal High (Deg C),Temperature Max (Deg C)
+CITRUS,700,560,,,,365,-2,12,32,48
+FRUIT,1060,500,,,,365,-40,-1,32,45
+NUT,1200,14000,,,,365,-40,10,35,45
+GRAIN,200,2000,,,,100,5,20,30,45
+OIL,500,21000,,,,75,5,25,30,37
+VEGGIES,500,250,,,,80,5,15,26,35
+SPECIAL,7000,1000,,,,80,-40,10,35,50
+FEED,250,3000,,,,80,0,20,30,45
+FISH,1200,100,,,,365,-20,10,40,50
+MEAT,4034,15415,,,,365,-40,20,30,45
+POULTRY,2491,4325,,,,365,-40,20,30,50
+DAIRY,3681,3178,,,,365,-40,20,30,45

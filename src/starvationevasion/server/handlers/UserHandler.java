@@ -4,6 +4,7 @@ package starvationevasion.server.handlers;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import starvationevasion.common.EnumRegion;
 import starvationevasion.server.*;
 import starvationevasion.server.model.*;
 
@@ -26,8 +27,8 @@ public class UserHandler extends AbstractHandler
 
       String uname = (String) request.getPayload().get("username");
       String pwd = (String) request.getPayload().get("password");
-
-      if (server.createUser(new User(uname, pwd, null, new ArrayList<>())))
+      EnumRegion region=(EnumRegion)request.getPayload().get("region");
+      if (server.createUser(new User(uname, pwd, region, new ArrayList<>())))
       {
         m_response = new Response(server.uptime(), "SUCCESS");
       }

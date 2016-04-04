@@ -17,7 +17,21 @@ public enum Type implements Sendable
 
   FOOD,
 
-  BROADCAST, POLICY, REGION, SPECIAL_EVENT, POLICY_CARD, REGION_DATA, WORLD_DATA;
+  BROADCAST,
+
+  POLICY,
+
+  REGION,
+
+  SPECIAL_EVENT,
+
+  POLICY_CARD,
+
+  REGION_DATA,
+
+  WORLD_DATA,
+
+  AREA;
 
 
   @Override

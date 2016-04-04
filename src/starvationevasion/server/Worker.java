@@ -23,7 +23,7 @@ import java.net.Socket;
  */
 public class Worker extends Thread
 {
-  private User cred;
+  private User cred = new User();
   private Socket client;
   private volatile boolean isRunning = true;
   private final Server server;
@@ -40,7 +40,6 @@ public class Worker extends Thread
 
   public Worker (Socket client, Server server)
   {
-
     this.writer = new SocketWriteStrategy(client);
     this.reader = new SocketReadStrategy(client);
     this.outStream = writer.getStream();
@@ -78,10 +77,10 @@ public class Worker extends Thread
     catch(IOException e)
     {
       String u = "";
-      if (getUser() != null)
-      {
-        u = getUser().toString() + "\n";
-      }
+//      if (getUser() != null)
+//      {
+//        u = getUser().toString() + "\n";
+//      }
       System.out.println("There was an error trying to write to:\n\t"
                                  + getName() + "\n\t"
                                  + u);
@@ -156,10 +155,10 @@ public class Worker extends Thread
       {
         isRunning = false;
         String u = "";
-        if (getUser() != null)
-        {
-          u = getUser().toString() + "\n";
-        }
+//        if (getUser() != null)
+//        {
+//          u = getUser().toString() + "\n";
+//        }
         System.out.println("There was an error reading:\n\t"
                                    + getName() + "\n\t"
                                    + u);
@@ -193,6 +192,11 @@ public class Worker extends Thread
   {
     this.writer = writer;
     this.writer.setStream(outStream);
+  }
+
+  public WriteStrategy getWriter ()
+  {
+    return writer;
   }
 
   public User getUser ()

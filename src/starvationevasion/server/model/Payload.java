@@ -12,11 +12,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class Payload<K extends String, V> extends HashMap<K, V> implements Sendable
+public class Payload extends HashMap<String, Object> implements Sendable
 {
 
   @Override
-  public V put (K key, V value)
+  public Object put (String key, Object value)
   {
     if (!(value instanceof Sendable || value instanceof Number || value instanceof String || value instanceof ArrayList))
     {
@@ -39,23 +39,23 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
     return super.put(key, value);
   }
 
-  public V putData (V value)
+  public Object putData (Object value)
   {
-    return put((K) "data", value);
+    return put("data", value);
   }
 
-  public V putMessage (V value)
+  public Object putMessage (Object value)
   {
-    return put((K) "message", value);
+    return put("message", value);
   }
 
   @Override
-  public V get (Object key)
+  public Object get (Object key)
   {
     return super.get(key);
   }
 
-  public V getData()
+  public Object getData()
   {
     return get("data");
   }
@@ -66,18 +66,18 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
   }
 
   @Override
-  public void putAll (Map<? extends K, ? extends V> m)
+  public void putAll (Map<? extends String, ?> m)
   {
-    Iterator<? extends K> iterator = m.keySet().iterator();
+    Iterator<? extends String> iterator = m.keySet().iterator();
     while(iterator.hasNext())
     {
-      K key = iterator.next();
+      String key = iterator.next();
       put(key, m.get(key));
     }
   }
 
   @Override
-  public V putIfAbsent (K key, V value)
+  public Object putIfAbsent (String key, Object value)
   {
     // not supported
     return super.putIfAbsent(key, value);
@@ -93,11 +93,11 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
   public JSONDocument toJSON ()
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
-    Iterator<? extends K> iterator = keySet().iterator();
+    Iterator<? extends String> iterator = keySet().iterator();
     while(iterator.hasNext())
     {
-      K key = iterator.next();
-      V value = get(key);
+      String key = iterator.next();
+      Object value = get(key);
 
 
       if (value instanceof String)
@@ -131,6 +131,6 @@ public class Payload<K extends String, V> extends HashMap<K, V> implements Senda
   public void fromJSON (Object doc)
   {
     JSONDocument _json = JSON.Parser.toJSON(doc);
-    this.putAll((Map<? extends K, ? extends V>) _json.object());
+     this.putAll(_json.object());
   }
 }

@@ -10,6 +10,7 @@ import starvationevasion.server.Server;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Request;
 import starvationevasion.server.model.Response;
+import starvationevasion.server.model.User;
 
 
 public class ChatHandler extends AbstractHandler
@@ -24,27 +25,42 @@ public class ChatHandler extends AbstractHandler
   {
     if (request.getDestination().equals(Endpoint.CHAT))
     {
-
-      if (getClient().getUser() == null)
+      boolean isRegion = false;
+      String to;
+      if (request.getPayload().containsKey("to-region"))
       {
-        getClient().send(new Response(server.uptime(),"Error"));
-        return true;
+        to = ((String) request.getPayload().get("to-region")).toUpperCase();
+        request.getPayload().remove("to-region");
+        isRegion = true;
       }
-      String to = ((String) request.getPayload().get("to")).toUpperCase();
-      String from = getClient().getUser().getRegion().name();
+      else {
+        to = (String) request.getPayload().get("to-username");
+        request.getPayload().remove("to-username");
+      }
 
-      request.getPayload().remove("to");
+      String from = getClient().getUser().getUsername();
+
       request.getPayload().put("from", from);
 
       if (to.equals("ALL"))
       {
         server.broadcast(new Response(server.uptime(), request.getPayload()));
       }
+      else if (!isRegion)
+      {
+        User u = server.getUserByUsername(to);
+        if (u != null)
+        {
+          u.getWorker().send(new Response(server.uptime(), request.getPayload()));
+        }
+      }
       else
       {
         EnumRegion destination = EnumRegion.valueOf(to);
-        Worker worker = server.getWorkerByRegion(destination);
-        worker.send(new Response(server.uptime(), request.getPayload()));
+        for (Worker _worker : server.getWorkerByRegion(destination))
+        {
+          _worker.send(new Response(server.uptime(), request.getPayload()));
+        }
       }
 
       return true;

@@ -11,15 +11,15 @@ public class Response implements Sendable
 {
 
   private Payload data = new Payload();
-  private String type = "";
+  private Type type = Type.BROADCAST;
   private String message = "";
   private double time = 0f;
 
 
-  public Response (double time, Payload data)
+  public Response (double time, Payload payload)
   {
     this.time = time;
-    this.data = data;
+    this.data = payload;
   }
 
   public Response (double time, String msg)
@@ -61,26 +61,26 @@ public class Response implements Sendable
 
 
     time = (double) json.getNumber("time");
-    type = json.getString("type");
+    type = Type.valueOf(json.getString("type"));
     message = json.getString("message");
 
     JSONDocument _data = json.get("data");
     data.fromJSON(_data);
   }
 
-  @Override
-  public void setType (String type)
+  public void setType (Type type)
   {
     this.type = type;
   }
 
   @Override
-  public String getType ()
+  public Type getType ()
   {
-    return null;
+    return type;
   }
 
-  public Payload getData ()
+  //change to payload
+  public Payload getPayload ()
   {
     return data;
   }

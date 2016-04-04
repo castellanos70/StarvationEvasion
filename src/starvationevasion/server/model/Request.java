@@ -5,12 +5,8 @@ package starvationevasion.server.model;
  */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-import com.oracle.javafx.jmx.json.impl.JSONStreamReaderImpl;
 import starvationevasion.server.io.EndpointException;
 import starvationevasion.server.io.JSON;
-
-import java.io.Serializable;
-import java.io.StringReader;
 
 public class Request implements Sendable
 {
@@ -66,7 +62,7 @@ public class Request implements Sendable
     return time;
   }
 
-  public Payload getData ()
+  public Payload getPayload ()
   {
     return data;
   }
@@ -82,13 +78,7 @@ public class Request implements Sendable
   }
 
   @Override
-  public void setType (String type)
-  {
-
-  }
-
-  @Override
-  public String getType ()
+  public Type getType ()
   {
     return null;
   }

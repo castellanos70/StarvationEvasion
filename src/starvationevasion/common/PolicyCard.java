@@ -3,8 +3,8 @@ package starvationevasion.common;
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.policies.*;
 import starvationevasion.server.model.Sendable;
+import starvationevasion.server.model.Type;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -646,15 +646,9 @@ public abstract class PolicyCard implements Sendable
   }
 
   @Override
-  public void setType (String type)
+  public Type getType ()
   {
-
-  }
-
-  @Override
-  public String getType ()
-  {
-    return null;
+    return Type.POLICY_CARD;
   }
 
   @Override

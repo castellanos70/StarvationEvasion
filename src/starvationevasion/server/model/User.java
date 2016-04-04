@@ -7,11 +7,8 @@ package starvationevasion.server.model;
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.server.io.JSON;
-import starvationevasion.util.Jsonify;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class User implements Encryptable, Sendable
@@ -44,7 +41,7 @@ public class User implements Encryptable, Sendable
 
   public User()
   {
-    setType("user");
+
   }
 
   public User (String[] raw)
@@ -202,15 +199,8 @@ public class User implements Encryptable, Sendable
   }
 
   @Override
-  public void setType (String type)
+  public Type getType ()
   {
-//    put("type", type);
-
-  }
-
-  @Override
-  public String getType ()
-  {
-    return null;
+    return Type.USER;
   }
 }

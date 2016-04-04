@@ -3,6 +3,7 @@ package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.model.Sendable;
+import starvationevasion.server.model.Type;
 
 /**
  * Defines types of possible special events.
@@ -26,15 +27,9 @@ public enum EnumSpecialEvent implements Sendable
   }
 
   @Override
-  public void setType (String type)
+  public Type getType ()
   {
-
-  }
-
-  @Override
-  public String getType ()
-  {
-    return "EnumSpecialEvent";
+    return Type.SPECIAL_EVENT;
   }
 
 }

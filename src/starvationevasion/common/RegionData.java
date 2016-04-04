@@ -3,6 +3,7 @@ package starvationevasion.common;
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.io.JSON;
 import starvationevasion.server.model.Sendable;
+import starvationevasion.server.model.Type;
 
 import java.util.List;
 
@@ -255,14 +256,8 @@ public class RegionData implements Sendable
   }
 
   @Override
-  public void setType (String type)
+  public Type getType ()
   {
-
-  }
-
-  @Override
-  public String getType ()
-  {
-    return null;
+    return Type.REGION_DATA;
   }
 }

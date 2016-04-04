@@ -1,8 +1,8 @@
 package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-import starvationevasion.server.io.JSON;
 import starvationevasion.server.model.Sendable;
+import starvationevasion.server.model.Type;
 
 import java.util.ResourceBundle;
 
@@ -91,15 +91,9 @@ public enum EnumRegion implements Sendable
   }
 
   @Override
-  public String getType ()
+  public Type getType ()
   {
-    return null;
-  }
-
-  @Override
-  public void setType (String type)
-  {
-
+    return Type.REGION;
   }
 
   /**

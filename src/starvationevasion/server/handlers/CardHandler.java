@@ -5,6 +5,7 @@ package starvationevasion.server.handlers;
  */
 
 import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.PolicyCard;
 import starvationevasion.server.Server;
 import starvationevasion.server.Worker;
 import starvationevasion.server.model.*;
@@ -47,6 +48,45 @@ public class CardHandler extends AbstractHandler
     }
     else if (request.getDestination().equals(Endpoint.DRAFT_CARD))
     {
+      PolicyCard policyCard = (PolicyCard) request.getPayload().getData();
+      Payload data = new Payload();
+      m_response = new Response(server.uptime(), data);
+
+
+      if (policyCard.getOwner() == getClient().getUser().getRegion())
+      {
+        String validation = policyCard.validate();
+        if (validation == null)
+        {
+          server.addDraftedCard(policyCard);
+          if (policyCard.votesRequired() > 0)
+          {
+            getClient().getUser().getHand().remove(policyCard);
+            m_response.setType(Type.DRAFTED_INTO_VOTE);
+            data.putData(policyCard);
+            getClient().send(m_response);
+            return true;
+          }
+          else
+          {
+            getClient().getUser().getHand().remove(policyCard);
+            m_response.setType(Type.DRAFTED);
+            data.putData(policyCard);
+            getClient().send(m_response);
+            return true;
+          }
+        }
+        else
+        {
+          m_response.setType(Type.DRAFTED);
+          data.putData(policyCard);
+          data.putMessage(validation);
+          getClient().send(m_response);
+          return true;
+        }
+
+      }
+
 
       return true;
     }

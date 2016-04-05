@@ -17,6 +17,8 @@ import java.util.Random;
 
 public class Hand extends AbstractCommand
 {
+
+  private int tries = 3;
   public Hand (AI client)
   {
     super(client);
@@ -35,8 +37,9 @@ public class Hand extends AbstractCommand
 
     // Discard a card
     System.out.println("Checking phase");
-    if (!getClient().getState().equals(State.DRAFTING))
+    if (!getClient().getState().equals(State.DRAFTING) && tries < 1)
     {
+      tries--;
       return true;
     }
 

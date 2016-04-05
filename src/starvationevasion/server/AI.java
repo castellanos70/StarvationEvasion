@@ -5,34 +5,34 @@ import starvationevasion.server.model.*;
 
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Scanner;
 
 
-class JavaSocketClient
+class AI
 {
   private Socket clientSocket;
 
   private DataInputStream reader;
   private DataOutputStream writer;
 
+  private User u;
+
+  private State state;
+
+  private WorldData worldData;
+
   // time of server start
   private long startNanoSec;
-  private Scanner keyboard;
-  // writes to user
-  private ClientListener listener;
+
+  private StreamListener listener;
   private volatile boolean isRunning = true;
 
 
-  private JavaSocketClient (String host, int portNumber)
+  private AI (String host, int portNumber)
   {
 
-    keyboard = new Scanner(System.in);
-
     openConnection(host, portNumber);
-    listener = new ClientListener();
-    System.out.println("JavaClient: Starting listener = : " + listener);
+    listener = new StreamListener();
+    System.out.println("AI: Starting listener = : " + listener);
     listener.start();
 
     listenToUserRequests();
@@ -46,13 +46,7 @@ class JavaSocketClient
     {
       clientSocket = new Socket(host, portNumber);
     }
-    catch(UnknownHostException e)
-    {
-
-      isRunning = false;
-      return false;
-    }
-    catch(IOException e)
+    catch(Exception e)
     {
       System.err.println("Client Error: Could not open connection to " + host
                                  + " on port " + portNumber);
@@ -67,11 +61,13 @@ class JavaSocketClient
       writer.write("JavaClient\n".getBytes());
       writer.flush();
     }
-    catch(IOException e)
+    catch(Exception e)
     {
       e.printStackTrace();
       return false;
     }
+
+
     try
     {
       reader = new DataInputStream(clientSocket.getInputStream());
@@ -94,61 +90,32 @@ class JavaSocketClient
     while(isRunning)
     {
 
-      String cmd = keyboard.nextLine();
-
-
-      if (cmd == null || cmd.length() < 1)
+      try
       {
-        continue;
+        Thread.sleep(1000);
+
+        requestGameState();
+
+        requestTime();
+
+        login();
+
       }
-
-      if (cmd.charAt(0) == 'q')
+      catch(InterruptedException e)
       {
-        isRunning = false;
-      }
-      if (cmd.equals("login"))
-      {
-        // Create a request to login
-        Request f = new Request(startNanoSec, Endpoint.LOGIN);
-        // Create a payload (this is the class that stores Sendable information)
-        Payload data = new Payload();
-
-        data.put("username", "admin");
-        data.put("password", "admin");
-
-        f.setData(data);
-
-        try
-        {
-
-          ByteArrayOutputStream baos = new ByteArrayOutputStream();
-          ObjectOutputStream oos = new ObjectOutputStream(baos);
-          oos.writeObject(f);
-          oos.close();
-
-
-          byte[] bytes = baos.toByteArray();
-
-          writer.writeInt(bytes.length);
-          writer.write(bytes);
-          writer.flush();
-        }
-        catch(IOException e)
-        {
-          e.printStackTrace();
-        }
+        e.printStackTrace();
       }
     }
   }
 
 
   /**
-   * ClientListener
+   * StreamListener
    *
    * Handles reading stream from socket. The data is then outputted
    * to the console for user.
    */
-  private class ClientListener extends Thread
+  private class StreamListener extends Thread
   {
 
     public void run ()
@@ -214,12 +181,28 @@ class JavaSocketClient
     return (Response) is.readObject();
   }
 
-  private String timeDiff ()
+  private void send(Request request)
   {
-    long nanoSecDiff = System.nanoTime() - startNanoSec;
-    double secDiff = (double) nanoSecDiff / 1000000000.0;
-    return String.format("%.3f", secDiff);
+    try
+    {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(request);
+      oos.close();
+
+
+      byte[] bytes = baos.toByteArray();
+
+      writer.writeInt(bytes.length);
+      writer.write(bytes);
+      writer.flush();
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
   }
+
 
   public static void main (String[] args)
   {
@@ -240,8 +223,41 @@ class JavaSocketClient
     {
       System.exit(0);
     }
-    new JavaSocketClient(host, port);
+    new AI(host, port);
 
+  }
+
+
+  private void requestGameState()
+  {
+    if (state == null)
+    {
+      send(new Request((double) System.currentTimeMillis(), Endpoint.GAME_STATE));
+    }
+  }
+
+  private void requestTime()
+  {
+    if (startNanoSec == 0)
+    {
+      send(new Request((double) System.currentTimeMillis(), Endpoint.SERVER_UPTIME));
+    }
+  }
+
+
+  private void login()
+  {
+    if (u == null)
+    {
+      Request loginRequest = new Request(startNanoSec, Endpoint.LOGIN);
+      Payload data = new Payload();
+
+      data.put("username", "admin");
+      data.put("password", "admin");
+
+      loginRequest.setData(data);
+      send(loginRequest);
+    }
   }
 
 

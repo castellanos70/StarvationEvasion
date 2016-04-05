@@ -91,6 +91,7 @@ public class Model
   private final static boolean DEBUG = true;
 
   private WorldData[] worldData = new WorldData[YEARS_OF_DATA];
+  private CropData cropData;
 
   private int currentYear;
 
@@ -134,6 +135,8 @@ public class Model
     instantiateRegions();
 
     ProductionCSVLoader.load(regionList);
+
+    cropData = new CropData();
       //tileManager = CropZoneDataIO.parseFile(territoryList);
 
       //instantiateRegions();
@@ -392,12 +395,11 @@ public class Model
     WorldData data = worldData[yearIdx];
     data.year = year;
 
-    //threeYearData.seaLevel = seaLevel.getSeaLevel(currentYear);
-    //for (int i=0; i< EnumFood.SIZE; i++)
-    //{
-    //  CropZoneData currentZone   = categoryData.get(i);
-    //  threeYearData.foodPrice[i] = currentZone.pricePerMetricTon;
-    //}
+    for (int i=0; i< EnumFood.SIZE; i++)
+    for (EnumFood food : EnumFood.values())
+    {
+      data.foodPrice[food.ordinal()] = cropData.getPrice(year, food);
+    }
 
 
     //Region Data

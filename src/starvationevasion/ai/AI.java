@@ -3,6 +3,7 @@ package starvationevasion.ai;
 import com.sun.tools.javac.util.ArrayUtils;
 import starvationevasion.ai.commands.*;
 import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.PolicyCard;
 import starvationevasion.common.WorldData;
 import starvationevasion.server.model.Response;
 
@@ -31,6 +32,8 @@ public class AI
   private State state = null;
 
   private ArrayList<WorldData> worldData;
+
+  private ArrayList<PolicyCard> ballot;
 
   // time of server start
   private double startNanoSec = 0;
@@ -162,10 +165,9 @@ public class AI
     return commands;
   }
 
-  public void setHand (ArrayList hand)
+  public ArrayList<PolicyCard> getBallot ()
   {
-    u.setHand(hand);
-    commands.add(new Hand(this));
+    return ballot;
   }
 
   /**
@@ -199,6 +201,7 @@ public class AI
           {
             System.out.println("AI is in.");
             u = (User) response.getPayload().getData();
+            System.out.println(u.getRegion());
           }
           else
           {
@@ -219,14 +222,34 @@ public class AI
         {
           System.out.println("Getting state of server");
           state = (starvationevasion.server.model.State) response.getPayload().getData();
+          if (state == starvationevasion.server.model.State.VOTING)
+          {
+            AI.this.commands.add(new Vote(AI.this));
+          }
         }
         else if (response.getType().equals(Type.USER_HAND))
         {
           ArrayList hand = (ArrayList<EnumPolicy>) response.getPayload().getData();
           System.out.println("getting hand" + String.valueOf(hand));
-
-          setHand(hand);
+          if (AI.this.getUser().getHand() == null || hand == null || !hand.equals(AI.this.getUser().getHand()))
+          {
+            AI.this.getUser().setHand(hand);
+            commands.add(new Hand(AI.this));
+          }
         }
+        else if (response.getType().equals(Type.DRAFTED))
+        {
+          String msg = response.getPayload().getMessage();
+          PolicyCard card = (PolicyCard) response.getPayload().getData();
+          getUser().getHand().remove(card.getCardType());
+          System.out.println(msg);
+
+        }
+        else if (response.getType().equals(Type.VOTE_BALLOT))
+        {
+          ballot = (ArrayList<PolicyCard>) response.getPayload().getData();
+        }
+
       }
       catch(EOFException e)
       {

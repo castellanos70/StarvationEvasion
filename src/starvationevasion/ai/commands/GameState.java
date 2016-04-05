@@ -32,6 +32,12 @@ public class GameState extends AbstractCommand
       return true;
     }
 
+    if (getClient().getState().ordinal() > State.BEGINNING.ordinal())
+    {
+      getClient().getCommands().add(new Hand(getClient()));
+      return false;
+    }
+
     return false;
 
   }

@@ -24,6 +24,7 @@ public class User implements Encryptable, Sendable
   private boolean isLoggedIn = false;
   private boolean isPlaying = false;
   private ArrayList<EnumPolicy> hand = new ArrayList<>();
+  public int policyCardsDiscarded = 0;
 
   public User()
   {

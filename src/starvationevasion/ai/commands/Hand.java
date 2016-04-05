@@ -42,7 +42,8 @@ public class Hand extends AbstractCommand
       Request r = new Request(getClient().getStartNanoSec(), Endpoint.DELETE_CARD);
       Payload data = new Payload();
 
-      EnumPolicy card = getClient().getUser().getHand().get(3);
+      EnumPolicy card = getClient().getUser().getHand().remove(3);
+
 
       data.putData(card);
 

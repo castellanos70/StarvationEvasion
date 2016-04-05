@@ -28,6 +28,7 @@ public class UserHandler extends AbstractHandler
       String uname = (String) request.getPayload().get("username");
       String pwd = (String) request.getPayload().get("password");
       EnumRegion region=(EnumRegion)request.getPayload().get("region");
+
       if (server.createUser(new User(uname, pwd, region, new ArrayList<>())))
       {
         m_response = new Response(server.uptime(), "SUCCESS");
@@ -66,9 +67,11 @@ public class UserHandler extends AbstractHandler
     else if (request.getDestination().equals(Endpoint.READY))
     {
       User _u = getClient().getUser();
-      if (_u != null && _u.getRegion() != null)
+      if (_u != null)
       {
         _u.setPlaying(true);
+
+        // addPlayer() will set the region if not already set.
         server.addPlayer(_u);
         m_response = new Response(server.uptime(), "SUCCESS");
         getClient().send(m_response);

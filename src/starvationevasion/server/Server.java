@@ -390,10 +390,7 @@ public class Server
   private void begin ()
   {
     currentState = State.BEGINNING;
-    Payload _data = new Payload();
-    _data.putData(currentState);
-    _data.putMessage("Get data");
-    broadcast(new Response(uptime(), _data));
+    broadcastStateChange();
 
     ArrayList<WorldData> worldDataList = simulator.getWorldData(Constant.FIRST_DATA_YEAR,
                                                                 Constant.FIRST_GAME_YEAR - 1);
@@ -409,11 +406,15 @@ public class Server
 
       data.putData(user);
       data.clear();
-      user.getWorker().send(new Response(uptime(), data));
+      Response r = new Response(uptime(), data);
+      r.setType(Type.USER_HAND);
+      user.getWorker().send(r);
     }
 
     data.putData(worldDataList);
-    broadcast(new Response(uptime(), data));
+    Response r = new Response(uptime(), data);
+    r.setType(Type.WORLD_DATA_LIST);
+    broadcast(r);
 
     draft();
   }
@@ -425,12 +426,9 @@ public class Server
   private void draft ()
   {
     currentState = State.DRAFTING;
+    broadcastStateChange();
+
     enactedPolicyCards.clear();
-    Payload _data = new Payload();
-    _data.putData(currentState);
-    // _data.putMessage("Currently in " + currentState.name());
-    System.out.println(currentState.name());
-    broadcast(new Response(uptime(), _data));
 
 
     phase = advancer.schedule(this::vote, currentState.getDuration(), TimeUnit.MILLISECONDS);
@@ -444,9 +442,7 @@ public class Server
   private void vote ()
   {
     currentState = State.VOTING;
-    Payload _data = new Payload();
-    _data.putData(currentState);
-    broadcast(new Response(uptime(), _data));
+    broadcastStateChange();
     System.out.println(currentState.name());
 
 
@@ -474,11 +470,10 @@ public class Server
     }
 
     currentState = State.DRAWING;
-    Payload _data = new Payload();
-    _data.putData(currentState);
+    broadcastStateChange();
 
     System.out.println(currentState.name());
-    broadcast(new Response(uptime(), _data));
+
 
     phase = advancer.schedule(this::draft, currentState.getDuration(), TimeUnit.MILLISECONDS);
   }
@@ -498,8 +493,10 @@ public class Server
       Payload data = new Payload();
       data.putData(currentState);
       data.putMessage("Game will begin in 10s");
+      Response r = new Response(uptime(), data);
+      r.setType(Type.GAME_STATE);
+      broadcast(r);
 
-      broadcast(new Response(uptime(), data));
       phase = advancer.schedule(this::begin, currentState.getDuration(), TimeUnit.MILLISECONDS);
     }
   }
@@ -640,6 +637,15 @@ public class Server
     {
       System.out.println(dateFormat.format(date) + " Removed " + con + " connection workers.");
     }
+  }
+
+  private void broadcastStateChange ()
+  {
+    Payload _data = new Payload();
+    _data.putData(currentState);
+    Response r = new Response(uptime(), _data);
+    r.setType(Type.GAME_STATE);
+    broadcast(r);
   }
 
   public static void main (String args[])

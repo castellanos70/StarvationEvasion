@@ -168,6 +168,8 @@ public class CardDeck
       PolicyCard policy = PolicyCard.create(EnumRegion.USA_CALIFORNIA, card);
       System.out.println("Policy: " + policy);
     }
+
+    deck.discard(hand[3]);
   }
 }
 

@@ -1,13 +1,25 @@
-package starvationevasion.server;
+package starvationevasion.ai;
 
+import com.sun.tools.javac.util.ArrayUtils;
+import starvationevasion.ai.commands.*;
+import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.WorldData;
-import starvationevasion.server.model.*;
+import starvationevasion.server.model.Response;
+
+import starvationevasion.server.model.State;
+import starvationevasion.server.model.Type;
+import starvationevasion.server.model.User;
+
+import starvationevasion.server.model.Request;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Stack;
 
 
-class AI
+public class AI
 {
   private Socket clientSocket;
 
@@ -16,15 +28,17 @@ class AI
 
   private User u;
 
-  private State state;
+  private State state = null;
 
-  private WorldData worldData;
+  private ArrayList<WorldData> worldData;
 
   // time of server start
-  private long startNanoSec;
+  private double startNanoSec = 0;
 
   private StreamListener listener;
   private volatile boolean isRunning = true;
+
+  private Stack<Command> commands = new Stack<>();
 
 
   private AI (String host, int portNumber)
@@ -34,6 +48,9 @@ class AI
     listener = new StreamListener();
     System.out.println("AI: Starting listener = : " + listener);
     listener.start();
+    commands.add(new GameState(this));
+    commands.add(new Login(this));
+    commands.add(new Uptime(this));
 
     listenToUserRequests();
 
@@ -92,13 +109,25 @@ class AI
 
       try
       {
-        Thread.sleep(1000);
 
-        requestGameState();
 
-        requestTime();
+        Thread.sleep(2000);
 
-        login();
+        if (commands.size() == 0)
+        {
+          continue;
+        }
+
+        Command c = commands.peek();
+
+        System.out.println(c.getClass().getName());
+
+        boolean run = c.run();
+        if (!run)
+        {
+          commands.pop();
+        }
+
 
       }
       catch(InterruptedException e)
@@ -108,6 +137,36 @@ class AI
     }
   }
 
+  public ArrayList<WorldData> getWorldData ()
+  {
+    return worldData;
+  }
+
+  public double getStartNanoSec ()
+  {
+    return startNanoSec;
+  }
+
+  public State getState ()
+  {
+    return state;
+  }
+
+  public User getUser ()
+  {
+    return u;
+  }
+
+  public Stack<Command> getCommands ()
+  {
+    return commands;
+  }
+
+  public void setHand (ArrayList hand)
+  {
+    u.setHand(hand);
+    commands.add(new Hand(this));
+  }
 
   /**
    * StreamListener
@@ -132,17 +191,41 @@ class AI
       try
       {
         Response response = readObject();
+        System.out.println(response.getType());
 
-        System.out.println("Received a Response object.");
-        if (response.getPayload().get("data") instanceof User)
+        if (response.getType().equals(Type.AUTH))
         {
-          System.out.println("Response.data = User object.");
-
-          System.out.println(((User) response.getPayload().get("data")).getRegion());
+          if (response.getPayload().getMessage().equals("SUCCESS"))
+          {
+            System.out.println("AI is in.");
+            u = (User) response.getPayload().getData();
+          }
+          else
+          {
+            System.out.println("error");
+          }
         }
-        else if (response.getPayload().get("data") instanceof WorldData)
+        else if (response.getType().equals(Type.TIME))
         {
-          System.out.println("Response.data = WorldData object.");
+          System.out.println("Getting start time");
+          startNanoSec = (double) response.getPayload().get("data");
+        }
+        else if (response.getType().equals(Type.WORLD_DATA_LIST))
+        {
+          System.out.println("Getting world data");
+          worldData = (ArrayList<WorldData>) response.getPayload().getData();
+        }
+        else if (response.getType().equals(Type.GAME_STATE))
+        {
+          System.out.println("Getting state of server");
+          state = (starvationevasion.server.model.State) response.getPayload().getData();
+        }
+        else if (response.getType().equals(Type.USER_HAND))
+        {
+          ArrayList hand = (ArrayList<EnumPolicy>) response.getPayload().getData();
+          System.out.println("getting hand" + String.valueOf(hand));
+
+          setHand(hand);
         }
       }
       catch(EOFException e)
@@ -158,7 +241,7 @@ class AI
     }
   }
 
-  private Response readObject() throws Exception
+  private Response readObject () throws Exception
   {
     int ch1 = reader.read();
     int ch2 = reader.read();
@@ -169,7 +252,7 @@ class AI
     {
       throw new EOFException();
     }
-    int size  = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+    int size = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
 
     byte[] object = new byte[size];
 
@@ -181,7 +264,7 @@ class AI
     return (Response) is.readObject();
   }
 
-  private void send(Request request)
+  public void send (Request request)
   {
     try
     {
@@ -226,40 +309,6 @@ class AI
     new AI(host, port);
 
   }
-
-
-  private void requestGameState()
-  {
-    if (state == null)
-    {
-      send(new Request((double) System.currentTimeMillis(), Endpoint.GAME_STATE));
-    }
-  }
-
-  private void requestTime()
-  {
-    if (startNanoSec == 0)
-    {
-      send(new Request((double) System.currentTimeMillis(), Endpoint.SERVER_UPTIME));
-    }
-  }
-
-
-  private void login()
-  {
-    if (u == null)
-    {
-      Request loginRequest = new Request(startNanoSec, Endpoint.LOGIN);
-      Payload data = new Payload();
-
-      data.put("username", "admin");
-      data.put("password", "admin");
-
-      loginRequest.setData(data);
-      send(loginRequest);
-    }
-  }
-
 
 }
 

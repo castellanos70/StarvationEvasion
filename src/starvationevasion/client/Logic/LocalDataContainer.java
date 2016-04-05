@@ -1,5 +1,6 @@
 package starvationevasion.client.Logic;
 
+import starvationevasion.client.Client;
 import starvationevasion.client.GUIOrig.GUI;
 import starvationevasion.client.GUIOrig.Graphs.GraphManager;
 import starvationevasion.client.GUIOrig.SummaryBar;
@@ -22,10 +23,9 @@ public class LocalDataContainer
   public final int START_YEAR = 1981;
   private WorldData worldData;
   private EnumPolicy[] hand;
-  private Client client;
   private GUI gui;
   private int year;
-
+  private Client client;
   /**
    * Constructs an instance of the LocalDataContainer class
    * @param client A reference to the client to construct to LocalDataContainer
@@ -33,7 +33,7 @@ public class LocalDataContainer
   public LocalDataContainer(Client client)
   {
     this.client = client;
-    this.gui = client.gui;
+    //this.gui = client.gui;
     regionToData = new HashMap<>();
   }
 
@@ -113,7 +113,7 @@ public class LocalDataContainer
   private void sendDataToSummaryBar()
   {
     SummaryBar summaryBar = gui.getDraftLayout().getSummaryBar();
-    EnumRegion region = client.getAssignedRegion();
+    EnumRegion region = client.getRegion();
     for (EnumRegion enumRegion : regionToData.keySet())
     {
       if(region.equals(enumRegion))

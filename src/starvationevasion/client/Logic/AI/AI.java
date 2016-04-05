@@ -6,7 +6,7 @@ package starvationevasion.client.Logic.AI;
 import starvationevasion.client.GUIOrig.DraftLayout.hand.ClientPolicyCard;
 import starvationevasion.client.GUIOrig.DraftLayout.hand.Hand;
 import starvationevasion.client.GUIOrig.GUI;
-import starvationevasion.client.Logic.Client;
+import starvationevasion.client.Client;
 import starvationevasion.client.Networking.Messenger;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -45,9 +45,9 @@ public class AI extends Application
 
   public AI()
   {
-    client = new Client(true);
-    client.init();
-    messenger = client.messenger;
+    //client = new Client(true);
+    //client.init();
+   // messenger = client.messenger;
     //hand=GUIOrig.getDraftLayout().getHand();
   }
 
@@ -58,7 +58,7 @@ public class AI extends Application
     //thread = new Thread(client.listener);
     //thread.setDaemon(true);
     //thread.start();
-    client.listener.call();
+   // client.listener.call();
 
   }
   private void draftCard(ClientPolicyCard clientPolicyCard)

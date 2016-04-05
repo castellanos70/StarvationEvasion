@@ -32,27 +32,41 @@ import java.util.concurrent.TimeUnit;
 public class Server
 {
   private ServerSocket serverSocket;
+  // List of all the workers
   private LinkedList<Worker> allConnections = new LinkedList<>();
-  private long startNanoSec = 0l;
+
+
+  private long startNanoSec = 0;
   private Simulator simulator;
-  private HashMap<String, User> users = new HashMap<>();
-  private ArrayList<User> userList = new ArrayList<>();
+
+  // list of ALL the users
+  private final ArrayList<User> userList = new ArrayList<>();
+
+  // list of all the users playing the game (subset of userList)
+  private final ArrayList<User> players = new ArrayList<>();
+
   private State currentState = State.LOGIN;
   private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
   private Date date = new Date();
 
+  // list of available regions
   private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
-  private ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>(), draftedPolicyCards = new ArrayList<>();
+  private ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>(),
+          draftedPolicyCards = new ArrayList<>();
 
   private ScheduledFuture<?> phase;
+  // Service that moves game along to next phase
   private ScheduledExecutorService advancer = Executors.newSingleThreadScheduledExecutor();
+
+  // bool that listen for connections is looping over
+  private boolean isWaiting = true;
 
   public Server (int portNumber)
   {
 
     Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
 
-    addUser(new User("admin", "admin", EnumRegion.USA_CALIFORNIA, new ArrayList<>()));
+    createUser(new User("admin", "admin", EnumRegion.USA_CALIFORNIA, new ArrayList<>()));
     startNanoSec = System.nanoTime();
     simulator = new Simulator();
 
@@ -80,23 +94,6 @@ public class Server
 
     waitForConnection(portNumber);
 
-
-  }
-
-  private void update ()
-  {
-    cleanConnectionList();
-
-    if (getActiveCount() == 1 && currentState == State.LOGIN)
-    {
-      currentState = State.BEGINNING;
-      Payload data = new Payload();
-      data.putData(currentState);
-      data.putMessage("Game will begin in 10s");
-
-      broadcast(new Response(uptime(), data));
-      phase = advancer.schedule(this::begin, currentState.getDuration(), TimeUnit.MILLISECONDS);
-    }
   }
 
 
@@ -119,7 +116,7 @@ public class Server
    *
    * @param port port to listen on.
    */
-  public void waitForConnection (int port)
+  private void waitForConnection (int port)
   {
 
     String host = "";
@@ -131,7 +128,7 @@ public class Server
     {
       e.printStackTrace();
     }
-    while(true)
+    while(isWaiting)
     {
       System.out.println("Server(" + host + "): waiting for Connection on port: " + port);
       try
@@ -168,32 +165,6 @@ public class Server
   }
 
 
-  public static void main (String args[])
-  {
-    //Valid port numbers are Port numbers are 1024 through 65535.
-    //  ports under 1024 are reserved for system services http, ftp, etc.
-    int port = 5555; //default
-    if (args.length > 0)
-    {
-      try
-      {
-        port = Integer.parseInt(args[0]);
-        if (port < 1)
-        {
-          throw new Exception();
-        }
-      }
-      catch(Exception e)
-      {
-        System.out.println("Usage: Server portNumber");
-        System.exit(0);
-      }
-    }
-
-    new Server(port);
-  }
-
-
   public String uptimeString ()
   {
     return String.format("%.3f", uptime());
@@ -202,15 +173,7 @@ public class Server
   public double uptime ()
   {
     long nanoSecDiff = System.nanoTime() - startNanoSec;
-    double secDiff = nanoSecDiff / 1000000000.0;
-    return secDiff;
-  }
-
-  public double getCurrentTime ()
-  {
-    long nanoSecDiff = System.nanoTime() - startNanoSec;
-    double secDiff = nanoSecDiff / 1000000000.0;
-    return secDiff;
+    return nanoSecDiff / 1000000000.0;
   }
 
 
@@ -237,16 +200,17 @@ public class Server
   //    return new User(new JSONDocument(JSONDocument.Type.OBJECT));//users.get(worker);
   //  }
 
-  public Worker getWorkerByRegion (EnumRegion region)
+  public Iterable<Worker> getWorkerByRegion (EnumRegion region)
   {
+    ArrayList<Worker> _list = new ArrayList<>();
     for (Worker worker : allConnections)
     {
       if (worker.getUser().getRegion() == region)
       {
-        return worker;
+        _list.add(worker);
       }
     }
-    return null;
+    return _list;
   }
 
   public Iterable<User> getUserList ()
@@ -254,44 +218,25 @@ public class Server
     return userList;
   }
 
-  public boolean addUser (User u)
+  public boolean createUser (User u)
   {
-    if (getActiveCount() == 7)
-    {
-      return false;
-    }
-    // users.put(client.getName(), u);
-    EnumRegion _region = u.getRegion();
-
-    if (_region != null)
-    {
-      int loc = availableRegions.lastIndexOf(_region);
-      if (loc == -1)
-      {
-        return false;
-      }
-      availableRegions.remove(loc);
-    }
-    else
-    {
-      u.setRegion(availableRegions.remove(0));
-    }
-
     userList.add(u);
-    Payload data = new Payload();
-    data.putData(u);
-    broadcast(new Response(uptime(), data));
+//    Payload data = new Payload();
+//    data.putData(u);
+//    broadcast(new Response(uptime(), data));
 
     return true;
   }
 
 
-  public int getActiveCount ()
+
+
+  public int getLoggedInCount ()
   {
     int i = 0;
     for (User user : userList)
     {
-      if (user.isActive())
+      if (user.isLoggedIn())
       {
         i++;
       }
@@ -299,12 +244,12 @@ public class Server
     return i;
   }
 
-  public Iterable<User> getActiveUserList ()
+  public Iterable<User> getLoggedInUsers ()
   {
     ArrayList<User> _active = new ArrayList<>();
     for (User user : userList)
     {
-      if (user.isActive())
+      if (user.isLoggedIn())
       {
         _active.add(user);
       }
@@ -317,71 +262,6 @@ public class Server
     return userList.size();
   }
 
-  /**
-   * Tell the server that the player is ready
-   */
-  public void begin ()
-  {
-    currentState = State.BEGINNING;
-    Payload _data = new Payload();
-    _data.putData(currentState);
-    _data.putMessage("Get data");
-    broadcast(new Response(uptime(), _data));
-
-    ArrayList<WorldData> worldDataList = simulator.getWorldData(Constant.FIRST_DATA_YEAR,
-                                                                Constant.FIRST_GAME_YEAR - 1);
-
-    for (Worker worker : allConnections)
-    {
-      EnumPolicy[] _hand = simulator.drawCards(worker.getUser().getRegion());
-      ArrayList<EnumPolicy> handList = new ArrayList<>();
-      Collections.addAll(handList, _hand);
-      Payload data = new Payload();
-      worker.getUser().setHand(handList);
-
-      data.putData(worker.getUser());
-      worker.send(worker.getUser());
-      data.clear();
-
-      data.putData(worldDataList);
-      worker.send(new Response(uptime(), data));
-
-      // NOTE: can either send it as soon as we get it or have client request it.
-      //TODO: make send work with this ServerSendData.
-      //workers.send(data);
-    }
-
-    draft();
-  }
-
-  private void draft ()
-  {
-    currentState = State.DRAFTING;
-    enactedPolicyCards.clear();
-    Payload _data = new Payload();
-    _data.putData(currentState);
-    // _data.putMessage("Currently in " + currentState.name());
-    System.out.println(currentState.name());
-    broadcast(new Response(uptime(), _data));
-
-
-    phase = advancer.schedule(this::vote, currentState.getDuration(), TimeUnit.MILLISECONDS);
-
-  }
-
-  public void vote ()
-  {
-    currentState = State.VOTING;
-    Payload _data = new Payload();
-    _data.putData(currentState);
-    broadcast(new Response(uptime(), _data));
-    System.out.println(currentState.name());
-
-
-    phase = advancer.schedule(this::draw, currentState.getDuration(), TimeUnit.MILLISECONDS);
-
-  }
-
 
   /**
    * Draw new cards for a specific user
@@ -392,175 +272,22 @@ public class Server
     worker.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
   }
 
-  /**
-   * Draw cards for all users
-   */
-  public void draw ()
-  {
-    for (Worker workers : allConnections)
-    {
-      // This will not happen when the API's are secured
-      // Bug check if user is logged in... user is logged in when worker is associated with user
-      if (workers.getUser() == null)
-      {
-        System.out.println("worker user is null: " + workers.getName());
-        return;
-      }
-      // EnumPolicy[] _hand = simulator.drawCards(workers.getUser().getRegion());
-      //workers.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
-      // NOTE: can either send it as soon as we get it or have client request it.
-      // System.out.println(JsonAnnotationProcessor.gets(workers.getUser()));
-    }
 
-    currentState = State.DRAWING;
-    Payload _data = new Payload();
-    _data.putData(currentState);
 
-    System.out.println(currentState.name());
-    broadcast(new Response(uptime(), _data));
 
-    phase = advancer.schedule(this::draft, currentState.getDuration(), TimeUnit.MILLISECONDS);
-  }
-
-  /**
-   * Handle a handshake with web client
-   *
-   * @param x Key recieved from client
-   *
-   * @return Hashed key that is to be given back to client for auth check.
-   */
-  private static String handshake (String x)
-  {
-
-    MessageDigest digest = null;
-    byte[] one = x.getBytes();
-    byte[] two = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11".getBytes();
-    byte[] combined = new byte[one.length + two.length];
-
-    for (int i = 0; i < combined.length; ++i)
-    {
-      combined[i] = i < one.length ? one[i] : two[i - one.length];
-    }
-
-    try
-    {
-      digest = MessageDigest.getInstance("SHA-1");
-    }
-    catch(NoSuchAlgorithmException e)
-    {
-      e.printStackTrace();
-      return "";
-    }
-
-    digest.reset();
-    digest.update(combined);
-
-    return new String(Base64.getEncoder().encode(digest.digest()));
-
-  }
-
-  private boolean secureConnection (Worker worker, Socket s)
-  {
-    // Handling websocket
-    // StringBuilder reading = new StringBuilder();
-    String line = "";
-    String key = "";
-    String socketKey = "";
-    ReadStrategy<String> reader = worker.getReader();
-
-    while(true)
-    {
-      try
-      {
-        line = reader.read();
-      }
-      catch(Exception e)
-      {
-        e.printStackTrace();
-        return false;
-      }
-      // trim line, note that there is a check for "\r\n"
-      line = line.trim();
-
-      // check if the end of line or if data was found.
-      if (line == null || line.equals("client") || line.equals("\r\n") || line.equals("JavaClient"))
-      {
-        if (line != null && line.equals("JavaClient"))
-        {
-          worker.setReader(new JavaObjectReadStrategy(s, null));
-          worker.setWriter(new JavaObjectWriteStrategy(s, null));
-          return false;
-        }
-
-        if (socketKey.isEmpty())
-        {
-          return false;
-        }
-        else
-        {
-          // use the plain text writer to send following data
-          worker.setWriter(new PlainTextWriteStrategy(s, null));
-          worker.send(new Response("HTTP/1.1 101 Switching Protocols\n" +
-                                           "Upgrade: websocket\n" +
-                                           "Connection: Upgrade\n" +
-                                           "Sec-WebSocket-Accept: " + socketKey + "\r\n"));
-
-          return true;
-        }
-
-      }
-
-      // reading.append(line);
-      if (line.contains("Sec-WebSocket-Key:"))
-      {
-        // removing whitespace (includes nl, cr)
-        key = line.replace("Sec-WebSocket-Key: ", "").trim();
-        socketKey = Server.handshake(key);
-      }
-      if (line.contains("Sec-Socket-Key: "))
-      {
-        key = line.replace("Sec-Socket-Key: ", "").trim();
-        socketKey = Encryptable.generateKey();
-      }
-    }
-  }
-
-  private void cleanConnectionList ()
-  {
-    int con = 0;
-    for (int i = 0; i < allConnections.size(); i++)
-    {
-      if (!allConnections.get(i).isRunning())
-      {
-        if (allConnections.get(i).getUser() != null)
-        {
-          // no longer active
-          allConnections.get(i).getUser().setActive(false);
-        }
-        allConnections.get(i).shutdown();
-        // the worker is not running. remove it.
-        allConnections.remove(i);
-        con++;
-      }
-    }
-    // check if any removed. Show removed count
-    if (con > 0)
-    {
-      System.out.println(dateFormat.format(date) + " Removed " + con + " connection workers.");
-    }
-  }
 
   public void broadcast (Response response)
   {
-    for (Worker worker : allConnections)
+    for (User u : getLoggedInUsers())
     {
-      worker.send(response);
+      u.getWorker().send(response);
     }
   }
 
   public void killServer ()
   {
     System.out.println(dateFormat.format(date) + " Killing server.");
+    isWaiting = false;
     for (Worker connection : allConnections)
     {
       connection.send(new Response(uptime(), "Server will shutdown in 3 seconds"));
@@ -591,6 +318,7 @@ public class Server
   public void restartGame ()
   {
     stopGame();
+    broadcast(new Response(uptime(), "The game has been restarted."));
     simulator = new Simulator();
     // TODO clear all hands and cards
 
@@ -605,5 +333,343 @@ public class Server
     advancer.shutdownNow();
     advancer = Executors.newSingleThreadScheduledExecutor();
     currentState = State.END;
+    broadcast(new Response(uptime(), "The game has been stopped."));
+  }
+
+  public Iterable<User> getPlayers()
+  {
+    synchronized(players)
+    {
+      return players;
+    }
+  }
+
+  public int getPlayerCount ()
+  {
+    synchronized(players)
+    {
+      return players.size();
+    }
+  }
+
+  public boolean addPlayer (User u)
+  {
+    EnumRegion _region = u.getRegion();
+
+    if (_region != null)
+    {
+      int loc = availableRegions.lastIndexOf(_region);
+      if (loc == -1)
+      {
+        return false;
+      }
+      availableRegions.remove(loc);
+      u.setPlaying(true);
+      players.add(u);
+      return true;
+    }
+    else
+    {
+      u.setRegion(availableRegions.remove(0));
+      u.setPlaying(true);
+      players.add(u);
+      return true;
+    }
+  }
+
+  public ArrayList<EnumRegion> getAvailableRegions ()
+  {
+    return availableRegions;
+  }
+
+  /**
+   * Beginning of the game!!!
+   *
+   * Users are delt cards and world data is sent out.
+   */
+  private void begin ()
+  {
+    currentState = State.BEGINNING;
+    broadcastStateChange();
+
+    ArrayList<WorldData> worldDataList = simulator.getWorldData(Constant.FIRST_DATA_YEAR,
+                                                                Constant.FIRST_GAME_YEAR - 1);
+
+    Payload data = new Payload();
+
+    for (User user : getPlayers())
+    {
+      EnumPolicy[] _hand = simulator.drawCards(user.getRegion());
+      ArrayList<EnumPolicy> handList = new ArrayList<>();
+      Collections.addAll(handList, _hand);
+      user.setHand(handList);
+
+      data.putData(user);
+      data.clear();
+      Response r = new Response(uptime(), data);
+      r.setType(Type.USER_HAND);
+      user.getWorker().send(r);
+    }
+
+    data.putData(worldDataList);
+    Response r = new Response(uptime(), data);
+    r.setType(Type.WORLD_DATA_LIST);
+    broadcast(r);
+
+    draft();
+  }
+
+  /**
+   * Sets the state to drafting and schedules a new task.
+   * Drafting allows for users to discard and draw new cards
+   */
+  private void draft ()
+  {
+    currentState = State.DRAFTING;
+    broadcastStateChange();
+
+    enactedPolicyCards.clear();
+
+
+    phase = advancer.schedule(this::vote, currentState.getDuration(), TimeUnit.MILLISECONDS);
+
+  }
+
+  /**
+   * Sets the state to vote and schedules a new draw task
+   * Allows users to send votes on cards
+   */
+  private void vote ()
+  {
+    currentState = State.VOTING;
+    broadcastStateChange();
+    System.out.println(currentState.name());
+
+
+    phase = advancer.schedule(this::draw, currentState.getDuration(), TimeUnit.MILLISECONDS);
+
+  }
+
+
+  /**
+   * Draw cards for all users
+   */
+  private void draw ()
+  {
+    // get all the cards drafted that recieved adequite votes:
+    // 1) add then enacted list
+    // 2) removed from hand
+
+    // advance sim to next turn with enacted cards
+    // resend world data
+
+    //
+    for (User user : getPlayers())
+    {
+
+    }
+
+    currentState = State.DRAWING;
+    broadcastStateChange();
+
+    System.out.println(currentState.name());
+
+
+    phase = advancer.schedule(this::draft, currentState.getDuration(), TimeUnit.MILLISECONDS);
+  }
+
+  /**
+   * Method that is on a timer called every 500ms
+   *
+   * Mainly to start the game and clean the connection list
+   */
+  private void update ()
+  {
+    cleanConnectionList();
+
+    if (getPlayerCount() == 1 && currentState == State.LOGIN)
+    {
+      currentState = State.BEGINNING;
+      Payload data = new Payload();
+      data.putData(currentState);
+      data.putMessage("Game will begin in 10s");
+      Response r = new Response(uptime(), data);
+      r.setType(Type.GAME_STATE);
+      broadcast(r);
+
+      phase = advancer.schedule(this::begin, currentState.getDuration(), TimeUnit.MILLISECONDS);
+    }
+  }
+
+
+  /**
+   * Handle a handshake with web client
+   *
+   * @param x Key received from client
+   *
+   * @return Hashed key that is to be given back to client for auth check.
+   */
+  private static String handshake (String x)
+  {
+
+    MessageDigest digest;
+    byte[] one = x.getBytes();
+    byte[] two = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11".getBytes();
+    byte[] combined = new byte[one.length + two.length];
+
+    for (int i = 0; i < combined.length; ++i)
+    {
+      combined[i] = i < one.length ? one[i] : two[i - one.length];
+    }
+
+    try
+    {
+      digest = MessageDigest.getInstance("SHA-1");
+    }
+    catch(NoSuchAlgorithmException e)
+    {
+      e.printStackTrace();
+      return "";
+    }
+
+    digest.reset();
+    digest.update(combined);
+
+    return new String(Base64.getEncoder().encode(digest.digest()));
+
+  }
+
+  /**
+   * Set up the worker with proper streams
+   *
+   * @param worker worker that is holding the socket connection
+   * @param s socket that is opened
+   * @return
+   */
+  private boolean secureConnection (Worker worker, Socket s)
+  {
+    // Handling websocket
+    // StringBuilder reading = new StringBuilder();
+    String line = "";
+    String key = "";
+    String socketKey = "";
+    ReadStrategy<String> reader = worker.getReader();
+
+    while(true)
+    {
+      try
+      {
+        line = reader.read();
+      }
+      catch(Exception e)
+      {
+        e.printStackTrace();
+        return false;
+      }
+
+      // check if the end of line or if data was found.
+      if (line.trim().equals("client") || line.equals("\r\n") || line.trim().equals("JavaClient"))
+      {
+        if (line.contains("JavaClient"))
+        {
+          worker.setReader(new JavaObjectReadStrategy(s, null));
+          worker.setWriter(new JavaObjectWriteStrategy(s, null));
+          return false;
+        }
+
+        if (socketKey.isEmpty())
+        {
+          return false;
+        }
+        else
+        {
+          // use the plain text writer to send following data
+          worker.setWriter(new PlainTextWriteStrategy(s, null));
+          ((PlainTextWriteStrategy)worker.getWriter())
+                  .getWriter().println("HTTP/1.1 101 Switching Protocols\n" +
+                                               "Upgrade: websocket\n" +
+                                               "Connection: Upgrade\n" +
+                                               "Sec-WebSocket-Accept: " + socketKey + "\r\n");
+
+          return true;
+        }
+
+      }
+
+      // reading.append(line);
+      if (line.contains("Sec-WebSocket-Key:"))
+      {
+        // removing whitespace (includes nl, cr)
+        key = line.replace("Sec-WebSocket-Key: ", "").trim();
+        socketKey = Server.handshake(key);
+      }
+      if (line.contains("Sec-Socket-Key: "))
+      {
+        key = line.replace("Sec-Socket-Key: ", "").trim();
+        socketKey = Encryptable.generateKey();
+      }
+    }
+  }
+
+  /**
+   * Cleans the connections list that have gone stale
+   */
+  private void cleanConnectionList ()
+  {
+    int con = 0;
+    for (int i = 0; i < allConnections.size(); i++)
+    {
+      if (!allConnections.get(i).isRunning())
+      {
+        if (allConnections.get(i).getUser() != null)
+        {
+          // no longer active
+          allConnections.get(i).getUser().setLoggedIn(false);
+        }
+        allConnections.get(i).shutdown();
+        // the worker is not running. remove it.
+        allConnections.remove(i);
+        con++;
+      }
+    }
+    // check if any removed. Show removed count
+    if (con > 0)
+    {
+      System.out.println(dateFormat.format(date) + " Removed " + con + " connection workers.");
+    }
+  }
+
+  private void broadcastStateChange ()
+  {
+    Payload _data = new Payload();
+    _data.putData(currentState);
+    Response r = new Response(uptime(), _data);
+    r.setType(Type.GAME_STATE);
+    broadcast(r);
+  }
+
+  public static void main (String args[])
+  {
+    //Valid port numbers are Port numbers are 1024 through 65535.
+    //  ports under 1024 are reserved for system services http, ftp, etc.
+    int port = 5555; //default
+    if (args.length > 0)
+    {
+      try
+      {
+        port = Integer.parseInt(args[0]);
+        if (port < 1)
+        {
+          throw new Exception();
+        }
+      }
+      catch(Exception e)
+      {
+        System.out.println("Usage: Server portNumber");
+        System.exit(0);
+      }
+    }
+
+    new Server(port);
   }
 }

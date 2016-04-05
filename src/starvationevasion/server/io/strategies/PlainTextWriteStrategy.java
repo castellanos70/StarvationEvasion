@@ -46,4 +46,9 @@ public class PlainTextWriteStrategy extends AbstractWriteStrategy
   {
     writer.close();
   }
+
+  public PrintWriter getWriter ()
+  {
+    return writer;
+  }
 }

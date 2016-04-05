@@ -70,7 +70,7 @@ public class GeographyXMLparser extends DefaultHandler
       case "area":
         tmpRegion = new GeographicArea();
         tmpRegion.setName(regionName);
-        tmpRegion.setType(regionType);
+        // tmpRegion.setType(regionType);
         break;
 
       case "name":

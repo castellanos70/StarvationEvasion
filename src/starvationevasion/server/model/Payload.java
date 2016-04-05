@@ -18,7 +18,8 @@ public class Payload extends HashMap<String, Object> implements Sendable
   @Override
   public Object put (String key, Object value)
   {
-    if (!(value instanceof Sendable || value instanceof Number || value instanceof String || value instanceof ArrayList))
+    if (!(value instanceof Sendable || value instanceof Number || value instanceof Boolean ||
+            value instanceof String || value instanceof ArrayList))
     {
       System.out.println(value + " is NOT a valid Payload");
       System.exit(0);
@@ -104,6 +105,14 @@ public class Payload extends HashMap<String, Object> implements Sendable
       {
         json.setString(key, (String) value);
       }
+      else if (value instanceof Number)
+      {
+        json.setNumber(key, (Number) value);
+      }
+      else if (value instanceof Boolean)
+      {
+        json.setBoolean(key, (Boolean) value);
+      }
       else if (value instanceof Sendable)
       {
           json.set(key, ((JSON) value).toJSON());
@@ -118,10 +127,6 @@ public class Payload extends HashMap<String, Object> implements Sendable
           i++;
         }
         json.set(key, doc);
-      }
-      else if (value instanceof Number)
-      {
-        json.setNumber(key, (Number) value);
       }
     }
     return json;

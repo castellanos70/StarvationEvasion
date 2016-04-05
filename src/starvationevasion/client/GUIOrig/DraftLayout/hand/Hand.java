@@ -47,8 +47,6 @@ public class Hand extends GridPane
     this.gui = gui;
     primaryStage = gui.getPrimaryStage();
 
-    //Just for testing
-    dealRandomHand();
   }
 
   /**

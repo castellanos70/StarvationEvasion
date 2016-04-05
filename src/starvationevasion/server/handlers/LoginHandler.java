@@ -53,7 +53,8 @@ public class LoginHandler extends AbstractHandler
       String hash = Encryptable.generateHashedPassword(salt, password);
       if (s.getPassword().equals(hash))
       {
-        s.setActive(true);
+        s.setLoggedIn(true);
+        s.setWorker(getClient());
         getClient().setUser(s);
         return true;
       }

@@ -1,108 +1,367 @@
 package starvationevasion.client;
-/**
- * @author Javier Chavez
- */
 
-import com.oracle.javafx.jmx.json.JSONReader;
 import starvationevasion.client.Logic.ChatManager;
+import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.PolicyCard;
+import starvationevasion.common.WorldData;
+import starvationevasion.server.model.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * Client
- *
- * UX/UI. This is the interface that handles user input
- */
+
 public class Client
 {
   private Socket clientSocket;
 
-  // write to socket
-  private PrintWriter write;
-  // read the socket
-  private BufferedReader reader;
+  private DataInputStream reader;
+  private DataOutputStream writer;
 
   // time of server start
   private long startNanoSec;
-  private volatile long lastInventoryUpdate;
   private Scanner keyboard;
   // writes to user
   private ClientListener listener;
 
-  private ChatManager chatManager;
   private EnumRegion region;
-  private JSONReader jsonReader;
-
-
-  private String currentOutput="";
-
   private volatile boolean isRunning = true;
-
-
-  public Client(String host, int portNumber)
+  private ArrayList<User> allUsers=new ArrayList<>();
+  private ChatManager chatManager;
+  private ArrayList<EnumPolicy> hand;
+  private User user;
+  private String userName;
+  private boolean loginSuccessful;
+  private boolean recivedMessege=false;
+  public Client (String host, int portNumber)
   {
     chatManager=new ChatManager(this);
     keyboard = new Scanner(System.in);
-    region=EnumRegion.USA_CALIFORNIA;
-    while (!openConnection(host, portNumber))
-    {
-    }
-    //jsonReader=new JSONStreamReaderImpl(reader);
+
+    openConnection(host, portNumber);
     listener = new ClientListener();
-    System.out.println("Client(): Starting listener = : " + listener);
+    System.out.println("JavaClient: Starting listener = : " + listener);
     listener.start();
 
-    //listenToUserRequests();
-
-    //closeAll();
+   // listenToUserRequests();
 
   }
-  public ChatManager getChatManager(){return chatManager;}
-  public boolean writeToServer(String message){
-    currentOutput="";
-    write.println(System.nanoTime() + " " + message);
+  public ChatManager getChatManager(){return  chatManager;}
+  //TODO
+  public EnumRegion getRegion(){return region;}
+  public boolean loginToServer(String userName,String pass)
+  {
+    this.userName=userName;
+    // Create a request to login
+    Request f = new Request(startNanoSec, Endpoint.LOGIN);
+    // Create a payload (this is the class that stores Sendable information)
+    Payload data = new Payload();
 
-    System.out.println((System.nanoTime() + " " + message));
-    //System.out.println(currentOutput);
-    while(message.contains("login"))
+    data.putData("user");
+
+    data.put("username", userName);
+    data.put("password", pass);
+
+    f.setData(data);
+    try
     {
-      if (currentOutput.contains("SUCCESS"))return true;
-      if(currentOutput.contains("FAIL"))return false;
-    }
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(f);
+      oos.close();
+      byte[] bytes = baos.toByteArray();
 
-      return false;
+      writer.writeInt(bytes.length);
+      writer.write(bytes);
+      writer.flush();
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+    createHand();
+    getGameState();
+    ready();
+
+//    while(!recivedMessege){
+//      System.out.println(recivedMessege);
+//      //Wait tell a message has been recieved
+//      }
+    return true;
   }
-  private void output(String msg){
-    currentOutput+=msg;
+  public void createHand()
+  {
+    Request f = new Request(startNanoSec, Endpoint.HAND_CREATE);
+    // Create a payload (this is the class that stores Sendable information)
+    try
+    {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(f);
+      oos.close();
+      byte[] bytes = baos.toByteArray();
+      writer.writeInt(bytes.length);
+      writer.write(bytes);
+      writer.flush();
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+    readHand();
   }
-  private boolean openConnection(String host, int portNumber)
+  public void readHand()
+  {
+    Request f = new Request(startNanoSec, Endpoint.HAND_READ);
+    // Create a payload (this is the class that stores Sendable information)
+    try
+    {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(f);
+      oos.close();
+      byte[] bytes = baos.toByteArray();
+      writer.writeInt(bytes.length);
+      writer.write(bytes);
+      writer.flush();
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+  }
+  public void ready()
+  {
+    Request f = new Request(startNanoSec, Endpoint.READY);
+    // Create a payload (this is the class that stores Sendable information)
+    try
+    {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(f);
+      oos.close();
+      byte[] bytes = baos.toByteArray();
+      writer.writeInt(bytes.length);
+      writer.write(bytes);
+      writer.flush();
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+  }
+  public void getUsers()
+  {
+    Request f = new Request(startNanoSec, Endpoint.USERS);
+    // Create a payload (this is the class that stores Sendable information)
+    try
+    {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(f);
+      oos.close();
+      byte[] bytes = baos.toByteArray();
+      writer.writeInt(bytes.length);
+      writer.write(bytes);
+      writer.flush();
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+  }
+  public ArrayList<EnumPolicy> getHand()
+  {
+    return hand;
+  }
+  public void getGameState()
+  {
+    Request f = new Request(startNanoSec, Endpoint.GAME_STATE);
+    // Create a payload (this is the class that stores Sendable information)
+    try
+    {
+
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(f);
+      oos.close();
+      byte[] bytes = baos.toByteArray();
+      writer.writeInt(bytes.length);
+      writer.write(bytes);
+      writer.flush();
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+  }
+  public void drawCard()
+  {
+    Request f = new Request(startNanoSec, Endpoint.DRAW_CARD);
+    // Create a payload (this is the class that stores Sendable information)
+    try
+    {
+
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(f);
+      oos.close();
+      byte[] bytes = baos.toByteArray();
+      writer.writeInt(bytes.length);
+      writer.write(bytes);
+      writer.flush();
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+  }
+
+  public void createUser(String user,String pass)
+  {
+    // Create a request to login
+    Request f = new Request(startNanoSec, Endpoint.USER_CREATE);
+    // Create a payload (this is the class that stores Sendable information)
+    Payload data = new Payload();
+
+    data.putData("user");
+
+    data.put("username", user);
+    data.put("password", pass);
+
+    f.setData(data);
+    try
+    {
+
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(f);
+      oos.close();
+
+
+      byte[] bytes = baos.toByteArray();
+
+      writer.writeInt(bytes.length);
+      writer.write(bytes);
+      writer.flush();
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+  }
+  public void draftCard(PolicyCard card)
+  {
+    Request f = new Request(startNanoSec, Endpoint.DRAFT_CARD);
+    Payload data = new Payload();
+
+    data.putData("user");
+    data.put("card", card);
+    // Create a payload (this is the class that stores Sendable information)
+    try
+    {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(f);
+      oos.close();
+      byte[] bytes = baos.toByteArray();
+      writer.writeInt(bytes.length);
+      writer.write(bytes);
+      writer.flush();
+    } catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+  }
+  public void discardCard(PolicyCard card)
+  {
+    Request f = new Request(startNanoSec, Endpoint.DELETE_CARD);
+    Payload data = new Payload();
+
+    data.putData("user");
+    data.put("card", card);
+    // Create a payload (this is the class that stores Sendable information)
+    try
+    {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(f);
+      oos.close();
+      byte[] bytes = baos.toByteArray();
+      writer.writeInt(bytes.length);
+      writer.write(bytes);
+      writer.flush();
+    } catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+  }
+  public void sendChatMessage(String message,EnumRegion toRegion)
+  {
+    // Create a request to login
+    Request f = new Request(startNanoSec, Endpoint.CHAT);
+    // Create a payload (this is the class that stores Sendable information)
+    Payload data = new Payload();
+    data.putData("chat");
+    data.put("to-region",toRegion.name());
+    data.put("card", EnumPolicy.Clean_River_Incentive);
+    data.put("text",message);
+    f.setData(data);
+    try
+    {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(f);
+      oos.close();
+
+
+      byte[] bytes = baos.toByteArray();
+
+      writer.writeInt(bytes.length);
+      writer.write(bytes);
+      writer.flush();
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+  }
+  public boolean writeToServer(String message){
+
+
+//    currentOutput="";
+//    write.println(System.nanoTime() + " " + message);
+//
+//    System.out.println((System.nanoTime() + " " + message));
+//    //System.out.println(currentOutput);
+//    while(message.contains("login"))
+//    {
+//      if (currentOutput.contains("SUCCESS"))return true;
+//      if(currentOutput.contains("FAIL"))return false;
+//    }
+
+    return false;
+  }
+  private boolean openConnection (String host, int portNumber)
   {
 
     try
     {
       clientSocket = new Socket(host, portNumber);
     }
-    catch (UnknownHostException e)
+    catch(UnknownHostException e)
     {
-      System.err.println("Client Error: Unknown Host " + host);
-      e.printStackTrace();
 
       isRunning = false;
       return false;
     }
-    catch (IOException e)
+    catch(IOException e)
     {
       System.err.println("Client Error: Could not open connection to " + host
               + " on port " + portNumber);
-      if (true) throw new RuntimeException("");
-
       e.printStackTrace();
       isRunning = false;
       return false;
@@ -110,37 +369,57 @@ public class Client
 
     try
     {
-      write = new PrintWriter(clientSocket.getOutputStream(), true);
+      writer = new DataOutputStream(clientSocket.getOutputStream());
+      writer.write("JavaClient\n".getBytes());
+      writer.flush();
     }
-    catch (IOException e)
+    catch(IOException e)
     {
-      System.err.println("Client Error: Could not open output stream");
       e.printStackTrace();
       return false;
     }
     try
     {
-      reader = new BufferedReader(new InputStreamReader(
-              clientSocket.getInputStream()));
+      reader = new DataInputStream(clientSocket.getInputStream());
     }
-    catch (IOException e)
+    catch(IOException e)
     {
-      System.err.println("Client Error: Could not open input stream");
       e.printStackTrace();
       return false;
     }
     isRunning = true;
-    //ToDo JavaClient
-    write.println("client");
+
     return true;
 
   }
-
-  private void listenToUserRequests()
+  private void updateUser(User user)
   {
-    while (isRunning)
+    this.user = user;
+    region = user.getRegion();
+
+  }
+  public void closeAll()
+  {
+    isRunning=false;
+    try
     {
+      writer.close();
+      reader.close();
+      clientSocket.close();
+    } catch (IOException e)
+    {
+      e.printStackTrace();
+    }
+
+  }
+  private void listenToUserRequests ()
+  {
+    while(isRunning)
+    {
+
       String cmd = keyboard.nextLine();
+
+
       if (cmd == null || cmd.length() < 1)
       {
         continue;
@@ -150,46 +429,43 @@ public class Client
       {
         isRunning = false;
       }
-      write.println(System.nanoTime() + " " + cmd);
-    }
-  }
-
-  public void closeAll()
-  {
-    System.out.println("Closing client");
-    isRunning=false;
-    if (write != null)
-    {
-      write.close();
-    }
-
-    if (reader != null)
-    {
-      try
+      if (cmd.equals("login"))
       {
-        reader.close();
-        clientSocket.close();
-      }
-      catch (IOException e)
-      {
-        System.err.println("Client Error: Could not close");
-        e.printStackTrace();
+        // Create a request to login
+        Request f = new Request(startNanoSec, Endpoint.LOGIN);
+        // Create a payload (this is the class that stores Sendable information)
+        Payload data = new Payload();
+
+        data.putData("user");
+
+        data.put("username", "admin");
+        data.put("password", "admin");
+
+        f.setData(data);
+
+        try
+        {
+
+          ByteArrayOutputStream baos = new ByteArrayOutputStream();
+          ObjectOutputStream oos = new ObjectOutputStream(baos);
+          oos.writeObject(f);
+          oos.close();
+
+
+          byte[] bytes = baos.toByteArray();
+
+          writer.writeInt(bytes.length);
+          writer.write(bytes);
+          writer.flush();
+        }
+        catch(IOException e)
+        {
+          e.printStackTrace();
+        }
       }
     }
   }
 
-  public EnumRegion getRegion(){return region;}
-
-  private String timeDiff()
-  {
-    long nanoSecDiff = System.nanoTime() - startNanoSec;
-    double secDiff = (double) nanoSecDiff / 1000000000.0;
-    return String.format("%.3f", secDiff);
-  }
-  private void setRegion(String regionString)
-  {
-    region=EnumRegion.valueOf(regionString);
-  }
 
   /**
    * ClientListener
@@ -197,57 +473,59 @@ public class Client
    * Handles reading stream from socket. The data is then outputted
    * to the console for user.
    */
-  class ClientListener extends Thread
+  private class ClientListener extends Thread
   {
 
-    public void run()
+    public void run ()
     {
-      while (isRunning)
+
+      while(isRunning)
       {
         read();
       }
     }
-    private void read()
+
+    private void read ()
     {
       try
       {
-        String msg = reader.readLine();
-
-        if (msg == null)
+        Response response = readObject();
+        System.out.println(response.getPayload());
+        if (response.getPayload().get("data") instanceof User)
         {
-          System.out.println("Lost server, press enter to shutdown.");
-          isRunning = false;
-          return;
-        }
-        output(msg);
+          if(response.getPayload().get("message")!=null&&response.getPayload().get("message").equals("SUCCESS"))
+          {
+            loginSuccessful=true;
+            recivedMessege=true;
 
+          }else if(response.getPayload().get("message")=="FAIL")
+          {
+            loginSuccessful=false;
+            recivedMessege=true;
+          }
+          System.out.println("Response.data = User object.");
+          updateUser((User)response.getPayload().get("data"));
 
-        //TODO Implement JSON Parser    // instanceOf
-        //
-//        StringReader stringReader=new StringReader(msg);
-//        JSONStreamReaderImpl jsonStreamReader=new JSONStreamReaderImpl(stringReader);
-//        JSONDocument json=jsonStreamReader.build();
-//        String data=json.getString("time");
-////
-//        if(data.contains("chat"))
-//        {
-//         chatManager.sendChatToClient(json.getString("data"));
-//        }
-        if(msg.contains("text"))
-        {
-          String message=msg.substring(msg.indexOf("text") + 3);
-          message=message.substring(msg.indexOf('"'));
-          chatManager.sendChatToClient(message);
         }
-        if(region==null&&msg.contains("region"))
+
+        else if (response.getPayload().get("data") instanceof WorldData)
         {
-          String halfMsg=msg.substring((msg.indexOf("region") +9 ));
-          setRegion(halfMsg.substring(0, halfMsg.indexOf("\",")));
+          System.out.println("Response.data = WorldData object.");
         }
-        System.out.println(msg);
+        else if(response.getPayload().get("data")instanceof ArrayList)
+        {
+          hand=((ArrayList)response.getPayload().get("data"));
+        }
+        else if(response.getPayload().get("data")instanceof String)
+        {
+          chatManager.sendChatToClient((String)response.getPayload().get("text"));
+        }
       }
-      catch (IOException e)
+      catch(EOFException e)
       {
+        isRunning = false;
+        System.out.println("Lost server, press enter to shutdown.");
+        return;
       }
       catch(Exception e)
       {
@@ -255,4 +533,60 @@ public class Client
       }
     }
   }
+
+  private Response readObject() throws Exception
+  {
+    int ch1 = reader.read();
+    int ch2 = reader.read();
+    int ch3 = reader.read();
+    int ch4 = reader.read();
+
+    if ((ch1 | ch2 | ch3 | ch4) < 0)
+    {
+      throw new EOFException();
+    }
+    int size  = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+
+    byte[] object = new byte[size];
+
+    reader.readFully(object);
+
+    ByteArrayInputStream in = new ByteArrayInputStream(object);
+    ObjectInputStream is = new ObjectInputStream(in);
+
+    return (Response) is.readObject();
+  }
+
+  private String timeDiff ()
+  {
+    long nanoSecDiff = System.nanoTime() - startNanoSec;
+    double secDiff = (double) nanoSecDiff / 1000000000.0;
+    return String.format("%.3f", secDiff);
+  }
+
+  public static void main (String[] args)
+  {
+
+    String host = null;
+    int port = 0;
+
+    try
+    {
+      host = args[0];
+      port = Integer.parseInt(args[1]);
+      if (port < 1)
+      {
+        throw new Exception();
+      }
+    }
+    catch(Exception e)
+    {
+      System.exit(0);
+    }
+    new Client(host, port);
+
+  }
+
+
 }
+

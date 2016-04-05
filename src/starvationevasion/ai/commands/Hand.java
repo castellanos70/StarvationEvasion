@@ -55,7 +55,7 @@ public class Hand extends AbstractCommand
       {
         card = PolicyCard.create(getClient().getUser().getRegion(), policy);
 
-        if (card.votesRequired() == 0)
+        if (card.votesRequired() == 1)
         {
           break;
         }
@@ -75,18 +75,18 @@ public class Hand extends AbstractCommand
 
       for (PolicyCard.EnumVariable variable : PolicyCard.EnumVariable.values())
       {
-        if(card.getRequiredVariables(variable) != null)
+        if (card.getRequiredVariables(variable) != null)
         {
           int amt = 10;
-          if(card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.MILLION_DOLLAR))
+          if (card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.MILLION_DOLLAR))
           {
             amt = 1;
           }
-          if(card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.PERCENT))
+          if (card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.PERCENT))
           {
             amt = 10;
           }
-          if(card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.UNIT))
+          if (card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.UNIT))
           {
             amt = 30;
           }
@@ -114,22 +114,23 @@ public class Hand extends AbstractCommand
       data.putData(card);
       r.setData(data);
       getClient().send(r);
-      return true;
-    }
+      // return true;
 
-    if (getClient().getUser().getHand().size() == 7)
-    {
-      System.out.println("discarding");
-      Request r = new Request(getClient().getStartNanoSec(), Endpoint.DELETE_CARD);
-      Payload data = new Payload();
 
-      EnumPolicy card = getClient().getUser().getHand().remove(3);
-      data.putData(card);
+      if (getClient().getUser().getHand().size() == 7)
+      {
+        System.out.println("discarding");
+        Request request = new Request(getClient().getStartNanoSec(), Endpoint.DELETE_CARD);
+        Payload payload = new Payload();
 
-      r.setData(data);
-      getClient().send(r);
+        EnumPolicy discard = getClient().getUser().getHand().remove(3);
+        data.putData(discard);
 
-      return false;
+        request.setData(payload);
+        getClient().send(request);
+
+        return false;
+      }
     }
 
     return false;

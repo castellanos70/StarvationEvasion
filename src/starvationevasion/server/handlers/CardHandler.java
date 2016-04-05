@@ -7,10 +7,7 @@ package starvationevasion.server.handlers;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.server.Server;
 import starvationevasion.server.Worker;
-import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Payload;
-import starvationevasion.server.model.Request;
-import starvationevasion.server.model.Response;
+import starvationevasion.server.model.*;
 
 public class CardHandler extends AbstractHandler
 {
@@ -54,6 +51,7 @@ public class CardHandler extends AbstractHandler
 
       data.putData(getClient().getUser().getHand());
       m_response = new Response(server.uptime(), data);
+      m_response.setType(Type.USER_HAND);
 
       getClient().send(m_response);
 

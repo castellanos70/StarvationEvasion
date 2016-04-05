@@ -477,6 +477,7 @@ public class Server
   {
     currentState = State.DRAWING;
     broadcastStateChange();
+    enactedPolicyCards.clear();
 
     for (PolicyCard p : draftedPolicyCards)
     {
@@ -488,9 +489,14 @@ public class Server
       else
       {
         enactedPolicyCards.add(p);
-
         simulator.discard(p.getOwner(), p.getCardType());
       }
+
+      if (p.votesRequired() == 0)
+      {
+        enactedPolicyCards.add(p);
+      }
+      simulator.discard(p.getOwner(), p.getCardType());
     }
 
     for (User user : getPlayers())

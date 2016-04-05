@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * class is used to convert between the spring2015code.model and the starvationevasion.client.Aegislash.GUI
  * for converting between lat lon to   x, y and back.
  */
@@ -20,14 +19,12 @@ public class MapConverter
   public static final double PROJECTION_WIDTH = 360 * SCALING_FACTOR;
 
 
-
   /**
-   Convert latitude to graphics Y given a point of reference
-
-   @param lat
-   @param refPoint
-
-   @return the latitude, scaled and projected in Y
+   * Convert latitude to graphics Y given a point of reference
+   *
+   * @param lat
+   * @param refPoint
+   * @return the latitude, scaled and projected in Y
    */
   public double latToY(double lat, MapPoint refPoint)
   {
@@ -36,12 +33,11 @@ public class MapConverter
 
 
   /**
-   Convert latitude to graphics Y, assuming (0,0) is the point of reference
-   in the spherical coord system
-
-   @param lat
-
-   @return the latitude, scaled and projected in Y
+   * Convert latitude to graphics Y, assuming (0,0) is the point of reference
+   * in the spherical coord system
+   *
+   * @param lat
+   * @return the latitude, scaled and projected in Y
    */
   public double latToY(double lat)
   {
@@ -50,15 +46,12 @@ public class MapConverter
 
 
   /**
-   Convert longitude to graphics X, given a reference point in spherical
-   coords
-
-   @param lon
-   decimal longitude to convert
-   @param refPoint
-   mapPoint of reference
-
-   @return longitude, scaled and projected in X
+   * Convert longitude to graphics X, given a reference point in spherical
+   * coords
+   *
+   * @param lon      decimal longitude to convert
+   * @param refPoint mapPoint of reference
+   * @return longitude, scaled and projected in X
    */
   public double lonToX(double lon, MapPoint refPoint)
   {
@@ -66,12 +59,11 @@ public class MapConverter
   }
 
   /**
-   Convert longitude to graphics X, assuming a reference point of (0,0) in
-   spherical coords.
-
-   @param lon decimal longitude to convert
-
-   @return longitude, scaled and projected in X
+   * Convert longitude to graphics X, assuming a reference point of (0,0) in
+   * spherical coords.
+   *
+   * @param lon decimal longitude to convert
+   * @return longitude, scaled and projected in X
    */
   public double lonToX(double lon)
   {
@@ -80,12 +72,11 @@ public class MapConverter
 
 
   /**
-   Convert a MapPoint (lat, lon) to a graphics-space point, assuming the parallel
-   of no distortion is the equator.  This is a Plate-Caree projection.
-
-   @param mp
-   MapPoint to convert
-   @return a Point in graphics-space
+   * Convert a MapPoint (lat, lon) to a graphics-space point, assuming the parallel
+   * of no distortion is the equator.  This is a Plate-Caree projection.
+   *
+   * @param mp MapPoint to convert
+   * @return a Point in graphics-space
    */
   public Point mapPointToPoint(MapPoint mp)
   {
@@ -96,13 +87,12 @@ public class MapConverter
 
 
   /**
-   Convert a Point in graphics-space to a MapPoint assuming the parallel of no
-   distortion is  the equator.  This converts from a Plate-Caree projection back
-   to lat and lon
-   @return
-   A MapPoint, reversing the projection defined by this class
-    @param p
-    Point to convert
+   * Convert a Point in graphics-space to a MapPoint assuming the parallel of no
+   * distortion is  the equator.  This converts from a Plate-Caree projection back
+   * to lat and lon
+   *
+   * @param p Point to convert
+   * @return A MapPoint, reversing the projection defined by this class
    */
   public MapPoint pointToMapPoint(Point2D p)
   {
@@ -113,9 +103,10 @@ public class MapConverter
 
 
   /**
-   Converts a GeographicArea to a Polygon in graphics-space
-   @param r region object to be transformed.
-   @return a Polygon representing the passed GeographicArea, appropriately scaled and converted
+   * Converts a GeographicArea to a Polygon in graphics-space
+   *
+   * @param r region object to be transformed.
+   * @return a Polygon representing the passed GeographicArea, appropriately scaled and converted
    */
   public Polygon regionToPolygon(GeographicArea r)
   {
@@ -132,7 +123,7 @@ public class MapConverter
   }
 
   /**
-   @return the factor by which this converter scales coordinates
+   * @return the factor by which this converter scales coordinates
    */
   public double getScale()
   {
@@ -141,9 +132,10 @@ public class MapConverter
 
 
   /**
-   generates a projected grid of latitude and longitude lines converted to
-   the scaled graphics space
-   @return  A list of Line2Ds representing the Lon Lat grid in graphics-space
+   * generates a projected grid of latitude and longitude lines converted to
+   * the scaled graphics space
+   *
+   * @return A list of Line2Ds representing the Lon Lat grid in graphics-space
    */
   public List<Line2D> getLatLonGrid()
   {
@@ -171,20 +163,29 @@ public class MapConverter
   }
 
   /**
-   * This converts lat and long point into the mollweide projection
-   * http://mathworld.wolfram.com/MollweideProjection.html
-   * @param point
-   * @return
+   * Takes a coordinate point and converts it to an (x,y) point on a Mollweide projection.
+   *
+   * @param coordinate  - Point.Double(latitude, longitude)
+   * @param imageWidth  - Width of the Mollweide map
+   * @param imageHeight - Height of the Mollweide map
+   * @return A Point.Double of the (x, y) position on the Mollweide map
    */
-  public Point mollweideProjection(Point point,double radius)
+  public Point.Double mollweideProjection(Point.Double coordinate, double imageWidth, double imageHeight)
   {
-    double lon=point.getX();
-    double lat=point.getY();
-    Point newPoint=new Point();
-    double theta=1;
-    double x=radius*(2*Math.sqrt(2)/Math.PI)*lon*Math.cos(lat);
-    double y=radius*(Math.sqrt(2)*Math.sin(lat));
-    newPoint.setLocation(x,y);
+    double scaleX = imageWidth / (2 * Math.sqrt(2));
+    double scaleY = imageHeight / (2 * Math.sqrt(2));
+    double latitude = coordinate.getX();
+    double longitude = coordinate.getY();
+    double radLon = (longitude * (Math.PI / 180.0));//convert to radians
+    double radLat = (latitude * (Math.PI / 180.0));
+    double x, y;
+    x = (scaleX * (2 * Math.sqrt(2) / Math.PI) * radLon * Math.cos(radLat));
+    y = (scaleY * (Math.sqrt(2) * Math.sin(radLat)));
+
+//    double posX = x + imageWidth / 2;
+//    double posY = y + imageHeight / 2;
+//    Point.Double newPoint = new Point.Double(posX, posY);
+    Point.Double newPoint = new Point.Double(x, y);//could change to posX, posY if not already offset
     return newPoint;
   }
 

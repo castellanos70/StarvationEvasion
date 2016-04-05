@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.DoubleBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -25,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 
 
 /**
@@ -53,6 +55,8 @@ public class Server
   private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
   private ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>(),
           draftedPolicyCards = new ArrayList<>();
+  private HashMap<PolicyCard, Tuple<User, Boolean>> votes = new HashMap<>();
+
 
   private ScheduledFuture<?> phase;
   // Service that moves game along to next phase
@@ -443,8 +447,22 @@ public class Server
   {
     currentState = State.VOTING;
     broadcastStateChange();
-    System.out.println(currentState.name());
 
+    Payload cards = new Payload();
+    ArrayList<PolicyCard> list = new ArrayList<>();
+    for (PolicyCard card : draftedPolicyCards)
+    {
+      if (card.votesRequired() > 0)
+      {
+        list.add(card);
+      }
+    }
+
+    cards.putData(list);
+    Response r = new Response(uptime(), cards);
+    r.setType(Type.VOTE_BALLOT);
+
+    broadcast(r);
 
     phase = advancer.schedule(this::draw, currentState.getDuration(), TimeUnit.MILLISECONDS);
 
@@ -456,23 +474,51 @@ public class Server
    */
   private void draw ()
   {
-    // get all the cards drafted that recieved adequite votes:
-    // 1) add then enacted list
-    // 2) removed from hand
-
-    // advance sim to next turn with enacted cards
-    // resend world data
-
-    //
-    for (User user : getPlayers())
-    {
-
-    }
-
     currentState = State.DRAWING;
     broadcastStateChange();
 
-    System.out.println(currentState.name());
+    for (PolicyCard p : draftedPolicyCards)
+    {
+      System.out.println(p);
+      if (p.votesRequired() > p.getEnactingRegionCount())
+      {
+        simulator.discard(p.getOwner(), p.getCardType());
+      }
+      else
+      {
+        enactedPolicyCards.add(p);
+
+        simulator.discard(p.getOwner(), p.getCardType());
+      }
+    }
+
+    for (User user : getPlayers())
+    {
+      Payload data = new Payload();
+      EnumPolicy[] _hand = simulator.drawCards(user.getRegion());
+      ArrayList<EnumPolicy> handList = new ArrayList<>();
+      Collections.addAll(handList, _hand);
+      user.setHand(handList);
+
+      data.putData(user);
+      data.clear();
+      Response r = new Response(uptime(), data);
+      r.setType(Type.USER_HAND);
+      user.getWorker().send(r);
+    }
+
+    System.out.println("here");
+    WorldData data = simulator.nextTurn(enactedPolicyCards);
+    Payload payload = new Payload();
+    payload.putData(data);
+    Response r = new Response(payload);
+    r.setType(Type.WORLD_DATA);
+    broadcast(r);
+
+    if (data.year >= Constant.LAST_YEAR)
+    {
+      currentState = State.END;
+    }
 
 
     phase = advancer.schedule(this::draft, currentState.getDuration(), TimeUnit.MILLISECONDS);
@@ -641,6 +687,7 @@ public class Server
 
   private void broadcastStateChange ()
   {
+    System.out.println(currentState);
     Payload _data = new Payload();
     _data.putData(currentState);
     Response r = new Response(uptime(), _data);
@@ -672,4 +719,21 @@ public class Server
 
     new Server(port);
   }
+
+  public void addDraftedCard (PolicyCard policyCard)
+  {
+    draftedPolicyCards.add(policyCard);
+  }
+
+  public HashMap<PolicyCard, Tuple<User, Boolean>> getVoteMap ()
+  {
+    return votes;
+  }
+
+  public ArrayList<PolicyCard> getDraftedPolicyCards ()
+  {
+    return draftedPolicyCards;
+  }
+
+
 }

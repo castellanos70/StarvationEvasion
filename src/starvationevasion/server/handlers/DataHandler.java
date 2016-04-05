@@ -22,33 +22,44 @@ public class DataHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-    Payload data = new Payload();
-    m_response = new Response(server.uptime(), "Data");
 
     if (request.getDestination().equals(Endpoint.GAME_STATE))
     {
-
+      Payload data = new Payload();
       data.putData(server.getGameState());
-      m_response.setType(Type.GAME);
+
+      m_response = new Response(server.uptime(), data);
+      m_response.setType(Type.GAME_STATE);
+
       getClient().send(m_response);
       return true;
     }
     else if (request.getDestination().equals(Endpoint.SERVER_UPTIME))
     {
-      data.put("time", server.uptime());
-      m_response.setType(Type.GAME);
+      Payload data = new Payload();
+      data.putData(server.uptime());
+
+      m_response = new Response(server.uptime(), data);
+      m_response.setType(Type.TIME);
+
       getClient().send(m_response);
       return true;
     }
     else if (request.getDestination().equals(Endpoint.AVAILABLE_REGIONS))
     {
+      Payload data = new Payload();
       data.putData(server.getAvailableRegions());
-      m_response.setType(Type.GAME);
+
+      m_response = new Response(server.uptime(), data);
+      m_response.setType(Type.AVAILABLE_REGIONS);
+
       getClient().send(m_response);
       return true;
     }
     else if (request.getDestination().equals(Endpoint.WORLD_DATA))
     {
+      Payload data = new Payload();
+
 
       // todo: if true advance then send
       boolean isComplete = (boolean) request.getPayload().get("client-done");
@@ -74,9 +85,9 @@ public class DataHandler extends AbstractHandler
         ArrayList<GeographicArea>[] geographicAreaList = server.getSimulator().getRegionBoundaries();
         data.put("geographic-data", geographicAreaList);
       }
+
+
       m_response = new Response(data);
-
-
       m_response.setType(Type.WORLD_DATA);
       getClient().send(m_response);
 

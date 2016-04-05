@@ -34,7 +34,7 @@ public enum Type implements Sendable
   AREA,
   TIME,
   GAME_STATE,
-  AVAILABLE_REGIONS;
+  AVAILABLE_REGIONS, USER_HAND, WORLD_DATA_LIST;
 
 
   @Override

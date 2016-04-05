@@ -32,7 +32,7 @@ public class ProductionCSVLoader
     yield;       //Yield (MT/HA)
 
     public static final int SIZE = values().length;
-  };
+  }
 
   public static void load(Region[] regionList)
   {

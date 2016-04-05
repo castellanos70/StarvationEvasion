@@ -1,6 +1,8 @@
 package starvationevasion.sim;
 
+import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.sim.io.CSVReader;
 
 import java.io.FileNotFoundException;
@@ -9,59 +11,125 @@ import java.util.logging.Logger;
 public class CropData
 {
   private final static Logger LOGGER = Logger.getLogger(CropData.class.getName());
+  private final String PATH_CROPDATA = "/sim/CropData.csv";
+
+  private enum EnumHeader
+  {
+    food,      // EnumCrop
+    price2000, // int: Price (2000 US import price, Dollars per Metric Ton)
+    price2009, // int: Price (2009 US import price, Dollars per Metric Ton)
+    water,     // int: Water (Cubic meters per Metric Ton)
+    energy,    // not implemented yet.
+    fertilizerN,    // not implemented yet.
+    fertilizerP2O5, // not implemented yet.
+    fertilizerK2O,  // not implemented yet.
+    growDays,       //Growing Period (days/year)
+    temperatureMin,        //Temperature Min (Deg C). Crops die if temperature drops below this within its growing period.
+    temperatureIdealLow,  // Temperature Ideal Low (Deg C). Crops have max productivity if all days are within this range.
+    temperatureIdealHigh, // Temperature Ideal High (Deg C). Crops have max productivity if all days are within this range.
+    temperatureMax;       // Temperature Max (Deg C). Crops die if temperature rise above this within its growing period.
+    private static final int SIZE = values().length;
+  }
 
 
-  /**
-   * price in Dollars per Metric Ton for the first year of the model.
-   */
-  public double[] foodPriceStart = new double[EnumFood.SIZE];
+  public enum Field
+  {
+    WATER,     // int: Water (Cubic meters per Metric Ton)
+    ENERGY,    // not implemented yet.
+    FERTILIZER_N,    // not implemented yet.
+    FERTILIZER_P2O5, // not implemented yet.
+    FERTILIZER_K2O,  // not implemented yet.
+    GROW_DAYS,       //Growing Period (days/year)
+    TEMPERATURE_MIN,        //Temperature Min (Deg C). Crops die if temperature drops below this within its growing period.
+    TEMPERATURE_IDEAL_LOW,  // Temperature Ideal Low (Deg C). Crops have max productivity if all days are within this range.
+    TEMPERATURE_IDEAL_HIGH, // Temperature Ideal High (Deg C). Crops have max productivity if all days are within this range.
+    TEMPERATURE_MAX;       // Temperature Max (Deg C). Crops die if temperature rise above this within its growing period.
+    public static final int SIZE = values().length;
+  }
 
-  /**
-   * price in Dollars per Metric Ton for the current year of the model.
-   */
-  public double[] foodPrice = new double[EnumFood.SIZE];
-
-
-  /**
-   * land Yield in Metric Tons / Square Kilometer for USA in first year of model.
-   */
-  public double[] foodYieldStart = new double[EnumFood.SIZE];
-
-
-  /**
-   * land Yield in Metric Tons / Square Kilometer for USA in current year of model.
-   */
-  public double[] foodYield = new double[EnumFood.SIZE];
+  private int[][] foodPrice = new int[Model.YEARS_OF_DATA][EnumFood.SIZE];
+  private int[][] data = new int[Field.SIZE][EnumFood.SIZE];
 
 
   public CropData()
   {
-    final String PATH = "/sim/CropData.csv";
-    CSVReader fileReader;
+    CSVReader fileReader = new CSVReader(PATH_CROPDATA, 0);
 
-      fileReader = new CSVReader(PATH, 2);
+    //Check header
+    String[] fieldList = fileReader.readRecord(EnumHeader.SIZE);
 
-
-    for (int i=0; i< EnumFood.SIZE; i++)
+    for (EnumHeader header : EnumHeader.values())
     {
-      String fields[] = fileReader.readRecord(10);
-      if ((fields==null) || (!fields[0].equals(EnumFood.values()[i].name())))
+      int i = header.ordinal();
+      if (!header.name().equals(fieldList[i]))
       {
-        LOGGER.severe("**ERROR** Reading " + PATH);
+        LOGGER.severe("**ERROR** Reading " + PATH_CROPDATA +
+          ": Expected header[" + i + "]=" + header + ", Found: " + fieldList[i]);
         return;
       }
-      try
-      {
-        foodPriceStart[i] = Double.parseDouble(fields[1]);
-        foodYieldStart[i] = Double.parseDouble(fields[2]);
+    }
+    fileReader.trashRecord();
 
-        foodPrice[i] = foodPriceStart[i];
-        foodYield[i] = foodYieldStart[i];
+    // read until end of file is found
+    while ((fieldList = fileReader.readRecord(EnumHeader.SIZE)) != null)
+    {
+      System.out.println("CropData(): record="+fieldList[0]);
+
+      EnumFood food = EnumFood.valueOf(fieldList[0]);
+      int foodIdx = food.ordinal();
+
+      for (EnumHeader header : EnumHeader.values())
+      {
+        int i = header.ordinal();
+        if (i == 0)  continue;
+        if (fieldList[i].equals("")) continue;
+
+        int value = Integer.parseInt(fieldList[i]);
+        switch (header)
+        {
+          case price2000:
+            foodPrice[0][foodIdx] = value;  break;
+          case price2009:
+            foodPrice[9][foodIdx] = value;  break;
+          case water:
+            data[Field.WATER.ordinal()][foodIdx] = value; break;
+          case energy:
+            data[Field.ENERGY.ordinal()][foodIdx] = value; break;
+          case fertilizerN:
+            data[Field.FERTILIZER_N.ordinal()][foodIdx] = value; break;
+          case fertilizerP2O5:
+            data[Field.FERTILIZER_P2O5.ordinal()][foodIdx] = value; break;
+          case fertilizerK2O:
+            data[Field.FERTILIZER_K2O.ordinal()][foodIdx] = value; break;
+          case growDays:
+            data[Field.GROW_DAYS.ordinal()][foodIdx] = value; break;
+          case temperatureMin:
+            data[Field.TEMPERATURE_MIN.ordinal()][foodIdx] = value; break;
+          case temperatureIdealLow:
+            data[Field.TEMPERATURE_IDEAL_LOW.ordinal()][foodIdx] = value; break;
+          case temperatureIdealHigh:
+            data[Field.TEMPERATURE_IDEAL_HIGH.ordinal()][foodIdx] = value; break;
+          case temperatureMax:
+            data[Field.TEMPERATURE_MAX.ordinal()][foodIdx] = value; break;
+        }
       }
-      catch (Exception e)
-      { LOGGER.severe(e.getMessage());
-        e.printStackTrace();
+
+
+      for (int yearIdx=1; yearIdx<9; yearIdx++)
+      {
+        double w = yearIdx/9.0;
+        foodPrice[yearIdx][foodIdx] =
+          (int)(foodPrice[0][foodIdx]*(1.0-w) + foodPrice[9][foodIdx]*w);
       }
     }
+    fileReader.close();
+  }
+
+  public int getPrice(int year, EnumFood food)
+  { return foodPrice[year-Constant.FIRST_DATA_YEAR][food.ordinal()];
+  }
+
+  public int getData(Field field, EnumFood food)
+  { return data[field.ordinal()][food.ordinal()];
   }
 }

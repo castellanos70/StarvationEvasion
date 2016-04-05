@@ -1,6 +1,6 @@
 package starvationevasion.ai;
 
-import com.sun.tools.javac.util.ArrayUtils;
+
 import starvationevasion.ai.commands.*;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.WorldData;
@@ -14,8 +14,7 @@ import starvationevasion.server.model.Request;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.ArrayList;;
 import java.util.Stack;
 
 

@@ -73,7 +73,7 @@ public class CropData
     // read until end of file is found
     while ((fieldList = fileReader.readRecord(EnumHeader.SIZE)) != null)
     {
-      System.out.println("CropData(): record="+fieldList[0]);
+      //System.out.println("CropData(): record="+fieldList[0]);
 
       EnumFood food = EnumFood.valueOf(fieldList[0]);
       int foodIdx = food.ordinal();

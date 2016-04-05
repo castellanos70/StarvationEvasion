@@ -34,10 +34,15 @@ public class CardHandler extends AbstractHandler
     else if (request.getDestination().equals(Endpoint.DELETE_CARD))
     {
       EnumPolicy card = (EnumPolicy) request.getPayload().get("data");
-      if (getClient().getUser().getHand().contains(card))
+      if (getClient().getUser().policyCardsDiscarded <= 2)
       {
-        server.getSimulator().discard(getClient().getUser().getRegion(), card);
+        if (getClient().getUser().getHand().contains(card))
+        {
+          server.getSimulator().discard(getClient().getUser().getRegion(), card);
+          server.getSimulator().drawCards(getClient().getUser().getRegion());
+        }
       }
+
       return true;
     }
     else if (request.getDestination().equals(Endpoint.DRAFT_CARD))

@@ -21,8 +21,8 @@ public class Login extends AbstractCommand
       Request loginRequest = new Request(getClient().getStartNanoSec(), Endpoint.LOGIN);
       Payload data = new Payload();
 
-      data.put("username", "admin");
-      data.put("password", "admin");
+      data.put("username", "javier");
+      data.put("password", "javier");
 
       loginRequest.setData(data);
       getClient().send(loginRequest);

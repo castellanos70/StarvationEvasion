@@ -32,7 +32,7 @@ public class GraphDisplay extends BorderPane
   /**
    * Constructor for GraphDisplay
    * Takes a reference to the GUIOrig which ones it
-   * @param gui
+   * @param gui reference to gui
    */
   public GraphDisplay(GUI gui)
   {

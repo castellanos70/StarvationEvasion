@@ -99,6 +99,7 @@ public class PopupManager
 
   /**
    * When foodpopup is clicked, do the appropriate thing (close, open, close and open something else)
+   * @param id  the id.
    */
   public void toggleFoodPopup(int id)
   {
@@ -139,7 +140,7 @@ public class PopupManager
 
   /**
    * sets the pbDataDisplay to the passed in pbDataDisplay
-   * @param pbDataDisplay
+   * @param pbDataDisplay something
    */
   public void setPbDataDisplay(ProductBarDataDisplay pbDataDisplay)
   {
@@ -148,7 +149,7 @@ public class PopupManager
 
   /**
    * sets the graphDisplay to the passed in pbDataDisplay
-   * @param graphDisplay
+   * @param graphDisplay something
    */
   public void setGraphDisplay(GraphDisplay graphDisplay)
   {
@@ -157,7 +158,7 @@ public class PopupManager
 
   /**
    * sets the discardDisplay to the passed in pbDataDisplay
-   * @param discardDisplay
+   * @param discardDisplay something
    */
   public void setDiscardDisplay(DiscardDisplay discardDisplay)
   {

@@ -28,7 +28,7 @@ public class ClientRequestData
    * If worldDataFrom equals worldDataThroughYear then the server return an ArrayList of one
    * WorldData object for the given year.<br><br>
    *
-   * If worldDataThroughYear==0 or worldDataThroughYear >= currentYear,
+   * If worldDataThroughYear==0 or worldDataThroughYear &gt;= currentYear,
    * the server will default worldDataThroughYear to one less than the current year.<br><br>
    *
    * Note: If clientTurnDone==true, then client is requesting that the server advance the

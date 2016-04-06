@@ -196,13 +196,13 @@ public class ImageGetter implements ImageConstants
 
   /**
    * Get the undo button image
-   * @return
+   * @return undo button image
    */
   public Image getUndoButton(){return undoButton;}
 
   /**
    * Get the vote icon image
-   * @return
+   * @return vote icon image
    */
   public ImageView getVoteIcon(){return voteIcon;}
 

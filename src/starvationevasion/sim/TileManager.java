@@ -295,13 +295,13 @@ public class TileManager
    and a random number in range [0,2]
 
    @param delta calculated delta value
-   @param distance
-   @param r3
-   @return
+   @param distance between tiles
+   @param r random number
+   @return something
    */
-  public float scaleDeltaByDistance(double delta, double distance, double r3)
+  public float scaleDeltaByDistance(double delta, double distance, double r)
   {
-    return (float)(delta/(Math.log(Math.E + distance * r3)));
+    return (float)(delta/(Math.log(Math.E + distance * r)));
   }
 
   /**

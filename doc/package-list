@@ -31,6 +31,3 @@ starvationevasion.sim.io
 starvationevasion.sim.io.XMLparsers
 starvationevasion.sim.testing
 starvationevasion.util
-starvationevasion.vis.ClientTest
-starvationevasion.vis.controller
-starvationevasion.vis.visuals

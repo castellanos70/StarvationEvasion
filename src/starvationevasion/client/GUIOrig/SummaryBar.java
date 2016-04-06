@@ -143,7 +143,7 @@ public class SummaryBar extends GridPane
 
   /**
    * Updates the balance on the summarybar to the new balance
-   * @param newBalance
+   * @param newBalance something
    */
   public void updateBalance(int newBalance)
   {

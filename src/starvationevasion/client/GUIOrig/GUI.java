@@ -83,9 +83,6 @@ public class GUI extends Application
 
   /**
    * Constructor for the GUIOrig which the client calls
-   *
-   * @param client reference to the client
-   * @param localDataContainer reference to the local data the client stores
    */
   private Client client2;
   private MainGameLoop mainGameLoop;
@@ -160,7 +157,6 @@ public class GUI extends Application
   }
   /**
    * Simple getter in case any node needs to get the stage
-   * @return
    */
   public void initGame()
   {

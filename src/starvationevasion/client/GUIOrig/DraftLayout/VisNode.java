@@ -6,7 +6,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import starvationevasion.vis.controller.EarthViewer;
 import starvationevasion.client.GUIOrig.GUI;
 /**
  * VisNode is the GUIOrig element responsible for allowing the user to view and interact with the visualizer
@@ -16,7 +15,7 @@ public class VisNode extends StackPane
 {
   Stage primaryStage;
   boolean fullEarth=false;
-  EarthViewer earthViewer;
+  //EarthViewer earthViewer;
   Stage popUpEarth;
   Scene earthScene;
   GUI gui;
@@ -24,8 +23,8 @@ public class VisNode extends StackPane
   {
     this.gui=gui;
     primaryStage = stage;
-    earthViewer=new EarthViewer(100, 250);
-    getChildren().add(earthViewer.updateMini());
+    //earthViewer=new EarthViewer(100, 250);
+    //getChildren().add(earthViewer.updateMini());
 
 
     setOnMouseClicked(new EventHandler<MouseEvent>()
@@ -66,8 +65,8 @@ public class VisNode extends StackPane
     else
     {
       popUpEarth=new Stage();
-      Scene earthScene = new Scene(earthViewer.updateFull(),700,700);
-      earthViewer.addVisStyleSheet(earthScene);
+      //Scene earthScene = new Scene(earthViewer.updateFull(),700,700);
+      //earthViewer.addVisStyleSheet(earthScene);
 
       popUpEarth.setScene(earthScene);
       popUpEarth.show();

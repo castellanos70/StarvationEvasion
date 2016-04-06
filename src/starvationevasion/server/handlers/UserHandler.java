@@ -5,6 +5,7 @@ package starvationevasion.server.handlers;
  */
 
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.Util;
 import starvationevasion.server.*;
 import starvationevasion.server.model.*;
 
@@ -28,6 +29,7 @@ public class UserHandler extends AbstractHandler
       String uname = (String) request.getPayload().get("username");
       String pwd = (String) request.getPayload().get("password");
       EnumRegion region=(EnumRegion)request.getPayload().get("region");
+
       if (server.createUser(new User(uname, pwd, region, new ArrayList<>())))
       {
         m_response = new Response(server.uptime(), "SUCCESS");
@@ -50,27 +52,48 @@ public class UserHandler extends AbstractHandler
     }
     else if (request.getDestination().equals(Endpoint.USERS_LOGGED_IN))
     {
-      ArrayList list = new ArrayList<User>();
-      for (User user : server.getLoggedInUsers())
-      {
-        list.add(user);
-      }
-
       Payload data = new Payload();
       data.putData(server.getLoggedInUsers());
 
       m_response = new Response(server.uptime(), data);
+      m_response.setType(Type.USERS_LOGGED_IN_LIST);
+      getClient().send(m_response);
+      return true;
+    }
+    else if (request.getDestination().equals(Endpoint.USERS_READY))
+    {
+      Payload data = new Payload();
+      data.putData(server.getPlayers());
+
+      m_response = new Response(server.uptime(), data);
+      m_response.setType(Type.USERS_READY_LIST);
       getClient().send(m_response);
       return true;
     }
     else if (request.getDestination().equals(Endpoint.READY))
     {
       User _u = getClient().getUser();
-      if (_u != null && _u.getRegion() != null)
+
+      Payload payload = new Payload();
+      m_response = new Response(server.uptime(), payload);
+
+      if (_u != null)
       {
         _u.setPlaying(true);
-        server.addPlayer(_u);
-        m_response = new Response(server.uptime(), "SUCCESS");
+
+        // addPlayer() will set the region if not already set.
+        boolean isPlaying = server.addPlayer(_u);
+        if (isPlaying)
+        {
+          payload.putData(_u);
+          payload.putMessage("SUCCESS");
+          m_response.setType(Type.USER);
+        }
+        else
+        {
+          m_response = new Response(server.uptime(), "Sorry, " + _u.getUsername() + " there was an error.");
+        }
+
         getClient().send(m_response);
       }
 

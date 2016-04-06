@@ -120,21 +120,22 @@ public class CardDeck
   public void discard(EnumPolicy card)
   {
     //It is faster to remove from the end of an array list
-    for (int i = cardsInHand.size() ; i>=0; i--)
+    for (int i = cardsInHand.size()-1; i >= 0; i--)
     {
       EnumPolicy handCard = cardsInHand.get(i);
+
       if (card == handCard)
       {
         //Note: it is important that a pointer to the local card is added to the discard
         //      pile and NOT a pointer to the card in the argument list.
-        drawPile.add(handCard); //TODO NOTE This does not add to discardPile. Either misaligned or discard pile is outdated
+        // drawPile.add(handCard);
         cardsInHand.remove(i);
+        discardPile.add(handCard);
+        return;
       }
-
-      throw new IllegalArgumentException("discard(card="+card+") is not in " +
-        "this player's hand.");
-
     }
+
+    throw new IllegalArgumentException("discard(card="+card+") is not in this player's hand.");
   }
 
 
@@ -158,8 +159,8 @@ public class CardDeck
     CardDeck deck = new CardDeck(EnumRegion.USA_CALIFORNIA);
 
     // Draw cards, instantiating each.
-    //
     EnumPolicy[] hand = deck.drawCards();
+
     System.out.println("Drew " + hand.length + " cards" + deck.cardsRemainingInDrawPile() + " remaining in draw pile.");
     for (EnumPolicy card : hand)
     {
@@ -168,6 +169,7 @@ public class CardDeck
       PolicyCard policy = PolicyCard.create(EnumRegion.USA_CALIFORNIA, card);
       System.out.println("Policy: " + policy);
     }
+
   }
 }
 

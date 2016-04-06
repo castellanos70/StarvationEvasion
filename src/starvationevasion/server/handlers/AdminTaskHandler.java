@@ -20,7 +20,7 @@ public class AdminTaskHandler extends AbstractHandler
   protected boolean handleRequestImpl (Request request)
   {
     // first check the credentials
-    if(getClient().getUser() != null && getClient().getUser().getUsername().equals("admin"))
+    if(getClient().getUser().getUsername().equals("admin"))
     {
 
       if (request.getDestination().equals(Endpoint.KILL))

@@ -128,7 +128,7 @@ public class CSVReader
     if (fields.length > fieldCount)
     {
       LOGGER.severe("****ERROR reading " + path + ": Expected " + fieldCount +
-        " fields but read "+ fields.length + "/ndata=["+str+"]");
+        " fields but read "+ fields.length + "\ndata=["+str+"]");
       Thread.dumpStack();
       System.exit(0);
     }
@@ -149,9 +149,6 @@ public class CSVReader
       System.exit(0);
     }
   }
-
-
-
 
 
   /**

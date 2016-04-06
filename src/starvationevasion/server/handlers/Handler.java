@@ -30,7 +30,8 @@ public class Handler
                     new ChatHandler(server, worker).setSuccessor(
                             new CardHandler(server, worker).setSuccessor(
                                     new LoginHandler(server, worker).setSuccessor(
-                                            new AdminTaskHandler(server, worker)
+                                            new AdminTaskHandler(server, worker).setSuccessor(
+                                                    new DataHandler(server, worker))
                                     )))));
   }
 

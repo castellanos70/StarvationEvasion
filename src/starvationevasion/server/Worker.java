@@ -23,13 +23,11 @@ import java.net.Socket;
  */
 public class Worker extends Thread
 {
-  private User cred = new User();
   private Socket client;
+  private String username = "ANON";
   private volatile boolean isRunning = true;
   private final Server server;
-  private final Simulator simulator;
   private Handler handler;
-  private long serverStartTime;
 
   private WriteStrategy writer;
   private ReadStrategy reader;
@@ -47,7 +45,6 @@ public class Worker extends Thread
 
 
     this.client = client;
-    this.simulator = server.getSimulator();
     this.server = server;
     this.handler = new Handler(server, this);
 
@@ -172,11 +169,6 @@ public class Worker extends Thread
     }
   }
 
-  public void setServerStartTime (long serverStartTime)
-  {
-    this.serverStartTime = serverStartTime;
-  }
-
   public ReadStrategy getReader ()
   {
     return reader;
@@ -199,13 +191,19 @@ public class Worker extends Thread
     return writer;
   }
 
-  public User getUser ()
+
+  public String getUsername ()
   {
-    return cred;
+    return username;
   }
 
-  public void setUser (User user)
+  public void setUsername (String username)
   {
-    this.cred = user;
+    this.username = username;
+  }
+
+  public User getUser()
+  {
+    return server.getUserByUsername(getUsername());
   }
 }

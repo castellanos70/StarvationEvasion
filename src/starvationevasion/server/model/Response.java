@@ -88,4 +88,9 @@ public class Response implements Sendable
   {
     return time;
   }
+
+  public void setMessage (String message)
+  {
+    this.message = message;
+  }
 }

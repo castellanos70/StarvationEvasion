@@ -19,7 +19,7 @@ public class User implements Encryptable, Sendable
   private transient String salt;
 
   private String username = "Anon";
-  private String password;
+  private String password = "";
   private EnumRegion region;
   private boolean isLoggedIn = false;
   private boolean isPlaying = false;
@@ -181,7 +181,7 @@ public class User implements Encryptable, Sendable
 
     json.setString("username", username);
     json.setString("password", password);
-    json.setString("region", region.name());
+    json.setString("region", String.valueOf(region));
     json.setString("type", getType().name());
 
     //    ArrayList list = (ArrayList) this.get("hand");

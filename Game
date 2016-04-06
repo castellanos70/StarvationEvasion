@@ -45,7 +45,7 @@ run_server () {
 
 run_client () {
     build
-    java -classpath ./dist starvationevasion/server/Client "$1" "$2"
+    java -classpath "./dist:./dist/libs/*" starvationevasion/ai/AI "$1" "$2"
 }
 
 clean () {

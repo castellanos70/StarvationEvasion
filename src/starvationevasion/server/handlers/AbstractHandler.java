@@ -8,6 +8,7 @@ import starvationevasion.server.Server;
 import starvationevasion.server.Worker;
 import starvationevasion.server.model.Request;
 import starvationevasion.server.model.Response;
+import starvationevasion.server.model.User;
 
 /**
  * Generic handler. Mainly to forces subclasses to implement handleRequestImpl method

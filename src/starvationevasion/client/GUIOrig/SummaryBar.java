@@ -23,7 +23,7 @@ public class SummaryBar extends GridPane
   private ArrayList<RowConstraints> rowConstraintsList;
 
   GUI gui;
-  static EnumRegion region;
+  private EnumRegion region;
   static int year = 1981;
 
   static int regionPopulationData;
@@ -140,7 +140,7 @@ public class SummaryBar extends GridPane
     this.add(balanceLabel, 2,3,1,1);
 
   }
-
+  public void setRegion(EnumRegion region){this.region=region;}
   /**
    * Updates the balance on the summarybar to the new balance
    * @param newBalance something

@@ -38,9 +38,7 @@ public class ChatHandler extends AbstractHandler
         request.getPayload().remove("to-username");
       }
 
-      String from = getClient().getUser().getUsername();
-
-      request.getPayload().put("from", from);
+      request.getPayload().put("from", getClient().getUsername());
 
       if (to.equals("ALL"))
       {
@@ -57,9 +55,12 @@ public class ChatHandler extends AbstractHandler
       else
       {
         EnumRegion destination = EnumRegion.valueOf(to);
-        for (Worker _worker : server.getWorkerByRegion(destination))
+        for (User _user : server.getLoggedInUsers())
         {
-          _worker.send(new Response(server.uptime(), request.getPayload()));
+          if (_user.getRegion().equals(destination))
+          {
+            _user.getWorker().send(new Response(server.uptime(), request.getPayload()));
+          }
         }
       }
 

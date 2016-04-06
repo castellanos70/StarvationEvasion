@@ -27,7 +27,7 @@ public class LoginHandler extends AbstractHandler
       boolean auth = authenticate(uname, pwd);
       if (auth)
       {
-        data.putData(getClient().getUser());
+        data.putData(server.getUserByUsername(uname));
         data.putMessage("SUCCESS");
       }
       else
@@ -47,6 +47,7 @@ public class LoginHandler extends AbstractHandler
   private boolean authenticate(String username, String password)
   {
     User s = server.getUserByUsername(username);
+
     if (s != null)
     {
       String salt = s.getSalt();
@@ -54,8 +55,8 @@ public class LoginHandler extends AbstractHandler
       if (s.getPassword().equals(hash))
       {
         s.setLoggedIn(true);
+        getClient().setUsername(s.getUsername());
         s.setWorker(getClient());
-        getClient().setUser(s);
         return true;
       }
     }

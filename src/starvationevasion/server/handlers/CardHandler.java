@@ -22,7 +22,7 @@ public class CardHandler extends AbstractHandler
   {
     if (request.getDestination().equals(Endpoint.HAND_CREATE))
     {
-      server.drawByWorker(getClient());
+      server.drawByUser(getClient().getUser());
       Payload data = new Payload();
 
       data.putData(getClient().getUser().getHand());
@@ -40,7 +40,17 @@ public class CardHandler extends AbstractHandler
         if (getClient().getUser().getHand().contains(card))
         {
           server.getSimulator().discard(getClient().getUser().getRegion(), card);
+          getClient().getUser().getHand().remove(card);
+
           server.getSimulator().drawCards(getClient().getUser().getRegion());
+          Payload data = new Payload();
+
+          data.putData(getClient().getUser());
+          data.putMessage("SUCCESS");
+          m_response = new Response(server.uptime(), data);
+          m_response.setType(Type.USER);
+          getClient().send(m_response);
+
         }
       }
 

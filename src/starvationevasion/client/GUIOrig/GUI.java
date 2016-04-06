@@ -93,7 +93,6 @@ public class GUI extends Application
    // this.client = client;
     this.localDataContainer = localDataContainer;
     assignedRegion = client.getRegion();
-
   }
   public Client getClient(){return client2;}
   /**
@@ -167,6 +166,7 @@ public class GUI extends Application
       getDraftLayout().getHand().setHand(cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]));
     }
     assignedRegion=client2.getRegion();
+    getDraftLayout().getSummaryBar().setRegion(assignedRegion);
   }
   public ArrayList<EnumPolicy> getCardsInHand() {return cardsInHand;}
   public void setCardsInHand(ArrayList<EnumPolicy> cards)
@@ -229,6 +229,10 @@ public class GUI extends Application
       currentRoot = draftLayout;
       draftingPhase=true;
     }
+  }
+  public Boolean isDraftLayout(){
+    if(currentRoot==draftLayout) return true;
+    else return false;
   }
 
   /**

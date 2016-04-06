@@ -1,11 +1,6 @@
 package starvationevasion.client.Driver;
 
 
-import starvationevasion.client.GUIOrig.DraftLayout.map.ConfigPhaseMapController;
-import starvationevasion.client.GUIOrig.DraftLayout.map.Map;
-import starvationevasion.client.GUIOrig.DraftLayout.map.MapController;
-import starvationevasion.client.Client;
-import starvationevasion.client.Logic.LocalDataContainer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -13,11 +8,22 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import starvationevasion.client.Client;
+import starvationevasion.client.GUIOrig.DraftLayout.map.ConfigPhaseMapController;
+import starvationevasion.client.GUIOrig.DraftLayout.map.Map;
+import starvationevasion.client.GUIOrig.DraftLayout.map.MapController;
+import starvationevasion.client.GUIOrig.GUI;
+import starvationevasion.client.Logic.LocalDataContainer;
 
 /**
  * Created by Dayloki on 11/15/2015.
@@ -32,12 +38,14 @@ public class RegionChooser extends Application
   public static Text selectionText;
   public Stage primaryStage;
 
+
   public RegionChooser(Client client, LocalDataContainer localDataContainer)
   {
     super();
     this.localDataContainer = localDataContainer;
     this.client = client;
     this.map = new Map();
+
   }
 
   @Override
@@ -46,6 +54,19 @@ public class RegionChooser extends Application
     this.primaryStage = primaryStage;
     primaryStage.setTitle("Choose a Region");
     GridPane gridPane = new GridPane();
+    VBox login=new VBox();
+    HBox userName=new HBox();
+    Label unameLabel = new Label("Username");
+    TextField uname = new TextField();
+    userName.getChildren().addAll(unameLabel,uname);
+    HBox password=new HBox();
+    Label passwdLabel = new Label("Password");
+    PasswordField passwd = new PasswordField();
+    password.getChildren().addAll(passwdLabel,passwd);
+    Button createUser=new Button("Create new User");
+    login.getChildren().addAll(userName,password,createUser);
+    gridPane.add(login,0,1,1,1);
+
     gridPane.setPrefSize(1000, 200);
     gridPane.setAlignment(Pos.CENTER);
 
@@ -73,6 +94,10 @@ public class RegionChooser extends Application
       @Override
       public void handle(ActionEvent event)
       {
+        GUI gui=new GUI(client,null);
+        Stage guiStage=new Stage();
+        gui.start(guiStage);
+        primaryStage.close();
         button.setDisable(true);
       }
     });

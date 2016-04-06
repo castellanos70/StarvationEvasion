@@ -79,7 +79,7 @@ public class Hand extends GridPane
     {
       //Needs working connection
       // ClientPolicyCard clientPolicyCard=new ClientPolicyCard(GUIOrig.client.getAssignedRegion(),hand[i],GUIOrig);
-      ClientPolicyCard clientPolicyCard=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA,hand[i],gui);
+      ClientPolicyCard clientPolicyCard=new ClientPolicyCard(gui.getAssignedRegion(),hand[i],gui);
       clientPolicyCard.setHandIndex(i);
       elements.add(clientPolicyCard);
       add(clientPolicyCard, i, 0);

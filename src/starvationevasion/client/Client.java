@@ -179,7 +179,6 @@ public class Client
   {
     Request f = new Request(startNanoSec, Endpoint.DRAFT_CARD);
     Payload data = new Payload();
-
     data.putData("user");
     data.put("card", card);
     // Create a payload (this is the class that stores Sendable information)

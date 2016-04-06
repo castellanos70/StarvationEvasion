@@ -1,8 +1,5 @@
 package starvationevasion.client.GUIOrig.DraftLayout;
 
-import starvationevasion.client.GUIOrig.DraftLayout.hand.ClientPolicyCard;
-import starvationevasion.client.GUIOrig.DraftLayout.hand.Hand;
-import starvationevasion.client.GUIOrig.GUI;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -11,6 +8,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import starvationevasion.client.GUIOrig.DraftLayout.hand.ClientPolicyCard;
+import starvationevasion.client.GUIOrig.DraftLayout.hand.Hand;
+import starvationevasion.client.GUIOrig.GUI;
 
 import java.util.ArrayList;
 

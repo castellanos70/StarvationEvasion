@@ -1,8 +1,28 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import starvationevasion.sim.CropZoneData.EnumCropZone;
+
+
+/**
+ * LandTiles are used to hold climate data for the model.<br>
+ * This model uses past and future values of climate data from third party measurements and models
+ * sampled on a geodesic grid of regular hexagons with 0.25 degree resolution.<br><br>
+ *
+ * Areas of the globe not over one of the modeled territories have been pre filtered from the data file.<br><br>
+ *
+ * Each tile is a hexagon with center at latitude, longitude.<br><br>
+ * Each game territory is contains the LandTiles that cover that territory. <br><br>
+ *
+ *
+ * Data source: http://www.nccs.nasa.gov/<br>
+ * Temperatures are near surface, air temperatures in degrees C.<br>
+ * The raw data from is daily.<br><br>
+ * Precipitation is the average volume of water in the form of rain, snow, hail,
+ * or sleet that falls per unit of area and per unit of time at the site.
+ * The raw data is measured in units of (kg / m2)/sec. We converted this to
+ * (kg / m2) = millimeters by multiplying by 24*60*60.
+ */
 
 public class LandTile
 {
@@ -11,16 +31,25 @@ public class LandTile
     static int SIZE = values().length;
   }
 
+  public enum RawDataYears
+  { y2000, y2001, y2002, y2003, y2004, y2005, y2010, y2015, y2020, y2025, y2030, y2035, y2040, y2045, y2050;
+    static int SIZE = values().length;
+  }
+
+
+
+
+
   private float latitude;
   private float longitude;
-  private float[][] temperatureMonthlyLow = new float[Model.YEARS_OF_DATA][Month.SIZE];   //degrees Celsius.
-  private float[][] temperatureMonthlyHigh = new float[Model.YEARS_OF_DATA][Month.SIZE];  //degrees Celsius.
-  private float[][] temperatureMeanDailyLow = new float[Model.YEARS_OF_DATA][Month.SIZE]; //degrees Celsius.
-  private float[][] temperatureMeanDailyHigh = new float[Model.YEARS_OF_DATA][Month.SIZE];//degrees Celsius.
-  private float[][] rainMeanDaily = new float[Model.YEARS_OF_DATA][Month.SIZE];           //cm
-  private float[][] rainMaxDaily = new float[Model.YEARS_OF_DATA][Month.SIZE];            //cm
 
-  private EnumFood currCrop = null;
+  private float[][] temperatureMonthlyLow = new float[RawDataYears.SIZE][Month.SIZE];   //degrees Celsius.
+  private float[][] temperatureMonthlyHigh = new float[RawDataYears.SIZE][Month.SIZE];  //degrees Celsius.
+  private float[][] temperatureMeanDailyLow = new float[RawDataYears.SIZE][Month.SIZE]; //degrees Celsius.
+  private float[][] temperatureMeanDailyHigh = new float[RawDataYears.SIZE][Month.SIZE];//degrees Celsius.
+  private float[][] rainMeanDaily = new float[RawDataYears.SIZE][Month.SIZE];           //cm
+
+  private EnumFood curCrop = null;
 
   /**
    Constructor used for initial creation of data set
@@ -34,18 +63,8 @@ public class LandTile
   }
 
 
-  /**
-   Find an interpolated value given extremes of the range across which to
-   interpolate, the number of steps to divide that range into and the step of
-   the range to find.
 
-   @param start   beginning (min) of the range
-   @param end     end (max) of the range
-   @param slices  slices to divide range into
-   @param n       slice desired from interpolation
-   @return        interpolated value
-   */
-  public static float interpolate(float start, float end, float slices, float n)
+  public float getinterpolate(float start, float end, float slices, float n)
   {
     if (slices < 0) return end;
     float stepSize = (end - start) / slices;
@@ -63,9 +82,9 @@ public class LandTile
   }
 
 
-  public void setCurrCrop(EnumFood crop)
+  public void setCurCrop(EnumFood crop)
   {
-    currCrop = crop;
+    curCrop = crop;
   }
 
   /**
@@ -178,8 +197,8 @@ public class LandTile
         zonePercent = 0.25;
         break;
     }
-    if (currCrop == crop) usePercent = 1;
-    else if (currCrop == null) usePercent = 0.1;
+    if (curCrop == crop) usePercent = 1;
+    else if (curCrop == null) usePercent = 0.1;
     else usePercent = 0.5;
     return zonePercent * usePercent;
   }
@@ -201,7 +220,7 @@ public class LandTile
   public String toString()
   {
     return "LandTile{" +
-            ", current crop =" + currCrop +
+            ", current crop =" + curCrop +
             '}';
 
 

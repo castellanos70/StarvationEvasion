@@ -27,6 +27,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 
 /**
@@ -45,7 +47,7 @@ public class Server
   private final ArrayList<User> userList = new ArrayList<>();
 
   // list of all the users playing the game (subset of userList)
-  private final ArrayList<User> players = new ArrayList<>();
+  // private final ArrayList<User> players = new ArrayList<>();
 
   private State currentState = State.LOGIN;
   private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -55,6 +57,7 @@ public class Server
   private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
   private ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>(),
           draftedPolicyCards = new ArrayList<>();
+
   private HashMap<PolicyCard, Tuple<User, Boolean>> votes = new HashMap<>();
 
 
@@ -71,7 +74,14 @@ public class Server
     Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
 
     createUser(new User("admin", "admin", EnumRegion.USA_CALIFORNIA, new ArrayList<>()));
-    createUser(new User("javier", "javier", EnumRegion.USA_MOUNTAIN, new ArrayList<>()));
+    createUser(new User("ANON", "", null, new ArrayList<>()));
+    createUser(new User("Emma", "bot", null, new ArrayList<>()));
+    createUser(new User("Olivia", "bot", null, new ArrayList<>()));
+    createUser(new User("Noah", "bot", null, new ArrayList<>()));
+    createUser(new User("Liam", "bot", null, new ArrayList<>()));
+    createUser(new User("Sophia", "bot", null, new ArrayList<>()));
+
+
     startNanoSec = System.nanoTime();
     simulator = new Simulator();
 
@@ -142,7 +152,6 @@ public class Server
         System.out.println(dateFormat.format(date) + " Server: new Connection request recieved.");
         System.out.println(dateFormat.format(date) + " Server " + client.getRemoteSocketAddress());
         Worker worker = new Worker(client, this);
-        worker.setServerStartTime(startNanoSec);
 
 
         if (secureConnection(worker, client))
@@ -200,37 +209,21 @@ public class Server
     return null;
   }
 
-  //  public User getUserByWorker (String worker)
-  //  {
-  //    return new User(new JSONDocument(JSONDocument.Type.OBJECT));//users.get(worker);
-  //  }
-
-  public Iterable<Worker> getWorkerByRegion (EnumRegion region)
-  {
-    ArrayList<Worker> _list = new ArrayList<>();
-    for (Worker worker : allConnections)
-    {
-      if (worker.getUser().getRegion() == region)
-      {
-        _list.add(worker);
-      }
-    }
-    return _list;
-  }
-
-  public Iterable<User> getUserList ()
+  public List<User> getUserList ()
   {
     return userList;
   }
 
   public boolean createUser (User u)
   {
-    userList.add(u);
-//    Payload data = new Payload();
-//    data.putData(u);
-//    broadcast(new Response(uptime(), data));
-
-    return true;
+    boolean found = userList.stream()
+                            .anyMatch(user -> user.getUsername().equals(u.getUsername()));
+    if (!found)
+    {
+      userList.add(u);
+      return true;
+    }
+    return false;
   }
 
 
@@ -238,28 +231,15 @@ public class Server
 
   public int getLoggedInCount ()
   {
-    int i = 0;
-    for (User user : userList)
-    {
-      if (user.isLoggedIn())
-      {
-        i++;
-      }
-    }
-    return i;
+    return (int) getLoggedInUsers().stream()
+                                   .count();
   }
 
-  public Iterable<User> getLoggedInUsers ()
+  public List<User> getLoggedInUsers ()
   {
-    ArrayList<User> _active = new ArrayList<>();
-    for (User user : userList)
-    {
-      if (user.isLoggedIn())
-      {
-        _active.add(user);
-      }
-    }
-    return _active;
+    return userList.stream()
+            .filter(user -> user.isLoggedIn())
+            .collect(Collectors.toList());
   }
 
   public int getUserCount ()
@@ -268,24 +248,11 @@ public class Server
   }
 
 
-  /**
-   * Draw new cards for a specific user
-   */
-  public void drawByWorker (Worker worker)
-  {
-    EnumPolicy[] _hand = simulator.drawCards(worker.getUser().getRegion());
-    worker.getUser().setHand(new ArrayList<>(Arrays.asList(_hand)));
-  }
-
-
-
-
-
   public void broadcast (Response response)
   {
-    for (User u : getLoggedInUsers())
+    for (Worker worker : allConnections)
     {
-      u.getWorker().send(response);
+      worker.send(response);
     }
   }
 
@@ -341,20 +308,17 @@ public class Server
     broadcast(new Response(uptime(), "The game has been stopped."));
   }
 
-  public Iterable<User> getPlayers()
+  public List<User> getPlayers()
   {
-    synchronized(players)
-    {
-      return players;
-    }
+    return userList.stream()
+            .filter(user -> user.isPlaying())
+            .collect(Collectors.toList());
   }
 
   public int getPlayerCount ()
   {
-    synchronized(players)
-    {
-      return players.size();
-    }
+    return (int) getPlayers().stream()
+                             .count();
   }
 
   public boolean addPlayer (User u)
@@ -370,14 +334,13 @@ public class Server
       }
       availableRegions.remove(loc);
       u.setPlaying(true);
-      players.add(u);
+      // players.add(u);
       return true;
     }
     else
     {
-      u.setRegion(availableRegions.remove(0));
+      u.setRegion(availableRegions.get(Util.randInt(0, availableRegions.size()-1)));
       u.setPlaying(true);
-      players.add(u);
       return true;
     }
   }
@@ -400,7 +363,8 @@ public class Server
     ArrayList<WorldData> worldDataList = simulator.getWorldData(Constant.FIRST_DATA_YEAR,
                                                                 Constant.FIRST_GAME_YEAR - 1);
 
-    Payload data = new Payload();
+    Payload payload = new Payload();
+    Response response = new Response(uptime(), payload);
 
     for (User user : getPlayers())
     {
@@ -409,17 +373,15 @@ public class Server
       Collections.addAll(handList, _hand);
       user.setHand(handList);
 
-      data.putData(user);
-      data.clear();
-      Response r = new Response(uptime(), data);
-      r.setType(Type.USER_HAND);
-      user.getWorker().send(r);
+      payload.putData(user.getHand());
+      response.setType(Type.USER_HAND);
+      user.getWorker().send(response);
     }
 
-    data.putData(worldDataList);
-    Response r = new Response(uptime(), data);
-    r.setType(Type.WORLD_DATA_LIST);
-    broadcast(r);
+    payload.clear();
+    payload.putData(worldDataList);
+    response.setType(Type.WORLD_DATA_LIST);
+    broadcast(response);
 
     draft();
   }
@@ -434,7 +396,6 @@ public class Server
     broadcastStateChange();
 
     enactedPolicyCards.clear();
-
 
     phase = advancer.schedule(this::vote, currentState.getDuration(), TimeUnit.MILLISECONDS);
 
@@ -481,48 +442,37 @@ public class Server
 
     for (PolicyCard p : draftedPolicyCards)
     {
-      System.out.println(p);
-      if (p.votesRequired() > p.getEnactingRegionCount())
-      {
-        simulator.discard(p.getOwner(), p.getCardType());
-      }
-      else
-      {
-        enactedPolicyCards.add(p);
-        simulator.discard(p.getOwner(), p.getCardType());
-      }
-
-      if (p.votesRequired() == 0)
+      if (p.votesRequired() == 0 || p.getEnactingRegionCount() >= p.votesRequired())
       {
         enactedPolicyCards.add(p);
       }
       simulator.discard(p.getOwner(), p.getCardType());
     }
 
+
+    Payload payload = new Payload();
+    Response response = new Response(uptime(), payload);
+
     for (User user : getPlayers())
     {
-      Payload data = new Payload();
-      EnumPolicy[] _hand = simulator.drawCards(user.getRegion());
-      ArrayList<EnumPolicy> handList = new ArrayList<>();
-      Collections.addAll(handList, _hand);
-      user.setHand(handList);
+      drawByUser(user);
 
-      data.putData(user);
-      data.clear();
-      Response r = new Response(uptime(), data);
-      r.setType(Type.USER_HAND);
-      user.getWorker().send(r);
+      payload.putData(user.getHand());
+      response.setType(Type.USER_HAND);
+      user.getWorker().send(response);
     }
 
-    System.out.println("here");
-    WorldData data = simulator.nextTurn(enactedPolicyCards);
-    Payload payload = new Payload();
-    payload.putData(data);
-    Response r = new Response(payload);
-    r.setType(Type.WORLD_DATA);
-    broadcast(r);
 
-    if (data.year >= Constant.LAST_YEAR)
+    WorldData worldData = simulator.nextTurn(enactedPolicyCards);
+
+
+    payload.clear();
+    payload.putData(worldData);
+    response.setType(Type.WORLD_DATA);
+    broadcast(response);
+
+
+    if (worldData.year >= Constant.LAST_YEAR)
     {
       currentState = State.END;
     }
@@ -540,7 +490,7 @@ public class Server
   {
     cleanConnectionList();
 
-    if (getPlayerCount() == 1 && currentState == State.LOGIN)
+    if (getPlayerCount() == 2 && currentState == State.LOGIN)
     {
       currentState = State.BEGINNING;
       Payload data = new Payload();
@@ -674,11 +624,6 @@ public class Server
     {
       if (!allConnections.get(i).isRunning())
       {
-        if (allConnections.get(i).getUser() != null)
-        {
-          // no longer active
-          allConnections.get(i).getUser().setLoggedIn(false);
-        }
         allConnections.get(i).shutdown();
         // the worker is not running. remove it.
         allConnections.remove(i);
@@ -732,15 +677,21 @@ public class Server
     draftedPolicyCards.add(policyCard);
   }
 
-  public HashMap<PolicyCard, Tuple<User, Boolean>> getVoteMap ()
-  {
-    return votes;
-  }
 
   public ArrayList<PolicyCard> getDraftedPolicyCards ()
   {
     return draftedPolicyCards;
   }
 
+
+  public void drawByUser (User user)
+  {
+    EnumPolicy[] _hand = simulator.drawCards(user.getRegion());
+    ArrayList<EnumPolicy> handList = new ArrayList<>();
+    Collections.addAll(handList, _hand);
+    User u = getPlayers().stream().filter(user1 -> user1.getUsername().equals(user.getUsername())).findFirst().get();
+    u.setHand(handList);
+
+  }
 
 }

@@ -8,7 +8,16 @@ import java.util.Random;
  */
 public class Constant
 {
+  /**
+   * Labels for the month
+   */
+  public static final String[] MONTH_LABELS = {"January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"};
 
+  /**
+   * Days in each month
+   */
+  public static final int[] MONTH_DAYS = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
   /**
    * Each game turn advances the simulator by YEARS_PER_TURN years.
    */

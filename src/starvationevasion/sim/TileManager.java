@@ -77,14 +77,14 @@ public class TileManager
   }
 
 
-  /**
+  /*
    Get the max temperature at a location in the current simulation year.
 
    @param lat [-90.0 to 90.0], South latitudes are less than 0.
    @param lon [-180.0 to 180.0], West longitudes are less than 0.
    @return  the max temperature at the coordinates, either estimated or exact,
             depending on the year
-   */
+
   public float getTemperatureMax(float lat, float lon)
   {
     LandTile tile = getTile(lon, lat);
@@ -96,14 +96,15 @@ public class TileManager
     return tile.getMaxAnnualTemp();
   }
 
-  /**
+
+  /*
    Get the min temperature at a location in the current simulation year.
 
    @param lat [-90.0 to 90.0], South latitudes are less than 0.
    @param lon [-180.0 to 180.0], West longitudes are less than 0.
    @return  the min temperature at the coordinates, either estimated or exact,
    depending on the year
-   */
+
   public float getTemperatureMin(float lat, float lon)
   {
     LandTile tile = getTile(lon, lat);
@@ -115,14 +116,14 @@ public class TileManager
     return tile.getMinAnnualTemp();
   }
 
-  /**
+  /*
    Get the average daytime temperature at a location in the current simulation year.
 
    @param lat [-90.0 to 90.0], South latitudes are less than 0.
    @param lon [-180.0 to 180.0], West longitudes are less than 0.
    @return  the average daytime temperature at the coordinates, either estimated
    or exact, depending on the year
-   */
+
   public float getTemperatureDay(float lat, float lon)
   {
     LandTile tile = getTile(lon, lat);
@@ -134,14 +135,14 @@ public class TileManager
     return tile.getAvgDayTemp();
   }
 
-  /**
+  /*
    Get the average nighttime temperature at a location in the current simulation year.
 
    @param lat [-90.0 to 90.0], South latitudes are less than 0.
    @param lon [-180.0 to 180.0], West longitudes are less than 0.
    @return  the average night temperature at the coordinates, either estimated
    or exact, depending on the year
-   */
+
   public float getTemperatureNight(float lat, float lon)
   {
     LandTile tile = getTile(lon, lat);
@@ -153,14 +154,14 @@ public class TileManager
     return tile.getAvgNightTemp();
   }
 
-  /**
+  /*
    Get the annual rainfall at a location in the current simulation year.
 
    @param lat [-90.0 to 90.0], South latitudes are less than 0.
    @param lon [-180.0 to 180.0], West longitudes are less than 0.
    @return  the annual rainfall at the coordinates, either estimated or exact,
    depending on the year
-   */
+
   public float getRainfall(float lat, float lon)
   {
     LandTile tile = getTile(lon, lat);
@@ -174,11 +175,11 @@ public class TileManager
   }
 
 
-  /**
+  /*
    Mutates all the tile data based on projections maintained within each tile
    and noise added randomly.
    @param year The simulation year.
-   */
+
   public void setClimate(int year)
   {
     LandTile[] tiles = dataTiles();
@@ -191,7 +192,7 @@ public class TileManager
         int victim = Util.rand.nextInt(count);
         addNoiseByTile(tiles[victim]);
     }
-
+*/
 //    /* Shuffle tiles before adding noise
 //    */
 //    Collections.shuffle(tiles);
@@ -199,32 +200,32 @@ public class TileManager
 //    {
 //      addNoiseByTile(tile);
 //    }
-  }
-
-  /* adds noise to the parameters of all the tiles within the NOISE_RADIUS of
-    a given tile */
+//  }
+/*
+  // adds noise to the parameters of all the tiles within the NOISE_RADIUS of
+  // a given tile
   private void addNoiseByTile(LandTile tile)
   {
     int centerRow = latToRow(tile.getLat());
     int centerCol = lonToCol(tile.getLon());
     
-    /* calculate min and max row and column based on radius of noise addition and
-      the current tile's location in the data */
+    // calculate min and max row and column based on radius of noise addition and
+    // the current tile's location in the data
     int minRow = centerRow - (int) (NOISE_RADIUS / DY_KM);
     int maxRow = centerRow + (int) (NOISE_RADIUS / DY_KM);
     int minCol = centerCol - (int) (NOISE_RADIUS / DX_KM);
     int maxCol = centerCol + (int) (NOISE_RADIUS / DX_KM);
 
-    /* get the source tile's data.  
-      All noise is added as a function of these values */
+    // get the source tile's data.
+    // All noise is added as a function of these values
     float minTemp = tile.getMinAnnualTemp();
     float maxTemp = tile.getMaxAnnualTemp();
     float pmTemp = tile.getAvgNightTemp();
     float amTemp = tile.getAvgDayTemp();
     float rain = tile.getRainfall();
     
-    /* noise is also a function of two random numbers in range [0,1]
-    (generated once per source?) */
+    // noise is also a function of two random numbers in range [0,1]
+    //(generated once per source?)
     double r1 = Util.rand.nextDouble();
     double r2 = Util.rand.nextDouble();
 
@@ -238,7 +239,7 @@ public class TileManager
     {
       for (int c = minCol; c < maxCol; c++)
       {
-        /* allow overlap in data to account for the sphere */
+        // allow overlap in data to account for the sphere
         int colIndex = c < 0 ? COLS + c : c%COLS;
         int rowIndex = r < 0 ? ROWS + r : r%ROWS;
         if (colIndex < 0 || rowIndex < 0)
@@ -273,7 +274,7 @@ public class TileManager
     }
   }
 
-  /**
+  /*
    Calculates the delta value used to add noise to tiles, given a maximum and
    minimum value for the parameter, and two random numbers in range [0,1]
    To use this for the annual rainfall delta, use 0 as the minimum.
@@ -283,13 +284,13 @@ public class TileManager
    @param r1    first random number between 0 and 1
    @param r2    second random number between 0 and 1
    @return      the delta value used to randomize climate data
-   */
+
   public float calcTileDelta(double min, double max, double r1, double r2)
   {
     return (float)(0.1 * (max - min)  * (r1 - r2));
   }
 
-  /**
+  /*
    Calculates the actual amount to add to a given parameter in a LandTile, given
    the delta value, the distance between the tile from which noise is being added
    and a random number in range [0,2]
@@ -298,20 +299,20 @@ public class TileManager
    @param distance between tiles
    @param r random number
    @return something
-   */
+
   public float scaleDeltaByDistance(double delta, double distance, double r)
   {
     return (float)(delta/(Math.log(Math.E + distance * r)));
   }
 
-  /**
+
    Get a tile by longitude and latitude
 
    @param lon degrees longitude
    @param lat degrees latitude
    @return the tile into which the specified longitude and latitude coordinates
    fall.  If no tile exists at that point, NO_DATA is returned
-   */
+
   public LandTile getTile (double lon, double lat)
   {
     if(!coordsInBounds(lon, lat))
@@ -321,7 +322,7 @@ public class TileManager
       );
     }
     
-    /* equal area projection is encapsulated here */
+    // equal area projection is encapsulated here
     int col = lonToCol(lon);
     int row = latToRow(lat);
     LandTile tile = tiles[col][row];
@@ -329,13 +330,13 @@ public class TileManager
   }
 
 
-  /**
+
    Add a given tile to the data set.
    This should really only be used when reading in a new set of tiles from
    a file.
 
    @param tile  LandTile to add
-   */
+
   public void putTile(LandTile tile)
   {
     double lon = tile.getLon();
@@ -344,37 +345,37 @@ public class TileManager
   }
 
 
-  /**
+  /*
    Registers a tile as having been associated with a country.  Due to gaps in the
    country data, if a set of tiles covering all the land is desired, use dataTiles()
    @param tile  tile to register
-   */
+
   public void registerCountryTile(LandTile tile)
   {
     countryTiles.add(tile);
   }
 
 
-  /**
+  /*
    Returns a Collection of tiles that have been registered with a country.
    This is dependent on the usage of registerCountryTile() at initial data
    creation. (Also maybe should be refactored to another location?)
 
    @return Collection of those LandTiles that have been registered with a Territory
-   */
+
   public List<LandTile> countryTiles()
   {
     return countryTiles;
   }
 
-  /**
+  /*
    Returns a Collection of the tiles held by this TileManager that actually
    contain data.  This, in effect, excludes tiles that would be over ocean and
    those at the extremes of latitude.  For all tiles, use allTiles();
 
    @return  a Collection holding only those tiles for which there exists raster
             data.
-   */
+
   public LandTile[] dataTiles()
   {
     if(null == dataTiles)
@@ -391,9 +392,9 @@ public class TileManager
     return dataTiles;
   }
 
-  /**
+  /*
    @return  all the tiles in this manager in a List
-   */
+
   public List<LandTile> allTiles()
   {
     if(allTiles == null)
@@ -405,22 +406,22 @@ public class TileManager
   }
 
 
-  /**
+
    remove a given tile from the underlying set of tiles.  This has the effect
    of placing a NO_DATA tile at the location of the given tile in the full
    projection (assuming the given tile was found)
    @param tile tile to remove
    @return  true if the tile was found and removed
-   */
+
   public boolean removeTile(LandTile tile)
   {
     int col = lonToCol(tile.getLon());
     int row = latToRow(tile.getLat());
 
-    /* check if tile is in the right position */
+    // check if tile is in the right position
     boolean ret = tiles[col][row] == tile;
 
-    if(!ret) /* only search if the tile is not in its proper place */
+    if(!ret) // only search if the tile is not in its proper place
     {
       loop:
       for (int i = 0; i < tiles.length; i++)
@@ -429,24 +430,24 @@ public class TileManager
         {
           if(ret = (tiles[i][j] == tile))
           {
-            /* "remove" first instance of tile from underlying array */
+            // "remove" first instance of tile from underlying array
             tiles[i][j] = NO_DATA;
             break loop;
           }
         }
       }
     }
-    /* tile is in the right place, remove it */
+    // tile is in the right place, remove it
     else tiles[col][row] = NO_DATA;
 
-    /* pull all tiles from method ref, to guarantee the list exists */
+    // pull all tiles from method ref, to guarantee the list exists
     ret = ret || allTiles().remove(tile);
     ret = ret || countryTiles.remove(tile);
 
-    /* ret is true iff the tile was a member of one of the underlying structures */
+    // ret is true iff the tile was a member of one of the underlying structures
     return ret;
   }
-
+*/
 
 
 
@@ -501,7 +502,7 @@ public class TileManager
   }
 
   /* initialize a new tile set with proper latitude and longitude center points.
-    This is really only used for making tiles for a new data set*/
+    This is really only used for making tiles for a new data set
   private static void initTiles(LandTile [][] tileset)
   {
     for (int col = 0; col < COLS; col++)
@@ -514,12 +515,12 @@ public class TileManager
       }
     }
   }
-
+*/
   /* Used to create and write a new tile set.
      Be careful using this with the current data's filepath.  If a backup is not
      made, that data will be overwritten and must be re-generated from the raw
      data from www.worldclim.org (See BioClimDataParser)
-   */
+
   private static void writeNewTileSet(String filePath)
   {
     TileManager data = new TileManager();
@@ -537,7 +538,7 @@ public class TileManager
       e.printStackTrace();
     }
   }
-
+*/
   /**
    Exception used if accessors from the AbstractClimateData class are given
    invalid coordinates

@@ -21,7 +21,7 @@ public class Hurricane extends AbstractEvent
     Territory landArea = getLandArea();
     for (LandTile tile : landArea.getLandTiles())
     {
-      tile.setRainfall(tile.getRainfall()*3);
+      //tile.setRainfall(tile.getRainfall()*3);
     }
     super.applyEffects();
   }

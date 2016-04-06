@@ -484,13 +484,13 @@ public class Model
   {
     // Done.
     //
-    if (debugLevel.intValue() < Level.INFO.intValue())
-    { Simulator.dbg.println("******************************************* Updating climate");
-    }
+    //if (debugLevel.intValue() < Level.INFO.intValue())
+    //{ Simulator.dbg.println("******************************************* Updating climate");
+    //}
 
-    if (debugLevel.intValue() < Level.INFO.intValue())
-    { printCurrentClimate(regionList[debugRegion.ordinal()], currentYear);
-    }
+    //if (debugLevel.intValue() < Level.INFO.intValue())
+    //{ printCurrentClimate(regionList[debugRegion.ordinal()], currentYear);
+    //}
   }
 
   private void generateSpecialEvents()
@@ -699,7 +699,7 @@ public class Model
     }
     Simulator.dbg.println();
   }
-
+/*
   public void printCurrentClimate(Region region, int year)
   {
     // Print just the cell at the capital.
@@ -709,10 +709,10 @@ public class Model
     {
       MapPoint capitol = territory.getCapitolLocation();
       LandTile tile = tileManager.getTile(capitol.longitude, capitol.latitude);
-      Simulator.dbg.println("\t" + territory.getName() + ": " + tile.toDetailedString());
+      Simulator.dbg.println("\t" + territory.getName() + ": " + tile);
     }
   }
-
+*/
 
   public void printRegions(boolean verbose)
   {
@@ -748,9 +748,11 @@ public class Model
       if (debugLevel.intValue() <= Level.FINER.intValue()) printData(territory, year, "\t");
       if (debugLevel.intValue() <= Level.FINEST.intValue())
       {
+        /*
         for (LandTile tile : territory.getLandTiles())
         { if (tile.getCurrentCrop() != null) Simulator.dbg.println("\t\t" + tile.toString());
         }
+        */
       }
     }
   }

@@ -115,9 +115,28 @@ public class Client
   }
   public void ready()
   {
+
     Request f = new Request(startNanoSec, Endpoint.READY);
     sendRequest(f);
+    readHand();
     //createHand();
+  }
+  public void worldData()
+  {
+    Request f = new Request(startNanoSec, Endpoint.LOGIN);
+    // Create a payload (this is the class that stores Sendable information)
+    Payload data = new Payload();
+
+    data.putData("user");
+
+    data.put("client-done", true);
+    data.put("region-polygons", true);
+    data.put("data-start",2000);
+    data.put("data-end",2001);
+
+    f.setData(data);
+    sendRequest(f);
+    requestAvaliableRegions();
   }
   public void getUsers()
   {
@@ -152,7 +171,7 @@ public class Client
 
     data.put("username", user);
     data.put("password", pass);
-    data.put("region",region);
+    data.put("region",EnumRegion.USA_SOUTHEAST);
     f.setData(data);
     sendRequest(f);
   }
@@ -374,7 +393,7 @@ public class Client
       try
       {
         Response response = readObject();
-        System.out.println(response.getPayload());
+        //System.out.println(response.getPayload());
         if (response.getPayload().get("data") instanceof User)
         {
           if(response.getPayload().get("message")!=null&&response.getPayload().get("message").equals("SUCCESS"))

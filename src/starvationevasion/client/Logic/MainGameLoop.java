@@ -1,5 +1,6 @@
 package starvationevasion.client.Logic;
 
+import javafx.application.Platform;
 import starvationevasion.client.Client;
 import starvationevasion.client.GUIOrig.DraftLayout.ChatNode;
 import starvationevasion.client.GUIOrig.DraftLayout.DraftLayout;
@@ -7,6 +8,7 @@ import starvationevasion.client.GUIOrig.DraftLayout.hand.Hand;
 import starvationevasion.client.GUIOrig.GUI;
 import starvationevasion.client.GUIOrig.VotingLayout.VotingLayout;
 import starvationevasion.common.EnumPolicy;
+import starvationevasion.server.model.State;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -48,6 +50,9 @@ public class MainGameLoop
       @Override
       public void run()
       {
+        Platform.runLater(()->{
+
+
        // System.out.println(gui.getCardsInHand());
 //        if(gui.getCardsInHand()==null||gui.getCardsInHand().isEmpty()&&client.getHand()!=null)
 //        {
@@ -56,14 +61,23 @@ public class MainGameLoop
 //        cardsInHand=client.getHand();
 //          hand.setHand(cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]));
 
-         chatNodeDraft.setChatMessages(chatManager.getChat());
+           chatNodeDraft.setChatMessages(chatManager.getChat());
 
-        chatNodeVote.setChatMessages(chatManager.getChat());
-        if(gui.getDraftLayout().getHand().getHand()!=null)
-        {
-          chatNodeDraft.setHand(gui.getDraftLayout().getHand().getHand());
-          chatNodeVote.setHand(gui.getDraftLayout().getHand().getHand());
-        }
+          chatNodeVote.setChatMessages(chatManager.getChat());
+          if(cardsInHand==null||cardsInHand.isEmpty()&&client.getHand()!=null&&!client.getHand().isEmpty())
+          {
+            System.out.println("DSL:FKJ");
+            cardsInHand=client.getHand();
+            hand.setHand(client.getHand().toArray(new EnumPolicy[cardsInHand.size()]));
+          }
+          if(gui.getDraftLayout().getHand().getHand()!=null)
+          {
+            chatNodeDraft.setHand(gui.getDraftLayout().getHand().getHand());
+            chatNodeVote.setHand(gui.getDraftLayout().getHand().getHand());
+          }
+          if(gui.isDraftingPhase()&&client.getState().equals(State.VOTING)) gui.switchScenes();
+          if(!gui.isDraftingPhase()&&client.getState().equals(State.DRAFTING)) gui.switchScenes();
+        });
       }
     };
     timer.schedule(timerTask,100,100);

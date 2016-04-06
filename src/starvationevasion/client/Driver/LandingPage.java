@@ -199,7 +199,7 @@ public class LandingPage extends Application
   public void stop(){
     client.closeAll();
   }
-  private void errorMessage(String message)
+  private void errorMessage(  String message)
   {
     final Stage dialog = new Stage();
     VBox dialogVbox = new VBox(20);

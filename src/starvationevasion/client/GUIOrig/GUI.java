@@ -230,6 +230,10 @@ public class GUI extends Application
       draftingPhase=true;
     }
   }
+  public Boolean isDraftLayout(){
+    if(currentRoot==draftLayout) return true;
+    else return false;
+  }
 
   /**
    * Getter that returns whether it is the drafting phase or not

@@ -1,7 +1,10 @@
 package starvationevasion.sim;
 
+import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.sim.CropZoneData.EnumCropZone;
+import starvationevasion.sim.io.CSVReader;
 
 
 /**
@@ -26,30 +29,47 @@ import starvationevasion.sim.CropZoneData.EnumCropZone;
 
 public class LandTile
 {
-  public enum Month
-  { JAN, FEB, MAR, APR, MAY, JUN, JLY, AUG, SEP, OCT, NOV, DEC;
-    static int SIZE = values().length;
-  }
-
   public enum RawDataYears
   { y2000, y2001, y2002, y2003, y2004, y2005, y2010, y2015, y2020, y2025, y2030, y2035, y2040, y2045, y2050;
     static int SIZE = values().length;
   }
 
+  private static final String PATH_CLIMATE_DIR = "/data/sim/climate_";
+
+  private enum FileHeaders
+  {
+    Latitude,          //Latitude ranges from -90 to 90. North latitude is positive.
+    Longitude,        //Longitude ranges from -180 to 180. East longitude is positive.
+    TempMonthLow,     //Temperature Monthly Low (deg C).
+    TempMonthHigh,    //Temperature Monthly High (deg C).
+    TempMeanDailyLow, //Temperature Mean Daily Low  (deg C).
+    TempMeanDailyHigh,//Temperature Mean Daily High (deg C).
+    Rain;             //Precipitation Mean Daily (kg/m2, which is the same as millimeters height).
+    static int SIZE = values().length;
+  }
 
 
-
+  public enum Field
+  {
+    TEMP_MONTHLY_LOW,     //Temperature Monthly Low (deg C).
+    TEMP_MONTHLY_HIGH,    //Temperature Monthly High (deg C).
+    TEMP_MEAN_DAILY_LOW, //Temperature Mean Daily Low  (deg C).
+    TEMP_MEAN_DAILY_HIGH,//Temperature Mean Daily High (deg C).
+    RAIN;             //Precipitation Mean Daily (kg/m2, which is the same as millimeters height).
+    static int SIZE = values().length;
+  }
 
   private float latitude;
   private float longitude;
 
-  private float[][] temperatureMonthlyLow = new float[RawDataYears.SIZE][Month.SIZE];   //degrees Celsius.
-  private float[][] temperatureMonthlyHigh = new float[RawDataYears.SIZE][Month.SIZE];  //degrees Celsius.
-  private float[][] temperatureMeanDailyLow = new float[RawDataYears.SIZE][Month.SIZE]; //degrees Celsius.
-  private float[][] temperatureMeanDailyHigh = new float[RawDataYears.SIZE][Month.SIZE];//degrees Celsius.
-  private float[][] rainMeanDaily = new float[RawDataYears.SIZE][Month.SIZE];           //cm
-
+  /**
+   * curCrop == null indicates there that no crop is currently planted in this LandTile.
+   */
   private EnumFood curCrop = null;
+
+  private float[][][] data = new float[RawDataYears.SIZE][Constant.Month.SIZE][Field.SIZE];
+
+
 
   /**
    Constructor used for initial creation of data set
@@ -62,6 +82,52 @@ public class LandTile
     longitude = lon;
   }
 
+  public float getField(Field field, int year, Constant.Month month)
+  {
+    int lowIdx = 0;
+    int lowYear = Constant.FIRST_DATA_YEAR;
+    for (RawDataYears yearEnum : RawDataYears.values())
+    {
+      int tempYear = Integer.valueOf(yearEnum.name().substring(1));
+      if (tempYear <= year)
+      {
+        lowIdx = yearEnum.ordinal();
+        lowYear = tempYear;
+      }
+      if (tempYear >= year) break;
+    }
+
+    float lowValue = data[lowIdx][month.ordinal()][field.ordinal()];
+    if (lowYear == year) return lowValue;
+
+    int highIdx = Math.min(lowIdx+1, RawDataYears.SIZE-1);
+    int highYear = Integer.valueOf(RawDataYears.values()[highIdx].name().substring(1));
+    float highValue = data[highIdx][month.ordinal()][field.ordinal()];
+    if (highYear >= year) return highValue;
+
+    return 0;
+
+
+  }
+
+
+  /**
+   * @return Latitude ranges from -90 to 90. North latitude is positive.
+   */
+  public float getLatitude() {return latitude;}
+
+  /**
+   * @return Longitude ranges from -180 to 180. East longitude is positive.
+   */
+  public float getLongitude() {return longitude;}
+
+  public void setCrop(EnumFood crop)
+  {
+    curCrop = crop;
+  }
+  public EnumFood getCrop() { return curCrop; }
+
+
 
 
   public float getinterpolate(float start, float end, float slices, float n)
@@ -70,23 +136,6 @@ public class LandTile
     float stepSize = (end - start) / slices;
     return n * stepSize + start;
   }
-
-  public double getLon()
-  {
-    return longitude;
-  }
-
-  public double getLat()
-  {
-    return latitude;
-  }
-
-
-  public void setCurCrop(EnumFood crop)
-  {
-    curCrop = crop;
-  }
-
   /**
    * Rates tile's suitability for a particular crop.
    * @param crop  crop for which we want rating (wheat, corn, rice, or soy)
@@ -225,4 +274,159 @@ public class LandTile
 
 
   }
+
+  /**
+   * Given the game's full list of regions, this static method reads the climate data files,
+   * creates a LandTile for each location and adds each LandTile to the territory within the
+   * region to which it belongs.
+   * @param regionList The full list of game regions where each region in the list has already had
+   * all of its member territories assigned.
+   */
+  public static void load(Region[] regionList)
+  {
+    /*
+    int preGameYears = Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR;
+    long[][] usa_exports     = new long[preGameYears][EnumFood.SIZE];
+    long[][] usa_imports     = new long[preGameYears][EnumFood.SIZE];
+    long[][] usa_production  = new long[preGameYears][EnumFood.SIZE];
+    long[][] usa_area        = new long[preGameYears][EnumFood.SIZE];
+
+    int year = 2000;
+    int month = 0;
+    String monthStr = String.format("%02d", month);
+    String path = PATH_CLIMATE_DIR + year + '_' +monthStr + ".csv");
+
+    CSVReader fileReader = new CSVReader(path, 0);
+
+    //Check header
+    String[] fieldList = fileReader.readRecord(FileHeaders.SIZE);
+
+    for (FileHeaders header : FileHeaders.values())
+    {
+      int i = header.ordinal();
+      if (!header.name().equals(fieldList[i]))
+      {
+        LOGGER.severe("**ERROR** Reading " + PATH_WORLD_PRODUCTION +
+          ": Expected header[" + i + "]=" + header + ", Found: " + fieldList[i]);
+        return;
+      }
+    }
+    fileReader.trashRecord();
+
+    // read until end of file is found
+    while ((fieldList = fileReader.readRecord(EnumHeader.SIZE)) != null)
+    {
+      //System.out.println("ProductionCSVLoader(): record="+fieldList[0]+", "+fieldList[2]+", len="+fieldList.length);
+      EnumFood food = null;
+      EnumRegion region = null;
+      int year = 0;
+      long imports = 0;
+      long exports = 0;
+      long production = 0;
+      long area = 0;
+
+      for (EnumHeader header : EnumHeader.values())
+      {
+        int i = header.ordinal();
+        if (fieldList[i].equals("")) continue;
+
+        switch (header)
+        {
+          case year:
+            year = Integer.parseInt(fieldList[i]);
+            //TODO: for now, data is 1981, but this should be changed
+            if (year < Constant.FIRST_DATA_YEAR) year = Constant.FIRST_DATA_YEAR;
+            break;
+          case category:
+            food = EnumFood.valueOf(fieldList[i]);
+            break;
+          case region:
+            if (!fieldList[i].equals("UNITED_STATES"))
+            {
+              region = EnumRegion.valueOf(fieldList[i]);
+            }
+            break;
+          case imports:
+            imports = Long.parseLong(fieldList[i]);
+            break;
+          case exports:
+            exports = Long.parseLong(fieldList[i]);
+            break;
+
+          case production:
+            production = Long.parseLong(fieldList[i]);
+            break;
+
+          case yield:
+            area = (long)(production/Double.parseDouble(fieldList[i]));
+            break;
+        }
+      }
+
+      //Usually, our game will start in 2010. Thus, we only want to load pre-game data
+      //  of productions up through 2009.
+      if (year < Constant.FIRST_GAME_YEAR)
+      {
+        if (region != null)
+        { int idx = region.ordinal();
+          regionList[idx].addProduction(year, food, imports, exports, production,area);
+        }
+        else
+        {
+          int yearIdx = year-Constant.FIRST_DATA_YEAR;
+          int cropIdx = food.ordinal();
+          usa_imports[yearIdx][cropIdx]     += imports;
+          usa_exports[yearIdx][cropIdx]     += exports;
+          usa_production[yearIdx][cropIdx]  += production;
+          usa_area[yearIdx][cropIdx]        += area;
+        }
+      }
+    }
+    fileReader.close();
+
+    fileReader = new CSVReader(PATH_USA_PRODUCTION_BY_STATE, 0);
+    fileReader.trashRecord();
+
+    // read until end of file is found
+    double[][] productionPercent = new double[EnumRegion.SIZE][EnumFood.SIZE];
+
+    while ((fieldList = fileReader.readRecord(EnumFood.SIZE+2)) != null)
+    {
+      int regionIdx = EnumRegion.getRegion(fieldList[1]).ordinal();
+
+      for (int i=2; i<fieldList.length; i++)
+      {
+        int foodIdx = i-2;
+        productionPercent[regionIdx][foodIdx] += Double.parseDouble(fieldList[i]);
+      }
+    }
+    fileReader.close();
+
+
+
+    for (int year=Constant.FIRST_DATA_YEAR; year< Constant.FIRST_GAME_YEAR; year++)
+    {
+      int yearIdx = year - Constant.FIRST_DATA_YEAR;
+      for (EnumRegion region : EnumRegion.values())
+      {
+        int regionIdx = region.ordinal();
+        for (EnumFood food : EnumFood.values())
+        {
+          int cropIdx = food.ordinal();
+
+          long imports     = (long)(productionPercent[regionIdx][cropIdx] * usa_imports[yearIdx][cropIdx]);
+          long exports     = (long)(productionPercent[regionIdx][cropIdx] * usa_exports[yearIdx][cropIdx]);
+          long production  = (long)(productionPercent[regionIdx][cropIdx] * usa_production[yearIdx][cropIdx]);
+          long area        = (long)(productionPercent[regionIdx][cropIdx] * usa_area[yearIdx][cropIdx]);
+
+          regionList[regionIdx].addProduction(year, food, imports, exports, production, area);
+        }
+      }
+    }
+    fileReader.close();
+    */
+  }
+
+
+
 }

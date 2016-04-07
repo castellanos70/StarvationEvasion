@@ -11,8 +11,12 @@ import java.util.List;
 import java.util.logging.*;
 
 /**
- * This is the main API point of the Starvation Evasion Simulator.
- * This constructor should be called once at the start of each game by the Server.
+ * This is the main API point of the Starvation Evasion Simulator.<br>
+ * This constructor should be called once at the start of each game by the Server.<br><br>
+ *
+ * The design of this simulator is for its non-static methods to ONLY BE CALLED FROM A
+ * <em>SINGLE THREAD</em> (the main game loop thread) of the Server. The effect this has is that
+ * the server must guarantee synchronization of all clients before advancing the game turn.
  */
 public class Simulator
 {
@@ -158,13 +162,15 @@ public class Simulator
   }
 
   /**
-   * The Server should call nextTurn(cards) when it is ready to advance the simulator
-   * a turn (Constant.YEARS_PER_TURN years).<br><br>
+   * FROM ONE THREAD ONLY, the Server should call nextTurn(cards) when it is ready to advance the
+   * simulator a turn (Constant.YEARS_PER_TURN years).<br><br>
    * Before calling nextTurn, the Server must:
    * <ol>
    * <li>Verify all policy cards drafted by the clients during the draft phase.</li>
-   * <li>Verify that any cards discarded by a player could be discarded.</li>
-   * <li>Call discard on each card discarded by a player.</li>
+   * <li>Verify that any cards discarded by a player could legally be discarded.</li>
+   * <li>Wait for all players to either finish the turn or time out clients that go over
+   * the turn phase time limit.</li>
+   * <li>Call discard(), FROM A SINGLE THREAD, on each card discarded by a player.</li>
    * <li>End the voting phase and decide the results.</li>
    * <li>Call discard on each card that did not receive enough votes.</li>
    * <li>Call drawCards for each player and send them their new cards.</li>

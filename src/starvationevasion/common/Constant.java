@@ -8,16 +8,33 @@ import java.util.Random;
  */
 public class Constant
 {
-  /**
-   * Labels for the month
-   */
-  public static final String[] MONTH_LABELS = {"January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"};
 
   /**
-   * Days in each month
+   * Month names in calendar order where:<br>
+   * .ordinal() is the month number -1,<br>
+   * .name() is the three letter abbreviation of the month, <br>
+   * .full() returns the full name of the month, and <br>
+   * .days() returns the number of days in the month as used by the simulator (in the
+   * simulator, including leap years, February has 28 days).
    */
-  public static final int[] MONTH_DAYS = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  public enum Month
+  { JAN {public String full() {return "January";}   public int days() {return 31;}},
+    FEB {public String full() {return "February";}  public int days() {return 28;}},
+    MAR {public String full() {return "March";}     public int days() {return 31;}},
+    APR {public String full() {return "April";}     public int days() {return 30;}},
+    MAY {public String full() {return "May";}       public int days() {return 31;}},
+    JUN {public String full() {return "June";}      public int days() {return 30;}},
+    JLY {public String full() {return "July";}      public int days() {return 31;}},
+    AUG {public String full() {return "August";}    public int days() {return 31;}},
+    SEP {public String full() {return "September";} public int days() {return 30;}},
+    OCT {public String full() {return "October";}   public int days() {return 31;}},
+    NOV {public String full() {return "November";}  public int days() {return 30;}},
+    DEC {public String full() {return "December";}  public int days() {return 31;}};
+    public static int SIZE = values().length;
+    public abstract String full();
+    public abstract int days();
+  }
+
   /**
    * Each game turn advances the simulator by YEARS_PER_TURN years.
    */

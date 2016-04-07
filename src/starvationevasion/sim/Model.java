@@ -96,8 +96,6 @@ public class Model
   private int currentYear;
 
 
-  private TileManager tileManager;
-
   private ArrayList<Territory> territoryList;
 
   // The set of world regions includes all of the regions in the enum, plus an

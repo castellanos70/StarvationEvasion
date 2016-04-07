@@ -18,6 +18,7 @@ public class Draft extends AbstractCommand
 {
   private boolean draftedCard = false;
   private boolean discarded = false;
+  private boolean drawn = false;
   private PolicyCard cardDrafted;
 
 
@@ -29,20 +30,30 @@ public class Draft extends AbstractCommand
   @Override
   public boolean run ()
   {
+    System.out.println("Drafted: " + draftedCard +
+                               "\nDiscarded: " + discarded +
+                               "\nDrawn: " + drawn);
+
     if (getClient().getState().equals(State.DRAFTING))
     {
 
       if (!draftedCard)
       {
         randomlySetDraftedCard();
-        System.out.println("Drafting:\n" + cardDrafted.toJSON());
         return true;
       }
 
-      if (!discarded)
+      if (!discarded && getClient().getUser().getHand().size() > 0)
       {
         randomlyDiscard();
-        // System.out.println("Discarding:\n" + cardDrafted.toJSON());
+        return true;
+      }
+
+      if (!drawn && getClient().getUser().getHand().size() <= 6)
+      {
+        Request request = new Request(getClient().getStartNanoSec(), Endpoint.DRAW_CARD);
+        getClient().send(request);
+        drawn = true;
         return true;
       }
 
@@ -70,9 +81,7 @@ public class Draft extends AbstractCommand
     int idx = getClient().getUser().getHand().indexOf(discard);
     if(idx >= 0)
     {
-      getClient().getUser().getHand().remove(idx);
       payload.putData(discard);
-
       request.setData(payload);
       getClient().send(request);
     }
@@ -83,7 +92,7 @@ public class Draft extends AbstractCommand
   {
     Request r = new Request(getClient().getStartNanoSec(), Endpoint.DRAFT_CARD);
     Payload data = new Payload();
-    PolicyCard card = null;//PolicyCard.create(getClient().getUser().getRegion(), getClient().getUser().getHand().get(0));
+    PolicyCard card = null;
 
     for (EnumPolicy policy : getClient().getUser().getHand())
     {
@@ -171,7 +180,6 @@ public class Draft extends AbstractCommand
 
     cardDrafted = card;
     draftedCard = true;
-
     data.putData(card);
     r.setData(data);
     getClient().send(r);

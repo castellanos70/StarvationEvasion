@@ -341,18 +341,14 @@ public class Model
    *
    * @return the simulation currentYear that has just finished.
    */
-  protected int nextYear(ArrayList<PolicyCard> cards, WorldData threeYearData)
+  protected int nextYear(ArrayList<PolicyCard> cards)
   {
-    currentYear++;
-    LOGGER.info("Advancing currentYear to " + currentYear);
 
-    if (debugLevel.intValue() < Level.INFO.intValue())
-    { Simulator.dbg.println("******************************************* SIMULATION YEAR " + currentYear);
-    }
+    LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
-    applyPolicies(); // Not started.
+    //applyPolicies(); // Not started.
 
-    updateLandUse(); // Not started.
+    //updateLandUse(); // Not started.
 
     //updatePopulation(); // Done.
 
@@ -362,25 +358,25 @@ public class Model
 
     //applySpecialEvents(); // Done.
 
-    updateFarmProductYield(); // Done.
+    //updateFarmProductYield(); // Done.
 
-    updateFarmProductNeed(); // Done.
+    //updateFarmProductNeed(); // Done.
 
-    updateFarmProductMarket(); // Not started.
+    //updateFarmProductMarket(); // Not started.
 
-    updateFoodDistribution(); // Not started.
+    //updateFoodDistribution(); // Not started.
 
-    updatePlayerRegionRevenue(); // Not started.
+    //updatePlayerRegionRevenue(); // Not started.
 
-    updateHumanDevelopmentIndex(); // Done.
+    //updateHumanDevelopmentIndex(); // Done.
 
-    //appendWorldData(threeYearData); // Done
 
-    if (debugLevel.intValue() < Level.INFO.intValue())
-    { Simulator.dbg.println("******************************************* FINAL Stats for " + debugRegion + " in " + currentYear);
-      printRegion(regionList[debugRegion.ordinal()], currentYear);
-    }
+    //if (debugLevel.intValue() < Level.INFO.intValue())
+    //{ Simulator.dbg.println("******************************************* FINAL Stats for " + debugRegion + " in " + currentYear);
+    //  printRegion(regionList[debugRegion.ordinal()], currentYear);
+    //}
 
+    currentYear++;
     return currentYear;
   }
 

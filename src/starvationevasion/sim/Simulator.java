@@ -176,7 +176,10 @@ public class Simulator
    * <li>Call drawCards for each player and send them their new cards.</li>
    * </ol>
    *
-   * @param cards List of PolicyCards enacted this turn. Note: cards played but not
+   * @param cards Combined list of ALL PolicyCards enacted this turn by <em>ALL players</em>. <br>
+   *              Note: Since this is a combined list, all clients must report their cards and votes
+   *              or be timed out before the server may call this method.<br>
+   *              Note: cards played but not
    *              enacted (did not get required votes) must NOT be in this list.
    *              Such cards must be discarded
    *              (call discard(EnumRegion playerRegion, PolicyCard card))
@@ -186,13 +189,13 @@ public class Simulator
    */
   public ArrayList<WorldData> nextTurn(ArrayList<PolicyCard> cards)
   {
-    LOGGER.info("Advancing Turn to ...");
+    LOGGER.info("Advancing Turn ...");
     ArrayList<WorldData> worldData = getWorldData();
 
-    model.nextYear(cards, null);
-    model.nextYear(cards, null);
+    model.nextYear(cards);
+    model.nextYear(cards);
 
-    LOGGER.info("Turn complete, year is now " + getCurrentYear());
+    LOGGER.info("Turn complete. Game is now Jan 1, " + getCurrentYear());
     return worldData;
   }
 
@@ -405,14 +408,11 @@ public class Simulator
     {
       LOGGER.info("==================================================\n"+data.toString()+"\n");
     }
-    System.out.println(startingHandMsg);
+    LOGGER.info(startingHandMsg);
 
-    // Now step through the simulation years for debugging
-    //
-    //for (int i = Constant.FIRST_YEAR + 1; i < Constant.LAST_YEAR ; i += 3)
-    //{
-    //  sim.nextTurn(null); // Test w/o playing any cards.
-    //}
+    ArrayList<PolicyCard> policiesEnactedThisTurnByAllPlayers = new ArrayList<>();
+    sim.nextTurn(policiesEnactedThisTurnByAllPlayers);
+
 
     try
     {

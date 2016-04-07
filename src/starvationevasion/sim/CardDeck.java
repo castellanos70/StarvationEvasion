@@ -37,6 +37,8 @@ public class CardDeck
    */
   private ArrayList<EnumPolicy> cardsInPlay = new ArrayList<>();
 
+
+
   /**
    *  Cards that are currently in play (drafted or enacted) this turn or on a past turn but
    *  still active.
@@ -89,13 +91,12 @@ public class CardDeck
    * If there are insufficient cards remaining, then the player's discard
    * pile is shuffled back into the deck.
    *
-   * @return The cards drawn from the deck. Returns null if the player already
-   * has a max hand size.
+   * @return EnumPolicy[] array of cards drawn cards
    */
   public EnumPolicy[] drawCards()
   {
     int count = Constant.MAX_HAND_SIZE - cardsInHand.size();
-    if (count <=0) return null;
+    if (count <= 0) return null;
 
     EnumPolicy[] cards = new EnumPolicy[count];
     for (int i = 0 ; i < count ; i++)
@@ -112,6 +113,9 @@ public class CardDeck
       cardsInHand.add(cards[i]);
       drawPile.remove(drawPile.size() - 1);
     }
+
+    // cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]);
+    // returning drawn cards!
     return cards;
   }
 
@@ -124,11 +128,8 @@ public class CardDeck
     {
       EnumPolicy handCard = cardsInHand.get(i);
 
-      if (card == handCard)
+      if (card.equals(handCard))
       {
-        //Note: it is important that a pointer to the local card is added to the discard
-        //      pile and NOT a pointer to the card in the argument list.
-        // drawPile.add(handCard);
         cardsInHand.remove(i);
         discardPile.add(handCard);
         return;
@@ -147,6 +148,10 @@ public class CardDeck
     return drawPile.size();
   }
 
+  public EnumPolicy[] getCardsInHand ()
+  {
+    return cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]);
+  }
 
   /**
    * This entry point is for testing only. <br><br>
@@ -156,20 +161,33 @@ public class CardDeck
    */
   public static void main(String[] args)
   {
-    CardDeck deck = new CardDeck(EnumRegion.USA_CALIFORNIA);
+    CardDeck[] playerDeck = new CardDeck[EnumRegion.US_REGIONS.length];
 
-    // Draw cards, instantiating each.
-    EnumPolicy[] hand = deck.drawCards();
-
-    System.out.println("Drew " + hand.length + " cards" + deck.cardsRemainingInDrawPile() + " remaining in draw pile.");
-    for (EnumPolicy card : hand)
+    for (int j = 0; j < 7; j++)
     {
-      String name = card.name();
-
-      PolicyCard policy = PolicyCard.create(EnumRegion.USA_CALIFORNIA, card);
-      System.out.println("Policy: " + policy);
+      playerDeck[j] = new CardDeck(EnumRegion.values()[j]);
     }
 
+    for (int i = 0; i < EnumRegion.US_REGIONS.length; i++)
+    {
+
+      // Draw cards, instantiating each.
+      EnumPolicy[] hand = playerDeck[i].drawCards();
+      for (int j = 0; j < hand.length; j++)
+      {
+        System.out.println("Drew " + hand.length + " cards" + playerDeck[j].cardsRemainingInDrawPile() + " remaining in draw pile.");
+        String name = hand[j].name();
+
+        //PolicyCard policy = PolicyCard.create(EnumRegion.USA_CALIFORNIA, card);
+        //System.out.println("Policy: " + policy);
+        if (hand[j].ordinal() % 2 == 0)
+        {
+          playerDeck[i].discard(hand[j]);
+        }
+      }
+
+      System.out.println(playerDeck[i]);
+    }
   }
 }
 

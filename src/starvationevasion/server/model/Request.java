@@ -5,14 +5,18 @@ package starvationevasion.server.model;
  */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.server.Worker;
 import starvationevasion.server.io.EndpointException;
 import starvationevasion.server.io.JSON;
+
+import java.beans.Transient;
 
 public class Request implements Sendable
 {
   private Payload data = new Payload();
   private double time;
   private Endpoint destination;
+  private transient Worker worker;
 
   /**
    * Expecting at least 2 args.
@@ -95,4 +99,15 @@ public class Request implements Sendable
 
   }
 
+  @Transient
+  public Worker getWorker ()
+  {
+    return worker;
+  }
+
+  @Transient
+  public void setWorker (Worker worker)
+  {
+    this.worker = worker;
+  }
 }

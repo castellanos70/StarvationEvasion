@@ -22,10 +22,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -65,9 +62,10 @@ public class Server
   // bool that listen for connections is looping over
   private boolean isWaiting = true;
 
+  private BlockingQueue<Tuple<User, Request>> queue = new LinkedBlockingQueue<>(1024);
+
   public Server (int portNumber)
   {
-
     Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
 
     createUser(new User("admin", "admin", EnumRegion.USA_CALIFORNIA, new ArrayList<>()));
@@ -148,7 +146,7 @@ public class Server
         Socket client = serverSocket.accept();
         System.out.println(dateFormat.format(date) + " Server: new Connection request recieved.");
         System.out.println(dateFormat.format(date) + " Server " + client.getRemoteSocketAddress());
-        Worker worker = new Worker(client, this);
+        Worker worker = new Worker(client, queue);
 
 
         if (secureConnection(worker, client))
@@ -690,5 +688,8 @@ public class Server
     Collections.addAll(user.getHand(), _hand);
 
   }
+
+
+  
 
 }

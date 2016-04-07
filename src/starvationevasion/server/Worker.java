@@ -5,6 +5,7 @@ package starvationevasion.server;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import starvationevasion.common.Tuple;
 import starvationevasion.server.handlers.Handler;
 import starvationevasion.server.io.*;
 import starvationevasion.server.io.strategies.SocketReadStrategy;
@@ -17,16 +18,20 @@ import starvationevasion.sim.Simulator;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  *  Worker that holds connection, writer, reader, and user information
  */
 public class Worker extends Thread
 {
+  private final BlockingQueue<Tuple<User, Request>> queue;
   private Socket client;
-  private String username = "ANON";
+
+  private User user;
   private volatile boolean isRunning = true;
-  private final Server server;
+  // private final Server server;
   private Handler handler;
 
   private WriteStrategy writer;
@@ -36,17 +41,18 @@ public class Worker extends Thread
   private final DataInputStream inStream;
 
 
-  public Worker (Socket client, Server server)
+  public Worker (Socket client, BlockingQueue<Tuple<User, Request>> server)
   {
     this.writer = new SocketWriteStrategy(client);
     this.reader = new SocketReadStrategy(client);
     this.outStream = writer.getStream();
     this.inStream = reader.getStream();
 
-
     this.client = client;
-    this.server = server;
-    this.handler = new Handler(server, this);
+     this.queue = server;
+
+    user = new User();
+    user.setUsername("ANON");
 
   }
 
@@ -132,7 +138,7 @@ public class Worker extends Thread
           String[] arr = string.split("\\s+");
           if (arr.length < 2)
           {
-            send(new Response(server.uptime(), "Invalid number of arguments"));
+            // send(new Response(server.uptime(), "Invalid number of arguments"));
             continue;
           }
 
@@ -146,7 +152,7 @@ public class Worker extends Thread
       catch(EndpointException e)
       {
         System.out.println("Invalid endpoint!");
-        send(new Response(server.uptime(), e.getMessage()));
+        // send(new Response(server.uptime(), e.getMessage()));
       }
       catch(IOException e)
       {
@@ -164,7 +170,7 @@ public class Worker extends Thread
       catch(ClassNotFoundException e)
       {
         System.out.println("Invalid Class was received");
-        send(new Response(server.uptime(), e.getMessage()));
+        // send(new Response(server.uptime(), e.getMessage()));
       }
     }
   }
@@ -192,18 +198,14 @@ public class Worker extends Thread
   }
 
 
-  public String getUsername ()
+  public User getUser ()
   {
-    return username;
+    return user;
   }
 
-  public void setUsername (String username)
+  public void setUser (User user)
   {
-    this.username = username;
+    this.user = user;
   }
 
-  public User getUser()
-  {
-    return server.getUserByUsername(getUsername());
-  }
 }

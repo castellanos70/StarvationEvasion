@@ -4,11 +4,15 @@ package starvationevasion.server.handlers;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import starvationevasion.common.Tuple;
 import starvationevasion.server.Server;
 import starvationevasion.server.Worker;
 import starvationevasion.server.model.Request;
 import starvationevasion.server.model.Response;
 import starvationevasion.server.model.User;
+
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * Generic handler. Mainly to forces subclasses to implement handleRequestImpl method
@@ -17,10 +21,10 @@ public abstract class AbstractHandler
 {
   private final Worker client;
   protected AbstractHandler m_successor;
-  protected final Server server;
+  protected final BlockingQueue<Tuple<User, Request>> server;
   protected Response m_response = null;
 
-  public AbstractHandler (Server server, Worker client)
+  public AbstractHandler (BlockingQueue<Tuple<User, Request>> server, Worker client)
   {
     this.server = server;
     this.client = client;

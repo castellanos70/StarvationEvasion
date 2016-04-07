@@ -149,28 +149,28 @@ public enum Endpoint
 
   /**
    * Turn off the server
-   * Handled by {@link starvationevasion.server.handlers.AdminTaskHandler}
-   * No Payload
+   * Handled by {@link starvationevasion.server.handlers.AdminTaskHandler}<br><br>
+   * No Payload<br>
    *
-   * @apiNote Special permission required
+   * <em> Special permission required</em>
    */
   KILL("kill"),
 
   /**
    * Stop the current game
-   * Handled by {@link starvationevasion.server.handlers.AdminTaskHandler}
-   * No Payload
+   * Handled by {@link starvationevasion.server.handlers.AdminTaskHandler}<br>
+   * No Payload<br><br>
    *
-   * @apiNote Special permission required
+   * <em> Special permission required</em>
    */
   STOP_GAME("stop_game"),
 
   /**
    * Restart the current game
-   * Handled by {@link starvationevasion.server.handlers.AdminTaskHandler}
-   * No Payload
+   * Handled by {@link starvationevasion.server.handlers.AdminTaskHandler}<br>
+   * No Payload<br><br>
    *
-   * @apiNote Special permission required
+   * <em>Special permission required</em>
    */
   RESTART_GAME("restart_game"),
 

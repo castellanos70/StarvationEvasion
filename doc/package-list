@@ -13,10 +13,7 @@ starvationevasion.client.GUIOrig.Popups
 starvationevasion.client.GUIOrig.VotingLayout
 starvationevasion.client.GUIOrig.images
 starvationevasion.client.Logic
-starvationevasion.client.Logic.AI
 starvationevasion.client.Logic.geography
-starvationevasion.client.Networking
-starvationevasion.client.utils
 starvationevasion.common
 starvationevasion.common.policies
 starvationevasion.server

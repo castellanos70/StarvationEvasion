@@ -23,7 +23,7 @@ public class Drought extends AbstractEvent
     {
       for (starvationevasion.sim.LandTile tile : territory.getLandTiles())
       {
-        tile.setRainfall(tile.getRainfall() / 3);
+        //tile.setRainfall(tile.getRainfall() / 3);
       }
     }
     super.applyEffects();

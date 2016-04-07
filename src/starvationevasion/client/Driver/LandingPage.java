@@ -43,12 +43,13 @@ public class LandingPage extends Application
   Label passwdLabel = new Label("Password");
   PasswordField passwd = new PasswordField();
   Button createUser=new Button("Create new User");
-  Button seeUsers=new Button("Users");
+  Button loginAsAdmin =new Button("Login as Admin");
   Button createUserWithRegion=new Button("Create with Region");
   ArrayList<EnumRegion> regions=new ArrayList<>(Arrays.asList(EnumRegion.US_REGIONS));
   ObservableList<EnumRegion> regionList= FXCollections.observableArrayList(regions);
   ComboBox comboBox=new ComboBox(regionList);
-
+  private Button startGame=new Button("startGame");
+  Stage stage;
   /**
    * This is called when you create a new Application
    * @param stage
@@ -57,19 +58,18 @@ public class LandingPage extends Application
   @Override
   public void start(final Stage stage) throws Exception
   {
-
+    this.stage=stage;
     stage.setTitle("Starvation Evasion");
     confirm.setText("Login");
     multiConfirm.setText("Login");
     singlePlayer.setText("Single Player");
     multiPlayer.setText("MultiPlayer");
-
     //Event handlers for buttons
     singlePlayer.setOnAction(actionEvent -> {
       try
       {
-        client = new Client("Nathan", 2020);
-        setLogin();
+        client = new Client("localhost", 5555);
+        setBasicLogin();
       }catch(Exception e)
       {
         errorMessage(NO_HOST);
@@ -79,7 +79,7 @@ public class LandingPage extends Application
     multiPlayer.setOnAction(e ->
     {
       client=new Client("foodgame.cs.unm.edu",5555);
-      setLogin();
+      setBasicLogin();
     });
 
     confirm.setOnAction(e ->
@@ -93,48 +93,48 @@ public class LandingPage extends Application
         errorMessage(WRONG_COMBO);
      }else
       {
-        GUI gui=new GUI(client,null);
-        Stage guiStage=new Stage();
-        gui.start(guiStage);
-        stage.close();
+        setSelectRegion();
+//        GUI gui=new GUI(client,null);
+//        Stage guiStage=new Stage();
+//        gui.start(guiStage);
+//        stage.close();
+        //openRegionChooser();
      }
     });
 
-    seeUsers.setOnAction(event1 ->
+    loginAsAdmin.setOnAction(event1 ->
     {
-      client.getUsers();
+      setAdminLogin();
+     // client.getUsers();
     });
 
     createUser.setOnAction(event ->
     {
       if(!(uname.getText().equals(""))||!passwd.getText().equals(""))
       {
-        if(comboBox.getValue()!=null)
+        //if(comboBox.getValue()==null)
         {
-          client.createUser(uname.getText(),passwd.getText());
-         // client.writeToServer("user_create " + uname.getText() + " " + passwd.getText()+" "+comboBox.getValue().toString());
-        }else
+          //errorMessage("NEED REGION");
+        }
+        //else
         {
-          client.createUser(uname.getText(),passwd.getText());
-          //client.writeToServer("user_create " + uname.getText() + " " + passwd.getText());
+          client.createUser(uname.getText(),passwd.getText(),(EnumRegion)comboBox.getValue());
         }
       }else errorMessage(WRONG_COMBO);
     });
 
     createUserWithRegion.setOnAction(event ->
     {
-      Stage regionStage=new Stage();
-      RegionChooser regionChooser=new RegionChooser(client,null);
-      try
-      {
-        regionChooser.start(regionStage);
-      } catch (Exception e)
-      {
-        e.printStackTrace();
-      }
+      openRegionChooser();
+    });
+    startGame.setOnAction(event ->
+    {
+      client.ready();
+      GUI gui=new GUI(client,null);
+      Stage guiStage=new Stage();
+      gui.start(guiStage);
       stage.close();
     });
-
     //Sets up the initial stage
     root.setAlignment(Pos.CENTER);
     root.setHgap(10);
@@ -144,6 +144,19 @@ public class LandingPage extends Application
     stage.setScene(new Scene(root, width, height));
     stage.show();
   }
+  private void openRegionChooser()
+  {
+    Stage regionStage=new Stage();
+    RegionChooser regionChooser=new RegionChooser(client,null);
+    try
+    {
+      regionChooser.start(regionStage);
+    } catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+    stage.close();
+  }
   private void setLogin(){
     root.getChildren().clear();
     root.add(unameLabel, 0, 1);
@@ -152,15 +165,41 @@ public class LandingPage extends Application
     root.add(passwd, 0, 4);
     root.add(confirm,1,1);
     root.add(createUser,1,2);
-    root.add(seeUsers,1,3);
+    root.add(loginAsAdmin,1,3);
     root.add(createUserWithRegion,1,4);
     root.add(comboBox,1,5);
+  }
+  private void setBasicLogin(){
+    root.getChildren().clear();
+    root.add(unameLabel, 0, 1);
+    root.add(uname, 0, 2);
+    root.add(passwdLabel, 0, 3);
+    root.add(passwd, 0, 4);
+    root.add(confirm,1,1);
+    root.add(createUser,1,2);
+//    root.add(loginAsAdmin,1,3);
+//    root.add(createUserWithRegion,1,4);
+//    root.add(comboBox,1,5);
+  }
+  private Slider numberOfPlayers;
+  private void setAdminLogin()
+  {
+
+  }
+  private void setSelectRegion()
+  {
+//    regions=client.getAvaliableRegion();
+//    regionList= FXCollections.observableArrayList(regions);
+//    comboBox=new ComboBox(regionList);
+    root.getChildren().clear();
+   // root.add(comboBox,0,0);
+    root.add(startGame,0,1);
   }
   @Override
   public void stop(){
     client.closeAll();
   }
-  private void errorMessage(String message)
+  private void errorMessage(  String message)
   {
     final Stage dialog = new Stage();
     VBox dialogVbox = new VBox(20);

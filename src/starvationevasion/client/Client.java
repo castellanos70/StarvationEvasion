@@ -36,6 +36,12 @@ public class Client
   private String userName;
   private boolean loginSuccessful;
   private boolean recivedMessege=false;
+  private State state;
+
+
+
+  private ArrayList<EnumRegion> avaliableRegion;
+
   public Client (String host, int portNumber)
   {
     chatManager=new ChatManager(this);
@@ -45,13 +51,22 @@ public class Client
     listener = new ClientListener();
     System.out.println("JavaClient: Starting listener = : " + listener);
     listener.start();
-
+    //requestAvaliableRegions();
    // listenToUserRequests();
 
   }
   public ChatManager getChatManager(){return  chatManager;}
   //TODO
   public EnumRegion getRegion(){return region;}
+  public State getState()
+  {
+    return state;
+  }
+
+  public ArrayList<EnumRegion> getAvaliableRegion()
+  {
+    return avaliableRegion;
+  }
   public boolean loginToServer(String userName,String pass)
   {
     this.userName=userName;
@@ -66,25 +81,13 @@ public class Client
     data.put("password", pass);
 
     f.setData(data);
-    try
-    {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(f);
-      oos.close();
-      byte[] bytes = baos.toByteArray();
-
-      writer.writeInt(bytes.length);
-      writer.write(bytes);
-      writer.flush();
-    }
-    catch(IOException e)
-    {
-      e.printStackTrace();
-    }
-    createHand();
+    sendRequest(f);
+    requestAvaliableRegions();
+   // restart();
+   // ready();
+    //createHand();
     getGameState();
-    ready();
+
 
 //    while(!recivedMessege){
 //      System.out.println(recivedMessege);
@@ -95,83 +98,50 @@ public class Client
   public void createHand()
   {
     Request f = new Request(startNanoSec, Endpoint.HAND_CREATE);
+    sendRequest(f);
+    //readHand();
+  }
+  public void restart()
+  {
+    Request f = new Request(startNanoSec, Endpoint.RESTART_GAME);
     // Create a payload (this is the class that stores Sendable information)
-    try
-    {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(f);
-      oos.close();
-      byte[] bytes = baos.toByteArray();
-      writer.writeInt(bytes.length);
-      writer.write(bytes);
-      writer.flush();
-    }
-    catch(IOException e)
-    {
-      e.printStackTrace();
-    }
+    sendRequest(f);
     readHand();
   }
   public void readHand()
   {
     Request f = new Request(startNanoSec, Endpoint.HAND_READ);
-    // Create a payload (this is the class that stores Sendable information)
-    try
-    {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(f);
-      oos.close();
-      byte[] bytes = baos.toByteArray();
-      writer.writeInt(bytes.length);
-      writer.write(bytes);
-      writer.flush();
-    }
-    catch(IOException e)
-    {
-      e.printStackTrace();
-    }
+    sendRequest(f);
   }
   public void ready()
   {
+
     Request f = new Request(startNanoSec, Endpoint.READY);
+    sendRequest(f);
+    readHand();
+    //createHand();
+  }
+  public void worldData()
+  {
+    Request f = new Request(startNanoSec, Endpoint.LOGIN);
     // Create a payload (this is the class that stores Sendable information)
-    try
-    {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(f);
-      oos.close();
-      byte[] bytes = baos.toByteArray();
-      writer.writeInt(bytes.length);
-      writer.write(bytes);
-      writer.flush();
-    }
-    catch(IOException e)
-    {
-      e.printStackTrace();
-    }
+    Payload data = new Payload();
+
+    data.putData("user");
+
+    data.put("client-done", true);
+    data.put("region-polygons", true);
+    data.put("data-start",2000);
+    data.put("data-end",2001);
+
+    f.setData(data);
+    sendRequest(f);
+    requestAvaliableRegions();
   }
   public void getUsers()
   {
     Request f = new Request(startNanoSec, Endpoint.USERS);
-    // Create a payload (this is the class that stores Sendable information)
-    try
-    {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(f);
-      oos.close();
-      byte[] bytes = baos.toByteArray();
-      writer.writeInt(bytes.length);
-      writer.write(bytes);
-      writer.flush();
-    }
-    catch(IOException e)
-    {
-      e.printStackTrace();
-    }
+    sendRequest(f);
   }
   public ArrayList<EnumPolicy> getHand()
   {
@@ -181,46 +151,16 @@ public class Client
   {
     Request f = new Request(startNanoSec, Endpoint.GAME_STATE);
     // Create a payload (this is the class that stores Sendable information)
-    try
-    {
-
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(f);
-      oos.close();
-      byte[] bytes = baos.toByteArray();
-      writer.writeInt(bytes.length);
-      writer.write(bytes);
-      writer.flush();
-    }
-    catch(IOException e)
-    {
-      e.printStackTrace();
-    }
+    sendRequest(f);
   }
   public void drawCard()
   {
     Request f = new Request(startNanoSec, Endpoint.DRAW_CARD);
     // Create a payload (this is the class that stores Sendable information)
-    try
-    {
-
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(f);
-      oos.close();
-      byte[] bytes = baos.toByteArray();
-      writer.writeInt(bytes.length);
-      writer.write(bytes);
-      writer.flush();
-    }
-    catch(IOException e)
-    {
-      e.printStackTrace();
-    }
+    sendRequest(f);
   }
 
-  public void createUser(String user,String pass)
+  public void createUser(String user,String pass,EnumRegion region)
   {
     // Create a request to login
     Request f = new Request(startNanoSec, Endpoint.USER_CREATE);
@@ -231,50 +171,18 @@ public class Client
 
     data.put("username", user);
     data.put("password", pass);
-
+    data.put("region",EnumRegion.USA_SOUTHEAST);
     f.setData(data);
-    try
-    {
-
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(f);
-      oos.close();
-
-
-      byte[] bytes = baos.toByteArray();
-
-      writer.writeInt(bytes.length);
-      writer.write(bytes);
-      writer.flush();
-    }
-    catch(IOException e)
-    {
-      e.printStackTrace();
-    }
+    sendRequest(f);
   }
   public void draftCard(PolicyCard card)
   {
     Request f = new Request(startNanoSec, Endpoint.DRAFT_CARD);
     Payload data = new Payload();
-
     data.putData("user");
     data.put("card", card);
     // Create a payload (this is the class that stores Sendable information)
-    try
-    {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(f);
-      oos.close();
-      byte[] bytes = baos.toByteArray();
-      writer.writeInt(bytes.length);
-      writer.write(bytes);
-      writer.flush();
-    } catch (IOException e)
-    {
-      e.printStackTrace();
-    }
+    sendRequest(f);
   }
   public void discardCard(PolicyCard card)
   {
@@ -284,20 +192,7 @@ public class Client
     data.putData("user");
     data.put("card", card);
     // Create a payload (this is the class that stores Sendable information)
-    try
-    {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(f);
-      oos.close();
-      byte[] bytes = baos.toByteArray();
-      writer.writeInt(bytes.length);
-      writer.write(bytes);
-      writer.flush();
-    } catch (IOException e)
-    {
-      e.printStackTrace();
-    }
+    sendRequest(f);
   }
   public void sendChatMessage(String message,EnumRegion toRegion)
   {
@@ -310,11 +205,20 @@ public class Client
     data.put("card", EnumPolicy.Clean_River_Incentive);
     data.put("text",message);
     f.setData(data);
+   sendRequest(f);
+  }
+  public void requestAvaliableRegions()
+  {
+    Request f = new Request(startNanoSec, Endpoint.AVAILABLE_REGIONS);
+    sendRequest(f);
+  }
+  public void sendRequest(Request request)
+  {
     try
     {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(f);
+      oos.writeObject(request);
       oos.close();
 
 
@@ -388,15 +292,13 @@ public class Client
       return false;
     }
     isRunning = true;
-
     return true;
-
   }
   private void updateUser(User user)
   {
     this.user = user;
     region = user.getRegion();
-
+    hand=user.getHand();
   }
   public void closeAll()
   {
@@ -490,7 +392,7 @@ public class Client
       try
       {
         Response response = readObject();
-        System.out.println(response.getPayload());
+        //System.out.println(response.getPayload());
         if (response.getPayload().get("data") instanceof User)
         {
           if(response.getPayload().get("message")!=null&&response.getPayload().get("message").equals("SUCCESS"))
@@ -505,20 +407,39 @@ public class Client
           }
           System.out.println("Response.data = User object.");
           updateUser((User)response.getPayload().get("data"));
-
         }
-
         else if (response.getPayload().get("data") instanceof WorldData)
         {
           System.out.println("Response.data = WorldData object.");
         }
         else if(response.getPayload().get("data")instanceof ArrayList)
         {
-          hand=((ArrayList)response.getPayload().get("data"));
+          ArrayList data = (ArrayList) response.getPayload().get("data");
+          if(!data.isEmpty())
+          {
+            if (data.get(0) instanceof EnumPolicy)
+            {
+              System.out.println("Response.data = Array list of EnumPolicies objects.");
+
+              hand = ((ArrayList) response.getPayload().get("data"));
+            } else if (data.get(0) instanceof EnumRegion)
+            {
+              System.out.println("Response.data = Array list of EnumRegion objects.");
+              avaliableRegion = data;
+            } else if (data.get(0) instanceof WorldData)
+            {
+              System.out.println("Response.data = Array list of WorldData objects.");
+            }
+          }
         }
         else if(response.getPayload().get("data")instanceof String)
         {
           chatManager.sendChatToClient((String)response.getPayload().get("text"));
+        }
+        else if(response.getPayload().get("data")instanceof starvationevasion.server.model.State)
+        {
+          System.out.println("Response.data = State");
+          state=(starvationevasion.server.model.State) response.getPayload().get("data");
         }
       }
       catch(EOFException e)
@@ -563,30 +484,5 @@ public class Client
     double secDiff = (double) nanoSecDiff / 1000000000.0;
     return String.format("%.3f", secDiff);
   }
-
-  public static void main (String[] args)
-  {
-
-    String host = null;
-    int port = 0;
-
-    try
-    {
-      host = args[0];
-      port = Integer.parseInt(args[1]);
-      if (port < 1)
-      {
-        throw new Exception();
-      }
-    }
-    catch(Exception e)
-    {
-      System.exit(0);
-    }
-    new Client(host, port);
-
-  }
-
-
 }
 

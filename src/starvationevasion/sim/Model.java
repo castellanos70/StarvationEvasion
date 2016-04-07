@@ -356,11 +356,11 @@ public class Model
 
     //updatePopulation(); // Done.
 
-    updateClimate(); // Done.
+    //updateClimate(); // Done.
 
-    generateSpecialEvents(); // In progress (Alfred).
+    //generateSpecialEvents(); // In progress (Alfred).
 
-    applySpecialEvents(); // Done.
+    //applySpecialEvents(); // Done.
 
     updateFarmProductYield(); // Done.
 

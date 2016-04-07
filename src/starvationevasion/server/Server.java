@@ -46,9 +46,6 @@ public class Server
   // list of ALL the users
   private final ArrayList<User> userList = new ArrayList<>();
 
-  // list of all the users playing the game (subset of userList)
-  // private final ArrayList<User> players = new ArrayList<>();
-
   private State currentState = State.LOGIN;
   private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
   private Date date = new Date();
@@ -191,7 +188,7 @@ public class Server
   }
 
 
-  public Simulator getSimulator ()
+  public synchronized Simulator getSimulator ()
   {
     return simulator;
   }
@@ -368,13 +365,10 @@ public class Server
 
     for (User user : getPlayers())
     {
-      EnumPolicy[] _hand = simulator.drawCards(user.getRegion());
-      ArrayList<EnumPolicy> handList = new ArrayList<>();
-      Collections.addAll(handList, _hand);
-      user.setHand(handList);
+      drawByUser(user);
 
-      payload.putData(user.getHand());
-      response.setType(Type.USER_HAND);
+      payload.putData(user);
+      response.setType(Type.USER);
       user.getWorker().send(response);
     }
 
@@ -395,7 +389,6 @@ public class Server
     currentState = State.DRAFTING;
     broadcastStateChange();
 
-    enactedPolicyCards.clear();
 
     phase = advancer.schedule(this::vote, currentState.getDuration(), TimeUnit.MILLISECONDS);
 
@@ -412,6 +405,7 @@ public class Server
 
     Payload cards = new Payload();
     ArrayList<PolicyCard> list = new ArrayList<>();
+
     for (PolicyCard card : draftedPolicyCards)
     {
       if (card.votesRequired() > 0)
@@ -446,10 +440,11 @@ public class Server
       {
         enactedPolicyCards.add(p);
       }
+
       simulator.discard(p.getOwner(), p.getCardType());
     }
 
-
+    System.out.println("After discarding...");
     Payload payload = new Payload();
     Response response = new Response(uptime(), payload);
 
@@ -457,24 +452,25 @@ public class Server
     {
       drawByUser(user);
 
-      payload.putData(user.getHand());
-      response.setType(Type.USER_HAND);
+      payload.putData(user);
+      response.setType(Type.USER);
       user.getWorker().send(response);
     }
 
 
-    WorldData worldData = simulator.nextTurn(enactedPolicyCards);
+    ArrayList<WorldData> worldData = simulator.nextTurn(enactedPolicyCards);
 
 
     payload.clear();
     payload.putData(worldData);
-    response.setType(Type.WORLD_DATA);
+    response.setType(Type.WORLD_DATA_LIST);
     broadcast(response);
 
 
-    if (worldData.year >= Constant.LAST_YEAR)
+    if (simulator.getCurrentYear()  >= Constant.LAST_YEAR)
     {
       currentState = State.END;
+      broadcastStateChange();
     }
 
 
@@ -687,10 +683,11 @@ public class Server
   public void drawByUser (User user)
   {
     EnumPolicy[] _hand = simulator.drawCards(user.getRegion());
-    ArrayList<EnumPolicy> handList = new ArrayList<>();
-    Collections.addAll(handList, _hand);
-    User u = getPlayers().stream().filter(user1 -> user1.getUsername().equals(user.getUsername())).findFirst().get();
-    u.setHand(handList);
+    if (_hand == null)
+    {
+      return;
+    }
+    Collections.addAll(user.getHand(), _hand);
 
   }
 

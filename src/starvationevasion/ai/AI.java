@@ -199,19 +199,25 @@ public class AI
       try
       {
         Response response = readObject();
-        System.out.println(response.getType());
+        //System.out.println(response.toJSON());
 
-        if (response.getType().equals(Type.AUTH) || response.getType().equals(Type.USER))
+
+        if (response.getType().equals(Type.AUTH))
         {
           if (response.getPayload().getMessage().equals("SUCCESS"))
           {
             u = (User) response.getPayload().getData();
-            System.out.println("Logged in as \n" + u.toJSON().toString());
+            //System.out.println("Logged in as \n" + u.toJSON().toString());
           }
           else
           {
             System.out.println("Error logging in");
+            isRunning = false;
           }
+        }
+        else if (response.getType().equals(Type.USER))
+        {
+          u = (User) response.getPayload().getData();
         }
         else if (response.getType().equals(Type.TIME))
         {
@@ -249,19 +255,18 @@ public class AI
             // AI.this.commands.add(new Draft(AI.this));
           }
         }
-        else if (response.getType().equals(Type.USER_HAND))
-        {
-          ArrayList hand = (ArrayList<EnumPolicy>) response.getPayload().getData();
-          System.out.println("getting hand " + String.valueOf(hand));
-          if ( hand == null)
-          {
-            commands.push(new Hand(AI.this));
-          }
-          else if (AI.this.getUser().getHand() == null || !hand.equals(AI.this.getUser().getHand()))
-          {
-            AI.this.getUser().setHand(hand);
-          }
-        }
+//        else if (response.getType().equals(Type.USER_HAND))
+//        {
+//          ArrayList hand = (ArrayList<EnumPolicy>) response.getPayload().getData();
+//          System.out.println("getting hand " + String.valueOf(hand));
+//          if ( hand == null)
+//          {
+//            commands.push(new Hand(AI.this));
+//          }
+//
+//            AI.this.getUser().setHand(hand);
+//
+//        }
         else if (response.getType().equals(Type.DRAFTED) || response.getType().equals(Type.DRAFTED_INTO_VOTE))
         {
           String msg = response.getPayload().getMessage();

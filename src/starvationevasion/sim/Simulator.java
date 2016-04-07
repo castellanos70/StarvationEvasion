@@ -184,16 +184,21 @@ public class Simulator
    * @return data structure populated with all game state data needed by the client
    * except high resolution data that might be needed by the visualizer.
    */
-  public WorldData nextTurn(ArrayList<PolicyCard> cards)
+  public ArrayList<WorldData> nextTurn(ArrayList<PolicyCard> cards)
   {
     LOGGER.info("Advancing Turn to ...");
-    WorldData threeYearData = new WorldData();
+    ArrayList<WorldData> worldData = getWorldData();
 
-    model.nextYear(cards, threeYearData);
-    model.nextYear(cards, threeYearData);
-    model.nextYear(cards, threeYearData);
-    LOGGER.info("Turn complete, year is now " + threeYearData.year);
-    return threeYearData;
+    model.nextYear(cards, null);
+    model.nextYear(cards, null);
+
+    LOGGER.info("Turn complete, year is now " + getCurrentYear());
+    return worldData;
+  }
+
+  public int getCurrentYear()
+  {
+    return model.getCurrentYear();
   }
 
 
@@ -209,6 +214,12 @@ public class Simulator
   public EnumPolicy[] drawCards(EnumRegion playerRegion)
   {
     return playerDeck[playerRegion.ordinal()].drawCards();
+  }
+
+
+  public EnumPolicy[] getCardsInHand(EnumRegion playerRegion)
+  {
+    return playerDeck[playerRegion.ordinal()].getCardsInHand();
   }
 
 
@@ -234,8 +245,8 @@ public class Simulator
   {
     if (!playerRegion.isUS())
     {
-      throw new IllegalArgumentException("discard(=" + playerRegion + ", cards) must be " +
-        "a player region.");
+      throw new IllegalArgumentException("discard(=" + playerRegion + ", cards) " +
+                                                 "must be a player region.");
     }
 
     CardDeck deck = playerDeck[playerRegion.ordinal()];
@@ -324,6 +335,17 @@ public class Simulator
       if (region.containsMapPoint(mapPoint)) return regionEnum;
     }
     return null;
+  }
+
+
+  private ArrayList<WorldData> getWorldData ()
+  {
+    if (model.getCurrentYear() == Constant.FIRST_GAME_YEAR)
+    {
+      return getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR-1);
+    }
+
+    return getWorldData(model.getCurrentYear()-2, model.getCurrentYear()-1);
   }
 
   /**

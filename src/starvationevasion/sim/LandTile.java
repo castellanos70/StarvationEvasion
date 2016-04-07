@@ -3,6 +3,7 @@ package starvationevasion.sim;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.Util;
 import starvationevasion.sim.CropZoneData.EnumCropZone;
 import starvationevasion.sim.io.CSVReader;
 
@@ -105,9 +106,7 @@ public class LandTile
     float highValue = data[highIdx][month.ordinal()][field.ordinal()];
     if (highYear >= year) return highValue;
 
-    return 0;
-
-
+    return Util.linearInterpolate(lowYear, year, highYear, lowValue, highValue);
   }
 
 
@@ -130,12 +129,7 @@ public class LandTile
 
 
 
-  public float getinterpolate(float start, float end, float slices, float n)
-  {
-    if (slices < 0) return end;
-    float stepSize = (end - start) / slices;
-    return n * stepSize + start;
-  }
+
   /**
    * Rates tile's suitability for a particular crop.
    * @param crop  crop for which we want rating (wheat, corn, rice, or soy)

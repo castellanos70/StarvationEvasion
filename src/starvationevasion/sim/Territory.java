@@ -175,8 +175,10 @@ public class Territory
       }
       for (int k=lastIdx+1; k<nextIdx; k++)
       {
-        double w = (double)(k-lastIdx)/(double)(nextIdx-lastIdx);
-        populationProjection[k] = (int)(populationProjection[lastIdx]*(1.0-w) + populationProjection[nextIdx]*w);
+        float lastPop = populationProjection[lastIdx];
+        float nextPop = populationProjection[nextIdx];
+        populationProjection[k] = (int)Util.linearInterpolate(lastIdx, k, nextIdx, lastPop, nextPop);
+
         if (k+Constant.FIRST_DATA_YEAR < Constant.FIRST_GAME_YEAR)
         {
           population[k] = populationProjection[k];

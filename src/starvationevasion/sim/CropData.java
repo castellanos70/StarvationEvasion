@@ -3,6 +3,7 @@ package starvationevasion.sim;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.Util;
 import starvationevasion.sim.io.CSVReader;
 
 import java.io.FileNotFoundException;
@@ -117,9 +118,8 @@ public class CropData
 
       for (int yearIdx=1; yearIdx<9; yearIdx++)
       {
-        double w = yearIdx/9.0;
         foodPrice[yearIdx][foodIdx] =
-          (int)(foodPrice[0][foodIdx]*(1.0-w) + foodPrice[9][foodIdx]*w);
+          (int) Util.linearInterpolate(0, yearIdx, 9, foodPrice[0][foodIdx], foodPrice[9][foodIdx]);
       }
     }
     fileReader.close();

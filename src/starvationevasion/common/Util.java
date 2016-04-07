@@ -17,4 +17,16 @@ public class Util
   {
     return rand.nextInt((max - min) + 1) + min;
   }
+
+
+  public static float linearInterpolate(float x1, float x2, float x3, float y1, float y3)
+  {
+    if (x2 <= x1) return y1;
+    if (x2 >= x3) return y3;
+
+    float w = (x2-x1)/(x3-x1);
+    float y2 = y1*(1-w) + y3*w;
+
+    return y2;
+  }
 }

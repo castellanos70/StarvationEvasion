@@ -76,7 +76,7 @@ public class MainGameLoop
           }
           if(gui.isDraftingPhase()&&client.getState().equals(State.VOTING)) gui.switchScenes();
           if(!gui.isDraftingPhase()&&(client.getState().equals(State.DRAFTING)||client.getState().equals(State.DRAWING))) gui.switchScenes();
-          if(client.getVotingCards()!=null) gui.getVotingLayout().updateCardSpaces(client.getVotingCards());
+          if(client.getVotingCards()!=null&&!gui.getVotingLayout().hasRecievedCards()) gui.getVotingLayout().updateCardSpaces(client.getVotingCards());
 
         });
       }

@@ -17,7 +17,7 @@ public class CardSpace extends StackPane
   private final FXMLLoader loader;
   GUI gui;
   Label label;
-
+  private ClientPolicyCard clientPolicyCard;
   /**
    * Constructor for the CardSpace class
    * @param gui instance reference of the GUI
@@ -66,7 +66,7 @@ public class CardSpace extends StackPane
   }
   public void setCard(EnumRegion region,EnumPolicy card,GUI gui)
   {
-    ClientPolicyCard clientPolicyCard=new ClientPolicyCard(region,card,gui);
+    clientPolicyCard=new ClientPolicyCard(region,card,gui);
     clientPolicyCard.setBasicCard();
     clientPolicyCard.setOnMouseEntered(event->
     {
@@ -80,6 +80,6 @@ public class CardSpace extends StackPane
     });
     this.getChildren().add(clientPolicyCard);
   }
-
+public ClientPolicyCard getCard(){return clientPolicyCard;}
 
 }

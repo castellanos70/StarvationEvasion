@@ -99,6 +99,7 @@ public class ActionButtons extends HBox
       for (ClientPolicyCard card : clientPolicyCards)
       {
         gui.getClient().draftCard(card.getPolicyCard());
+
       }
       ArrayList<ClientPolicyCard> discardedCards = gui.getDraftLayout().getHand().getDiscardCards();
       for (ClientPolicyCard card : discardedCards)

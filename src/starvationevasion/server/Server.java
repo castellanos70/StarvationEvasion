@@ -405,7 +405,7 @@ public class Server
 
     for (PolicyCard card : draftedPolicyCards)
     {
-      if (card.votesRequired() > 0)
+      //if (card.votesRequired() > 0)
       {
         list.add(card);
       }

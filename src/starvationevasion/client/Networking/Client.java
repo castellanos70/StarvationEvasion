@@ -190,6 +190,26 @@ public class Client
     // Create a payload (this is the class that stores Sendable information)
     sendRequest(f);
   }
+  public void voteUp(PolicyCard card)
+  {
+    Request f = new Request(startNanoSec, Endpoint.VOTE_UP);
+    Payload data = new Payload();
+    data.putData(card);
+    data.put("card", card);
+    f.setData(data);
+    // Create a payload (this is the class that stores Sendable information)
+    sendRequest(f);
+  }
+  public void voteDown(PolicyCard card)
+  {
+    Request f = new Request(startNanoSec, Endpoint.VOTE_DOWN);
+    Payload data = new Payload();
+    data.putData(card);
+    data.put("card", card);
+    f.setData(data);
+    // Create a payload (this is the class that stores Sendable information)
+    sendRequest(f);
+  }
   public void discardCard(PolicyCard card)
   {
     Request f = new Request(startNanoSec, Endpoint.DELETE_CARD);
@@ -197,6 +217,7 @@ public class Client
 
     data.putData("user");
     data.put("card", card);
+    f.setData(data);
     // Create a payload (this is the class that stores Sendable information)
     sendRequest(f);
   }

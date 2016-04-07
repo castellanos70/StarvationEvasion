@@ -1,5 +1,6 @@
 package starvationevasion.client.GUI.VotingLayout;
 
+import javafx.scene.control.Button;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -38,6 +39,8 @@ public class VotingLayout extends GridPane
 
   private GridPane centerPane;
   private ChatNode chatNode;
+
+  private boolean recievedCards=false;
   public VotingLayout(GUI gui)
   {
     this.gui = gui;
@@ -78,7 +81,7 @@ public class VotingLayout extends GridPane
 //            BackgroundPosition.CENTER,
 //            BackgroundSize.DEFAULT)));
   }
-
+  public boolean hasRecievedCards(){return recievedCards;}
   public void setCards(PolicyCard[] cards)
   {
    // for (int i = 0; i < ; i++)
@@ -95,20 +98,35 @@ public class VotingLayout extends GridPane
   {
     if(cards!=null)
     {
-
+      recievedCards=true;
       for(PolicyCard card: cards)
       {
-        if(card.votesRequired()>0)
-        {System.out.println("Trying so hard1");
-          cardSpacesFirstRow.get(getIndexOfRegion(card.getOwner())).setCard(card.getOwner(),card.getCardType(),gui);
+        int index=getIndexOfRegion(card.getOwner());
+        if(card.votesRequired()==0)
+        {
+          if(cardSpacesSecondRow.get(index).getCard()==null)
+          {
+            cardSpacesSecondRow.get(index).setCard(card.getOwner(),card.getCardType(),gui);
+          }else cardSpacesFirstRow.get(index).setCard(card.getOwner(),card.getCardType(),gui);
         }
         else
-        {System.out.println("Trying so hard2");
-          cardSpacesSecondRow.get(getIndexOfRegion(card.getOwner())).setCard(card.getOwner(),card.getCardType(),gui);
+        {
+          Button[] buttons=votingNodes.get(index).addVotingButtons();
+          buttons[0].setOnAction(event ->
+          {
+            gui.getClient().voteUp(cardSpacesFirstRow.get(index).getCard().getPolicyCard());
+          });
+          buttons[1].setOnAction(event ->
+          {
+            gui.getClient().voteDown(cardSpacesFirstRow.get(index).getCard().getPolicyCard());
+
+          });
+          cardSpacesFirstRow.get(index).setCard(card.getOwner(),card.getCardType(),gui);
         }
       }
     }
   }
+
   private int getIndexOfRegion(EnumRegion region)
   {
     for (int i = 0; i<EnumRegion.US_REGIONS.length ; i++)
@@ -138,7 +156,7 @@ public class VotingLayout extends GridPane
       VotingNode firstNewVotingNode = new VotingNode(gui, EnumRegion.US_REGIONS[i], 1);
       VotingNode secondNewVotingNode = new VotingNode(gui, EnumRegion.US_REGIONS[i], 2);
       votingNodes.add(firstNewVotingNode);
-      votingNodes.add(secondNewVotingNode);
+      //votingNodes.add(secondNewVotingNode);
 
       this.add(firstNewVotingNode, i+1, 14, 1, 1);
       this.add(secondNewVotingNode, i+1, 19, 1, 1);

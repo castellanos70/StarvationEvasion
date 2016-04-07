@@ -28,6 +28,11 @@ public class VotingNode extends BorderPane
     this.getStylesheets().add("/starvationevasion/client/GUI/VotingLayout/style.css");
     this.getStyleClass().add("votingnode");
 
+
+  }
+  public Button[] addVotingButtons()
+  {
+    Button[] returnButtons=new Button[2];
     Button voteFor=new Button("Yes");
     Button voteAgainst=new Button("No");
     HBox buttons=new HBox();
@@ -38,8 +43,10 @@ public class VotingNode extends BorderPane
     //this.setTop(label);
     this.setBottom(buttons);
     this.setAlignment(buttons, Pos.CENTER);
+    returnButtons[0]=voteFor;
+    returnButtons[1]=voteAgainst;
+    return returnButtons;
   }
-
   private void initializeLabel(EnumRegion region, int cardNumber)
   {
     switch (region)

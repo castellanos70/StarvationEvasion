@@ -78,9 +78,12 @@ public class ClientPolicyCard extends VBox
    */
   public PolicyCard getPolicyCard()
   {
-    policy.setX(xVal);
-    policy.setY(yVal);
-    policy.setZ(zVal);
+    if(xVal!=0)policy.setX(xVal);
+    else policy.setX(50);
+    if(yVal!=0) policy.setY(yVal);
+    else policy.setY(50);
+    if(zVal!=0) policy.setZ(zVal);
+    else policy.setZ(50);
     policy.setTargetFood(selectedFood);
     policy.setTargetRegion(selectedRegion);
     return policy;

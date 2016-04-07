@@ -11,8 +11,6 @@ import starvationevasion.server.Server;
 import starvationevasion.server.Worker;
 import starvationevasion.server.model.*;
 
-import java.util.Collections;
-
 public class CardHandler extends AbstractHandler
 {
   public CardHandler (Server server, Worker client)
@@ -70,6 +68,7 @@ public class CardHandler extends AbstractHandler
       if (policyCard.getOwner() == getClient().getUser().getRegion())
       {
         String validation = policyCard.validate();
+        System.out.println(validation);
         if (validation == null)
         {
           server.addDraftedCard(policyCard);

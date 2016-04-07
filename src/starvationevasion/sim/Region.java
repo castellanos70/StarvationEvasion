@@ -319,10 +319,8 @@ public class Region extends Territory
   /**
    * Estimates the initial crop budget for a all of the territoryList in the region by multiplying the territory
    * consumption of the crop by its cost.
-   *
-   * @param cropData crop data loaded from "/data/sim/CropData.csv"
    */
-  public void estimateInitialBudget(List<CropZoneData> cropData)
+  public void estimateInitialBudget()
   {
     /*
     for (CropZoneData zoneData : cropData)
@@ -340,7 +338,7 @@ public class Region extends Territory
     */
   }
 
-  public void estimateInitialCropLandArea(List<CropZoneData> cropData)
+  public void estimateInitialCropLandArea()
   {
 
     /*
@@ -370,7 +368,7 @@ public class Region extends Territory
   }
 
   // defined to be the temp function in the spec
-  private double cropLandAreaHelper(Territory t, CropZoneData zoneData)
+  private double cropLandAreaHelper(Territory t)
   {
 
     /*
@@ -381,16 +379,6 @@ public class Region extends Territory
     return 0;
   }
 
-  // finds the sum of the temp function defined in the spec
-  private double cropLandAreaHelper(Territory t, List<CropZoneData> zoneData)
-  {
-    double sum = 0;
-    for (CropZoneData zone : zoneData)
-    {
-      sum += cropLandAreaHelper(t, zone);
-    }
-    return sum;
-  }
 
 
   /**

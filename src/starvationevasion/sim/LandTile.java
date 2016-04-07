@@ -4,7 +4,6 @@ import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Util;
-import starvationevasion.sim.CropZoneData.EnumCropZone;
 import starvationevasion.sim.io.CSVReader;
 
 
@@ -181,10 +180,9 @@ public class LandTile
 
   /**
    * Rate tile's suitability for a particular country's  other crops.
-   * @param otherCropsData  a country's otherCropsData object
    * @return EnumCropZone (IDEAL, ACCEPTABLE, or POOR)
    */
-  public EnumCropZone rateTileForOtherCrops(CropZoneData otherCropsData)
+  public EnumCropZone rateTileForOtherCrops()
   {
     /*
     float cropDayT = otherCropsData.dayTemp;

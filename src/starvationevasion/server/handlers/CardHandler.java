@@ -5,10 +5,13 @@ package starvationevasion.server.handlers;
  */
 
 import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 import starvationevasion.server.Server;
 import starvationevasion.server.Worker;
 import starvationevasion.server.model.*;
+
+import java.util.Collections;
 
 public class CardHandler extends AbstractHandler
 {
@@ -20,14 +23,14 @@ public class CardHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-    if (request.getDestination().equals(Endpoint.HAND_CREATE))
+    if (request.getDestination().equals(Endpoint.DRAW_CARD))
     {
       server.drawByUser(getClient().getUser());
       Payload data = new Payload();
 
-      data.putData(getClient().getUser().getHand());
-      data.putMessage("SUCCESS");
+      data.putData(getClient().getUser());
       m_response = new Response(server.uptime(), data);
+      m_response.setType(Type.USER);
       getClient().send(m_response);
 
       return true;
@@ -39,14 +42,15 @@ public class CardHandler extends AbstractHandler
       {
         if (getClient().getUser().getHand().contains(card))
         {
-          server.getSimulator().discard(getClient().getUser().getRegion(), card);
+          EnumRegion region = getClient().getUser().getRegion();
+
+          server.getSimulator().discard(region, card);
           getClient().getUser().getHand().remove(card);
 
-          server.getSimulator().drawCards(getClient().getUser().getRegion());
-          Payload data = new Payload();
+          server.drawByUser(getClient().getUser());
 
+          Payload data = new Payload();
           data.putData(getClient().getUser());
-          data.putMessage("SUCCESS");
           m_response = new Response(server.uptime(), data);
           m_response.setType(Type.USER);
           getClient().send(m_response);
@@ -71,7 +75,7 @@ public class CardHandler extends AbstractHandler
           server.addDraftedCard(policyCard);
           if (policyCard.votesRequired() > 0)
           {
-            getClient().getUser().getHand().remove(policyCard);
+            getClient().getUser().getHand().remove(policyCard.getCardType());
             m_response.setType(Type.DRAFTED_INTO_VOTE);
             data.putData(policyCard);
             getClient().send(m_response);
@@ -79,7 +83,7 @@ public class CardHandler extends AbstractHandler
           }
           else
           {
-            getClient().getUser().getHand().remove(policyCard);
+            getClient().getUser().getHand().remove(policyCard.getCardType());
             m_response.setType(Type.DRAFTED);
             data.putData(policyCard);
             getClient().send(m_response);
@@ -104,9 +108,9 @@ public class CardHandler extends AbstractHandler
     {
       Payload data = new Payload();
 
-      data.putData(getClient().getUser().getHand());
+      data.putData(getClient().getUser());
       m_response = new Response(server.uptime(), data);
-      m_response.setType(Type.USER_HAND);
+      m_response.setType(Type.USER);
 
       getClient().send(m_response);
 

@@ -6,7 +6,7 @@ package starvationevasion.server;
  */
 
 import starvationevasion.common.*;
-import starvationevasion.server.io.*;
+import starvationevasion.server.io.ReadStrategy;
 import starvationevasion.server.io.strategies.*;
 import starvationevasion.server.model.*;
 import starvationevasion.sim.Simulator;
@@ -16,18 +16,15 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.DoubleBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
-import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 
@@ -486,7 +483,7 @@ public class Server
   {
     cleanConnectionList();
 
-    if (getPlayerCount() == 2 && currentState == State.LOGIN)
+    if (getPlayerCount() == 1 && currentState == State.LOGIN)
     {
       currentState = State.BEGINNING;
       Payload data = new Payload();

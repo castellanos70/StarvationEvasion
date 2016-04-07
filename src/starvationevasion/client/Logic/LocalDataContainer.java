@@ -1,9 +1,9 @@
 package starvationevasion.client.Logic;
 
-import starvationevasion.client.Client;
-import starvationevasion.client.GUIOrig.GUI;
-import starvationevasion.client.GUIOrig.Graphs.GraphManager;
-import starvationevasion.client.GUIOrig.SummaryBar;
+import starvationevasion.client.Networking.Client;
+import starvationevasion.client.GUI.GUI;
+import starvationevasion.client.GUI.Graphs.GraphManager;
+import starvationevasion.client.GUI.SummaryBar;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;

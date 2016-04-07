@@ -1,12 +1,12 @@
 package starvationevasion.client.Logic;
 
 import javafx.application.Platform;
-import starvationevasion.client.Client;
-import starvationevasion.client.GUIOrig.DraftLayout.ChatNode;
-import starvationevasion.client.GUIOrig.DraftLayout.DraftLayout;
-import starvationevasion.client.GUIOrig.DraftLayout.hand.Hand;
-import starvationevasion.client.GUIOrig.GUI;
-import starvationevasion.client.GUIOrig.VotingLayout.VotingLayout;
+import starvationevasion.client.Networking.Client;
+import starvationevasion.client.GUI.DraftLayout.ChatNode;
+import starvationevasion.client.GUI.DraftLayout.DraftLayout;
+import starvationevasion.client.GUI.DraftLayout.hand.Hand;
+import starvationevasion.client.GUI.GUI;
+import starvationevasion.client.GUI.VotingLayout.VotingLayout;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.server.model.State;
 
@@ -66,7 +66,6 @@ public class MainGameLoop
           chatNodeVote.setChatMessages(chatManager.getChat());
           if(cardsInHand==null||cardsInHand.isEmpty()&&client.getHand()!=null&&!client.getHand().isEmpty())
           {
-            System.out.println("DSL:FKJ");
             cardsInHand=client.getHand();
             hand.setHand(client.getHand().toArray(new EnumPolicy[cardsInHand.size()]));
           }
@@ -77,6 +76,8 @@ public class MainGameLoop
           }
           if(gui.isDraftingPhase()&&client.getState().equals(State.VOTING)) gui.switchScenes();
           if(!gui.isDraftingPhase()&&(client.getState().equals(State.DRAFTING)||client.getState().equals(State.DRAWING))) gui.switchScenes();
+          if(client.getVotingCards()!=null) gui.getVotingLayout().updateCardSpaces(client.getVotingCards());
+
         });
       }
     };

@@ -1,6 +1,6 @@
 package starvationevasion.client.Logic;
 
-import starvationevasion.client.Client;
+import starvationevasion.client.Networking.Client;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 

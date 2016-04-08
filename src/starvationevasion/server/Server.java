@@ -36,9 +36,10 @@ public class Server
   // List of all the workers
   private LinkedList<Worker> allConnections = new LinkedList<>();
 
+  private LinkedList<Process> processes = new LinkedList<>();
 
   private long startNanoSec = 0;
-  private Simulator simulator = new Simulator();
+  private Simulator simulator;
 
   // list of ALL the users
   private final List<User> userList = Collections.synchronizedList(new ArrayList<>());
@@ -700,7 +701,22 @@ public class Server
 
   public void startAI()
   {
-    ServerUtil.StartAIProcess(new String[]{"java", "-classpath", "./dist:./dist/libs/*", "starvationevasion/ai/AI", "foodgame.cs.unm.edu", "5555"});
+    Process p = ServerUtil.StartAIProcess(new String[]{"java", "-classpath", "./dist:./dist/libs/*", "starvationevasion/ai/AI", "foodgame.cs.unm.edu", "5555"});
+    if (p != null)
+    {
+      processes.add(p);
+    }
+  }
+
+  public int killAI()
+  {
+    if (processes.size() > 0)
+    {
+      Process p = processes.poll();
+      p.destroyForcibly();
+      return p.exitValue();
+    }
+    return 666;
   }
 
 }

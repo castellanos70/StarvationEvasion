@@ -18,7 +18,6 @@ public abstract class AbstractHandler
   private final Worker client;
   protected AbstractHandler m_successor;
   protected final Server server;
-  protected Response m_response = null;
 
   public AbstractHandler (Server server, Worker client)
   {
@@ -44,17 +43,6 @@ public abstract class AbstractHandler
     }
   }
 
-  public Response getResponse ()
-  {
-    if (m_response != null)
-    {
-      Response _sending = m_response;
-      // _sending.setFrom(client.getName());
-      m_response = null;
-      return _sending;
-    }
-    return null;
-  }
 
   public Worker getClient ()
   {

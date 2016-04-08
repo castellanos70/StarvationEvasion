@@ -115,7 +115,7 @@ public class AI
       {
 
 
-        Thread.sleep(2000);
+
 
         if (commands.size() == 0)
         {
@@ -131,6 +131,7 @@ public class AI
         {
           commands.pop();
         }
+        Thread.sleep(1000);
 
 
       }
@@ -208,6 +209,7 @@ public class AI
           {
             u = (User) response.getPayload().getData();
             //System.out.println("Logged in as \n" + u.toJSON().toString());
+            System.out.println("Hi, I am "+ u.getUsername() + ". I'll be playing using (crappy) AI.");
           }
           else
           {

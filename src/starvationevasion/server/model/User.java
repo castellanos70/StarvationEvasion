@@ -10,6 +10,7 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.server.Worker;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.beans.Transient;
 import java.util.ArrayList;
 
 public class User implements Encryptable, Sendable
@@ -126,16 +127,18 @@ public class User implements Encryptable, Sendable
     isPlaying = playing;
   }
 
+  @Transient
   public String getSalt ()
   {
     return salt;
   }
 
-  public Worker getWorker ()
+  @Transient
+  public synchronized Worker getWorker ()
   {
     return worker;
   }
-
+  @Transient
   public User setWorker (Worker worker)
   {
     this.worker = worker;

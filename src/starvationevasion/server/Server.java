@@ -6,7 +6,7 @@ package starvationevasion.server;
  */
 
 import starvationevasion.common.*;
-import starvationevasion.server.io.ReadStrategy;
+import starvationevasion.server.io.*;
 import starvationevasion.server.io.strategies.*;
 import starvationevasion.server.model.*;
 import starvationevasion.sim.Simulator;
@@ -16,15 +16,15 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.DoubleBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+import java.util.concurrent.*;
+import java.util.function.BooleanSupplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 
@@ -38,21 +38,19 @@ public class Server
 
 
   private long startNanoSec = 0;
-  private Simulator simulator;
+  private Simulator simulator = new Simulator();
 
   // list of ALL the users
-  private final ArrayList<User> userList = new ArrayList<>();
+  private final List<User> userList = Collections.synchronizedList(new ArrayList<>());
 
   private State currentState = State.LOGIN;
   private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
   private Date date = new Date();
 
   // list of available regions
-  private ArrayList<EnumRegion> availableRegions = new ArrayList<>();
-  private ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>(),
-          draftedPolicyCards = new ArrayList<>();
-
-  private HashMap<PolicyCard, Tuple<User, Boolean>> votes = new HashMap<>();
+  private List<EnumRegion> availableRegions = Collections.synchronizedList(new ArrayList<>());
+  private ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>();
+  private final LinkedBlockingQueue<PolicyCard> draftedPolicyCards = new LinkedBlockingQueue<>();
 
 
   private ScheduledFuture<?> phase;
@@ -67,7 +65,7 @@ public class Server
 
     Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
 
-    createUser(new User("admin", "admin", EnumRegion.USA_CALIFORNIA, new ArrayList<>()));
+    createUser(new User("admin", "admin", null, new ArrayList<>()));
     createUser(new User("ANON", "", null, new ArrayList<>()));
     createUser(new User("Emma", "bot", null, new ArrayList<>()));
     createUser(new User("Olivia", "bot", null, new ArrayList<>()));
@@ -99,7 +97,7 @@ public class Server
       {
         update();
       }
-    }, 500, 500);
+    }, 0, 1500);
 
     waitForConnection(portNumber);
 
@@ -190,7 +188,7 @@ public class Server
     return simulator;
   }
 
-  public User getUserByUsername (String username)
+  public synchronized User getUserByUsername (String username)
   {
     for (User user : userList)
     {
@@ -221,8 +219,6 @@ public class Server
   }
 
 
-
-
   public int getLoggedInCount ()
   {
     return (int) getLoggedInUsers().stream()
@@ -232,8 +228,8 @@ public class Server
   public List<User> getLoggedInUsers ()
   {
     return userList.stream()
-            .filter(user -> user.isLoggedIn())
-            .collect(Collectors.toList());
+                   .filter(user -> user.isLoggedIn())
+                   .collect(Collectors.toList());
   }
 
   public int getUserCount ()
@@ -278,7 +274,10 @@ public class Server
 
   public State getGameState ()
   {
-    return currentState;
+    synchronized(currentState)
+    {
+      return currentState;
+    }
   }
 
   public void restartGame ()
@@ -289,8 +288,14 @@ public class Server
     // TODO clear all hands and cards
 
     // There is a loop constantly checking if state is login...
+    for (User user : getPlayers())
+    {
+      user.getHand().clear();
+    }
+    enactedPolicyCards.clear();
+    draftedPolicyCards.clear();
     currentState = State.LOGIN;
-
+    broadcastStateChange();
   }
 
   public void stopGame ()
@@ -302,11 +307,11 @@ public class Server
     broadcast(new Response(uptime(), "The game has been stopped."));
   }
 
-  public List<User> getPlayers()
+  public List<User> getPlayers ()
   {
     return userList.stream()
-            .filter(user -> user.isPlaying())
-            .collect(Collectors.toList());
+                   .filter(user -> user.isPlaying())
+                   .collect(Collectors.toList());
   }
 
   public int getPlayerCount ()
@@ -333,13 +338,13 @@ public class Server
     }
     else
     {
-      u.setRegion(availableRegions.get(Util.randInt(0, availableRegions.size()-1)));
+      u.setRegion(availableRegions.get(Util.randInt(0, availableRegions.size() - 1)));
       u.setPlaying(true);
       return true;
     }
   }
 
-  public ArrayList<EnumRegion> getAvailableRegions ()
+  public List<EnumRegion> getAvailableRegions ()
   {
     return availableRegions;
   }
@@ -401,17 +406,20 @@ public class Server
     broadcastStateChange();
 
     Payload cards = new Payload();
-    ArrayList<PolicyCard> list = new ArrayList<>();
+    ArrayList<PolicyCard> _list = new ArrayList<>();
 
-    for (PolicyCard card : draftedPolicyCards)
+    Iterator i = draftedPolicyCards.iterator();
+    while(i.hasNext())
     {
-      //if (card.votesRequired() > 0)
+      PolicyCard card = (PolicyCard)i.next();
+      if (card.votesRequired() >= 1)
       {
-        list.add(card);
+        _list.add(card);
       }
     }
 
-    cards.putData(list);
+
+    cards.putData(_list);
     Response r = new Response(uptime(), cards);
     r.setType(Type.VOTE_BALLOT);
 
@@ -429,26 +437,28 @@ public class Server
   {
     currentState = State.DRAWING;
     broadcastStateChange();
-    enactedPolicyCards.clear();
+    enactedPolicyCards = new ArrayList<>();
 
-    for (PolicyCard p : draftedPolicyCards)
+    PolicyCard p;
+    while ((p=draftedPolicyCards.poll())!=null)
     {
-      if (p.votesRequired() == 0 || p.getEnactingRegionCount() >= p.votesRequired())
+
+      if (p.votesRequired() == 0 || p.getEnactingRegionCount() > p.votesRequired())
       {
         enactedPolicyCards.add(p);
       }
-
       simulator.discard(p.getOwner(), p.getCardType());
     }
 
-    System.out.println("After discarding...");
-    Payload payload = new Payload();
-    Response response = new Response(uptime(), payload);
+    draftedPolicyCards.clear();
+
+
 
     for (User user : getPlayers())
     {
+      Payload payload = new Payload();
+      Response response = new Response(uptime(), payload);
       drawByUser(user);
-
       payload.putData(user);
       response.setType(Type.USER);
       user.getWorker().send(response);
@@ -456,18 +466,20 @@ public class Server
 
 
     ArrayList<WorldData> worldData = simulator.nextTurn(enactedPolicyCards);
+    System.out.println("There is " + enactedPolicyCards.size() + " cards being enacted.");
+    // System.out.println(String.valueOf(enactedPolicyCards));
 
-
-    payload.clear();
+    Payload payload = new Payload();
+    Response response = new Response(uptime(), payload);
     payload.putData(worldData);
     response.setType(Type.WORLD_DATA_LIST);
     broadcast(response);
 
-
-    if (simulator.getCurrentYear()  >= Constant.LAST_YEAR)
+    if (simulator.getCurrentYear() >= Constant.LAST_YEAR)
     {
       currentState = State.END;
       broadcastStateChange();
+      return;
     }
 
 
@@ -483,7 +495,7 @@ public class Server
   {
     cleanConnectionList();
 
-    if (getPlayerCount() == 1 && currentState == State.LOGIN)
+    if (getPlayerCount() == 2 && currentState == State.LOGIN)
     {
       currentState = State.BEGINNING;
       Payload data = new Payload();
@@ -540,6 +552,7 @@ public class Server
    *
    * @param worker worker that is holding the socket connection
    * @param s socket that is opened
+   *
    * @return
    */
   private boolean secureConnection (Worker worker, Socket s)
@@ -581,7 +594,7 @@ public class Server
         {
           // use the plain text writer to send following data
           worker.setWriter(new PlainTextWriteStrategy(s, null));
-          ((PlainTextWriteStrategy)worker.getWriter())
+          ((PlainTextWriteStrategy) worker.getWriter())
                   .getWriter().println("HTTP/1.1 101 Switching Protocols\n" +
                                                "Upgrade: websocket\n" +
                                                "Connection: Upgrade\n" +
@@ -632,7 +645,7 @@ public class Server
 
   private void broadcastStateChange ()
   {
-    System.out.println(currentState);
+    // System.out.println(currentState);
     Payload _data = new Payload();
     _data.putData(currentState);
     Response r = new Response(uptime(), _data);
@@ -665,13 +678,8 @@ public class Server
     new Server(port);
   }
 
-  public void addDraftedCard (PolicyCard policyCard)
-  {
-    draftedPolicyCards.add(policyCard);
-  }
 
-
-  public ArrayList<PolicyCard> getDraftedPolicyCards ()
+  public LinkedBlockingQueue<PolicyCard> getDraftedPolicyCards ()
   {
     return draftedPolicyCards;
   }

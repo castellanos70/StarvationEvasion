@@ -21,6 +21,13 @@ public class CardHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
+    if (!server.getGameState().equals(State.DRAFTING))
+    {
+      return false;
+    }
+
+    Response m_response = new Response("");
+
     if (request.getDestination().equals(Endpoint.DRAW_CARD))
     {
       server.drawByUser(getClient().getUser());
@@ -62,6 +69,7 @@ public class CardHandler extends AbstractHandler
     {
       PolicyCard policyCard = (PolicyCard) request.getPayload().getData();
       Payload data = new Payload();
+
       m_response = new Response(server.uptime(), data);
 
 
@@ -71,7 +79,9 @@ public class CardHandler extends AbstractHandler
         System.out.println(validation);
         if (validation == null)
         {
-          server.addDraftedCard(policyCard);
+
+          server.getDraftedPolicyCards().add(policyCard);
+
           if (policyCard.votesRequired() > 0)
           {
             getClient().getUser().getHand().remove(policyCard.getCardType());

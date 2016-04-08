@@ -52,6 +52,12 @@ clean () {
     rm -rf dist/
 }
 
+move_webui () {
+    rm ../public_html/foodgame/*
+    cp src/starvationevasion/server/*.js ../public_html/foodgame/
+    cp src/starvationevasion/server/*.html ../public_html/foodgame/
+}
+
 if [ "$1" == "build" ]
 then
     build
@@ -85,6 +91,9 @@ then
 elif [ "$1" == "docs" ]
 then
     make_javadoc
+elif [ "$1" == "webui" ]
+then
+    move_webui
 else
     echo "Command not found"
 fi

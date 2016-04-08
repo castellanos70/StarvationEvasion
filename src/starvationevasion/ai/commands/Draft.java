@@ -11,8 +11,6 @@ import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.Request;
 import starvationevasion.server.model.State;
 
-import java.util.Random;
-
 
 public class Draft extends AbstractCommand
 {
@@ -60,7 +58,7 @@ public class Draft extends AbstractCommand
         return true;
       }
 
-      if (!drawn && getClient().getUser().getHand().size() <= 6)
+      if (!drawn && getClient().getUser().getHand().size() <= 7)
       {
         Request request = new Request(getClient().getStartNanoSec(), Endpoint.DRAW_CARD);
         getClient().send(request);
@@ -109,7 +107,7 @@ public class Draft extends AbstractCommand
     {
       card = PolicyCard.create(getClient().getUser().getRegion(), policy);
 
-      if (Util.randFloat() <= .20f)
+      if (Util.likeliness(.20f))
       {
         break;
       }

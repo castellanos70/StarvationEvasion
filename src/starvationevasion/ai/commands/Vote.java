@@ -46,7 +46,7 @@ public class Vote extends AbstractCommand
           if (card.getOwner() != getClient().getUser().getRegion())
           {
             Endpoint endpoint;
-            if (Util.randFloat() <= .20f)
+            if (Util.likeliness(.20f))
             {
               endpoint = Endpoint.VOTE_UP;
             }

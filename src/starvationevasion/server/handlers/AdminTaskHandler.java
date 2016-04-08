@@ -47,23 +47,7 @@ public class AdminTaskHandler extends AbstractHandler
       }
       else if (request.getDestination().equals(Endpoint.KILL_AI))
       {
-        int exit = server.killAI();
-        Payload data = new Payload();
-        data.put("to-region", "ALL");
-
-
-        Response response = new Response(server.uptime(), data);
-
-        if (exit == 666)
-        {
-          data.put("text", "1 AI could not be removed");
-        }
-        else
-        {
-          data.put("text", "1 AI was removed.");
-        }
-
-        server.broadcast(response);
+        server.killAI();
         return true;
       }
 

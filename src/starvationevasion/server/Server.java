@@ -708,15 +708,23 @@ public class Server
     }
   }
 
-  public int killAI()
+  public void killAI()
   {
     if (processes.size() > 0)
     {
       Process p = processes.poll();
-      p.destroyForcibly();
-      return p.exitValue();
+      p.destroy();
+      int val = p.exitValue();
+      Payload data = new Payload();
+      data.put("to-region", "ALL");
+
+      Response response = new Response(uptime(), data);
+
+      data.put("text", "1 AI was removed. with exit value " + String.valueOf(val));
+
+      broadcast(response);
+
     }
-    return 666;
   }
 
 }

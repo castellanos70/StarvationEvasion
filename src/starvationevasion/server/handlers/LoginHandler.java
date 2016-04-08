@@ -18,6 +18,7 @@ public class LoginHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
+    Response m_response = new Response("");
     if (request.getDestination().equals(Endpoint.LOGIN))
     {
       String uname = (String) request.getPayload().get("username");

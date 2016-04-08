@@ -11,22 +11,24 @@ import java.util.Map;
  */
 public class ServerUtil
 {
-  public static void StartAIProcess(String[] command, String hostname, int port, String username, String password)
+  public static Process StartAIProcess(String[] command/*, String hostname, int port, String username, String password*/)
   {
     ProcessBuilder processBuilder = new ProcessBuilder(command);
     processBuilder.inheritIO();
-    final Map<String, String> environment = processBuilder.environment();
-    environment.put("SEHOSTNAME", hostname);
-    environment.put("SEPORT", "" + port);
-    environment.put("SEUSERNAME", username);
-    environment.put("SEPASSWORD", password);
+    // final Map<String, String> environment = processBuilder.environment();
+//    environment.put("SEHOSTNAME", hostname);
+//    environment.put("SEPORT", "" + port);
+//    environment.put("SEUSERNAME", username);
+//    environment.put("SEPASSWORD", password);
     try
     {
-      processBuilder.start();
+      return processBuilder.start();
     }
     catch (IOException e)
     {
       e.printStackTrace();
     }
+
+    return null;
   }
 }

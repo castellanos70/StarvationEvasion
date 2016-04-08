@@ -13,6 +13,10 @@ var Client = (function (window, $) {
             connectArea:   $('#connection'),
             address:       $('#address-in'),
             connectBtn:    $('#connect-btn'),
+            restartBtn:    $('#restart-btn'),
+            loginBtn:      $('#login-btn'),
+            endBtn:        $('#end-btn'),
+            pwdText:       $('#pwd-field'),
             inputText:     $('#text-input'),
             sendBtn:       $('#send-btn'),
             responses:     $('#stream')
@@ -50,24 +54,61 @@ var Client = (function (window, $) {
             Client.connection.onclose = function (event) {
                 Client.config.inputArea.fadeOut();
                 Client.config.connectArea.fadeIn();
+                Client.config.loginBtn.fadeIn();
             };
 
             Client.connection.onerror = function (event) {
                 Client.config.inputArea.fadeOut();
                 Client.config.connectArea.fadeIn();
+                Client.config.loginBtn.fadeIn();
             };
 
             Client.connection.onmessage = function (event) {
-                Client.config.responses.append("\n------\n" + event.data);
+                var json_data = JSON.parse(event.data);
+                Client.config.responses.append(event.data+ "\n");
                 Client.config.responses.scrollTop(Client.config.responses.prop("scrollHeight"));
+
+                if(json_data.type.name === "AUTH" && json_data.message === "SUCCESS")
+                {
+                    Client.config.loginBtn.fadeOut();
+                }
             };
             
         });
 
-        Client.config.sendBtn.click(function () {
+        Client.config.endBtn.click(function()
+        {
+            Client.connection.send(_getTime() + " stop_game");
+        });
 
-            var _data = Client.config.inputText.val();
-            Client.connection.send(_getTime() + " " + _data);
+        Client.config.restartBtn.click(function()
+        {
+            Client.connection.send(_getTime() + " restart_game");
+        });
+
+
+        Client.config.loginBtn.click(function()
+        {
+            Client.config.pwdText.fadeIn();
+        });
+
+        Client.config.pwdText.keydown(function (event) {
+            var keypressed = event.keyCode || event.which;
+            if (keypressed == 13) {
+                var _data = Client.config.pwdText.val();
+                Client.config.pwdText.val('');
+                Client.connection.send(_getTime() + " login " + JSON.stringify({ username: "admin", password:_data}));
+                Client.config.pwdText.fadeOut();
+            }
+        });
+
+        Client.config.inputText.keydown(function (event) {
+            var keypressed = event.keyCode || event.which;
+            if (keypressed == 13) {
+                var _data = Client.config.inputText.val();
+                Client.config.inputText.val('');
+                Client.connection.send(_getTime() + " " + _data);
+            }
         });
 
     };

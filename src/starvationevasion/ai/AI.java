@@ -5,13 +5,7 @@ import starvationevasion.ai.commands.*;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.PolicyCard;
 import starvationevasion.common.WorldData;
-import starvationevasion.server.model.Response;
-
-import starvationevasion.server.model.State;
-import starvationevasion.server.model.Type;
-import starvationevasion.server.model.User;
-
-import starvationevasion.server.model.Request;
+import starvationevasion.server.model.*;
 
 import java.io.*;
 import java.net.Socket;
@@ -115,7 +109,7 @@ public class AI
       {
 
 
-        Thread.sleep(2000);
+
 
         if (commands.size() == 0)
         {
@@ -131,6 +125,7 @@ public class AI
         {
           commands.pop();
         }
+        Thread.sleep(1000);
 
 
       }
@@ -207,7 +202,16 @@ public class AI
           if (response.getPayload().getMessage().equals("SUCCESS"))
           {
             u = (User) response.getPayload().getData();
-            //System.out.println("Logged in as \n" + u.toJSON().toString());
+
+            Payload data = new Payload();
+            data.put("to-region", "ALL");
+            data.put("text", "Hi, I am "+ u.getUsername() + ". I'll be playing using (crappy) AI.");
+
+            Request request = new Request(startNanoSec, Endpoint.CHAT);
+            request.setData(data);
+            send(request);
+
+            System.out.println("Hi, I am "+ u.getUsername() + ". I'll be playing using (crappy) AI.");
           }
           else
           {

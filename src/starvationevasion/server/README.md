@@ -1,9 +1,9 @@
 # Server
 I have supplied a ```Client.java``` file. Run it and try out some of these commands.
 
-You can also use my hosted [web page](http://cs.unm.edu/~javierc/testing.html).
+You can also use my hosted [web page](http://cs.unm.edu/~javierc/foodgame/testing.html).
 
-Client that is more like the ```Client.java``` can be found [here](http://cs.unm.edu/~javierc/client.html)
+Admin UI that is more like the ```Client.java``` can be found [here](http://cs.unm.edu/~javierc/foodgame/admin.html)
 
 # Run
 

@@ -12,6 +12,7 @@ import starvationevasion.server.model.State;
 
 public class Vote extends AbstractCommand
 {
+  private int tries = 2;
 
   public Vote (AI client)
   {
@@ -23,32 +24,45 @@ public class Vote extends AbstractCommand
   {
     if (getClient().getState().equals(State.VOTING))
     {
-      System.out.println("vote");
+
+      if (tries <= 0)
+      {
+        return false;
+      }
+
+      if (getClient().getBallot() == null)
+      {
+        System.out.println(String.valueOf(getClient().getBallot()));
+        tries--;
+        return true;
+      }
 
 
-
-      if (getClient().getBallot().size() >0)
+      if (getClient().getBallot().size() > 0)
       {
 
         for (PolicyCard card : getClient().getBallot())
         {
-
-          Endpoint endpoint;
-          if (Util.rand.nextBoolean())
+          if (card.getOwner() != getClient().getUser().getRegion())
           {
-            endpoint = Endpoint.VOTE_UP;
-          }
-          else
-          {
-            endpoint = Endpoint.VOTE_DOWN;
-          }
+            Endpoint endpoint;
+            if (Util.likeliness(.20f))
+            {
+              endpoint = Endpoint.VOTE_UP;
+            }
+            else
+            {
+              endpoint = Endpoint.VOTE_DOWN;
+            }
 
-          Request request = new Request(getClient().getStartNanoSec(), endpoint);
 
-          Payload payload = new Payload();
-          payload.putData(card);
-          request.setData(payload);
-          getClient().send(request);
+            Request request = new Request(getClient().getStartNanoSec(), endpoint);
+
+            Payload payload = new Payload();
+            payload.putData(card);
+            request.setData(payload);
+            getClient().send(request);
+          }
         }
       }
 

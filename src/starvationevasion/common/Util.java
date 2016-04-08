@@ -20,6 +20,11 @@ public class Util
     return rand.nextInt((max - min) + 1) + min;
   }
 
+  public static boolean likeliness (float likeliness)
+  {
+    return rand.nextFloat() <= likeliness;
+  }
+
 
   public static float linearInterpolate(float x1, float x2, float x3, float y1, float y3)
   {

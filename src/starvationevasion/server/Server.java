@@ -727,7 +727,9 @@ public class Server
 
       Response response = new Response(uptime(), data);
 
-      data.put("text", "1 AI was removed. with exit value " + String.valueOf(val));
+      data.put("text", "AI was removed.");
+
+      System.out.println("AI removed with exit value: " + String.valueOf(val));
 
       broadcast(response);
 

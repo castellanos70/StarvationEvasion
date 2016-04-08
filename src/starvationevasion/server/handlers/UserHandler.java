@@ -22,7 +22,7 @@ public class UserHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-
+    Response m_response = new Response("");
     if (request.getDestination().equals(Endpoint.USER_CREATE))
     {
 

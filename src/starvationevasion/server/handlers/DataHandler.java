@@ -22,7 +22,7 @@ public class DataHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-
+    Response m_response = new Response("");
     if (request.getDestination().equals(Endpoint.GAME_STATE))
     {
       Payload data = new Payload();

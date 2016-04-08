@@ -285,9 +285,7 @@ public class Server
     stopGame();
     broadcast(new Response(uptime(), "The game has been restarted."));
     simulator = new Simulator();
-    // TODO clear all hands and cards
 
-    // There is a loop constantly checking if state is login...
     for (User user : getPlayers())
     {
       user.getHand().clear();
@@ -300,7 +298,10 @@ public class Server
 
   public void stopGame ()
   {
-    phase.cancel(true);
+    if (phase != null)
+    {
+      phase.cancel(true);
+    }
     advancer.shutdownNow();
     advancer = Executors.newSingleThreadScheduledExecutor();
     currentState = State.END;

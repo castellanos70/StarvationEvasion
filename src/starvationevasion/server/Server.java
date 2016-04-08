@@ -36,9 +36,10 @@ public class Server
   // List of all the workers
   private LinkedList<Worker> allConnections = new LinkedList<>();
 
+  private LinkedList<Process> processes = new LinkedList<>();
 
   private long startNanoSec = 0;
-  private Simulator simulator = new Simulator();
+  private Simulator simulator;
 
   // list of ALL the users
   private final List<User> userList = Collections.synchronizedList(new ArrayList<>());
@@ -59,6 +60,8 @@ public class Server
 
   // bool that listen for connections is looping over
   private boolean isWaiting = true;
+
+  public static int TOTAL_PLAYERS = 2;
 
   public Server (int portNumber)
   {
@@ -285,9 +288,7 @@ public class Server
     stopGame();
     broadcast(new Response(uptime(), "The game has been restarted."));
     simulator = new Simulator();
-    // TODO clear all hands and cards
 
-    // There is a loop constantly checking if state is login...
     for (User user : getPlayers())
     {
       user.getHand().clear();
@@ -300,7 +301,10 @@ public class Server
 
   public void stopGame ()
   {
-    phase.cancel(true);
+    if (phase != null)
+    {
+      phase.cancel(true);
+    }
     advancer.shutdownNow();
     advancer = Executors.newSingleThreadScheduledExecutor();
     currentState = State.END;
@@ -495,7 +499,7 @@ public class Server
   {
     cleanConnectionList();
 
-    if (getPlayerCount() == 2 && currentState == State.LOGIN)
+    if (getPlayerCount() == TOTAL_PLAYERS && currentState == State.LOGIN)
     {
       currentState = State.BEGINNING;
       Payload data = new Payload();
@@ -695,5 +699,46 @@ public class Server
     Collections.addAll(user.getHand(), _hand);
 
   }
+
+
+  public void startAI()
+  {
+    Process p = ServerUtil.StartAIProcess(new String[]{"java", "-classpath", "./dist:./dist/libs/*", "starvationevasion/ai/AI", "foodgame.cs.unm.edu", "5555"});
+    if (p != null)
+    {
+      processes.add(p);
+    }
+  }
+
+  public void killAI()
+  {
+    if (processes.size() > 0)
+    {
+      Process p = processes.poll();
+      p.destroy();
+      try
+      {
+        p.waitFor();
+      }
+      catch(InterruptedException e)
+      {
+      }
+      int val = p.exitValue();
+      Payload data = new Payload();
+      data.put("to-region", "ALL");
+
+      Response response = new Response(uptime(), data);
+
+      data.put("text", "AI was removed.");
+
+      System.out.println("AI removed with exit value: " + String.valueOf(val));
+
+      broadcast(response);
+
+    }
+  }
+
+
+
 
 }

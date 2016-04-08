@@ -179,7 +179,13 @@ public enum Endpoint
    * Handled by {@link starvationevasion.server.handlers.UserHandler}
    * Required Payload: client-done:boolean, region-polygons:boolean, data-start:int, data-end:int
    */
-  WORLD_DATA("world_data");
+  WORLD_DATA("world_data"),
+
+  AI("ai"),
+
+  KILL_AI("kill_ai"),
+
+  TOTAL_PLAYERS("total_players");
 
   private String url;
 

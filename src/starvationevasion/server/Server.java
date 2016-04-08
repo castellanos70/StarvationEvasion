@@ -38,7 +38,7 @@ public class Server
 
 
   private long startNanoSec = 0;
-  private final Simulator simulator = new Simulator();
+  private Simulator simulator = new Simulator();
 
   // list of ALL the users
   private final List<User> userList = Collections.synchronizedList(new ArrayList<>());
@@ -65,7 +65,7 @@ public class Server
 
     Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
 
-    createUser(new User("admin", "admin", EnumRegion.USA_CALIFORNIA, new ArrayList<>()));
+    createUser(new User("admin", "admin", null, new ArrayList<>()));
     createUser(new User("ANON", "", null, new ArrayList<>()));
     createUser(new User("Emma", "bot", null, new ArrayList<>()));
     createUser(new User("Olivia", "bot", null, new ArrayList<>()));
@@ -75,7 +75,7 @@ public class Server
 
 
     startNanoSec = System.nanoTime();
-    // simulator = new Simulator();
+    simulator = new Simulator();
 
 
     try
@@ -284,12 +284,18 @@ public class Server
   {
     stopGame();
     broadcast(new Response(uptime(), "The game has been restarted."));
-    //simulator = new Simulator();
+    simulator = new Simulator();
     // TODO clear all hands and cards
 
     // There is a loop constantly checking if state is login...
+    for (User user : getPlayers())
+    {
+      user.getHand().clear();
+    }
+    enactedPolicyCards.clear();
+    draftedPolicyCards.clear();
     currentState = State.LOGIN;
-
+    broadcastStateChange();
   }
 
   public void stopGame ()

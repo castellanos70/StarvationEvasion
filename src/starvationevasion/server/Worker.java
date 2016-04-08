@@ -34,6 +34,7 @@ public class Worker extends Thread
 
   private final DataOutputStream outStream;
   private final DataInputStream inStream;
+  private boolean isLoggedIn = false;
 
 
   public Worker (Socket client, Server server)
@@ -65,7 +66,7 @@ public class Worker extends Thread
    * Send message to client.
    *
    */
-  public <T extends Sendable> void send (T data)
+  public synchronized <T extends Sendable> void send (T data)
   {
     try
     {
@@ -99,7 +100,8 @@ public class Worker extends Thread
     {
       e.printStackTrace();
     }
-    
+    getUser().setLoggedIn(false);
+    isLoggedIn = false;
   }
   
   public void run ()
@@ -200,6 +202,15 @@ public class Worker extends Thread
   public void setUsername (String username)
   {
     this.username = username;
+    if (!username.equals("ANON"))
+    {
+      isLoggedIn = true;
+    }
+  }
+
+  public boolean loggedIn ()
+  {
+    return isLoggedIn;
   }
 
   public User getUser()

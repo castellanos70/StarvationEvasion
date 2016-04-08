@@ -20,41 +20,48 @@ public class VoteHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-    if (server.getGameState().equals(State.VOTING))
+    if (!server.getGameState().equals(State.VOTING))
     {
-      m_response = new Response("Not eligible to vote.");
-      PolicyCard card = (PolicyCard) request.getPayload().getData();
-      int i = server.getDraftedPolicyCards().indexOf(card);
-
-      if (request.getDestination().equals(Endpoint.VOTE_UP))
-      {
-        if (!card.isEligibleToVote(getClient().getUser().getRegion()))
-        {
-          // send to client.
-          getClient().send(m_response);
-          return true;
-        }
-        if (i >= 0)
-        {
-          server.getDraftedPolicyCards().get(i).addEnactingRegion(getClient().getUser().getRegion());
-        }
-        // server.getVoteMap().put(card, new Tuple(getClient().getUser(), true));
-      }
-      else if (request.getDestination().equals(Endpoint.VOTE_DOWN))
-      {
-        if (!card.isEligibleToVote(getClient().getUser().getRegion()))
-        {
-          getClient().send(m_response);
-          return true;
-        }
-        // server.getVoteMap().put(card, new Tuple(getClient().getUser(), false));
-      }
-      m_response.setMessage("SUCCESS");
-      getClient().send(m_response);
-
-
-      return true;
+      return false;
     }
-    return false;
+
+    Response m_response = new Response("Not eligible to vote.");
+    PolicyCard card = (PolicyCard) request.getPayload().getData();
+    boolean isPresent = server.getDraftedPolicyCards().contains(card);
+    if (!isPresent)
+    {
+      return false;
+    }
+
+    if (request.getDestination().equals(Endpoint.VOTE_UP))
+    {
+      if (!card.isEligibleToVote(getClient().getUser().getRegion()))
+      {
+        // send to client.
+        getClient().send(m_response);
+        return true;
+      }
+
+      for (PolicyCard policyCard : server.getDraftedPolicyCards())
+      {
+        if (policyCard.equals(card))
+        {
+          policyCard.addEnactingRegion(getClient().getUser().getRegion());
+        }
+      }
+    }
+    else if (request.getDestination().equals(Endpoint.VOTE_DOWN))
+    {
+      if (!card.isEligibleToVote(getClient().getUser().getRegion()))
+      {
+        getClient().send(m_response);
+        return true;
+      }
+    }
+    m_response.setMessage("SUCCESS");
+    getClient().send(m_response);
+
+
+    return true;
   }
 }

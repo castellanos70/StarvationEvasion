@@ -1,19 +1,27 @@
 package starvationevasion.sim.io.XMLparsers;
 
-import org.xml.sax.*;
+import org.xml.sax.XMLReader;
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
-import starvationevasion.sim.io.GeographyValidator;
-import starvationevasion.common.GeographicArea;
-import starvationevasion.common.MapPoint;
-
+import org.xml.sax.InputSource;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static starvationevasion.sim.io.IOHelpers.readIndex;
+import starvationevasion.sim.io.GeographyValidator;
+import starvationevasion.common.GeographicArea;
+import starvationevasion.common.MapPoint;
 
 /**
  * Created by winston on 3/21/15.
@@ -190,6 +198,38 @@ public class GeographyXMLparser extends DefaultHandler
       e.printStackTrace();
       System.exit(1);
     }
+  }
+
+  public static ArrayList<String> readIndex(String indexPath)
+  {
+    ArrayList<String> files = new ArrayList<>();
+
+    try
+    {
+      System.out.println("IOHelpers.readIndex(" + indexPath + ")");
+      InputStream resourceStream = GeographyXMLparser.class.getResourceAsStream(indexPath);
+      BufferedReader reader = new BufferedReader(new InputStreamReader(resourceStream));
+
+
+      String entry;
+      while ((entry = reader.readLine()) != null)
+      {
+        files.add(entry);
+        //System.out.println("      "+entry);
+      }
+
+
+      reader.close();
+      resourceStream.close();
+
+    } catch (IOException ex)
+    {
+      Logger.getGlobal().log(Level.SEVERE, "Error parsing geography index", ex);
+      ex.printStackTrace();
+      System.exit(1);
+    }
+
+    return files;
   }
 }
 

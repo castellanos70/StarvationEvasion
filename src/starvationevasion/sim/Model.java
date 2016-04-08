@@ -106,7 +106,6 @@ public class Model
 
   private SeaLevel seaLevel;
 
-  private ArrayList<CropZoneData>     cropZoneDatum;
   private ArrayList<SpecialEventData> specialEventDatum;
 
   private List<AbstractEvent> specialEvents = new ArrayList<>();

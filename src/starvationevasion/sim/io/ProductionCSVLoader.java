@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  */
 public class ProductionCSVLoader
 {
-  private final static Logger LOGGER = Logger.getLogger(FertilizerCSVLoader.class.getName());
+  private final static Logger LOGGER = Logger.getLogger(ProductionCSVLoader.class.getName());
   private static final String PATH_WORLD_PRODUCTION = "/sim/WorldFoodProduction_2000-2009.csv";
   private static final String PATH_USA_PRODUCTION_BY_STATE = "/sim/Percentage_USA_Production_by_State_2014.csv";
 

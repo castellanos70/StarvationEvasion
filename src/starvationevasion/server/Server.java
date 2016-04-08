@@ -714,6 +714,13 @@ public class Server
     {
       Process p = processes.poll();
       p.destroy();
+      try
+      {
+        p.waitFor();
+      }
+      catch(InterruptedException e)
+      {
+      }
       int val = p.exitValue();
       Payload data = new Payload();
       data.put("to-region", "ALL");

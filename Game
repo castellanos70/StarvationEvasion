@@ -53,9 +53,9 @@ clean () {
 }
 
 move_webui () {
-    rm ../public_html/foodgame/*
-    cp src/starvationevasion/server/*.js ../public_html/foodgame/
-    cp src/starvationevasion/server/*.html ../public_html/foodgame/
+    rm /nfs/student/j/javierc/public_html/foodgame/*
+    cp /nfs/student/j/javierc/starvation_evasion/src/starvationevasion/server/*.js /nfs/student/j/javierc/public_html/foodgame/
+    cp /nfs/student/j/javierc/starvation_evasion/src/starvationevasion/server/*.html /nfs/student/j/javierc/public_html/foodgame/
 }
 
 if [ "$1" == "build" ]

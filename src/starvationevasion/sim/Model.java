@@ -134,27 +134,9 @@ public class Model
     ProductionCSVLoader.load(regionList);
 
     cropData = new CropData();
-      //tileManager = CropZoneDataIO.parseFile(territoryList);
 
-      //instantiateRegions();
-
-      // add data from csv to agricultureUnits
-      //ProductionCSVLoader csvProduction;
-      //csvProduction = new ProductionCSVLoader(regionList);
-
-
-      //Calendar startingDate = Calendar.getInstance();
-      //startingDate.set(Calendar.YEAR,  2014);
-
-      //world = World.makeWorld(geography, territoryList, tileManager, startingDate);
-
-      //tileManager.setWorld(world);
-
-
-      //seaLevel = new SeaLevel();
-
-      //load any special events
-      //loadExistingSpecialEvents();
+    //LandTile.load(this);
+    //assert (assertLandTiles());
 
     for (int i = 0; i< YEARS_OF_DATA; i++)
     {
@@ -204,6 +186,19 @@ public class Model
     return true;
   }
 
+
+  private boolean assertLandTiles()
+  {
+    for (Territory territory : territoryList)
+    {
+      float area = territory.getLandTiles().size();
+      System.out.println("LandTiles: " + territory.getName() + ": area="+
+       area + ", tile count=" + territory.getLandTiles().size() +
+        ", land per tile = " + area/territory.getLandTiles().size());
+    }
+    return true;
+  }
+
   private void addGeographyToTerritories(ArrayList<GeographicArea> geography)
   {
      // Collections.sort(geography, new Comparator<GeographicArea>() {
@@ -233,6 +228,23 @@ public class Model
   {
     return regionList[r.ordinal()];
   }
+
+  /**
+   * @param latitude  Latitude ranges from -90 to 90. North latitude is positive.
+   * @param longitude Longitude ranges from -180 to 180. East longitude is positive.
+   * @return The territory containing the given latitude and longitude or null if the given location
+   * is not within a game territory.
+   */
+  public Territory getTerritory(double latitude, double longitude)
+  {
+    MapPoint mapPoint = new MapPoint(latitude, longitude);
+    for (Territory territory : territoryList)
+    {
+      if (territory.containsMapPoint(mapPoint)) return territory;
+    }
+    return null;
+  }
+
 
   public ArrayList<GeographicArea> getGeographicBoundary(EnumRegion regionCode)
   {

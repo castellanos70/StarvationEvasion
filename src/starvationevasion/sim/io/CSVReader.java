@@ -93,8 +93,10 @@ public class CSVReader
       { reader.readLine(); //trash line i
       }
     }
-    catch (IOException e)
-    { e.printStackTrace();
+    catch (Exception e)
+    {
+      System.out.println("ERROR reading " + resource);
+      e.printStackTrace();
       System.exit(0);
     }
   }

@@ -6,6 +6,10 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Util;
 import starvationevasion.sim.io.CSVReader;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 /**
  * LandTiles are used to hold climate data for the model.<br>
@@ -34,7 +38,7 @@ public class LandTile
     static int SIZE = values().length;
   }
 
-  private static final String PATH_CLIMATE_DIR = "/data/sim/climate_";
+  private static final String PATH_CLIMATE_DIR = "/sim/climate/Climate_";
 
   private enum FileHeaders
   {
@@ -69,6 +73,7 @@ public class LandTile
 
   private float[][][] data = new float[RawDataYears.SIZE][Constant.Month.SIZE][Field.SIZE];
 
+  private static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
 
   /**
@@ -271,22 +276,19 @@ public class LandTile
    * Given the game's full list of regions, this static method reads the climate data files,
    * creates a LandTile for each location and adds each LandTile to the territory within the
    * region to which it belongs.
-   * @param regionList The full list of game regions where each region in the list has already had
-   * all of its member territories assigned.
+   * @param model the model.
    */
-  public static void load(Region[] regionList)
+  public static void load(Model model)
   {
-    /*
+    Date dateStart = new Date();
+    System.out.println("LandTile.load() Loading Climate Data: " +dateFormat.format(dateStart));
     int preGameYears = Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR;
-    long[][] usa_exports     = new long[preGameYears][EnumFood.SIZE];
-    long[][] usa_imports     = new long[preGameYears][EnumFood.SIZE];
-    long[][] usa_production  = new long[preGameYears][EnumFood.SIZE];
-    long[][] usa_area        = new long[preGameYears][EnumFood.SIZE];
 
     int year = 2000;
     int month = 0;
-    String monthStr = String.format("%02d", month);
-    String path = PATH_CLIMATE_DIR + year + '_' +monthStr + ".csv");
+    int yearIdx = year - Constant.FIRST_DATA_YEAR;
+    String monthStr = String.format("%02d", month+1);
+    String path = PATH_CLIMATE_DIR + year + '_' +monthStr + ".csv";
 
     CSVReader fileReader = new CSVReader(path, 0);
 
@@ -298,127 +300,44 @@ public class LandTile
       int i = header.ordinal();
       if (!header.name().equals(fieldList[i]))
       {
-        LOGGER.severe("**ERROR** Reading " + PATH_WORLD_PRODUCTION +
+        System.out.println("**ERROR** Reading " + path +
           ": Expected header[" + i + "]=" + header + ", Found: " + fieldList[i]);
-        return;
+        System.exit(1);
       }
     }
     fileReader.trashRecord();
 
     // read until end of file is found
-    while ((fieldList = fileReader.readRecord(EnumHeader.SIZE)) != null)
+
+    while ((fieldList = fileReader.readRecord(FileHeaders.SIZE)) != null)
     {
       //System.out.println("ProductionCSVLoader(): record="+fieldList[0]+", "+fieldList[2]+", len="+fieldList.length);
-      EnumFood food = null;
-      EnumRegion region = null;
-      int year = 0;
-      long imports = 0;
-      long exports = 0;
-      long production = 0;
-      long area = 0;
 
-      for (EnumHeader header : EnumHeader.values())
+      float latitude = Float.parseFloat(fieldList[0]);
+      float longitude = Float.parseFloat(fieldList[1])-180.0f;
+      LandTile tile = new LandTile(latitude, longitude);
+      Territory territory = model.getTerritory(latitude, longitude);
+      if (territory == null)
       {
-        int i = header.ordinal();
-        if (fieldList[i].equals("")) continue;
-
-        switch (header)
-        {
-          case year:
-            year = Integer.parseInt(fieldList[i]);
-            //TODO: for now, data is 1981, but this should be changed
-            if (year < Constant.FIRST_DATA_YEAR) year = Constant.FIRST_DATA_YEAR;
-            break;
-          case category:
-            food = EnumFood.valueOf(fieldList[i]);
-            break;
-          case region:
-            if (!fieldList[i].equals("UNITED_STATES"))
-            {
-              region = EnumRegion.valueOf(fieldList[i]);
-            }
-            break;
-          case imports:
-            imports = Long.parseLong(fieldList[i]);
-            break;
-          case exports:
-            exports = Long.parseLong(fieldList[i]);
-            break;
-
-          case production:
-            production = Long.parseLong(fieldList[i]);
-            break;
-
-          case yield:
-            area = (long)(production/Double.parseDouble(fieldList[i]));
-            break;
-        }
+        //System.out.println("LandTile: ERROR: ["+latitude+", "+longitude+"] not a territory");
+        continue;
       }
 
-      //Usually, our game will start in 2010. Thus, we only want to load pre-game data
-      //  of productions up through 2009.
-      if (year < Constant.FIRST_GAME_YEAR)
+      territory.addLandTile(tile);
+
+
+      for (int i=2; i<FileHeaders.SIZE; i++)
       {
-        if (region != null)
-        { int idx = region.ordinal();
-          regionList[idx].addProduction(year, food, imports, exports, production,area);
-        }
-        else
-        {
-          int yearIdx = year-Constant.FIRST_DATA_YEAR;
-          int cropIdx = food.ordinal();
-          usa_imports[yearIdx][cropIdx]     += imports;
-          usa_exports[yearIdx][cropIdx]     += exports;
-          usa_production[yearIdx][cropIdx]  += production;
-          usa_area[yearIdx][cropIdx]        += area;
-        }
+        int ii = i-2;
+        float value= Float.parseFloat(fieldList[i]);
+
+        tile.data[yearIdx][month][ii] = value;
       }
     }
     fileReader.close();
+    Date dateDone = new Date();
+    double deltaSec = (dateDone.getTime() - dateStart.getTime())/1000.0;
+    System.out.println("LandTile.load() Done: elapsed sec=" +deltaSec);
 
-    fileReader = new CSVReader(PATH_USA_PRODUCTION_BY_STATE, 0);
-    fileReader.trashRecord();
-
-    // read until end of file is found
-    double[][] productionPercent = new double[EnumRegion.SIZE][EnumFood.SIZE];
-
-    while ((fieldList = fileReader.readRecord(EnumFood.SIZE+2)) != null)
-    {
-      int regionIdx = EnumRegion.getRegion(fieldList[1]).ordinal();
-
-      for (int i=2; i<fieldList.length; i++)
-      {
-        int foodIdx = i-2;
-        productionPercent[regionIdx][foodIdx] += Double.parseDouble(fieldList[i]);
-      }
-    }
-    fileReader.close();
-
-
-
-    for (int year=Constant.FIRST_DATA_YEAR; year< Constant.FIRST_GAME_YEAR; year++)
-    {
-      int yearIdx = year - Constant.FIRST_DATA_YEAR;
-      for (EnumRegion region : EnumRegion.values())
-      {
-        int regionIdx = region.ordinal();
-        for (EnumFood food : EnumFood.values())
-        {
-          int cropIdx = food.ordinal();
-
-          long imports     = (long)(productionPercent[regionIdx][cropIdx] * usa_imports[yearIdx][cropIdx]);
-          long exports     = (long)(productionPercent[regionIdx][cropIdx] * usa_exports[yearIdx][cropIdx]);
-          long production  = (long)(productionPercent[regionIdx][cropIdx] * usa_production[yearIdx][cropIdx]);
-          long area        = (long)(productionPercent[regionIdx][cropIdx] * usa_area[yearIdx][cropIdx]);
-
-          regionList[regionIdx].addProduction(year, food, imports, exports, production, area);
-        }
-      }
-    }
-    fileReader.close();
-    */
   }
-
-
-
 }

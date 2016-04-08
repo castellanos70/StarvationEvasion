@@ -16,6 +16,6 @@ public class PermissionFilter extends AbstractHandler
   protected boolean handleRequestImpl (Request request)
   {
     // No command will pass permission gate.
-    return getClient().getUsername().equals("ANON");
+    return !getClient().loggedIn();
   }
 }

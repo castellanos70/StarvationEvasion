@@ -20,7 +20,7 @@ public class Draft extends AbstractCommand
   private boolean discarded = false;
   private boolean drawn = false;
   private PolicyCard cardDrafted;
-
+  private int tries = 2;
 
   public Draft (AI client)
   {
@@ -33,6 +33,17 @@ public class Draft extends AbstractCommand
     System.out.println("Drafted: " + draftedCard +
                                "\nDiscarded: " + discarded +
                                "\nDrawn: " + drawn);
+
+    if (!getClient().getState().equals(State.DRAFTING) && tries > 0)
+    {
+      tries--;
+      if (tries == 0)
+      {
+        return false;
+      }
+    }
+
+
 
     if (getClient().getState().equals(State.DRAFTING))
     {
@@ -98,7 +109,7 @@ public class Draft extends AbstractCommand
     {
       card = PolicyCard.create(getClient().getUser().getRegion(), policy);
 
-      if (card.votesRequired() == 0)
+      if (Util.randFloat() <= .20f)
       {
         break;
       }
@@ -183,5 +194,6 @@ public class Draft extends AbstractCommand
     data.putData(card);
     r.setData(data);
     getClient().send(r);
+    tries = 2;
   }
 }

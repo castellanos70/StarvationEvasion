@@ -61,6 +61,8 @@ public class Server
   // bool that listen for connections is looping over
   private boolean isWaiting = true;
 
+  public static int TOTAL_PLAYERS = 2;
+
   public Server (int portNumber)
   {
 
@@ -497,7 +499,7 @@ public class Server
   {
     cleanConnectionList();
 
-    if (getPlayerCount() == 2 && currentState == State.LOGIN)
+    if (getPlayerCount() == TOTAL_PLAYERS && currentState == State.LOGIN)
     {
       currentState = State.BEGINNING;
       Payload data = new Payload();
@@ -735,5 +737,8 @@ public class Server
 
     }
   }
+
+
+
 
 }

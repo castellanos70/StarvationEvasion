@@ -51,6 +51,13 @@ public class AdminTaskHandler extends AbstractHandler
         return true;
       }
 
+      else if (request.getDestination().equals(Endpoint.TOTAL_PLAYERS))
+      {
+        long num = (long) request.getPayload().getData();
+        Server.TOTAL_PLAYERS = (int) num;
+        return true;
+      }
+
     }
 
     return false;

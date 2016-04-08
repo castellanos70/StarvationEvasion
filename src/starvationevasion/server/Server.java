@@ -696,4 +696,10 @@ public class Server
 
   }
 
+
+  public void startAI()
+  {
+    ServerUtil.StartAIProcess(new String[]{"java", "-classpath", "./dist:./dist/libs/*", "starvationevasion/ai/AI", "localhost", "5555"});
+  }
+
 }

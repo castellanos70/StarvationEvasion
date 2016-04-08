@@ -38,6 +38,11 @@ public class AdminTaskHandler extends AbstractHandler
         server.restartGame();
         return true;
       }
+      else if (request.getDestination().equals(Endpoint.AI))
+      {
+        server.startAI();
+        return true;
+      }
 
     }
 

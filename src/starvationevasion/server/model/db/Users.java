@@ -1,6 +1,7 @@
 package starvationevasion.server.model.db;
 
 import starvationevasion.common.EnumRegion;
+import starvationevasion.server.io.NotImplementedException;
 import starvationevasion.server.model.User;
 import starvationevasion.server.model.db.backends.Backend;
 
@@ -34,7 +35,6 @@ public class Users extends Transaction<User>
 
       while(results.next())
       {
-        // int id = results.getInt("id");
         cache.add(initUser(results));
       }
 
@@ -109,12 +109,14 @@ public class Users extends Transaction<User>
   public <V> void delete (V data)
   {
     dirty = true;
+    throw new NotImplementedException();
   }
 
   @Override
   public <V> void update (V username, User data)
   {
-
+    dirty = true;
+    throw new NotImplementedException();
   }
 
 

@@ -10,12 +10,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
 
-public class UserDB extends Transaction<User>
+public class Users extends Transaction<User>
 {
-  private ArrayList<User> cache = new ArrayList<>();
+  private static ArrayList<User> cache = new ArrayList<>();
   private boolean dirty = true;
 
-  public UserDB (Backend db)
+  public Users (Backend db)
   {
     super(db);
   }

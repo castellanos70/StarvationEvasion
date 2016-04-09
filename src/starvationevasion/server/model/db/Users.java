@@ -51,20 +51,20 @@ public class Users extends Transaction<User>
   }
 
   @Override
-  public <V> User get (V username)
+  public <V> User get (V user)
   {
     if (!dirty)
     {
-      for (User user : cache)
+      for (User _user : cache)
       {
-        if(user.getUsername().equals(username))
+        if(_user.equals(user))
         {
-          return user;
+          return _user;
         }
       }
     }
 
-    ResultSet results = getDb().select("user", "where username='" + username + "'");
+    ResultSet results = getDb().select("user", "where username='" + ((User) user).getUsername() + "'");
     try
     {
       int i =results.getFetchSize();

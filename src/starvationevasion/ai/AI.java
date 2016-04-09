@@ -100,34 +100,28 @@ public class AI
 
   private void listenToUserRequests ()
   {
-
-
     while(isRunning)
     {
-
       try
       {
-
-
-
-
+        // if commands is empty check again
         if (commands.size() == 0)
         {
           continue;
         }
 
+        // take off the top of the stack
         Command c = commands.peek();
 
-        System.out.println(c.getClass().getName());
+        boolean runAgain = c.run();
 
-        boolean run = c.run();
-        if (!run)
+        // if it does not need to run again pop
+        if (!runAgain)
         {
           commands.pop();
         }
+        // wait a little
         Thread.sleep(1000);
-
-
       }
       catch(InterruptedException e)
       {
@@ -194,8 +188,6 @@ public class AI
       try
       {
         Response response = readObject();
-        //System.out.println(response.toJSON());
-
 
         if (response.getType().equals(Type.AUTH))
         {
@@ -203,13 +195,10 @@ public class AI
           {
             u = (User) response.getPayload().getData();
 
-            Payload data = new Payload();
-            data.put("to-region", "ALL");
-            data.put("text", "Hi, I am "+ u.getUsername() + ". I'll be playing using (crappy) AI.");
-
-            Request request = new Request(startNanoSec, Endpoint.CHAT);
-            request.setData(data);
-            send(request);
+            send(RequestFactory.chat(startNanoSec,
+                                "ALL",
+                                "Hi, I am "+ u.getUsername() + ". I'll be playing using (crappy) AI.",
+                                null));
 
             System.out.println("Hi, I am "+ u.getUsername() + ". I'll be playing using (crappy) AI.");
           }
@@ -229,22 +218,22 @@ public class AI
         }
         else if (response.getType().equals(Type.WORLD_DATA_LIST))
         {
-          System.out.println("Getting a list of WorldData's");
+          // System.out.println("Getting a list of WorldData's");
           worldData = (ArrayList<WorldData>) response.getPayload().getData();
         }
         else if (response.getType().equals(Type.USERS_LOGGED_IN_LIST))
         {
-          System.out.println("Getting a list of ready users");
+          // System.out.println("Getting a list of ready users");
           users = (ArrayList<User>) response.getPayload().getData();
         }
         else if (response.getType().equals(Type.WORLD_DATA))
         {
-          System.out.println("Getting a list of WorldData's");
+          // System.out.println("Getting a list of WorldData's");
           worldData.add((WorldData) response.getPayload().getData());
         }
         else if (response.getType().equals(Type.GAME_STATE))
         {
-          System.out.println("Getting state of server");
+          // System.out.println("Getting state of server");
           state = (starvationevasion.server.model.State) response.getPayload().getData();
           if (state == starvationevasion.server.model.State.VOTING)
           {
@@ -259,18 +248,6 @@ public class AI
             // AI.this.commands.add(new Draft(AI.this));
           }
         }
-//        else if (response.getType().equals(Type.USER_HAND))
-//        {
-//          ArrayList hand = (ArrayList<EnumPolicy>) response.getPayload().getData();
-//          System.out.println("getting hand " + String.valueOf(hand));
-//          if ( hand == null)
-//          {
-//            commands.push(new Hand(AI.this));
-//          }
-//
-//            AI.this.getUser().setHand(hand);
-//
-//        }
         else if (response.getType().equals(Type.DRAFTED) || response.getType().equals(Type.DRAFTED_INTO_VOTE))
         {
           String msg = response.getPayload().getMessage();

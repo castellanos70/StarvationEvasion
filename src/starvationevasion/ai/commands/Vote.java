@@ -5,10 +5,7 @@ import starvationevasion.ai.AI;
 import starvationevasion.common.PolicyCard;
 import starvationevasion.common.Util;
 import starvationevasion.common.policies.InternationalFoodReliefProgramPolicy;
-import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Payload;
-import starvationevasion.server.model.Request;
-import starvationevasion.server.model.State;
+import starvationevasion.server.model.*;
 
 public class Vote extends AbstractCommand
 {
@@ -56,11 +53,8 @@ public class Vote extends AbstractCommand
             }
 
 
-            Request request = new Request(getClient().getStartNanoSec(), endpoint);
+            Request request = RequestFactory.build(getClient().getStartNanoSec(), card, endpoint);
 
-            Payload payload = new Payload();
-            payload.putData(card);
-            request.setData(payload);
             getClient().send(request);
           }
         }

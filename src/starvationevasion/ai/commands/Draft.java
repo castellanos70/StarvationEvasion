@@ -33,7 +33,7 @@ public class Draft extends AbstractCommand
     if (!getClient().getState().equals(State.DRAFTING) && tries > 0)
     {
       tries--;
-      if (tries == 0)
+      if (tries <= 0)
       {
         return false;
       }

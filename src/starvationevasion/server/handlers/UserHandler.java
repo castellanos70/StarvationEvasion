@@ -71,7 +71,7 @@ public class UserHandler extends AbstractHandler
     {
       getClient().send(ResponseFactory.build(server.uptime(),
                                              new Payload(server.getLoggedInUsers()),
-                                             Type.USERS));
+                                             Type.USERS_LOGGED_IN_LIST));
       return true;
     }
     else if (request.getDestination().equals(Endpoint.USERS_READY))

@@ -297,8 +297,11 @@ public class AI
 
     ByteArrayInputStream in = new ByteArrayInputStream(object);
     ObjectInputStream is = new ObjectInputStream(in);
+    Response response = (Response) is.readObject();
+    is.close();
+    in.close();
 
-    return (Response) is.readObject();
+    return response;
   }
 
   public void send (Request request)
@@ -316,6 +319,7 @@ public class AI
       writer.writeInt(bytes.length);
       writer.write(bytes);
       writer.flush();
+      baos.close();
     }
     catch(IOException e)
     {

@@ -678,7 +678,14 @@ public class Server
 
   public void startAI()
   {
-    Process p = ServerUtil.StartAIProcess(new String[]{"java", "-classpath", "./dist:./dist/libs/*", "starvationevasion/ai/AI", "foodgame.cs.unm.edu", "5555"});
+    Process p = ServerUtil.StartAIProcess(new String[]{"java",
+                                                       "-XX:+OptimizeStringConcat",
+                                                       "-XX:+UseCodeCacheFlushing",
+                                                       "-client",
+                                                       "-classpath",
+                                                       "./dist:./dist/libs/*",
+                                                       "starvationevasion/ai/AI",
+                                                       "foodgame.cs.unm.edu", "5555"});
     if (p != null)
     {
       processes.add(p);

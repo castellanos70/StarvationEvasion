@@ -10,6 +10,7 @@ import starvationevasion.server.model.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 
@@ -189,24 +190,21 @@ public class AI
       {
         Response response = readObject();
 
-        if (response.getType().equals(Type.AUTH))
+        if (response.getType().equals(Type.AUTH_SUCCESS))
         {
-          if (response.getPayload().getMessage().equals("SUCCESS"))
-          {
-            u = (User) response.getPayload().getData();
+          u = (User) response.getPayload().getData();
 
-            send(RequestFactory.chat(startNanoSec,
-                                "ALL",
-                                "Hi, I am "+ u.getUsername() + ". I'll be playing using (crappy) AI.",
-                                null));
+          send(RequestFactory.chat(startNanoSec,
+                                   "ALL",
+                                   "Hi, I am " + u.getUsername() + ". I'll be playing using (crappy) AI.",
+                                   null));
 
-            System.out.println("Hi, I am "+ u.getUsername() + ". I'll be playing using (crappy) AI.");
-          }
-          else
-          {
-            System.out.println("Error logging in");
-            isRunning = false;
-          }
+          System.out.println("Hi, I am " + u.getUsername() + ". I'll be playing using (crappy) AI.");
+        }
+        else if (response.getType().equals(Type.AUTH_ERROR))
+        {
+          System.out.println("Error logging in");
+          isRunning = false;
         }
         else if (response.getType().equals(Type.USER))
         {
@@ -253,8 +251,8 @@ public class AI
           String msg = response.getPayload().getMessage();
           if (msg == null)
           {
-            PolicyCard card = (PolicyCard) response.getPayload().getData();
-            getUser().getHand().remove(card.getCardType());
+            // PolicyCard card = (PolicyCard) response.getPayload().getData();
+            // getUser().getHand().remove(card.getCardType());
           }
           else
           {

@@ -16,6 +16,8 @@ import java.util.ArrayList;
 public class User implements Encryptable, Sendable
 {
   public transient int actionsRemaining = 2;
+  public transient int policyCardsDiscarded = 0;
+
   public transient Worker worker;
   private transient String salt;
 
@@ -25,7 +27,6 @@ public class User implements Encryptable, Sendable
   private boolean isLoggedIn = false;
   private boolean isPlaying = false;
   private ArrayList<EnumPolicy> hand = new ArrayList<>();
-  public int policyCardsDiscarded = 0;
 
   public User()
   {
@@ -39,71 +40,141 @@ public class User implements Encryptable, Sendable
     encrypt(password, null);
   }
 
-
+  /**
+   * Returns the username
+   *
+   * @return username username string of user
+   */
   public String getUsername ()
   {
     return username;
   }
 
+  /**
+   * Set the username NOTE: must be unique
+   *
+   * @param username unique username
+   */
   public void setUsername (String username)
   {
     this.username = username;
   }
 
-  public String getPassword ()
-  {
-     return password;
-  }
-
-  public void setPassword (String password)
-  {
-    encrypt(password, null);
-  }
-
-  public void setEncryptedPassword (String password, String salt)
-  {
-     this.password = password;
-     this.salt = salt;
-  }
-
+  /**
+   * Get the users region
+   * @return Region this user belongs to
+   */
   public EnumRegion getRegion ()
   {
      return region;
   }
 
+  /**
+   * Set the region of the user.
+   *
+   * US only if planning on playing game
+   *
+   * @param region region of user
+   */
   public void setRegion (EnumRegion region)
   {
      this.region = region;
   }
 
+  /**
+   * Get the hand of the user
+   *
+   * @return cards that currently belong to user
+   */
   public ArrayList<EnumPolicy> getHand ()
   {
     return hand;
   }
 
+  /**
+   * Set the current list of cards that the user has
+   *
+   * @param hand list of cards to replace current hand
+   */
   public void setHand (ArrayList<EnumPolicy> hand)
   {
     this.hand = hand;
   }
 
+  /**
+   * Check if the user is logged in
+   *
+   * @return true if logged in
+   */
   public boolean isLoggedIn ()
   {
     return isLoggedIn;
   }
 
+  /**
+   * Set the user logged in status. Set to true when user logs in.
+   *
+   * @param loggedIn user's logged in status. false if not logged in
+   */
   public void setLoggedIn (boolean loggedIn)
   {
     isLoggedIn = loggedIn;
   }
 
+  /**
+   * Check to see if the player has signaled they are ready.
+   *
+   * @return true if playing
+   */
   public boolean isPlaying ()
   {
     return isPlaying;
   }
 
+  /**
+   * Set the users playing status. Set to true when user sends ready
+   *
+   * @param playing true if playing
+   */
   public void setPlaying (boolean playing)
   {
     isPlaying = playing;
+  }
+
+  /**
+   * Get the password
+   * @return encrypted password
+   */
+  @Transient
+  public String getPassword ()
+  {
+    return password;
+  }
+
+  /**
+   * Sets the password and encrypts it
+   *
+   * @param password password for auth
+   */
+  @Transient
+  public void setPassword (String password)
+  {
+    encrypt(password, null);
+  }
+
+  /**
+   * Set the encrypted password
+   *
+   * @param password encrypted password
+   * @param salt key that is used to check for authentication.
+   *
+   * The salt must be able to reproduce the encrypted password
+   */
+  @Transient
+  public void setEncryptedPassword (String password, String salt)
+  {
+    this.password = password;
+    this.salt = salt;
   }
 
   @Transient
@@ -117,6 +188,7 @@ public class User implements Encryptable, Sendable
   {
     return worker;
   }
+
   @Transient
   public User setWorker (Worker worker)
   {
@@ -145,7 +217,6 @@ public class User implements Encryptable, Sendable
   {
     throw new NotImplementedException();
   }
-
 
   @Override
   public Type getType ()

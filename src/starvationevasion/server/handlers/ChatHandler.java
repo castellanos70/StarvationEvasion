@@ -7,10 +7,7 @@ package starvationevasion.server.handlers;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.server.Worker;
 import starvationevasion.server.Server;
-import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Request;
-import starvationevasion.server.model.Response;
-import starvationevasion.server.model.User;
+import starvationevasion.server.model.*;
 
 
 public class ChatHandler extends AbstractHandler
@@ -42,14 +39,18 @@ public class ChatHandler extends AbstractHandler
 
       if (to.equals("ALL"))
       {
-        server.broadcast(new Response(server.uptime(), request.getPayload()));
+        server.broadcast(ResponseFactory.build(server.uptime(),
+                                               request.getPayload(),
+                                               Type.CHAT));
       }
       else if (!isRegion)
       {
         User u = server.getUserByUsername(to);
         if (u != null)
         {
-          u.getWorker().send(new Response(server.uptime(), request.getPayload()));
+          u.getWorker().send(ResponseFactory.build(server.uptime(),
+                                                   request.getPayload(),
+                                                   Type.CHAT));
         }
       }
       else
@@ -59,7 +60,9 @@ public class ChatHandler extends AbstractHandler
         {
           if (_user.getRegion().equals(destination))
           {
-            _user.getWorker().send(new Response(server.uptime(), request.getPayload()));
+            _user.getWorker().send(ResponseFactory.build(server.uptime(),
+                                                         request.getPayload(),
+                                                         Type.CHAT));
           }
         }
       }

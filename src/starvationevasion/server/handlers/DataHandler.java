@@ -22,38 +22,27 @@ public class DataHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-    Response m_response = new Response("");
+
     if (request.getDestination().equals(Endpoint.GAME_STATE))
     {
-      Payload data = new Payload();
-      data.putData(server.getGameState());
 
-      m_response = new Response(server.uptime(), data);
-      m_response.setType(Type.GAME_STATE);
-
-      getClient().send(m_response);
+      getClient().send(ResponseFactory.build(server.uptime(),
+                                             server.getGameState(),
+                                             Type.GAME_STATE));
       return true;
     }
     else if (request.getDestination().equals(Endpoint.SERVER_UPTIME))
     {
-      Payload data = new Payload();
-      data.putData(server.uptime());
-
-      m_response = new Response(server.uptime(), data);
-      m_response.setType(Type.TIME);
-
-      getClient().send(m_response);
+      getClient().send(ResponseFactory.build(server.uptime(),
+                                             new Payload(server.uptime()),
+                                             Type.TIME));
       return true;
     }
     else if (request.getDestination().equals(Endpoint.AVAILABLE_REGIONS))
     {
-      Payload data = new Payload();
-      data.putData(server.getAvailableRegions());
-
-      m_response = new Response(server.uptime(), data);
-      m_response.setType(Type.AVAILABLE_REGIONS);
-
-      getClient().send(m_response);
+      getClient().send(ResponseFactory.build(server.uptime(),
+                                             new Payload(server.getAvailableRegions()),
+                                             Type.AVAILABLE_REGIONS));
       return true;
     }
     else if (request.getDestination().equals(Endpoint.WORLD_DATA))
@@ -77,7 +66,7 @@ public class DataHandler extends AbstractHandler
       if (dataStart >= 0 && dataEnd >= dataStart)
       {
         ArrayList<WorldData> worldDataList = server.getSimulator().getWorldData(dataStart, dataEnd);
-        data.put("world-data", worldDataList);
+        data.putData(worldDataList);
       }
 
       if (polygons)
@@ -86,10 +75,9 @@ public class DataHandler extends AbstractHandler
         data.put("geographic-data", geographicAreaList);
       }
 
-
-      m_response = new Response(data);
-      m_response.setType(Type.WORLD_DATA);
-      getClient().send(m_response);
+      getClient().send(ResponseFactory.build(server.uptime(),
+                                             data,
+                                             Type.WORLD_DATA_LIST));
 
       return true;
 

@@ -64,7 +64,7 @@ public class Server
 
   public static int TOTAL_PLAYERS = 2;
 
-  private Backend db = new Sqlite();
+  private Backend db = new Sqlite(Constant.DB_LOCATION);
   private Transaction<User> transaction;
 
 

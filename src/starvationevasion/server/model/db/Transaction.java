@@ -17,11 +17,13 @@ public abstract class Transaction<T>
 
   public abstract ArrayList<T> getAll();
 
-  public abstract <V> T get(V data);
+  public abstract <V> T get(V id);
 
   public abstract <V> T create(V data);
 
-  public abstract <V> void delete(V data);
+  public abstract <V> void delete(V id);
+
+  public abstract <V> void update(V id, T data);
 
   Backend getDb ()
   {

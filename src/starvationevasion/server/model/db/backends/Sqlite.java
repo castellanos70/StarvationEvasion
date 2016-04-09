@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 
 
 public class Sqlite implements Backend
@@ -19,13 +20,14 @@ public class Sqlite implements Backend
   {
     try
     {
-      connection = DriverManager.getConnection("jdbc:sqlite:sample.db");
+      connection = DriverManager.getConnection("jdbc:sqlite:db.db");
     }
     catch(SQLException e)
     {
       e.printStackTrace();
+      return false;
     }
-    return false;
+    return true;
   }
 
   @Override
@@ -67,13 +69,44 @@ public class Sqlite implements Backend
   }
 
   @Override
-  public void insert (String table)
+  public void insert (String table, Set<Object> values)
   {
     Statement statement = null;
     try
     {
       statement = connection.createStatement();
-      statement.executeUpdate("insert into " + table + " values(1, 'leo')");
+      StringBuilder stringBuilder = new StringBuilder();
+      stringBuilder.append("insert into ").append(table).append("values ( ");
+
+
+      int size = values.size();
+      int i = 0;
+
+      for (Object value : values)
+      {
+        if (value instanceof String)
+        {
+          stringBuilder.append("'").append(value).append("'");
+        }
+        else if (value instanceof Number)
+        {
+          stringBuilder.append(value);
+        }
+
+        if (size-1 == i)
+        {
+          stringBuilder.append(")");
+        }
+        else
+        {
+          stringBuilder.append(", ");
+        }
+
+        i++;
+      }
+
+      statement.executeUpdate(stringBuilder.toString());
+
     }
     catch(SQLException e)
     {
@@ -82,12 +115,13 @@ public class Sqlite implements Backend
   }
 
   @Override
-  public ResultSet select (String table)
+  public ResultSet select (String table, String where)
   {
     try
     {
       Statement statement = connection.createStatement();
-      return statement.executeQuery("SELECT * FROM " + table);
+
+      return statement.executeQuery("SELECT * FROM " + table + " " + where);
     }
     catch(SQLException e)
     {

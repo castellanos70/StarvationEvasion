@@ -10,7 +10,6 @@ import starvationevasion.server.io.*;
 import starvationevasion.server.io.strategies.SocketReadStrategy;
 import starvationevasion.server.io.strategies.SocketWriteStrategy;
 import starvationevasion.server.model.*;
-import starvationevasion.sim.Simulator;
 
 import java.io.*;
 import java.net.Socket;
@@ -131,7 +130,7 @@ public class Worker extends Thread
           String[] arr = string.split("\\s+");
           if (arr.length < 2)
           {
-            send(ResponseFactory.build(server.uptime(), null,"Invalid command args" ,Type.BROADCAST));
+            send(ResponseFactory.build(server.uptime(), null, Type.BROADCAST, "Invalid command args"));
             continue;
           }
 
@@ -145,7 +144,7 @@ public class Worker extends Thread
       catch(EndpointException e)
       {
         System.out.println("Invalid endpoint!");
-        send(ResponseFactory.build(server.uptime(), null,"Invalid endpoint" ,Type.BROADCAST));
+        send(ResponseFactory.build(server.uptime(), null, Type.BROADCAST, "Invalid endpoint"));
       }
       catch(IOException e)
       {
@@ -163,7 +162,7 @@ public class Worker extends Thread
       catch(ClassNotFoundException e)
       {
         System.out.println("Invalid Class was received");
-        send(ResponseFactory.build(server.uptime(), null,"Invalid Class" ,Type.BROADCAST));
+        send(ResponseFactory.build(server.uptime(), null, Type.BROADCAST, "Invalid Class"));
       }
     }
   }

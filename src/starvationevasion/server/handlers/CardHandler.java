@@ -11,8 +11,6 @@ import starvationevasion.server.Server;
 import starvationevasion.server.Worker;
 import starvationevasion.server.model.*;
 
-import java.util.Collections;
-
 public class CardHandler extends AbstractHandler
 {
   public CardHandler (Server server, Worker client)
@@ -86,7 +84,7 @@ public class CardHandler extends AbstractHandler
         }
         else
         {
-          getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), validation, Type.DRAFTED));
+          getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, validation));
           return true;
         }
 

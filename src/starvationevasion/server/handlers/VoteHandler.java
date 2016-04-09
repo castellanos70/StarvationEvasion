@@ -5,7 +5,6 @@ package starvationevasion.server.handlers;
  */
 
 import starvationevasion.common.PolicyCard;
-import starvationevasion.common.Tuple;
 import starvationevasion.server.Worker;
 import starvationevasion.server.Server;
 import starvationevasion.server.model.*;
@@ -29,7 +28,7 @@ public class VoteHandler extends AbstractHandler
     boolean isPresent = server.getDraftedPolicyCards().contains(card);
     if (!isPresent)
     {
-      getClient().send(ResponseFactory.build(server.uptime(), card, "Not present", Type.VOTE_ERROR));
+      getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_ERROR, "Not present"));
       return false;
     }
 
@@ -38,7 +37,7 @@ public class VoteHandler extends AbstractHandler
       if (!card.isEligibleToVote(getClient().getUser().getRegion()))
       {
         // send to client.
-        getClient().send(ResponseFactory.build(server.uptime(), card, "Not Eligible", Type.VOTE_ERROR));
+        getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_ERROR, "Not Eligible"));
         return true;
       }
 
@@ -56,7 +55,7 @@ public class VoteHandler extends AbstractHandler
     {
       if (!card.isEligibleToVote(getClient().getUser().getRegion()))
       {
-        getClient().send(ResponseFactory.build(server.uptime(), card, "Not Eligible", Type.VOTE_ERROR));
+        getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_ERROR, "Not Eligible"));
         return true;
       }
       getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_SUCCESS));

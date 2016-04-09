@@ -265,8 +265,8 @@ public class Server
     {
       connection.send(ResponseFactory.build(uptime(),
                                             currentState,
-                                            "Server will shutdown in 3 sec",
-                                            Type.BROADCAST));
+                                            Type.BROADCAST, "Server will shutdown in 3 sec"
+      ));
     }
 
     try
@@ -297,7 +297,7 @@ public class Server
   public void restartGame ()
   {
     stopGame();
-    broadcast(ResponseFactory.build(uptime(), currentState, "Game restarted.", Type.BROADCAST));
+    broadcast(ResponseFactory.build(uptime(), currentState, Type.BROADCAST, "Game restarted."));
 
     simulator = new Simulator();
 
@@ -320,7 +320,7 @@ public class Server
     advancer.shutdownNow();
     advancer = Executors.newSingleThreadScheduledExecutor();
     currentState = State.END;
-    broadcast(ResponseFactory.build(uptime(), currentState, "Game has been stopped.", Type.GAME_STATE));
+    broadcast(ResponseFactory.build(uptime(), currentState, Type.GAME_STATE, "Game has been stopped."));
   }
 
   public List<User> getPlayers ()
@@ -490,7 +490,7 @@ public class Server
     if (getPlayerCount() == TOTAL_PLAYERS && currentState == State.LOGIN)
     {
       currentState = State.BEGINNING;
-      broadcast(ResponseFactory.build(uptime(), currentState, "Game will begin in 10s", Type.GAME_STATE));
+      broadcast(ResponseFactory.build(uptime(), currentState, Type.GAME_STATE, "Game will begin in 10s"));
 
       phase = advancer.schedule(this::begin, currentState.getDuration(), TimeUnit.MILLISECONDS);
     }

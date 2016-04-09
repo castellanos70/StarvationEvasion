@@ -5,6 +5,7 @@ package starvationevasion.server.model;
  */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.common.WorldData;
 import starvationevasion.server.io.JSON;
 
 import java.util.ArrayList;
@@ -14,6 +15,17 @@ import java.util.Map;
 
 public class Payload extends HashMap<String, Object> implements Sendable
 {
+
+  public Payload (Object data)
+  {
+    super();
+    this.putData(data);
+  }
+
+  public Payload ()
+  {
+    super();
+  }
 
   @Override
   public Object put (String key, Object value)

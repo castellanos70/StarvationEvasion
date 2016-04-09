@@ -409,20 +409,15 @@ public class Server
 
     ArrayList<PolicyCard> _list = new ArrayList<>();
 
-//    Iterator i = draftedPolicyCards.iterator();
-//    while(i.hasNext())
-//    {
-//      PolicyCard card = (PolicyCard)i.next();
-//      if (card.votesRequired() >= 1)
-//      {
-//        _list.add(card);
-//      }
-//    }
-
-
+    Iterator i = draftedPolicyCards.iterator();
+    while(i.hasNext())
+    {
+      PolicyCard card = (PolicyCard)i.next();
+      _list.add(card);
+    }
 
     broadcast(ResponseFactory.build(uptime(),
-                                    new Payload(Collections.singletonList(draftedPolicyCards)),
+                                    new Payload(_list),
                                     Type.VOTE_BALLOT));
 
     phase = advancer.schedule(this::draw, currentState.getDuration(), TimeUnit.MILLISECONDS);

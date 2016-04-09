@@ -35,7 +35,7 @@ public class UserDB extends Transaction<User>
       while(results.next())
       {
         // int id = results.getInt("id");
-        cache.add(createUser(results));
+        cache.add(initUser(results));
       }
 
 
@@ -72,7 +72,7 @@ public class UserDB extends Transaction<User>
       {
         if (results.first())
         {
-          return createUser(results);
+          return initUser(results);
         }
       }
       results.close();
@@ -90,13 +90,18 @@ public class UserDB extends Transaction<User>
     dirty = true;
     User user = ((User) data);
     LinkedHashSet<Object> values = new LinkedHashSet<>();
-
     values.add(user.getUsername());
     values.add(user.getPassword());
     values.add(user.getSalt());
     values.add(user.getRegion());
 
-    getDb().insert("user", values);
+    LinkedHashSet<String> cols = new LinkedHashSet<>();
+    cols.add("username");
+    cols.add("password");
+    cols.add("salt");
+    cols.add("region");
+
+    getDb().insert("user",cols, values);
     return user;
   }
 
@@ -107,7 +112,7 @@ public class UserDB extends Transaction<User>
   }
 
 
-  private User createUser(ResultSet results) throws SQLException
+  private User initUser (ResultSet results) throws SQLException
   {
     String username = results.getString("username");
     String password = results.getString("password");

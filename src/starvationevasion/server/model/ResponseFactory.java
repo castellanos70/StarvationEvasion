@@ -25,7 +25,7 @@ public class ResponseFactory
 
     if (data instanceof Payload)
     {
-      return new Response(time, data, type);
+      return new Response(time, (Payload) data, type);
     }
     else
     {

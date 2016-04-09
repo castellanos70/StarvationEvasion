@@ -32,13 +32,12 @@ public abstract class NetworkData implements Sendable
 
   public <T extends Payload> NetworkData (double time, T data, Type type)
   {
-    this(time, new Payload(), "", type);
-    getPayload().putData(data);
+    this(time, data, "", type);
   }
 
   public NetworkData (double time, Sendable data, Type type)
   {
-    this(time, data, "", type);
+    this(time, new Payload(data), "", type);
   }
 
   @Override

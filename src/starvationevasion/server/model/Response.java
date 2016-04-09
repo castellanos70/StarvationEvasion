@@ -4,93 +4,42 @@ package starvationevasion.server.model;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
-import com.oracle.javafx.jmx.json.JSONDocument;
-import starvationevasion.server.io.JSON;
 
-public class Response implements Sendable
+public class Response extends NetworkData
 {
 
-  private Payload data = new Payload();
-  private Type type = Type.BROADCAST;
-  private String message = "";
-  private double time = 0f;
-
-
-  public Response (double time, Payload payload)
+  public <T extends Payload> Response (double time, T data, String msg, Type type)
   {
-    this.time = time;
-    this.data = payload;
+    super(time, data, msg, type);
   }
 
-  public Response (double time, String msg)
+  public Response (double time, Sendable data, String msg, Type type)
   {
-    this.time = time;
-    this.message = msg;
+    super(time, data, msg, type);
   }
 
-  public Response (Payload data)
+  public Response (double time, Payload data, String msg)
   {
-    this.data = data;
+    super(time, data, msg);
   }
 
-  public Response (String message)
+  public <T extends Payload> Response (double time, T data, Type type)
   {
-    this.message = message;
+    super(time, data, type);
   }
 
-  @Override
-  public String toString ()
+  public Response (double time, Sendable data, Type type)
   {
-    return String.valueOf(time) + " " + data;
+    super(time, data, type);
   }
 
-  @Override
-  public JSONDocument toJSON ()
-  {
-    data.put("time", time);
-    data.put("type", data.getOrDefault("type", type));
-    data.put("message", data.getOrDefault("message", message));
+//  public Response(double time, Payload daya)
+//  {
+//
+//  }
 
-    return data.toJSON();
-  }
-
-  @Override
-  public void fromJSON (Object doc)
-  {
-    JSONDocument json = JSON.Parser.toJSON(data);
-
-
-    time = (double) json.getNumber("time");
-    type = Type.valueOf(json.getString("type"));
-    message = json.getString("message");
-
-    JSONDocument _data = json.get("data");
-    data.fromJSON(_data);
-  }
-
-  public void setType (Type type)
-  {
-    this.type = type;
-  }
-
-  @Override
-  public Type getType ()
-  {
-    return type;
-  }
-
-  public Payload getPayload ()
-  {
-    return data;
-  }
-
-  public double getTime ()
-  {
-    return time;
-  }
-
-  public void setMessage (String message)
-  {
-    this.message = message;
-  }
+//  public Response(double time, String daya)
+//  {
+//
+//  }
 }

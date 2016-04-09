@@ -7,21 +7,22 @@ import java.util.Set;
 
 public class Postgresql implements Backend
 {
-
+  private String url;
+  private Properties properties = null;
   private Connection connection;
 
   @Override
   public boolean connect ()
   {
-    String url = "jdbc:postgresql://localhost/test";
-    Properties props = new Properties();
-    props.setProperty("user","fred");
-    props.setProperty("password","secret");
-    props.setProperty("ssl","true");
+    // String url = "jdbc:postgresql://localhost/test";
+    // Properties props = new Properties();
+    // props.setProperty("user","fred");
+    // props.setProperty("password","secret");
+    // props.setProperty("ssl","true");
     // Connection conn = null;
     try
     {
-      connection = DriverManager.getConnection(url, props);
+      connection = DriverManager.getConnection(url, properties);
     }
     catch(SQLException e)
     {

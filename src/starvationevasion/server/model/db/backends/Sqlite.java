@@ -8,19 +8,27 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 
 public class Sqlite implements Backend
 {
-  Connection connection = null;
+  private final String url;
+  private Connection connection = null;
+  private Properties properties = null;
+
+  public Sqlite(String url)
+  {
+    this.url = url;
+  }
 
   @Override
   public boolean connect ()
   {
     try
     {
-      connection = DriverManager.getConnection("jdbc:sqlite:data/db.db");
+      connection = DriverManager.getConnection(url);
     }
     catch(SQLException e)
     {

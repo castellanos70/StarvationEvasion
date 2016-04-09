@@ -32,7 +32,7 @@ public class CardHandler extends AbstractHandler
     if (request.getDestination().equals(Endpoint.DRAW_CARD))
     {
       server.drawByUser(getClient().getUser());
-      getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
+      // getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.D));
 
       return true;
     }
@@ -50,7 +50,7 @@ public class CardHandler extends AbstractHandler
 
           server.drawByUser(getClient().getUser());
 
-          getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
+          // getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
 
         }
       }
@@ -86,7 +86,7 @@ public class CardHandler extends AbstractHandler
         }
         else
         {
-          getClient().send(ResponseFactory.build(server.uptime(), policyCard, validation, Type.DRAFTED));
+          getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), validation, Type.DRAFTED));
           return true;
         }
 

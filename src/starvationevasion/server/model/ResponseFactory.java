@@ -35,7 +35,7 @@ public class ResponseFactory
     }
   }
 
-  public static Response build (double time, Sendable data, String message, Type type)
+  public static Response build (double time, Sendable data, Type type, String message)
   {
     Response response = ResponseFactory.build(time, data, type);
     response.getPayload().putMessage(message);

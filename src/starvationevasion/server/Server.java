@@ -10,7 +10,7 @@ import starvationevasion.server.io.*;
 import starvationevasion.server.io.strategies.*;
 import starvationevasion.server.model.*;
 import starvationevasion.server.model.db.Transaction;
-import starvationevasion.server.model.db.UserDB;
+import starvationevasion.server.model.db.Users;
 import starvationevasion.server.model.db.backends.Backend;
 import starvationevasion.server.model.db.backends.Sqlite;
 import starvationevasion.sim.Simulator;
@@ -64,16 +64,20 @@ public class Server
 
   public static int TOTAL_PLAYERS = 2;
 
-  private Backend db = new Sqlite(Constant.DB_LOCATION);
-  private Transaction<User> transaction;
+  // Create a backend, currently sqlite
+  private final Backend db = new Sqlite(Constant.DB_LOCATION);
+
+  // Class that save User's to a database
+  private final Transaction<User> userTransaction;
 
 
   public Server (int portNumber)
   {
-    transaction = new UserDB(db);
+    userTransaction = new Users(db);
     Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
 
-    for (User user : transaction.getAll())
+    // get all the users from the database
+    for (User user : userTransaction.getAll())
     {
       userList.add(user);
     }
@@ -124,6 +128,8 @@ public class Server
 
   /**
    * Wait for a connection.
+   *
+   * TODO: Refactor waiting to use a NON-Blocking Input/Output. Look at ServerSocketChannel
    *
    * @param port port to listen on.
    */
@@ -216,7 +222,7 @@ public class Server
                             .anyMatch(user -> user.getUsername().equals(u.getUsername()));
     if (!found)
     {
-      transaction.create(u);
+      userTransaction.create(u);
       userList.add(u);
       return true;
     }
@@ -409,10 +415,8 @@ public class Server
 
     ArrayList<PolicyCard> _list = new ArrayList<>();
 
-    Iterator i = draftedPolicyCards.iterator();
-    while(i.hasNext())
+    for (PolicyCard card : draftedPolicyCards)
     {
-      PolicyCard card = (PolicyCard)i.next();
       _list.add(card);
     }
 
@@ -536,7 +540,7 @@ public class Server
    * @param worker worker that is holding the socket connection
    * @param s socket that is opened
    *
-   * @return
+   * @return boolean true if web-socket
    */
   private boolean secureConnection (Worker worker, Socket s)
   {
@@ -597,8 +601,9 @@ public class Server
       }
       if (line.contains("Sec-Socket-Key: "))
       {
-        key = line.replace("Sec-Socket-Key: ", "").trim();
-        socketKey = Encryptable.generateKey();
+        throw new NotImplementedException();
+        //key = line.replace("Sec-Socket-Key: ", "").trim();
+        //socketKey = Encryptable.generateKey();
       }
     }
   }
@@ -704,6 +709,7 @@ public class Server
       }
       catch(InterruptedException e)
       {
+        System.out.println("Interrupted and could not wait for exit code");
       }
       int val = p.exitValue();
       Payload data = new Payload();

@@ -40,7 +40,7 @@ run_server_n_build() {
 run_server () {
     build
     # java -XX:+AggressiveOpts -XX:+UseFastAccessorMethods -Xms128m -Xmx2g -Xcomp -classpath ./dist starvationevasion/server/Server "$1" "$2"
-    java -classpath "./dist:./dist/libs/*" starvationevasion/server/Server "$1"
+    java -Xcomp -XX:+AggressiveOpts -XX:+UseFastAccessorMethods -classpath "./dist:./dist/libs/*" starvationevasion/server/Server "$1"
 }
 
 run_client () {

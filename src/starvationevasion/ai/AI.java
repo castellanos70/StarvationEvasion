@@ -2,7 +2,6 @@ package starvationevasion.ai;
 
 
 import starvationevasion.ai.commands.*;
-import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.PolicyCard;
 import starvationevasion.common.WorldData;
 import starvationevasion.server.model.*;
@@ -10,7 +9,6 @@ import starvationevasion.server.model.*;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 

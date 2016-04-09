@@ -51,20 +51,20 @@ public class UserDB extends Transaction<User>
   }
 
   @Override
-  public <V> User get (V data)
+  public <V> User get (V username)
   {
     if (!dirty)
     {
       for (User user : cache)
       {
-        if(user.getUsername().equals(data))
+        if(user.getUsername().equals(username))
         {
           return user;
         }
       }
     }
 
-    ResultSet results = getDb().select("user", "where username='" + data + "'");
+    ResultSet results = getDb().select("user", "where username='" + username + "'");
     try
     {
       int i =results.getFetchSize();
@@ -109,6 +109,12 @@ public class UserDB extends Transaction<User>
   public <V> void delete (V data)
   {
     dirty = true;
+  }
+
+  @Override
+  public <V> void update (V username, User data)
+  {
+
   }
 
 

@@ -9,6 +9,10 @@ import starvationevasion.common.*;
 import starvationevasion.server.io.*;
 import starvationevasion.server.io.strategies.*;
 import starvationevasion.server.model.*;
+import starvationevasion.server.model.db.Transaction;
+import starvationevasion.server.model.db.UserDB;
+import starvationevasion.server.model.db.backends.Backend;
+import starvationevasion.server.model.db.backends.Sqlite;
 import starvationevasion.sim.Simulator;
 
 import java.io.IOException;
@@ -16,15 +20,12 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.DoubleBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.concurrent.*;
-import java.util.function.BooleanSupplier;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 
@@ -63,23 +64,23 @@ public class Server
 
   public static int TOTAL_PLAYERS = 2;
 
+  private Backend db = new Sqlite();
+  private Transaction<User> transaction;
+
+
   public Server (int portNumber)
   {
-
+    transaction = new UserDB(db);
     Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
 
-    createUser(new User("admin", "admin", null, new ArrayList<>()));
-    createUser(new User("ANON", "", null, new ArrayList<>()));
-    createUser(new User("Emma", "bot", null, new ArrayList<>()));
-    createUser(new User("Olivia", "bot", null, new ArrayList<>()));
-    createUser(new User("Noah", "bot", null, new ArrayList<>()));
-    createUser(new User("Liam", "bot", null, new ArrayList<>()));
-    createUser(new User("Sophia", "bot", null, new ArrayList<>()));
+    for (User user : transaction.getAll())
+    {
+      userList.add(user);
+    }
 
 
     startNanoSec = System.nanoTime();
     simulator = new Simulator();
-
 
     try
     {
@@ -215,6 +216,7 @@ public class Server
                             .anyMatch(user -> user.getUsername().equals(u.getUsername()));
     if (!found)
     {
+      transaction.create(u);
       userList.add(u);
       return true;
     }
@@ -255,7 +257,10 @@ public class Server
     isWaiting = false;
     for (Worker connection : allConnections)
     {
-      connection.send(new Response(uptime(), "Server will shutdown in 3 seconds"));
+      connection.send(ResponseFactory.build(uptime(),
+                                            currentState,
+                                            "Server will shutdown in 3 sec",
+                                            Type.BROADCAST));
     }
 
     try
@@ -286,7 +291,8 @@ public class Server
   public void restartGame ()
   {
     stopGame();
-    broadcast(new Response(uptime(), "The game has been restarted."));
+    broadcast(ResponseFactory.build(uptime(), currentState, "Game restarted.", Type.BROADCAST));
+
     simulator = new Simulator();
 
     for (User user : getPlayers())
@@ -308,7 +314,7 @@ public class Server
     advancer.shutdownNow();
     advancer = Executors.newSingleThreadScheduledExecutor();
     currentState = State.END;
-    broadcast(new Response(uptime(), "The game has been stopped."));
+    broadcast(ResponseFactory.build(uptime(), currentState, "Game has been stopped.", Type.GAME_STATE));
   }
 
   public List<User> getPlayers ()
@@ -366,23 +372,15 @@ public class Server
     ArrayList<WorldData> worldDataList = simulator.getWorldData(Constant.FIRST_DATA_YEAR,
                                                                 Constant.FIRST_GAME_YEAR - 1);
 
-    Payload payload = new Payload();
-    Response response = new Response(uptime(), payload);
-
     for (User user : getPlayers())
     {
       drawByUser(user);
-
-      payload.putData(user);
-      response.setType(Type.USER);
-      user.getWorker().send(response);
+      user.getWorker().send(ResponseFactory.build(uptime(),
+                                                  user,
+                                                  Type.USER));
     }
 
-    payload.clear();
-    payload.putData(worldDataList);
-    response.setType(Type.WORLD_DATA_LIST);
-    broadcast(response);
-
+    broadcast(ResponseFactory.build(uptime(), new Payload(worldDataList), Type.WORLD_DATA_LIST));
     draft();
   }
 
@@ -409,25 +407,23 @@ public class Server
     currentState = State.VOTING;
     broadcastStateChange();
 
-    Payload cards = new Payload();
     ArrayList<PolicyCard> _list = new ArrayList<>();
 
-    Iterator i = draftedPolicyCards.iterator();
-    while(i.hasNext())
-    {
-      PolicyCard card = (PolicyCard)i.next();
-      if (card.votesRequired() >= 1)
-      {
-        _list.add(card);
-      }
-    }
+//    Iterator i = draftedPolicyCards.iterator();
+//    while(i.hasNext())
+//    {
+//      PolicyCard card = (PolicyCard)i.next();
+//      if (card.votesRequired() >= 1)
+//      {
+//        _list.add(card);
+//      }
+//    }
 
 
-    cards.putData(_list);
-    Response r = new Response(uptime(), cards);
-    r.setType(Type.VOTE_BALLOT);
 
-    broadcast(r);
+    broadcast(ResponseFactory.build(uptime(),
+                                    new Payload(Collections.singletonList(draftedPolicyCards)),
+                                    Type.VOTE_BALLOT));
 
     phase = advancer.schedule(this::draw, currentState.getDuration(), TimeUnit.MILLISECONDS);
 
@@ -460,24 +456,17 @@ public class Server
 
     for (User user : getPlayers())
     {
-      Payload payload = new Payload();
-      Response response = new Response(uptime(), payload);
       drawByUser(user);
-      payload.putData(user);
-      response.setType(Type.USER);
-      user.getWorker().send(response);
+      user.getWorker().send(ResponseFactory.build(uptime(),
+                                                  user,
+                                                  Type.USER));
     }
 
 
     ArrayList<WorldData> worldData = simulator.nextTurn(enactedPolicyCards);
     System.out.println("There is " + enactedPolicyCards.size() + " cards being enacted.");
-    // System.out.println(String.valueOf(enactedPolicyCards));
 
-    Payload payload = new Payload();
-    Response response = new Response(uptime(), payload);
-    payload.putData(worldData);
-    response.setType(Type.WORLD_DATA_LIST);
-    broadcast(response);
+    broadcast(ResponseFactory.build(uptime(), new Payload(worldData), Type.WORLD_DATA_LIST));
 
     if (simulator.getCurrentYear() >= Constant.LAST_YEAR)
     {
@@ -502,12 +491,7 @@ public class Server
     if (getPlayerCount() == TOTAL_PLAYERS && currentState == State.LOGIN)
     {
       currentState = State.BEGINNING;
-      Payload data = new Payload();
-      data.putData(currentState);
-      data.putMessage("Game will begin in 10s");
-      Response r = new Response(uptime(), data);
-      r.setType(Type.GAME_STATE);
-      broadcast(r);
+      broadcast(ResponseFactory.build(uptime(), currentState, "Game will begin in 10s", Type.GAME_STATE));
 
       phase = advancer.schedule(this::begin, currentState.getDuration(), TimeUnit.MILLISECONDS);
     }
@@ -650,11 +634,7 @@ public class Server
   private void broadcastStateChange ()
   {
     // System.out.println(currentState);
-    Payload _data = new Payload();
-    _data.putData(currentState);
-    Response r = new Response(uptime(), _data);
-    r.setType(Type.GAME_STATE);
-    broadcast(r);
+    broadcast(ResponseFactory.build(uptime(), currentState, Type.GAME_STATE));
   }
 
   public static void main (String args[])
@@ -726,14 +706,13 @@ public class Server
       int val = p.exitValue();
       Payload data = new Payload();
       data.put("to-region", "ALL");
-
-      Response response = new Response(uptime(), data);
-
+      data.put("card", "");
       data.put("text", "AI was removed.");
+      data.put("from", "admin");
 
       System.out.println("AI removed with exit value: " + String.valueOf(val));
 
-      broadcast(response);
+      broadcast(ResponseFactory.build(uptime(), data, Type.CHAT));
 
     }
   }

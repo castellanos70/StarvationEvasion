@@ -8,7 +8,7 @@ import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.server.Worker;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import starvationevasion.server.io.NotImplementedException;
 
 import java.beans.Transient;
 import java.util.ArrayList;
@@ -31,25 +31,6 @@ public class User implements Encryptable, Sendable
   {
   }
 
-//  public User (String[] raw)
-//  {
-//    this();
-////    this.put("username", raw[0]);
-//     username = raw[0];
-////    this.put("password", raw[1]);
-//     password = raw[1];
-//    if (raw.length == 3)
-//    {
-//       region = EnumRegion.valueOf(raw[2]);
-////      this.put("region", EnumRegion.valueOf(raw[2]));
-//    }
-//
-////    this.put("hand", new ArrayList<>());
-////    ((ArrayList<EnumPolicy>)this.get("hand")).add(EnumPolicy.Clean_River_Incentive);
-//    hand.add(EnumPolicy.Clean_River_Incentive);
-//
-//  }
-//
   public User (String username, String password, EnumRegion region, ArrayList<EnumPolicy> hand)
   {
     this.username = username;
@@ -81,9 +62,7 @@ public class User implements Encryptable, Sendable
 
   public void setEncryptedPassword (String password, String salt)
   {
-//    this.put("password", password);
      this.password = password;
-//    this.put("salt", salt);
      this.salt = salt;
   }
 
@@ -154,13 +133,10 @@ public class User implements Encryptable, Sendable
   @Override
   public void encrypt (String pwd, String key)
   {
-    // String salt = "";
     if (key == null || key.isEmpty())
     {
       salt = Encryptable.generateKey();
-      //      this.put("salt", salt);
     }
-    //    this.put("password", Encryptable.generateHashedPassword(salt, pwd));
     password = Encryptable.generateHashedPassword(salt, pwd);
   }
 
@@ -187,7 +163,6 @@ public class User implements Encryptable, Sendable
     json.setString("region", String.valueOf(region));
     json.setString("type", getType().name());
 
-    //    ArrayList list = (ArrayList) this.get("hand");
     JSONDocument _hand = JSONDocument.createArray(hand.size());
     for (int i = 0; i < hand.size(); i++)
     {
@@ -202,7 +177,7 @@ public class User implements Encryptable, Sendable
   @Override
   public void fromJSON (Object doc)
   {
-
+    throw new NotImplementedException();
   }
 
 }

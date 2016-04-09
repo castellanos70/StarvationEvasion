@@ -50,7 +50,7 @@ public class Postgresql implements Backend
 
 
   @Override
-  public void insert (String table, Set<Object> values)
+  public void insert (String table, Set<String> cols, Set<Object> values)
   {
 
   }

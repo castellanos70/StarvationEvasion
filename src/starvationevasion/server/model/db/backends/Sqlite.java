@@ -20,7 +20,7 @@ public class Sqlite implements Backend
   {
     try
     {
-      connection = DriverManager.getConnection("jdbc:sqlite:db.db");
+      connection = DriverManager.getConnection("jdbc:sqlite:data/db.db");
     }
     catch(SQLException e)
     {
@@ -69,21 +69,47 @@ public class Sqlite implements Backend
   }
 
   @Override
-  public void insert (String table, Set<Object> values)
+  public void insert (String table, Set<String> cols, Set<Object> values)
   {
     Statement statement = null;
     try
     {
       statement = connection.createStatement();
       StringBuilder stringBuilder = new StringBuilder();
-      stringBuilder.append("insert into ").append(table).append("values ( ");
+      stringBuilder.append("insert into ").append(table).append("(");
 
-
-      int size = values.size();
+      int size = cols.size();
       int i = 0;
+
+      for (String value : cols)
+      {
+        stringBuilder.append(value);
+
+        if (size-1 == i)
+        {
+          stringBuilder.append(") ");
+        }
+        else
+        {
+          stringBuilder.append(", ");
+        }
+
+        i++;
+      }
+
+
+      stringBuilder.append("values ( ");
+
+      size = values.size();
+      i = 0;
 
       for (Object value : values)
       {
+        if (value == null)
+        {
+          stringBuilder.append("NULL");
+        }
+
         if (value instanceof String)
         {
           stringBuilder.append("'").append(value).append("'");
@@ -92,6 +118,7 @@ public class Sqlite implements Backend
         {
           stringBuilder.append(value);
         }
+
 
         if (size-1 == i)
         {
@@ -104,7 +131,7 @@ public class Sqlite implements Backend
 
         i++;
       }
-
+      System.out.println(stringBuilder.toString());
       statement.executeUpdate(stringBuilder.toString());
 
     }

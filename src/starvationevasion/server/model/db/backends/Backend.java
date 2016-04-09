@@ -11,7 +11,7 @@ public interface Backend
 
   void createTable (String table, Hashtable<String, Object> properties);
 
-  void insert (String table, Set<Object> values);
+  void insert (String table, Set<String> cols, Set<Object> values);
 
   ResultSet select (String table, String where);
 

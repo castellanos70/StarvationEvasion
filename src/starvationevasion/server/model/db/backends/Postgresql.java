@@ -2,6 +2,7 @@ package starvationevasion.server.model.db.backends;
 import java.sql.*;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.Set;
 
 
 public class Postgresql implements Backend
@@ -49,13 +50,13 @@ public class Postgresql implements Backend
 
 
   @Override
-  public void insert (String table)
+  public void insert (String table, Set<Object> values)
   {
 
   }
 
   @Override
-  public ResultSet select (String table)
+  public ResultSet select (String table, String where)
   {
     return null;
   }

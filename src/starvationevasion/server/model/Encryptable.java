@@ -4,8 +4,6 @@ package starvationevasion.server.model;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 import java.security.SecureRandom;
 import java.util.Random;
 import java.io.UnsupportedEncodingException;
@@ -36,68 +34,6 @@ public interface Encryptable
 
   <T> T decrypt (String msg, String key);
 
-
-  static String xorEncrypt (String message, String key)
-  {
-    try
-    {
-      if (message == null || key == null)
-      {
-        return "";
-      }
-
-      char[] _keys = key.toCharArray();
-      char[] _msg = message.toCharArray();
-
-      int ml = _msg.length;
-      int kl = _keys.length;
-      char[] _newMsg = new char[ml];
-
-      for (int i = 0; i < ml; i++)
-      {
-        _newMsg[i] = (char) (_msg[i] ^ _keys[i % kl]);
-      }
-      _msg = null;
-      _keys = null;
-      String temp = new String(_newMsg);
-      return new BASE64Encoder().encodeBuffer(temp.getBytes());
-    }
-    catch(Exception e)
-    {
-      return "";
-    }
-  }
-
-
-  static String xorDecrypt (String message, String key)
-  {
-    try
-    {
-      if (message == null || key == null)
-      {
-        return "";
-      }
-      char[] _keys = key.toCharArray();
-      message = new String(new BASE64Decoder().decodeBuffer(message));
-      char[] _msg = message.toCharArray();
-
-      int ml = _msg.length;
-      int kl = _keys.length;
-      char[] _newMsg = new char[ml];
-
-      for (int i = 0; i < ml; i++)
-      {
-        _newMsg[i] = (char) (_msg[i] ^ _keys[i % kl]);
-      }
-      _msg = null;
-      _keys = null;
-      return new String(_newMsg);
-    }
-    catch(Exception e)
-    {
-      return "";
-    }
-  }
 
   static String generateKey ()
   {

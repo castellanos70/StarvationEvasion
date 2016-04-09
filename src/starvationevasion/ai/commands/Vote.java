@@ -29,7 +29,7 @@ public class Vote extends AbstractCommand
 
       if (getClient().getBallot() == null)
       {
-        System.out.println(String.valueOf(getClient().getBallot()));
+        System.out.println("Ballot null");
         tries--;
         return true;
       }
@@ -37,6 +37,7 @@ public class Vote extends AbstractCommand
 
       if (getClient().getBallot().size() > 0)
       {
+        System.out.println("Ballot got it. With size: " + getClient().getBallot().size());
 
         for (PolicyCard card : getClient().getBallot())
         {

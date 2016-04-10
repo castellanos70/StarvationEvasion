@@ -87,12 +87,12 @@ public class Client
 
     f.setData(data);
     sendRequest(f);
-    requestAvaliableRegions();
+  //  requestAvaliableRegions();
    // restart();
    // ready();
     //createHand();
     getGameState();
-
+  //  ai();
 
 //    while(!recivedMessege){
 //      System.out.println(recivedMessege);
@@ -100,6 +100,7 @@ public class Client
 //      }
     return true;
   }
+
   public void createHand()
   {
     Request f = new Request(startNanoSec, Endpoint.HAND_CREATE);
@@ -237,6 +238,11 @@ public class Client
   public void requestAvaliableRegions()
   {
     Request f = new Request(startNanoSec, Endpoint.AVAILABLE_REGIONS);
+    sendRequest(f);
+  }
+  public void ai()
+  {
+    Request f = new Request(startNanoSec, Endpoint.AI);
     sendRequest(f);
   }
   public void sendRequest(Request request)
@@ -407,7 +413,6 @@ public class Client
 
     public void run ()
     {
-
       while(isRunning)
       {
         read();
@@ -419,8 +424,8 @@ public class Client
       try
       {
         Response response = readObject();
-        System.out.println(response.getType());
-        System.out.println(response.getPayload().getData());
+        //System.out.println(response.getType());
+//        if(!response.getType().equals(Type.WORLD_DATA_LIST))System.out.println(response.getPayload());
         if (response.getPayload().get("data") instanceof User)
         {
           if(response.getPayload().get("message")!=null&&response.getPayload().get("message").equals("SUCCESS"))
@@ -444,7 +449,6 @@ public class Client
         {
           System.out.println("Vote Ballot received  " + response.getPayload().getData().getClass());
          ArrayList arrayList=(ArrayList)response.getPayload().getData();
-          if(arrayList.isEmpty()) System.out.println("EMpty Ballot");
           votingCards=(ArrayList) response.getPayload().getData();
         }
         else if(response.getPayload().get("data")instanceof ArrayList)
@@ -473,12 +477,10 @@ public class Client
         }
         else if(response.getPayload().get("data")instanceof starvationevasion.server.model.State)
         {
-          System.out.println("Response.data = State");
+
           state=(starvationevasion.server.model.State) response.getPayload().get("data");
-        }
-        else if(response.getType().equals(Type.VOTE_BALLOT))
-        {
-          System.out.println("Vote Ballot received  " + response.getPayload().getData().getClass());
+          System.out.println(state+" Response.data = State");
+          if(state.equals(starvationevasion.server.model.State.DRAWING)) readHand();
         }
 
       }
@@ -490,7 +492,11 @@ public class Client
       }
       catch(Exception e)
       {
+
         e.printStackTrace();
+        isRunning = false;
+        System.out.println("Lost server, press enter to shutdown.");
+        return;
       }
     }
   }

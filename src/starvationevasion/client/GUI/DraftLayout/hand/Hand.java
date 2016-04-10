@@ -55,6 +55,7 @@ public class Hand extends GridPane
    */
   public void setHand(EnumPolicy[] hand)
   {
+
     this.hand = hand;
     updateHand();
   }
@@ -71,6 +72,7 @@ public class Hand extends GridPane
   public ArrayList<ClientPolicyCard> getDiscardCards(){return discardPile;}
   private void updateHand()
   {
+    getChildren().clear();
     elements = new ArrayList<>();
     usedCards=new Stack<>();
     discardPile=new ArrayList<>();
@@ -79,14 +81,21 @@ public class Hand extends GridPane
     {
       //Needs working connection
       // ClientPolicyCard clientPolicyCard=new ClientPolicyCard(GUI.client.getAssignedRegion(),hand[i],GUI);
-      ClientPolicyCard clientPolicyCard=new ClientPolicyCard(gui.getAssignedRegion(),hand[i],gui);
+      ClientPolicyCard clientPolicyCard=new ClientPolicyCard(EnumRegion.USA_HEARTLAND,hand[i],gui);
       clientPolicyCard.setHandIndex(i);
       elements.add(clientPolicyCard);
+
       add(clientPolicyCard, i, 0);
     }
     setListeners();
   }
-
+  public void newTurn()
+  {
+     playedSupportCard=false;
+     discardedSingleCard=false;
+     selectingCard=false;
+     numberOfActionsUsed=0;
+  }
   private void setListeners()
   {
     for(final ClientPolicyCard card : elements)
@@ -207,6 +216,8 @@ public class Hand extends GridPane
       card.setBasicCard();
     }
   }
+
+
   private void selectCard(ClientPolicyCard clientPolicyCard)
   {
     clientPolicyCard.selectCard();

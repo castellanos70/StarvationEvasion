@@ -23,7 +23,7 @@ public class ActionButtons extends HBox
   Text tempText;
   GUI gui;
   Button bigDiscard;
-
+  Button endTurn;
   /**
    * Default constructor. Takes a reference to the GUI which owns it
    * @param gui
@@ -40,7 +40,7 @@ public class ActionButtons extends HBox
     Button undo=new Button("",image);
 
     undo.setOnAction(event -> gui.getDraftLayout().getHand().undo());
-    Button endTurn=new Button();
+    endTurn=new Button();
     endTurn.setText("End Turn");
 
 
@@ -107,6 +107,11 @@ public class ActionButtons extends HBox
         gui.getClient().discardCard(card.getPolicyCard());
       }
     }
-    gui.switchScenes();
+    endTurn.setDisable(true);
+   // gui.switchScenes();
+  }
+  public void resetActionButtons()
+  {
+    endTurn.setDisable(false);
   }
 }

@@ -80,6 +80,10 @@ public class CardSpace extends StackPane
     });
     this.getChildren().add(clientPolicyCard);
   }
+  public void removeCard()
+  {
+    this.getChildren().clear();
+  }
 public ClientPolicyCard getCard(){return clientPolicyCard;}
 
 }

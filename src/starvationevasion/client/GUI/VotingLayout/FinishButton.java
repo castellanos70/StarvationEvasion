@@ -25,7 +25,7 @@ public class FinishButton extends StackPane
       @Override
       public void handle(ActionEvent event)
       {
-        gui.switchScenes();
+        //gui.switchScenes();
       }
     });
 

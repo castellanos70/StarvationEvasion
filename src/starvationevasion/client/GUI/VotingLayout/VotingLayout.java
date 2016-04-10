@@ -40,7 +40,7 @@ public class VotingLayout extends GridPane
   private GridPane centerPane;
   private ChatNode chatNode;
 
-  private boolean recievedCards=false;
+  private boolean receivedCards =false;
   public VotingLayout(GUI gui)
   {
     this.gui = gui;
@@ -81,7 +81,7 @@ public class VotingLayout extends GridPane
 //            BackgroundPosition.CENTER,
 //            BackgroundSize.DEFAULT)));
   }
-  public boolean hasRecievedCards(){return recievedCards;}
+  public boolean hasReceivedCards(){return receivedCards;}
   public void setCards(PolicyCard[] cards)
   {
    // for (int i = 0; i < ; i++)
@@ -98,7 +98,7 @@ public class VotingLayout extends GridPane
   {
     if(cards!=null)
     {
-      recievedCards=true;
+      receivedCards =true;
       for(PolicyCard card: cards)
       {
         int index=getIndexOfRegion(card.getOwner());
@@ -115,18 +115,32 @@ public class VotingLayout extends GridPane
           buttons[0].setOnAction(event ->
           {
             gui.getClient().voteUp(cardSpacesFirstRow.get(index).getCard().getPolicyCard());
+            buttons[0].setDisable(true);
+            buttons[1].setDisable(true);
           });
           buttons[1].setOnAction(event ->
           {
             gui.getClient().voteDown(cardSpacesFirstRow.get(index).getCard().getPolicyCard());
-
+            buttons[0].setDisable(true);
+            buttons[1].setDisable(true);
           });
           cardSpacesFirstRow.get(index).setCard(card.getOwner(),card.getCardType(),gui);
         }
       }
     }
   }
-
+  public void resetVotingLayout()
+  {
+    receivedCards=false;
+    for(CardSpace cardSpace:cardSpacesFirstRow)
+    {
+      cardSpace.removeCard();
+    }
+    for(CardSpace cardSpace:cardSpacesSecondRow)
+    {
+      cardSpace.removeCard();
+    }
+  }
   private int getIndexOfRegion(EnumRegion region)
   {
     for (int i = 0; i<EnumRegion.US_REGIONS.length ; i++)

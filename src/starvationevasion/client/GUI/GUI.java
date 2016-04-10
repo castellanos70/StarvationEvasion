@@ -1,25 +1,30 @@
 package starvationevasion.client.GUI;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import starvationevasion.client.Networking.Client;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
 import starvationevasion.client.GUI.DraftLayout.DraftLayout;
+import starvationevasion.client.GUI.DraftLayout.hand.Hand;
 import starvationevasion.client.GUI.DraftLayout.map.GamePhaseMapController;
 import starvationevasion.client.GUI.DraftLayout.map.MapController;
 import starvationevasion.client.GUI.Graphs.GraphManager;
 import starvationevasion.client.GUI.Popups.PopupManager;
 import starvationevasion.client.GUI.VotingLayout.VotingLayout;
 import starvationevasion.client.GUI.images.ImageGetter;
+import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.client.Logic.MainGameLoop;
+import starvationevasion.client.Networking.Client;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.TimerTask;
 
 
 /**
@@ -69,6 +74,7 @@ public class GUI extends Application
   boolean selectingRegion = false;
   boolean selectingProduct = false;
   private boolean draftingPhase=true;
+  private boolean needHand=true;
   /**
    * Default constructor for GUI
    * Used for debugging the GUI, cannot connect to a game
@@ -93,6 +99,7 @@ public class GUI extends Application
    // this.client = client;
     this.localDataContainer = localDataContainer;
     assignedRegion = client.getRegion();
+
   }
   public Client getClient(){return client2;}
   /**
@@ -138,14 +145,15 @@ public class GUI extends Application
 
 
     mainGameLoop=new MainGameLoop(this);
+
     //if(!client.isAI)
     {
       primaryStage.show();
     }
     primaryStage.setOnCloseRequest(event2 ->
     {
-      primaryStage.close();
-      mainGameLoop.stop();
+//      primaryStage.close();
+//      mainGameLoop.stop();
     });
     initGame();
   }
@@ -171,12 +179,22 @@ public class GUI extends Application
   public ArrayList<EnumPolicy> getCardsInHand() {return cardsInHand;}
   public void setCardsInHand(ArrayList<EnumPolicy> cards)
   {
+    needHand=false;
     cardsInHand=cards;
-    cardsInHand=client2.getHand();
-    if(cardsInHand!=null)
-    {
-      getDraftLayout().getHand().setHand(cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]));
-    }
+
+  }
+  public boolean needsHand(){return needHand;}
+  public void resetDraftingPhase()
+  {
+    needHand=true;
+    cardsInHand.clear();
+    cardsInHand=null;
+    draftLayout.getHand().newTurn();
+    draftLayout.getActionButtons().resetActionButtons();
+  }
+  public void resetVotingPhase()
+  {
+    votingLayout.resetVotingLayout();
   }
   public Stage getPrimaryStage()
   {
@@ -230,7 +248,7 @@ public class GUI extends Application
       draftingPhase=true;
     }
   }
-  public Boolean isDraftLayout(){
+  public boolean isDraftLayout(){
     if(currentRoot==draftLayout) return true;
     else return false;
   }
@@ -348,7 +366,54 @@ public class GUI extends Application
   {
     return assignedRegion;
   }
+  private void main()
+  {java.util.Timer timer=new java.util.Timer();
+    ChatNode chatNodeDraft=draftLayout.getChatNode();
+    ChatNode chatNodeVote=votingLayout.getChatNode();
+    ChatManager chatManager=client2.getChatManager();
+    Hand hand=getDraftLayout().getHand();
+    TimerTask timerTask=new TimerTask()
+    {
+      boolean flag=false;
+      @Override
+      public void run()
+      {
+        Platform.runLater(() -> {
 
+          chatNodeDraft.setChatMessages(chatManager.getChat());
+          chatNodeVote.setChatMessages(chatManager.getChat());
+          if (needsHand() && client2.getHand() != null && !client2.getHand().isEmpty())
+          {
+
+            setCardsInHand(client2.getHand());
+            cardsInHand = client2.getHand();
+            hand.setHand(client2.getHand().toArray(new EnumPolicy[cardsInHand.size()]));
+            System.out.println("please work " + Arrays.toString(hand.getHand()) + Platform.isFxApplicationThread());
+          }
+          if (getDraftLayout().getHand().getHand() != null)
+          {
+            chatNodeDraft.setHand(getDraftLayout().getHand().getHand());
+            chatNodeVote.setHand(getDraftLayout().getHand().getHand());
+          }
+          if (isDraftingPhase() && client2.getState().equals(starvationevasion.server.model.State.VOTING))
+          {
+            resetDraftingPhase();
+            switchScenes();
+          }
+          if (!isDraftingPhase() && (client2.getState().equals(starvationevasion.server.model.State.DRAFTING) || client2.getState().equals(starvationevasion.server.model.State.DRAWING)))
+          {
+            resetVotingPhase();
+            switchScenes();
+          }
+          if (client2.getVotingCards() != null && !getVotingLayout().hasReceivedCards())
+            getVotingLayout().updateCardSpaces(client2.getVotingCards());
+
+        });
+      }
+    };
+
+    timer.schedule(timerTask,100,1000);
+  }
   private void initializeProductList()
   {
     productList = new ArrayList<>();
@@ -365,4 +430,5 @@ public class GUI extends Application
     productList.add(EnumFood.POULTRY);
     productList.add(EnumFood.DAIRY);
   }
+
 }

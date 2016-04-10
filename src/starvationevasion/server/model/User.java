@@ -148,7 +148,7 @@ public class User implements Encryptable, Sendable
   @Override
   public String toString ()
   {
-    return region.toString();
+    return String.valueOf(region);
   }
 
   @Override

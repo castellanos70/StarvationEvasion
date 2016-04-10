@@ -5,33 +5,42 @@ package starvationevasion.server.model;
  */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+import starvationevasion.common.WorldData;
 import starvationevasion.server.io.JSON;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class Payload extends HashMap<String, Object> implements Sendable
 {
+
+  public Payload (Object data)
+  {
+    super();
+    this.putData(data);
+  }
+
+  public Payload ()
+  {
+    super();
+  }
 
   @Override
   public Object put (String key, Object value)
   {
     if (!(value instanceof Sendable || value instanceof Number || value instanceof Boolean ||
-            value instanceof String || value instanceof ArrayList))
+            value instanceof String || value instanceof List))
     {
       System.out.println(value + " is NOT a valid Payload");
       System.exit(0);
       return value;
     }
-    if (value instanceof ArrayList)
+    if (value instanceof List)
     {
-      if (!((ArrayList) value).isEmpty())
+      if (!((List) value).isEmpty())
       {
-        if (!(((ArrayList) value).get(0) instanceof Sendable))
+        if (!(((List) value).get(0) instanceof Sendable))
         {
-          System.out.println(((ArrayList) value).get(0) + " NOT a valid payload send");
+          System.out.println(((List) value).get(0) + " NOT a valid value in a payload list.");
           System.exit(0);
           return value;
         }
@@ -117,11 +126,11 @@ public class Payload extends HashMap<String, Object> implements Sendable
       {
           json.set(key, ((JSON) value).toJSON());
       }
-      else if (value instanceof ArrayList)
+      else if (value instanceof List)
       {
-        JSONDocument doc = JSONDocument.createArray(((ArrayList) value).size());
+        JSONDocument doc = JSONDocument.createArray(((List) value).size());
         int i = 0;
-        for (Object o : ((ArrayList) value))
+        for (Object o : ((List) value))
         {
           doc.set(i, ((JSON) o).toJSON());
           i++;

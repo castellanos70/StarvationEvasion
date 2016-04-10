@@ -36,6 +36,11 @@ public class Constant
   }
 
   /**
+   * Server DB
+   */
+  public static final String DB_LOCATION = "jdbc:sqlite:data/test_db.db";
+
+  /**
    * Each game turn advances the simulator by YEARS_PER_TURN years.
    */
   public static final int YEARS_PER_TURN = 2;

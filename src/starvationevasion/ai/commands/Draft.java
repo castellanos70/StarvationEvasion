@@ -1,15 +1,13 @@
 package starvationevasion.ai.commands;
 
+import com.sun.org.apache.regexp.internal.RE;
 import starvationevasion.ai.AI;
 import starvationevasion.common.*;
 import starvationevasion.common.policies.CovertIntelligencePolicy;
 import starvationevasion.common.policies.EfficientIrrigationIncentivePolicy;
 import starvationevasion.common.policies.EthanolTaxCreditChangePolicy;
 import starvationevasion.common.policies.FertilizerSubsidyPolicy;
-import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Payload;
-import starvationevasion.server.model.Request;
-import starvationevasion.server.model.State;
+import starvationevasion.server.model.*;
 
 
 public class Draft extends AbstractCommand
@@ -35,7 +33,7 @@ public class Draft extends AbstractCommand
     if (!getClient().getState().equals(State.DRAFTING) && tries > 0)
     {
       tries--;
-      if (tries == 0)
+      if (tries <= 0)
       {
         return false;
       }
@@ -72,9 +70,6 @@ public class Draft extends AbstractCommand
 
   private void randomlyDiscard ()
   {
-    Request request = new Request(getClient().getStartNanoSec(), Endpoint.DELETE_CARD);
-    Payload payload = new Payload();
-
     EnumPolicy discard = null;
 
     for (EnumPolicy policy : getClient().getUser().getHand())
@@ -90,9 +85,11 @@ public class Draft extends AbstractCommand
     int idx = getClient().getUser().getHand().indexOf(discard);
     if(idx >= 0)
     {
-      payload.putData(discard);
-      request.setData(payload);
-      getClient().send(request);
+
+      getClient().send(RequestFactory.build(getClient().getStartNanoSec(),
+                                            discard,
+                                            Endpoint.DELETE_CARD));
+
     }
     discarded = true;
   }

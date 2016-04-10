@@ -13,7 +13,6 @@ package starvationevasion.server.model;
 public class ResponseFactory
 {
   private static ResponseFactory ourInstance = new ResponseFactory();
-  protected static Payload payload = new Payload();
 
   public static ResponseFactory init ()
   {
@@ -34,6 +33,7 @@ public class ResponseFactory
    */
   public static Response build (double time, Sendable data, Type type)
   {
+    Payload payload = new Payload();
     // if the data is null create a new payload
     if (data == null)
     {
@@ -46,8 +46,6 @@ public class ResponseFactory
     }
     else
     {
-      // clear the static object
-      payload.clear();
       // add the data
       payload.putData(data);
       return new Response(time, payload, type);

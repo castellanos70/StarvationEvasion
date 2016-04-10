@@ -34,7 +34,7 @@ public class RequestFactory
    */
   public static Request build (double time, Endpoint endpoint)
   {
-    return RequestFactory.build(time, new Payload(), endpoint);
+    return new Request(time, endpoint);
   }
 
   /**

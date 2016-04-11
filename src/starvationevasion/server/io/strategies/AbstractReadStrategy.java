@@ -9,7 +9,7 @@ import starvationevasion.server.io.ReadStrategy;
 import java.io.*;
 import java.net.Socket;
 
-public abstract class AbstractReadStrategy<T> implements ReadStrategy<T>
+public abstract class AbstractReadStrategy<T> extends SecureStream implements ReadStrategy<T>
 {
   private final Socket socket;
   private DataInputStream reader;

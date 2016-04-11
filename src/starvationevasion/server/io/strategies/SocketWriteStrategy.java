@@ -4,10 +4,14 @@ package starvationevasion.server.io.strategies;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import starvationevasion.common.Constant;
 import starvationevasion.server.model.Sendable;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import java.io.*;
 import java.net.Socket;
+import java.security.InvalidKeyException;
 
 public class SocketWriteStrategy extends AbstractWriteStrategy
 {
@@ -23,12 +27,17 @@ public class SocketWriteStrategy extends AbstractWriteStrategy
   }
 
   @Override
-  public void write (Sendable s) throws IOException
+  public void write (Sendable s) throws IOException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException
   {
-    // Here I am going to assume if a client is using a standard socket they want JSON
-    byte[] rawData = s.toJSON().toString().getBytes();
+    String _jsonString = s.toJSON().toJSON();
 
-    getStream().write(rawData);
+    if (isEncrypted())
+    {
+      _jsonString = encrypt(_jsonString);
+    }
+    // Here I am going to assume if a client is using a standard socket they want JSON
+    _jsonString += Constant.TERMINATION;
+    getStream().write(_jsonString.getBytes());
     getStream().flush();
   }
 

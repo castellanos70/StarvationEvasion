@@ -18,26 +18,26 @@ public class LoginHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-    Response m_response = new Response("");
     if (request.getDestination().equals(Endpoint.LOGIN))
     {
       String uname = (String) request.getPayload().get("username");
       String pwd = (String) request.getPayload().get("password");
-      Payload data = new Payload();
 
       boolean auth = authenticate(uname, pwd);
       if (auth)
       {
-        data.putData(server.getUserByUsername(uname));
-        data.putMessage("SUCCESS");
+        getClient().send(ResponseFactory.build(server.uptime(),
+                                               server.getUserByUsername(uname),
+                                               Type.AUTH_SUCCESS, "SUCCESS"
+        ));
       }
       else
       {
-        data.putMessage("FAIL");
+        getClient().send(ResponseFactory.build(server.uptime(),
+                                               null,
+                                               Type.AUTH_ERROR, "Username or password incorrect."
+        ));
       }
-      m_response = new Response(server.uptime(), data);
-      m_response.setType(Type.AUTH);
-      getClient().send(m_response);
 
       return true;
     }
@@ -52,7 +52,8 @@ public class LoginHandler extends AbstractHandler
     if (s != null)
     {
       String salt = s.getSalt();
-      String hash = Encryptable.generateHashedPassword(salt, password);
+      String hash = Encryptable.bytesToHex(Encryptable.generateHashedPassword(salt.getBytes(),
+                                                                              password.getBytes()));
       if (s.getPassword().equals(hash))
       {
         s.setLoggedIn(true);

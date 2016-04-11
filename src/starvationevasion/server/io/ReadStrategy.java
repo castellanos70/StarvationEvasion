@@ -4,10 +4,15 @@ package starvationevasion.server.io;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import starvationevasion.server.model.Encryptable;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.security.InvalidKeyException;
 
-public interface ReadStrategy<Result>
+public interface ReadStrategy<Result> extends Encryptable
 {
   /**
    * Read in data
@@ -17,7 +22,7 @@ public interface ReadStrategy<Result>
    * @throws IOException            when there is an error with connection
    * @throws ClassNotFoundException When a object is sent and not found
    */
-  Result read () throws IOException, ClassNotFoundException;
+  Result read () throws IOException, ClassNotFoundException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException;
 
   /**
    * Shutdown the reading

@@ -1,9 +1,11 @@
 package starvationevasion.ai.commands;
 
 import starvationevasion.ai.AI;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.Request;
+import starvationevasion.server.model.RequestFactory;
 
 public class Login extends AbstractCommand
 {
@@ -23,7 +25,8 @@ public class Login extends AbstractCommand
   {
     if (!requestSent && getClient().getUsers().size() == 0)
     {
-      getClient().send(new Request(getClient().getStartNanoSec(), Endpoint.USERS_LOGGED_IN));
+      getClient().send(RequestFactory.build(getClient().getStartNanoSec(),
+                                            Endpoint.USERS_LOGGED_IN));
       requestSent = true;
       return true;
     }
@@ -43,13 +46,11 @@ public class Login extends AbstractCommand
 
     if (getClient().getUser() == null)
     {
-      Request loginRequest = new Request(getClient().getStartNanoSec(), Endpoint.LOGIN);
-      Payload data = new Payload();
-      data.put("username", chosenUsername);
-      data.put("password", "bot");
 
-      loginRequest.setData(data);
-      getClient().send(loginRequest);
+      getClient().send(RequestFactory.login(getClient().getStartNanoSec(),
+                                            chosenUsername,
+                                            "bot",
+                                            null));
       return true;
     }
     return false;

@@ -9,14 +9,13 @@ import starvationevasion.server.handlers.Handler;
 import starvationevasion.server.io.*;
 import starvationevasion.server.io.strategies.SocketReadStrategy;
 import starvationevasion.server.io.strategies.SocketWriteStrategy;
-import starvationevasion.server.model.Request;
-import starvationevasion.server.model.Response;
-import starvationevasion.server.model.Sendable;
-import starvationevasion.server.model.User;
-import starvationevasion.sim.Simulator;
+import starvationevasion.server.model.*;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import java.io.*;
 import java.net.Socket;
+import java.security.InvalidKeyException;
 
 /**
  *  Worker that holds connection, writer, reader, and user information
@@ -72,16 +71,9 @@ public class Worker extends Thread
     {
       writer.write(data);
     }
-    catch(IOException e)
+    catch(Exception e)
     {
-      String u = "";
-//      if (getUser() != null)
-//      {
-//        u = getUser().toString() + "\n";
-//      }
-      System.out.println("There was an error trying to write to:\n\t"
-                                 + getName() + "\n\t"
-                                 + u);
+      e.printStackTrace();
       shutdown();
     }
   }
@@ -134,7 +126,7 @@ public class Worker extends Thread
           String[] arr = string.split("\\s+");
           if (arr.length < 2)
           {
-            send(new Response(server.uptime(), "Invalid number of arguments"));
+            send(ResponseFactory.build(server.uptime(), null, Type.BROADCAST, "Invalid command args"));
             continue;
           }
 
@@ -148,7 +140,7 @@ public class Worker extends Thread
       catch(EndpointException e)
       {
         System.out.println("Invalid endpoint!");
-        send(new Response(server.uptime(), e.getMessage()));
+        send(ResponseFactory.build(server.uptime(), null, Type.BROADCAST, "Invalid endpoint"));
       }
       catch(IOException e)
       {
@@ -166,7 +158,19 @@ public class Worker extends Thread
       catch(ClassNotFoundException e)
       {
         System.out.println("Invalid Class was received");
-        send(new Response(server.uptime(), e.getMessage()));
+        send(ResponseFactory.build(server.uptime(), null, Type.BROADCAST, "Invalid Class"));
+      }
+      catch(BadPaddingException e)
+      {
+        e.printStackTrace();
+      }
+      catch(IllegalBlockSizeException e)
+      {
+        e.printStackTrace();
+      }
+      catch(InvalidKeyException e)
+      {
+        e.printStackTrace();
       }
     }
   }

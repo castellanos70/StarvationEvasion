@@ -11,8 +11,6 @@ import starvationevasion.server.Server;
 import starvationevasion.server.Worker;
 import starvationevasion.server.model.*;
 
-import java.util.Collections;
-
 public class CardHandler extends AbstractHandler
 {
   public CardHandler (Server server, Worker client)
@@ -28,17 +26,11 @@ public class CardHandler extends AbstractHandler
       return false;
     }
 
-    Response m_response = new Response("");
 
     if (request.getDestination().equals(Endpoint.DRAW_CARD))
     {
       server.drawByUser(getClient().getUser());
-      Payload data = new Payload();
-
-      data.putData(getClient().getUser());
-      m_response = new Response(server.uptime(), data);
-      m_response.setType(Type.USER);
-      getClient().send(m_response);
+      // getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.D));
 
       return true;
     }
@@ -56,11 +48,7 @@ public class CardHandler extends AbstractHandler
 
           server.drawByUser(getClient().getUser());
 
-          Payload data = new Payload();
-          data.putData(getClient().getUser());
-          m_response = new Response(server.uptime(), data);
-          m_response.setType(Type.USER);
-          getClient().send(m_response);
+          // getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
 
         }
       }
@@ -70,9 +58,7 @@ public class CardHandler extends AbstractHandler
     else if (request.getDestination().equals(Endpoint.DRAFT_CARD))
     {
       PolicyCard policyCard = (PolicyCard) request.getPayload().getData();
-      Payload data = new Payload();
 
-      m_response = new Response(server.uptime(), data);
 
 
       if (policyCard.getOwner() == getClient().getUser().getRegion())
@@ -86,26 +72,19 @@ public class CardHandler extends AbstractHandler
           if (policyCard.votesRequired() > 0)
           {
             getClient().getUser().getHand().remove(policyCard.getCardType());
-            m_response.setType(Type.DRAFTED_INTO_VOTE);
-            data.putData(policyCard);
-            getClient().send(m_response);
+            getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED_INTO_VOTE));
             return true;
           }
           else
           {
             getClient().getUser().getHand().remove(policyCard.getCardType());
-            m_response.setType(Type.DRAFTED);
-            data.putData(policyCard);
-            getClient().send(m_response);
+            getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED));
             return true;
           }
         }
         else
         {
-          m_response.setType(Type.DRAFTED);
-          data.putData(policyCard);
-          data.putMessage(validation);
-          getClient().send(m_response);
+          getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, validation));
           return true;
         }
 
@@ -116,14 +95,7 @@ public class CardHandler extends AbstractHandler
     }
     else if (request.getDestination().equals(Endpoint.HAND_READ))
     {
-      Payload data = new Payload();
-
-      data.putData(getClient().getUser());
-      m_response = new Response(server.uptime(), data);
-      m_response.setType(Type.USER);
-
-      getClient().send(m_response);
-
+      getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(),Type.USER));
       return true;
     }
 

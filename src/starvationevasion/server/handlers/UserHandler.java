@@ -5,7 +5,6 @@ package starvationevasion.server.handlers;
  */
 
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.Util;
 import starvationevasion.server.*;
 import starvationevasion.server.model.*;
 
@@ -22,60 +21,68 @@ public class UserHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-    Response m_response = new Response("");
     if (request.getDestination().equals(Endpoint.USER_CREATE))
     {
 
       String uname = (String) request.getPayload().get("username");
       String pwd = (String) request.getPayload().get("password");
-      EnumRegion region=(EnumRegion)request.getPayload().get("region");
+      EnumRegion region = null;
 
+      if (request.getPayload().keySet().contains("region"))
+      {
+        try
+        {
+          region = (EnumRegion) request.getPayload().get("region");
+        }
+        catch(Exception e)
+        {
+          getClient().send(ResponseFactory.build(server.uptime(),
+                                                 null,
+                                                 Type.CREATE_ERROR, "Not a valid region. Remove completely to get a better result"
+          ));
+          return true;
+        }
+      }
       if (server.createUser(new User(uname, pwd, region, new ArrayList<>())))
       {
-        m_response = new Response(server.uptime(), "SUCCESS");
+        getClient().send(ResponseFactory.build(server.uptime(),
+                                               null,
+                                               Type.CREATE_SUCCESS, "User created."
+        ));
       }
       else
       {
-        m_response = new Response(server.uptime(), "Could not create user");
+        getClient().send(ResponseFactory.build(server.uptime(),
+                                               null,
+                                               Type.CREATE_ERROR, "Username taken"
+        ));
       }
-      getClient().send(m_response);
       return true;
     }
     else if (request.getDestination().equals(Endpoint.USERS))
     {
-      Payload data = new Payload();
-      data.putData(server.getUserList());
-
-      m_response = new Response(server.uptime(), data);
-      getClient().send(m_response);
+      getClient().send(ResponseFactory.build(server.uptime(),
+                                             new Payload(server.getUserList()),
+                                             Type.USERS));
       return true;
     }
     else if (request.getDestination().equals(Endpoint.USERS_LOGGED_IN))
     {
-      Payload data = new Payload();
-      data.putData(server.getLoggedInUsers());
-
-      m_response = new Response(server.uptime(), data);
-      m_response.setType(Type.USERS_LOGGED_IN_LIST);
-      getClient().send(m_response);
+      getClient().send(ResponseFactory.build(server.uptime(),
+                                             new Payload(server.getLoggedInUsers()),
+                                             Type.USERS_LOGGED_IN_LIST));
       return true;
     }
     else if (request.getDestination().equals(Endpoint.USERS_READY))
     {
-      Payload data = new Payload();
-      data.putData(server.getPlayers());
-
-      m_response = new Response(server.uptime(), data);
-      m_response.setType(Type.USERS_READY_LIST);
-      getClient().send(m_response);
+      getClient().send(ResponseFactory.build(server.uptime(),
+                                             new Payload(server.getPlayers()),
+                                             Type.USERS_READY_LIST));
       return true;
     }
     else if (request.getDestination().equals(Endpoint.READY) && getClient().loggedIn())
     {
       User _u = getClient().getUser();
-
-      Payload payload = new Payload();
-      m_response = new Response(server.uptime(), payload);
 
       if (_u != null)
       {
@@ -85,16 +92,19 @@ public class UserHandler extends AbstractHandler
         boolean isPlaying = server.addPlayer(_u);
         if (isPlaying)
         {
-          payload.putData(_u);
-          payload.putMessage("SUCCESS");
-          m_response.setType(Type.USER);
+          getClient().send(ResponseFactory.build(server.uptime(),
+                                                 null,
+                                                 Type.BROADCAST, "Success"
+          ));
         }
         else
         {
-          m_response = new Response(server.uptime(), "Sorry, " + _u.getUsername() + " there was an error.");
+          getClient().send(ResponseFactory.build(server.uptime(),
+                                                 null,
+                                                 Type.BROADCAST, "Sorry, " + _u.getUsername() + " there was an error." + " " +_u.getRegion().name()
+          ));
         }
 
-        getClient().send(m_response);
       }
 
       return true;
@@ -118,9 +128,9 @@ public class UserHandler extends AbstractHandler
       }
 
 
-      m_response = new Response(data);
-      getClient().send(m_response);
-
+      getClient().send(ResponseFactory.build(server.uptime(),
+                                             data,
+                                             Type.USER));
       return true;
     }
 

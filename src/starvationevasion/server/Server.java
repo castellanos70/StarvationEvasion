@@ -15,13 +15,17 @@ import starvationevasion.server.model.db.backends.Backend;
 import starvationevasion.server.model.db.backends.Sqlite;
 import starvationevasion.sim.Simulator;
 
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
@@ -155,12 +159,7 @@ public class Server
         System.out.println(dateFormat.format(date) + " Server " + client.getRemoteSocketAddress());
         Worker worker = new Worker(client, this);
 
-
-        if (secureConnection(worker, client))
-        {
-          worker.setReader(new WebSocketReadStrategy(client, null));
-          worker.setWriter(new WebSocketWriteStrategy(client, null));
-        }
+        setStreamType(worker, client);
         worker.start();
         System.out.println(dateFormat.format(date) + " Server: Connected to ");
         worker.setName("worker" + uptimeString());
@@ -534,6 +533,33 @@ public class Server
 
   }
 
+  private static byte[] asymmetricHandshake (String desKey, String clientPublicKey)
+  {
+    PublicKey pubKey = null;
+    byte[] cipherText = null;
+
+    try
+    {
+      final KeyFactory keyFact = KeyFactory.getInstance("RSA");
+
+      byte[] clientBytes = Base64.getDecoder().decode(clientPublicKey);
+      X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(clientBytes);
+
+      pubKey = keyFact.generatePublic(x509KeySpec);
+
+      final Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+      cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+
+      cipherText = cipher.doFinal(desKey.getBytes());
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
+    return cipherText;
+  }
+
   /**
    * Set up the worker with proper streams
    *
@@ -542,14 +568,17 @@ public class Server
    *
    * @return boolean true if web-socket
    */
-  private boolean secureConnection (Worker worker, Socket s)
+  private void setStreamType (Worker worker, Socket s) throws NoSuchAlgorithmException, NoSuchPaddingException, IOException
   {
     // Handling websocket
     // StringBuilder reading = new StringBuilder();
     String line = "";
     String key = "";
     String socketKey = "";
+    byte[] socketKeyBytes = new byte[128];
     ReadStrategy<String> reader = worker.getReader();
+    SecretKey myDesKey = null;
+    boolean encrypted = false;
 
     while(true)
     {
@@ -560,34 +589,47 @@ public class Server
       catch(Exception e)
       {
         e.printStackTrace();
-        return false;
+        return;
       }
-
+      //System.out.println((int)line.charAt(0));
       // check if the end of line or if data was found.
       if (line.trim().equals("client") || line.equals("\r\n") || line.trim().equals("JavaClient"))
       {
+
         if (line.contains("JavaClient"))
         {
           worker.setReader(new JavaObjectReadStrategy(s, null));
           worker.setWriter(new JavaObjectWriteStrategy(s, null));
-          return false;
+          return;
         }
+        if (encrypted)
+        {
+          worker.getWriter().getStream().write(socketKeyBytes);
+          worker.getWriter().getStream().flush();
 
+          worker.getWriter().setEncrypted(true, myDesKey);
+          worker.getReader().setEncrypted(true, myDesKey);
+          return;
+        }
         if (socketKey.isEmpty())
         {
-          return false;
+          return;
         }
         else
         {
           // use the plain text writer to send following data
           worker.setWriter(new PlainTextWriteStrategy(s, null));
+          // Send plan text to the web socket.
           ((PlainTextWriteStrategy) worker.getWriter())
                   .getWriter().println("HTTP/1.1 101 Switching Protocols\n" +
                                                "Upgrade: websocket\n" +
                                                "Connection: Upgrade\n" +
                                                "Sec-WebSocket-Accept: " + socketKey + "\r\n");
 
-          return true;
+          // assume the client accepted socket key and set up stream readers
+          worker.setReader(new WebSocketReadStrategy(s, null));
+          worker.setWriter(new WebSocketWriteStrategy(s, null));
+          return;
         }
 
       }
@@ -599,11 +641,16 @@ public class Server
         key = line.replace("Sec-WebSocket-Key: ", "").trim();
         socketKey = Server.handshake(key);
       }
-      if (line.contains("Sec-Socket-Key: "))
+      if (line.contains("RSA-Socket-Key:"))
       {
-        throw new NotImplementedException();
-        //key = line.replace("Sec-Socket-Key: ", "").trim();
-        //socketKey = Encryptable.generateKey();
+        encrypted = true;
+        key = line.replace("RSA-Socket-Key: ", "").trim();
+
+        KeyGenerator keygenerator = KeyGenerator.getInstance(Constant.ALGORITHM);
+        keygenerator.init(128);
+
+        myDesKey = keygenerator.generateKey();
+        socketKeyBytes = Server.asymmetricHandshake(Base64.getEncoder().encodeToString(myDesKey.getEncoded()), key);
       }
     }
   }

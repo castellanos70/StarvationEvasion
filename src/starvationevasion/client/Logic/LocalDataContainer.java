@@ -1,9 +1,10 @@
 package starvationevasion.client.Logic;
 
-import starvationevasion.client.Networking.Client;
+import javafx.application.Platform;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.Graphs.GraphManager;
 import starvationevasion.client.GUI.SummaryBar;
+import starvationevasion.client.Networking.Client;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
@@ -71,14 +72,14 @@ public class LocalDataContainer
    * contents of his new hand as well as all data that does
    * not pertain to the Visualizer.
    */
-//  public void updateGameState(GameState newGameState)
-//  {
-//    Platform.runLater(() ->
-//    {
-//      gui.getDraftLayout().getHand().setHand(newGameState.hand);
-//      parseNewRoundData(newGameState.worldData);
-//    });
-//  }
+  public void updateGameState(WorldData worldData)
+  {
+    gui=client.getGui();
+    Platform.runLater(() ->
+    {
+      parseNewRoundData(worldData);
+    });
+  }
 
   private void parseNewRoundData(WorldData newData)
   {

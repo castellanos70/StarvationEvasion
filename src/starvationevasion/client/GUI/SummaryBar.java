@@ -129,6 +129,7 @@ public class SummaryBar extends GridPane
     balanceLabel.setText("Balance: $" + farmingBalance + " million");
 
     this.getChildren().removeAll();
+    getChildren().clear();
     this.add(yearLabel, 0, 0, 1, 4);
 
     this.add(regionPopulation, 1, 1, 1, 1);

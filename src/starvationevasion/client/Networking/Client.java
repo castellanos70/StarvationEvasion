@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Logic.ChatManager;
+import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
@@ -44,7 +45,7 @@ public class Client
 
   private GUI gui;
 
-
+  private LocalDataContainer localDataContainer;
   private ArrayList<EnumRegion> availableRegion;
 
   public Client (String host, int portNumber)
@@ -58,8 +59,10 @@ public class Client
     listener.start();
     //requestAvaliableRegions();
    // listenToUserRequests();
-
+    localDataContainer=new LocalDataContainer(this);
+    localDataContainer.init();
   }
+  public GUI getGui(){return gui;}
   public ChatManager getChatManager(){return  chatManager;}
   //TODO
   public EnumRegion getRegion(){return region;}
@@ -187,7 +190,7 @@ public class Client
   }
   public void draftCard(PolicyCard card)
   {
-    System.out.println("Drafted Card");
+    System.out.println("Drafted Card"+card.toString());
     Request f = new Request(startNanoSec, Endpoint.DRAFT_CARD);
     Payload data = new Payload();
     data.putData(card);
@@ -274,7 +277,7 @@ public class Client
 
   public void openGUI()
   {
-    gui=new GUI(this,null);
+    gui=new GUI(this,localDataContainer);
     Stage guiStage=new Stage();
     gui.start(guiStage);
     gui.start(guiStage);
@@ -290,13 +293,14 @@ public class Client
       case BEGINNING:
         return;
       case DRAWING:
-        break;
-      case DRAFTING:
         if(!gui.isDraftingPhase())
         {
           gui.resetVotingPhase();
           gui.switchScenes();
         }
+        break;
+      case DRAFTING:
+
         break;
       case VOTING:
         if(gui.isDraftingPhase())
@@ -507,6 +511,11 @@ public class Client
               availableRegion = data;
             } else if (data.get(0) instanceof WorldData)
             {
+              ArrayList<WorldData> worldData=data;
+              for(WorldData wd: worldData)
+              {
+                localDataContainer.updateGameState(wd);
+              }
               System.out.println("Response.data = Array list of WorldData objects.");
             }
           }

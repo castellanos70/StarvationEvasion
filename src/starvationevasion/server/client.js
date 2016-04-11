@@ -58,9 +58,10 @@ var Client = (function (window, $) {
             };
 
             Client.connection.onerror = function (event) {
-                Client.config.inputArea.fadeOut();
-                Client.config.connectArea.fadeIn();
-                Client.config.loginBtn.fadeIn();
+                console.log("error");
+                // Client.config.inputArea.fadeOut();
+                // Client.config.connectArea.fadeIn();
+                // Client.config.loginBtn.fadeIn();
             };
 
             Client.connection.onmessage = function (event) {

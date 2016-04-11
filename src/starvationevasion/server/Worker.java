@@ -11,8 +11,11 @@ import starvationevasion.server.io.strategies.SocketReadStrategy;
 import starvationevasion.server.io.strategies.SocketWriteStrategy;
 import starvationevasion.server.model.*;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import java.io.*;
 import java.net.Socket;
+import java.security.InvalidKeyException;
 
 /**
  *  Worker that holds connection, writer, reader, and user information
@@ -68,16 +71,9 @@ public class Worker extends Thread
     {
       writer.write(data);
     }
-    catch(IOException e)
+    catch(Exception e)
     {
-      String u = "";
-//      if (getUser() != null)
-//      {
-//        u = getUser().toString() + "\n";
-//      }
-      System.out.println("There was an error trying to write to:\n\t"
-                                 + getName() + "\n\t"
-                                 + u);
+      e.printStackTrace();
       shutdown();
     }
   }
@@ -163,6 +159,18 @@ public class Worker extends Thread
       {
         System.out.println("Invalid Class was received");
         send(ResponseFactory.build(server.uptime(), null, Type.BROADCAST, "Invalid Class"));
+      }
+      catch(BadPaddingException e)
+      {
+        e.printStackTrace();
+      }
+      catch(IllegalBlockSizeException e)
+      {
+        e.printStackTrace();
+      }
+      catch(InvalidKeyException e)
+      {
+        e.printStackTrace();
       }
     }
   }

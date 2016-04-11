@@ -26,6 +26,7 @@ public class GeographicArea implements Sendable
 
   public GeographicArea(String name)
   { this.name = name;
+    //System.out.println("++++++++++++++++++++++++GeographicArea("+name+")");
   }
 
   public boolean containsMapPoint(MapPoint mapPoint)

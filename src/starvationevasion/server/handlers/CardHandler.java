@@ -85,7 +85,7 @@ public class CardHandler extends AbstractHandler
         }
         else
         {
-          getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), validation, Type.DRAFTED));
+          getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, validation));
           return true;
         }
 

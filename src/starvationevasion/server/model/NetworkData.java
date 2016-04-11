@@ -8,7 +8,7 @@ public abstract class NetworkData implements Sendable
 {
   private Payload data;
   private Type type;
-  private String message;
+  private String message;// header
   private double time = 0f;
 
   public <T extends Payload> NetworkData (double time, T data, String msg, Type type)

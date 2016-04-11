@@ -1,6 +1,5 @@
 package starvationevasion.ai.commands;
 
-import com.sun.org.apache.regexp.internal.RE;
 import starvationevasion.ai.AI;
 import starvationevasion.common.*;
 import starvationevasion.common.policies.CovertIntelligencePolicy;

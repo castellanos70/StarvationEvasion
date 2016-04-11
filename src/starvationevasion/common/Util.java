@@ -1,7 +1,16 @@
 package starvationevasion.common;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.security.KeyPair;
+import java.security.PrivateKey;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Random;
 
 /**
@@ -38,6 +47,66 @@ public class Util
   }
 
 
+  public static SecretKey endServerHandshake (Socket s, KeyPair keyPair)
+  {
+    // first
+    byte[] sdf = new byte[128];
+    try
+    {
+      s.getInputStream().read(sdf);
+      String decryptedMsg = decrypt(sdf, keyPair.getPrivate());
+
+      byte[] msg = Base64.getDecoder().decode(decryptedMsg);
+      return  new SecretKeySpec(msg, "AES");
+
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public static void startServerHandshake (Socket s, KeyPair keyPair)
+  {
+    // first
+    byte[] publicKey = keyPair.getPublic().getEncoded();
+    String pubKeyStr = Base64.getEncoder().encodeToString(publicKey);
+
+    try
+    {
+      PrintWriter write = new PrintWriter(s.getOutputStream(), true);
+
+      write.print("RSA-Socket-Key: " + pubKeyStr + "\n\r\n");
+      write.flush();
+    }
+    catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+
+  }
+
+  public static String decrypt(byte[] text, PrivateKey key)
+  {
+    byte[] dectyptedText = null;
+    try
+    {
+      // get an RSA cipher object and print the provider
+      final Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+
+      // decrypt the text using the private key
+      cipher.init(Cipher.DECRYPT_MODE, key);
+      dectyptedText = cipher.doFinal(text);
+
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+    }
+
+    return new String(dectyptedText);
+  }
 
 
   /**

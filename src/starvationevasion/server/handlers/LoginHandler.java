@@ -28,15 +28,15 @@ public class LoginHandler extends AbstractHandler
       {
         getClient().send(ResponseFactory.build(server.uptime(),
                                                server.getUserByUsername(uname),
-                                               "SUCCESS",
-                                               Type.AUTH_SUCCESS));
+                                               Type.AUTH_SUCCESS, "SUCCESS"
+        ));
       }
       else
       {
         getClient().send(ResponseFactory.build(server.uptime(),
                                                null,
-                                               "Username or password incorrect.",
-                                               Type.AUTH_ERROR));
+                                               Type.AUTH_ERROR, "Username or password incorrect."
+        ));
       }
 
       return true;
@@ -52,7 +52,8 @@ public class LoginHandler extends AbstractHandler
     if (s != null)
     {
       String salt = s.getSalt();
-      String hash = Encryptable.generateHashedPassword(salt, password);
+      String hash = Encryptable.bytesToHex(Encryptable.generateHashedPassword(salt.getBytes(),
+                                                                              password.getBytes()));
       if (s.getPassword().equals(hash))
       {
         s.setLoggedIn(true);

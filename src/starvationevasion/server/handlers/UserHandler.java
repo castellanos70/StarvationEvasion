@@ -5,7 +5,6 @@ package starvationevasion.server.handlers;
  */
 
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.Util;
 import starvationevasion.server.*;
 import starvationevasion.server.model.*;
 
@@ -39,8 +38,8 @@ public class UserHandler extends AbstractHandler
         {
           getClient().send(ResponseFactory.build(server.uptime(),
                                                  null,
-                                                 "Not a valid region. Remove completely to get a better result",
-                                                 Type.CREATE_ERROR));
+                                                 Type.CREATE_ERROR, "Not a valid region. Remove completely to get a better result"
+          ));
           return true;
         }
       }
@@ -48,15 +47,15 @@ public class UserHandler extends AbstractHandler
       {
         getClient().send(ResponseFactory.build(server.uptime(),
                                                null,
-                                               "User created.",
-                                               Type.CREATE_SUCCESS));
+                                               Type.CREATE_SUCCESS, "User created."
+        ));
       }
       else
       {
         getClient().send(ResponseFactory.build(server.uptime(),
                                                null,
-                                               "Username taken",
-                                               Type.CREATE_ERROR));
+                                               Type.CREATE_ERROR, "Username taken"
+        ));
       }
       return true;
     }
@@ -95,15 +94,15 @@ public class UserHandler extends AbstractHandler
         {
           getClient().send(ResponseFactory.build(server.uptime(),
                                                  null,
-                                                 "Success",
-                                                 Type.BROADCAST));
+                                                 Type.BROADCAST, "Success"
+          ));
         }
         else
         {
           getClient().send(ResponseFactory.build(server.uptime(),
                                                  null,
-                                                 "Sorry, " + _u.getUsername() + " there was an error." + " " +_u.getRegion().name(),
-                                                 Type.BROADCAST));
+                                                 Type.BROADCAST, "Sorry, " + _u.getUsername() + " there was an error." + " " +_u.getRegion().name()
+          ));
         }
 
       }

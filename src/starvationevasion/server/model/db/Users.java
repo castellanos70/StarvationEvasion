@@ -1,6 +1,7 @@
 package starvationevasion.server.model.db;
 
 import starvationevasion.common.EnumRegion;
+import starvationevasion.server.io.NotImplementedException;
 import starvationevasion.server.model.User;
 import starvationevasion.server.model.db.backends.Backend;
 
@@ -10,12 +11,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
 
-public class UserDB extends Transaction<User>
+public class Users extends Transaction<User>
 {
-  private ArrayList<User> cache = new ArrayList<>();
+  private static ArrayList<User> cache = new ArrayList<>();
   private boolean dirty = true;
 
-  public UserDB (Backend db)
+  public Users (Backend db)
   {
     super(db);
   }
@@ -34,7 +35,6 @@ public class UserDB extends Transaction<User>
 
       while(results.next())
       {
-        // int id = results.getInt("id");
         cache.add(initUser(results));
       }
 
@@ -51,20 +51,20 @@ public class UserDB extends Transaction<User>
   }
 
   @Override
-  public <V> User get (V username)
+  public <V> User get (V user)
   {
     if (!dirty)
     {
-      for (User user : cache)
+      for (User _user : cache)
       {
-        if(user.getUsername().equals(username))
+        if(_user.equals(user))
         {
-          return user;
+          return _user;
         }
       }
     }
 
-    ResultSet results = getDb().select("user", "where username='" + username + "'");
+    ResultSet results = getDb().select("user", "where username='" + ((User) user).getUsername() + "'");
     try
     {
       int i =results.getFetchSize();
@@ -109,12 +109,14 @@ public class UserDB extends Transaction<User>
   public <V> void delete (V data)
   {
     dirty = true;
+    throw new NotImplementedException();
   }
 
   @Override
   public <V> void update (V username, User data)
   {
-
+    dirty = true;
+    throw new NotImplementedException();
   }
 
 

@@ -5,14 +5,22 @@ package starvationevasion.server.model;
  */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-import starvationevasion.common.WorldData;
 import starvationevasion.server.io.JSON;
 
 import java.util.*;
 
+/**
+ * Class to allow for passing arbitrary data over network. The underlying data structure is a
+ * HashMap to help with conversion to JSON
+ */
 public class Payload extends HashMap<String, Object> implements Sendable
 {
 
+  /**
+   * Create and add object. adds object to Data key!
+   *
+   * @param data Object to be stored. Stores in key "data"
+   */
   public Payload (Object data)
   {
     super();
@@ -30,9 +38,7 @@ public class Payload extends HashMap<String, Object> implements Sendable
     if (!(value instanceof Sendable || value instanceof Number || value instanceof Boolean ||
             value instanceof String || value instanceof List))
     {
-      System.out.println(value + " is NOT a valid Payload");
-      System.exit(0);
-      return value;
+      throw new IllegalArgumentException("Value must be String, Number, Boolean, List, or Sendable.");
     }
     if (value instanceof List)
     {
@@ -40,23 +46,33 @@ public class Payload extends HashMap<String, Object> implements Sendable
       {
         if (!(((List) value).get(0) instanceof Sendable))
         {
-          System.out.println(((List) value).get(0) + " NOT a valid value in a payload list.");
-          System.exit(0);
-          return value;
+          throw new IllegalArgumentException("List contents must be: String, Number, Boolean, List, or Sendable.");
         }
       }
     }
     return super.put(key, value);
   }
 
+  /**
+   * Puts object in the map inside the value of "data" key
+   *
+   * @param value object to be stored
+   * @return Object that was stored.
+   */
   public Object putData (Object value)
   {
     return put("data", value);
   }
 
-  public Object putMessage (Object value)
+  /**
+   * Puts string is the message key
+   *
+   * @param stringMessage string to be stored
+   * @return Object that was stored.
+   */
+  public String putMessage (String stringMessage)
   {
-    return put("message", value);
+    return (String) put("message", stringMessage);
   }
 
   @Override
@@ -65,11 +81,21 @@ public class Payload extends HashMap<String, Object> implements Sendable
     return super.get(key);
   }
 
+  /**
+   * Retrieves value for key "data"
+   *
+   * @return object stored at "data"
+   */
   public Object getData()
   {
     return get("data");
   }
 
+  /**
+   * Retrieves the value for the key "message"
+   *
+   * @return String that was stored in message
+   */
   public String getMessage ()
   {
     return (String) get("message");

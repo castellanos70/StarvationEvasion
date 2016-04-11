@@ -414,10 +414,7 @@ public class Server
 
     ArrayList<PolicyCard> _list = new ArrayList<>();
 
-    for (PolicyCard card : draftedPolicyCards)
-    {
-      _list.add(card);
-    }
+    _list.addAll(draftedPolicyCards);
 
     broadcast(ResponseFactory.build(uptime(),
                                     new Payload(_list),
@@ -441,7 +438,7 @@ public class Server
     while ((p=draftedPolicyCards.poll())!=null)
     {
 
-      if (p.votesRequired() == 0 || p.getEnactingRegionCount() > p.votesRequired())
+      if (p.votesRequired() == 0 || p.getEnactingRegionCount() >= p.votesRequired())
       {
         enactedPolicyCards.add(p);
       }
@@ -455,6 +452,9 @@ public class Server
     for (User user : getPlayers())
     {
       drawByUser(user);
+      user.actionsRemaining=2;
+      user.policyCardsDiscarded=0;
+
       user.getWorker().send(ResponseFactory.build(uptime(),
                                                   user,
                                                   Type.USER));

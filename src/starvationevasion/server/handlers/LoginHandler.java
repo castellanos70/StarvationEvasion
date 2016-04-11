@@ -52,7 +52,8 @@ public class LoginHandler extends AbstractHandler
     if (s != null)
     {
       String salt = s.getSalt();
-      String hash = Encryptable.generateHashedPassword(salt, password);
+      String hash = Encryptable.bytesToHex(Encryptable.generateHashedPassword(salt.getBytes(),
+                                                                              password.getBytes()));
       if (s.getPassword().equals(hash))
       {
         s.setLoggedIn(true);

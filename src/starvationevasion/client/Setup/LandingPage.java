@@ -12,7 +12,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import starvationevasion.client.Networking.Client;
-import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumRegion;
 
 import java.util.ArrayList;
@@ -130,10 +129,7 @@ public class LandingPage extends Application
     startGame.setOnAction(event ->
     {
       client.ready();
-      GUI gui=new GUI(client,null);
-      Stage guiStage=new Stage();
-      gui.start(guiStage);
-      gui.start(guiStage);
+      client.openGUI();
       stage.close();
     });
     //Sets up the initial stage

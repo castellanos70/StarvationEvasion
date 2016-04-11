@@ -1,5 +1,8 @@
 package starvationevasion.client.Networking;
 
+import javafx.application.Platform;
+import javafx.stage.Stage;
+import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
@@ -39,6 +42,7 @@ public class Client
   private State state;
   private ArrayList<PolicyCard> votingCards;
 
+  private GUI gui;
 
 
   private ArrayList<EnumRegion> availableRegion;
@@ -183,6 +187,7 @@ public class Client
   }
   public void draftCard(PolicyCard card)
   {
+    System.out.println("Drafted Card");
     Request f = new Request(startNanoSec, Endpoint.DRAFT_CARD);
     Payload data = new Payload();
     data.putData(card);
@@ -266,21 +271,49 @@ public class Client
       e.printStackTrace();
     }
   }
-  public boolean writeToServer(String message){
 
+  public void openGUI()
+  {
+    gui=new GUI(this,null);
+    Stage guiStage=new Stage();
+    gui.start(guiStage);
+    gui.start(guiStage);
 
-//    currentOutput="";
-//    write.println(System.nanoTime() + " " + message);
-//
-//    System.out.println((System.nanoTime() + " " + message));
-//    //System.out.println(currentOutput);
-//    while(message.contains("login"))
-//    {
-//      if (currentOutput.contains("SUCCESS"))return true;
-//      if(currentOutput.contains("FAIL"))return false;
-//    }
+  }
 
-    return false;
+  private void guiStateManagement(State state)
+  {
+    switch (state)
+    {
+      case LOGIN:
+        return;
+      case BEGINNING:
+        return;
+      case DRAWING:
+        break;
+      case DRAFTING:
+        if(!gui.isDraftingPhase())
+        {
+          gui.resetVotingPhase();
+          gui.switchScenes();
+        }
+        break;
+      case VOTING:
+        if(gui.isDraftingPhase())
+        {
+          gui.resetDraftingPhase();
+          gui.switchScenes();
+        }
+        break;
+      case WIN:
+        break;
+      case LOSE:
+        break;
+      case END:
+        break;
+      case TRANSITION:
+        break;
+    }
   }
   private boolean openConnection (String host, int portNumber)
   {
@@ -332,6 +365,11 @@ public class Client
     this.user = user;
     region = user.getRegion();
     hand=user.getHand();
+    if(gui!=null&&gui.needsHand()&&getHand()!=null&&!getHand().isEmpty())
+    {
+      gui.setCardsInHand(getHand());
+      Platform.runLater(() -> gui.getDraftLayout().getHand().setHand(getHand().toArray(new EnumPolicy[hand.size()])));
+    }
   }
   public void closeAll()
   {
@@ -449,7 +487,9 @@ public class Client
         {
           System.out.println("Vote Ballot received  " + response.getPayload().getData().getClass());
          ArrayList arrayList=(ArrayList)response.getPayload().getData();
+          System.out.println(arrayList);
           votingCards=(ArrayList) response.getPayload().getData();
+          Platform.runLater(() -> gui.getVotingLayout().updateCardSpaces(votingCards));
         }
         else if(response.getPayload().get("data")instanceof ArrayList)
         {
@@ -474,6 +514,8 @@ public class Client
         else if(response.getPayload().get("data")instanceof String)
         {
           chatManager.sendChatToClient((String)response.getPayload().get("text"));
+          gui.getDraftLayout().getChatNode().setChatMessages(chatManager.getChat());
+          gui.getVotingLayout().getChatNode().setChatMessages(chatManager.getChat());
         }
         else if(response.getPayload().get("data")instanceof starvationevasion.server.model.State)
         {
@@ -481,6 +523,8 @@ public class Client
           state=(starvationevasion.server.model.State) response.getPayload().get("data");
           System.out.println(state+" Response.data = State");
           if(state.equals(starvationevasion.server.model.State.DRAWING)) readHand();
+
+          Platform.runLater(() -> guiStateManagement(state));
         }
 
       }

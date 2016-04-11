@@ -62,7 +62,7 @@ public class Server
   // bool that listen for connections is looping over
   private boolean isWaiting = true;
 
-  public static int TOTAL_PLAYERS = 2;
+  public static int TOTAL_PLAYERS =1;
 
   private Backend db = new Sqlite(Constant.DB_LOCATION);
   private Transaction<User> transaction;

@@ -144,7 +144,7 @@ public class GUI extends Application
     primaryStage.setScene(gameScene);
 
 
-    mainGameLoop=new MainGameLoop(this);
+   // mainGameLoop=new MainGameLoop(this);
 
     //if(!client.isAI)
     {

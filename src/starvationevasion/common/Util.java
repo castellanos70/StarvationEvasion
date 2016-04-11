@@ -62,12 +62,12 @@ public class Util
     }
     catch(IOException e)
     {
-      e.printStackTrace();
+      System.out.println("There was an error ending handshake.");
     }
     return null;
   }
 
-  public static void startServerHandshake (Socket s, KeyPair keyPair)
+  public static void startServerHandshake (Socket s, KeyPair keyPair, String streamType)
   {
     // first
     byte[] publicKey = keyPair.getPublic().getEncoded();
@@ -77,12 +77,12 @@ public class Util
     {
       PrintWriter write = new PrintWriter(s.getOutputStream(), true);
 
-      write.print("RSA-Socket-Key: " + pubKeyStr + "\n\r\n");
+      write.print("RSA-Socket-Key: " + pubKeyStr + "\n" + streamType +"\n");
       write.flush();
     }
     catch(IOException e)
     {
-      e.printStackTrace();
+      System.out.println("There was an error starting handshake.");
     }
 
   }

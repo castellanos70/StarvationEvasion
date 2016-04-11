@@ -234,15 +234,7 @@ public class Territory
     return humanDevelopmentIndex;
   }
 
-  final public double getPenaltyValue()
-  {
-    return penaltyValue;
-  }
 
-  final public void setPenaltyValue(double penaltyValue)
-  {
-    this.penaltyValue = penaltyValue;
-  }
 
   final public void setUndernourished(int year, int people)
   {

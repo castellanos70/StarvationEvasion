@@ -2,12 +2,18 @@ package starvationevasion.ai;
 
 
 import starvationevasion.ai.commands.*;
+import starvationevasion.common.Constant;
 import starvationevasion.common.PolicyCard;
+import starvationevasion.common.Util;
 import starvationevasion.common.WorldData;
 import starvationevasion.server.model.*;
 
+import javax.crypto.*;
 import java.io.*;
 import java.net.Socket;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -36,11 +42,16 @@ public class AI
 
   private Stack<Command> commands = new Stack<>();
 
+  private SecretKey serverKey;
+  private Cipher aesCipher;
+  private KeyPair rsaKey;
 
   private AI (String host, int portNumber)
   {
-
-    openConnection(host, portNumber);
+    setupSecurity();
+    while (!openConnection(host, portNumber))
+    {
+    }
     listener = new StreamListener();
     System.out.println("AI: Starting listener = : " + listener);
     listener.start();
@@ -72,8 +83,6 @@ public class AI
     try
     {
       writer = new DataOutputStream(clientSocket.getOutputStream());
-      writer.write("JavaClient\n".getBytes());
-      writer.flush();
     }
     catch(Exception e)
     {
@@ -93,6 +102,8 @@ public class AI
     }
     isRunning = true;
 
+    Util.startServerHandshake(clientSocket, rsaKey, "JavaClient");
+
     return true;
 
   }
@@ -104,7 +115,7 @@ public class AI
       try
       {
         // if commands is empty check again
-        if (commands.size() == 0)
+        if (commands.size() == 0 || serverKey == null)
         {
           continue;
         }
@@ -175,7 +186,7 @@ public class AI
 
     public void run ()
     {
-
+      serverKey = Util.endServerHandshake(clientSocket, rsaKey);
       while(isRunning)
       {
         read();
@@ -289,13 +300,13 @@ public class AI
     }
     int size = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
 
-    byte[] object = new byte[size];
+    byte[] encObject = new byte[size];
 
-    reader.readFully(object);
-
-    ByteArrayInputStream in = new ByteArrayInputStream(object);
+    reader.readFully(encObject);
+    ByteArrayInputStream in = new ByteArrayInputStream(encObject);
     ObjectInputStream is = new ObjectInputStream(in);
-    Response response = (Response) is.readObject();
+    SealedObject sealedObject = (SealedObject) is.readObject();
+    Response response = (Response) sealedObject.getObject(serverKey);
     is.close();
     in.close();
 
@@ -306,20 +317,30 @@ public class AI
   {
     try
     {
+      aesCipher.init(Cipher.ENCRYPT_MODE, serverKey);
+      SealedObject sealedObject = new SealedObject(request, aesCipher);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(request);
+      oos.writeObject(sealedObject);
       oos.close();
 
 
+      writer.flush();
       byte[] bytes = baos.toByteArray();
-
       writer.writeInt(bytes.length);
       writer.write(bytes);
       writer.flush();
       baos.close();
     }
     catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+    catch(InvalidKeyException e)
+    {
+      e.printStackTrace();
+    }
+    catch(IllegalBlockSizeException e)
     {
       e.printStackTrace();
     }
@@ -348,6 +369,20 @@ public class AI
     new AI(host, port);
 
   }
+  private void setupSecurity ()
+  {
+    try
+    {
+      final KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
 
+      keyGen.initialize(1024);
+      rsaKey = keyGen.generateKeyPair();
+      aesCipher = Cipher.getInstance(Constant.ALGORITHM);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+  }
 }
 

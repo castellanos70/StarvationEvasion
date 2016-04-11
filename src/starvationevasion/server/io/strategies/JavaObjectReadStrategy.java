@@ -6,8 +6,12 @@ package starvationevasion.server.io.strategies;
 
 import starvationevasion.server.model.Request;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SealedObject;
 import java.io.*;
 import java.net.Socket;
+import java.security.InvalidKeyException;
 
 public class JavaObjectReadStrategy extends AbstractReadStrategy<Request>
 {
@@ -23,7 +27,7 @@ public class JavaObjectReadStrategy extends AbstractReadStrategy<Request>
   }
 
   @Override
-  public Request read () throws IOException, ClassNotFoundException
+  public Request read () throws IOException, ClassNotFoundException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException
   {
     // we are always expecting an integer that represents the size of the byte array
     int ch1 = getStream().read();
@@ -40,13 +44,22 @@ public class JavaObjectReadStrategy extends AbstractReadStrategy<Request>
     // merge frames into a single int
     int size  = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
     // create buffer
-    byte[] object = new byte[size];
+    byte[] encObject = new byte[size];
     // read into buffer
-    getStream().readFully(object);
+    getStream().readFully(encObject);
     // convert into object
-    ByteArrayInputStream in = new ByteArrayInputStream(object);
+    ByteArrayInputStream in = new ByteArrayInputStream(encObject);
     ObjectInputStream is = new ObjectInputStream(in);
+
+    Serializable s = (Serializable) is.readObject();
+
+    Request request = null;
+    if (isEncrypted())
+    {
+      request = (Request) decrypt(s);
+    }
+
     // we are only expecting Requests
-    return (Request) is.readObject();
+    return request;
   }
 }

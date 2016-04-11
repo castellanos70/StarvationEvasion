@@ -4,6 +4,9 @@ package starvationevasion.server.handlers;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
@@ -26,10 +29,10 @@ public class CardHandler extends AbstractHandler
       return false;
     }
 
-
+    // need to disable --- This was used for testing
     if (request.getDestination().equals(Endpoint.DRAW_CARD))
     {
-      server.drawByUser(getClient().getUser());
+      // server.drawByUser(getClient().getUser());
       // getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.D));
 
       return true;
@@ -37,7 +40,7 @@ public class CardHandler extends AbstractHandler
     else if (request.getDestination().equals(Endpoint.DELETE_CARD))
     {
       EnumPolicy card = (EnumPolicy) request.getPayload().get("data");
-      if (getClient().getUser().policyCardsDiscarded <= 2)
+      if (getClient().getUser().policyCardsDiscarded == 0 || getClient().getUser().actionsRemaining >= 1)
       {
         if (getClient().getUser().getHand().contains(card))
         {
@@ -46,11 +49,57 @@ public class CardHandler extends AbstractHandler
           server.getSimulator().discard(region, card);
           getClient().getUser().getHand().remove(card);
 
-          server.drawByUser(getClient().getUser());
+
+          if (getClient().getUser().policyCardsDiscarded == 1)
+          {
+            getClient().getUser().actionsRemaining--;
+          }
+          else
+          {
+            getClient().getUser().policyCardsDiscarded++;
+          }
+
+          // getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
+          server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Discarded many"));
+        }
+      }
+      else
+      {
+        getClient().send(ResponseFactory.build(server.uptime(), null, Type.ERROR, "You're out of actions!"));
+      }
+
+      return true;
+    }
+    else if (request.getDestination().equals(Endpoint.DELETE_AND_DRAW_CARDS))
+    {
+      ArrayList<EnumPolicy> cards = (ArrayList<EnumPolicy>) request.getPayload().get("data");
+      if (getClient().getUser().actionsRemaining >= 1)
+      {
+        boolean isSubset = getClient().getUser().getHand().containsAll(cards);
+
+        if (isSubset)
+        {
+          EnumRegion region = getClient().getUser().getRegion();
+
+          for (EnumPolicy card : cards)
+          {
+            server.getSimulator().discard(region, card);
+            getClient().getUser().getHand().remove(card);
+            EnumPolicy[] newCards = server.getSimulator().drawCards(region);
+            Collections.addAll(getClient().getUser().getHand(), newCards);
+          }
+
+
+          getClient().getUser().actionsRemaining--;
+          server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Drafted many"));
 
           // getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
 
         }
+      }
+      else
+      {
+        getClient().send(ResponseFactory.build(server.uptime(), null, Type.ERROR, "You're out of actions!"));
       }
 
       return true;
@@ -59,36 +108,40 @@ public class CardHandler extends AbstractHandler
     {
       PolicyCard policyCard = (PolicyCard) request.getPayload().getData();
 
-
-
-      if (policyCard.getOwner() == getClient().getUser().getRegion())
+      if (getClient().getUser().actionsRemaining >= 1)
       {
-        String validation = policyCard.validate();
-        System.out.println(validation);
-        if (validation == null)
+
+        if (policyCard.getOwner() == getClient().getUser().getRegion())
         {
-
-          server.getDraftedPolicyCards().add(policyCard);
-
-          if (policyCard.votesRequired() > 0)
+          String validation = policyCard.validate();
+          if (validation == null)
           {
-            getClient().getUser().getHand().remove(policyCard.getCardType());
-            getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED_INTO_VOTE));
+
+            server.getDraftedPolicyCards().add(policyCard);
+
+            if (policyCard.votesRequired() > 0)
+            {
+              getClient().getUser().getHand().remove(policyCard.getCardType());
+              server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED_INTO_VOTE));
+            }
+            else
+            {
+              getClient().getUser().getHand().remove(policyCard.getCardType());
+              server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED));
+            }
+            getClient().getUser().actionsRemaining--;
             return true;
           }
           else
           {
-            getClient().getUser().getHand().remove(policyCard.getCardType());
-            getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED));
+            getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, validation));
             return true;
           }
         }
-        else
-        {
-          getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, validation));
-          return true;
-        }
-
+      }
+      else
+      {
+        getClient().send(ResponseFactory.build(server.uptime(), null, Type.ERROR, "You're out of actions!"));
       }
 
 

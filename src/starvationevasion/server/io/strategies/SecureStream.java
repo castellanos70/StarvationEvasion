@@ -6,6 +6,8 @@ import starvationevasion.server.model.Encryptable;
 
 import javax.crypto.*;
 import javax.xml.bind.DatatypeConverter;
+import java.io.IOException;
+import java.io.Serializable;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -67,5 +69,17 @@ abstract class SecureStream implements Encryptable
     byte[] _data = data.getBytes();
     String ss = DatatypeConverter.printBase64Binary(encrypt(_data));
     return ss;
+  }
+
+  protected Serializable encrypt(Serializable data) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException, IOException
+  {
+    aesCipher.init(Cipher.ENCRYPT_MODE, key);
+    return new SealedObject(data, aesCipher);
+  }
+
+  protected Serializable decrypt(Serializable data) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException, IOException, ClassNotFoundException
+  {
+    aesCipher.init(Cipher.DECRYPT_MODE, key);
+    return (Serializable) ((SealedObject) data).getObject(aesCipher);
   }
 }

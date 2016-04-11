@@ -4,10 +4,12 @@ package starvationevasion.server.io.strategies;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
-import starvationevasion.server.io.strategies.AbstractReadStrategy;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import java.io.*;
 import java.net.Socket;
+import java.security.InvalidKeyException;
 
 public class SocketReadStrategy extends AbstractReadStrategy<String>
 {
@@ -24,7 +26,7 @@ public class SocketReadStrategy extends AbstractReadStrategy<String>
   }
 
   @Override
-  public String read () throws IOException
+  public String read () throws IOException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException
   {
     int i  = getStream().read();
     StringBuilder _sb = new StringBuilder();
@@ -40,6 +42,12 @@ public class SocketReadStrategy extends AbstractReadStrategy<String>
       }
       _sb.append((char) i);
       i = getStream().read();
+    }
+    String data = _sb.toString();
+
+    if (isEncrypted())
+    {
+      return decrypt(data);
     }
     return _sb.toString();
   }

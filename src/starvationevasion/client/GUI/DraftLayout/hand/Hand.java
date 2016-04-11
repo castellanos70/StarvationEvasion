@@ -1,21 +1,16 @@
 package starvationevasion.client.GUI.DraftLayout.hand;
 
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 import starvationevasion.client.GUI.DraftLayout.DeckNode;
 import starvationevasion.client.GUI.DraftLayout.DraftedCards;
-import starvationevasion.client.GUI.DraftLayout.map.Map;
 import starvationevasion.client.GUI.GUI;
-
-import javafx.scene.layout.GridPane;
 import starvationevasion.common.EnumPolicy;
-
-import javafx.stage.Stage;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.sim.CardDeck;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
-
 import java.util.Stack;
 
 /**
@@ -167,10 +162,6 @@ public class Hand extends GridPane
   {
     if (numberOfActionsUsed < 2)
     {
-      if(card.needsFood()&&gui.getDraftLayout().getProductBar().getSelectedElement()!=null||!card.needsFood())
-      {
-        if((card.needsRegion()&& Map.currentlySelectedRegion.isPresent())||!card.needsRegion())
-        {
           numberOfActionsUsed++;
           draftedCards = gui.getDraftLayout().getDraftedCards();
           usedCards.add(card);
@@ -187,11 +178,7 @@ public class Hand extends GridPane
           card.getDiscardButton().setDisable(true);
           if (card.isSupportCard()) playedSupportCard = true;
           if (numberOfActionsUsed == 2) gui.getDraftLayout().getActionButtons().setDisableOnBigDiscardButton(true);
-          card.setSelectedFood(gui.getDraftLayout().getProductBar().getSelectedElement());
-
-          //if(!gui.client.isAI&&Map.currentlySelectedRegion.isPresent())card.setSelectedRegion(Map.currentlySelectedRegion.get());
-        }
-      }
+          //card.setSelectedFood(gui.getDraftLayout().getProductBar().getSelectedElement());
     }
   }
 

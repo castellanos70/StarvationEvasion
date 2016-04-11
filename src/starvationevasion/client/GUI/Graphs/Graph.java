@@ -25,7 +25,7 @@ public class Graph
    */
   public Graph()
   {
-    xAxis = new NumberAxis(1980, 2050, 1);
+    xAxis = new NumberAxis(2000, 2050, 1);
     yAxis = new NumberAxis();
     xAxis.setLabel("Year");
 

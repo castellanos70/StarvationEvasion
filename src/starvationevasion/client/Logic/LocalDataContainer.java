@@ -34,7 +34,6 @@ public class LocalDataContainer
   public LocalDataContainer(Client client)
   {
     this.client = client;
-    //this.gui = client.gui;
     regionToData = new HashMap<>();
   }
 
@@ -100,15 +99,18 @@ public class LocalDataContainer
   private void sendDataToGraphs()
   {
     GraphManager manager =  gui.getGraphManager();
+    regionToData.keySet().forEach(region ->{
+      manager.addData(year,worldData.foodPrice);
+    });
     regionToData.keySet().forEach(region ->
         manager.addData(region, 0, year, regionToData.get(region).population));
       regionToData.keySet().forEach(region ->
         manager.addData(region, 1, year, (int) regionToData.get(region).humanDevelopmentIndex));
       regionToData.keySet().forEach(region ->
         manager.addData(region, 2, year, regionToData.get(region).revenueBalance));
-      //regionToData.keySet().forEach(region ->
-        //manager.addData(region, year, regionToData.get(region).foodProduced,
-                                                              //regionToData.get(region).foodExported,regionToData.get(region).foodIncome));
+//      regionToData.keySet().forEach(region ->
+//        manager.addData(region, year, regionToData.get(region).foodProduced,
+//                                                              regionToData.get(region).foodExported,regionToData.get(region).foodIncome));
   }
 
   private void sendDataToSummaryBar()

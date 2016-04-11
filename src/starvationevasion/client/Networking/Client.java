@@ -190,7 +190,6 @@ public class Client
   }
   public void draftCard(PolicyCard card)
   {
-    System.out.println("Drafted Card"+card.toString());
     Request f = new Request(startNanoSec, Endpoint.DRAFT_CARD);
     Payload data = new Payload();
     data.putData(card);
@@ -224,8 +223,8 @@ public class Client
     Request f = new Request(startNanoSec, Endpoint.DELETE_CARD);
     Payload data = new Payload();
 
-    data.putData("user");
-    data.put("card", card);
+
+    data.putData(card.getCardType());
     f.setData(data);
     // Create a payload (this is the class that stores Sendable information)
     sendRequest(f);
@@ -467,6 +466,7 @@ public class Client
       {
         Response response = readObject();
         //System.out.println(response.getType());
+        //System.out.println(response.getPayload());
 //        if(!response.getType().equals(Type.WORLD_DATA_LIST))System.out.println(response.getPayload());
         if (response.getPayload().get("data") instanceof User)
         {

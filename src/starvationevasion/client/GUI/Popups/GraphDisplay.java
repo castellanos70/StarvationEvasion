@@ -1,5 +1,7 @@
 package starvationevasion.client.GUI.Popups;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.Graphs.Graph;
 import javafx.event.EventHandler;
@@ -11,6 +13,9 @@ import javafx.scene.image.*;
 import javafx.scene.layout.StackPane;
 import starvationevasion.common.EnumRegion;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * GUI element which displays the graphs during the drafting phase
  */
@@ -20,7 +25,7 @@ public class GraphDisplay extends BorderPane
   ImageView leftArrow;
   ImageView rightArrow;
 
-  ComboBox regionSelect;
+  ComboBox<EnumRegion> regionSelect;
 
   EnumRegion currentRegion;
   int graphIndex = 0;
@@ -76,17 +81,20 @@ public class GraphDisplay extends BorderPane
 
   private void initializeComboBox()
   {
-    regionSelect = new ComboBox();
-    regionSelect.setValue(currentRegion.toString());
-    for (int i=  0; i < EnumRegion.US_REGIONS.length; ++i)
+    ArrayList<EnumRegion> regions=new ArrayList<>(Arrays.asList(EnumRegion.values()));
+    ObservableList<EnumRegion> regionList= FXCollections.observableArrayList(regions);
+    regionSelect =new ComboBox<>(regionList);
+
+    regionSelect.setValue(currentRegion);
+    for (int i=  0; i < EnumRegion.values().length; ++i)
     {
-      regionSelect.getItems().add(EnumRegion.US_REGIONS[i].toString());
+      regionSelect.getItems().add(EnumRegion.values()[i]);
     }
 
     regionSelect.setOnAction((event) -> {
-        currentRegion = stringToRegion(regionSelect.getSelectionModel().getSelectedItem());
+        currentRegion = regionSelect.getValue();
         graphDisplay = gui.getGraphManager().getGraphNodeGraph(currentRegion, graphIndex);
-        setCenter(graphDisplay.getLineChart());
+      setCenter(graphDisplay.getLineChart());
     });
   }
 

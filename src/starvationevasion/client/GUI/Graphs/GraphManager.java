@@ -4,6 +4,9 @@ import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * Graph Manager which handles all of the graphs attached to the GUI
  * Has functions which allows the client to add data to a graph or methods for the graph node in the GUI to get
@@ -12,7 +15,8 @@ import starvationevasion.common.EnumRegion;
 public class GraphManager
 {
   GUI gui;
-
+  ArrayList<Graph[]> graphs=new ArrayList<>();
+  HashMap <EnumRegion,Graph[]> graphMap=new HashMap<>();
   Graph[] californiaGraphs;
   Graph[] mountainGraphs;
   Graph[] heartlandGraphs;
@@ -43,12 +47,12 @@ public class GraphManager
    * @param year
    * @param foodPrice
    */
-  public void addData(int year, double[] foodPrice)
+  public void addData(int year, int[] foodPrice)
   {
     int p;
     for (int i = 0; i < 12; ++i)
     {
-      p =  (int) foodPrice[i];
+      p =   foodPrice[i];
       productBarGraphs[i].addDataPoint(year, p);
     }
   }
@@ -56,39 +60,40 @@ public class GraphManager
   public void addData(EnumRegion region, int graphNumber, int year, int dataValue)
   {
     Graph g;
-
-    switch (region)
-    {
-      case USA_CALIFORNIA:
-        g = californiaGraphs[graphNumber];
-        g.addDataPoint(year, dataValue);
-        break;
-      case USA_MOUNTAIN:
-        g= mountainGraphs[graphNumber];
-        g.addDataPoint(year, dataValue);
-        break;
-      case USA_HEARTLAND:
-        g = heartlandGraphs[graphNumber];
-        g.addDataPoint(year, dataValue);
-        break;
-      case USA_NORTHERN_PLAINS:
-        g = northernPlainsGraphs[graphNumber];
-        break;
-      case USA_SOUTHERN_PLAINS:
-        g = southernPlainsGraphs[graphNumber];
-        g.addDataPoint(year, dataValue);
-        break;
-      case USA_NORTHERN_CRESCENT:
-        g = northernCresentGraphs[graphNumber];
-        g.addDataPoint(year, dataValue);
-        break;
-      case USA_SOUTHEAST:
-        g = southeastGraphs[graphNumber];
-        g.addDataPoint(year, dataValue);
-        break;
-      default:
-        break;
-    }
+    Graph[] regionGraphs=graphMap.get(region);
+    regionGraphs[graphNumber].addDataPoint(year,dataValue);
+//    switch (region)
+//    {
+//      case USA_CALIFORNIA:
+//        g = californiaGraphs[graphNumber];
+//        g.addDataPoint(year, dataValue);
+//        break;
+//      case USA_MOUNTAIN:
+//        g= mountainGraphs[graphNumber];
+//        g.addDataPoint(year, dataValue);
+//        break;
+//      case USA_HEARTLAND:
+//        g = heartlandGraphs[graphNumber];
+//        g.addDataPoint(year, dataValue);
+//        break;
+//      case USA_NORTHERN_PLAINS:
+//        g = northernPlainsGraphs[graphNumber];
+//        break;
+//      case USA_SOUTHERN_PLAINS:
+//        g = southernPlainsGraphs[graphNumber];
+//        g.addDataPoint(year, dataValue);
+//        break;
+//      case USA_NORTHERN_CRESCENT:
+//        g = northernCresentGraphs[graphNumber];
+//        g.addDataPoint(year, dataValue);
+//        break;
+//      case USA_SOUTHEAST:
+//        g = southeastGraphs[graphNumber];
+//        g.addDataPoint(year, dataValue);
+//        break;
+//      default:
+//        break;
+//    }
   }
   /*
   public void addData(EnumRegion region,  int year, int[] grossIncome, int[] foodProduced, int[] foodConsumed)
@@ -139,35 +144,36 @@ public class GraphManager
   public Graph getGraphNodeGraph(EnumRegion region, int number)
   {
     Graph g;
-
-    switch (region)
-    {
-      case USA_CALIFORNIA:
-        g = californiaGraphs[number];
-        break;
-      case USA_MOUNTAIN:
-        g= mountainGraphs[number];
-        break;
-      case USA_HEARTLAND:
-        g = heartlandGraphs[number];
-        break;
-      case USA_NORTHERN_PLAINS:
-        g = northernPlainsGraphs[number];
-        break;
-      case USA_SOUTHERN_PLAINS:
-        g = southernPlainsGraphs[number];
-        break;
-      case USA_NORTHERN_CRESCENT:
-        g = northernCresentGraphs[number];
-        break;
-      case USA_SOUTHEAST:
-        g = southeastGraphs[number];
-        break;
-      default:
-        g = null;
-        break;
-    }
-    return g;
+    Graph[] regionGraphs=graphMap.get(region);
+    return regionGraphs[number];
+//    switch (region)
+//    {
+//      case USA_CALIFORNIA:
+//        g = californiaGraphs[number];
+//        break;
+//      case USA_MOUNTAIN:
+//        g= mountainGraphs[number];
+//        break;
+//      case USA_HEARTLAND:
+//        g = heartlandGraphs[number];
+//        break;
+//      case USA_NORTHERN_PLAINS:
+//        g = northernPlainsGraphs[number];
+//        break;
+//      case USA_SOUTHERN_PLAINS:
+//        g = southernPlainsGraphs[number];
+//        break;
+//      case USA_NORTHERN_CRESCENT:
+//        g = northernCresentGraphs[number];
+//        break;
+//      case USA_SOUTHEAST:
+//        g = southeastGraphs[number];
+//        break;
+//      default:
+//        g = null;
+//        break;
+//    }
+//    return g;
   }
 
   /**
@@ -190,13 +196,22 @@ public class GraphManager
 
   private void initializeGraphNodeGraphs()
   {
-    initCaliGraph();
-    initHrtGraph();
-    initMntGraph();
-    initNPGraph();
-    initSPGraph();
-    initSEGraph();
-    initNCGraph();
+    for(EnumRegion region:EnumRegion.values())
+    {
+      Graph[] regionGraph=new Graph[3];
+
+      regionGraph[0] = new GraphPopulation(region);
+      regionGraph[1] = new GraphHDI(region);
+      regionGraph[2] = new GraphFarmingBalance(region);
+      graphMap.put(region, regionGraph);
+    }
+//    initCaliGraph();
+//    initHrtGraph();
+//    initMntGraph();
+//    initNPGraph();
+//    initSPGraph();
+//    initSEGraph();
+//    initNCGraph();
   }
 
   private void initCaliGraph()

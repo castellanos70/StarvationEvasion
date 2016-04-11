@@ -20,10 +20,13 @@ public class GeographicArea implements Sendable
 {
   public final static MapConverter mapConverter = new MapConverter();
   private List<MapPoint> perimeter;
-  private String name;
+  private final String name;
 
   private Polygon mapSpacePoly;
 
+  public GeographicArea(String name)
+  { this.name = name;
+  }
 
   public boolean containsMapPoint(MapPoint mapPoint)
   {
@@ -38,11 +41,6 @@ public class GeographicArea implements Sendable
     return name;
   }
 
-
-  public void setName(String name)
-  {
-    this.name = name;
-  }
 
   public Type getType()
   {

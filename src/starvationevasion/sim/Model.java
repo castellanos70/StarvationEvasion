@@ -127,6 +127,7 @@ public class Model
     //System.out.println("territoryList.size()=" + territoryList.size());
 
     addGeographyToTerritories(geography);
+    //if (true) return;
     assert (assertTerritoryGeography());
 
     instantiateRegions();
@@ -135,8 +136,8 @@ public class Model
 
     cropData = new CropData();
 
-    LandTile.load(this);
-    assert (assertLandTiles());
+    //LandTile.load(this);
+    //assert (assertLandTiles());
 
     for (int i = 0; i< YEARS_OF_DATA; i++)
     {
@@ -191,7 +192,7 @@ public class Model
   {
     for (Territory territory : territoryList)
     {
-      float area = territory.getLandTiles().size();
+      float area = territory.getLandTotal();
       System.out.println("LandTiles: " + territory.getName() + ": area="+
        area + ", tile count=" + territory.getLandTiles().size() +
         ", land per tile = " + area/territory.getLandTiles().size());
@@ -210,12 +211,19 @@ public class Model
 
       for (GeographicArea area : geography)
       {
+        boolean foundTerritory = false;
         for (Territory territory : territoryList)
         {
           if (territory.getName().equals(area.getName()))
           {
             territory.addGeographicArea(area);
+            foundTerritory = true;
+            break;
           }
+        }
+        if (!foundTerritory)
+        {
+          System.out.println("Area "+area.getName()+" has no Territory");
         }
       }
   }

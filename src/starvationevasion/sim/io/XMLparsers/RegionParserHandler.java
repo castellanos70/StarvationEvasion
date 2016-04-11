@@ -1,143 +1,126 @@
 package starvationevasion.sim.io.XMLparsers;
 
-/**
- * Created by winston on 1/20/15.
- * phase 1
- * CS 351 spring 2015
- */
-
+import org.xml.sax.*;
+import org.xml.sax.helpers.DefaultHandler;
 import starvationevasion.common.GeographicArea;
 import starvationevasion.common.MapPoint;
-import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.DefaultHandler;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
 
 /**
- * The class handles the parsing of the region data from XML into region objects.
+ * @author david
+ *         created: 2015-01-29<br>
+ *         description:
  */
+
 public class RegionParserHandler extends DefaultHandler
 {
-  private List<GeographicArea> regionList;
-  private Locator locator;
-  private GeographicArea tmpRegion;
-  private List<MapPoint> tmpPerimeterSet;
+  private List<GeographicArea> regions;
+
+  private String regName;
+  private String cleanCoordString;
+
   private boolean nameTag;
+  private boolean coordTag;
 
-
-  /**
-   * The method is to be called AFTER this class has been used in parsing.
-   * Other wise this returns null. So check for null exceptions!
-   *
-   * @return list of regions from the last file parsed.
-   */
 
   public List<GeographicArea> getRegionList()
   {
-    return regionList;
-  }
-
-  /**
-   * This is used to extract the line number from a parsing error
-   *
-   * @return Locator representing a location in file.
-   */
-  public Locator getLocator()
-  {
-    return locator;
-  }
-
-
-  @Override
-  public void setDocumentLocator(Locator locator)
-  {
-    this.locator = locator;
+    return regions;
   }
 
   @Override
   public void startDocument() throws SAXException
   {
-    regionList = new ArrayList<>();
-    tmpPerimeterSet = new LinkedList<>();
+    regions = new ArrayList<>();
   }
 
   @Override
-  public void startElement(String namespaceURI, String localName,
-                           String qName, Attributes atts)
-  throws SAXException
+  public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException
   {
-    switch (qName)
+    switch(qName)
     {
-    /*
-     * entering a new area tag.
-     */
-      case "area":
-        tmpRegion = new GeographicArea();
-        break;
-    /*
-     * sets flag to extract content of the same tag.
-     */
       case "name":
         nameTag = true;
         break;
-
-    /*
-     * because the vertex tag only has atts and no content, we do not need
-     * to set a flag as we did above.
-     */
-      case "vertex":
-        double lat = 0;
-        double lon = 0;
-        try
-        {
-          lat = Double.parseDouble(atts.getValue("lat"));
-          lon = Double.parseDouble(atts.getValue("lon"));
-        }
-        catch (Exception e)
-        {
-          System.out.println(locator.getLineNumber());
-          fatalError(new SAXParseException("Could not parse lat/lon.", locator));
-        }
-        tmpPerimeterSet.add(new MapPoint(lat, lon));
+      case "coordinates":
+        coordTag = true;
+        cleanCoordString = "";
         break;
-
-      case "region":  // no nothing, this is a just a container tag.
-        break;
-
-      default:
-        String msg = qName + " is not a recognized tag.";
-        fatalError(new SAXParseException(msg, locator));
     }
   }
-
 
   @Override
   public void characters(char[] ch, int start, int length) throws SAXException
   {
-    if (nameTag && tmpRegion != null)
+    if(nameTag)
     {
-      nameTag = false;
-      tmpRegion.setName(new String(ch, start, length));
+      regName = new String(ch, start, length);
+    }
+    if(coordTag)
+    {
+      cleanCoordString += new String(ch, start, length);
     }
   }
 
   @Override
-  public void endElement(String uri, String localName, String qName)
-  throws SAXException
+  public void endElement(String uri, String localName, String qName) throws SAXException
   {
-    if (qName.equals("area"))
+    switch (qName)
     {
-      // save and reset....
-      tmpRegion.setPerimeter(new ArrayList<MapPoint>(tmpPerimeterSet));
-      regionList.add(tmpRegion);
-      tmpPerimeterSet.clear();
+      case "name":
+        nameTag = false;
+        break;
+      case "coordinates":
+        coordTag = false;
+        GeographicArea r = new GeographicArea(regName);
+        r.setPerimeter(parseCoordString());
+        regions.add(r);
     }
   }
+
+  private List<MapPoint> parseCoordString()
+  {
+    List <MapPoint> l = new ArrayList<>();
+
+    for(String s : cleanCoordString.trim().split("\\s+"))
+    {
+      String nums[] = s.split(",");
+      double lon = Double.parseDouble(nums[0]);
+      double lat = Double.parseDouble(nums[1]);
+      l.add(new MapPoint(lat, lon));
+    }
+    return l;
+  }
+
+  public static Collection<GeographicArea> getRegionsFromFile(String filePath)
+  {
+    try
+    {
+      XMLReader kmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+      RegionParserHandler kmlParser = new RegionParserHandler();
+      kmlReader.setContentHandler(kmlParser);
+
+      InputStream resourceStream = RegionParserHandler.class.getResourceAsStream(filePath);
+      BufferedInputStream inputStream = new BufferedInputStream(resourceStream);
+
+      kmlReader.parse(new InputSource(inputStream));
+      return kmlParser.getRegionList();
+
+    }
+    /* I had no idea this was legal.
+     * Bad form, but works for proof of kml parsing *  */
+    catch (SAXException | ParserConfigurationException | IOException e)
+    {
+      e.printStackTrace();
+    }
+    return null;
+  }
 }
-
-

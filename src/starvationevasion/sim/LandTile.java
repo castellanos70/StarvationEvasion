@@ -325,7 +325,7 @@ public class LandTile
       //System.out.println("ProductionCSVLoader(): record="+fieldList[0]+", "+fieldList[2]+", len="+fieldList.length);
 
       float latitude = Float.parseFloat(fieldList[0]);
-      float longitude = Float.parseFloat(fieldList[1])-180.0f;
+      float longitude = Float.parseFloat(fieldList[1]);
       LandTile tile = new LandTile(latitude, longitude);
       Territory territory = model.getTerritory(latitude, longitude);
       if (territory == null)

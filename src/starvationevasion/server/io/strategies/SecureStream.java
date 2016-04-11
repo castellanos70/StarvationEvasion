@@ -1,35 +1,37 @@
 package starvationevasion.server.io.strategies;
 
 
-import starvationevasion.server.io.NotImplementedException;
+import starvationevasion.common.Constant;
 import starvationevasion.server.model.Encryptable;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
+import javax.crypto.*;
+import javax.xml.bind.DatatypeConverter;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 
 abstract class SecureStream implements Encryptable
 {
   private boolean isEncrypted = false;
   private SecretKey key;
-  private Cipher des;
+  private Cipher aesCipher;
 
+  public SecureStream setEncrypted (boolean encrypted) throws NoSuchAlgorithmException, NoSuchPaddingException
+  {
+    return setEncrypted(encrypted, null);
+  }
+
+  @Override
   public SecureStream setEncrypted (boolean encrypted, SecretKey key) throws NoSuchPaddingException, NoSuchAlgorithmException
   {
     this.key = key;
     isEncrypted = encrypted;
     if (isEncrypted)
     {
-      des = Cipher.getInstance("DES");
+      aesCipher = Cipher.getInstance(Constant.ALGORITHM);
     }
     return this;
-  }
-
-  public SecureStream setEncrypted (boolean encrypted) throws NoSuchAlgorithmException, NoSuchPaddingException
-  {
-    return setEncrypted(encrypted, null);
   }
 
   public boolean isEncrypted ()
@@ -38,14 +40,32 @@ abstract class SecureStream implements Encryptable
   }
 
   @Override
-  public void encrypt (String msg, String key)
+  public byte[] encrypt (byte[] msg) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException
   {
-    throw new NotImplementedException();
+    aesCipher.init(Cipher.ENCRYPT_MODE, key);
+    return aesCipher.doFinal(msg);
   }
 
   @Override
-  public <T> T decrypt (String msg, String key)
+  public byte[] decrypt (byte[] msg) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException
   {
-    return null;
+    aesCipher.init(Cipher.DECRYPT_MODE, key);
+    return aesCipher.doFinal(msg);
+  }
+
+  protected String decrypt(String data) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException
+  {
+    byte[] dataBytes = DatatypeConverter.parseBase64Binary(data.trim());
+
+    byte[] al =  decrypt(dataBytes);
+    String sl = new String(al);
+    return sl;
+  }
+
+  protected String encrypt(String data) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException
+  {
+    byte[] _data = data.getBytes();
+    String ss = DatatypeConverter.printBase64Binary(encrypt(_data));
+    return ss;
   }
 }

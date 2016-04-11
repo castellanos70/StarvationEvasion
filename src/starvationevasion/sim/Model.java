@@ -135,8 +135,8 @@ public class Model
 
     cropData = new CropData();
 
-    //LandTile.load(this);
-    //assert (assertLandTiles());
+    LandTile.load(this);
+    assert (assertLandTiles());
 
     for (int i = 0; i< YEARS_OF_DATA; i++)
     {

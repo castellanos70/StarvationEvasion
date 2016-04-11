@@ -43,6 +43,15 @@ public class LandTile
   private enum FileHeaders
   {
     Latitude,          //Latitude ranges from -90 to 90. North latitude is positive.
+    Longitude;        //Longitude ranges from -180 to 180. East longitude is positive.
+    static int SIZE = values().length;
+  }
+
+
+  /*
+    private enum FileHeaders
+  {
+    Latitude,          //Latitude ranges from -90 to 90. North latitude is positive.
     Longitude,        //Longitude ranges from -180 to 180. East longitude is positive.
     TempMonthLow,     //Temperature Monthly Low (deg C).
     TempMonthHigh,    //Temperature Monthly High (deg C).
@@ -52,6 +61,7 @@ public class LandTile
     static int SIZE = values().length;
   }
 
+   */
 
   public enum Field
   {
@@ -285,12 +295,13 @@ public class LandTile
     int preGameYears = Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR;
 
     int year = 2000;
-    int month = 0;
+    int month = 7;
     int yearIdx = year - Constant.FIRST_DATA_YEAR;
     String monthStr = String.format("%02d", month+1);
     String path = PATH_CLIMATE_DIR + year + '_' +monthStr + ".csv";
 
-    CSVReader fileReader = new CSVReader(path, 0);
+    //CSVReader fileReader = new CSVReader(path, 0);
+    CSVReader fileReader = new CSVReader("/sim/climate/Viable_Coordinates.csv",0);
 
     //Check header
     String[] fieldList = fileReader.readRecord(FileHeaders.SIZE);
@@ -319,7 +330,7 @@ public class LandTile
       Territory territory = model.getTerritory(latitude, longitude);
       if (territory == null)
       {
-        //System.out.println("LandTile: ERROR: ["+latitude+", "+longitude+"] not a territory");
+        System.out.println("LandTile: ERROR: ["+latitude+", "+longitude+"] not a territory");
         continue;
       }
 

@@ -327,7 +327,6 @@ public class AI
 
       writer.flush();
       byte[] bytes = baos.toByteArray();
-      System.out.println(bytes.length);
       writer.writeInt(bytes.length);
       writer.write(bytes);
       writer.flush();

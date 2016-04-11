@@ -4,11 +4,13 @@ package starvationevasion.server.model;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import java.security.InvalidKeyException;
 import java.security.SecureRandom;
 import java.util.Random;
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -32,72 +34,13 @@ public interface Encryptable
   int NONCE_SIZE = 32;
   final Random r = new SecureRandom();
 
-  void encrypt (String msg, String key);
+  byte[] encrypt (byte[] msg) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException;
 
-  <T> T decrypt (String msg, String key);
+  byte[] decrypt (byte[] msg) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException;
 
+  boolean isEncrypted ();
 
-  static String xorEncrypt (String message, String key)
-  {
-    try
-    {
-      if (message == null || key == null)
-      {
-        return "";
-      }
-
-      char[] _keys = key.toCharArray();
-      char[] _msg = message.toCharArray();
-
-      int ml = _msg.length;
-      int kl = _keys.length;
-      char[] _newMsg = new char[ml];
-
-      for (int i = 0; i < ml; i++)
-      {
-        _newMsg[i] = (char) (_msg[i] ^ _keys[i % kl]);
-      }
-      _msg = null;
-      _keys = null;
-      String temp = new String(_newMsg);
-      return new BASE64Encoder().encodeBuffer(temp.getBytes());
-    }
-    catch(Exception e)
-    {
-      return "";
-    }
-  }
-
-
-  static String xorDecrypt (String message, String key)
-  {
-    try
-    {
-      if (message == null || key == null)
-      {
-        return "";
-      }
-      char[] _keys = key.toCharArray();
-      message = new String(new BASE64Decoder().decodeBuffer(message));
-      char[] _msg = message.toCharArray();
-
-      int ml = _msg.length;
-      int kl = _keys.length;
-      char[] _newMsg = new char[ml];
-
-      for (int i = 0; i < ml; i++)
-      {
-        _newMsg[i] = (char) (_msg[i] ^ _keys[i % kl]);
-      }
-      _msg = null;
-      _keys = null;
-      return new String(_newMsg);
-    }
-    catch(Exception e)
-    {
-      return "";
-    }
-  }
+  Encryptable setEncrypted (boolean encrypted, SecretKey key) throws NoSuchPaddingException, NoSuchAlgorithmException;
 
   static String generateKey ()
   {
@@ -143,7 +86,7 @@ public interface Encryptable
    * @param password the password to use
    * @return the resulting salted/hashed password.
    */
-  static String generateHashedPassword(String salt, String password)
+  static byte[] generateHashedPassword(byte[] salt, byte[] password)
   {
     MessageDigest md = null;
     try
@@ -158,21 +101,14 @@ public interface Encryptable
     }
 
     byte[] passwordBytes, saltBytes;
-    try
-    {
-      saltBytes = salt.getBytes("UTF-8");
-      passwordBytes = password.getBytes("UTF-8");
-    }
-    catch (UnsupportedEncodingException e)
-    {
-      e.printStackTrace();
-      throw new RuntimeException("Unable to convert strings to UTF-8");
-    }
+    saltBytes = salt;
+    passwordBytes = password;
+
     byte[] saltDigest = md.digest(saltBytes);
     byte[] saltDigestAndPasswordBytes = new byte[saltDigest.length + passwordBytes.length];
     System.arraycopy(saltDigest, 0, saltDigestAndPasswordBytes, 0, saltDigest.length);
     System.arraycopy(passwordBytes, 0, saltDigestAndPasswordBytes, saltDigest.length, passwordBytes.length);
-    return bytesToHex(md.digest(saltDigestAndPasswordBytes));
+    return md.digest(saltDigestAndPasswordBytes);
   }
 
 }

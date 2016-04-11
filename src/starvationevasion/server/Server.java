@@ -9,22 +9,27 @@ import starvationevasion.common.*;
 import starvationevasion.server.io.*;
 import starvationevasion.server.io.strategies.*;
 import starvationevasion.server.model.*;
+import starvationevasion.server.model.db.Transaction;
+import starvationevasion.server.model.db.Users;
+import starvationevasion.server.model.db.backends.Backend;
+import starvationevasion.server.model.db.backends.Sqlite;
 import starvationevasion.sim.Simulator;
 
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.DoubleBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.concurrent.*;
-import java.util.function.BooleanSupplier;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 
@@ -61,25 +66,29 @@ public class Server
   // bool that listen for connections is looping over
   private boolean isWaiting = true;
 
-  public static int TOTAL_PLAYERS = 2;
+  public static int TOTAL_PLAYERS = 1;
+
+  // Create a backend, currently sqlite
+  private final Backend db = new Sqlite(Constant.DB_LOCATION);
+
+  // Class that save User's to a database
+  private final Transaction<User> userTransaction;
+
 
   public Server (int portNumber)
   {
-
+    userTransaction = new Users(db);
     Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
 
-    createUser(new User("admin", "admin", null, new ArrayList<>()));
-    createUser(new User("ANON", "", null, new ArrayList<>()));
-    createUser(new User("Emma", "bot", null, new ArrayList<>()));
-    createUser(new User("Olivia", "bot", null, new ArrayList<>()));
-    createUser(new User("Noah", "bot", null, new ArrayList<>()));
-    createUser(new User("Liam", "bot", null, new ArrayList<>()));
-    createUser(new User("Sophia", "bot", null, new ArrayList<>()));
+    // get all the users from the database
+    for (User user : userTransaction.getAll())
+    {
+      userList.add(user);
+    }
 
 
     startNanoSec = System.nanoTime();
     simulator = new Simulator();
-
 
     try
     {
@@ -124,6 +133,8 @@ public class Server
   /**
    * Wait for a connection.
    *
+   * TODO: Refactor waiting to use a NON-Blocking Input/Output. Look at ServerSocketChannel
+   *
    * @param port port to listen on.
    */
   private void waitForConnection (int port)
@@ -148,12 +159,7 @@ public class Server
         System.out.println(dateFormat.format(date) + " Server " + client.getRemoteSocketAddress());
         Worker worker = new Worker(client, this);
 
-
-        if (secureConnection(worker, client))
-        {
-          worker.setReader(new WebSocketReadStrategy(client, null));
-          worker.setWriter(new WebSocketWriteStrategy(client, null));
-        }
+        setStreamType(worker, client);
         worker.start();
         System.out.println(dateFormat.format(date) + " Server: Connected to ");
         worker.setName("worker" + uptimeString());
@@ -215,6 +221,7 @@ public class Server
                             .anyMatch(user -> user.getUsername().equals(u.getUsername()));
     if (!found)
     {
+      userTransaction.create(u);
       userList.add(u);
       return true;
     }
@@ -255,7 +262,10 @@ public class Server
     isWaiting = false;
     for (Worker connection : allConnections)
     {
-      connection.send(new Response(uptime(), "Server will shutdown in 3 seconds"));
+      connection.send(ResponseFactory.build(uptime(),
+                                            currentState,
+                                            Type.BROADCAST, "Server will shutdown in 3 sec"
+      ));
     }
 
     try
@@ -286,7 +296,8 @@ public class Server
   public void restartGame ()
   {
     stopGame();
-    broadcast(new Response(uptime(), "The game has been restarted."));
+    broadcast(ResponseFactory.build(uptime(), currentState, Type.BROADCAST, "Game restarted."));
+
     simulator = new Simulator();
 
     for (User user : getPlayers())
@@ -308,7 +319,7 @@ public class Server
     advancer.shutdownNow();
     advancer = Executors.newSingleThreadScheduledExecutor();
     currentState = State.END;
-    broadcast(new Response(uptime(), "The game has been stopped."));
+    broadcast(ResponseFactory.build(uptime(), currentState, Type.GAME_STATE, "Game has been stopped."));
   }
 
   public List<User> getPlayers ()
@@ -366,23 +377,15 @@ public class Server
     ArrayList<WorldData> worldDataList = simulator.getWorldData(Constant.FIRST_DATA_YEAR,
                                                                 Constant.FIRST_GAME_YEAR - 1);
 
-    Payload payload = new Payload();
-    Response response = new Response(uptime(), payload);
-
     for (User user : getPlayers())
     {
       drawByUser(user);
-
-      payload.putData(user);
-      response.setType(Type.USER);
-      user.getWorker().send(response);
+      user.getWorker().send(ResponseFactory.build(uptime(),
+                                                  user,
+                                                  Type.USER));
     }
 
-    payload.clear();
-    payload.putData(worldDataList);
-    response.setType(Type.WORLD_DATA_LIST);
-    broadcast(response);
-
+    broadcast(ResponseFactory.build(uptime(), new Payload(worldDataList), Type.WORLD_DATA_LIST));
     draft();
   }
 
@@ -409,25 +412,13 @@ public class Server
     currentState = State.VOTING;
     broadcastStateChange();
 
-    Payload cards = new Payload();
     ArrayList<PolicyCard> _list = new ArrayList<>();
 
-    Iterator i = draftedPolicyCards.iterator();
-    while(i.hasNext())
-    {
-      PolicyCard card = (PolicyCard)i.next();
-      if (card.votesRequired() >= 1)
-      {
-        _list.add(card);
-      }
-    }
+    _list.addAll(draftedPolicyCards);
 
-
-    cards.putData(_list);
-    Response r = new Response(uptime(), cards);
-    r.setType(Type.VOTE_BALLOT);
-
-    broadcast(r);
+    broadcast(ResponseFactory.build(uptime(),
+                                    new Payload(_list),
+                                    Type.VOTE_BALLOT));
 
     phase = advancer.schedule(this::draw, currentState.getDuration(), TimeUnit.MILLISECONDS);
 
@@ -447,7 +438,7 @@ public class Server
     while ((p=draftedPolicyCards.poll())!=null)
     {
 
-      if (p.votesRequired() == 0 || p.getEnactingRegionCount() > p.votesRequired())
+      if (p.votesRequired() == 0 || p.getEnactingRegionCount() >= p.votesRequired())
       {
         enactedPolicyCards.add(p);
       }
@@ -460,24 +451,20 @@ public class Server
 
     for (User user : getPlayers())
     {
-      Payload payload = new Payload();
-      Response response = new Response(uptime(), payload);
       drawByUser(user);
-      payload.putData(user);
-      response.setType(Type.USER);
-      user.getWorker().send(response);
+      user.actionsRemaining=2;
+      user.policyCardsDiscarded=0;
+
+      user.getWorker().send(ResponseFactory.build(uptime(),
+                                                  user,
+                                                  Type.USER));
     }
 
 
     ArrayList<WorldData> worldData = simulator.nextTurn(enactedPolicyCards);
     System.out.println("There is " + enactedPolicyCards.size() + " cards being enacted.");
-    // System.out.println(String.valueOf(enactedPolicyCards));
 
-    Payload payload = new Payload();
-    Response response = new Response(uptime(), payload);
-    payload.putData(worldData);
-    response.setType(Type.WORLD_DATA_LIST);
-    broadcast(response);
+    broadcast(ResponseFactory.build(uptime(), new Payload(worldData), Type.WORLD_DATA_LIST));
 
     if (simulator.getCurrentYear() >= Constant.LAST_YEAR)
     {
@@ -502,12 +489,7 @@ public class Server
     if (getPlayerCount() == TOTAL_PLAYERS && currentState == State.LOGIN)
     {
       currentState = State.BEGINNING;
-      Payload data = new Payload();
-      data.putData(currentState);
-      data.putMessage("Game will begin in 10s");
-      Response r = new Response(uptime(), data);
-      r.setType(Type.GAME_STATE);
-      broadcast(r);
+      broadcast(ResponseFactory.build(uptime(), currentState, Type.GAME_STATE, "Game will begin in 10s"));
 
       phase = advancer.schedule(this::begin, currentState.getDuration(), TimeUnit.MILLISECONDS);
     }
@@ -551,22 +533,55 @@ public class Server
 
   }
 
+  private static byte[] asymmetricHandshake (String desKey, String clientPublicKey)
+  {
+    PublicKey pubKey = null;
+    byte[] cipherText = null;
+
+    try
+    {
+      final KeyFactory keyFact = KeyFactory.getInstance("RSA");
+
+      byte[] clientBytes = Base64.getDecoder().decode(clientPublicKey);
+      X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(clientBytes);
+
+      pubKey = keyFact.generatePublic(x509KeySpec);
+
+      final Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+      cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+
+      cipherText = cipher.doFinal(desKey.getBytes());
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
+    return cipherText;
+  }
+
   /**
    * Set up the worker with proper streams
    *
    * @param worker worker that is holding the socket connection
    * @param s socket that is opened
    *
-   * @return
+   * @return boolean true if web-socket
    */
-  private boolean secureConnection (Worker worker, Socket s)
+  private void setStreamType (Worker worker, Socket s) throws NoSuchAlgorithmException, NoSuchPaddingException, IOException
   {
     // Handling websocket
     // StringBuilder reading = new StringBuilder();
     String line = "";
     String key = "";
     String socketKey = "";
+    byte[] socketKeyBytes = new byte[128];
     ReadStrategy<String> reader = worker.getReader();
+    SecretKey myDesKey = null;
+    boolean encrypted = false;
+
+    ReadStrategy discoveredReader = worker.getReader();
+    WriteStrategy discoveredWriter = worker.getWriter();
 
     while(true)
     {
@@ -577,34 +592,39 @@ public class Server
       catch(Exception e)
       {
         e.printStackTrace();
-        return false;
+        return;
       }
 
+      //System.out.println((int)line.charAt(0));
       // check if the end of line or if data was found.
       if (line.trim().equals("client") || line.equals("\r\n") || line.trim().equals("JavaClient"))
       {
+
         if (line.contains("JavaClient"))
         {
-          worker.setReader(new JavaObjectReadStrategy(s, null));
-          worker.setWriter(new JavaObjectWriteStrategy(s, null));
-          return false;
+          discoveredReader = new JavaObjectReadStrategy(s, null);
+          discoveredWriter = new JavaObjectWriteStrategy(s, null);
+          break;
         }
-
-        if (socketKey.isEmpty())
+        else if (line.contains("client"))
         {
-          return false;
+          break;
         }
-        else
+        else if(line.equals("\r\n"))
         {
           // use the plain text writer to send following data
           worker.setWriter(new PlainTextWriteStrategy(s, null));
+          // Send plan text to the web socket.
           ((PlainTextWriteStrategy) worker.getWriter())
                   .getWriter().println("HTTP/1.1 101 Switching Protocols\n" +
                                                "Upgrade: websocket\n" +
                                                "Connection: Upgrade\n" +
                                                "Sec-WebSocket-Accept: " + socketKey + "\r\n");
 
-          return true;
+          // assume the client accepted socket key and set up stream readers
+          discoveredReader = new WebSocketReadStrategy(s, null);
+          discoveredWriter =  new WebSocketWriteStrategy(s, null);
+          break;
         }
 
       }
@@ -616,12 +636,36 @@ public class Server
         key = line.replace("Sec-WebSocket-Key: ", "").trim();
         socketKey = Server.handshake(key);
       }
-      if (line.contains("Sec-Socket-Key: "))
+      else if (line.contains("RSA-Socket-Key:"))
       {
-        key = line.replace("Sec-Socket-Key: ", "").trim();
-        socketKey = Encryptable.generateKey();
+        encrypted = true;
+        key = line.replace("RSA-Socket-Key: ", "").trim();
+
+        KeyGenerator keygenerator = KeyGenerator.getInstance(Constant.ALGORITHM);
+        keygenerator.init(128);
+
+        myDesKey = keygenerator.generateKey();
+        socketKeyBytes = Server.asymmetricHandshake(Base64.getEncoder().encodeToString(myDesKey.getEncoded()), key);
       }
     }
+
+    if (encrypted)
+    {
+      System.out.println("Encrypted!");
+      worker.getWriter().getStream().write(socketKeyBytes);
+      worker.getWriter().getStream().flush();
+      worker.setReader(discoveredReader);
+      worker.setWriter(discoveredWriter);
+      worker.getWriter().setEncrypted(true, myDesKey);
+      worker.getReader().setEncrypted(true, myDesKey);
+    }
+    else
+    {
+      worker.setReader(discoveredReader);
+      worker.setWriter(discoveredWriter);
+    }
+
+
   }
 
   /**
@@ -650,11 +694,7 @@ public class Server
   private void broadcastStateChange ()
   {
     // System.out.println(currentState);
-    Payload _data = new Payload();
-    _data.putData(currentState);
-    Response r = new Response(uptime(), _data);
-    r.setType(Type.GAME_STATE);
-    broadcast(r);
+    broadcast(ResponseFactory.build(uptime(), currentState, Type.GAME_STATE));
   }
 
   public static void main (String args[])
@@ -703,7 +743,14 @@ public class Server
 
   public void startAI()
   {
-    Process p = ServerUtil.StartAIProcess(new String[]{"java", "-classpath", "./dist:./dist/libs/*", "starvationevasion/ai/AI", "foodgame.cs.unm.edu", "5555"});
+    Process p = ServerUtil.StartAIProcess(new String[]{"java",
+                                                       "-XX:+OptimizeStringConcat",
+                                                       "-XX:+UseCodeCacheFlushing",
+                                                       "-client",
+                                                       "-classpath",
+                                                       "./dist:./dist/libs/*",
+                                                       "starvationevasion/ai/AI",
+                                                       "foodgame.cs.unm.edu", "5555"});
     if (p != null)
     {
       processes.add(p);
@@ -722,18 +769,18 @@ public class Server
       }
       catch(InterruptedException e)
       {
+        System.out.println("Interrupted and could not wait for exit code");
       }
       int val = p.exitValue();
       Payload data = new Payload();
       data.put("to-region", "ALL");
-
-      Response response = new Response(uptime(), data);
-
+      data.put("card", "");
       data.put("text", "AI was removed.");
+      data.put("from", "admin");
 
       System.out.println("AI removed with exit value: " + String.valueOf(val));
 
-      broadcast(response);
+      broadcast(ResponseFactory.build(uptime(), data, Type.CHAT));
 
     }
   }

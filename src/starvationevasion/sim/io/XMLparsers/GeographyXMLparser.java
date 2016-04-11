@@ -41,7 +41,7 @@ public class GeographyXMLparser extends DefaultHandler
   private ArrayList<GeographicArea> regionList;
   private Locator locator;
   private String regionName;
-  private String regionType;
+
   private GeographicArea tmpRegion;
   private List<MapPoint> tmpPerimeterSet;
   private GeographyValidator regionValidator = new GeographyValidator();
@@ -59,10 +59,12 @@ public class GeographyXMLparser extends DefaultHandler
   {
     tmpPerimeterSet = new LinkedList<>();
     regionName = null;
-    regionType = null;
+    //regionType = null;
   }
 
   @Override
+  //public void startElement(String uri, String localName,
+  //                         String qName, Attributes attributes) throws SAXException
   public void startElement(String uri, String localName,
                            String qName, Attributes attributes) throws SAXException
   {
@@ -72,12 +74,10 @@ public class GeographyXMLparser extends DefaultHandler
     {
       case "country":
       case "state":
-        regionType = qName;
+        //regionType = qName;
         break;
-
       case "area":
-        tmpRegion = new GeographicArea();
-        tmpRegion.setName(regionName);
+        tmpRegion = new GeographicArea(regionName);
         // tmpRegion.setType(regionType);
         break;
 
@@ -186,7 +186,7 @@ public class GeographyXMLparser extends DefaultHandler
         String file = filesToRead.remove(0);
 
         String resourcePath = BORDERS_DIR + '/' + file;
-        InputStream resourceStream = KMLParser.class.getResourceAsStream(resourcePath);
+        InputStream resourceStream = RegionParserHandler.class.getResourceAsStream(resourcePath);
 
         BufferedInputStream inputStream = new BufferedInputStream(resourceStream);
         xmlReader.parse(new InputSource(inputStream));

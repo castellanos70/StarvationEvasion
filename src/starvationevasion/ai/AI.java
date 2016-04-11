@@ -2,13 +2,18 @@ package starvationevasion.ai;
 
 
 import starvationevasion.ai.commands.*;
-import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.Constant;
 import starvationevasion.common.PolicyCard;
+import starvationevasion.common.Util;
 import starvationevasion.common.WorldData;
 import starvationevasion.server.model.*;
 
+import javax.crypto.*;
 import java.io.*;
 import java.net.Socket;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -37,11 +42,16 @@ public class AI
 
   private Stack<Command> commands = new Stack<>();
 
+  private SecretKey serverKey;
+  private Cipher aesCipher;
+  private KeyPair rsaKey;
 
   private AI (String host, int portNumber)
   {
-
-    openConnection(host, portNumber);
+    setupSecurity();
+    while (!openConnection(host, portNumber))
+    {
+    }
     listener = new StreamListener();
     System.out.println("AI: Starting listener = : " + listener);
     listener.start();
@@ -73,8 +83,6 @@ public class AI
     try
     {
       writer = new DataOutputStream(clientSocket.getOutputStream());
-      writer.write("JavaClient\n".getBytes());
-      writer.flush();
     }
     catch(Exception e)
     {
@@ -94,40 +102,36 @@ public class AI
     }
     isRunning = true;
 
+    Util.startServerHandshake(clientSocket, rsaKey, "JavaClient");
+
     return true;
 
   }
 
   private void listenToUserRequests ()
   {
-
-
     while(isRunning)
     {
-
       try
       {
-
-
-
-
-        if (commands.size() == 0)
+        // if commands is empty check again
+        if (commands.size() == 0 || serverKey == null)
         {
           continue;
         }
 
+        // take off the top of the stack
         Command c = commands.peek();
 
-        System.out.println(c.getClass().getName());
+        boolean runAgain = c.run();
 
-        boolean run = c.run();
-        if (!run)
+        // if it does not need to run again pop
+        if (!runAgain)
         {
           commands.pop();
         }
+        // wait a little
         Thread.sleep(1000);
-
-
       }
       catch(InterruptedException e)
       {
@@ -182,7 +186,7 @@ public class AI
 
     public void run ()
     {
-
+      serverKey = Util.endServerHandshake(clientSocket, rsaKey);
       while(isRunning)
       {
         read();
@@ -194,30 +198,22 @@ public class AI
       try
       {
         Response response = readObject();
-        //System.out.println(response.toJSON());
 
-
-        if (response.getType().equals(Type.AUTH))
+        if (response.getType().equals(Type.AUTH_SUCCESS))
         {
-          if (response.getPayload().getMessage().equals("SUCCESS"))
-          {
-            u = (User) response.getPayload().getData();
+          u = (User) response.getPayload().getData();
 
-            Payload data = new Payload();
-            data.put("to-region", "ALL");
-            data.put("text", "Hi, I am "+ u.getUsername() + ". I'll be playing using (crappy) AI.");
+          send(RequestFactory.chat(startNanoSec,
+                                   "ALL",
+                                   "Hi, I am " + u.getUsername() + ". I'll be playing using (crappy) AI.",
+                                   null));
 
-            Request request = new Request(startNanoSec, Endpoint.CHAT);
-            request.setData(data);
-            send(request);
-
-            System.out.println("Hi, I am "+ u.getUsername() + ". I'll be playing using (crappy) AI.");
-          }
-          else
-          {
-            System.out.println("Error logging in");
-            isRunning = false;
-          }
+          System.out.println("Hi, I am " + u.getUsername() + ". I'll be playing using (crappy) AI.");
+        }
+        else if (response.getType().equals(Type.AUTH_ERROR))
+        {
+          System.out.println("Error logging in");
+          isRunning = false;
         }
         else if (response.getType().equals(Type.USER))
         {
@@ -229,22 +225,22 @@ public class AI
         }
         else if (response.getType().equals(Type.WORLD_DATA_LIST))
         {
-          System.out.println("Getting a list of WorldData's");
+          // System.out.println("Getting a list of WorldData's");
           worldData = (ArrayList<WorldData>) response.getPayload().getData();
         }
         else if (response.getType().equals(Type.USERS_LOGGED_IN_LIST))
         {
-          System.out.println("Getting a list of ready users");
+          // System.out.println("Getting a list of ready users");
           users = (ArrayList<User>) response.getPayload().getData();
         }
         else if (response.getType().equals(Type.WORLD_DATA))
         {
-          System.out.println("Getting a list of WorldData's");
+          // System.out.println("Getting a list of WorldData's");
           worldData.add((WorldData) response.getPayload().getData());
         }
         else if (response.getType().equals(Type.GAME_STATE))
         {
-          System.out.println("Getting state of server");
+          // System.out.println("Getting state of server");
           state = (starvationevasion.server.model.State) response.getPayload().getData();
           if (state == starvationevasion.server.model.State.VOTING)
           {
@@ -259,25 +255,13 @@ public class AI
             // AI.this.commands.add(new Draft(AI.this));
           }
         }
-//        else if (response.getType().equals(Type.USER_HAND))
-//        {
-//          ArrayList hand = (ArrayList<EnumPolicy>) response.getPayload().getData();
-//          System.out.println("getting hand " + String.valueOf(hand));
-//          if ( hand == null)
-//          {
-//            commands.push(new Hand(AI.this));
-//          }
-//
-//            AI.this.getUser().setHand(hand);
-//
-//        }
         else if (response.getType().equals(Type.DRAFTED) || response.getType().equals(Type.DRAFTED_INTO_VOTE))
         {
           String msg = response.getPayload().getMessage();
           if (msg == null)
           {
-            PolicyCard card = (PolicyCard) response.getPayload().getData();
-            getUser().getHand().remove(card.getCardType());
+            // PolicyCard card = (PolicyCard) response.getPayload().getData();
+            // getUser().getHand().remove(card.getCardType());
           }
           else
           {
@@ -316,33 +300,47 @@ public class AI
     }
     int size = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
 
-    byte[] object = new byte[size];
+    byte[] encObject = new byte[size];
 
-    reader.readFully(object);
-
-    ByteArrayInputStream in = new ByteArrayInputStream(object);
+    reader.readFully(encObject);
+    ByteArrayInputStream in = new ByteArrayInputStream(encObject);
     ObjectInputStream is = new ObjectInputStream(in);
+    SealedObject sealedObject = (SealedObject) is.readObject();
+    Response response = (Response) sealedObject.getObject(serverKey);
+    is.close();
+    in.close();
 
-    return (Response) is.readObject();
+    return response;
   }
 
   public void send (Request request)
   {
     try
     {
+      aesCipher.init(Cipher.ENCRYPT_MODE, serverKey);
+      SealedObject sealedObject = new SealedObject(request, aesCipher);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(request);
+      oos.writeObject(sealedObject);
       oos.close();
 
 
+      writer.flush();
       byte[] bytes = baos.toByteArray();
-
       writer.writeInt(bytes.length);
       writer.write(bytes);
       writer.flush();
+      baos.close();
     }
     catch(IOException e)
+    {
+      e.printStackTrace();
+    }
+    catch(InvalidKeyException e)
+    {
+      e.printStackTrace();
+    }
+    catch(IllegalBlockSizeException e)
     {
       e.printStackTrace();
     }
@@ -371,6 +369,20 @@ public class AI
     new AI(host, port);
 
   }
+  private void setupSecurity ()
+  {
+    try
+    {
+      final KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
 
+      keyGen.initialize(1024);
+      rsaKey = keyGen.generateKeyPair();
+      aesCipher = Cipher.getInstance(Constant.ALGORITHM);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+  }
 }
 

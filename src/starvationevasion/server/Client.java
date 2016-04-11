@@ -4,12 +4,20 @@ package starvationevasion.server;
  * @author Javier Chavez
  */
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+
+import starvationevasion.common.Constant;
+import starvationevasion.common.Util;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SecretKey;
+import javax.xml.bind.DatatypeConverter;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.security.*;
+import java.util.Base64;
 import java.util.Scanner;
 
 /**
@@ -33,12 +41,17 @@ class Client
   // writes to user
   private ClientListener listener;
 
+  private SecretKey serverKey;
+  private Cipher aesCipher;
 
   private volatile boolean isRunning = true;
+  private KeyPair rsaKey;
 
 
   public Client(String host, int portNumber)
   {
+    setupSecurity();
+
     keyboard = new Scanner(System.in);
 
     while (!openConnection(host, portNumber))
@@ -100,9 +113,9 @@ class Client
       return false;
     }
     isRunning = true;
-    write.println("client");
-    //write.print("\r\n");
-    write.flush();
+    // write.println("client");
+
+    Util.startServerHandshake(clientSocket, rsaKey, "client");
     return true;
 
   }
@@ -126,7 +139,28 @@ class Client
       {
         isRunning = false;
       }
-      write.println(System.nanoTime() + " " + cmd);
+      try
+      {
+        String s = String.valueOf(System.nanoTime()) + " " + cmd;
+
+        aesCipher.init(Cipher.ENCRYPT_MODE, serverKey);
+        String data = DatatypeConverter.printBase64Binary(aesCipher.doFinal(s.getBytes()));
+        write.print(data + Constant.TERMINATION);
+        write.flush();
+      }
+      catch(InvalidKeyException e)
+      {
+        e.printStackTrace();
+      }
+      catch(BadPaddingException e)
+      {
+        e.printStackTrace();
+      }
+      catch(IllegalBlockSizeException e)
+      {
+        e.printStackTrace();
+      }
+
     }
   }
 
@@ -187,6 +221,7 @@ class Client
   }
 
 
+
   /**
    * ClientListener
    *
@@ -195,9 +230,10 @@ class Client
    */
   class ClientListener extends Thread
   {
-
     public void run()
     {
+      serverKey = Util.endServerHandshake(clientSocket, rsaKey);
+
       while (isRunning)
       {
         read();
@@ -208,13 +244,33 @@ class Client
     {
       try
       {
-        String msg = reader.readLine();
-        if (msg == null)
+        int i  = reader.read();
+        if (i == -1)
         {
           System.out.println("Lost server, press enter to shutdown.");
           isRunning = false;
           return;
         }
+
+        StringBuilder _sb = new StringBuilder();
+        while(true)
+        {
+          if (i == -1 || i == 10)
+          {
+            if (i >= 0)
+            {
+               _sb.append((char) i);
+              break;
+            }
+            break;
+          }
+          _sb.append((char) i);
+          i = reader.read();
+        }
+
+        aesCipher.init(Cipher.DECRYPT_MODE, serverKey);
+        String msg =  new String(aesCipher.doFinal(DatatypeConverter.parseBase64Binary(_sb.toString().trim())));
+
         System.out.println(msg);
 
       }
@@ -225,6 +281,22 @@ class Client
       {
         e.printStackTrace();
       }
+    }
+  }
+
+  private void setupSecurity ()
+  {
+    try
+    {
+      final KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+
+      keyGen.initialize(1024);
+      rsaKey = keyGen.generateKeyPair();
+      aesCipher = Cipher.getInstance(Constant.ALGORITHM);
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
     }
   }
 }

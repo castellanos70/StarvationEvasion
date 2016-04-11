@@ -6,8 +6,12 @@ package starvationevasion.server.io.strategies;
 
 import starvationevasion.server.model.Sendable;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SealedObject;
 import java.io.*;
 import java.net.Socket;
+import java.security.InvalidKeyException;
 
 public class JavaObjectWriteStrategy extends AbstractWriteStrategy
 {
@@ -23,11 +27,18 @@ public class JavaObjectWriteStrategy extends AbstractWriteStrategy
   }
 
   @Override
-  public void write (Sendable s) throws IOException
+  public void write (Sendable s) throws IOException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException
   {
+    Serializable serializable = s;
+
+    if (isEncrypted())
+    {
+      serializable = encrypt(s);
+    }
+
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     ObjectOutputStream oos = new ObjectOutputStream(baos);
-    oos.writeObject(s);
+    oos.writeObject(serializable);
     oos.close();
 
     byte[] bytes = baos.toByteArray();

@@ -5,7 +5,6 @@ package starvationevasion.server.handlers;
  */
 
 import starvationevasion.common.PolicyCard;
-import starvationevasion.common.Tuple;
 import starvationevasion.server.Worker;
 import starvationevasion.server.Server;
 import starvationevasion.server.model.*;
@@ -25,11 +24,11 @@ public class VoteHandler extends AbstractHandler
       return false;
     }
 
-    Response m_response = new Response("Not eligible to vote.");
     PolicyCard card = (PolicyCard) request.getPayload().getData();
     boolean isPresent = server.getDraftedPolicyCards().contains(card);
     if (!isPresent)
     {
+      getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_ERROR, "Not present"));
       return false;
     }
 
@@ -38,7 +37,7 @@ public class VoteHandler extends AbstractHandler
       if (!card.isEligibleToVote(getClient().getUser().getRegion()))
       {
         // send to client.
-        getClient().send(m_response);
+        getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_ERROR, "Not Eligible"));
         return true;
       }
 
@@ -47,6 +46,8 @@ public class VoteHandler extends AbstractHandler
         if (policyCard.equals(card))
         {
           policyCard.addEnactingRegion(getClient().getUser().getRegion());
+          getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_SUCCESS));
+          return true;
         }
       }
     }
@@ -54,13 +55,11 @@ public class VoteHandler extends AbstractHandler
     {
       if (!card.isEligibleToVote(getClient().getUser().getRegion()))
       {
-        getClient().send(m_response);
+        getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_ERROR, "Not Eligible"));
         return true;
       }
+      getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_SUCCESS));
     }
-    m_response.setMessage("SUCCESS");
-    getClient().send(m_response);
-
 
     return true;
   }

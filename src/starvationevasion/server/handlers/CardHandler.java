@@ -40,7 +40,7 @@ public class CardHandler extends AbstractHandler
     else if (request.getDestination().equals(Endpoint.DELETE_CARD))
     {
       EnumPolicy card = (EnumPolicy) request.getPayload().get("data");
-      if (getClient().getUser().policyCardsDiscarded == 0 || getClient().getUser().actionsRemaining <= 1)
+      if (getClient().getUser().policyCardsDiscarded == 0 || getClient().getUser().actionsRemaining >= 1)
       {
         if (getClient().getUser().getHand().contains(card))
         {
@@ -60,7 +60,7 @@ public class CardHandler extends AbstractHandler
           }
 
           // getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
-
+          server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Discarded many"));
         }
       }
       else
@@ -73,7 +73,7 @@ public class CardHandler extends AbstractHandler
     else if (request.getDestination().equals(Endpoint.DELETE_AND_DRAW_CARDS))
     {
       ArrayList<EnumPolicy> cards = (ArrayList<EnumPolicy>) request.getPayload().get("data");
-      if (getClient().getUser().actionsRemaining <= 1)
+      if (getClient().getUser().actionsRemaining >= 1)
       {
         boolean isSubset = getClient().getUser().getHand().containsAll(cards);
 
@@ -91,6 +91,7 @@ public class CardHandler extends AbstractHandler
 
 
           getClient().getUser().actionsRemaining--;
+          server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Drafted many"));
 
           // getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
 
@@ -107,7 +108,7 @@ public class CardHandler extends AbstractHandler
     {
       PolicyCard policyCard = (PolicyCard) request.getPayload().getData();
 
-      if (getClient().getUser().actionsRemaining <= 1)
+      if (getClient().getUser().actionsRemaining >= 1)
       {
 
         if (policyCard.getOwner() == getClient().getUser().getRegion())
@@ -121,12 +122,12 @@ public class CardHandler extends AbstractHandler
             if (policyCard.votesRequired() > 0)
             {
               getClient().getUser().getHand().remove(policyCard.getCardType());
-              getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED_INTO_VOTE));
+              server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED_INTO_VOTE));
             }
             else
             {
               getClient().getUser().getHand().remove(policyCard.getCardType());
-              getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED));
+              server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED));
             }
             getClient().getUser().actionsRemaining--;
             return true;

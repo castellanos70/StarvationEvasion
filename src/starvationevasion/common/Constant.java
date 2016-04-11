@@ -1,13 +1,21 @@
 package starvationevasion.common;
 
 
-import java.util.Random;
 
 /**
  * This class contains all constant values used throughout the Starvation Evasion game.
  */
 public class Constant
 {
+
+  public static final String ALGORITHM = "AES";
+
+  public static final String TERMINATION = "\n";
+
+  public enum Stream {
+    CLIENT, OBJECT, SECURE_CLIENT;
+
+  }
 
   /**
    * Month names in calendar order where:<br>

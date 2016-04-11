@@ -10,6 +10,7 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.server.Worker;
 import starvationevasion.server.io.NotImplementedException;
 
+import javax.crypto.SecretKey;
 import java.beans.Transient;
 import java.util.ArrayList;
 
@@ -37,7 +38,7 @@ public class User implements Encryptable, Sendable
     this.username = username;
     this.hand = hand;
     this.region = region;
-    encrypt(password, null);
+    this.password = Encryptable.bytesToHex(encrypt(password.getBytes()));
   }
 
   /**
@@ -159,7 +160,7 @@ public class User implements Encryptable, Sendable
   @Transient
   public void setPassword (String password)
   {
-    encrypt(password, null);
+    encrypt(password.getBytes());
   }
 
   /**
@@ -203,19 +204,32 @@ public class User implements Encryptable, Sendable
   }
 
   @Override
-  public void encrypt (String pwd, String key)
+  public byte[] encrypt (byte[] password)
   {
-    if (key == null || key.isEmpty())
+    if (salt == null)
     {
       salt = Encryptable.generateKey();
     }
-    password = Encryptable.generateHashedPassword(salt, pwd);
+
+    return Encryptable.generateHashedPassword(salt.getBytes(), password);
   }
 
   @Override
-  public <T> T decrypt (String msg, String key)
+  public byte[] decrypt (byte[] msg)
   {
     throw new NotImplementedException();
+  }
+
+  @Override
+  public boolean isEncrypted ()
+  {
+    return false;
+  }
+
+  @Override
+  public Encryptable setEncrypted (boolean encrypted, SecretKey key)
+  {
+    return null;
   }
 
   @Override

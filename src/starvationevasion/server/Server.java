@@ -66,7 +66,7 @@ public class Server
   // bool that listen for connections is looping over
   private boolean isWaiting = true;
 
-  public static int TOTAL_PLAYERS = 2;
+  public static int TOTAL_PLAYERS = 1;
 
   // Create a backend, currently sqlite
   private final Backend db = new Sqlite(Constant.DB_LOCATION);
@@ -414,10 +414,7 @@ public class Server
 
     ArrayList<PolicyCard> _list = new ArrayList<>();
 
-    for (PolicyCard card : draftedPolicyCards)
-    {
-      _list.add(card);
-    }
+    _list.addAll(draftedPolicyCards);
 
     broadcast(ResponseFactory.build(uptime(),
                                     new Payload(_list),
@@ -441,7 +438,7 @@ public class Server
     while ((p=draftedPolicyCards.poll())!=null)
     {
 
-      if (p.votesRequired() == 0 || p.getEnactingRegionCount() > p.votesRequired())
+      if (p.votesRequired() == 0 || p.getEnactingRegionCount() >= p.votesRequired())
       {
         enactedPolicyCards.add(p);
       }
@@ -455,6 +452,9 @@ public class Server
     for (User user : getPlayers())
     {
       drawByUser(user);
+      user.actionsRemaining=2;
+      user.policyCardsDiscarded=0;
+
       user.getWorker().send(ResponseFactory.build(uptime(),
                                                   user,
                                                   Type.USER));
@@ -580,6 +580,9 @@ public class Server
     SecretKey myDesKey = null;
     boolean encrypted = false;
 
+    ReadStrategy discoveredReader = worker.getReader();
+    WriteStrategy discoveredWriter = worker.getWriter();
+
     while(true)
     {
       try
@@ -591,6 +594,7 @@ public class Server
         e.printStackTrace();
         return;
       }
+
       //System.out.println((int)line.charAt(0));
       // check if the end of line or if data was found.
       if (line.trim().equals("client") || line.equals("\r\n") || line.trim().equals("JavaClient"))
@@ -598,24 +602,15 @@ public class Server
 
         if (line.contains("JavaClient"))
         {
-          worker.setReader(new JavaObjectReadStrategy(s, null));
-          worker.setWriter(new JavaObjectWriteStrategy(s, null));
-          return;
+          discoveredReader = new JavaObjectReadStrategy(s, null);
+          discoveredWriter = new JavaObjectWriteStrategy(s, null);
+          break;
         }
-        if (encrypted)
+        else if (line.contains("client"))
         {
-          worker.getWriter().getStream().write(socketKeyBytes);
-          worker.getWriter().getStream().flush();
-
-          worker.getWriter().setEncrypted(true, myDesKey);
-          worker.getReader().setEncrypted(true, myDesKey);
-          return;
+          break;
         }
-        if (socketKey.isEmpty())
-        {
-          return;
-        }
-        else
+        else if(line.equals("\r\n"))
         {
           // use the plain text writer to send following data
           worker.setWriter(new PlainTextWriteStrategy(s, null));
@@ -627,9 +622,9 @@ public class Server
                                                "Sec-WebSocket-Accept: " + socketKey + "\r\n");
 
           // assume the client accepted socket key and set up stream readers
-          worker.setReader(new WebSocketReadStrategy(s, null));
-          worker.setWriter(new WebSocketWriteStrategy(s, null));
-          return;
+          discoveredReader = new WebSocketReadStrategy(s, null);
+          discoveredWriter =  new WebSocketWriteStrategy(s, null);
+          break;
         }
 
       }
@@ -641,7 +636,7 @@ public class Server
         key = line.replace("Sec-WebSocket-Key: ", "").trim();
         socketKey = Server.handshake(key);
       }
-      if (line.contains("RSA-Socket-Key:"))
+      else if (line.contains("RSA-Socket-Key:"))
       {
         encrypted = true;
         key = line.replace("RSA-Socket-Key: ", "").trim();
@@ -653,6 +648,24 @@ public class Server
         socketKeyBytes = Server.asymmetricHandshake(Base64.getEncoder().encodeToString(myDesKey.getEncoded()), key);
       }
     }
+
+    if (encrypted)
+    {
+      System.out.println("Encrypted!");
+      worker.getWriter().getStream().write(socketKeyBytes);
+      worker.getWriter().getStream().flush();
+      worker.setReader(discoveredReader);
+      worker.setWriter(discoveredWriter);
+      worker.getWriter().setEncrypted(true, myDesKey);
+      worker.getReader().setEncrypted(true, myDesKey);
+    }
+    else
+    {
+      worker.setReader(discoveredReader);
+      worker.setWriter(discoveredWriter);
+    }
+
+
   }
 
   /**

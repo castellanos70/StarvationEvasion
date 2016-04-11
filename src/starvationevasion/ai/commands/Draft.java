@@ -55,13 +55,13 @@ public class Draft extends AbstractCommand
         return true;
       }
 
-      if (!drawn && getClient().getUser().getHand().size() <= 7)
-      {
-        Request request = new Request(getClient().getStartNanoSec(), Endpoint.DRAW_CARD);
-        getClient().send(request);
-        drawn = true;
-        return true;
-      }
+//      if (!drawn && getClient().getUser().getHand().size() < 7)
+//      {
+//        Request request = new Request(getClient().getStartNanoSec(), Endpoint.DRAW_CARD);
+//        getClient().send(request);
+//        drawn = true;
+//        return true;
+//      }
 
     }
     return false;

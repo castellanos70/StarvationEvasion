@@ -1,9 +1,10 @@
 package starvationevasion.client.Logic;
 
-import starvationevasion.client.Client;
-import starvationevasion.client.GUIOrig.GUI;
-import starvationevasion.client.GUIOrig.Graphs.GraphManager;
-import starvationevasion.client.GUIOrig.SummaryBar;
+import javafx.application.Platform;
+import starvationevasion.client.GUI.GUI;
+import starvationevasion.client.GUI.Graphs.GraphManager;
+import starvationevasion.client.GUI.SummaryBar;
+import starvationevasion.client.Networking.Client;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
@@ -33,7 +34,6 @@ public class LocalDataContainer
   public LocalDataContainer(Client client)
   {
     this.client = client;
-    //this.gui = client.gui;
     regionToData = new HashMap<>();
   }
 
@@ -71,14 +71,14 @@ public class LocalDataContainer
    * contents of his new hand as well as all data that does
    * not pertain to the Visualizer.
    */
-//  public void updateGameState(GameState newGameState)
-//  {
-//    Platform.runLater(() ->
-//    {
-//      gui.getDraftLayout().getHand().setHand(newGameState.hand);
-//      parseNewRoundData(newGameState.worldData);
-//    });
-//  }
+  public void updateGameState(WorldData worldData)
+  {
+    gui=client.getGui();
+    Platform.runLater(() ->
+    {
+      parseNewRoundData(worldData);
+    });
+  }
 
   private void parseNewRoundData(WorldData newData)
   {
@@ -99,15 +99,18 @@ public class LocalDataContainer
   private void sendDataToGraphs()
   {
     GraphManager manager =  gui.getGraphManager();
+    regionToData.keySet().forEach(region ->{
+      manager.addData(year,worldData.foodPrice);
+    });
     regionToData.keySet().forEach(region ->
         manager.addData(region, 0, year, regionToData.get(region).population));
       regionToData.keySet().forEach(region ->
         manager.addData(region, 1, year, (int) regionToData.get(region).humanDevelopmentIndex));
       regionToData.keySet().forEach(region ->
         manager.addData(region, 2, year, regionToData.get(region).revenueBalance));
-      //regionToData.keySet().forEach(region ->
-        //manager.addData(region, year, regionToData.get(region).foodProduced,
-                                                              //regionToData.get(region).foodExported,regionToData.get(region).foodIncome));
+//      regionToData.keySet().forEach(region ->
+//        manager.addData(region, year, regionToData.get(region).foodProduced,
+//                                                              regionToData.get(region).foodExported,regionToData.get(region).foodIncome));
   }
 
   private void sendDataToSummaryBar()

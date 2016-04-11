@@ -185,7 +185,9 @@ public enum Endpoint
 
   KILL_AI("kill_ai"),
 
-  TOTAL_PLAYERS("total_players");
+  TOTAL_PLAYERS("total_players"),
+
+  DELETE_AND_DRAW_CARDS("delete_and_draw_cards");
 
   private String url;
 

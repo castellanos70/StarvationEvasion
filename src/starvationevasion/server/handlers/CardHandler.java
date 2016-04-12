@@ -60,7 +60,7 @@ public class CardHandler extends AbstractHandler
           }
 
           // getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
-          server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Discarded many"));
+          server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Discarded a card."));
         }
       }
       else
@@ -91,7 +91,7 @@ public class CardHandler extends AbstractHandler
 
 
           getClient().getUser().actionsRemaining--;
-          server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Drafted many"));
+          server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Discard and Drew"));
 
           // getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
 
@@ -122,12 +122,12 @@ public class CardHandler extends AbstractHandler
             if (policyCard.votesRequired() > 0)
             {
               getClient().getUser().getHand().remove(policyCard.getCardType());
-              server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED_INTO_VOTE));
+              server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED_INTO_VOTE, "Drafted a card into vote."));
             }
             else
             {
               getClient().getUser().getHand().remove(policyCard.getCardType());
-              server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED));
+              server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Drafted a card."));
             }
             getClient().getUser().actionsRemaining--;
             return true;

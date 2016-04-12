@@ -39,7 +39,7 @@ public class ChatHandler extends AbstractHandler
 
       if (to.equals("ALL"))
       {
-        server.broadcast(ResponseFactory.build(server.uptime(),
+        server.broadcast(new ResponseFactory().build(server.uptime(),
                                                request.getPayload(),
                                                Type.CHAT));
       }
@@ -48,7 +48,7 @@ public class ChatHandler extends AbstractHandler
         User u = server.getUserByUsername(to);
         if (u != null)
         {
-          u.getWorker().send(ResponseFactory.build(server.uptime(),
+          u.getWorker().send(new ResponseFactory().build(server.uptime(),
                                                    request.getPayload(),
                                                    Type.CHAT));
         }
@@ -60,7 +60,7 @@ public class ChatHandler extends AbstractHandler
         {
           if (_user.getRegion().equals(destination))
           {
-            _user.getWorker().send(ResponseFactory.build(server.uptime(),
+            _user.getWorker().send(new ResponseFactory().build(server.uptime(),
                                                          request.getPayload(),
                                                          Type.CHAT));
           }

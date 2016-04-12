@@ -107,7 +107,7 @@ public class Client
 //      System.out.println(recivedMessege);
 //      //Wait tell a message has been recieved
 //      }
-    sendRequest(RequestFactory.login(startNanoSec, userName, pass, null));
+    sendRequest(new RequestFactory().login(startNanoSec, userName, pass, null));
     return true;
   }
 

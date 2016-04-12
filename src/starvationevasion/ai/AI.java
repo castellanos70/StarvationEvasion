@@ -15,6 +15,7 @@ import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 
@@ -32,7 +33,7 @@ public class AI
 
   private ArrayList<WorldData> worldData;
 
-  private ArrayList<PolicyCard> ballot;
+  private List<PolicyCard> ballot;
 
   // time of server start
   private double startNanoSec = 0;
@@ -165,7 +166,7 @@ public class AI
     return commands;
   }
 
-  public ArrayList<PolicyCard> getBallot ()
+  public List<PolicyCard> getBallot ()
   {
     return ballot;
   }
@@ -203,7 +204,7 @@ public class AI
         {
           u = (User) response.getPayload().getData();
 
-          send(RequestFactory.chat(startNanoSec,
+          send(new RequestFactory().chat(startNanoSec,
                                    "ALL",
                                    "Hi, I am " + u.getUsername() + ". I'll be playing using (crappy) AI.",
                                    null));
@@ -217,7 +218,11 @@ public class AI
         }
         else if (response.getType().equals(Type.USER))
         {
-          u = (User) response.getPayload().getData();
+          if (u != null && u.getUsername().equals(((User) response.getPayload().getData()).getUsername()))
+          {
+            u = (User) response.getPayload().getData();
+          }
+
         }
         else if (response.getType().equals(Type.TIME))
         {
@@ -253,6 +258,7 @@ public class AI
           else if (state == starvationevasion.server.model.State.DRAWING)
           {
             // AI.this.commands.add(new Draft(AI.this));
+            commands.clear();
           }
         }
         else if (response.getType().equals(Type.DRAFTED) || response.getType().equals(Type.DRAFTED_INTO_VOTE))
@@ -270,7 +276,7 @@ public class AI
         }
         else if (response.getType().equals(Type.VOTE_BALLOT))
         {
-          ballot = (ArrayList<PolicyCard>) response.getPayload().getData();
+          ballot = (List<PolicyCard>) response.getPayload().getData();
         }
 
       }

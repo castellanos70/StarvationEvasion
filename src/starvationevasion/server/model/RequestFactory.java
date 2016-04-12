@@ -12,17 +12,6 @@ import starvationevasion.common.PolicyCard;
  */
 public class RequestFactory
 {
-  private static RequestFactory ourInstance = new RequestFactory();
-
-  public static RequestFactory init ()
-  {
-    return ourInstance;
-  }
-
-  private RequestFactory ()
-  {
-  }
-
 
   /**
    * Build Request without a payload
@@ -32,7 +21,7 @@ public class RequestFactory
    *
    * @return Request
    */
-  public static Request build (double time, Endpoint endpoint)
+  public Request build (double time, Endpoint endpoint)
   {
     return new Request(time, endpoint);
   }
@@ -46,9 +35,9 @@ public class RequestFactory
    *
    * @return Request
    */
-  public static Request build (double time, Sendable data, Endpoint endpoint)
+  public Request build (double time, Sendable data, Endpoint endpoint)
   {
-    Request request = RequestFactory.build(time, endpoint);
+    Request request = new RequestFactory().build(time, endpoint);
 
     if (data instanceof Payload)
     {
@@ -73,9 +62,9 @@ public class RequestFactory
    *
    * @return Request
    */
-  public static Request build (double time, Sendable data, String message, Endpoint endpoint)
+  public Request build (double time, Sendable data, String message, Endpoint endpoint)
   {
-    Request request = RequestFactory.build(time, data, endpoint);
+    Request request = new RequestFactory().build(time, data, endpoint);
     request.getPayload().putMessage(message);
     return request;
   }
@@ -93,7 +82,7 @@ public class RequestFactory
    *
    * @return chat request
    */
-  public static <T> Request chat(double time, T destination, String text, PolicyCard card)
+  public <T> Request chat(double time, T destination, String text, PolicyCard card)
   {
     Payload data = new Payload();
 
@@ -129,7 +118,7 @@ public class RequestFactory
 
     data.put("text", text);
 
-    return RequestFactory.build(time, data, Endpoint.CHAT);
+    return new RequestFactory().build(time, data, Endpoint.CHAT);
 
   }
 
@@ -143,7 +132,7 @@ public class RequestFactory
    *
    * @return Request built with given information
    */
-  public static Request login (double time, String username, String password, EnumRegion region)
+  public Request login (double time, String username, String password, EnumRegion region)
   {
     Payload data = new Payload();
     data.put("username", username);
@@ -154,6 +143,6 @@ public class RequestFactory
       data.put("region", region);
     }
 
-    return RequestFactory.build(time, data,Endpoint.LOGIN);
+    return new RequestFactory().build(time, data,Endpoint.LOGIN);
   }
 }

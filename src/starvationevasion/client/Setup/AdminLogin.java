@@ -24,7 +24,6 @@ public class AdminLogin extends Application
   @Override
   public void start(Stage primaryStage) throws Exception
   {
-      this.primaryStage=primaryStage;
-
+    this.primaryStage=primaryStage;
   }
 }

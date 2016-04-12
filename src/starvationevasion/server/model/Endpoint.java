@@ -187,7 +187,13 @@ public enum Endpoint
 
   TOTAL_PLAYERS("total_players"),
 
+  /**
+   * they are done with their turn
+   */
+  DONE("done"),
+
   DELETE_AND_DRAW_CARDS("delete_and_draw_cards");
+
 
   private String url;
 

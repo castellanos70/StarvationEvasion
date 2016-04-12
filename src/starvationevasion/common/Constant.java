@@ -8,7 +8,9 @@ package starvationevasion.common;
 public class Constant
 {
 
-  public static final String ALGORITHM = "AES";
+  public static final String DATA_ALGORITHM = "AES";
+
+  public static final String ASYM_ALGORITHM = "RSA";
 
   public static final String TERMINATION = "\n";
 

@@ -17,7 +17,6 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.*;
-import java.util.Base64;
 import java.util.Scanner;
 
 /**
@@ -288,11 +287,11 @@ class Client
   {
     try
     {
-      final KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+      final KeyPairGenerator keyGen = KeyPairGenerator.getInstance(Constant.ASYM_ALGORITHM);
 
       keyGen.initialize(1024);
       rsaKey = keyGen.generateKeyPair();
-      aesCipher = Cipher.getInstance(Constant.ALGORITHM);
+      aesCipher = Cipher.getInstance(Constant.DATA_ALGORITHM);
     }
     catch (Exception e)
     {

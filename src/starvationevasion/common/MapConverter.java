@@ -180,7 +180,7 @@ public class MapConverter
     double radLat = (latitude * (Math.PI / 180.0));
     double x, y;
     x = (scaleX * (2 * Math.sqrt(2) / Math.PI) * radLon * Math.cos(radLat));
-    y = (scaleY * (Math.sqrt(2) * Math.sin(radLat)));
+    y = -(scaleY * (Math.sqrt(2) * Math.sin(radLat)));
 
 //    double posX = x + imageWidth / 2;
 //    double posY = y + imageHeight / 2;

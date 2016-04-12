@@ -16,8 +16,10 @@ import java.util.ArrayList;
 
 public class User implements Encryptable, Sendable
 {
-  public transient int actionsRemaining = 2;
-  public transient int policyCardsDiscarded = 0;
+  public volatile transient int actionsRemaining = 2;
+  public volatile transient int policyCardsDiscarded = 0;
+  public volatile transient int drafts = 0;
+  public volatile transient int draftVoteCard = 0;
 
   public transient Worker worker;
   private transient String salt;
@@ -27,7 +29,7 @@ public class User implements Encryptable, Sendable
   private EnumRegion region;
   private boolean isLoggedIn = false;
   private boolean isPlaying = false;
-  private ArrayList<EnumPolicy> hand = new ArrayList<>();
+  private volatile ArrayList<EnumPolicy> hand = new ArrayList<>();
 
   public User()
   {
@@ -265,4 +267,12 @@ public class User implements Encryptable, Sendable
     throw new NotImplementedException();
   }
 
+  @Transient
+  public void reset ()
+  {
+    actionsRemaining=2;
+    policyCardsDiscarded=0;
+    drafts=0;
+    draftVoteCard=0;
+  }
 }

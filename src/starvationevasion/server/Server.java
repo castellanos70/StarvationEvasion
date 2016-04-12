@@ -641,7 +641,7 @@ public class Server
         encrypted = true;
         key = line.replace("RSA-Socket-Key: ", "").trim();
 
-        KeyGenerator keygenerator = KeyGenerator.getInstance(Constant.ALGORITHM);
+        KeyGenerator keygenerator = KeyGenerator.getInstance(Constant.DATA_ALGORITHM);
         keygenerator.init(128);
 
         myDesKey = keygenerator.generateKey();

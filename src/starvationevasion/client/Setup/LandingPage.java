@@ -67,7 +67,7 @@ public class LandingPage extends Application
     singlePlayer.setOnAction(actionEvent -> {
       try
       {
-        client = new Client("localhost", 2020);
+        client = new Client("localhost", 5555);
         setBasicLogin();
       }catch(Exception e)
       {

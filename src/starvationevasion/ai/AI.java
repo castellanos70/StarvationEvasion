@@ -377,7 +377,7 @@ public class AI
 
       keyGen.initialize(1024);
       rsaKey = keyGen.generateKeyPair();
-      aesCipher = Cipher.getInstance(Constant.ALGORITHM);
+      aesCipher = Cipher.getInstance(Constant.DATA_ALGORITHM);
     }
     catch (Exception e)
     {

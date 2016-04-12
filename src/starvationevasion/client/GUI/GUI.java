@@ -82,26 +82,22 @@ public class GUI extends Application
   public GUI()
   {
       super();
-    //client2=new Client("Nathan", 2020);
-    this.localDataContainer = localDataContainer;
-    //assignedRegion = client2.getRegion();
   }
 
   /**
    * Constructor for the GUI which the client calls
    */
-  private Client client2;
+  private Client client;
   private MainGameLoop mainGameLoop;
   public GUI(Client client, LocalDataContainer localDataContainer)
   {
     super();
-    client2=client;
-   // this.client = client;
+    this.client =client;
     this.localDataContainer = localDataContainer;
     assignedRegion = client.getRegion();
-
   }
-  public Client getClient(){return client2;}
+  public Client getClient(){return client;}
+
   /**
    * Main function which launches the GUI thread
    * @param args
@@ -143,13 +139,8 @@ public class GUI extends Application
     currentRoot = draftLayout;
     primaryStage.setScene(gameScene);
 
-
-   // mainGameLoop=new MainGameLoop(this);
-
-    //if(!client.isAI)
-    {
       primaryStage.show();
-    }
+
     primaryStage.setOnCloseRequest(event2 ->
     {
 //      primaryStage.close();
@@ -160,30 +151,48 @@ public class GUI extends Application
   @Override
   public void stop()
   {
-    client2.closeAll();
+    client.closeAll();
   }
+
   /**
-   * Simple getter in case any node needs to get the stage
+   *  basic initializing of things that only need to be called once
    */
   public void initGame()
   {
-    //client2.getHand();
-    cardsInHand=client2.getHand();
+    cardsInHand= client.getHand();
     if(cardsInHand!=null)
     {
       getDraftLayout().getHand().setHand(cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]));
     }
-    assignedRegion=client2.getRegion();
+    assignedRegion= client.getRegion();
     getDraftLayout().getSummaryBar().setRegion(assignedRegion);
   }
+
+  /**
+   * Getter for hand arraylist
+   * @return
+   */
   public ArrayList<EnumPolicy> getCardsInHand() {return cardsInHand;}
+
+  /**
+   * Sets the cards in hand and sets flag to indicate that cards have been set
+   * @param cards
+   */
   public void setCardsInHand(ArrayList<EnumPolicy> cards)
   {
     needHand=false;
     cardsInHand=cards;
-
   }
+
+  /**
+   * Returns flag indicating if hand has been set
+   * @return
+   */
   public boolean needsHand(){return needHand;}
+
+  /**
+   * resets hand and buttons
+   */
   public void resetDraftingPhase()
   {
     needHand=true;
@@ -192,10 +201,18 @@ public class GUI extends Application
     draftLayout.getHand().newTurn();
     draftLayout.getActionButtons().resetActionButtons();
   }
+
+  /**
+   * resets what cards are being voted on
+   */
   public void resetVotingPhase()
   {
     votingLayout.resetVotingLayout();
   }
+
+  /**
+   * Simple getter in case any node needs to get the stage
+   */
   public Stage getPrimaryStage()
   {
     return primaryStage;
@@ -366,11 +383,11 @@ public class GUI extends Application
   {
     return assignedRegion;
   }
-  private void main()
+  private void initTimer()
   {java.util.Timer timer=new java.util.Timer();
     ChatNode chatNodeDraft=draftLayout.getChatNode();
     ChatNode chatNodeVote=votingLayout.getChatNode();
-    ChatManager chatManager=client2.getChatManager();
+    ChatManager chatManager= client.getChatManager();
     Hand hand=getDraftLayout().getHand();
     TimerTask timerTask=new TimerTask()
     {
@@ -382,12 +399,12 @@ public class GUI extends Application
 
           chatNodeDraft.setChatMessages(chatManager.getChat());
           chatNodeVote.setChatMessages(chatManager.getChat());
-          if (needsHand() && client2.getHand() != null && !client2.getHand().isEmpty())
+          if (needsHand() && client.getHand() != null && !client.getHand().isEmpty())
           {
 
-            setCardsInHand(client2.getHand());
-            cardsInHand = client2.getHand();
-            hand.setHand(client2.getHand().toArray(new EnumPolicy[cardsInHand.size()]));
+            setCardsInHand(client.getHand());
+            cardsInHand = client.getHand();
+            hand.setHand(client.getHand().toArray(new EnumPolicy[cardsInHand.size()]));
             System.out.println("please work " + Arrays.toString(hand.getHand()) + Platform.isFxApplicationThread());
           }
           if (getDraftLayout().getHand().getHand() != null)
@@ -395,18 +412,18 @@ public class GUI extends Application
             chatNodeDraft.setHand(getDraftLayout().getHand().getHand());
             chatNodeVote.setHand(getDraftLayout().getHand().getHand());
           }
-          if (isDraftingPhase() && client2.getState().equals(starvationevasion.server.model.State.VOTING))
+          if (isDraftingPhase() && client.getState().equals(starvationevasion.server.model.State.VOTING))
           {
             resetDraftingPhase();
             switchScenes();
           }
-          if (!isDraftingPhase() && (client2.getState().equals(starvationevasion.server.model.State.DRAFTING) || client2.getState().equals(starvationevasion.server.model.State.DRAWING)))
+          if (!isDraftingPhase() && (client.getState().equals(starvationevasion.server.model.State.DRAFTING) || client.getState().equals(starvationevasion.server.model.State.DRAWING)))
           {
             resetVotingPhase();
             switchScenes();
           }
-          if (client2.getVotingCards() != null && !getVotingLayout().hasReceivedCards())
-            getVotingLayout().updateCardSpaces(client2.getVotingCards());
+          if (client.getVotingCards() != null && !getVotingLayout().hasReceivedCards())
+            getVotingLayout().updateCardSpaces(client.getVotingCards());
 
         });
       }

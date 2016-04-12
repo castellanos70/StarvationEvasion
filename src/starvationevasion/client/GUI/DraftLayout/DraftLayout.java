@@ -131,6 +131,8 @@ public class DraftLayout extends GridPane
     chatNode=new ChatNode(gui);
     this.add(chatNode,0,0,1,4);
 
+
+    //Places a background, not in use for testing
 //    this.setBackground(new Background(new BackgroundImage(
 //            gui.getImageGetter().getBackground(),
 //            BackgroundRepeat.NO_REPEAT,

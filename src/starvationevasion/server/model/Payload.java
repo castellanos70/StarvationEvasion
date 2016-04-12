@@ -38,7 +38,8 @@ public class Payload extends HashMap<String, Object> implements Sendable
     if (!(value instanceof Sendable || value instanceof Number || value instanceof Boolean ||
             value instanceof String || value instanceof List))
     {
-      throw new IllegalArgumentException("Value must be String, Number, Boolean, List, or Sendable.");
+      throw new IllegalArgumentException(String.valueOf(value) + " in NOT allowed. Value must be " +
+                                                 "String, Number, Boolean, List, or Sendable.");
     }
     if (value instanceof List)
     {

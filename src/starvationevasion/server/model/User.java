@@ -20,6 +20,7 @@ public class User implements Encryptable, Sendable
   public volatile transient int policyCardsDiscarded = 0;
   public volatile transient int drafts = 0;
   public volatile transient int draftVoteCard = 0;
+  public volatile boolean isDone = false;
 
   public transient Worker worker;
   private transient String salt;
@@ -274,5 +275,6 @@ public class User implements Encryptable, Sendable
     policyCardsDiscarded=0;
     drafts=0;
     draftVoteCard=0;
+    isDone = false;
   }
 }

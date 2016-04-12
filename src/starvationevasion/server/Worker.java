@@ -26,7 +26,7 @@ public class Worker extends Thread
   private String username = "ANON";
   private volatile boolean isRunning = true;
   private final Server server;
-  // private Handler handler;
+  private final Handler handler;
 
   private WriteStrategy writer;
   private ReadStrategy reader;
@@ -47,7 +47,7 @@ public class Worker extends Thread
 
     this.client = client;
     this.server = server;
-    //this.handler = new Handler(server, this);
+    this.handler = new Handler(server, this);
 
   }
 
@@ -127,21 +127,19 @@ public class Worker extends Thread
           String[] arr = string.split("\\s+");
           if (arr.length < 2)
           {
-            send(ResponseFactory.build(server.uptime(), null, Type.BROADCAST, "Invalid command args"));
+            send(new ResponseFactory().build(server.uptime(), null, Type.BROADCAST, "Invalid command args"));
             continue;
           }
 
           request = new Request(arr[0], arr[1], string);
         }
 
-        Handler handler1 = new Handler(server, this);
-        handler1.handle(request);
-        handler1 = null;
+        handler.handle(request);
       }
       catch(EndpointException e)
       {
         System.out.println("Invalid endpoint!");
-        send(ResponseFactory.build(server.uptime(), null, Type.BROADCAST, "Invalid endpoint"));
+        send(new ResponseFactory().build(server.uptime(), null, Type.BROADCAST, "Invalid endpoint"));
       }
       catch(IOException e)
       {
@@ -152,7 +150,7 @@ public class Worker extends Thread
       catch(ClassNotFoundException e)
       {
         System.out.println("Invalid Class was received");
-        send(ResponseFactory.build(server.uptime(), null, Type.BROADCAST, "Invalid Class"));
+        send(new ResponseFactory().build(server.uptime(), null, Type.BROADCAST, "Invalid Class"));
       }
       catch(BadPaddingException e)
       {

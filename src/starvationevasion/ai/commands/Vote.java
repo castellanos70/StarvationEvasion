@@ -59,8 +59,11 @@ public class Vote extends AbstractCommand
             Request request = new RequestFactory().build(getClient().getStartNanoSec(), card, endpoint);
 
             getClient().send(request);
+
+
           }
         }
+        getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), new Payload(), Endpoint.DONE));
       }
 
 

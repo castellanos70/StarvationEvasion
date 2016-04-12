@@ -55,12 +55,16 @@ public class JavaObjectReadStrategy extends AbstractReadStrategy<Request>
     Serializable s = (Serializable) is.readObject();
     in.close();
 
-    Request request = (Request) s;
+    Request request = null;
     if (isEncrypted())
     {
       request = (Request) decrypt(s);
     }
-
+    else
+    {
+      request = (Request) s;
+    }
+}
     // we are only expecting Requests
     return request;
   }

@@ -42,6 +42,7 @@ public class JavaObjectWriteStrategy extends AbstractWriteStrategy
     oos.close();
 
     byte[] bytes = baos.toByteArray();
+    baos.close();
     getStream().writeInt(bytes.length);
     getStream().write(bytes);
     getStream().flush();

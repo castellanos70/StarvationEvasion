@@ -25,7 +25,7 @@ public class Login extends AbstractCommand
   {
     if (!requestSent && getClient().getUsers().size() == 0)
     {
-      getClient().send(RequestFactory.build(getClient().getStartNanoSec(),
+      getClient().send(new RequestFactory().build(getClient().getStartNanoSec(),
                                             Endpoint.USERS_LOGGED_IN));
       requestSent = true;
       return true;
@@ -47,7 +47,7 @@ public class Login extends AbstractCommand
     if (getClient().getUser() == null)
     {
 
-      getClient().send(RequestFactory.login(getClient().getStartNanoSec(),
+      getClient().send(new RequestFactory().login(getClient().getStartNanoSec(),
                                             chosenUsername,
                                             "bot",
                                             null));

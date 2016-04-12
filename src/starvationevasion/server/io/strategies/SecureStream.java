@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 
 
 abstract class SecureStream implements Encryptable
@@ -31,7 +30,7 @@ abstract class SecureStream implements Encryptable
     isEncrypted = encrypted;
     if (isEncrypted)
     {
-      aesCipher = Cipher.getInstance(Constant.ALGORITHM);
+      aesCipher = Cipher.getInstance(Constant.DATA_ALGORITHM);
     }
     return this;
   }

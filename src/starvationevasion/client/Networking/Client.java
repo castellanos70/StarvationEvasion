@@ -81,30 +81,33 @@ public class Client
   }
   public boolean loginToServer(String userName,String pass)
   {
+    System.out.println("Client.loginToServer");
+
     this.userName=userName;
     // Create a request to login
-    Request f = new Request(startNanoSec, Endpoint.LOGIN);
-    // Create a payload (this is the class that stores Sendable information)
-    Payload data = new Payload();
-
-    data.putData("user");
-
-    data.put("username", userName);
-    data.put("password", pass);
-
-    f.setData(data);
-    sendRequest(f);
-  //  requestAvaliableRegions();
-   // restart();
-   // ready();
-    //createHand();
-    getGameState();
+//    Request f = new Request(startNanoSec, Endpoint.LOGIN);
+//    // Create a payload (this is the class that stores Sendable information)
+//    Payload data = new Payload();
+//
+//    data.putData("user");
+//
+//    data.put("username", userName);
+//    data.put("password", pass);
+//
+//    f.setData(data);
+//    sendRequest(f);
+//  //  requestAvaliableRegions();
+//   // restart();
+//   // ready();
+//    //createHand();
+//    getGameState();
   //  ai();
 
 //    while(!recivedMessege){
 //      System.out.println(recivedMessege);
 //      //Wait tell a message has been recieved
 //      }
+    sendRequest(new RequestFactory().login(startNanoSec, userName, pass, null));
     return true;
   }
 
@@ -254,6 +257,7 @@ public class Client
   }
   public void sendRequest(Request request)
   {
+
     try
     {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -267,6 +271,7 @@ public class Client
       writer.writeInt(bytes.length);
       writer.write(bytes);
       writer.flush();
+      baos.close();
     }
     catch(IOException e)
     {
@@ -470,12 +475,12 @@ public class Client
 //        if(!response.getType().equals(Type.WORLD_DATA_LIST))System.out.println(response.getPayload());
         if (response.getPayload().get("data") instanceof User)
         {
-          if(response.getPayload().get("message")!=null&&response.getPayload().get("message").equals("SUCCESS"))
+          if(response.getType().equals(Type.AUTH_SUCCESS))
           {
             loginSuccessful=true;
             recivedMessege=true;
 
-          }else if(response.getPayload().get("message")=="FAIL")
+          }else if(response.getType().equals(Type.AUTH_SUCCESS))
           {
             loginSuccessful=false;
             recivedMessege=true;
@@ -539,6 +544,7 @@ public class Client
       }
       catch(EOFException e)
       {
+        e.printStackTrace();
         isRunning = false;
         System.out.println("Lost server, press enter to shutdown.");
         return;
@@ -568,11 +574,13 @@ public class Client
     int size  = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
 
     byte[] object = new byte[size];
-
     reader.readFully(object);
 
     ByteArrayInputStream in = new ByteArrayInputStream(object);
     ObjectInputStream is = new ObjectInputStream(in);
+    is.close();
+    in.close();
+
 
     return (Response) is.readObject();
   }

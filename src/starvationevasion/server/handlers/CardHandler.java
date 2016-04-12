@@ -44,10 +44,7 @@ public class CardHandler extends AbstractHandler
       {
         if (getClient().getUser().getHand().contains(card))
         {
-          EnumRegion region = getClient().getUser().getRegion();
-
-          server.getSimulator().discard(region, card);
-          getClient().getUser().getHand().remove(card);
+          server.discard(getClient().getUser(), card);
 
 
           if (getClient().getUser().policyCardsDiscarded == 1)
@@ -60,7 +57,7 @@ public class CardHandler extends AbstractHandler
           }
 
           // getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
-          server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Discarded many"));
+          server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Discarded a card."));
         }
       }
       else
@@ -83,18 +80,15 @@ public class CardHandler extends AbstractHandler
 
           for (EnumPolicy card : cards)
           {
-            server.getSimulator().discard(region, card);
-            getClient().getUser().getHand().remove(card);
+            server.discard(getClient().getUser(), card);
             EnumPolicy[] newCards = server.getSimulator().drawCards(region);
             Collections.addAll(getClient().getUser().getHand(), newCards);
           }
 
 
           getClient().getUser().actionsRemaining--;
-          server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Drafted many"));
-
-          // getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
-
+          server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Discard and Drew"));
+          getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
         }
       }
       else
@@ -108,7 +102,7 @@ public class CardHandler extends AbstractHandler
     {
       PolicyCard policyCard = (PolicyCard) request.getPayload().getData();
 
-      if (getClient().getUser().actionsRemaining >= 1)
+      if (getClient().getUser().actionsRemaining >= 1 && getClient().getUser().drafts < 2)
       {
 
         if (policyCard.getOwner() == getClient().getUser().getRegion())
@@ -116,18 +110,23 @@ public class CardHandler extends AbstractHandler
           String validation = policyCard.validate();
           if (validation == null)
           {
+            int drafts = getClient().getUser().drafts;
+            server.getDraftedPolicyCards()[policyCard.getOwner().ordinal()][drafts] = policyCard;
 
-            server.getDraftedPolicyCards().add(policyCard);
-
-            if (policyCard.votesRequired() > 0)
+            if (policyCard.votesRequired() > 0 && getClient().getUser().draftVoteCard < 1)
             {
               getClient().getUser().getHand().remove(policyCard.getCardType());
-              server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED_INTO_VOTE));
+              server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED_INTO_VOTE, "Drafted a card into vote."));
+              getClient().getUser().drafts++;
+              getClient().getUser().draftVoteCard++;
+              getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
             }
             else
             {
               getClient().getUser().getHand().remove(policyCard.getCardType());
-              server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED));
+              server.broadcast(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Drafted a card."));
+              getClient().getUser().drafts++;
+              getClient().send(ResponseFactory.build(server.uptime(), getClient().getUser(), Type.USER));
             }
             getClient().getUser().actionsRemaining--;
             return true;

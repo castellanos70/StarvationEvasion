@@ -26,7 +26,7 @@ public class Worker extends Thread
   private String username = "ANON";
   private volatile boolean isRunning = true;
   private final Server server;
-  private Handler handler;
+  // private Handler handler;
 
   private WriteStrategy writer;
   private ReadStrategy reader;
@@ -34,6 +34,7 @@ public class Worker extends Thread
   private final DataOutputStream outStream;
   private final DataInputStream inStream;
   private boolean isLoggedIn = false;
+  private User user;
 
 
   public Worker (Socket client, Server server)
@@ -46,7 +47,7 @@ public class Worker extends Thread
 
     this.client = client;
     this.server = server;
-    this.handler = new Handler(server, this);
+    //this.handler = new Handler(server, this);
 
   }
 
@@ -133,9 +134,9 @@ public class Worker extends Thread
           request = new Request(arr[0], arr[1], string);
         }
 
-
-        handler.handle(request);
-
+        Handler handler1 = new Handler(server, this);
+        handler1.handle(request);
+        handler1 = null;
       }
       catch(EndpointException e)
       {
@@ -145,14 +146,7 @@ public class Worker extends Thread
       catch(IOException e)
       {
         isRunning = false;
-        String u = "";
-//        if (getUser() != null)
-//        {
-//          u = getUser().toString() + "\n";
-//        }
-        System.out.println("There was an error reading:\n\t"
-                                   + getName() + "\n\t"
-                                   + u);
+        System.out.println("There was an error reading");
         return;
       }
       catch(ClassNotFoundException e)
@@ -219,6 +213,10 @@ public class Worker extends Thread
 
   public User getUser()
   {
-    return server.getUserByUsername(getUsername());
+    if (user == null)
+    {
+      this.user = server.getUserByUsername(getUsername());
+    }
+    return user;
   }
 }

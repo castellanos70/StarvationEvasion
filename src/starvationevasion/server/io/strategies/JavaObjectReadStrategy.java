@@ -50,15 +50,20 @@ public class JavaObjectReadStrategy extends AbstractReadStrategy<Request>
     // convert into object
     ByteArrayInputStream in = new ByteArrayInputStream(encObject);
     ObjectInputStream is = new ObjectInputStream(in);
+    is.close();
 
     Serializable s = (Serializable) is.readObject();
+    in.close();
 
     Request request = null;
     if (isEncrypted())
     {
       request = (Request) decrypt(s);
     }
-
+    else
+    {
+      request = (Request) s;
+    }
     // we are only expecting Requests
     return request;
   }

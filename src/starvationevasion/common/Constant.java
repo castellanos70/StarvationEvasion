@@ -8,7 +8,9 @@ package starvationevasion.common;
 public class Constant
 {
 
-  public static final String ALGORITHM = "AES";
+  public static final String DATA_ALGORITHM = "AES";
+
+  public static final String ASYM_ALGORITHM = "RSA";
 
   public static final String TERMINATION = "\n";
 
@@ -90,4 +92,10 @@ public class Constant
     */
 
   public static final double EARTH_CIRCUMFERENCE = 40075;
+
+  public static final long DRAFTING_TIME = 2*60*1000;
+
+  public static final long DRAWING_TIME = 2*60*1000;
+
+  public static final long VOTING_TIME = 3*60*1000;
 }

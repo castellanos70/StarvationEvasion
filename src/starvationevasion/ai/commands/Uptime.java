@@ -20,7 +20,7 @@ public class Uptime extends AbstractCommand
 
     if (getClient().getStartNanoSec() == 0)
     {
-      getClient().send(RequestFactory.build(getClient().getStartNanoSec(), Endpoint.SERVER_UPTIME));
+      getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), Endpoint.SERVER_UPTIME));
       return true;
     }
     return false;

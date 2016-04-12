@@ -64,7 +64,6 @@ public class JavaObjectReadStrategy extends AbstractReadStrategy<Request>
     {
       request = (Request) s;
     }
-}
     // we are only expecting Requests
     return request;
   }

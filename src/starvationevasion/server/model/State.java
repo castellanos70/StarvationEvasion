@@ -5,6 +5,8 @@ package starvationevasion.server.model;
  */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+import com.sun.org.apache.bcel.internal.classfile.ConstantDouble;
+import starvationevasion.common.Constant;
 
 public enum State implements Sendable
 {
@@ -13,31 +15,28 @@ public enum State implements Sendable
     @Override
     public long getDuration ()
     {
-      return 10*1000;
+      return 3*1000;
     }
   },
   DRAWING {
     @Override
     public long getDuration ()
     {
-      return 10*1000;
-      // return 5*60*1000;
+      return Constant.DRAWING_TIME;
     }
   },
   DRAFTING {
     @Override
     public long getDuration ()
     {
-      return 10*1000;
-      // return 2*60*1000
+      return Constant.DRAFTING_TIME;
     }
   },
   VOTING {
     @Override
     public long getDuration ()
     {
-      return 10*1000;
-      // return 2*60*1000;
+      return Constant.VOTING_TIME;
     }
   },
   WIN,

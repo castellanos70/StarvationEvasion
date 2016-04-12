@@ -31,7 +31,7 @@ public class Hand extends AbstractCommand
     if (getClient().getUser().getHand() == null || getClient().getUser().getHand().size() <= 6)
     {
       tries--;
-      getClient().send(RequestFactory.build(getClient().getStartNanoSec(),
+      getClient().send(new RequestFactory().build(getClient().getStartNanoSec(),
                                             Endpoint.HAND_READ));
       return true;
     }

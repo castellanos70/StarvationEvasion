@@ -69,7 +69,7 @@ public class Server
   // Class that save User's to a database
   private final Transaction<User> userTransaction;
   private volatile long counter = 0;
-  private volatile boolean isPlaying = false;
+  private boolean isPlaying = false;
 
 
   public Server (int portNumber)
@@ -366,7 +366,7 @@ public class Server
   {
     startNanoSec = System.currentTimeMillis();
     endNanoSec = startNanoSec + currentState.getDuration();
-    while(isPlaying)
+    while(true)
     {
       if (endNanoSec < System.currentTimeMillis())
       {
@@ -405,7 +405,7 @@ public class Server
 
     startNanoSec = System.currentTimeMillis();
     endNanoSec = startNanoSec + currentState.getDuration();
-    while(isPlaying)
+    while(true)
     {
       if (endNanoSec < System.currentTimeMillis())
       {
@@ -451,7 +451,7 @@ public class Server
 
     startNanoSec = System.currentTimeMillis();
     endNanoSec = startNanoSec + currentState.getDuration();
-    while(isPlaying)
+    while(true)
     {
       if (endNanoSec < System.currentTimeMillis())
       {
@@ -527,7 +527,7 @@ public class Server
 
     startNanoSec = System.currentTimeMillis();
     endNanoSec = startNanoSec + currentState.getDuration();
-    while(isPlaying)
+    while(true)
     {
       if (endNanoSec < System.currentTimeMillis())
       {

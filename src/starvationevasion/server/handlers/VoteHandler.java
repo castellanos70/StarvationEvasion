@@ -38,7 +38,7 @@ public class VoteHandler extends AbstractHandler
 
 //    if (!isPresent)
 //    {
-//      getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_ERROR, "Not present"));
+//      getClient().send(new ResponseFactory().build(server.uptime(), card, Type.VOTE_ERROR, "Not present"));
 //      return false;
 //    }
 
@@ -48,20 +48,25 @@ public class VoteHandler extends AbstractHandler
       {
         System.out.println("Not eligible");
         // send to client.
-        getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_ERROR, "Not Eligible"));
+        getClient().send(new ResponseFactory().build(server.uptime(), card, Type.VOTE_ERROR, "Not Eligible"));
         return true;
       }
-
-      final Boolean status = server.addVote(card, getClient().getUser().getRegion());
+      boolean status;
+      synchronized(server)
+      {
+        status = server.addVote(card, getClient().getUser().getRegion());
+      }
 
       if (status)
       {
-        getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_SUCCESS));
+        getClient().send(new ResponseFactory().build(server.uptime(), card, Type.VOTE_SUCCESS));
+        System.out.println("Vote recorded");
       }
       else
       {
         // throw new VoteException("There was an error voting");
-        System.out.println("Vote failed");
+        getClient().send(new ResponseFactory().build(server.uptime(), card, Type.VOTE_ERROR, "Try to vote again."));
+        //.System.out.println("Vote failed");
       }
 
       return true;
@@ -70,10 +75,10 @@ public class VoteHandler extends AbstractHandler
     {
       if (!card.isEligibleToVote(getClient().getUser().getRegion()))
       {
-        getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_ERROR, "Not Eligible"));
+        getClient().send(new ResponseFactory().build(server.uptime(), card, Type.VOTE_ERROR, "Not Eligible"));
         return true;
       }
-      getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_SUCCESS));
+      getClient().send(new ResponseFactory().build(server.uptime(), card, Type.VOTE_SUCCESS));
     }
 
     return true;

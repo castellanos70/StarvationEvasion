@@ -26,21 +26,21 @@ public class DataHandler extends AbstractHandler
     if (request.getDestination().equals(Endpoint.GAME_STATE))
     {
 
-      getClient().send(ResponseFactory.build(server.uptime(),
+      getClient().send(new ResponseFactory().build(server.uptime(),
                                              server.getGameState(),
                                              Type.GAME_STATE));
       return true;
     }
     else if (request.getDestination().equals(Endpoint.SERVER_UPTIME))
     {
-      getClient().send(ResponseFactory.build(server.uptime(),
+      getClient().send(new ResponseFactory().build(server.uptime(),
                                              new Payload(server.uptime()),
                                              Type.TIME));
       return true;
     }
     else if (request.getDestination().equals(Endpoint.AVAILABLE_REGIONS))
     {
-      getClient().send(ResponseFactory.build(server.uptime(),
+      getClient().send(new ResponseFactory().build(server.uptime(),
                                              new Payload(server.getAvailableRegions()),
                                              Type.AVAILABLE_REGIONS));
       return true;
@@ -75,7 +75,7 @@ public class DataHandler extends AbstractHandler
         data.put("geographic-data", geographicAreaList);
       }
 
-      getClient().send(ResponseFactory.build(server.uptime(),
+      getClient().send(new ResponseFactory().build(server.uptime(),
                                              data,
                                              Type.WORLD_DATA_LIST));
 

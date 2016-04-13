@@ -26,14 +26,14 @@ public class LoginHandler extends AbstractHandler
       boolean auth = authenticate(uname, pwd);
       if (auth)
       {
-        getClient().send(ResponseFactory.build(server.uptime(),
+        getClient().send(new ResponseFactory().build(server.uptime(),
                                                server.getUserByUsername(uname),
                                                Type.AUTH_SUCCESS, "SUCCESS"
         ));
       }
       else
       {
-        getClient().send(ResponseFactory.build(server.uptime(),
+        getClient().send(new ResponseFactory().build(server.uptime(),
                                                null,
                                                Type.AUTH_ERROR, "Username or password incorrect."
         ));

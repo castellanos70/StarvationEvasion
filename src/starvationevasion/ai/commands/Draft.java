@@ -58,8 +58,9 @@ public class Draft extends AbstractCommand
           randomlyDiscard();
         }
 
-        return false;
+        return true;
       }
+      getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), new Payload(), Endpoint.DONE));
 
 //      if (!drawn && getClient().getUser().getHand().size() < 7)
 //      {
@@ -81,7 +82,7 @@ public class Draft extends AbstractCommand
     {
       PolicyCard _card = PolicyCard.create(getClient().getUser().getRegion(), policy);
       // dont remove the card we just drafted!!!
-      if (policy != cardDrafted.getCardType() && _card.votesRequired() >= Util.randInt(0,2))
+      if (cardDrafted != null && policy != cardDrafted.getCardType() && Util.rand.nextBoolean())
       {
         discard = policy;
         break;
@@ -109,10 +110,11 @@ public class Draft extends AbstractCommand
     {
       card = PolicyCard.create(getClient().getUser().getRegion(), policy);
 
-        if (card.votesRequired() == 0 && !draftSent)
+        if (card.votesRequired() == 0 || !draftSent)
         {
           setupCard(card);
           getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), card, Endpoint.DRAFT_CARD));
+          draftedCard = true;
           draftSent = true;
           if (i == 0)
           {

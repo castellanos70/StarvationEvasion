@@ -5,7 +5,6 @@ package starvationevasion.server.model;
  */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-import com.sun.org.apache.bcel.internal.classfile.ConstantDouble;
 import starvationevasion.common.Constant;
 
 public enum State implements Sendable

@@ -546,7 +546,7 @@ public class Server
    */
   private void update ()
   {
-    cleanConnectionList();
+    // cleanConnectionList();
 
     if (getPlayerCount() == TOTAL_PLAYERS && currentState == State.LOGIN)
     {
@@ -722,6 +722,7 @@ public class Server
     }
     else
     {
+      broadcast(new ResponseFactory().build(uptime(), currentState, Type.CHAT, "Someone joined with unencrypted!"));
       worker.setReader(discoveredReader);
       worker.setWriter(discoveredWriter);
     }
@@ -732,15 +733,13 @@ public class Server
   /**
    * Cleans the connections list that have gone stale
    */
-  private void cleanConnectionList ()
+  public void cleanConnectionList ()
   {
     int con = 0;
     for (int i = 0; i < allConnections.size(); i++)
     {
       if (!allConnections.get(i).isRunning())
       {
-        allConnections.get(i).shutdown();
-        // the worker is not running. remove it.
         allConnections.remove(i);
         con++;
       }

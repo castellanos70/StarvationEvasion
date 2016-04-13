@@ -11,9 +11,11 @@ import starvationevasion.server.model.*;
 import javax.crypto.*;
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -284,16 +286,39 @@ public class AI
       {
         isRunning = false;
         System.out.println("Lost server, press enter to shutdown.");
-        return;
+
       }
-      catch(Exception e)
+      catch(SocketException e)
       {
-        e.printStackTrace();
+        isRunning = false;
+        System.out.println("Lost server");
+        System.out.println("Shutting down...");
+
+      }
+      catch(NoSuchAlgorithmException e)
+      {
+        isRunning = false;
+        System.out.println("Will not be able to decrypt");
+        System.exit(1);
+      }
+      catch(IOException e)
+      {
+        isRunning = false;
+        System.out.println("Error reading");
+      }
+      catch(InvalidKeyException e)
+      {
+        System.out.println("Key is not valid");
+      }
+      catch(ClassNotFoundException e)
+      {
+        isRunning = false;
+        System.out.println("Class not found!");
       }
     }
   }
 
-  private Response readObject () throws Exception
+  private Response readObject () throws IOException, ClassNotFoundException, InvalidKeyException, NoSuchAlgorithmException
   {
     int ch1 = reader.read();
     int ch2 = reader.read();

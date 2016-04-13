@@ -72,11 +72,27 @@ public class Worker extends Thread
     {
       writer.write(data);
     }
-    catch(Exception e)
+    catch(BadPaddingException e)
     {
-      e.printStackTrace();
+      System.out.println("Contains incorrect padding");
       shutdown();
     }
+    catch(IllegalBlockSizeException e)
+    {
+      System.out.println("Block is incorrect");
+      shutdown();
+    }
+    catch(InvalidKeyException e)
+    {
+      System.out.println("Key is invalid");
+      shutdown();
+    }
+    catch(IOException e)
+    {
+      System.out.println("Error writing to stream");
+      shutdown();
+    }
+
   }
 
 
@@ -91,10 +107,11 @@ public class Worker extends Thread
     }
     catch(IOException e)
     {
-      e.printStackTrace();
+      System.out.println("There was an error shutting down");
     }
     getUser().setLoggedIn(false);
     isLoggedIn = false;
+    server.cleanConnectionList();
   }
   
   public void run ()
@@ -143,9 +160,8 @@ public class Worker extends Thread
       }
       catch(IOException e)
       {
-        isRunning = false;
+        // isRunning = false;
         System.out.println("There was an error reading");
-        return;
       }
       catch(ClassNotFoundException e)
       {
@@ -154,15 +170,15 @@ public class Worker extends Thread
       }
       catch(BadPaddingException e)
       {
-        e.printStackTrace();
+        System.out.println("Error padding encryption");
       }
       catch(IllegalBlockSizeException e)
       {
-        e.printStackTrace();
+        System.out.println("Block is too large");
       }
       catch(InvalidKeyException e)
       {
-        e.printStackTrace();
+        System.out.println("Key is incorrect.");
       }
     }
   }

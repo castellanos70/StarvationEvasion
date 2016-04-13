@@ -20,6 +20,13 @@ public class LoginHandler extends AbstractHandler
   {
     if (request.getDestination().equals(Endpoint.LOGIN))
     {
+      if (getClient().getUser().isLoggedIn())
+      {
+        getClient().send(new ResponseFactory().build(server.uptime(),
+                                                     getClient().getUser(),
+                                                     Type.ERROR, "Already logged in"));
+        return true;
+      }
       String uname = (String) request.getPayload().get("username");
       String pwd = (String) request.getPayload().get("password");
 

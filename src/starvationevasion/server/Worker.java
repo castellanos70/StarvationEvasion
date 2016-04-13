@@ -109,8 +109,11 @@ public class Worker extends Thread
     {
       System.out.println("There was an error shutting down");
     }
-    getUser().setLoggedIn(false);
     isLoggedIn = false;
+    if (user != null)
+    {
+      user.setLoggedIn(false);
+    }
   }
   
   public void run ()

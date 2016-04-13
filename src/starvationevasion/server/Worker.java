@@ -114,6 +114,10 @@ public class Worker extends Thread
     {
       user.setLoggedIn(false);
     }
+    else
+    {
+      username = "";
+    }
   }
   
   public void run ()

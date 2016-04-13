@@ -253,6 +253,7 @@ public class Server
 
   public void broadcast (Response response)
   {
+    cleanConnectionList();
     for (Worker worker : allConnections)
     {
       worker.send(response);
@@ -715,7 +716,7 @@ public class Server
     int con = 0;
     for (int i = 0; i < allConnections.size(); i++)
     {
-      if (!allConnections.get(i).isRunning() )
+      if (allConnections.get(i).getUsername().isEmpty() || !allConnections.get(i).isRunning() )
       {
         allConnections.remove(i);
         con++;
@@ -871,7 +872,15 @@ public class Server
         }
         catch(Exception e)
         {
-          System.out.println("could not advance");
+          System.out.println("could not advance trying again");
+          try
+          {
+            phase.call();
+          }
+          catch(Exception e1)
+          {
+            System.out.println("could not advance closeing");
+          }
         }
       }
     }

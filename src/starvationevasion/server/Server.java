@@ -518,6 +518,7 @@ public class Server
     cleanConnectionList();
     if (getPlayerCount() == TOTAL_PLAYERS && currentState == State.LOGIN)
     {
+      isPlaying = true;
       currentState = State.BEGINNING;
       broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE, "Game will begin in 10s"));
       waitAndAdvance(this::begin);

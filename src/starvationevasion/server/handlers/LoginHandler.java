@@ -20,7 +20,7 @@ public class LoginHandler extends AbstractHandler
   {
     if (request.getDestination().equals(Endpoint.LOGIN))
     {
-      if (getClient().getUser().isLoggedIn())
+      if (getClient().loggedIn())
       {
         getClient().send(new ResponseFactory().build(server.uptime(),
                                                      getClient().getUser(),

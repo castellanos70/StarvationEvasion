@@ -91,6 +91,7 @@ public class Server
     try
     {
       serverSocket = new ServerSocket(portNumber);
+      serverSocket.setSoTimeout(10);
     }
     catch(IOException e)
     {
@@ -149,7 +150,7 @@ public class Server
     }
     while(isWaiting)
     {
-      System.out.println("Server(" + host + "): waiting for Connection on port: " + port);
+      //System.out.println("Server(" + host + "): waiting for Connection on port: " + port);
       try
       {
         Socket client = serverSocket.accept();
@@ -167,12 +168,16 @@ public class Server
       }
       catch(IOException e)
       {
-        System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
-        e.printStackTrace();
+        // System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
+        // e.printStackTrace();
       }
       catch(Exception e)
       {
-        e.printStackTrace();
+        // e.printStackTrace();
+      }
+      finally
+      {
+        cleanConnectionList();
       }
     }
   }
@@ -248,6 +253,7 @@ public class Server
 
   public void broadcast (Response response)
   {
+    cleanConnectionList();
     for (Worker worker : allConnections)
     {
       worker.send(response);
@@ -500,6 +506,10 @@ public class Server
       currentState = State.END;
       broadcastStateChange();
       isPlaying = false;
+      for (int i = 0; i < processes.size(); i++)
+      {
+        killAI();
+      }
       return null;
     }
 
@@ -515,9 +525,9 @@ public class Server
    */
   private void update ()
   {
-    cleanConnectionList();
     if (getPlayerCount() == TOTAL_PLAYERS && currentState == State.LOGIN)
     {
+      isPlaying = true;
       currentState = State.BEGINNING;
       broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE, "Game will begin in 10s"));
       waitAndAdvance(this::begin);
@@ -706,7 +716,7 @@ public class Server
     int con = 0;
     for (int i = 0; i < allConnections.size(); i++)
     {
-      if (!allConnections.get(i).isRunning() )
+      if (allConnections.get(i).getUsername().isEmpty() || !allConnections.get(i).isRunning() )
       {
         allConnections.remove(i);
         con++;
@@ -862,7 +872,15 @@ public class Server
         }
         catch(Exception e)
         {
-          System.out.println("could not advance");
+          System.out.println("could not advance trying again");
+          try
+          {
+            phase.call();
+          }
+          catch(Exception e1)
+          {
+            System.out.println("could not advance closeing");
+          }
         }
       }
     }

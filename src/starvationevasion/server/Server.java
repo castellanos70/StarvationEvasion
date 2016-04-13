@@ -303,7 +303,7 @@ public class Server
   {
     stopGame();
     broadcast(new ResponseFactory().build(uptime(), currentState, Type.BROADCAST, "Game restarted."));
-
+    userList.forEach(User::reset);
     simulator.init();
 
     for (User user : getPlayers())

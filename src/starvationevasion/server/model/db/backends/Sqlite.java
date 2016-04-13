@@ -35,10 +35,6 @@ public class Sqlite implements Backend
       e.printStackTrace();
       return false;
     }
-    finally
-    {
-      close();
-    }
     return true;
   }
 
@@ -176,10 +172,6 @@ public class Sqlite implements Backend
     catch(SQLException e)
     {
       e.printStackTrace();
-    }
-    finally
-    {
-      close();
     }
     return null;
   }

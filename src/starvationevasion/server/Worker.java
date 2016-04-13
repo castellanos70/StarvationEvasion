@@ -159,8 +159,9 @@ public class Worker extends Thread
       }
       catch(IOException e)
       {
-        // isRunning = false;
         System.out.println("There was an error reading");
+        System.out.println("Shutting down");
+        shutdown();
       }
       catch(ClassNotFoundException e)
       {

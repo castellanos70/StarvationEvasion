@@ -546,7 +546,7 @@ public class Server
    */
   private void update ()
   {
-    // cleanConnectionList();
+     cleanConnectionList();
 
     if (getPlayerCount() == TOTAL_PLAYERS && currentState == State.LOGIN)
     {

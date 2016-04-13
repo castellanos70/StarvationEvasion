@@ -96,7 +96,7 @@ public class Worker extends Thread
   }
 
 
-  public void shutdown()
+  void shutdown()
   {
     isRunning = false;
     try

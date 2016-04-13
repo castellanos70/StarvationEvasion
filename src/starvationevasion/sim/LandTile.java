@@ -1,9 +1,6 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.Constant;
-import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.Util;
+import starvationevasion.common.*;
 import starvationevasion.sim.io.CSVReader;
 
 import java.text.DateFormat;
@@ -319,7 +316,7 @@ public class LandTile
     fileReader.trashRecord();
 
     // read until end of file is found
-
+    Territory territory = null;
     while ((fieldList = fileReader.readRecord(FileHeaders.SIZE)) != null)
     {
       //System.out.println("ProductionCSVLoader(): record="+fieldList[0]+", "+fieldList[2]+", len="+fieldList.length);
@@ -327,7 +324,11 @@ public class LandTile
       float latitude = Float.parseFloat(fieldList[0]);
       float longitude = Float.parseFloat(fieldList[1]);
       LandTile tile = new LandTile(latitude, longitude);
-      Territory territory = model.getTerritory(latitude, longitude);
+      MapPoint mapPoint = new MapPoint(latitude, longitude);
+      if ((territory == null) || (!territory.containsMapPoint(mapPoint)))
+      {
+        territory = model.getTerritory(mapPoint);
+      }
       if (territory == null)
       {
         System.out.println("LandTile: ERROR: ["+latitude+", "+longitude+"] not a territory");

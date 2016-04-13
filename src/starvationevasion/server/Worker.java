@@ -26,7 +26,7 @@ public class Worker extends Thread
   private String username = "ANON";
   private volatile boolean isRunning = true;
   private final Server server;
-  private Handler handler;
+  private final Handler handler;
 
   private WriteStrategy writer;
   private ReadStrategy reader;
@@ -34,6 +34,7 @@ public class Worker extends Thread
   private final DataOutputStream outStream;
   private final DataInputStream inStream;
   private boolean isLoggedIn = false;
+  private User user;
 
 
   public Worker (Socket client, Server server)
@@ -71,15 +72,31 @@ public class Worker extends Thread
     {
       writer.write(data);
     }
-    catch(Exception e)
+    catch(BadPaddingException e)
     {
-      e.printStackTrace();
+      System.out.println("Contains incorrect padding");
       shutdown();
     }
+    catch(IllegalBlockSizeException e)
+    {
+      System.out.println("Block is incorrect");
+      shutdown();
+    }
+    catch(InvalidKeyException e)
+    {
+      System.out.println("Key is invalid");
+      shutdown();
+    }
+    catch(IOException e)
+    {
+      System.out.println("Error writing to stream");
+      shutdown();
+    }
+
   }
 
 
-  public void shutdown()
+  void shutdown()
   {
     isRunning = false;
     try
@@ -90,7 +107,7 @@ public class Worker extends Thread
     }
     catch(IOException e)
     {
-      e.printStackTrace();
+      System.out.println("There was an error shutting down");
     }
     getUser().setLoggedIn(false);
     isLoggedIn = false;
@@ -126,51 +143,41 @@ public class Worker extends Thread
           String[] arr = string.split("\\s+");
           if (arr.length < 2)
           {
-            send(ResponseFactory.build(server.uptime(), null, Type.BROADCAST, "Invalid command args"));
+            send(new ResponseFactory().build(server.uptime(), null, Type.BROADCAST, "Invalid command args"));
             continue;
           }
 
           request = new Request(arr[0], arr[1], string);
         }
 
-
         handler.handle(request);
-
       }
       catch(EndpointException e)
       {
         System.out.println("Invalid endpoint!");
-        send(ResponseFactory.build(server.uptime(), null, Type.BROADCAST, "Invalid endpoint"));
+        send(new ResponseFactory().build(server.uptime(), null, Type.BROADCAST, "Invalid endpoint"));
       }
       catch(IOException e)
       {
-        isRunning = false;
-        String u = "";
-//        if (getUser() != null)
-//        {
-//          u = getUser().toString() + "\n";
-//        }
-        System.out.println("There was an error reading:\n\t"
-                                   + getName() + "\n\t"
-                                   + u);
-        return;
+        // isRunning = false;
+        System.out.println("There was an error reading");
       }
       catch(ClassNotFoundException e)
       {
         System.out.println("Invalid Class was received");
-        send(ResponseFactory.build(server.uptime(), null, Type.BROADCAST, "Invalid Class"));
+        send(new ResponseFactory().build(server.uptime(), null, Type.BROADCAST, "Invalid Class"));
       }
       catch(BadPaddingException e)
       {
-        e.printStackTrace();
+        System.out.println("Error padding encryption");
       }
       catch(IllegalBlockSizeException e)
       {
-        e.printStackTrace();
+        System.out.println("Block is too large");
       }
       catch(InvalidKeyException e)
       {
-        e.printStackTrace();
+        System.out.println("Key is incorrect.");
       }
     }
   }
@@ -219,6 +226,10 @@ public class Worker extends Thread
 
   public User getUser()
   {
-    return server.getUserByUsername(getUsername());
+    if (!username.equals("ANON") && user == null)
+    {
+      this.user = server.getUserByUsername(getUsername());
+    }
+    return user;
   }
 }

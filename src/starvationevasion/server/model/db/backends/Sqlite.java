@@ -35,12 +35,17 @@ public class Sqlite implements Backend
       e.printStackTrace();
       return false;
     }
+    finally
+    {
+      close();
+    }
     return true;
   }
 
   @Override
   public void createTable (String table, Hashtable<String, Object> properties)
   {
+    connect();
     Statement statement = null;
     try
     {
@@ -74,11 +79,16 @@ public class Sqlite implements Backend
     {
       e.printStackTrace();
     }
+    finally
+    {
+      close();
+    }
   }
 
   @Override
   public void insert (String table, Set<String> cols, Set<Object> values)
   {
+    connect();
     Statement statement = null;
     try
     {
@@ -147,11 +157,16 @@ public class Sqlite implements Backend
     {
       e.printStackTrace();
     }
+    finally
+    {
+      close();
+    }
   }
 
   @Override
   public ResultSet select (String table, String where)
   {
+    connect();
     try
     {
       Statement statement = connection.createStatement();
@@ -162,6 +177,10 @@ public class Sqlite implements Backend
     {
       e.printStackTrace();
     }
+    finally
+    {
+      close();
+    }
     return null;
   }
 
@@ -169,6 +188,11 @@ public class Sqlite implements Backend
   @Override
   public void close ()
   {
+    if (connection == null)
+    {
+      return;
+    }
+
     try
     {
       connection.close();
@@ -177,5 +201,7 @@ public class Sqlite implements Backend
     {
       e.printStackTrace();
     }
+
+    connection = null;
   }
 }

@@ -11,10 +11,13 @@ import starvationevasion.server.model.*;
 import javax.crypto.*;
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 
@@ -32,7 +35,7 @@ public class AI
 
   private ArrayList<WorldData> worldData;
 
-  private ArrayList<PolicyCard> ballot;
+  private List<PolicyCard> ballot;
 
   // time of server start
   private double startNanoSec = 0;
@@ -165,7 +168,7 @@ public class AI
     return commands;
   }
 
-  public ArrayList<PolicyCard> getBallot ()
+  public List<PolicyCard> getBallot ()
   {
     return ballot;
   }
@@ -203,7 +206,7 @@ public class AI
         {
           u = (User) response.getPayload().getData();
 
-          send(RequestFactory.chat(startNanoSec,
+          send(new RequestFactory().chat(startNanoSec,
                                    "ALL",
                                    "Hi, I am " + u.getUsername() + ". I'll be playing using (crappy) AI.",
                                    null));
@@ -217,7 +220,11 @@ public class AI
         }
         else if (response.getType().equals(Type.USER))
         {
-          u = (User) response.getPayload().getData();
+          if (u != null && u.getUsername().equals(((User) response.getPayload().getData()).getUsername()))
+          {
+            u = (User) response.getPayload().getData();
+          }
+
         }
         else if (response.getType().equals(Type.TIME))
         {
@@ -253,6 +260,7 @@ public class AI
           else if (state == starvationevasion.server.model.State.DRAWING)
           {
             // AI.this.commands.add(new Draft(AI.this));
+            commands.clear();
           }
         }
         else if (response.getType().equals(Type.DRAFTED) || response.getType().equals(Type.DRAFTED_INTO_VOTE))
@@ -270,7 +278,7 @@ public class AI
         }
         else if (response.getType().equals(Type.VOTE_BALLOT))
         {
-          ballot = (ArrayList<PolicyCard>) response.getPayload().getData();
+          ballot = (List<PolicyCard>) response.getPayload().getData();
         }
 
       }
@@ -278,16 +286,39 @@ public class AI
       {
         isRunning = false;
         System.out.println("Lost server, press enter to shutdown.");
-        return;
+
       }
-      catch(Exception e)
+      catch(SocketException e)
       {
-        e.printStackTrace();
+        isRunning = false;
+        System.out.println("Lost server");
+        System.out.println("Shutting down...");
+
+      }
+      catch(NoSuchAlgorithmException e)
+      {
+        isRunning = false;
+        System.out.println("Will not be able to decrypt");
+        System.exit(1);
+      }
+      catch(IOException e)
+      {
+        isRunning = false;
+        System.out.println("Error reading");
+      }
+      catch(InvalidKeyException e)
+      {
+        System.out.println("Key is not valid");
+      }
+      catch(ClassNotFoundException e)
+      {
+        isRunning = false;
+        System.out.println("Class not found!");
       }
     }
   }
 
-  private Response readObject () throws Exception
+  private Response readObject () throws IOException, ClassNotFoundException, InvalidKeyException, NoSuchAlgorithmException
   {
     int ch1 = reader.read();
     int ch2 = reader.read();

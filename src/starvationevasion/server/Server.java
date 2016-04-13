@@ -29,7 +29,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 
@@ -44,7 +44,8 @@ public class Server
   private LinkedList<Process> processes = new LinkedList<>();
 
   private long startNanoSec = 0;
-  private Simulator simulator;
+  private long endNanoSec = 0;
+  private final Simulator simulator;
 
   // list of ALL the users
   private final List<User> userList = Collections.synchronizedList(new ArrayList<>());
@@ -54,14 +55,9 @@ public class Server
   private Date date = new Date();
 
   // list of available regions
-  private List<EnumRegion> availableRegions = Collections.synchronizedList(new ArrayList<>());
-  private ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>();
-  private final LinkedBlockingQueue<PolicyCard> draftedPolicyCards = new LinkedBlockingQueue<>();
+  private final List<EnumRegion> availableRegions = new ArrayList<>(EnumRegion.US_REGIONS.length);
 
-
-  private ScheduledFuture<?> phase;
-  // Service that moves game along to next phase
-  private ScheduledExecutorService advancer = Executors.newSingleThreadScheduledExecutor();
+  private final PolicyCard[][] _drafted = new PolicyCard[EnumRegion.US_REGIONS.length][2];
 
   // bool that listen for connections is looping over
   private boolean isWaiting = true;
@@ -73,6 +69,8 @@ public class Server
 
   // Class that save User's to a database
   private final Transaction<User> userTransaction;
+  private volatile long counter = 0;
+  private volatile boolean isPlaying = false;
 
 
   public Server (int portNumber)
@@ -87,7 +85,7 @@ public class Server
     }
 
 
-    startNanoSec = System.nanoTime();
+    // startNanoSec = System.nanoTime();
     simulator = new Simulator();
 
     try
@@ -109,7 +107,7 @@ public class Server
       {
         update();
       }
-    }, 0, 1500);
+    }, 0, 1000);
 
     waitForConnection(portNumber);
 
@@ -262,7 +260,7 @@ public class Server
     isWaiting = false;
     for (Worker connection : allConnections)
     {
-      connection.send(ResponseFactory.build(uptime(),
+      connection.send(new ResponseFactory().build(uptime(),
                                             currentState,
                                             Type.BROADCAST, "Server will shutdown in 3 sec"
       ));
@@ -287,39 +285,35 @@ public class Server
 
   public State getGameState ()
   {
-    synchronized(currentState)
-    {
       return currentState;
-    }
   }
 
   public void restartGame ()
   {
     stopGame();
-    broadcast(ResponseFactory.build(uptime(), currentState, Type.BROADCAST, "Game restarted."));
+    broadcast(new ResponseFactory().build(uptime(), currentState, Type.BROADCAST, "Game restarted."));
 
-    simulator = new Simulator();
+    simulator.init();
 
     for (User user : getPlayers())
     {
       user.getHand().clear();
     }
-    enactedPolicyCards.clear();
-    draftedPolicyCards.clear();
+    // enactedPolicyCards.clear();
+    for (int i = 0; i < _drafted.length; i++)
+    {
+      _drafted[i] = new PolicyCard[2];
+    }
+    isPlaying = true;
     currentState = State.LOGIN;
     broadcastStateChange();
   }
 
   public void stopGame ()
   {
-    if (phase != null)
-    {
-      phase.cancel(true);
-    }
-    advancer.shutdownNow();
-    advancer = Executors.newSingleThreadScheduledExecutor();
     currentState = State.END;
-    broadcast(ResponseFactory.build(uptime(), currentState, Type.GAME_STATE, "Game has been stopped."));
+    isPlaying = false;
+    broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE, "Game has been stopped."));
   }
 
   public List<User> getPlayers ()
@@ -335,7 +329,7 @@ public class Server
                              .count();
   }
 
-  public boolean addPlayer (User u)
+  public synchronized boolean addPlayer (User u)
   {
     EnumRegion _region = u.getRegion();
 
@@ -369,112 +363,149 @@ public class Server
    *
    * Users are delt cards and world data is sent out.
    */
-  private void begin ()
+  private Void begin ()
   {
-    currentState = State.BEGINNING;
-    broadcastStateChange();
 
     ArrayList<WorldData> worldDataList = simulator.getWorldData(Constant.FIRST_DATA_YEAR,
                                                                 Constant.FIRST_GAME_YEAR - 1);
 
+    currentState = State.BEGINNING;
+    broadcastStateChange();
+    isPlaying = true;
+
     for (User user : getPlayers())
     {
       drawByUser(user);
-      user.getWorker().send(ResponseFactory.build(uptime(),
+      user.reset();
+      user.getWorker().send(new ResponseFactory().build(uptime(),
                                                   user,
                                                   Type.USER));
     }
 
-    broadcast(ResponseFactory.build(uptime(), new Payload(worldDataList), Type.WORLD_DATA_LIST));
+    broadcast(new ResponseFactory().build(uptime(), new Payload(worldDataList), Type.WORLD_DATA_LIST));
     draft();
+    return null;
   }
 
   /**
    * Sets the state to drafting and schedules a new task.
    * Drafting allows for users to discard and draw new cards
    */
-  private void draft ()
+  private Void draft ()
   {
     currentState = State.DRAFTING;
     broadcastStateChange();
 
+    waitAndAdvance(Server.this::vote);
 
-    phase = advancer.schedule(this::vote, currentState.getDuration(), TimeUnit.MILLISECONDS);
-
+    return null;
   }
 
   /**
    * Sets the state to vote and schedules a new draw task
    * Allows users to send votes on cards
    */
-  private void vote ()
+  private Void vote ()
   {
     currentState = State.VOTING;
-    broadcastStateChange();
 
     ArrayList<PolicyCard> _list = new ArrayList<>();
+    synchronized(_drafted)
+    {
+      for (PolicyCard[] policyCards : _drafted)
+      {
+        for (PolicyCard policyCard : policyCards)
+        {
+          if (policyCard != null)
+          {
+            _list.add(policyCard);
+          }
+        }
+      }
+    }
+    broadcastStateChange();
+    broadcast(new ResponseFactory().build(uptime(),
+                                          new Payload(_list),
+                                          Type.VOTE_BALLOT));
 
-    _list.addAll(draftedPolicyCards);
-
-    broadcast(ResponseFactory.build(uptime(),
-                                    new Payload(_list),
-                                    Type.VOTE_BALLOT));
-
-    phase = advancer.schedule(this::draw, currentState.getDuration(), TimeUnit.MILLISECONDS);
-
+    startNanoSec = System.currentTimeMillis();
+    endNanoSec = startNanoSec + currentState.getDuration();
+    while(true)
+    {
+      if (endNanoSec < System.currentTimeMillis())
+      {
+        break;
+      }
+      boolean allDone = getPlayers().stream().allMatch(user -> user.isDone);
+      if (allDone)
+      {
+        break;
+      }
+    }
+    waitAndAdvance(Server.this::draw);
+    return null;
   }
 
 
   /**
    * Draw cards for all users
    */
-  private void draw ()
+  private Void draw ()
   {
-    currentState = State.DRAWING;
-    broadcastStateChange();
-    enactedPolicyCards = new ArrayList<>();
+    ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>();
 
-    PolicyCard p;
-    while ((p=draftedPolicyCards.poll())!=null)
+
+    for (PolicyCard[] policyCards : _drafted)
     {
-
-      if (p.votesRequired() == 0 || p.getEnactingRegionCount() >= p.votesRequired())
+      for (PolicyCard p : policyCards)
       {
-        enactedPolicyCards.add(p);
+        if (p == null) continue;
+        if (p.votesRequired() == 0 || p.getEnactingRegionCount() > p.votesRequired())
+        {
+          enactedPolicyCards.add(p);
+        }
+        simulator.discard(p.getOwner(), p.getCardType());
       }
-      simulator.discard(p.getOwner(), p.getCardType());
     }
 
-    draftedPolicyCards.clear();
+    currentState = State.DRAWING;
+    broadcastStateChange();
 
+    for (int i = 0; i < EnumRegion.US_REGIONS.length; i++)
+    {
+      _drafted[i] = new PolicyCard[2];
+    }
 
 
     for (User user : getPlayers())
     {
       drawByUser(user);
-      user.actionsRemaining=2;
-      user.policyCardsDiscarded=0;
+      user.reset();
 
-      user.getWorker().send(ResponseFactory.build(uptime(),
+      user.getWorker().send(new ResponseFactory().build(uptime(),
                                                   user,
                                                   Type.USER));
     }
 
-
-    ArrayList<WorldData> worldData = simulator.nextTurn(enactedPolicyCards);
-    System.out.println("There is " + enactedPolicyCards.size() + " cards being enacted.");
-
-    broadcast(ResponseFactory.build(uptime(), new Payload(worldData), Type.WORLD_DATA_LIST));
+    // make sure there is no other thread calling the sim before advancing
+    synchronized(simulator)
+    {
+      ArrayList<WorldData> worldData = simulator.nextTurn(enactedPolicyCards);
+      System.out.println("There is " + enactedPolicyCards.size() + " cards being enacted.");
+      broadcast(new ResponseFactory().build(uptime(), new Payload(worldData), Type.WORLD_DATA_LIST));
+    }
 
     if (simulator.getCurrentYear() >= Constant.LAST_YEAR)
     {
       currentState = State.END;
       broadcastStateChange();
-      return;
+      isPlaying = false;
+      return null;
     }
 
+    waitAndAdvance(Server.this::draft);
 
-    phase = advancer.schedule(this::draft, currentState.getDuration(), TimeUnit.MILLISECONDS);
+    return null;
   }
 
   /**
@@ -485,13 +516,11 @@ public class Server
   private void update ()
   {
     cleanConnectionList();
-
     if (getPlayerCount() == TOTAL_PLAYERS && currentState == State.LOGIN)
     {
       currentState = State.BEGINNING;
-      broadcast(ResponseFactory.build(uptime(), currentState, Type.GAME_STATE, "Game will begin in 10s"));
-
-      phase = advancer.schedule(this::begin, currentState.getDuration(), TimeUnit.MILLISECONDS);
+      broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE, "Game will begin in 10s"));
+      waitAndAdvance(this::begin);
     }
   }
 
@@ -661,6 +690,7 @@ public class Server
     }
     else
     {
+      broadcast(new ResponseFactory().build(uptime(), currentState, Type.CHAT, "Someone joined with unencrypted!"));
       worker.setReader(discoveredReader);
       worker.setWriter(discoveredWriter);
     }
@@ -676,10 +706,8 @@ public class Server
     int con = 0;
     for (int i = 0; i < allConnections.size(); i++)
     {
-      if (!allConnections.get(i).isRunning())
+      if (!allConnections.get(i).isRunning() )
       {
-        allConnections.get(i).shutdown();
-        // the worker is not running. remove it.
         allConnections.remove(i);
         con++;
       }
@@ -693,8 +721,9 @@ public class Server
 
   private void broadcastStateChange ()
   {
+    getPlayers().stream().forEach(user -> user.isDone = false);
     // System.out.println(currentState);
-    broadcast(ResponseFactory.build(uptime(), currentState, Type.GAME_STATE));
+    broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE));
   }
 
   public static void main (String args[])
@@ -723,9 +752,28 @@ public class Server
   }
 
 
-  public LinkedBlockingQueue<PolicyCard> getDraftedPolicyCards ()
+  public void draftCard (PolicyCard card, User u)
   {
-    return draftedPolicyCards;
+    synchronized (_drafted)
+    {
+      _drafted[card.getOwner().ordinal()][u.drafts] = card;
+    }
+  }
+
+  public boolean addVote (PolicyCard card, EnumRegion user)
+  {
+    synchronized(_drafted)
+    {
+      for (int i = 0; i < _drafted[card.getOwner().ordinal()].length; i++)
+      {
+        if (_drafted[card.getOwner().ordinal()][i].getCardType().equals(card.getCardType()))
+        {
+          _drafted[card.getOwner().ordinal()][i].addEnactingRegion(user);
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
 
@@ -780,12 +828,43 @@ public class Server
 
       System.out.println("AI removed with exit value: " + String.valueOf(val));
 
-      broadcast(ResponseFactory.build(uptime(), data, Type.CHAT));
+      broadcast(new ResponseFactory().build(uptime(), data, Type.CHAT));
 
     }
   }
 
 
+  public void discard (User u, EnumPolicy card)
+  {
+    synchronized(simulator)
+    {
+      simulator.discard(u.getRegion(), card);
+      u.getHand().remove(card);
+    }
+  }
 
-
+  void waitAndAdvance(Callable phase)
+  {
+    startNanoSec = System.currentTimeMillis();
+    endNanoSec = startNanoSec + currentState.getDuration();
+    while(true)
+    {
+      if (!isPlaying)
+      {
+        return;
+      }
+      boolean allDone = getPlayers().stream().allMatch(user -> user.isDone);
+      if (allDone || endNanoSec < System.currentTimeMillis())
+      {
+        try
+        {
+          phase.call();
+        }
+        catch(Exception e)
+        {
+          System.out.println("could not advance");
+        }
+      }
+    }
+  }
 }

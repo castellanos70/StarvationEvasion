@@ -41,10 +41,12 @@ public class Vote extends AbstractCommand
 
         for (PolicyCard card : getClient().getBallot())
         {
-          if (card.getOwner() != getClient().getUser().getRegion())
+
+          // if (card.getOwner() != getClient().getUser().getRegion()) // Testing
+          if (card.isEligibleToVote(getClient().getUser().getRegion())) // Game play
           {
             Endpoint endpoint;
-            if (Util.likeliness(.20f))
+            if (Util.likeliness(.45f))
             {
               endpoint = Endpoint.VOTE_UP;
             }
@@ -54,11 +56,14 @@ public class Vote extends AbstractCommand
             }
 
 
-            Request request = RequestFactory.build(getClient().getStartNanoSec(), card, endpoint);
+            Request request = new RequestFactory().build(getClient().getStartNanoSec(), card, endpoint);
 
             getClient().send(request);
+
+
           }
         }
+        getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), new Payload(), Endpoint.DONE));
       }
 
 

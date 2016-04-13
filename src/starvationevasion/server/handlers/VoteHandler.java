@@ -23,42 +23,62 @@ public class VoteHandler extends AbstractHandler
     {
       return false;
     }
-
+    boolean isPresent = false;
+    int i;
     PolicyCard card = (PolicyCard) request.getPayload().getData();
-    boolean isPresent = server.getDraftedPolicyCards().contains(card);
-    if (!isPresent)
-    {
-      getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_ERROR, "Not present"));
-      return false;
-    }
+//    PolicyCard[] cards = server.getDraftedPolicyCards()[card.getOwner().ordinal()];
+//    for (i = 0; i < cards.length; i++)
+//    {
+//      if (cards[i].equals(card))
+//      {
+//        isPresent = true;
+//        break;
+//      }
+//    }
+
+//    if (!isPresent)
+//    {
+//      getClient().send(new ResponseFactory().build(server.uptime(), card, Type.VOTE_ERROR, "Not present"));
+//      return false;
+//    }
 
     if (request.getDestination().equals(Endpoint.VOTE_UP))
     {
       if (!card.isEligibleToVote(getClient().getUser().getRegion()))
       {
+        System.out.println("Not eligible");
         // send to client.
-        getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_ERROR, "Not Eligible"));
+        getClient().send(new ResponseFactory().build(server.uptime(), card, Type.VOTE_ERROR, "Not Eligible"));
         return true;
       }
-
-      for (PolicyCard policyCard : server.getDraftedPolicyCards())
+      boolean status;
+      synchronized(server)
       {
-        if (policyCard.equals(card))
-        {
-          policyCard.addEnactingRegion(getClient().getUser().getRegion());
-          getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_SUCCESS));
-          return true;
-        }
+        status = server.addVote(card, getClient().getUser().getRegion());
       }
+
+      if (status)
+      {
+        getClient().send(new ResponseFactory().build(server.uptime(), card, Type.VOTE_SUCCESS));
+        System.out.println("Vote recorded");
+      }
+      else
+      {
+        // throw new VoteException("There was an error voting");
+        getClient().send(new ResponseFactory().build(server.uptime(), card, Type.VOTE_ERROR, "Try to vote again."));
+        //.System.out.println("Vote failed");
+      }
+
+      return true;
     }
     else if (request.getDestination().equals(Endpoint.VOTE_DOWN))
     {
       if (!card.isEligibleToVote(getClient().getUser().getRegion()))
       {
-        getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_ERROR, "Not Eligible"));
+        getClient().send(new ResponseFactory().build(server.uptime(), card, Type.VOTE_ERROR, "Not Eligible"));
         return true;
       }
-      getClient().send(ResponseFactory.build(server.uptime(), card, Type.VOTE_SUCCESS));
+      getClient().send(new ResponseFactory().build(server.uptime(), card, Type.VOTE_SUCCESS));
     }
 
     return true;

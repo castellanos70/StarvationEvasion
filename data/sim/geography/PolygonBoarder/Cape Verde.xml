@@ -1,0 +1,106 @@
+<country>
+<name>Cabo Verde</name>
+<area>
+<vertex lat="14.856303" lon="-24.308252"/>
+<vertex lat="14.818217" lon="-24.386103"/>
+<vertex lat="14.834805" lon="-24.440544"/>
+<vertex lat="14.874235" lon="-24.492169"/>
+<vertex lat="14.931234" lon="-24.517103"/>
+<vertex lat="14.980275" lon="-24.496897"/>
+<vertex lat="15.038307" lon="-24.391968"/>
+<vertex lat="15.019497" lon="-24.329466"/>
+<vertex lat="14.929528" lon="-24.295772"/>
+<vertex lat="14.856303" lon="-24.308252"/>
+</area>
+<area>
+<vertex lat="15.136751" lon="-23.182145"/>
+<vertex lat="15.133082" lon="-23.209947"/>
+<vertex lat="15.178144" lon="-23.251805"/>
+<vertex lat="15.240543" lon="-23.242478"/>
+<vertex lat="15.257002" lon="-23.247154"/>
+<vertex lat="15.323561" lon="-23.210257"/>
+<vertex lat="15.317722" lon="-23.137755"/>
+<vertex lat="15.268422" lon="-23.119307"/>
+<vertex lat="15.166671" lon="-23.115870"/>
+<vertex lat="15.136751" lon="-23.182145"/>
+</area>
+<area>
+<vertex lat="15.007973" lon="-23.444248"/>
+<vertex lat="14.916092" lon="-23.504658"/>
+<vertex lat="14.923482" lon="-23.637208"/>
+<vertex lat="14.961309" lon="-23.705369"/>
+<vertex lat="15.076909" lon="-23.785003"/>
+<vertex lat="15.166103" lon="-23.782522"/>
+<vertex lat="15.243566" lon="-23.754462"/>
+<vertex lat="15.310797" lon="-23.759371"/>
+<vertex lat="15.328522" lon="-23.748106"/>
+<vertex lat="15.316895" lon="-23.707204"/>
+<vertex lat="15.271626" lon="-23.700641"/>
+<vertex lat="15.160884" lon="-23.580002"/>
+<vertex lat="15.139283" lon="-23.535250"/>
+<vertex lat="15.007973" lon="-23.444248"/>
+</area>
+<area>
+<vertex lat="16.237252" lon="-22.917717"/>
+<vertex lat="16.218984" lon="-22.834311"/>
+<vertex lat="16.225522" lon="-22.802634"/>
+<vertex lat="16.221542" lon="-22.749433"/>
+<vertex lat="16.169039" lon="-22.692615"/>
+<vertex lat="16.113280" lon="-22.681892"/>
+<vertex lat="16.043362" lon="-22.710107"/>
+<vertex lat="15.986053" lon="-22.820514"/>
+<vertex lat="15.992719" lon="-22.884076"/>
+<vertex lat="16.045119" lon="-22.959265"/>
+<vertex lat="16.148420" lon="-22.916141"/>
+<vertex lat="16.237252" lon="-22.917717"/>
+</area>
+<area>
+<vertex lat="16.622500" lon="-24.087723"/>
+<vertex lat="16.593070" lon="-24.046382"/>
+<vertex lat="16.572012" lon="-24.032739"/>
+<vertex lat="16.561057" lon="-24.094131"/>
+<vertex lat="16.599401" lon="-24.243037"/>
+<vertex lat="16.575939" lon="-24.282802"/>
+<vertex lat="16.493102" lon="-24.322334"/>
+<vertex lat="16.618417" lon="-24.398092"/>
+<vertex lat="16.664461" lon="-24.392924"/>
+<vertex lat="16.677794" lon="-24.376698"/>
+<vertex lat="16.644876" lon="-24.271071"/>
+<vertex lat="16.622500" lon="-24.087723"/>
+</area>
+<area>
+<vertex lat="16.659087" lon="-22.888313"/>
+<vertex lat="16.607927" lon="-22.920249"/>
+<vertex lat="16.683039" lon="-22.959420"/>
+<vertex lat="16.700893" lon="-22.980607"/>
+<vertex lat="16.808845" lon="-22.990891"/>
+<vertex lat="16.841014" lon="-22.932884"/>
+<vertex lat="16.843727" lon="-22.904746"/>
+<vertex lat="16.732106" lon="-22.903919"/>
+<vertex lat="16.659087" lon="-22.888313"/>
+</area>
+<area>
+<vertex lat="16.818095" lon="-24.887054"/>
+<vertex lat="16.794169" lon="-24.969168"/>
+<vertex lat="16.797218" lon="-25.019966"/>
+<vertex lat="16.832513" lon="-25.093036"/>
+<vertex lat="16.870702" lon="-25.070092"/>
+<vertex lat="16.913232" lon="-24.991027"/>
+<vertex lat="16.922120" lon="-24.936457"/>
+<vertex lat="16.846491" lon="-24.891912"/>
+<vertex lat="16.818095" lon="-24.887054"/>
+</area>
+<area>
+<vertex lat="16.946511" lon="-25.169828"/>
+<vertex lat="16.925944" lon="-25.267238"/>
+<vertex lat="16.935866" lon="-25.308320"/>
+<vertex lat="17.015396" lon="-25.321911"/>
+<vertex lat="17.067744" lon="-25.341548"/>
+<vertex lat="17.090998" lon="-25.337104"/>
+<vertex lat="17.193680" lon="-25.113449"/>
+<vertex lat="17.176471" lon="-25.034642"/>
+<vertex lat="17.094719" lon="-24.979658"/>
+<vertex lat="17.049296" lon="-25.017072"/>
+<vertex lat="16.946511" lon="-25.169828"/>
+</area>
+</country>

@@ -8,6 +8,8 @@ import starvationevasion.common.policies.EthanolTaxCreditChangePolicy;
 import starvationevasion.common.policies.FertilizerSubsidyPolicy;
 import starvationevasion.server.model.*;
 
+import java.util.ArrayList;
+
 
 public class Draft extends AbstractCommand
 {
@@ -25,9 +27,9 @@ public class Draft extends AbstractCommand
   @Override
   public boolean run ()
   {
-    System.out.println("Drafted: " + draftedCard +
-                               "\nDiscarded: " + discarded +
-                               "\nDrawn: " + drawn);
+//    System.out.println("Drafted: " + draftedCard +
+//                               "\nDiscarded: " + discarded +
+//                               "\nDrawn: " + drawn);
 
     if (!getClient().getState().equals(State.DRAFTING) && tries > 0)
     {
@@ -51,9 +53,14 @@ public class Draft extends AbstractCommand
 
       if (!discarded && getClient().getUser().getHand().size() > 0)
       {
-        randomlyDiscard();
+        if (!Util.rand.nextBoolean())
+        {
+          randomlyDiscard();
+        }
+
         return true;
       }
+      getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), new Payload(), Endpoint.DONE));
 
 //      if (!drawn && getClient().getUser().getHand().size() < 7)
 //      {
@@ -75,7 +82,7 @@ public class Draft extends AbstractCommand
     {
       PolicyCard _card = PolicyCard.create(getClient().getUser().getRegion(), policy);
       // dont remove the card we just drafted!!!
-      if (policy != cardDrafted.getCardType() && _card.votesRequired() >= Util.randInt(0,2))
+      if (cardDrafted != null && policy != cardDrafted.getCardType() && Util.rand.nextBoolean())
       {
         discard = policy;
         break;
@@ -85,7 +92,7 @@ public class Draft extends AbstractCommand
     if(idx >= 0)
     {
 
-      getClient().send(RequestFactory.build(getClient().getStartNanoSec(),
+      getClient().send(new RequestFactory().build(getClient().getStartNanoSec(),
                                             discard,
                                             Endpoint.DELETE_CARD));
 
@@ -95,24 +102,53 @@ public class Draft extends AbstractCommand
 
   private void randomlySetDraftedCard ()
   {
-    Request r = new Request(getClient().getStartNanoSec(), Endpoint.DRAFT_CARD);
-    Payload data = new Payload();
     PolicyCard card = null;
 
+    int i = 0;
+    boolean draftSent = false;
     for (EnumPolicy policy : getClient().getUser().getHand())
     {
       card = PolicyCard.create(getClient().getUser().getRegion(), policy);
 
-      if (Util.likeliness(.20f))
-      {
-        break;
-      }
+        if (card.votesRequired() == 0 || !draftSent)
+        {
+          setupCard(card);
+          getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), card, Endpoint.DRAFT_CARD));
+          draftedCard = true;
+          draftSent = true;
+          if (i == 0)
+          {
+            continue;
+          }
+          if ( i == getClient().getUser().getHand().size()-1)
+          {
+            return;
+          }
+
+        }
+      i++;
     }
+    setupCard(card);
+
     if (card == null)
     {
       return;
     }
 
+    new RequestFactory().build(getClient().getStartNanoSec(),
+                         card,
+                         Endpoint.DRAFT_CARD);
+    cardDrafted = card;
+    draftedCard = true;
+    tries = 2;
+  }
+
+  private void setupCard(PolicyCard card)
+  {
+    if (card == null)
+    {
+      return;
+    }
     EnumFood[] foods = card.getValidTargetFoods();
     EnumRegion[] regions = card.getValidTargetRegions();
 
@@ -182,12 +218,5 @@ public class Draft extends AbstractCommand
       }
 
     }
-
-    cardDrafted = card;
-    draftedCard = true;
-    data.putData(card);
-    r.setData(data);
-    getClient().send(r);
-    tries = 2;
   }
 }

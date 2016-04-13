@@ -92,4 +92,10 @@ public class Constant
     */
 
   public static final double EARTH_CIRCUMFERENCE = 40075;
+
+  public static final long DRAFTING_TIME = 2*60*1000;
+
+  public static final long DRAWING_TIME = 5*1000;
+
+  public static final long VOTING_TIME = 3*60*1000;
 }

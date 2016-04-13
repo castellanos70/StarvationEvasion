@@ -38,11 +38,11 @@ public class GeographyXMLparser extends DefaultHandler
   private static String BORDERS_DIR = "/sim/geography";
   private static String BORDERS_INDEX = BORDERS_DIR + "/PolygonBoarders.txt";
 
-  private ArrayList<GeographicArea> regionList;
+  private ArrayList<GeographicArea> geographicAreaList;
   private Locator locator;
-  private String regionName;
+  private String territoryName;
 
-  private GeographicArea tmpRegion;
+  private GeographicArea tmpGeographicArea;
   private List<MapPoint> tmpPerimeterSet;
   private GeographyValidator regionValidator = new GeographyValidator();
   private boolean name;
@@ -58,8 +58,7 @@ public class GeographyXMLparser extends DefaultHandler
   public void startDocument() throws SAXException
   {
     tmpPerimeterSet = new LinkedList<>();
-    regionName = null;
-    //regionType = null;
+    territoryName = null;
   }
 
   @Override
@@ -77,8 +76,7 @@ public class GeographyXMLparser extends DefaultHandler
         //regionType = qName;
         break;
       case "area":
-        tmpRegion = new GeographicArea(regionName);
-        // tmpRegion.setType(regionType);
+        tmpGeographicArea = new GeographicArea(territoryName);
         break;
 
       case "name":
@@ -116,13 +114,14 @@ public class GeographyXMLparser extends DefaultHandler
     {
       name = false;
 
-      if (regionName != null)
+      if (territoryName != null)
       {
         String msg = "(!) Duplicate name tag. no good.";
         fatalError(new SAXParseException(msg, locator));
       }
 
-      regionName = new String(ch, start, length);
+      territoryName = new String(ch, start, length);
+      //System.out.println("!!!!!!!!!!!!!!!! GeographyXMLparser.characters() territoryName="+territoryName);
     }
   }
 
@@ -134,10 +133,10 @@ public class GeographyXMLparser extends DefaultHandler
       if (qName.equals("area"))
       {
         // save and reset....
-        tmpRegion.setPerimeter(new ArrayList<>(tmpPerimeterSet));
+        tmpGeographicArea.setPerimeter(new ArrayList<>(tmpPerimeterSet));
 
-        if (REGION_VALIDATION) regionValidator.validate(tmpRegion);
-        regionList.add(tmpRegion);
+        if (REGION_VALIDATION) regionValidator.validate(tmpGeographicArea);
+        geographicAreaList.add(tmpGeographicArea);
         tmpPerimeterSet.clear();
       }
     }
@@ -151,7 +150,7 @@ public class GeographyXMLparser extends DefaultHandler
 
   public ArrayList<GeographicArea> getGeography()
   {
-    if (regionList == null)
+    if (geographicAreaList == null)
     {
       try
       {
@@ -166,7 +165,7 @@ public class GeographyXMLparser extends DefaultHandler
         System.exit(0);
       }
     }
-    return regionList;
+    return geographicAreaList;
   }
 
   /**
@@ -176,17 +175,17 @@ public class GeographyXMLparser extends DefaultHandler
   {
     try
     {
-      regionList = new ArrayList<>();
+      geographicAreaList = new ArrayList<>();
       XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
       xmlReader.setContentHandler(this);
 
       ArrayList<String> filesToRead = readIndex(BORDERS_INDEX);
-      while (!filesToRead.isEmpty())
+      //System.out.println("GeographyXMLparser.generateRegions() filesToRead="+filesToRead.size());
+      for (String fileName: filesToRead)
       {
-        String file = filesToRead.remove(0);
-
-        String resourcePath = BORDERS_DIR + '/' + file;
-        InputStream resourceStream = RegionParserHandler.class.getResourceAsStream(resourcePath);
+        //System.out.println("     fileName="+fileName);
+        String resourcePath = BORDERS_DIR + '/' + fileName;
+        InputStream resourceStream = GeographyXMLparser.class.getResourceAsStream(resourcePath);
 
         BufferedInputStream inputStream = new BufferedInputStream(resourceStream);
         xmlReader.parse(new InputSource(inputStream));

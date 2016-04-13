@@ -12,7 +12,6 @@ public abstract class Transaction<T>
   public Transaction(Backend db)
   {
     this.db = db;
-    db.connect();
   }
 
   public abstract ArrayList<T> getAll();

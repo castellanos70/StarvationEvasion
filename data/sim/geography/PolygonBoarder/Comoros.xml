@@ -1,0 +1,44 @@
+<country>
+<name>Comoros</name>
+<area>
+<vertex lat="-12.307000" lon="43.788676"/>
+<vertex lat="-12.368289" lon="43.858956"/>
+<vertex lat="-12.342864" lon="43.663619"/>
+<vertex lat="-12.287673" lon="43.632924"/>
+<vertex lat="-12.247056" lon="43.631373"/>
+<vertex lat="-12.255944" lon="43.704340"/>
+<vertex lat="-12.307000" lon="43.788676"/>
+</area>
+<area>
+<vertex lat="-12.081588" lon="44.476386"/>
+<vertex lat="-12.219564" lon="44.526719"/>
+<vertex lat="-12.323537" lon="44.526306"/>
+<vertex lat="-12.356506" lon="44.505015"/>
+<vertex lat="-12.335112" lon="44.460160"/>
+<vertex lat="-12.252223" lon="44.377478"/>
+<vertex lat="-12.171401" lon="44.220175"/>
+<vertex lat="-12.164787" lon="44.292315"/>
+<vertex lat="-12.173055" lon="44.334483"/>
+<vertex lat="-12.165614" lon="44.379131"/>
+<vertex lat="-12.120138" lon="44.407037"/>
+<vertex lat="-12.092957" lon="44.412618"/>
+<vertex lat="-12.071356" lon="44.451892"/>
+<vertex lat="-12.081588" lon="44.476386"/>
+</area>
+<area>
+<vertex lat="-11.901289" lon="43.465802"/>
+<vertex lat="-11.914570" lon="43.446785"/>
+<vertex lat="-11.857519" lon="43.355525"/>
+<vertex lat="-11.844083" lon="43.303331"/>
+<vertex lat="-11.751892" lon="43.226644"/>
+<vertex lat="-11.432118" lon="43.255996"/>
+<vertex lat="-11.391191" lon="43.280697"/>
+<vertex lat="-11.374551" lon="43.298991"/>
+<vertex lat="-11.368453" lon="43.341469"/>
+<vertex lat="-11.408554" lon="43.392938"/>
+<vertex lat="-11.614123" lon="43.379399"/>
+<vertex lat="-11.752512" lon="43.447715"/>
+<vertex lat="-11.862066" lon="43.491537"/>
+<vertex lat="-11.901289" lon="43.465802"/>
+</area>
+</country>

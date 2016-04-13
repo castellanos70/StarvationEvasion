@@ -253,10 +253,15 @@ public class Server
 
   public void broadcast (Response response)
   {
-    cleanConnectionList();
-    for (Worker worker : allConnections)
+    try
     {
-      worker.send(response);
+      allConnections.stream().filter(Worker::isRunning).forEach(worker -> {
+        worker.send(response);
+      });
+    }
+    catch(Exception e)
+    {
+      cleanConnectionList();
     }
   }
 
@@ -873,14 +878,6 @@ public class Server
         catch(Exception e)
         {
           System.out.println("could not advance trying again");
-          try
-          {
-            phase.call();
-          }
-          catch(Exception e1)
-          {
-            System.out.println("could not advance closeing");
-          }
         }
       }
     }

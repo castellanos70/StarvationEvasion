@@ -505,6 +505,10 @@ public class Server
       currentState = State.END;
       broadcastStateChange();
       isPlaying = false;
+      for (int i = 0; i < processes.size(); i++)
+      {
+        killAI();
+      }
       return null;
     }
 

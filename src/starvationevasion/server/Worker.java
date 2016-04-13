@@ -111,7 +111,6 @@ public class Worker extends Thread
     }
     getUser().setLoggedIn(false);
     isLoggedIn = false;
-    server.cleanConnectionList();
   }
   
   public void run ()
@@ -227,7 +226,7 @@ public class Worker extends Thread
 
   public User getUser()
   {
-    if (user == null)
+    if (!username.equals("ANON") && user == null)
     {
       this.user = server.getUserByUsername(getUsername());
     }

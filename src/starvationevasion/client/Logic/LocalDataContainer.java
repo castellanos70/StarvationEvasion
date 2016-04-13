@@ -12,9 +12,6 @@ import starvationevasion.common.WorldData;
 
 import java.util.HashMap;
 
-//import starvationevasion.common.messages.ActionResponse;
-//import starvationevasion.common.messages.GameState;
-
 /**
  * It basically takes data from the server and uses a run later to change data in the GUi accordingly.
  */

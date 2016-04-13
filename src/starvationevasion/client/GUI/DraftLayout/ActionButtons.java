@@ -108,6 +108,7 @@ public class ActionButtons extends HBox
       }
     }
     endTurn.setDisable(true);
+    gui.getClient().done();
    // gui.switchScenes();
   }
   public void resetActionButtons()

@@ -160,11 +160,12 @@ public class GUI extends Application
   public void initGame()
   {
     cardsInHand= client.getHand();
+    assignedRegion= client.getRegion();
     if(cardsInHand!=null)
     {
       getDraftLayout().getHand().setHand(cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]));
     }
-    assignedRegion= client.getRegion();
+
     getDraftLayout().getSummaryBar().setRegion(assignedRegion);
   }
 
@@ -184,6 +185,10 @@ public class GUI extends Application
     cardsInHand=cards;
   }
 
+  public void setAssignedRegion(EnumRegion region)
+  {
+    assignedRegion=region;
+  }
   /**
    * Returns flag indicating if hand has been set
    * @return

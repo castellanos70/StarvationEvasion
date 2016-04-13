@@ -96,7 +96,7 @@ public class Client
   {
     System.out.println("Client.loginToServer");
     this.userName=userName;
-    sendRequest(RequestFactory.login(startNanoSec, userName, pass, null));
+    sendRequest(new RequestFactory().login(startNanoSec, userName, pass, null));
     return true;
   }
 
@@ -134,7 +134,7 @@ public class Client
    */
   public void worldData()
   {
-    Request f = new Request(startNanoSec, Endpoint.LOGIN);
+    Request f = new Request(startNanoSec, Endpoint.WORLD_DATA);
     // Create a payload (this is the class that stores Sendable information)
     Payload data = new Payload();
     data.putData("user");
@@ -145,6 +145,14 @@ public class Client
     f.setData(data);
     sendRequest(f);
     requestAvaliableRegions();
+  }
+
+  /**
+   * Tells server your done with an action
+   */
+  public void done()
+  {
+    sendRequest(new RequestFactory().build(startNanoSec, Endpoint.DONE));
   }
   public void getUsers()
   {
@@ -359,9 +367,11 @@ public class Client
   {
     this.user = user;
     region = user.getRegion();
+
     hand=user.getHand();
-    if(gui!=null&&gui.needsHand()&&getHand()!=null&&!getHand().isEmpty())
+    if(gui!=null&&gui.needsHand()&&hand!=null&&!getHand().isEmpty())
     {
+      gui.setAssignedRegion(region);
       gui.setCardsInHand(getHand());
       Platform.runLater(() -> gui.getDraftLayout().getHand().setHand(getHand().toArray(new EnumPolicy[hand.size()])));
     }

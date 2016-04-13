@@ -29,7 +29,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
-import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 
@@ -45,7 +44,7 @@ public class Server
 
   private long startNanoSec = 0;
   private long endNanoSec = 0;
-  private Simulator simulator;
+  private final Simulator simulator;
 
   // list of ALL the users
   private final List<User> userList = Collections.synchronizedList(new ArrayList<>());
@@ -70,7 +69,7 @@ public class Server
   // Class that save User's to a database
   private final Transaction<User> userTransaction;
   private volatile long counter = 0;
-  private boolean isPlaying = false;
+  private volatile boolean isPlaying = false;
 
 
   public Server (int portNumber)
@@ -285,10 +284,7 @@ public class Server
 
   public State getGameState ()
   {
-    synchronized(currentState)
-    {
       return currentState;
-    }
   }
 
   public void restartGame ()
@@ -296,7 +292,7 @@ public class Server
     stopGame();
     broadcast(new ResponseFactory().build(uptime(), currentState, Type.BROADCAST, "Game restarted."));
 
-    simulator = new Simulator();
+    simulator.init();
 
     for (User user : getPlayers())
     {
@@ -370,7 +366,7 @@ public class Server
   {
     startNanoSec = System.currentTimeMillis();
     endNanoSec = startNanoSec + currentState.getDuration();
-    while(true)
+    while(isPlaying)
     {
       if (endNanoSec < System.currentTimeMillis())
       {
@@ -409,7 +405,7 @@ public class Server
 
     startNanoSec = System.currentTimeMillis();
     endNanoSec = startNanoSec + currentState.getDuration();
-    while(true)
+    while(isPlaying)
     {
       if (endNanoSec < System.currentTimeMillis())
       {
@@ -455,7 +451,7 @@ public class Server
 
     startNanoSec = System.currentTimeMillis();
     endNanoSec = startNanoSec + currentState.getDuration();
-    while(true)
+    while(isPlaying)
     {
       if (endNanoSec < System.currentTimeMillis())
       {
@@ -513,11 +509,13 @@ public class Server
                                                   Type.USER));
     }
 
-
-    ArrayList<WorldData> worldData = simulator.nextTurn(enactedPolicyCards);
-    System.out.println("There is " + enactedPolicyCards.size() + " cards being enacted.");
-
-    broadcast(new ResponseFactory().build(uptime(), new Payload(worldData), Type.WORLD_DATA_LIST));
+    // make sure there is no other thread calling the sim before advancing
+    synchronized(simulator)
+    {
+      ArrayList<WorldData> worldData = simulator.nextTurn(enactedPolicyCards);
+      System.out.println("There is " + enactedPolicyCards.size() + " cards being enacted.");
+      broadcast(new ResponseFactory().build(uptime(), new Payload(worldData), Type.WORLD_DATA_LIST));
+    }
 
     if (simulator.getCurrentYear() >= Constant.LAST_YEAR)
     {
@@ -529,7 +527,7 @@ public class Server
 
     startNanoSec = System.currentTimeMillis();
     endNanoSec = startNanoSec + currentState.getDuration();
-    while(true)
+    while(isPlaying)
     {
       if (endNanoSec < System.currentTimeMillis())
       {
@@ -797,12 +795,9 @@ public class Server
 
   public boolean addVote (PolicyCard card, EnumRegion user)
   {
-    int i = 0;
-
     synchronized(_drafted)
     {
-
-      for (i = 0; i < _drafted[card.getOwner().ordinal()].length; i++)
+      for (int i = 0; i < _drafted[card.getOwner().ordinal()].length; i++)
       {
         if (_drafted[card.getOwner().ordinal()][i].getCardType().equals(card.getCardType()))
         {
@@ -874,7 +869,10 @@ public class Server
 
   public void discard (User u, EnumPolicy card)
   {
-    simulator.discard(u.getRegion(), card);
-    u.getHand().remove(card);
+    synchronized(simulator)
+    {
+      simulator.discard(u.getRegion(), card);
+      u.getHand().remove(card);
+    }
   }
 }

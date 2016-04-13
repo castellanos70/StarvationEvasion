@@ -226,7 +226,7 @@ public class Worker extends Thread
 
   public User getUser()
   {
-    if (!username.equals("ANON") && user == null)
+    if (isLoggedIn && user == null)
     {
       this.user = server.getUserByUsername(getUsername());
     }

@@ -91,6 +91,7 @@ public class Server
     try
     {
       serverSocket = new ServerSocket(portNumber);
+      serverSocket.setSoTimeout(10);
     }
     catch(IOException e)
     {
@@ -149,7 +150,7 @@ public class Server
     }
     while(isWaiting)
     {
-      System.out.println("Server(" + host + "): waiting for Connection on port: " + port);
+      //System.out.println("Server(" + host + "): waiting for Connection on port: " + port);
       try
       {
         Socket client = serverSocket.accept();
@@ -167,12 +168,16 @@ public class Server
       }
       catch(IOException e)
       {
-        System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
-        e.printStackTrace();
+        // System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
+        // e.printStackTrace();
       }
       catch(Exception e)
       {
-        e.printStackTrace();
+        // e.printStackTrace();
+      }
+      finally
+      {
+        cleanConnectionList();
       }
     }
   }
@@ -515,7 +520,6 @@ public class Server
    */
   private void update ()
   {
-    cleanConnectionList();
     if (getPlayerCount() == TOTAL_PLAYERS && currentState == State.LOGIN)
     {
       isPlaying = true;

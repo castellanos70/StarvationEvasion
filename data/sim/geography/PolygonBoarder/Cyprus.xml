@@ -1,0 +1,61 @@
+<country>
+<name>Cyprus</name>
+<area>
+<vertex lat="35.171058" lon="32.712712"/>
+<vertex lat="35.145374" lon="32.720205"/>
+<vertex lat="35.115790" lon="32.784077"/>
+<vertex lat="35.089383" lon="32.869446"/>
+<vertex lat="35.087833" lon="32.919572"/>
+<vertex lat="35.116410" lon="32.985925"/>
+<vertex lat="35.146175" lon="33.077496"/>
+<vertex lat="35.173125" lon="33.190977"/>
+<vertex lat="35.156924" lon="33.248338"/>
+<vertex lat="35.153617" lon="33.325542"/>
+<vertex lat="35.162712" lon="33.383833"/>
+<vertex lat="35.140930" lon="33.424244"/>
+<vertex lat="35.101424" lon="33.455922"/>
+<vertex lat="35.004944" lon="33.463829"/>
+<vertex lat="35.000345" lon="33.475818"/>
+<vertex lat="35.038688" lon="33.525685"/>
+<vertex lat="35.022746" lon="33.614414"/>
+<vertex lat="35.017863" lon="33.675392"/>
+<vertex lat="35.037319" lon="33.725776"/>
+<vertex lat="35.039722" lon="33.756937"/>
+<vertex lat="35.048197" lon="33.792284"/>
+<vertex lat="35.067162" lon="33.831971"/>
+<vertex lat="35.093595" lon="33.866440"/>
+<vertex lat="35.085456" lon="33.903285"/>
+<vertex lat="35.056775" lon="33.965710"/>
+<vertex lat="35.065250" lon="34.004467"/>
+<vertex lat="35.045561" lon="34.023588"/>
+<vertex lat="34.988356" lon="34.050149"/>
+<vertex lat="34.971457" lon="33.936565"/>
+<vertex lat="34.965902" lon="33.822463"/>
+<vertex lat="34.973266" lon="33.759004"/>
+<vertex lat="34.969881" lon="33.699370"/>
+<vertex lat="34.806455" lon="33.514471"/>
+<vertex lat="34.750877" lon="33.414943"/>
+<vertex lat="34.717726" lon="33.296604"/>
+<vertex lat="34.698037" lon="33.176094"/>
+<vertex lat="34.695557" lon="33.115529"/>
+<vertex lat="34.674783" lon="33.062303"/>
+<vertex lat="34.636904" lon="33.024889"/>
+<vertex lat="34.600007" lon="33.023959"/>
+<vertex lat="34.569570" lon="33.007939"/>
+<vertex lat="34.575874" lon="32.941793"/>
+<vertex lat="34.635483" lon="32.914198"/>
+<vertex lat="34.661140" lon="32.867172"/>
+<vertex lat="34.647808" lon="32.750074"/>
+<vertex lat="34.649384" lon="32.693023"/>
+<vertex lat="34.706254" lon="32.505541"/>
+<vertex lat="34.729457" lon="32.449007"/>
+<vertex lat="34.778033" lon="32.413763"/>
+<vertex lat="34.953293" lon="32.317232"/>
+<vertex lat="35.082975" lon="32.301005"/>
+<vertex lat="35.049799" lon="32.390922"/>
+<vertex lat="35.090003" lon="32.475052"/>
+<vertex lat="35.155787" lon="32.555977"/>
+<vertex lat="35.182685" lon="32.652302"/>
+<vertex lat="35.171058" lon="32.712712"/>
+</area>
+</country>

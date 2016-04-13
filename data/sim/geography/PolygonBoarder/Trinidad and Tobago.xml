@@ -1,0 +1,45 @@
+<country>
+<name>Trinidad and Tobago</name>
+<area>
+<vertex lat="10.134317" lon="-61.012084"/>
+<vertex lat="10.078041" lon="-61.174271"/>
+<vertex lat="10.064657" lon="-61.596700"/>
+<vertex lat="10.085069" lon="-61.771650"/>
+<vertex lat="10.069153" lon="-61.906112"/>
+<vertex lat="10.191678" lon="-61.661476"/>
+<vertex lat="10.243406" lon="-61.632692"/>
+<vertex lat="10.253121" lon="-61.528849"/>
+<vertex lat="10.268573" lon="-61.499290"/>
+<vertex lat="10.538944" lon="-61.464770"/>
+<vertex lat="10.603384" lon="-61.478283"/>
+<vertex lat="10.638886" lon="-61.498825"/>
+<vertex lat="10.664466" lon="-61.540941"/>
+<vertex lat="10.699347" lon="-61.635302"/>
+<vertex lat="10.718054" lon="-61.651167"/>
+<vertex lat="10.747923" lon="-61.591842"/>
+<vertex lat="10.764460" lon="-61.464873"/>
+<vertex lat="10.796809" lon="-61.370047"/>
+<vertex lat="10.803320" lon="-61.173728"/>
+<vertex lat="10.831949" lon="-61.078489"/>
+<vertex lat="10.840217" lon="-60.917620"/>
+<vertex lat="10.716142" lon="-60.996736"/>
+<vertex lat="10.669892" lon="-61.033737"/>
+<vertex lat="10.558116" lon="-61.019319"/>
+<vertex lat="10.482255" lon="-61.037483"/>
+<vertex lat="10.386395" lon="-61.016425"/>
+<vertex lat="10.323401" lon="-60.968469"/>
+<vertex lat="10.261493" lon="-60.999630"/>
+<vertex lat="10.167803" lon="-61.004074"/>
+<vertex lat="10.134317" lon="-61.012084"/>
+</area>
+<area>
+<vertex lat="11.178491" lon="-60.756286"/>
+<vertex lat="11.168621" lon="-60.810650"/>
+<vertex lat="11.208412" lon="-60.804293"/>
+<vertex lat="11.277245" lon="-60.708950"/>
+<vertex lat="11.323547" lon="-60.562809"/>
+<vertex lat="11.325407" lon="-60.525499"/>
+<vertex lat="11.263706" lon="-60.546480"/>
+<vertex lat="11.178491" lon="-60.756286"/>
+</area>
+</country>

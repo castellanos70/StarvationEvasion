@@ -1,0 +1,79 @@
+<country>
+<name>Timor-Leste</name>
+<area>
+<vertex lat="-9.413740" lon="124.319316"/>
+<vertex lat="-9.427900" lon="124.282316"/>
+<vertex lat="-9.413844" lon="124.134573"/>
+<vertex lat="-9.423145" lon="124.115556"/>
+<vertex lat="-9.416428" lon="124.090131"/>
+<vertex lat="-9.375396" lon="124.052408"/>
+<vertex lat="-9.341600" lon="124.036388"/>
+<vertex lat="-9.256127" lon="124.198135"/>
+<vertex lat="-9.190343" lon="124.444425"/>
+<vertex lat="-9.238557" lon="124.438224"/>
+<vertex lat="-9.314315" lon="124.413006"/>
+<vertex lat="-9.349920" lon="124.375695"/>
+<vertex lat="-9.413740" lon="124.319316"/>
+</area>
+<area>
+<vertex lat="-8.424550" lon="127.296137"/>
+<vertex lat="-8.583558" lon="127.114546"/>
+<vertex lat="-8.715282" lon="126.915179"/>
+<vertex lat="-8.755124" lon="126.792499"/>
+<vertex lat="-8.781996" lon="126.665478"/>
+<vertex lat="-8.832897" lon="126.568533"/>
+<vertex lat="-8.912686" lon="126.486884"/>
+<vertex lat="-8.957592" lon="126.382498"/>
+<vertex lat="-8.972734" lon="126.264779"/>
+<vertex lat="-8.996712" lon="126.164217"/>
+<vertex lat="-9.043582" lon="126.073060"/>
+<vertex lat="-9.123939" lon="125.946142"/>
+<vertex lat="-9.132104" lon="125.894776"/>
+<vertex lat="-9.130140" lon="125.840309"/>
+<vertex lat="-9.160939" lon="125.735199"/>
+<vertex lat="-9.275764" lon="125.407984"/>
+<vertex lat="-9.403560" lon="125.210270"/>
+<vertex lat="-9.511926" lon="125.068108"/>
+<vertex lat="-9.381856" lon="125.033640"/>
+<vertex lat="-9.325994" lon="124.996950"/>
+<vertex lat="-9.294264" lon="124.968269"/>
+<vertex lat="-9.254680" lon="124.958606"/>
+<vertex lat="-9.213804" lon="124.960156"/>
+<vertex lat="-9.194942" lon="124.977519"/>
+<vertex lat="-9.189826" lon="125.100509"/>
+<vertex lat="-9.122905" lon="125.149447"/>
+<vertex lat="-9.042549" lon="125.148982"/>
+<vertex lat="-9.015418" lon="125.124435"/>
+<vertex lat="-9.003998" lon="125.100354"/>
+<vertex lat="-9.064304" lon="124.973282"/>
+<vertex lat="-9.053452" lon="124.936850"/>
+<vertex lat="-9.031541" lon="124.915094"/>
+<vertex lat="-8.942503" lon="124.922277"/>
+<vertex lat="-8.859046" lon="125.026922"/>
+<vertex lat="-8.708047" lon="125.115702"/>
+<vertex lat="-8.647844" lon="125.178024"/>
+<vertex lat="-8.591310" lon="125.323131"/>
+<vertex lat="-8.575342" lon="125.381836"/>
+<vertex lat="-8.492143" lon="125.804239"/>
+<vertex lat="-8.486562" lon="125.905111"/>
+<vertex lat="-8.488939" lon="126.172795"/>
+<vertex lat="-8.470800" lon="126.531016"/>
+<vertex lat="-8.459483" lon="126.619693"/>
+<vertex lat="-8.422793" lon="126.734518"/>
+<vertex lat="-8.377318" lon="126.845726"/>
+<vertex lat="-8.341558" lon="126.904637"/>
+<vertex lat="-8.315720" lon="126.966442"/>
+<vertex lat="-8.348276" lon="127.058529"/>
+<vertex lat="-8.372977" lon="127.214799"/>
+<vertex lat="-8.394578" lon="127.257070"/>
+<vertex lat="-8.424550" lon="127.296137"/>
+</area>
+<area>
+<vertex lat="-8.139916" lon="125.646109"/>
+<vertex lat="-8.311792" lon="125.579446"/>
+<vertex lat="-8.275102" lon="125.507099"/>
+<vertex lat="-8.178570" lon="125.584097"/>
+<vertex lat="-8.150045" lon="125.621097"/>
+<vertex lat="-8.139916" lon="125.646109"/>
+</area>
+</country>

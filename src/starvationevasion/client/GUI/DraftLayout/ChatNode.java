@@ -22,7 +22,7 @@ import java.util.Arrays;
 
 
 /**
- * Created by Dayloki on 3/9/2016.
+ *  This is the node that displays and sends chat messages
  */
 public class ChatNode extends BorderPane
 {
@@ -39,23 +39,17 @@ public class ChatNode extends BorderPane
   private ComboBox cardSelection;
   private EnumPolicy[] currentHand=new EnumPolicy[6];
 
+  /**
+   * Basic constructor
+   * @param gui the main gui
+   */
   public ChatNode(GUI gui)
   {
     ArrayList<EnumRegion> regions=new ArrayList<>(Arrays.asList(EnumRegion.US_REGIONS));
     regions.add(null);
     ObservableList<EnumRegion> regionList= FXCollections.observableArrayList(regions);
     regionSelection =new ComboBox<>(regionList);
-
-//    if(gui.getDraftLayout().getHand().getHand()!=null)
-//    {
-//      currentHand=gui.getDraftLayout().getHand().getHand();
-//      ArrayList<EnumPolicy> hand = new ArrayList<>(Arrays.asList(currentHand));
-//      ObservableList<EnumPolicy> handList= FXCollections.observableArrayList(hand);
-//      cardSelection =new ComboBox<>(handList);
-//    }else
     cardSelection=new ComboBox();
-
-
     client=gui.getClient();
     chatManager=client.getChatManager();
 
@@ -76,8 +70,12 @@ public class ChatNode extends BorderPane
       }
     });
     confirm.setOnAction(event -> sendMessage());
-
   }
+
+  /**
+   * Sets hand of combo box chooser
+   * @param newHand the new hand
+   */
   public void setHand(EnumPolicy[] newHand)
   {
     if(currentHand!=null&&!currentHand.equals(newHand))
@@ -88,10 +86,22 @@ public class ChatNode extends BorderPane
       currentHand = newHand;
     }
   }
+
+
+  /**
+   * sets the entire chat log, used by chat manager
+   * @param messages
+   */
+  public void setChatMessages(String messages)
+  {
+    chatMessages.setText(messages);
+  }
+
   private void sendMessage()
   {
     if(!inputMessage.getText().equals(""))
     {
+      //Sends too all regions if null
       if(regionSelection.getValue()==null)
       {
         for(EnumRegion region:EnumRegion.US_REGIONS)
@@ -108,9 +118,5 @@ public class ChatNode extends BorderPane
       }
       inputMessage.clear();
       }
-  }
-  public void setChatMessages(String messages)
-  {
-    chatMessages.setText(messages);
   }
 }

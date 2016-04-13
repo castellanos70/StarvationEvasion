@@ -5,7 +5,7 @@ import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 
 /**
- * Created by Dayloki on 3/9/2016.
+ * Manages communication with client and chatnode
  */
 public class ChatManager
 {
@@ -15,19 +15,34 @@ public class ChatManager
   {
   this.client=client;
   }
+
+  /**
+   * Sends a chat to the client who will send a request
+    * @param message A String representing message
+   * @param region The region you are sending message to
+   * @param card The card you are sending to the server
+   */
   public void sendChatToServer(String message,EnumRegion region,EnumPolicy card)
   {
 
-   // String msg="chat " +region.name()+" {\"card\":null,\"text\":\""+client.getRegion().toString()+": "+message+"\"}";
-    //String msg="chat " +region.name()+" {\"card\":null,\"text\":\""+"US_CALIFORNIA"+": "+message+"\"}";
     client.sendChatMessage(client.getRegion().toString()+": "+message,region);
     chat+=message+"\n";
   }
+
+  /**
+   * Called by Client, updates the chat for the chatnode
+   * @param message
+   */
   public void sendChatToClient(String message)
   {
     chat+=message+"\n";
 
   }
+
+  /**
+   * gets all chat messages so far
+   * @return
+   */
   public String getChat()
   {
     return chat;

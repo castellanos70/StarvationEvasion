@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Created by Dayloki on 11/14/2015.
  * This is the window that the users interacts with
  * Here you can select if your playing on a remote server or local,
  * Also handles login and creating new users

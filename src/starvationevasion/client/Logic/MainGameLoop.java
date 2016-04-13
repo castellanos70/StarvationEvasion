@@ -17,7 +17,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Created by Dayloki on 3/15/2016.
+ * This is the main game loop that will update game state in correct order
  *
  */
 public class MainGameLoop

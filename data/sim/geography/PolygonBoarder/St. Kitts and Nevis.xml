@@ -1,0 +1,27 @@
+<country>
+<name>Saint Kitts and Nevis</name>
+<area>
+<vertex lat="17.121849" lon="-62.532224"/>
+<vertex lat="17.100610" lon="-62.582428"/>
+<vertex lat="17.129575" lon="-62.624932"/>
+<vertex lat="17.199106" lon="-62.615268"/>
+<vertex lat="17.201043" lon="-62.574702"/>
+<vertex lat="17.170141" lon="-62.534162"/>
+<vertex lat="17.121849" lon="-62.532224"/>
+</area>
+<area>
+<vertex lat="17.239982" lon="-62.630694"/>
+<vertex lat="17.224427" lon="-62.656480"/>
+<vertex lat="17.286025" lon="-62.702007"/>
+<vertex lat="17.302820" lon="-62.775543"/>
+<vertex lat="17.339252" lon="-62.838898"/>
+<vertex lat="17.347055" lon="-62.840474"/>
+<vertex lat="17.365323" lon="-62.839415"/>
+<vertex lat="17.386407" lon="-62.827038"/>
+<vertex lat="17.402607" lon="-62.794611"/>
+<vertex lat="17.353256" lon="-62.713738"/>
+<vertex lat="17.290935" lon="-62.675807"/>
+<vertex lat="17.262280" lon="-62.640512"/>
+<vertex lat="17.239982" lon="-62.630694"/>
+</area>
+</country>

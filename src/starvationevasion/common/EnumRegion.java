@@ -51,7 +51,7 @@ public enum EnumRegion implements Sendable
    */
   USA_MOUNTAIN,
   ARCTIC_AMERICA, MIDDLE_AMERICA, SOUTH_AMERICA, EUROPE, MIDDLE_EAST, SUB_SAHARAN,
-  RUSSIA, CENTRAL_ASIA, SOUTH_ASIA, EAST_ASIA, SOUTHEAST_ASIA, OCEANIA;
+  RUSSIA, CENTRAL_ASIA, SOUTH_ASIA, EAST_ASIA, OCEANIA;
 
   public static final int SIZE = values().length;
 
@@ -67,7 +67,7 @@ public enum EnumRegion implements Sendable
    */
   public static final EnumRegion[] WORLD_REGIONS =
   { ARCTIC_AMERICA, MIDDLE_AMERICA, SOUTH_AMERICA, EUROPE, MIDDLE_EAST, SUB_SAHARAN,
-    RUSSIA, CENTRAL_ASIA, SOUTH_ASIA, EAST_ASIA, SOUTHEAST_ASIA, OCEANIA
+    RUSSIA, CENTRAL_ASIA, SOUTH_ASIA, EAST_ASIA, OCEANIA
   };
 
   private final ResourceBundle res = ResourceBundle.getBundle("strings_enum");

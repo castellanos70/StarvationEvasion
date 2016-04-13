@@ -29,10 +29,8 @@ public class Simulator
   private Model model;
 
   /**
-   * This constructor should be called once at the start of each game by the Server.
-   * Initializes the model
-   * Generates a random 80 card deck for each player (both
-   * human and AI players)
+   * This constructor does not initialize the model. Rather it checks to there are valid
+   * Game constants prior to beginning
    */
   public Simulator()
   {
@@ -40,6 +38,22 @@ public class Simulator
     assert ((Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR) % Constant.YEARS_PER_TURN == 0);
     assert ((Constant.LAST_YEAR - (Constant.FIRST_GAME_YEAR+1)) % Constant.YEARS_PER_TURN == 0);
 
+    init();
+  }
+
+  /**
+   *
+   * This should be called once at the start of each game by the Server.
+   * Initializes the model
+   * Generates a random 80 card deck for each player (both
+   * human and AI players)
+   *
+   * This is not in the constructor but rather a new method so that
+   * games can be restarted without new objects and allowing a
+   * final object instantiated once
+   */
+  public void init()
+  {
     // Model instantiation parses all of the XML and CSV.
     //
     LOGGER.info("Loading and initializing model");

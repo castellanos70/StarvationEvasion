@@ -20,20 +20,27 @@ public class LoginHandler extends AbstractHandler
   {
     if (request.getDestination().equals(Endpoint.LOGIN))
     {
+      if (getClient().loggedIn())
+      {
+        getClient().send(new ResponseFactory().build(server.uptime(),
+                                                     getClient().getUser(),
+                                                     Type.ERROR, "Already logged in"));
+        return true;
+      }
       String uname = (String) request.getPayload().get("username");
       String pwd = (String) request.getPayload().get("password");
 
       boolean auth = authenticate(uname, pwd);
       if (auth)
       {
-        getClient().send(ResponseFactory.build(server.uptime(),
+        getClient().send(new ResponseFactory().build(server.uptime(),
                                                server.getUserByUsername(uname),
                                                Type.AUTH_SUCCESS, "SUCCESS"
         ));
       }
       else
       {
-        getClient().send(ResponseFactory.build(server.uptime(),
+        getClient().send(new ResponseFactory().build(server.uptime(),
                                                null,
                                                Type.AUTH_ERROR, "Username or password incorrect."
         ));

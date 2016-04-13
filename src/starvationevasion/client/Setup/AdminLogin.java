@@ -7,7 +7,9 @@ import javafx.stage.Stage;
 import starvationevasion.client.Networking.Client;
 
 /**
- * Created by Dayloki on 4/5/2016.
+ * Opens a new window for admin settings
+ * This will be were you can set the number of players, AIs, ect
+ *
  */
 public class AdminLogin extends Application
 {
@@ -24,7 +26,6 @@ public class AdminLogin extends Application
   @Override
   public void start(Stage primaryStage) throws Exception
   {
-      this.primaryStage=primaryStage;
-
+    this.primaryStage=primaryStage;
   }
 }

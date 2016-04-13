@@ -127,7 +127,7 @@ public class Model
     //System.out.println("territoryList.size()=" + territoryList.size());
 
     addGeographyToTerritories(geography);
-    //if (true) return;
+
     assert (assertTerritoryGeography());
 
     instantiateRegions();
@@ -223,7 +223,7 @@ public class Model
         }
         if (!foundTerritory)
         {
-          System.out.println("Area "+area.getName()+" has no Territory");
+          System.out.println("***************** Area["+area.getName()+"] Does not belong to a territory");
         }
       }
   }
@@ -237,15 +237,24 @@ public class Model
     return regionList[r.ordinal()];
   }
 
-  /**
+  /*
    * @param latitude  Latitude ranges from -90 to 90. North latitude is positive.
    * @param longitude Longitude ranges from -180 to 180. East longitude is positive.
    * @return The territory containing the given latitude and longitude or null if the given location
    * is not within a game territory.
-   */
+
   public Territory getTerritory(double latitude, double longitude)
   {
     MapPoint mapPoint = new MapPoint(latitude, longitude);
+    for (Territory territory : territoryList)
+    {
+      if (territory.containsMapPoint(mapPoint)) return territory;
+    }
+    return null;
+  }
+  */
+  public Territory getTerritory(MapPoint mapPoint)
+  {
     for (Territory territory : territoryList)
     {
       if (territory.containsMapPoint(mapPoint)) return territory;

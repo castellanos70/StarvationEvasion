@@ -10,7 +10,7 @@ import java.util.Calendar;
 /**
  * Timer is the class responsible for representing the countdown timer for the two different game phases
  * DraftingPhase has 5 minutes
- * VotingPhase hase 2 minutes
+ * VotingPhase has 2 minutes
  */
 public class Timer extends Label
 {

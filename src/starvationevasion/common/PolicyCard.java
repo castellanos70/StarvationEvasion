@@ -380,7 +380,7 @@ public abstract class PolicyCard implements Sendable
   public boolean didVoteYes(EnumRegion region)
   {
     if (!region.isUS()) return false;
-    return (approvedRegionBits | region.getBit()) != 0;
+    return (approvedRegionBits & region.getBit()) != 0;
   }
 
 

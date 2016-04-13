@@ -21,6 +21,11 @@ public class UserHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
+    if (request.getDestination().equals(Endpoint.DONE))
+    {
+      getClient().getUser().isDone = true;
+      return true;
+    }
     if (request.getDestination().equals(Endpoint.USER_CREATE))
     {
 
@@ -36,7 +41,7 @@ public class UserHandler extends AbstractHandler
         }
         catch(Exception e)
         {
-          getClient().send(ResponseFactory.build(server.uptime(),
+          getClient().send(new ResponseFactory().build(server.uptime(),
                                                  null,
                                                  Type.CREATE_ERROR, "Not a valid region. Remove completely to get a better result"
           ));
@@ -45,14 +50,14 @@ public class UserHandler extends AbstractHandler
       }
       if (server.createUser(new User(uname, pwd, region, new ArrayList<>())))
       {
-        getClient().send(ResponseFactory.build(server.uptime(),
+        getClient().send(new ResponseFactory().build(server.uptime(),
                                                null,
                                                Type.CREATE_SUCCESS, "User created."
         ));
       }
       else
       {
-        getClient().send(ResponseFactory.build(server.uptime(),
+        getClient().send(new ResponseFactory().build(server.uptime(),
                                                null,
                                                Type.CREATE_ERROR, "Username taken"
         ));
@@ -61,21 +66,21 @@ public class UserHandler extends AbstractHandler
     }
     else if (request.getDestination().equals(Endpoint.USERS))
     {
-      getClient().send(ResponseFactory.build(server.uptime(),
+      getClient().send(new ResponseFactory().build(server.uptime(),
                                              new Payload(server.getUserList()),
                                              Type.USERS));
       return true;
     }
     else if (request.getDestination().equals(Endpoint.USERS_LOGGED_IN))
     {
-      getClient().send(ResponseFactory.build(server.uptime(),
+      getClient().send(new ResponseFactory().build(server.uptime(),
                                              new Payload(server.getLoggedInUsers()),
                                              Type.USERS_LOGGED_IN_LIST));
       return true;
     }
     else if (request.getDestination().equals(Endpoint.USERS_READY))
     {
-      getClient().send(ResponseFactory.build(server.uptime(),
+      getClient().send(new ResponseFactory().build(server.uptime(),
                                              new Payload(server.getPlayers()),
                                              Type.USERS_READY_LIST));
       return true;
@@ -92,14 +97,14 @@ public class UserHandler extends AbstractHandler
         boolean isPlaying = server.addPlayer(_u);
         if (isPlaying)
         {
-          getClient().send(ResponseFactory.build(server.uptime(),
+          getClient().send(new ResponseFactory().build(server.uptime(),
                                                  null,
                                                  Type.BROADCAST, "Success"
           ));
         }
         else
         {
-          getClient().send(ResponseFactory.build(server.uptime(),
+          getClient().send(new ResponseFactory().build(server.uptime(),
                                                  null,
                                                  Type.BROADCAST, "Sorry, " + _u.getUsername() + " there was an error." + " " +_u.getRegion().name()
           ));
@@ -128,7 +133,7 @@ public class UserHandler extends AbstractHandler
       }
 
 
-      getClient().send(ResponseFactory.build(server.uptime(),
+      getClient().send(new ResponseFactory().build(server.uptime(),
                                              data,
                                              Type.USER));
       return true;

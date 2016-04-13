@@ -12,16 +12,6 @@ package starvationevasion.server.model;
  */
 public class ResponseFactory
 {
-  private static ResponseFactory ourInstance = new ResponseFactory();
-
-  public static ResponseFactory init ()
-  {
-    return ourInstance;
-  }
-
-  private ResponseFactory ()
-  {
-  }
 
   /**
    * Returns a Response
@@ -31,7 +21,7 @@ public class ResponseFactory
    *
    * @return Response containing all the supplied data
    */
-  public static Response build (double time, Sendable data, Type type)
+  public Response build (double time, Sendable data, Type type)
   {
     Payload payload = new Payload();
     // if the data is null create a new payload
@@ -61,9 +51,9 @@ public class ResponseFactory
    *
    * @return Response containing all the supplied data
    */
-  public static Response build (double time, Sendable data, Type type, String message)
+  public Response build (double time, Sendable data, Type type, String message)
   {
-    Response response = ResponseFactory.build(time, data, type);
+    Response response = new ResponseFactory().build(time, data, type);
     response.getPayload().putMessage(message);
     return response;
   }

@@ -10,7 +10,6 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.sim.CardDeck;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Stack;
 
 /**
@@ -46,11 +45,11 @@ public class Hand extends GridPane
 
   /**
    * Sets the hand with an Array of EnumPolicies
+   * This will update the actual hand in the GUI
    * @param hand
    */
   public void setHand(EnumPolicy[] hand)
   {
-
     this.hand = hand;
     updateHand();
   }
@@ -65,6 +64,7 @@ public class Hand extends GridPane
     return cardsPlayed;
   }
   public ArrayList<ClientPolicyCard> getDiscardCards(){return discardPile;}
+
   private void updateHand()
   {
     getChildren().clear();
@@ -76,7 +76,7 @@ public class Hand extends GridPane
     {
       //Needs working connection
       // ClientPolicyCard clientPolicyCard=new ClientPolicyCard(GUI.client.getAssignedRegion(),hand[i],GUI);
-      ClientPolicyCard clientPolicyCard=new ClientPolicyCard(EnumRegion.USA_HEARTLAND,hand[i],gui);
+      ClientPolicyCard clientPolicyCard=new ClientPolicyCard(gui.getAssignedRegion(),hand[i],gui);
       clientPolicyCard.setHandIndex(i);
       elements.add(clientPolicyCard);
 
@@ -128,20 +128,6 @@ public class Hand extends GridPane
         {
           selectCard(card);
         }
-//        else if (!card.getIsFlipped()&&!card.getDrafted()&&!card.isDiscarded())
-//        {
-//          for(ClientPolicyCard clientPolicyCard:elements)
-//          {
-//            if(!card.equals(clientPolicyCard)) clientPolicyCard.setBasicCard();
-//            clientPolicyCard.setIsFlipped(false);
-//            gui.setSelectingProduct(false);
-//            gui.setSelectingRegion(false);
-//          }
-//          card.flipCardOver();
-//          if(card.needsFood()) gui.setSelectingProduct(true);
-//          if(card.needsRegion() && Map.currentlySelectedRegion.isPresent());
-//        }
-//        else if(!card.getDrafted()&&!card.isDiscarded()) card.setDetailedCard();
       });
       //Checks for when player clicks drafted card
       card.getDraftButton().setOnMouseClicked(event -> {
@@ -284,29 +270,6 @@ public class Hand extends GridPane
   }
 
   /**
-   * Plays a random card
-   * Called by AI
-   */
-  public void playRandomCard()
-  {
-    ArrayList<ClientPolicyCard> validCards=new ArrayList<>();
-    for(ClientPolicyCard card:elements)
-    {
-      if(isLegal(card))
-      {
-        card.setRandomValues();
-        validCards.add(card);
-      }
-    }
-    if(validCards.size()!=0)
-    {
-      Collections.shuffle(validCards);
-      draftCard(validCards.get(0));
-      // gui.client.draftCard(validCards.get(0).getPolicyCard());
-    }
-  }
-
-  /**
    * Just for testing, deals out basic hand of random cards
    */
   public void dealRandomHand()
@@ -314,6 +277,7 @@ public class Hand extends GridPane
     CardDeck deck =new CardDeck(EnumRegion.USA_CALIFORNIA);
     setHand(deck.drawCards());
   }
+
   private boolean isLegal(ClientPolicyCard card)
   {
     if(card.isSupportCard()&&playedSupportCard) return false;

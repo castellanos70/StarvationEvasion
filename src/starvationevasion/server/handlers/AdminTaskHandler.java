@@ -6,10 +6,7 @@ package starvationevasion.server.handlers;
 
 import starvationevasion.server.Server;
 import starvationevasion.server.Worker;
-import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Payload;
-import starvationevasion.server.model.Request;
-import starvationevasion.server.model.Response;
+import starvationevasion.server.model.*;
 
 public class AdminTaskHandler extends AbstractHandler
 {
@@ -54,7 +51,23 @@ public class AdminTaskHandler extends AbstractHandler
       else if (request.getDestination().equals(Endpoint.TOTAL_PLAYERS))
       {
         long num = (long) request.getPayload().getData();
+        boolean started = false;
+        if (server.getGameState() != State.LOGIN)
+        {
+          // send out notification?
+          server.stopGame();
+          started = true;
+        }
         Server.TOTAL_PLAYERS = (int) num;
+
+        server.broadcast(new ResponseFactory().build(server.uptime(),
+                                                     null,
+                                                     Type.SUCCESS, "Total players: " + Server.TOTAL_PLAYERS));
+        if (started)
+        {
+          server.restartGame();
+        }
+
         return true;
       }
 

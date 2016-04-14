@@ -96,7 +96,7 @@ public class Worker extends Thread
   }
 
 
-  public void shutdown()
+  void shutdown()
   {
     isRunning = false;
     try
@@ -109,9 +109,15 @@ public class Worker extends Thread
     {
       System.out.println("There was an error shutting down");
     }
-    getUser().setLoggedIn(false);
     isLoggedIn = false;
-    server.cleanConnectionList();
+    if (user != null)
+    {
+      user.setLoggedIn(false);
+    }
+    else
+    {
+      username = "";
+    }
   }
   
   public void run ()
@@ -160,8 +166,9 @@ public class Worker extends Thread
       }
       catch(IOException e)
       {
-        // isRunning = false;
         System.out.println("There was an error reading");
+        System.out.println("Shutting down");
+        shutdown();
       }
       catch(ClassNotFoundException e)
       {
@@ -227,7 +234,7 @@ public class Worker extends Thread
 
   public User getUser()
   {
-    if (user == null)
+    if (isLoggedIn && user == null)
     {
       this.user = server.getUserByUsername(getUsername());
     }

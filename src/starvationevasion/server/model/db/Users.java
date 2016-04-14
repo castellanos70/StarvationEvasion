@@ -24,15 +24,16 @@ public class Users extends Transaction<User>
   @Override
   public ArrayList<User> getAll ()
   {
+    getDb().connect();
     ResultSet results = getDb().select("user", "");
     if (!dirty)
     {
       return cache;
     }
-    cache.clear();
+
     try
     {
-
+      cache.clear();
       while(results.next())
       {
         cache.add(initUser(results));
@@ -41,25 +42,27 @@ public class Users extends Transaction<User>
 
       results.close();
       dirty = false;
-      return cache;
     }
     catch(SQLException e)
     {
       e.printStackTrace();
     }
-    return null;
+    getDb().close();
+    return cache;
   }
 
   @Override
   public <V> User get (V user)
   {
+    User found = null;
+    getDb().connect();
     if (!dirty)
     {
       for (User _user : cache)
       {
         if(_user.equals(user))
         {
-          return _user;
+          found = _user;
         }
       }
     }
@@ -72,7 +75,7 @@ public class Users extends Transaction<User>
       {
         if (results.first())
         {
-          return initUser(results);
+          found = initUser(results);
         }
       }
       results.close();
@@ -81,12 +84,15 @@ public class Users extends Transaction<User>
     {
       e.printStackTrace();
     }
-    return null;
+    getDb().close();
+
+    return found;
   }
 
   @Override
   public <V> User create (V data)
   {
+    getDb().connect();
     dirty = true;
     User user = ((User) data);
     LinkedHashSet<Object> values = new LinkedHashSet<>();
@@ -102,6 +108,7 @@ public class Users extends Transaction<User>
     cols.add("region");
 
     getDb().insert("user",cols, values);
+    getDb().close();
     return user;
   }
 

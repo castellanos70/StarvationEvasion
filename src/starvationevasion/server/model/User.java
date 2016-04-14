@@ -203,7 +203,21 @@ public class User implements Encryptable, Sendable
   @Override
   public String toString ()
   {
-    return String.valueOf(region);
+    StringBuilder _sb = new StringBuilder();
+    _sb.append(String.valueOf(username))
+       .append(" ")
+       .append("in ")
+       .append(String.valueOf(region));
+    if (isLoggedIn)
+    {
+      _sb.append(" is online");
+    }
+    else
+    {
+      _sb.append(" is offline");
+    }
+
+    return _sb.toString();
   }
 
   @Override

@@ -24,7 +24,7 @@ public class UserHandler extends AbstractHandler
     if (request.getDestination().equals(Endpoint.DONE))
     {
       getClient().getUser().isDone = true;
-
+      return true;
     }
     if (request.getDestination().equals(Endpoint.USER_CREATE))
     {

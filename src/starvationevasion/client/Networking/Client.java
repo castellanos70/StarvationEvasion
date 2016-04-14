@@ -17,7 +17,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-
+/**
+ * Communicates with server
+ */
 public class Client
 {
   private Socket clientSocket;
@@ -48,6 +50,11 @@ public class Client
   private LocalDataContainer localDataContainer;
   private ArrayList<EnumRegion> availableRegion;
 
+  /**
+   * Basic constructor that establishes connection with server
+   * @param host  your host name
+   * @param portNumber your port number
+   */
   public Client (String host, int portNumber)
   {
     chatManager=new ChatManager(this);
@@ -62,15 +69,14 @@ public class Client
     localDataContainer=new LocalDataContainer(this);
     localDataContainer.init();
   }
+
   public GUI getGui(){return gui;}
   public ChatManager getChatManager(){return  chatManager;}
-  //TODO
   public EnumRegion getRegion(){return region;}
   public State getState()
   {
     return state;
   }
-
   public ArrayList<EnumRegion> getAvailableRegion()
   {
     return availableRegion;
@@ -79,44 +85,21 @@ public class Client
   {
     return votingCards;
   }
+
+  /**
+   * Send a login request to Server
+   * @param userName
+   * @param pass
+   * @return
+   */
   public boolean loginToServer(String userName,String pass)
   {
     System.out.println("Client.loginToServer");
-
     this.userName=userName;
-    // Create a request to login
-//    Request f = new Request(startNanoSec, Endpoint.LOGIN);
-//    // Create a payload (this is the class that stores Sendable information)
-//    Payload data = new Payload();
-//
-//    data.putData("user");
-//
-//    data.put("username", userName);
-//    data.put("password", pass);
-//
-//    f.setData(data);
-//    sendRequest(f);
-//  //  requestAvaliableRegions();
-//   // restart();
-//   // ready();
-//    //createHand();
-//    getGameState();
-  //  ai();
-
-//    while(!recivedMessege){
-//      System.out.println(recivedMessege);
-//      //Wait tell a message has been recieved
-//      }
     sendRequest(new RequestFactory().login(startNanoSec, userName, pass, null));
     return true;
   }
 
-  public void createHand()
-  {
-    Request f = new Request(startNanoSec, Endpoint.HAND_CREATE);
-    sendRequest(f);
-    //readHand();
-  }
   public void restart()
   {
     Request f = new Request(startNanoSec, Endpoint.RESTART_GAME);
@@ -124,11 +107,19 @@ public class Client
     sendRequest(f);
     readHand();
   }
+
+  /**
+   * Gets hand from server, could be used for recovery
+   */
   public void readHand()
   {
     Request f = new Request(startNanoSec, Endpoint.HAND_READ);
     sendRequest(f);
   }
+
+  /**
+   * Tells Server that Client is ready
+   */
   public void ready()
   {
 
@@ -137,22 +128,31 @@ public class Client
     readHand();
     //createHand();
   }
+
+  /**
+   * request world data
+   */
   public void worldData()
   {
-    Request f = new Request(startNanoSec, Endpoint.LOGIN);
+    Request f = new Request(startNanoSec, Endpoint.WORLD_DATA);
     // Create a payload (this is the class that stores Sendable information)
     Payload data = new Payload();
-
     data.putData("user");
-
     data.put("client-done", true);
     data.put("region-polygons", true);
     data.put("data-start",2000);
     data.put("data-end",2001);
-
     f.setData(data);
     sendRequest(f);
     requestAvaliableRegions();
+  }
+
+  /**
+   * Tells server your done with an action
+   */
+  public void done()
+  {
+    sendRequest(new RequestFactory().build(startNanoSec, Endpoint.DONE));
   }
   public void getUsers()
   {
@@ -257,17 +257,13 @@ public class Client
   }
   public void sendRequest(Request request)
   {
-
     try
     {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       ObjectOutputStream oos = new ObjectOutputStream(baos);
       oos.writeObject(request);
       oos.close();
-
-
       byte[] bytes = baos.toByteArray();
-
       writer.writeInt(bytes.length);
       writer.write(bytes);
       writer.flush();
@@ -285,7 +281,6 @@ public class Client
     Stage guiStage=new Stage();
     gui.start(guiStage);
     gui.start(guiStage);
-
   }
 
   private void guiStateManagement(State state)
@@ -372,9 +367,11 @@ public class Client
   {
     this.user = user;
     region = user.getRegion();
+
     hand=user.getHand();
-    if(gui!=null&&gui.needsHand()&&getHand()!=null&&!getHand().isEmpty())
+    if(gui!=null&&gui.needsHand()&&hand!=null&&!getHand().isEmpty())
     {
+      gui.setAssignedRegion(region);
       gui.setCardsInHand(getHand());
       Platform.runLater(() -> gui.getDraftLayout().getHand().setHand(getHand().toArray(new EnumPolicy[hand.size()])));
     }

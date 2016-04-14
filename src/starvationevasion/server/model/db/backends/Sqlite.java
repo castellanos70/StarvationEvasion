@@ -169,6 +169,11 @@ public class Sqlite implements Backend
   @Override
   public void close ()
   {
+    if (connection == null)
+    {
+      return;
+    }
+
     try
     {
       connection.close();

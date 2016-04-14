@@ -29,6 +29,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 
@@ -69,7 +70,7 @@ public class Server
   // Class that save User's to a database
   private final Transaction<User> userTransaction;
   private volatile long counter = 0;
-  private boolean isPlaying = false;
+  private volatile boolean isPlaying = false;
 
 
   public Server (int portNumber)
@@ -90,6 +91,7 @@ public class Server
     try
     {
       serverSocket = new ServerSocket(portNumber);
+      serverSocket.setSoTimeout(10);
     }
     catch(IOException e)
     {
@@ -148,7 +150,7 @@ public class Server
     }
     while(isWaiting)
     {
-      System.out.println("Server(" + host + "): waiting for Connection on port: " + port);
+      //System.out.println("Server(" + host + "): waiting for Connection on port: " + port);
       try
       {
         Socket client = serverSocket.accept();
@@ -166,12 +168,16 @@ public class Server
       }
       catch(IOException e)
       {
-        System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
-        e.printStackTrace();
+        // System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
+        // e.printStackTrace();
       }
       catch(Exception e)
       {
-        e.printStackTrace();
+        // e.printStackTrace();
+      }
+      finally
+      {
+        cleanConnectionList();
       }
     }
   }
@@ -247,9 +253,15 @@ public class Server
 
   public void broadcast (Response response)
   {
-    for (Worker worker : allConnections)
+    try
     {
-      worker.send(response);
+      allConnections.stream().filter(Worker::isRunning).forEach(worker -> {
+        worker.send(response);
+      });
+    }
+    catch(Exception e)
+    {
+      cleanConnectionList();
     }
   }
 
@@ -291,7 +303,7 @@ public class Server
   {
     stopGame();
     broadcast(new ResponseFactory().build(uptime(), currentState, Type.BROADCAST, "Game restarted."));
-
+    userList.forEach(User::reset);
     simulator.init();
 
     for (User user : getPlayers())
@@ -362,23 +374,15 @@ public class Server
    *
    * Users are delt cards and world data is sent out.
    */
-  private void begin ()
+  private Void begin ()
   {
-    startNanoSec = System.currentTimeMillis();
-    endNanoSec = startNanoSec + currentState.getDuration();
-    while(true)
-    {
-      if (endNanoSec < System.currentTimeMillis())
-      {
-        break;
-      }
-    }
-
-    currentState = State.BEGINNING;
-    broadcastStateChange();
 
     ArrayList<WorldData> worldDataList = simulator.getWorldData(Constant.FIRST_DATA_YEAR,
                                                                 Constant.FIRST_GAME_YEAR - 1);
+
+    currentState = State.BEGINNING;
+    broadcastStateChange();
+    isPlaying = true;
 
     for (User user : getPlayers())
     {
@@ -391,42 +395,28 @@ public class Server
 
     broadcast(new ResponseFactory().build(uptime(), new Payload(worldDataList), Type.WORLD_DATA_LIST));
     draft();
+    return null;
   }
 
   /**
    * Sets the state to drafting and schedules a new task.
    * Drafting allows for users to discard and draw new cards
    */
-  private void draft ()
+  private Void draft ()
   {
     currentState = State.DRAFTING;
     broadcastStateChange();
 
+    waitAndAdvance(Server.this::vote);
 
-    startNanoSec = System.currentTimeMillis();
-    endNanoSec = startNanoSec + currentState.getDuration();
-    while(true)
-    {
-      if (endNanoSec < System.currentTimeMillis())
-      {
-        break;
-      }
-      boolean allDone = getPlayers().stream().allMatch(user -> user.isDone);
-      if (allDone)
-      {
-        break;
-      }
-    }
-
-    vote();
-
+    return null;
   }
 
   /**
    * Sets the state to vote and schedules a new draw task
    * Allows users to send votes on cards
    */
-  private void vote ()
+  private Void vote ()
   {
     currentState = State.VOTING;
 
@@ -463,16 +453,15 @@ public class Server
         break;
       }
     }
-
-    draw();
-
+    waitAndAdvance(Server.this::draw);
+    return null;
   }
 
 
   /**
    * Draw cards for all users
    */
-  private void draw ()
+  private Void draw ()
   {
     ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>();
 
@@ -522,21 +511,16 @@ public class Server
       currentState = State.END;
       broadcastStateChange();
       isPlaying = false;
-      return;
-    }
-
-    startNanoSec = System.currentTimeMillis();
-    endNanoSec = startNanoSec + currentState.getDuration();
-    while(true)
-    {
-      if (endNanoSec < System.currentTimeMillis())
+      for (int i = 0; i < processes.size(); i++)
       {
-        break;
+        killAI();
       }
+      return null;
     }
 
+    waitAndAdvance(Server.this::draft);
 
-    draft();
+    return null;
   }
 
   /**
@@ -546,13 +530,12 @@ public class Server
    */
   private void update ()
   {
-    // cleanConnectionList();
-
     if (getPlayerCount() == TOTAL_PLAYERS && currentState == State.LOGIN)
     {
+      isPlaying = true;
       currentState = State.BEGINNING;
       broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE, "Game will begin in 10s"));
-      begin();
+      waitAndAdvance(this::begin);
     }
   }
 
@@ -733,12 +716,12 @@ public class Server
   /**
    * Cleans the connections list that have gone stale
    */
-  public void cleanConnectionList ()
+  private void cleanConnectionList ()
   {
     int con = 0;
     for (int i = 0; i < allConnections.size(); i++)
     {
-      if (!allConnections.get(i).isRunning())
+      if (allConnections.get(i).getUsername().isEmpty() || !allConnections.get(i).isRunning() )
       {
         allConnections.remove(i);
         con++;
@@ -872,6 +855,31 @@ public class Server
     {
       simulator.discard(u.getRegion(), card);
       u.getHand().remove(card);
+    }
+  }
+
+  void waitAndAdvance(Callable phase)
+  {
+    startNanoSec = System.currentTimeMillis();
+    endNanoSec = startNanoSec + currentState.getDuration();
+    while(true)
+    {
+      if (!isPlaying)
+      {
+        return;
+      }
+      boolean allDone = getPlayers().stream().allMatch(user -> user.isDone);
+      if (allDone || endNanoSec < System.currentTimeMillis())
+      {
+        try
+        {
+          phase.call();
+        }
+        catch(Exception e)
+        {
+          System.out.println("could not advance trying again");
+        }
+      }
     }
   }
 }

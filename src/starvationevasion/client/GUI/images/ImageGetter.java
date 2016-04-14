@@ -64,7 +64,7 @@ public class ImageGetter implements ImageConstants
   {
     initialize64();
     initialize256();
-    worldMap=new Image("Mollweide_projection_SW.jpg");
+    worldMap=new Image("WorldMap_MollweideProjection.png");
     graphLeftArrowBig = new Image ("ActionButtons/leftArrowBig.png");
     graphRightArrowBig = new Image ("ActionButtons/rightArrowBig.png");
     discardLeftArrowSmall = new Image("ActionButtons/leftArrowSmall.png");

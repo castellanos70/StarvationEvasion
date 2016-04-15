@@ -39,8 +39,6 @@ Assuming the server is up and running, this will work. <br><br>
 Selecting single player requires that you first start a local server. the server entry point is:
 <tt>starvationevasion.server.Server<tt>. The default port is 5555.
 
-
-Project compiler output (bin or out) This is important because these two folders are in .gitignore If you let the .class files go in the src directory, they will pollute the repo.
 ## Server
 * Javier Chavez - javierc@cs.unm.edu
 

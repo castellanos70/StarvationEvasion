@@ -7,8 +7,6 @@
 1. [Overview](#overview)
 2. [Compilation and Project Configuration](#Compilation and Project Configuration)
 3. [Starting up the Game](#Starting up the Game)
-6. [Simulator](#simulator)
-7. [Visualizer](#visualizer)
 
 ## Overview
 

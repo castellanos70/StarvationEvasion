@@ -48,6 +48,11 @@ run_client () {
     java -client -classpath "./dist:./dist/libs/*" starvationevasion/ai/AI "$1" "$2"
 }
 
+run_co_test () {
+    build
+    java -client -classpath "./dist:./dist/libs/*" starvationevasion/sim/CoordinateTesting
+}
+
 clean () {
     rm -rf dist/
 }
@@ -94,6 +99,9 @@ then
 elif [ "$1" == "webui" ]
 then
     move_webui
+elif [ "$1" == "tester" ]
+then
+    run_co_test
 else
     echo "Command not found"
 fi

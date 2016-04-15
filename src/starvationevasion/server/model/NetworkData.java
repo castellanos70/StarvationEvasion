@@ -1,7 +1,7 @@
 package starvationevasion.server.model;
 
-
 import com.oracle.javafx.jmx.json.JSONDocument;
+
 import starvationevasion.server.io.JSON;
 
 public abstract class NetworkData implements Sendable
@@ -11,7 +11,8 @@ public abstract class NetworkData implements Sendable
   private String message;// header
   private double time = 0f;
 
-  public <T extends Payload> NetworkData (double time, T data, String msg, Type type)
+  public <T extends Payload> NetworkData(double time, T data, String msg,
+      Type type)
   {
     this.time = time;
     this.data = data;
@@ -19,35 +20,35 @@ public abstract class NetworkData implements Sendable
     this.type = type;
   }
 
-  public NetworkData (double time, Sendable data, String msg, Type type)
+  public NetworkData(double time, Sendable data, String msg, Type type)
   {
     this(time, new Payload(), msg, type);
     getPayload().putData(data);
   }
 
-  public NetworkData (double time, Payload data, String msg)
+  public NetworkData(double time, Payload data, String msg)
   {
     this(time, data, msg, Type.BROADCAST);
   }
 
-  public <T extends Payload> NetworkData (double time, T data, Type type)
+  public <T extends Payload> NetworkData(double time, T data, Type type)
   {
     this(time, data, "", type);
   }
 
-  public NetworkData (double time, Sendable data, Type type)
+  public NetworkData(double time, Sendable data, Type type)
   {
     this(time, new Payload(data), "", type);
   }
 
   @Override
-  public String toString ()
+  public String toString()
   {
     return String.valueOf(time) + " " + data;
   }
 
   @Override
-  public JSONDocument toJSON ()
+  public JSONDocument toJSON()
   {
     data.put("time", time);
     data.put("type", data.getOrDefault("type", type));
@@ -57,10 +58,9 @@ public abstract class NetworkData implements Sendable
   }
 
   @Override
-  public void fromJSON (Object doc)
+  public void fromJSON(Object doc)
   {
     JSONDocument json = JSON.Parser.toJSON(data);
-
 
     time = (double) json.getNumber("time");
     type = Type.valueOf(json.getString("type"));
@@ -70,28 +70,28 @@ public abstract class NetworkData implements Sendable
     data.fromJSON(_data);
   }
 
-  public void setType (Type type)
+  public void setType(Type type)
   {
     this.type = type;
   }
 
   @Override
-  public Type getType ()
+  public Type getType()
   {
     return type;
   }
 
-  public Payload getPayload ()
+  public Payload getPayload()
   {
     return data;
   }
 
-  public double getTime ()
+  public double getTime()
   {
     return time;
   }
 
-  public void setMessage (String message)
+  public void setMessage(String message)
   {
     this.message = message;
   }

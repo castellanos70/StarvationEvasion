@@ -1,9 +1,9 @@
 package starvationevasion.client.GUI.images;
 
-import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumPolicy;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumPolicy;
 
 /**
  * Created by jmweisburd on 11/15/15.
@@ -64,33 +64,33 @@ public class ImageGetter implements ImageConstants
   {
     initialize64();
     initialize256();
-    worldMap=new Image("Mollweide_projection_SW.jpg");
-    graphLeftArrowBig = new Image ("ActionButtons/leftArrowBig.png");
-    graphRightArrowBig = new Image ("ActionButtons/rightArrowBig.png");
+    worldMap = new Image("WorldMap_MollweideProjection.png");
+    graphLeftArrowBig = new Image("ActionButtons/leftArrowBig.png");
+    graphRightArrowBig = new Image("ActionButtons/rightArrowBig.png");
     discardLeftArrowSmall = new Image("ActionButtons/leftArrowSmall.png");
     discardRightArrowSmall = new Image("ActionButtons/rightArrowSmall.png");
 
-
-    undoButton=new Image("ActionButtons/undoResized.png");
-    voteIcon=new ImageView("cardImages/vote.png");
-
+    undoButton = new Image("ActionButtons/undoResized.png");
+    voteIcon = new ImageView("cardImages/vote.png");
 
     leftArm = "cardImages/left2.jpg";
     rightArm = "cardImages/right2.jpg";
     head = "cardImages/head2.png";
-    leftLeg= "cardImages/leftLeg.jpg";
-    rightLeg= "cardImages/rightLeg.jpg";
-    wingedDragonOfRa= "cardImages/wingedDragonOfRaw.jpg";
-    sliferTheSkyDragon= "cardImages/slifer.jpg";
-    obeliskTheTormentor= "cardImages/obeliskTheTormentor.jpg";
-    kuriboh= "cardImages/kuriboh.jpg";
+    leftLeg = "cardImages/leftLeg.jpg";
+    rightLeg = "cardImages/rightLeg.jpg";
+    wingedDragonOfRa = "cardImages/wingedDragonOfRaw.jpg";
+    sliferTheSkyDragon = "cardImages/slifer.jpg";
+    obeliskTheTormentor = "cardImages/obeliskTheTormentor.jpg";
+    kuriboh = "cardImages/kuriboh.jpg";
 
-    background= new Image("background.jpg");
+    background = new Image("background.png");
   }
 
   /**
    * Gets the food image of the EnumFood passed in 256x256
-   * @param type food type
+   * 
+   * @param type
+   *          food type
    * @return image of food type
    */
   public Image getImageForFoodType256(EnumFood type)
@@ -128,7 +128,9 @@ public class ImageGetter implements ImageConstants
 
   /**
    * Gets the food image of the EnumFood passed in 64x64
-   * @param type food type
+   * 
+   * @param type
+   *          food type
    * @return image of food type
    */
   public Image getImageForFoodType64(EnumFood type)
@@ -196,43 +198,71 @@ public class ImageGetter implements ImageConstants
 
   /**
    * Get the undo button image
+   * 
    * @return undo button image
    */
-  public Image getUndoButton(){return undoButton;}
+  public Image getUndoButton()
+  {
+    return undoButton;
+  }
 
   /**
    * Get the vote icon image
+   * 
    * @return vote icon image
    */
-  public ImageView getVoteIcon(){return voteIcon;}
+  public ImageView getVoteIcon()
+  {
+    return voteIcon;
+  }
 
   /**
    * Gets the image for the cards
-   * @param policy policy card you want to get an image for
+   * 
+   * @param policy
+   *          policy card you want to get an image for
    * @return image of the policy card
    */
   public ImageView getImageForCard(EnumPolicy policy)
   {
 
-    switch(policy)
+    switch (policy)
     {
       case Clean_River_Incentive:
-        return new ImageView(new Image(head, ImageConstants.INIT_CARD_WIDTH*8, ImageConstants.INIT_CARD_HEIGHT*8, false,false));
+        return new ImageView(new Image(head, ImageConstants.INIT_CARD_WIDTH * 8,
+            ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
       case Fertilizer_Subsidy:
-        return new ImageView(new Image(leftArm, ImageConstants.INIT_CARD_WIDTH*8, ImageConstants.INIT_CARD_HEIGHT*8, false, false));
+        return new ImageView(
+            new Image(leftArm, ImageConstants.INIT_CARD_WIDTH * 8,
+                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
       case Educate_the_Women_Campaign:
-        return new ImageView(new Image(rightArm, ImageConstants.INIT_CARD_WIDTH*8, ImageConstants.INIT_CARD_HEIGHT*8, false, false));
+        return new ImageView(
+            new Image(rightArm, ImageConstants.INIT_CARD_WIDTH * 8,
+                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
       case Covert_Intelligence:
-        return new ImageView(new Image(leftLeg, ImageConstants.INIT_CARD_WIDTH*8, ImageConstants.INIT_CARD_HEIGHT*8, false, false));
+        return new ImageView(
+            new Image(leftLeg, ImageConstants.INIT_CARD_WIDTH * 8,
+                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
       case Efficient_Irrigation_Incentive:
-        return new ImageView(new Image(rightLeg, ImageConstants.INIT_CARD_WIDTH*8, ImageConstants.INIT_CARD_HEIGHT*8, false, false));
+        return new ImageView(
+            new Image(rightLeg, ImageConstants.INIT_CARD_WIDTH * 8,
+                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
       case Ethanol_Tax_Credit_Change:
-        return new ImageView(new Image(wingedDragonOfRa, ImageConstants.INIT_CARD_WIDTH*8, ImageConstants.INIT_CARD_HEIGHT*8, false, false));
+        return new ImageView(
+            new Image(wingedDragonOfRa, ImageConstants.INIT_CARD_WIDTH * 8,
+                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
       case Foreign_Aid_for_Farm_Infrastructure:
-        return new ImageView(new Image(obeliskTheTormentor, ImageConstants.INIT_CARD_WIDTH*8, ImageConstants.INIT_CARD_HEIGHT*8, false, false));
+        return new ImageView(
+            new Image(obeliskTheTormentor, ImageConstants.INIT_CARD_WIDTH * 8,
+                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
       case GMO_Seed_Insect_Resistance_Research:
-        return new ImageView(new Image(sliferTheSkyDragon, ImageConstants.INIT_CARD_WIDTH*8, ImageConstants.INIT_CARD_HEIGHT*8, false, false));
-      default: return new ImageView(new Image(kuriboh, ImageConstants.INIT_CARD_WIDTH*8, ImageConstants.INIT_CARD_HEIGHT*8, false, false));
+        return new ImageView(
+            new Image(sliferTheSkyDragon, ImageConstants.INIT_CARD_WIDTH * 8,
+                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
+      default:
+        return new ImageView(
+            new Image(kuriboh, ImageConstants.INIT_CARD_WIDTH * 8,
+                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
     }
 
   }

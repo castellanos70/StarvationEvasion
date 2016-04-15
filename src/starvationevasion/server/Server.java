@@ -255,13 +255,14 @@ public class Server
   {
     try
     {
-      allConnections.stream().filter(Worker::isRunning).forEach(worker -> {
-        worker.send(response);
-      });
+      for (int i = 0; i < allConnections.size(); i++)
+      {
+        allConnections.get(i).send(response);
+      }
     }
     catch(Exception e)
     {
-      cleanConnectionList();
+      System.out.println("Error sending message");
     }
   }
 
@@ -439,20 +440,6 @@ public class Server
                                           new Payload(_list),
                                           Type.VOTE_BALLOT));
 
-    startNanoSec = System.currentTimeMillis();
-    endNanoSec = startNanoSec + currentState.getDuration();
-    while(true)
-    {
-      if (endNanoSec < System.currentTimeMillis())
-      {
-        break;
-      }
-      boolean allDone = getPlayers().stream().allMatch(user -> user.isDone);
-      if (allDone)
-      {
-        break;
-      }
-    }
     waitAndAdvance(Server.this::draw);
     return null;
   }
@@ -464,6 +451,7 @@ public class Server
   private Void draw ()
   {
     ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>();
+    ArrayList<PolicyCard> _list = new ArrayList<>();
 
 
     for (PolicyCard[] policyCards : _drafted)
@@ -475,9 +463,12 @@ public class Server
         {
           enactedPolicyCards.add(p);
         }
+        _list.add(p);
         simulator.discard(p.getOwner(), p.getCardType());
       }
     }
+    VoteData voteData = new VoteData(_list, enactedPolicyCards, _drafted);
+    broadcast(new ResponseFactory().build(uptime(), voteData, Type.VOTE_RESULTS));
 
     currentState = State.DRAWING;
     broadcastStateChange();
@@ -511,10 +502,6 @@ public class Server
       currentState = State.END;
       broadcastStateChange();
       isPlaying = false;
-      for (int i = 0; i < processes.size(); i++)
-      {
-        killAI();
-      }
       return null;
     }
 
@@ -657,14 +644,14 @@ public class Server
         else if(line.equals("\r\n"))
         {
           // use the plain text writer to send following data
-          worker.setWriter(new PlainTextWriteStrategy(s, null));
+          // worker.setWriter(new PlainTextWriteStrategy(s, null));
           // Send plan text to the web socket.
-          ((PlainTextWriteStrategy) worker.getWriter())
-                  .getWriter().println("HTTP/1.1 101 Switching Protocols\n" +
-                                               "Upgrade: websocket\n" +
-                                               "Connection: Upgrade\n" +
-                                               "Sec-WebSocket-Accept: " + socketKey + "\r\n");
+          worker.getWriter().getStream().writeUTF("HTTP/1.1 101 Web Socket Protocol Handshake\n" +
+                                                          "Upgrade: WebSocket\n" +
+                                                          "Connection: Upgrade\n" +
+                                                          "Sec-WebSocket-Accept: " + socketKey + "\r\n\r\n");
 
+          worker.getWriter().getStream().flush();
           // assume the client accepted socket key and set up stream readers
           discoveredReader = new WebSocketReadStrategy(s, null);
           discoveredWriter =  new WebSocketWriteStrategy(s, null);
@@ -736,8 +723,6 @@ public class Server
 
   private void broadcastStateChange ()
   {
-    getPlayers().stream().forEach(user -> user.isDone = false);
-    // System.out.println(currentState);
     broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE));
   }
 
@@ -825,7 +810,7 @@ public class Server
     if (processes.size() > 0)
     {
       Process p = processes.poll();
-      p.destroy();
+      p.destroyForcibly();
       try
       {
         p.waitFor();
@@ -873,6 +858,7 @@ public class Server
       {
         try
         {
+          getPlayers().stream().forEach(user -> user.isDone = false);
           phase.call();
         }
         catch(Exception e)

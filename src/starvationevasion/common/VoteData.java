@@ -65,6 +65,8 @@ public class VoteData implements Sendable
     JSONDocument _jsonBallot = JSONDocument.createArray(ballot.size());
 
 
+
+
     for (int i = 0; i < enacted.size(); i++)
     {
       _jsonEnacting.set(i, enacted.get(i).toJSON());
@@ -72,8 +74,29 @@ public class VoteData implements Sendable
 
     for (int i = 0; i < ballot.size(); i++)
     {
-      _jsonBallot.set(i, ballot.get(i).toJSON());
+      // get the card's JSON
+      JSONDocument _doc = ballot.get(i).toJSON();
+      // add a the votes to it
+      _doc.setNumber("votes-received", ballot.get(i).getEnactingRegionCount());
+      // create an array
+      JSONDocument _jsonRe = JSONDocument.createArray(EnumRegion.US_REGIONS.length);
+
+      // iter through the regions and check if their vote
+      for (int j = 0; j < EnumRegion.US_REGIONS.length; j++)
+      {
+        if (ballot.get(i).didVoteYes(EnumRegion.values()[j]))
+        {
+          // if they did add them to the array
+          _jsonRe.set(i, EnumRegion.values()[j].toJSON());
+        }
+      }
+      // add the array of enacting regions to card
+      _doc.set("enacting-regions", _jsonRe);
+      // add to ballot array
+      _jsonBallot.set(i, _doc);
     }
+
+
     _json.set("ballot", _jsonBallot);
     _json.set("enacted", _jsonEnacting);
 

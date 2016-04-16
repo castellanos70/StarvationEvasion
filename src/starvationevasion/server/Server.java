@@ -48,7 +48,7 @@ public class Server
   private final Simulator simulator;
 
   // list of ALL the users
-  private final List<User> userList = Collections.synchronizedList(new ArrayList<>());
+  private final List<User> userList = new ArrayList<>();//Collections.synchronizedList(new ArrayList<>());
 
   private State currentState = State.LOGIN;
   private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -255,13 +255,14 @@ public class Server
   {
     try
     {
-      allConnections.stream().filter(Worker::isRunning).forEach(worker -> {
-        worker.send(response);
-      });
+      for (int i = 0; i < allConnections.size(); i++)
+      {
+        allConnections.get(i).send(response);
+      }
     }
     catch(Exception e)
     {
-      cleanConnectionList();
+      System.out.println("Error sending message");
     }
   }
 
@@ -303,14 +304,14 @@ public class Server
   {
     stopGame();
     broadcast(new ResponseFactory().build(uptime(), currentState, Type.BROADCAST, "Game restarted."));
-    userList.forEach(User::reset);
+    for (User user : userList)
+    {
+      user.reset();
+      user.setHand(new ArrayList<>());
+      user.setPlaying(false);
+    }
     simulator.init();
 
-    for (User user : getPlayers())
-    {
-      user.getHand().clear();
-    }
-    // enactedPolicyCards.clear();
     for (int i = 0; i < _drafted.length; i++)
     {
       _drafted[i] = new PolicyCard[2];
@@ -439,20 +440,6 @@ public class Server
                                           new Payload(_list),
                                           Type.VOTE_BALLOT));
 
-    startNanoSec = System.currentTimeMillis();
-    endNanoSec = startNanoSec + currentState.getDuration();
-    while(true)
-    {
-      if (endNanoSec < System.currentTimeMillis())
-      {
-        break;
-      }
-      boolean allDone = getPlayers().stream().allMatch(user -> user.isDone);
-      if (allDone)
-      {
-        break;
-      }
-    }
     waitAndAdvance(Server.this::draw);
     return null;
   }
@@ -464,6 +451,7 @@ public class Server
   private Void draw ()
   {
     ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>();
+    ArrayList<PolicyCard> _list = new ArrayList<>();
 
 
     for (PolicyCard[] policyCards : _drafted)
@@ -475,17 +463,15 @@ public class Server
         {
           enactedPolicyCards.add(p);
         }
+        _list.add(p);
         simulator.discard(p.getOwner(), p.getCardType());
       }
     }
+    VoteData voteData = new VoteData(_list, enactedPolicyCards, _drafted);
+    broadcast(new ResponseFactory().build(uptime(), voteData, Type.VOTE_RESULTS));
 
     currentState = State.DRAWING;
     broadcastStateChange();
-
-    for (int i = 0; i < EnumRegion.US_REGIONS.length; i++)
-    {
-      _drafted[i] = new PolicyCard[2];
-    }
 
 
     for (User user : getPlayers())
@@ -505,16 +491,24 @@ public class Server
       System.out.println("There is " + enactedPolicyCards.size() + " cards being enacted.");
       broadcast(new ResponseFactory().build(uptime(), new Payload(worldData), Type.WORLD_DATA_LIST));
     }
+    // clear the votes
+    for (int i = 0; i < EnumRegion.US_REGIONS.length; i++)
+    {
+      // the 2d array is organized by regions that drafted card
+      if (_drafted[i] == null) continue;
+      for (int j = 0; j < 2; j++)
+      {
+        if (_drafted[i][j] == null) continue;
+        _drafted[i][j].clearVotes();
+      }
+      _drafted[i] = new PolicyCard[2];
+    }
 
     if (simulator.getCurrentYear() >= Constant.LAST_YEAR)
     {
       currentState = State.END;
       broadcastStateChange();
       isPlaying = false;
-      for (int i = 0; i < processes.size(); i++)
-      {
-        killAI();
-      }
       return null;
     }
 
@@ -657,14 +651,14 @@ public class Server
         else if(line.equals("\r\n"))
         {
           // use the plain text writer to send following data
-          worker.setWriter(new PlainTextWriteStrategy(s, null));
+          // worker.setWriter(new PlainTextWriteStrategy(s, null));
           // Send plan text to the web socket.
-          ((PlainTextWriteStrategy) worker.getWriter())
-                  .getWriter().println("HTTP/1.1 101 Switching Protocols\n" +
-                                               "Upgrade: websocket\n" +
-                                               "Connection: Upgrade\n" +
-                                               "Sec-WebSocket-Accept: " + socketKey + "\r\n");
+          worker.getWriter().getStream().writeUTF("HTTP/1.1 101 Web Socket Protocol Handshake\n" +
+                                                          "Upgrade: WebSocket\n" +
+                                                          "Connection: Upgrade\n" +
+                                                          "Sec-WebSocket-Accept: " + socketKey + "\r\n\r\n");
 
+          worker.getWriter().getStream().flush();
           // assume the client accepted socket key and set up stream readers
           discoveredReader = new WebSocketReadStrategy(s, null);
           discoveredWriter =  new WebSocketWriteStrategy(s, null);
@@ -721,9 +715,11 @@ public class Server
     int con = 0;
     for (int i = 0; i < allConnections.size(); i++)
     {
-      if (allConnections.get(i).getUsername().isEmpty() || !allConnections.get(i).isRunning() )
+      if (!allConnections.get(i).isRunning())
       {
+        User u = allConnections.get(i).getUser();
         allConnections.remove(i);
+        u.setLoggedIn(false);
         con++;
       }
     }
@@ -737,7 +733,6 @@ public class Server
   private void broadcastStateChange ()
   {
     getPlayers().stream().forEach(user -> user.isDone = false);
-    // System.out.println(currentState);
     broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE));
   }
 
@@ -781,6 +776,7 @@ public class Server
     {
       for (int i = 0; i < _drafted[card.getOwner().ordinal()].length; i++)
       {
+        if (_drafted[card.getOwner().ordinal()][i] == null) continue;
         if (_drafted[card.getOwner().ordinal()][i].getCardType().equals(card.getCardType()))
         {
           _drafted[card.getOwner().ordinal()][i].addEnactingRegion(user);
@@ -825,7 +821,7 @@ public class Server
     if (processes.size() > 0)
     {
       Process p = processes.poll();
-      p.destroy();
+      p.destroyForcibly();
       try
       {
         p.waitFor();
@@ -877,7 +873,7 @@ public class Server
         }
         catch(Exception e)
         {
-          System.out.println("could not advance trying again");
+          System.out.println("Could not advance game.");
         }
       }
     }

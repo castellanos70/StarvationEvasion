@@ -2,7 +2,6 @@ package starvationevasion.sim.io;
 
 import org.xml.sax.SAXException;
 import starvationevasion.common.GeographicArea;
-import starvationevasion.common.MapConverter;
 import starvationevasion.common.MapPoint;
 
 import java.awt.geom.Area;
@@ -15,7 +14,6 @@ import java.awt.geom.Area;
  */
 public class GeographyValidator
 {
-  private static final  MapConverter CONVERTER = new MapConverter();
 
   public boolean validate(GeographicArea region) throws SAXException
   {
@@ -25,7 +23,7 @@ public class GeographyValidator
     }
 
     // check to make sure all region polygons are simple.
-    Area area = new Area(CONVERTER.regionToPolygon(region));
+    Area area = new Area(region.regionToPolygon(region));
     boolean isSingular = area.isSingular();
 
     if (!isSingular)

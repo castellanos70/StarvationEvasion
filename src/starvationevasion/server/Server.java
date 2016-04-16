@@ -776,6 +776,7 @@ public class Server
     {
       for (int i = 0; i < _drafted[card.getOwner().ordinal()].length; i++)
       {
+        if (_drafted[card.getOwner().ordinal()][i] == null) continue;
         if (_drafted[card.getOwner().ordinal()][i].getCardType().equals(card.getCardType()))
         {
           _drafted[card.getOwner().ordinal()][i].addEnactingRegion(user);

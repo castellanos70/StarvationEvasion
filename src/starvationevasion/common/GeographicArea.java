@@ -6,8 +6,7 @@ import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 
 import java.awt.*;
-import java.util.List;
-
+import java.util.ArrayList;
 
 
 /**
@@ -19,7 +18,7 @@ import java.util.List;
 public class GeographicArea implements Sendable
 {
   public final static MapConverter mapConverter = new MapConverter();
-  private List<MapPoint> perimeter;
+  private ArrayList<MapPoint> perimeter;
   private final String name;
 
   private Polygon mapSpacePoly;
@@ -27,6 +26,12 @@ public class GeographicArea implements Sendable
   public GeographicArea(String name)
   { this.name = name;
     //System.out.println("++++++++++++++++++++++++GeographicArea("+name+")");
+  }
+
+  public Polygon getPolygon()
+  {
+    if (mapSpacePoly == null) mapSpacePoly = mapConverter.regionToPolygon(this);
+    return mapSpacePoly;
   }
 
   public boolean containsMapPoint(MapPoint mapPoint)
@@ -48,12 +53,12 @@ public class GeographicArea implements Sendable
     return Type.AREA;
   }
 
-  public List<MapPoint> getPerimeter()
+  public ArrayList<MapPoint> getPerimeter()
   {
     return perimeter;
   }
 
-  public void setPerimeter(List<MapPoint> perimeter)
+  public void setPerimeter(ArrayList<MapPoint> perimeter)
   {
     this.perimeter = perimeter;
   }

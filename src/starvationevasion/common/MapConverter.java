@@ -15,9 +15,9 @@ public class MapConverter
   private static final MapPoint DEFAULT_REF = new MapPoint(0, 0);
   private static final double SCALING_FACTOR = 10;
 
+
   public static final double PROJECTION_HEIGHT = 180 * SCALING_FACTOR;
   public static final double PROJECTION_WIDTH = 360 * SCALING_FACTOR;
-
 
   /**
    * Convert latitude to graphics Y given a point of reference
@@ -122,72 +122,8 @@ public class MapConverter
     return poly;
   }
 
-  /**
-   * @return the factor by which this converter scales coordinates
-   */
-  public double getScale()
-  {
-    return SCALING_FACTOR;
-  }
 
 
-  /**
-   * generates a projected grid of latitude and longitude lines converted to
-   * the scaled graphics space
-   *
-   * @return A list of Line2Ds representing the Lon Lat grid in graphics-space
-   */
-  public List<Line2D> getLatLonGrid()
-  {
-
-    List<Line2D> lines = new ArrayList<>();
-    int maxLat = 90;
-    int maxLon = 180;
-    int inc = 5;
-
-    for (int lon = -maxLon; lon <= maxLon; lon += inc)
-    {
-      double x = lonToX(lon);
-      double y = latToY(maxLat);
-      Line2D l = new Line2D.Double(x, y, x, -y);
-      lines.add(l);
-    }
-    for (int lat = -maxLat; lat <= maxLat; lat += inc)
-    {
-      double y = latToY(lat);
-      double x = lonToX(maxLon);
-      Line2D.Double l = new Line2D.Double(x, y, -x, y);
-      lines.add(l);
-    }
-    return lines;
-  }
-
-  /**
-   * Takes a coordinate point and converts it to an (x,y) point on a Mollweide projection.
-   *
-   * @param coordinate  - Point.Double(latitude, longitude)
-   * @param imageWidth  - Width of the Mollweide map
-   * @param imageHeight - Height of the Mollweide map
-   * @return A Point.Double of the (x, y) position on the Mollweide map
-   */
-  public Point.Double mollweideProjection(Point.Double coordinate, double imageWidth, double imageHeight)
-  {
-    double scaleX = imageWidth / (2 * Math.sqrt(2));
-    double scaleY = imageHeight / (2 * Math.sqrt(2));
-    double latitude = coordinate.getX();
-    double longitude = coordinate.getY();
-    double radLon = (longitude * (Math.PI / 180.0));//convert to radians
-    double radLat = (latitude * (Math.PI / 180.0));
-    double x, y;
-    x = (scaleX * (2 * Math.sqrt(2) / Math.PI) * radLon * Math.cos(radLat));
-    y = -(scaleY * (Math.sqrt(2) * Math.sin(radLat)));
-
-//    double posX = x + imageWidth / 2;
-//    double posY = y + imageHeight / 2;
-//    Point.Double newPoint = new Point.Double(posX, posY);
-    Point.Double newPoint = new Point.Double(x, y);//could change to posX, posY if not already offset
-    return newPoint;
-  }
 
   public double getWidth()
   {

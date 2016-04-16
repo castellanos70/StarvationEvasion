@@ -3,6 +3,7 @@ package starvationevasion.sim;
 import starvationevasion.common.*;
 import starvationevasion.sim.io.CSVReader;
 
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,21 +36,14 @@ public class LandTile
     static int SIZE = values().length;
   }
 
+  private static final String PATH_COORDINATES = "/sim/climate/ArableCoordinates.csv";
   private static final String PATH_CLIMATE_DIR = "/sim/climate/Climate_";
+
+  private static int PATH_COORDINATES_FIELD_COUNT = 3; //Latitude,Longitude,Territory
+
 
   private enum FileHeaders
   {
-    Latitude,          //Latitude ranges from -90 to 90. North latitude is positive.
-    Longitude;        //Longitude ranges from -180 to 180. East longitude is positive.
-    static int SIZE = values().length;
-  }
-
-
-  /*
-    private enum FileHeaders
-  {
-    Latitude,          //Latitude ranges from -90 to 90. North latitude is positive.
-    Longitude,        //Longitude ranges from -180 to 180. East longitude is positive.
     TempMonthLow,     //Temperature Monthly Low (deg C).
     TempMonthHigh,    //Temperature Monthly High (deg C).
     TempMeanDailyLow, //Temperature Mean Daily Low  (deg C).
@@ -57,8 +51,6 @@ public class LandTile
     Rain;             //Precipitation Mean Daily (kg/m2, which is the same as millimeters height).
     static int SIZE = values().length;
   }
-
-   */
 
   public enum Field
   {
@@ -287,6 +279,8 @@ public class LandTile
    */
   public static void load(Model model)
   {
+    //try
+    //{
     Date dateStart = new Date();
     System.out.println("LandTile.load() Loading Climate Data: " +dateFormat.format(dateStart));
     int preGameYears = Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR;
@@ -297,47 +291,37 @@ public class LandTile
     String monthStr = String.format("%02d", month+1);
     String path = PATH_CLIMATE_DIR + year + '_' +monthStr + ".csv";
 
-    //CSVReader fileReader = new CSVReader(path, 0);
-    CSVReader fileReader = new CSVReader("/sim/climate/Viable_Coordinates.csv",0);
+    CSVReader fileReader = new CSVReader(PATH_COORDINATES, 0);
 
-    //Check header
-    String[] fieldList = fileReader.readRecord(FileHeaders.SIZE);
-
-    for (FileHeaders header : FileHeaders.values())
-    {
-      int i = header.ordinal();
-      if (!header.name().equals(fieldList[i]))
-      {
-        System.out.println("**ERROR** Reading " + path +
-          ": Expected header[" + i + "]=" + header + ", Found: " + fieldList[i]);
-        System.exit(1);
-      }
-    }
+    String[] fieldList;
     fileReader.trashRecord();
-
-    // read until end of file is found
     Territory territory = null;
-    while ((fieldList = fileReader.readRecord(FileHeaders.SIZE)) != null)
+
+    //  FileWriter writer = new FileWriter("joel.csv", true);
+
+    //String out;
+
+    while ((fieldList = fileReader.readRecord(PATH_COORDINATES_FIELD_COUNT)) != null)
     {
       //System.out.println("ProductionCSVLoader(): record="+fieldList[0]+", "+fieldList[2]+", len="+fieldList.length);
 
       float latitude = Float.parseFloat(fieldList[0]);
       float longitude = Float.parseFloat(fieldList[1]);
       LandTile tile = new LandTile(latitude, longitude);
-      MapPoint mapPoint = new MapPoint(latitude, longitude);
-      if ((territory == null) || (!territory.containsMapPoint(mapPoint)))
-      {
-        territory = model.getTerritory(mapPoint);
-      }
-      if (territory == null)
-      {
-        System.out.println("LandTile: ERROR: ["+latitude+", "+longitude+"] not a territory");
-        continue;
-      }
 
+      if ((territory == null) || (!territory.getName().equals(fieldList[2])))
+      {
+        territory = model.getTerritory(fieldList[2]);
+      }
       territory.addLandTile(tile);
+    }
+    fileReader.close();
+    //  writer.close();
+    Date dateDone = new Date();
+    double deltaSec = (dateDone.getTime() - dateStart.getTime())/1000.0;
+    System.out.println("LandTile.load() Done: elapsed sec=" +deltaSec);
 
-
+/*
       for (int i=2; i<FileHeaders.SIZE; i++)
       {
         int ii = i-2;
@@ -350,6 +334,13 @@ public class LandTile
     Date dateDone = new Date();
     double deltaSec = (dateDone.getTime() - dateStart.getTime())/1000.0;
     System.out.println("LandTile.load() Done: elapsed sec=" +deltaSec);
-
+*/
+    //}
+    //catch (Exception e)
+    //{
+    //  System.out.println(e.getMessage());
+    //  e.printStackTrace();
+    //  System.exit(0);
+    //}
   }
 }

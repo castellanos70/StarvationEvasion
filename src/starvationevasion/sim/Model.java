@@ -7,7 +7,11 @@ import starvationevasion.sim.events.Drought;
 import starvationevasion.sim.events.Hurricane;
 import starvationevasion.sim.io.XMLparsers.GeographyXMLparser;
 
+import starvationevasion.util.Picture;
+
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -136,8 +140,8 @@ public class Model
 
     cropData = new CropData();
 
-    //LandTile.load(this);
-    //assert (assertLandTiles());
+    LandTile.load(this);
+    assert (assertLandTiles());
 
     for (int i = 0; i< YEARS_OF_DATA; i++)
     {
@@ -184,9 +188,57 @@ public class Model
     assert (!UnitedKingdom.containsMapPoint(new MapPoint(53.347309, -5.681383))); //Irish Sea
     assert (!Ireland.containsMapPoint(new MapPoint(53.347309, -5.681383))); //Irish Sea
     assert (!UnitedKingdom.containsMapPoint(new MapPoint(50.39, -1.7))); //English Channel
+
+
+    //Territory territory = getTerritory("South Africa");
+    Territory territory = getTerritory("China");
+    drawBoundary(territory);
+
     return true;
   }
 
+
+  private void drawBoundary(Territory territory)
+  {
+     Picture pic = new Picture("assets/WorldMap_MollweideProjection.png");
+
+    MapProjectionMollweide map  = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
+
+    Point pixel = new Point();
+
+    Graphics2D gfx = pic.getOffScreenGraphics();
+    Color[] colorList = {Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA};
+
+    int colorIdx = 0;
+    ArrayList<GeographicArea> geographicAreaList = territory.getGeographicBoundary();
+
+
+    for (GeographicArea boundary :  geographicAreaList)
+    {
+      gfx.setColor(colorList[colorIdx]);
+      //gfx.drawPolygon(boundary.getPolygon());
+      ArrayList<MapPoint> perimeter = boundary.getPerimeter();
+      int lastX = Integer.MAX_VALUE;
+      int lastY = Integer.MAX_VALUE;
+      for (MapPoint mapPoint:  perimeter)
+      {
+        map.setPoint(pixel, mapPoint);
+
+        //System.out.println(mapPoint + " ["+pixel.x+", "+pixel.y+"]");
+
+        if (lastX != Integer.MAX_VALUE)
+        {
+          gfx.drawLine(lastX, lastY, pixel.x, pixel.y);
+        }
+        lastX = pixel.x;
+        lastY = pixel.y;
+      }
+      colorIdx++;
+      if (colorIdx >=  colorList.length) colorIdx =  colorList.length-1;
+    }
+    pic.repaint();
+
+  }
 
   private boolean assertLandTiles()
   {
@@ -255,9 +307,34 @@ public class Model
   */
   public Territory getTerritory(MapPoint mapPoint)
   {
+    Territory found = null;
     for (Territory territory : territoryList)
     {
-      if (territory.containsMapPoint(mapPoint)) return territory;
+      //if (territory.containsMapPoint(mapPoint)) return territory;
+      if (territory.containsMapPoint(mapPoint))
+      {
+        if (found != null)
+        {
+          System.out.println("##################ERROR: Model.getTerritory() "+found.getName() +
+          " & " + territory.getName() + ", " + mapPoint);
+        }
+        found = territory;
+      }
+    }
+
+    return found;
+  }
+
+
+  public Territory getTerritory(String name)
+  {
+    for (Territory territory : territoryList)
+    {
+      //if (territory.containsMapPoint(mapPoint)) return territory;
+      if (territory.getName().equals(name))
+      {
+        return territory;
+      }
     }
     return null;
   }
@@ -267,6 +344,7 @@ public class Model
   {
     return regionList[regionCode.ordinal()].getGeographicBoundary();
   }
+
 
   public List<AbstractEvent> getSpecialEvents()
   {

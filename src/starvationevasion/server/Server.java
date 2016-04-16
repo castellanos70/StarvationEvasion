@@ -48,7 +48,7 @@ public class Server
   private final Simulator simulator;
 
   // list of ALL the users
-  private final List<User> userList = Collections.synchronizedList(new ArrayList<>());
+  private final List<User> userList = new ArrayList<>();//Collections.synchronizedList(new ArrayList<>());
 
   private State currentState = State.LOGIN;
   private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -304,14 +304,14 @@ public class Server
   {
     stopGame();
     broadcast(new ResponseFactory().build(uptime(), currentState, Type.BROADCAST, "Game restarted."));
-    userList.forEach(User::reset);
+    for (User user : userList)
+    {
+      user.reset();
+      user.setHand(new ArrayList<>());
+      user.setPlaying(false);
+    }
     simulator.init();
 
-    for (User user : getPlayers())
-    {
-      user.getHand().clear();
-    }
-    // enactedPolicyCards.clear();
     for (int i = 0; i < _drafted.length; i++)
     {
       _drafted[i] = new PolicyCard[2];
@@ -473,11 +473,6 @@ public class Server
     currentState = State.DRAWING;
     broadcastStateChange();
 
-    for (int i = 0; i < EnumRegion.US_REGIONS.length; i++)
-    {
-      _drafted[i] = new PolicyCard[2];
-    }
-
 
     for (User user : getPlayers())
     {
@@ -495,6 +490,18 @@ public class Server
       ArrayList<WorldData> worldData = simulator.nextTurn(enactedPolicyCards);
       System.out.println("There is " + enactedPolicyCards.size() + " cards being enacted.");
       broadcast(new ResponseFactory().build(uptime(), new Payload(worldData), Type.WORLD_DATA_LIST));
+    }
+    // clear the votes
+    for (int i = 0; i < EnumRegion.US_REGIONS.length; i++)
+    {
+      // the 2d array is organized by regions that drafted card
+      if (_drafted[i] == null) continue;
+      for (int j = 0; j < 2; j++)
+      {
+        if (_drafted[i][j] == null) continue;
+        _drafted[i][j].clearVotes();
+      }
+      _drafted[i] = new PolicyCard[2];
     }
 
     if (simulator.getCurrentYear() >= Constant.LAST_YEAR)
@@ -708,9 +715,11 @@ public class Server
     int con = 0;
     for (int i = 0; i < allConnections.size(); i++)
     {
-      if (allConnections.get(i).getUsername().isEmpty() || !allConnections.get(i).isRunning() )
+      if (!allConnections.get(i).isRunning())
       {
+        User u = allConnections.get(i).getUser();
         allConnections.remove(i);
+        u.setLoggedIn(false);
         con++;
       }
     }
@@ -723,6 +732,7 @@ public class Server
 
   private void broadcastStateChange ()
   {
+    getPlayers().stream().forEach(user -> user.isDone = false);
     broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE));
   }
 
@@ -858,12 +868,11 @@ public class Server
       {
         try
         {
-          getPlayers().stream().forEach(user -> user.isDone = false);
           phase.call();
         }
         catch(Exception e)
         {
-          System.out.println("could not advance trying again");
+          System.out.println("Could not advance game.");
         }
       }
     }

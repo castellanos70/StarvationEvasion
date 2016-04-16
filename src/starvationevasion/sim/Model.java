@@ -307,22 +307,12 @@ public class Model
   */
   public Territory getTerritory(MapPoint mapPoint)
   {
-    Territory found = null;
     for (Territory territory : territoryList)
     {
-      //if (territory.containsMapPoint(mapPoint)) return territory;
-      if (territory.containsMapPoint(mapPoint))
-      {
-        if (found != null)
-        {
-          System.out.println("##################ERROR: Model.getTerritory() "+found.getName() +
-          " & " + territory.getName() + ", " + mapPoint);
-        }
-        found = territory;
-      }
+      if (territory.containsMapPoint(mapPoint)) return territory;
     }
 
-    return found;
+    return null;
   }
 
 
@@ -330,11 +320,7 @@ public class Model
   {
     for (Territory territory : territoryList)
     {
-      //if (territory.containsMapPoint(mapPoint)) return territory;
-      if (territory.getName().equals(name))
-      {
-        return territory;
-      }
+      if (territory.getName().equals(name)) return territory;
     }
     return null;
   }

@@ -21,10 +21,53 @@ public class CSVReader
   private List<CSVRecord> records;
   private String path;
 
-  /** Constructs a new CSVReader
-  */
-  public CSVReader()
+
+  /**
+   * Opens the given file from the root data path. Sets class state variables.<br>
+   * Then reads and trashes headerLines.<br>
+   * @param resource Path to resource.
+   * @param headerLines Number of lines to skip.
+   */
+  public CSVReader(String resource, int headerLines)
   {
+    InputStream inputStream = getClass().getResourceAsStream(resource);
+    try
+    {
+      reader = new BufferedReader(new InputStreamReader(inputStream));
+      for (int i=0; i<headerLines; i++)
+      { reader.readLine(); //trash line i
+      }
+    }
+    catch (Exception e)
+    {
+      System.out.println("ERROR reading " + resource);
+      e.printStackTrace();
+      System.exit(0);
+    }
+  }
+
+
+  /**
+   * Opens the given file from the given inputStream. Sets class state variables.<br>
+   * Then reads and trashes headerLines.<br>
+   * @param inputStream stream to resource.
+   * @param headerLines Number of lines to skip.
+   */
+  public CSVReader(InputStream inputStream, int headerLines)
+  {
+    try
+    {
+      reader = new BufferedReader(new InputStreamReader(inputStream));
+      for (int i=0; i<headerLines; i++)
+      { reader.readLine(); //trash line i
+      }
+    }
+    catch (Exception e)
+    {
+      System.out.println("ERROR reading " + inputStream);
+      e.printStackTrace();
+      System.exit(0);
+    }
   }
 
   /** Reads CSV data from an input stream, parsing it into a record structure compatible
@@ -75,31 +118,7 @@ public class CSVReader
 
 
 
-  /**
-   * Opens the given file from the root data path. Sets class state variables.<br>
-   * Then reads and trashes headerLines.<br>
-   * @param resource Path to resource.
-   * @param headerLines Number of lines to skip.
-   */
-  public CSVReader(String resource, int headerLines)
-  {
-    InputStream inputStream = getClass().getResourceAsStream(resource);
-    if (inputStream == null)
-    this.path = resource;
-    try
-    {
-      reader = new BufferedReader(new InputStreamReader(inputStream));
-      for (int i=0; i<headerLines; i++)
-      { reader.readLine(); //trash line i
-      }
-    }
-    catch (Exception e)
-    {
-      System.out.println("ERROR reading " + resource);
-      e.printStackTrace();
-      System.exit(0);
-    }
-  }
+
 
   /**
    * Reads a record from class field reader<br>

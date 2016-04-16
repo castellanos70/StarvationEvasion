@@ -26,10 +26,10 @@ public class MapProjectionMollweide
     scaleY = (pixelHeight / 2.0) / ROOT2;
   }
 
-  public void setPoint(Point pixel, MapPoint mapPoint)
+  public void setPoint(Point pixel, double latitude, double longitude)
   {
-    double lon = (mapPoint.longitude * DEG_TO_RAD);//convert to radians
-    double lat = (mapPoint.latitude * DEG_TO_RAD);
+    double lon = (longitude * DEG_TO_RAD);//convert to radians
+    double lat = (latitude * DEG_TO_RAD);
 
     //To avoid division by zero at the poles, set theta0 equal +- pi/2.
     double theta0 = Math.PI;

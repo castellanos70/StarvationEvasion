@@ -1,6 +1,7 @@
 package starvationevasion.common;
 
 
+import java.awt.*;
 
 /**
  * This class contains all constant values used throughout the Starvation Evasion game.
@@ -98,4 +99,21 @@ public class Constant
   public static final long DRAWING_TIME = 5*1000;
 
   public static final long VOTING_TIME = 3*60*1000;
+
+
+
+  public static final Color COLOR_KHAKI = new Color(195, 176, 145);
+  public static final Color COLOR_AMBER = new Color(255, 191, 0);
+  public static final Color COLOR_MOSS = new Color(138, 154, 91);
+  public static final Color COLOR_SHAMROCK = new Color(0, 158, 96);
+  public static final Color COLOR_EMERALD = new Color(80, 220, 100);
+  public static final Color COLOR_TURQUOISE = new Color(64, 224, 208);
+  public static final Color COLOR_DODGER_BLUE = new Color(30, 144, 255);
+  public static final Color COLOR_VILOET = new Color(143, 0, 255);
+
+
+  public static final Color[] COLOR_MOISTURE_LIST =
+  { COLOR_KHAKI, COLOR_AMBER, COLOR_MOSS, COLOR_SHAMROCK, COLOR_EMERALD,
+    COLOR_TURQUOISE, COLOR_DODGER_BLUE, COLOR_VILOET
+  };
 }

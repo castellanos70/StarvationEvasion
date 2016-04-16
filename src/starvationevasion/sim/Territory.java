@@ -116,7 +116,7 @@ public class Territory
 
   //private final Area totalArea = new Area();
   private final ArrayList<GeographicArea> geographicAreaList = new ArrayList<>();
-  private Collection<LandTile> landTiles  = new ArrayList<>();
+  private ArrayList<LandTile> landTiles  = new ArrayList<>();
 
   /*
    * The region to which this country belongs.
@@ -461,7 +461,7 @@ public class Territory
   /**
    * @return country's collection of 100km2 tiles
    */
-  final public Collection<LandTile> getLandTiles()
+  final public ArrayList<LandTile> getLandTiles()
   {
     return landTiles;
   }

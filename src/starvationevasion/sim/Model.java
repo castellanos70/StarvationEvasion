@@ -190,24 +190,38 @@ public class Model
     assert (!UnitedKingdom.containsMapPoint(new MapPoint(50.39, -1.7))); //English Channel
 
 
-    //Territory territory = getTerritory("South Africa");
-    Territory territory = getTerritory("China");
-    drawBoundary(territory);
-
     return true;
   }
 
 
-  private void drawBoundary(Territory territory)
+  /**
+   * This method is used only for testing the geographic boundaries.<br>
+   * It displays a javax.swing.JFrame containing a Mollweide projection of the
+   * world to be drawn on using drawBoundary(Picture pic, Territory territory);
+   * @return reference to the created JFrame.
+   */
+  public Picture testShowMapProjection()
   {
-     Picture pic = new Picture("assets/WorldMap_MollweideProjection.png");
+    return new Picture("assets/WorldMap_MollweideProjection.png");
+  }
 
+
+  /**
+   * This method is used only for testing the geographic boundaries.<br>
+   * Given a Picture frame containing a Mollweide would map projection and a territory,
+   * it draws the boundary of that territory on the map using different colors for
+   * disconnected segments (islands) of the territory.
+   *
+   */
+  public void drawBoundary(Picture pic, Territory territory)
+  {
     MapProjectionMollweide map  = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
 
     Point pixel = new Point();
 
     Graphics2D gfx = pic.getOffScreenGraphics();
-    Color[] colorList = {Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA};
+    Color[] colorList = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN,
+      Color.BLUE, Color.MAGENTA};
 
     int colorIdx = 0;
     ArrayList<GeographicArea> geographicAreaList = territory.getGeographicBoundary();
@@ -222,7 +236,7 @@ public class Model
       int lastY = Integer.MAX_VALUE;
       for (MapPoint mapPoint:  perimeter)
       {
-        map.setPoint(pixel, mapPoint);
+        map.setPoint(pixel, mapPoint.latitude, mapPoint.longitude);
 
         //System.out.println(mapPoint + " ["+pixel.x+", "+pixel.y+"]");
 
@@ -239,6 +253,40 @@ public class Model
     pic.repaint();
 
   }
+
+
+
+  public void drawRain(Picture pic, int year, Constant.Month month)
+  {
+    MapProjectionMollweide map  = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
+
+    Point pixel = new Point();
+
+    Graphics2D gfx = pic.getOffScreenGraphics();
+
+    for (Territory territory : territoryList)
+    {
+      ArrayList<LandTile> tileList = territory.getLandTiles();
+
+      for (LandTile tile : tileList)
+      {
+        map.setPoint(pixel, tile.getLatitude(), tile.getLongitude());
+
+        double rain = tile.getField(LandTile.Field.RAIN, year, month);
+
+
+        int colorIdx = (int)((rain/15.0)*Constant.COLOR_MOISTURE_LIST.length);
+        if (colorIdx < 0) colorIdx = 0;
+        if (colorIdx >= Constant.COLOR_MOISTURE_LIST.length) colorIdx = Constant.COLOR_MOISTURE_LIST.length-1;
+        gfx.setColor(Constant.COLOR_MOISTURE_LIST[colorIdx]);
+
+        gfx.fillOval(pixel.x-1, pixel.y-1, 3,3);
+      }
+    }
+    pic.repaint();
+
+  }
+
 
   private boolean assertLandTiles()
   {
@@ -435,7 +483,6 @@ public class Model
    */
   protected int nextYear(ArrayList<PolicyCard> cards)
   {
-
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
     //applyPolicies(); // Not started.
@@ -887,5 +934,34 @@ public class Model
       //for (EnumFarmMethod method : EnumFarmMethod.values()) Simulator.dbg.print("\t" + unit.getMethod(method));
       Simulator.dbg.println();
     }
+  }
+
+
+  /**
+   * Testing entry point. This creates an instance of the model which, among other things,
+   * loads the world territories. This test program then creates a JFrame displaying a world
+   * map and a few example territories drawn on that map.
+   *
+   * @param args are ignored
+   */
+  public static void main(String[] args)
+  {
+    System.out.println("==========================================================================");
+    System.out.println("      Running Test entry point: starvationevasion.sim.Model()");
+    System.out.println("==========================================================================");
+
+    Model model = new Model();
+
+    Territory territory = model.getTerritory("China");
+    Picture pic = model.testShowMapProjection();
+    model.drawBoundary(pic, territory);
+
+    territory = model.getTerritory("Italy");
+    model.drawBoundary(pic, territory);
+
+
+
+    pic = model.testShowMapProjection();
+    model.drawRain(pic, 2009, Constant.Month.AUG);
   }
 }

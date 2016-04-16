@@ -2,10 +2,12 @@ package starvationevasion.common;
 
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+import org.xml.sax.SAXException;
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 
 import java.awt.*;
+import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
@@ -168,7 +170,36 @@ public class GeographicArea implements Sendable
     return lon * Math.cos(Math.toRadians(refPoint.latitude)) * SCALING_FACTOR;
   }
 
+  public static boolean validate(GeographicArea region)
+  {
+    for (MapPoint mp : region.getPerimeter())
+    {
+      if (! isValidMapPoint(mp) )
+      {
+        System.out.println("****ERROR**** GeographicArea.validate("+region.getName()+") Invalid Map Point: "+mp);
+      }
+    }
 
+    // check to make sure all region polygons are simple.
+    Area area = new Area(region.regionToPolygon(region));
+    boolean isSingular = area.isSingular();
+
+    if (!isSingular)
+    {
+      System.out.println("****ERROR**** GeographicArea.validate("+region.getName()+") Invalid GeographicArea shape");
+    }
+
+    return true;
+  }
+
+
+  private static boolean isValidMapPoint(MapPoint mapPoint)
+  {
+
+    return Math.abs(mapPoint.latitude) <= 90.00 &&
+      Math.abs(mapPoint.longitude) <= 180.00;
+
+  }
 
   public String toString()
   {

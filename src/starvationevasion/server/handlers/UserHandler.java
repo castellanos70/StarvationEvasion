@@ -85,7 +85,7 @@ public class UserHandler extends AbstractHandler
                                              Type.USERS_READY_LIST));
       return true;
     }
-    else if (request.getDestination().equals(Endpoint.READY) && getClient().loggedIn())
+    else if (request.getDestination().equals(Endpoint.READY) && getClient().getUser().isLoggedIn())
     {
       if (server.getGameState() == State.LOGIN)
       {

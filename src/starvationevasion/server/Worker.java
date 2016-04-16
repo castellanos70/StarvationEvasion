@@ -33,8 +33,7 @@ public class Worker extends Thread
 
   private final DataOutputStream outStream;
   private final DataInputStream inStream;
-  private boolean isLoggedIn = false;
-  private User user;
+  private User user = new User("ANON", "", null, null);
 
 
   public Worker (Socket client, Server server)
@@ -109,14 +108,9 @@ public class Worker extends Thread
     {
       System.out.println("There was an error shutting down");
     }
-    isLoggedIn = false;
-    if (user != null)
+    if (!username.equals("ANON"))
     {
       user.setLoggedIn(false);
-    }
-    else
-    {
-      username = "";
     }
   }
   
@@ -213,31 +207,13 @@ public class Worker extends Thread
   }
 
 
-  public String getUsername ()
+  public void setUser (User user)
   {
-    return username;
-  }
-
-  public void setUsername (String username)
-  {
-    this.username = username;
-    if (!username.equals("ANON"))
-    {
-      isLoggedIn = true;
-    }
-  }
-
-  public boolean loggedIn ()
-  {
-    return isLoggedIn;
+    this.user = user;
   }
 
   public User getUser()
   {
-    if (isLoggedIn && user == null)
-    {
-      this.user = server.getUserByUsername(getUsername());
-    }
     return user;
   }
 }

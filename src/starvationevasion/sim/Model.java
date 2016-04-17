@@ -5,7 +5,7 @@ import starvationevasion.sim.io.*;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
 import starvationevasion.sim.events.Hurricane;
-import starvationevasion.sim.io.XMLparsers.GeographyXMLparser;
+import starvationevasion.sim.io.GeographyXMLparser;
 
 import starvationevasion.util.Picture;
 

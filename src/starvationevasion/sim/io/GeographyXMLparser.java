@@ -1,4 +1,4 @@
-package starvationevasion.sim.io.XMLparsers;
+package starvationevasion.sim.io;
 
 import org.xml.sax.XMLReader;
 import org.xml.sax.Attributes;
@@ -14,8 +14,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

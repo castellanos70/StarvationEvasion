@@ -114,12 +114,9 @@ public class Territory
   };
 
 
-  public static final MapConverter converter = new MapConverter();
-
   //private final Area totalArea = new Area();
   private final ArrayList<GeographicArea> geographicAreaList = new ArrayList<>();
-  private Collection<LandTile> landTiles  = new ArrayList<>();
-  private MapPoint capitolLocation;
+  private ArrayList<LandTile> landTiles  = new ArrayList<>();
 
   /*
    * The region to which this country belongs.
@@ -464,7 +461,7 @@ public class Territory
   /**
    * @return country's collection of 100km2 tiles
    */
-  final public Collection<LandTile> getLandTiles()
+  final public ArrayList<LandTile> getLandTiles()
   {
     return landTiles;
   }
@@ -477,49 +474,8 @@ public class Territory
     landTiles.add(tile);
   }
 
-  // generate the capital by finding the center of the largest landmass.
-  // this method can only be called after the Country's regions have been set.
-  //
-  private MapPoint calCapitolLocation()
-  {
-    if (geographicAreaList== null) throw new RuntimeException("(!) regions not set!");
-    if (geographicAreaList.isEmpty()) throw new RuntimeException("(!) no regions !");
 
-    int maxArea = 0;
-    Polygon largest = null;
 
-    for (GeographicArea area : geographicAreaList)
-    {
-      Polygon poly = converter.regionToPolygon(area);
-      int landArea = (int) (poly.getBounds().getWidth() * poly.getBounds().getHeight());
-      if (landArea >= maxArea)
-      {
-        largest = poly;
-        maxArea = landArea;
-      }
-    }
-
-    int x = (int) largest.getBounds().getCenterX();
-    int y = (int) largest.getBounds().getCenterY();
-
-    return converter.pointToMapPoint(new Point(x, y));
-  }
-
-  /**
-   * returns the point representing the shipping location of that country.<br>
-   *
-   * (!) note: this method can only be called after the Country's regions have
-   * been set.
-   *
-   * @return map point representing the lat and lon location of the Country's
-   * capitol.
-   */
-  public MapPoint getCapitolLocation()
-  {
-    if (capitolLocation == null)  capitolLocation = calCapitolLocation();
-
-    return capitolLocation;
-  }
 
   /**
    * Used to link land tiles to a country.
@@ -567,7 +523,10 @@ public class Territory
   }
 
 
-
+  public MapPoint getCenter()
+  {
+    return null;
+  }
 
 
 

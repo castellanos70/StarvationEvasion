@@ -18,7 +18,6 @@ make_sources () {
 
 build () {
     rm -rf dist/
-    rm server.pid
     mkdir dist
     make_sources
     mkdir dist/data
@@ -35,7 +34,7 @@ build () {
 
 monitor_connections() {
     SERVER_PID="$(ps -ef | grep 'Server 5555' | grep -v grep | awk '{print $2}')"
-    echo "$SERVER_PID"
+    echo "Monitoring pid: $SERVER_PID"
     lsof -r 2 -p "$SERVER_PID" -i -a
 }
 
@@ -62,7 +61,6 @@ run_co_test () {
 
 clean () {
     rm -rf dist/
-    rm server.pid
 }
 
 move_webui () {

@@ -11,6 +11,7 @@ import starvationevasion.common.EnumPolicy;
 public class ImageGetter implements ImageConstants
 {
   private static Image worldMap;
+  private static Image regionWorldMap;
   private static Image citrus64;
   private static Image diary64;
   private static Image feed64;
@@ -65,6 +66,7 @@ public class ImageGetter implements ImageConstants
     initialize64();
     initialize256();
     worldMap = new Image("WorldMap_MollweideProjection.png");
+    regionWorldMap = new Image("WorldMap_MollweideProjection_With_Region_Boarders_Added.png");
     graphLeftArrowBig = new Image("ActionButtons/leftArrowBig.png");
     graphRightArrowBig = new Image("ActionButtons/rightArrowBig.png");
     discardLeftArrowSmall = new Image("ActionButtons/leftArrowSmall.png");
@@ -166,6 +168,12 @@ public class ImageGetter implements ImageConstants
     }
   }
 
+  public Image getRegionWorldMap()
+  {
+	  return regionWorldMap;
+  }
+  
+  
   public Image getWorldMap()
   {
     return worldMap;

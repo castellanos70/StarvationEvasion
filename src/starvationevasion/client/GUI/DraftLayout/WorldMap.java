@@ -26,7 +26,7 @@ public class WorldMap extends ScrollPane
 {
   private GUI gui;
   private double zoomLevel=1;
-  private StackPane zoomGroup = new StackPane();
+  private static StackPane zoomGroup = new StackPane();
   private Canvas canvas;
   Image imageMap;
   public WorldMap(GUI gui)
@@ -35,7 +35,7 @@ public class WorldMap extends ScrollPane
    // setVbarPolicy(ScrollBarPolicy.NEVER);
 
     this.gui=gui;
-    imageMap=gui.getImageGetter().getWorldMap();
+    imageMap=gui.getImageGetter().getRegionWorldMap();
     ImageView worldMap=new ImageView(imageMap);
 
     VBox holder=new VBox();
@@ -91,6 +91,17 @@ public class WorldMap extends ScrollPane
       //zoomGroup.getTransforms().add(scaleTransform);
     });
   }
-
+  /*
+   * 
+   * Get instance of the bane containing
+   * the world map
+   */
+  public StackPane getWorldPane()
+  {
+	  return zoomGroup;
+  }
+  
+  
+  
 
 }

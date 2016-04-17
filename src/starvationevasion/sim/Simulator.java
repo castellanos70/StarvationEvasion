@@ -175,6 +175,8 @@ public class Simulator
     return boundaryList;
   }
 
+
+
   /**
    * FROM ONE THREAD ONLY, the Server should call nextTurn(cards) when it is ready to advance the
    * simulator a turn (Constant.YEARS_PER_TURN years).<br><br>
@@ -375,6 +377,11 @@ public class Simulator
    */
   public static void main(String[] args)
   {
+    System.out.println("==========================================================================");
+    System.out.println("      Running Test entry point: starvationevasion.sim.Simulator()");
+    System.out.println("==========================================================================");
+
+
     // Configure a debug output stream for dumping verbose simulatoin data.
     //
     String tmpdir = System.getProperty("java.io.tmpdir");

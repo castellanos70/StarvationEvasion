@@ -18,6 +18,7 @@ make_sources () {
 
 build () {
     rm -rf dist/
+    rm server.pid
     mkdir dist
     make_sources
     mkdir dist/data
@@ -32,6 +33,11 @@ build () {
     rm files.txt
 }
 
+monitor_connections() {
+    SERVER_PID="$(ps -ef | grep 'Server 5555' | grep -v grep | awk '{print $2}')"
+    echo "$SERVER_PID"
+    lsof -r 2 -p "$SERVER_PID" -i -a
+}
 
 run_server_n_build() {
     java -classpath "./dist:./dist/libs/*" starvationevasion/server/Server "$1"
@@ -41,6 +47,7 @@ run_server () {
     build
     # java -XX:+AggressiveOpts -XX:+UseFastAccessorMethods -Xms128m -Xmx2g -Xcomp -classpath ./dist starvationevasion/server/Server "$1" "$2"
     java -server -XX:+OptimizeStringConcat -XX:+UseCodeCacheFlushing -XX:+UseFastAccessorMethods -classpath "./dist:./dist/libs/*" starvationevasion/server/Server "$1"
+    # echo $! > server.pid
 }
 
 run_client () {
@@ -55,6 +62,7 @@ run_co_test () {
 
 clean () {
     rm -rf dist/
+    rm server.pid
 }
 
 move_webui () {
@@ -102,6 +110,9 @@ then
 elif [ "$1" == "tester" ]
 then
     run_co_test
+elif [ "$1" == "monitor" ]
+then
+     monitor_connections
 else
     echo "Command not found"
 fi

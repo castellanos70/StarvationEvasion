@@ -29,8 +29,7 @@ public class Simulator
   private Model model;
 
   /**
-   * This constructor does not initialize the model. Rather it checks to there are valid
-   * Game constants prior to beginning
+   * Allocate memory and read massive data files.
    */
   public Simulator()
   {
@@ -38,6 +37,10 @@ public class Simulator
     assert ((Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR) % Constant.YEARS_PER_TURN == 0);
     assert ((Constant.LAST_YEAR - (Constant.FIRST_GAME_YEAR+1)) % Constant.YEARS_PER_TURN == 0);
 
+    LOGGER.info("Loading and initializing model");
+    model = new Model();
+
+    assert (assertSimulatorPreGameData());
     init();
   }
 
@@ -46,26 +49,20 @@ public class Simulator
    * This should be called once at the start of each game by the Server.
    * Initializes the model
    * Generates a random 80 card deck for each player (both
-   * human and AI players)
+   * human and AI players). <br><br?
    *
    * This is not in the constructor but rather a new method so that
-   * games can be restarted without new objects and allowing a
-   * final object instantiated once
+   * games can be restarted without reallocating memory and without reloading
+   * the massive data files.
    */
   public void init()
   {
-    // Model instantiation parses all of the XML and CSV.
-    //
-    LOGGER.info("Loading and initializing model");
-    model = new Model();
-
     LOGGER.info("Starting Simulator: year=" + Constant.FIRST_GAME_YEAR);
-
+    model.init();
     for (EnumRegion playerRegion : EnumRegion.US_REGIONS)
     {
       playerDeck[playerRegion.ordinal()] = new CardDeck(playerRegion);
     }
-    assert (assertSimulatorPreGameData());
   }
 
 
@@ -409,7 +406,10 @@ public class Simulator
     //
     LOGGER.setLevel(Level.INFO);
 
-    Simulator sim = new Simulator();
+
+    Simulator sim = new Simulator(); //Allocates memory and reads LARGE data files.
+    //To restart without reloading everything call sim.init();
+
 
     String startingHandMsg = "Starting Hands: \n";
 

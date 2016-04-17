@@ -82,7 +82,6 @@ import java.util.logging.Logger;
 public class Model
 {
   public static double EVENT_CHANCE = 0.02;
-  public static final String BG_DATA_PATH = "/sim/geography/ne_50m_land.kml";
 
   EnumRegion debugRegion = EnumRegion.USA_CALIFORNIA;
   private final static Logger LOGGER = Logger.getGlobal(); // getLogger(Model.class.getName())
@@ -117,18 +116,8 @@ public class Model
 
   public Model()
   {
-    currentYear = Constant.FIRST_GAME_YEAR;
-
     ArrayList<GeographicArea> geography = new GeographyXMLparser().getGeography();
-    //System.out.println("geography.size()="+geography.size());
-    //for (int i=0; i<geography.size(); i++)
-    //{
-    //  System.out.println("     " + geography.get(i).getName());
-    //}
-
     territoryList = Territory.territoryLoader();
-
-    //System.out.println("territoryList.size()=" + territoryList.size());
 
     addGeographyToTerritories(geography);
 
@@ -149,6 +138,11 @@ public class Model
       if (i < Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR)
       { populateWorldData(Constant.FIRST_DATA_YEAR + i); }
     }
+  }
+
+  public void init()
+  {
+    currentYear = Constant.FIRST_GAME_YEAR;
   }
 
   private boolean assertTerritoryGeography()
@@ -194,96 +188,6 @@ public class Model
   }
 
 
-  /**
-   * This method is used only for testing the geographic boundaries.<br>
-   * It displays a javax.swing.JFrame containing a Mollweide projection of the
-   * world to be drawn on using drawBoundary(Picture pic, Territory territory);
-   *
-   * @return reference to the created JFrame.
-   */
-  public Picture testShowMapProjection()
-  {
-    return new Picture("assets/WorldMap_MollweideProjection.png");
-  }
-
-
-  /**
-   * This method is used only for testing the geographic boundaries.<br>
-   * Given a Picture frame containing a Mollweide would map projection and a territory,
-   * it draws the boundary of that territory on the map using different colors for
-   * disconnected segments (islands) of the territory.
-   */
-  public void drawBoundary(Picture pic, Territory territory)
-  {
-    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
-
-    Point pixel = new Point();
-
-    Graphics2D gfx = pic.getOffScreenGraphics();
-    Color[] colorList = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN,
-      Color.BLUE, Color.MAGENTA};
-
-    int colorIdx = 0;
-    ArrayList<GeographicArea> geographicAreaList = territory.getGeographicBoundary();
-
-    gfx.setColor(Color.WHITE);
-    for (GeographicArea boundary : geographicAreaList)
-    {
-      //gfx.setColor(colorList[colorIdx]);
-
-      ArrayList<MapPoint> perimeter = boundary.getPerimeter();
-      int lastX = Integer.MAX_VALUE;
-      int lastY = Integer.MAX_VALUE;
-      for (MapPoint mapPoint : perimeter)
-      {
-        map.setPoint(pixel, mapPoint.latitude, mapPoint.longitude);
-
-        //System.out.println(mapPoint + " ["+pixel.x+", "+pixel.y+"]");
-
-        if (lastX != Integer.MAX_VALUE)
-        {
-          gfx.drawLine(lastX, lastY, pixel.x, pixel.y);
-        }
-        lastX = pixel.x;
-        lastY = pixel.y;
-      }
-      colorIdx++;
-      if (colorIdx >= colorList.length) colorIdx = colorList.length - 1;
-    }
-    pic.repaint();
-
-  }
-
-
-  public void drawRain(Picture pic, int year, Constant.Month month)
-  {
-    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
-
-    Point pixel = new Point();
-
-    Graphics2D gfx = pic.getOffScreenGraphics();
-
-    for (Territory territory : territoryList)
-    {
-      ArrayList<LandTile> tileList = territory.getLandTiles();
-
-      for (LandTile tile : tileList)
-      {
-        map.setPoint(pixel, tile.getLatitude(), tile.getLongitude());
-
-        double rain = tile.getField(LandTile.Field.RAIN, year, month);
-
-        int colorIdx = (int) ((rain / 20.0) * Constant.COLOR_MOISTURE_LIST.length);
-        if (colorIdx < 0) colorIdx = 0;
-        if (colorIdx >= Constant.COLOR_MOISTURE_LIST.length) colorIdx = Constant.COLOR_MOISTURE_LIST.length - 1;
-        gfx.setColor(Constant.COLOR_MOISTURE_LIST[colorIdx]);
-
-        gfx.fillOval(pixel.x - 1, pixel.y - 1, 3, 3);
-      }
-    }
-    pic.repaint();
-
-  }
 
 
   private boolean assertLandTiles()
@@ -337,22 +241,6 @@ public class Model
     return regionList[r.ordinal()];
   }
 
-  /*
-   * @param latitude  Latitude ranges from -90 to 90. North latitude is positive.
-   * @param longitude Longitude ranges from -180 to 180. East longitude is positive.
-   * @return The territory containing the given latitude and longitude or null if the given location
-   * is not within a game territory.
-
-  public Territory getTerritory(double latitude, double longitude)
-  {
-    MapPoint mapPoint = new MapPoint(latitude, longitude);
-    for (Territory territory : territoryList)
-    {
-      if (territory.containsMapPoint(mapPoint)) return territory;
-    }
-    return null;
-  }
-  */
   public Territory getTerritory(MapPoint mapPoint)
   {
     for (Territory territory : territoryList)
@@ -840,20 +728,7 @@ public class Model
     }
     Simulator.dbg.println();
   }
-/*
-  public void printCurrentClimate(Region region, int year)
-  {
-    // Print just the cell at the capital.
-    //
-    Simulator.dbg.println("Region " + region.getName() + " climate : ");
-    for (Territory territory : region.getTerritoryList())
-    {
-      MapPoint capitol = territory.getCapitolLocation();
-      LandTile tile = tileManager.getTile(capitol.longitude, capitol.latitude);
-      Simulator.dbg.println("\t" + territory.getName() + ": " + tile);
-    }
-  }
-*/
+
 
   public void printRegions(boolean verbose)
   {
@@ -945,6 +820,98 @@ public class Model
       //for (EnumFarmMethod method : EnumFarmMethod.values()) Simulator.dbg.print("\t" + unit.getMethod(method));
       Simulator.dbg.println();
     }
+  }
+
+
+  /**
+   * This method is used only for testing the geographic boundaries.<br>
+   * It displays a javax.swing.JFrame containing a Mollweide projection of the
+   * world to be drawn on using drawBoundary(Picture pic, Territory territory);
+   *
+   * @return reference to the created JFrame.
+   */
+  public Picture testShowMapProjection()
+  {
+    return new Picture("assets/WorldMap_MollweideProjection.png");
+  }
+
+
+  /**
+   * This method is used only for testing the geographic boundaries.<br>
+   * Given a Picture frame containing a Mollweide would map projection and a territory,
+   * it draws the boundary of that territory on the map using different colors for
+   * disconnected segments (islands) of the territory.
+   */
+  public void drawBoundary(Picture pic, Territory territory)
+  {
+    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
+
+    Point pixel = new Point();
+
+    Graphics2D gfx = pic.getOffScreenGraphics();
+    Color[] colorList = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN,
+      Color.BLUE, Color.MAGENTA};
+
+    int colorIdx = 0;
+    ArrayList<GeographicArea> geographicAreaList = territory.getGeographicBoundary();
+
+    gfx.setColor(Color.WHITE);
+    for (GeographicArea boundary : geographicAreaList)
+    {
+      //gfx.setColor(colorList[colorIdx]);
+
+      ArrayList<MapPoint> perimeter = boundary.getPerimeter();
+      int lastX = Integer.MAX_VALUE;
+      int lastY = Integer.MAX_VALUE;
+      for (MapPoint mapPoint : perimeter)
+      {
+        map.setPoint(pixel, mapPoint.latitude, mapPoint.longitude);
+
+        //System.out.println(mapPoint + " ["+pixel.x+", "+pixel.y+"]");
+
+        if (lastX != Integer.MAX_VALUE)
+        {
+          gfx.drawLine(lastX, lastY, pixel.x, pixel.y);
+        }
+        lastX = pixel.x;
+        lastY = pixel.y;
+      }
+      colorIdx++;
+      if (colorIdx >= colorList.length) colorIdx = colorList.length - 1;
+    }
+    pic.repaint();
+
+  }
+
+
+  public void drawRain(Picture pic, int year, Constant.Month month)
+  {
+    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
+
+    Point pixel = new Point();
+
+    Graphics2D gfx = pic.getOffScreenGraphics();
+
+    for (Territory territory : territoryList)
+    {
+      ArrayList<LandTile> tileList = territory.getLandTiles();
+
+      for (LandTile tile : tileList)
+      {
+        map.setPoint(pixel, tile.getLatitude(), tile.getLongitude());
+
+        double rain = tile.getField(LandTile.Field.RAIN, year, month);
+
+        int colorIdx = (int) ((rain / 20.0) * Constant.COLOR_MOISTURE_LIST.length);
+        if (colorIdx < 0) colorIdx = 0;
+        if (colorIdx >= Constant.COLOR_MOISTURE_LIST.length) colorIdx = Constant.COLOR_MOISTURE_LIST.length - 1;
+        gfx.setColor(Constant.COLOR_MOISTURE_LIST[colorIdx]);
+
+        gfx.fillOval(pixel.x - 1, pixel.y - 1, 3, 3);
+      }
+    }
+    pic.repaint();
+
   }
 
 

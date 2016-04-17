@@ -98,8 +98,8 @@ public class LandTile
 
   public float getField(Field field, int year, Constant.Month month)
   {
-    System.out.println("getField("+field+" , " + year + ", " + month + ") rain=" +
-    data[0][month.ordinal()][field.ordinal()]);
+    //System.out.println("getField("+field+" , " + year + ", " + month + ") rain=" +
+    //data[0][month.ordinal()][field.ordinal()]);
 
     int lowIdx = 0;
     int lowYear = Constant.FIRST_DATA_YEAR;

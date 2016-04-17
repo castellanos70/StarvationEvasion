@@ -3,16 +3,13 @@ package starvationevasion.sim;
 import starvationevasion.common.*;
 import starvationevasion.sim.io.CSVReader;
 
-import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Scanner;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 
 /**
@@ -342,14 +339,13 @@ public class LandTile
     try
     {
       ZipFile file = new ZipFile(model.getClass().getResource(path).getFile());
-      System.out.println("================Iterating over zip file : " + path);
       Enumeration<? extends ZipEntry> entries = file.entries();
 
       //Open sub-file for each month of year.
       int month = 0;
       while (entries.hasMoreElements())
       { ZipEntry entry = entries.nextElement();
-        System.out.printf("File: %s Size %d Modified on %TD %n", entry.getName(), entry.getSize(), new Date(entry.getTime()));
+        System.out.printf("File: %s\n", entry.getName());
         //extractEntry(entry, file.getInputStream(entry));
 
         fileReader = new CSVReader(file.getInputStream(entry), 2);

@@ -2,7 +2,6 @@ package starvationevasion.common;
 
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-import org.xml.sax.SAXException;
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 

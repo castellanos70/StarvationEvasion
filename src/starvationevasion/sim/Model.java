@@ -226,11 +226,11 @@ public class Model
     int colorIdx = 0;
     ArrayList<GeographicArea> geographicAreaList = territory.getGeographicBoundary();
 
-
+    gfx.setColor(Color.WHITE);
     for (GeographicArea boundary :  geographicAreaList)
     {
-      gfx.setColor(colorList[colorIdx]);
-      //gfx.drawPolygon(boundary.getPolygon());
+      //gfx.setColor(colorList[colorIdx]);
+
       ArrayList<MapPoint> perimeter = boundary.getPerimeter();
       int lastX = Integer.MAX_VALUE;
       int lastY = Integer.MAX_VALUE;
@@ -274,8 +274,7 @@ public class Model
 
         double rain = tile.getField(LandTile.Field.RAIN, year, month);
 
-
-        int colorIdx = (int)((rain/15.0)*Constant.COLOR_MOISTURE_LIST.length);
+        int colorIdx = (int)((rain/20.0)*Constant.COLOR_MOISTURE_LIST.length);
         if (colorIdx < 0) colorIdx = 0;
         if (colorIdx >= Constant.COLOR_MOISTURE_LIST.length) colorIdx = Constant.COLOR_MOISTURE_LIST.length-1;
         gfx.setColor(Constant.COLOR_MOISTURE_LIST[colorIdx]);
@@ -952,16 +951,14 @@ public class Model
 
     Model model = new Model();
 
-    Territory territory = model.getTerritory("China");
+
     Picture pic = model.testShowMapProjection();
+    model.drawRain(pic, 2009, Constant.Month.AUG);
+
+    Territory territory = model.getTerritory("China");
     model.drawBoundary(pic, territory);
 
     territory = model.getTerritory("Italy");
     model.drawBoundary(pic, territory);
-
-
-
-    pic = model.testShowMapProjection();
-    model.drawRain(pic, 2009, Constant.Month.AUG);
   }
 }

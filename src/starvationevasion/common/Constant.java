@@ -103,17 +103,17 @@ public class Constant
 
 
   public static final Color COLOR_KHAKI = new Color(195, 176, 145);
+  public static final Color COLOR_BUFF = new Color(240, 220, 130);
   public static final Color COLOR_AMBER = new Color(255, 191, 0);
   public static final Color COLOR_MOSS = new Color(138, 154, 91);
-  public static final Color COLOR_SHAMROCK = new Color(0, 158, 96);
-  public static final Color COLOR_EMERALD = new Color(80, 220, 100);
-  public static final Color COLOR_TURQUOISE = new Color(64, 224, 208);
-  public static final Color COLOR_DODGER_BLUE = new Color(30, 144, 255);
-  public static final Color COLOR_VILOET = new Color(143, 0, 255);
+  public static final Color COLOR_FOREST = new Color(34, 139, 34);
 
 
   public static final Color[] COLOR_MOISTURE_LIST =
-  { COLOR_KHAKI, COLOR_AMBER, COLOR_MOSS, COLOR_SHAMROCK, COLOR_EMERALD,
-    COLOR_TURQUOISE, COLOR_DODGER_BLUE, COLOR_VILOET
+  { COLOR_KHAKI, new Color(221, 198, 135), COLOR_BUFF, new Color(242, 213, 97),
+    COLOR_AMBER, new Color(224,188,8), new Color(191,171,50), new Color(159,161,74),
+    COLOR_MOSS, new Color(119,151,81), new Color(91,147,65), new Color(62,143,50),
+    COLOR_FOREST, new Color(28,132,28), new Color(12,114,12), new Color(0,100,0),
+    new Color(19, 90, 39), new Color(86, 53, 173), new Color(105, 43, 212)
   };
 }

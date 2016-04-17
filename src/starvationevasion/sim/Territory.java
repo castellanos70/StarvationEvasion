@@ -4,6 +4,7 @@ import starvationevasion.common.*;
 import starvationevasion.sim.io.CSVReader;
 
 import java.awt.*;
+import java.awt.geom.Area;
 import java.util.*;
 
 public class Territory
@@ -114,8 +115,7 @@ public class Territory
   };
 
 
-  //private final Area totalArea = new Area();
-  private final ArrayList<GeographicArea> geographicAreaList = new ArrayList<>();
+  private GeographicArea geographicArea;
   private ArrayList<LandTile> landTiles  = new ArrayList<>();
 
   /*
@@ -132,6 +132,7 @@ public class Territory
   public Territory(String name)
   {
     this.name = name;
+    geographicArea = new GeographicArea(name);
   }
 
 
@@ -461,7 +462,7 @@ public class Territory
   /**
    * @return country's collection of 100km2 tiles
    */
-  final public ArrayList<LandTile> getLandTiles()
+  public ArrayList<LandTile> getLandTiles()
   {
     return landTiles;
   }
@@ -469,7 +470,7 @@ public class Territory
   /**
    * @param tile LandTile to add to country
    */
-  final public void addLandTile(LandTile tile)
+  public void addLandTile(LandTile tile)
   {
     landTiles.add(tile);
   }
@@ -483,33 +484,30 @@ public class Territory
    * @param mapPoint mapPoint that is being testing for inclusing
    * @return true is mapPoint is found inside country.
    */
-  public boolean containsMapPoint(MapPoint mapPoint)
+  public boolean contains(MapPoint mapPoint)
   {
-    if (geographicAreaList == null)
-    {
-      throw new RuntimeException("(!)REGIONS NOT SET YET");
-    }
-
-    for (GeographicArea area : geographicAreaList)
-    {
-      if (area.containsMapPoint(mapPoint)) return true;
-    }
-    return false;
+    return contains(mapPoint);
   }
 
 
-  public void addGeographicArea(GeographicArea area)
+  public boolean contains(double latitude, double longitude)
   {
-    geographicAreaList.add(area);
-    //totalArea.add(new Area(converter.regionToPolygon(area)));
+    return geographicArea.contains(latitude, longitude);
   }
 
-  /**
-   * @return regions
-   */
-  public ArrayList<GeographicArea> getGeographicBoundary()
+  public void setGeographicArea(GeographicArea area)
   {
-    return geographicAreaList;
+    geographicArea = area;
+  }
+
+  //public void addGeographicArea(ArrayList<MapPoint> island)
+  //{
+  //  geographicArea.addToPerimeter(island);
+  //}
+
+  public GeographicArea getGeographicArea()
+  {
+    return geographicArea;
   }
 
   public String toString()

@@ -1,15 +1,9 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.Constant;
-import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.MapPoint;
-import starvationevasion.common.Util;
+import starvationevasion.common.*;
 
 import java.awt.geom.Area;
 import java.util.ArrayList;
-import java.util.List;
-import java.lang.IllegalStateException;
 
 
 /**
@@ -22,7 +16,6 @@ public class Region extends Territory
   private static final boolean VERBOSE = false;
 
   private EnumRegion region;
-  private final Area area = new Area();
   private final ArrayList<Territory> territoryList = new ArrayList<>();
 
   private int revenue;
@@ -128,29 +121,10 @@ public class Region extends Territory
   public void addTerritory(Territory territory)
   {
     territoryList.add(territory);
-    //area.add(territory.getArea());
+    Area perimeter = getGeographicArea().getPerimeter();
+    perimeter.add(territory.getGeographicArea().getPerimeter());
   }
 
-
-  /**
-   * Used to link land tiles to a country.
-   *
-   * @param mapPoint mapPoint that is being testing for inclusing
-   * @return true is mapPoint is found inside country.
-   */
-  public boolean containsMapPoint(MapPoint mapPoint)
-  {
-    if (territoryList == null)
-    {
-      throw new RuntimeException("(!)REGIONS NOT SET YET");
-    }
-
-    for (Territory t : territoryList)
-    {
-      if (t.containsMapPoint(mapPoint)) return true;
-    }
-    return false;
-  }
 
 
   /**
@@ -432,6 +406,6 @@ public class Region extends Territory
 
   public MapPoint getCenter()
   {
-    return new MapPoint(area.getBounds().getCenterY(), area.getBounds().getCenterX());
+    return null;
   }
 }

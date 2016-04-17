@@ -71,7 +71,7 @@ public class DataHandler extends AbstractHandler
 
       if (polygons)
       {
-        ArrayList<GeographicArea>[] geographicAreaList = server.getSimulator().getRegionBoundaries();
+        GeographicArea[] geographicAreaList = server.getSimulator().getRegionBoundaries();
         data.put("geographic-data", geographicAreaList);
       }
 

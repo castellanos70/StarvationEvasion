@@ -45,15 +45,9 @@ public class Simulator
   }
 
   /**
-   *
-   * This should be called once at the start of each game by the Server.
-   * Initializes the model
-   * Generates a random 80 card deck for each player (both
-   * human and AI players). <br><br?
-   *
-   * This is not in the constructor but rather a new method so that
-   * games can be restarted without reallocating memory and without reloading
-   * the massive data files.
+   * This is called by the constructor to initialize the model.
+   * It may also be called to restart the model without needing to
+   * reallocate memory and without reloading the large data files.
    */
   public void init()
   {
@@ -68,7 +62,6 @@ public class Simulator
 
   private boolean assertSimulatorPreGameData()
   {
-    assert (model.getCurrentYear() == Constant.FIRST_GAME_YEAR);
     for (int year = Constant.FIRST_DATA_YEAR; year < model.getCurrentYear(); year++)
     {
       WorldData world = model.getWorldData(year);
@@ -161,13 +154,13 @@ public class Simulator
     return dataList;
   }
 
-  public  ArrayList<GeographicArea>[] getRegionBoundaries()
+  public  GeographicArea[] getRegionBoundaries()
   {
-    ArrayList<GeographicArea>[] boundaryList = new ArrayList[EnumRegion.SIZE];
+    GeographicArea[] boundaryList = new GeographicArea[EnumRegion.SIZE];
 
     for (EnumRegion region : EnumRegion.values())
     {
-      boundaryList[region.ordinal()] = model.getGeographicBoundary(region);
+      boundaryList[region.ordinal()] = model.getGeographicArea(region);
     }
     return boundaryList;
   }
@@ -348,7 +341,7 @@ public class Simulator
     for (EnumRegion regionEnum : EnumRegion.values())
     {
       Region region = model.getRegion(regionEnum);
-      if (region.containsMapPoint(mapPoint)) return regionEnum;
+      if (region.contains(mapPoint)) return regionEnum;
     }
     return null;
   }

@@ -1,7 +1,8 @@
-package starvationevasion.sim;
+package starvationevasion.PreprocessingTools;
 
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.sim.Simulator;
 
 import java.awt.*;
 import java.io.*;
@@ -52,18 +53,20 @@ public class CoordinateTesting
 
   private Simulator sim = new Simulator();
 
+  private Deque<WriteValues> viable = new LinkedList<>();
+
   public static void main(String[] args)
   {
     String currentDirectory;
     currentDirectory = System.getProperty("user.dir");
     System.out.println("Current working directory : " + currentDirectory);
     CoordinateTesting test = new CoordinateTesting();
-    Deque<WriteValues> viable = new LinkedList<>();
-    test.findViablePoints(viable);
-    test.readAndWrite(viable, 2000, 2000, 1, test.HISTORICAL, "Historical");//do Historical data
+
+    test.findViablePoints(test.viable);
+    test.readAndWrite(2000, 2000, 1, test.HISTORICAL, "Historical");//do Historical data
     test.makeZipArchive("Historical", 2000);
-    test.readAndWrite(viable, 2010, 2050, 5, test.RCP45, "RCP45");
-    test.readAndWrite(viable, 2010, 2050, 5, test.RCP85, "RCP85");
+    test.readAndWrite(2010, 2050, 5, test.RCP45, "RCP45");
+    test.readAndWrite(2010, 2050, 5, test.RCP85, "RCP85");
   }
 
   /**
@@ -92,12 +95,11 @@ public class CoordinateTesting
   }
 
   /**
-   * @param viable    - A deque of WriteValues objects
    * @param startYear - The start year of data
    * @param endYear   - the end year of data
    * @param labels    - HISTORICAL, RCP45, RCP85 String[] Labels
    */
-  private void readAndWrite(Deque<WriteValues> viable, int startYear, int endYear, int increment, String[] labels, String title)
+  private void readAndWrite(int startYear, int endYear, int increment, String[] labels, String title)
   {
     Deque<WriteValues> viableCoor = viable;
     try
@@ -169,8 +171,8 @@ public class CoordinateTesting
               for (int i = 0; i < viableCoor.size(); i++)
               {
                 WriteValues val = viableCoor.pollFirst();//gets the next object
-                bufferedWriter.write(String.format("%.3f", val.getMinMin()) + "," + String.format("%.3f", val.getMinAvg()) + ","
-                  + String.format("%.3f", val.getMaxMax()) + "," + String.format("%.3f", val.getMaxAvg()) + ","
+                bufferedWriter.write(String.format("%.3f", val.getMinMin()) + "," + String.format("%.3f", val.getMaxMax()) + ","
+                  + String.format("%.3f", val.getMinAvg()) + "," + String.format("%.3f", val.getMaxAvg()) + ","
                   + String.format("%.3f", val.getPrAvg()) + "\n");
 
                 val.reset();//reset values

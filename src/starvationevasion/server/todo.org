@@ -1,4 +1,6 @@
 #+TITLE: Server project management
+#+PRIORITIES: A B C
+#+TAGS: BUG
 
 * Issues
 ** DONE Establish connection with client
@@ -22,14 +24,23 @@
    Currently the Server only checks to make sure there are 
    enough players.... We need to check if there are enough 
    AI and enough Human
-** TODO Voting
-*** TASK check if we are waiting on a player that matters {See ~PolicyCard.java~ required region votes}
+** TODO [50%] Voting
+*** TODO check if we are waiting on a player that matters {See ~PolicyCard.java~ required region votes}
 *** DONE Send results of the voting phase.
     CLOSED: [2016-04-17 Sun 00:07]
-** TODO Restarting game has a bug
-   if we restart there is a bug. The worker itself is still responsive
-   but i am unable to issue commands that require server state to be
-   changed or killing ai. 
+** TODO [0%] [#A] Restarting game! 				:BUG:
+*** TODO If we issue a command during waiting, the worker itself is still responsive
+    but i am unable to issue commands that require server state to be
+    changed or killing ai. Reproduce: login as admin and issue a restart game. 
+*** TODO Make sure Players are reset to non players
+     Impl. decision is to reset everyone, maybe reset only AI.
+     Do we kill AI?
+*** TODO Race condition on starting game?
+     There might be a race condition when begining a game and AI's are sitting waiting. 
+     They send a ready very quickly...
+     Reproduce: Start a game. let it finish. issue a restart command. (at this point AI's that were playing
+     should still not be "players" [users that sent ready]). start 2 new ai so that game will begin.
+     The game will fail. Notice that there are 4 players.
 ** TODO refactor (simplify) web handshake code
    #+BEGIN_SRC java 
    String wstring = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
@@ -37,29 +48,32 @@
    String secWsAccept =
    Base64.encodeBytes(sha.digest((requestMap.get("Sec-WebSocket-Key") + wstring).getBytes()));
    #+END_SRC
-** TODO [BUG] Webclient looses connection when world data is being sent
+** TODO Webclient looses connection when world data is being sent	:BUG:
    This only happens when the game first begins! very frusterating
    getting CLOSE_ABNORMAL 1006 error on client side.js
    https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
-** TODO [BUG] Disconnect is not complete
+** TODO Disconnect is not complete					:BUG:
    the socket is not completly closing. 
    to see run ./Game monitor run webclient and refresh page. you can
    see the connection stays in CLOSE_WAIT
-** TODO [BUG] Disconnect of a NON player
+** TODO Disconnect of a NON player					:BUG:
    Currently there is an issue that causes the advancePhase() to stop
    working if there is a client that looses connection during a broadca
-** TODO Finish impl. JSON
-*** TASK Write Constructors that task JSONDocument as arg
-   The constructor body will needs to take the json apart and 
-   fill in the values from JSON. The caller will the in
-   Payload class. There will need to be Major Refactor.   
-*** TASK Make sure all json can be converted into a POJO
+** TODO [#B] Finish impl. JSON
+*** TODO [50%] Write the ~toJSON()~ methods for all objects that are Sendable
+**** DONE Write methods
+**** TODO Check they are all done.
+     I havent had a chance to review all the sendable objects.
+*** TODO Write Constructors that task JSONDocument as arg
+    The constructor body will needs to take the json apart and 
+    fill in the values from JSON. The caller will the in
+    Payload class. There will need to be Major Refactor.   
+*** TODO Make sure all json can be converted into a POJO
     There is a payload make sure that its contents is converted
     properly.
 ** TASK Refactor and move the classes that are used by client and server to the "common" package
-** TODO make request a network object
-   
-** TODO [BUG] during handshake
+** TODO make request a network object   
+** TODO [#B] during handshake						:BUG:
    This can be reproduced if you create a connection with netcat
    nc foodgame.cs.unm.edu 5555 
    the next step would be to initiate a handshake by sending
@@ -78,22 +92,23 @@
    This is important because of WebSockets. When we send world data
    every once in a while we get kicked off because there is too much
    data being sent at once
-** TODO Make tmux accessible to all users
+** TODO [#C] Make tmux accessible to all users
    This will allow us to all have access to the same monitoring system
    and be able to restart and issue commands.
 *** TASK test out the ~./Game env~ command
-** TODO User to update 
+** TODO [#C] User to update 
 ** TODO Add last login timestamp to user
 ** TODO send a response to client if the command that was issued requires admin or login
 ** TODO make sure tostring is working 
    make sure the plain text works to send 
    use netcat
 
+
 * Documentation
-** TODO show how to connect via unencrypted
+** TODO [#A] show how to connect via unencrypted
    "JavaClient"
    "client"
-** TODO show how to connect via encrypted connection
+** TODO [#A] show how to connect via encrypted connection
    Order matters
    "RSA-..." then send "JavaClient"
    "RSA-..." then send "client"
@@ -101,10 +116,25 @@
 
 * Notes
   System notes
-   - Server :: Responsible for creating: creating workers, advancing
-               game, loading users, supplying methods for accessing
-               sim, filtered users.
+  - Server :: Responsible for creating: creating workers, advancing
+              game, loading users, supplying methods for accessing
+              sim, filtered users.
      - Events
+       1. Opens connection to DB
+       2. saves all the users to a array list for "cache" (could be a lookup)
+       3. Creates an instance of simulator
+       4. opens socket and listens
+       5. if a connection is recieved 
+	  a. calls setConnection
+	  b. read writers are set as well as encryption
+       6. Task loop is set up and calls update
+	  a. watches player count until reaches max
+	  b. starts ai's
+	  c. calls ~begin()~
+          d. begin sends broadcast
+	  e. begin calls draft
+	  f. draft calls vote
+	  g. vote calls draw (back to e)
      - Responsibilities
        + Accepting connections
        + Create handshake
@@ -113,8 +143,8 @@
        + advance game
        + game state
        + broadcasting messages
-   - Worker :: Holds a given socket connection. 1 to 1 relationship of
-               workers to connected clients
+  - Worker :: Holds a given socket connection. 1 to 1 relationship of
+              workers to connected clients
      - Events
        1. Reads/Writes to stream using read/write strategy
        2. Request is either generated based on return of strategy or
@@ -129,15 +159,15 @@
        + Shutting down stream
        + reading from client stream (receiving data)
        + writing to client stream (sending data)
-   - db :: Package that contains classes to persist data 
+  - db :: Package that contains classes to persist data 
      + Database - currently using sqlite
      + Support for Creating, Reading. (Update, delete)
-   - NetworkData :: Class that wraps data for sending. Wraps
-                    payload, destination and/or type, time, message.
+  - NetworkData :: Class that wraps data for sending. Wraps
+                   payload, destination and/or type, time, message.
      + Response only sent to client
      + Request only sent to server
-   - Strategies :: abstraction that allows different writing-to, and
-                   reading-from, streams.
+  - Strategies :: abstraction that allows different writing-to, and
+                  reading-from, streams.
      + SecureStream :: Most lowest level of a stream Reading and
                        writing both inherit (encryptable)
        + JavaObject :: serialization
@@ -145,33 +175,47 @@
        + Socket :: sends and recieves JSON
        + WebSocket :: sends and recieves JSON
        + PlainText :: toString()
-   - Sendable :: interface that arrgrigates, JSON, Serializable, Type  
-   - Encryptable :: Interface that provides methods to encrypt and decrypt
-   - handlers :: package that contians all the classes that handle
-                 requests. Responses are sent during the handling.
-     + AdminTaskHandler :: Tasks only for admin
-     + CardHandler :: Requests that pertain to cards
-     + ChatHander :: Requests about Chats (sending)
-     + DataHandler :: Requests for data
-     + LoginHandler :: Requests for logining in (need to add logout)
+  - Sendable :: interface that arrgrigates, JSON, Serializable, Type  
+  - Encryptable :: Interface that provides methods to encrypt and decrypt
+  - handlers :: package that contians all the classes that handle
+                requests. Responses are sent during the handling. Has a reference to server, client
+    + AdminTaskHandler :: Tasks only for admin
+    + CardHandler :: Requests that pertain to cards
+    + ChatHander :: Requests about Chats (sending)
+    + DataHandler :: Requests for data
+    + LoginHandler :: Requests for logining in (need to add logout)
                        rename to SessionHandler???
-     + PermissionFilter :: Stops requests from proceeding if they have
+    + PermissionFilter :: Stops requests from proceeding if they have
           not been logged in.
-     + UserHandler :: Requests about users
+    + UserHandler :: Requests about users
        1. getting users
        2. getting logged in users
        3. getting ready users
        4. getting user by username or region
        5. creating user (add updating)
-     + VoteHandler :: Handler for voting
+    + VoteHandler :: Handler for voting
        1. vote up
        2. vote down (not really doing much)
-   - User :: Object that contains data about a connected client.
-     - User attributes
+  - User :: Object that contains data about a connected client.
+    - Persisted fields
        + username
        + password
        + salt
-     - Game attributes
+       + region
+    - User transient
+       + actions remaining
+       + policies dicarded
+       + drafts 
+       + drafts voteable
+       + isdone
+       + isplaying
+       + isLoggedin 
+       + worker
+    - User attributes
+       + username
+       + password
+       + salt
+    - Game attributes
        + region
        + hand
        + drafts

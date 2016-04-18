@@ -42,10 +42,7 @@ public class LandTile
   /**
    * Each record of PATH_COORDINATES must be in a one-to-one,
    * ordered matching with each record in each month of each annual file of PATH_CLIMATE_PREFIX.
-   * TODO: Currently Chris Wu has too many records in the PATH_CLIMATE_PREFIX files and the
-   * climate data does not match at all with the coordinates in PATH_COORDINATES.
    */
-
   private static final String PATH_COORDINATES = "/sim/climate/ArableCoordinates.csv";
   private static final String PATH_CLIMATE_PREFIX = "/sim/climate/Climate_Historical_";
 
@@ -315,14 +312,31 @@ public class LandTile
       if ((territory == null) || (!territory.getName().equals(fieldList[2])))
       {
         territory = model.getTerritory(fieldList[2]);
+      }
         //assert(territory.containsMapPoint(new MapPoint(latitude,longitude)));
         //if (!territory.containsMapPoint(new MapPoint(latitude,longitude)))
         //{
         //  System.out.println("*********** ERROR " + territory.getName() + " does not contain " + new MapPoint(latitude,longitude));
         //}
+      //Territory territory2 = model.getTerritory(latitude, longitude);
+      //if (territory != territory2)
+      //{
+      //  String name = null;
+      //  if (territory2 != null) name=territory2.getName();
+      //  System.out.println("*********** ERROR " + territory.getName() + " != " + name
+      //    + ", ["+tile.getLatitude()+", " + tile.getLongitude());
+      //}
+      //else
+      //{
+      //  System.out.println("=========== GOOD " + territory.getName()
+      //    + ", ["+tile.getLatitude()+", " + tile.getLongitude());
+//
+      //}
 
-      }
+
       territory.addLandTile(tile);
+
+
     }
     fileReader.close();
 

@@ -9,7 +9,6 @@ public class MapProjectionMollweide
   private static final double ROOT2 = Math.sqrt(2.0);
   private static final double CX = 2.0*ROOT2/Math.PI;
   private static final double TOLERANCE = 0.0001;
-  private double R;
 
 
   private int pixelWidth;

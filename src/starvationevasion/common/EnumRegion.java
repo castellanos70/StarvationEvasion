@@ -4,6 +4,7 @@ import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 
+import java.awt.*;
 import java.util.ResourceBundle;
 
 /**
@@ -18,7 +19,6 @@ public enum EnumRegion implements Sendable
    *  The US states in this region are: CA
    */
   USA_CALIFORNIA,
-
 
   /**
    *  The US states in this region are: IA, MO, IL, IN
@@ -107,6 +107,10 @@ public enum EnumRegion implements Sendable
 
   public String toString() { return shortName; }
 
+  public Color getColor()
+  {
+    return REGION_COLOR[ordinal()];
+  }
   public static int allUSRegionBits()
   {
     return USA_CALIFORNIA.getBit() |
@@ -117,6 +121,7 @@ public enum EnumRegion implements Sendable
       USA_SOUTHERN_PLAINS.getBit() |
       USA_MOUNTAIN.getBit();
   }
+
 
 
   public static EnumRegion getRegion(String name)
@@ -137,4 +142,26 @@ public enum EnumRegion implements Sendable
     if ((getBit() | allUSRegionBits()) != 0) return true;
     return false;
   }
+
+  private Color[] REGION_COLOR =
+  {
+    new Color(177, 149, 198),//USA_CALIFORNIA,
+    new Color(253, 235, 157),//USA_HEARTLAND,
+    new Color(77, 169, 196),//USA_NORTHERN_PLAINS,
+    new Color(247, 175, 99),//USA_SOUTHEAST,
+    new Color(200, 212, 164),//USA_NORTHERN_CRESCENT,
+    new Color(243, 153, 152),//USA_SOUTHERN_PLAINS,
+    new Color(182, 146, 114),//USA_MOUNTAIN,
+    new Color(179, 205, 227),//ARCTIC_AMERICA,
+    new Color(200, 212, 164),// MIDDLE_AMERICA,
+    new Color(118, 162, 135),// SOUTH_AMERICA,
+    new Color(77, 169, 196),// EUROPE,
+    new Color(182, 146, 114),// MIDDLE_EAST,
+    new Color(223, 143, 135),// SUB_SAHARAN,
+    new Color(113, 179, 123),//RUSSIA,
+    new Color(247, 175, 99),// CENTRAL_ASIA,
+    new Color(245, 212, 121),// SOUTH_ASIA,
+    new Color(219, 82, 89),// EAST_ASIA,
+    new Color(179, 131, 179)// OCEANIA;
+  };
 }

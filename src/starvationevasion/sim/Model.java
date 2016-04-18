@@ -5,11 +5,13 @@ import starvationevasion.sim.io.*;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
 import starvationevasion.sim.events.Hurricane;
-import starvationevasion.sim.io.XMLparsers.GeographyXMLparser;
+import starvationevasion.sim.io.GeographyXMLparser;
 
 import starvationevasion.util.Picture;
 
 import java.awt.*;
+import java.awt.geom.Area;
+import java.awt.geom.PathIterator;
 import java.util.*;
 import java.util.List;
 import java.util.logging.Level;
@@ -116,10 +118,8 @@ public class Model
 
   public Model()
   {
-    ArrayList<GeographicArea> geography = new GeographyXMLparser().getGeography();
     territoryList = Territory.territoryLoader();
-
-    addGeographyToTerritories(geography);
+    new GeographyXMLparser(this);
 
     assert (assertTerritoryGeography());
 
@@ -171,17 +171,17 @@ public class Model
     assert (NewMexico != null);
     assert (China != null);
     assert (UnitedKingdom != null);
-    assert (NewMexico.containsMapPoint(new MapPoint(35, -106))); //Albuquerque
-    assert (!China.containsMapPoint(new MapPoint(35, -106))); //Albuquerque
-    assert (China.containsMapPoint(new MapPoint(40, 116))); //Beijing
-    assert (China.containsMapPoint(new MapPoint(31.2, 121.5))); //Shanghai
-    assert (UnitedKingdom.containsMapPoint(new MapPoint(51.5, -0.13))); //London
-    assert (UnitedKingdom.containsMapPoint(new MapPoint(54.5970, -5.93))); //Belfast, Northern Ireland
-    assert (!UnitedKingdom.containsMapPoint(new MapPoint(53.349925, -6.270475))); //Dublin, Ireland
-    assert (Ireland.containsMapPoint(new MapPoint(53.349925, -6.270475))); //Dublin, Ireland
-    assert (!UnitedKingdom.containsMapPoint(new MapPoint(53.347309, -5.681383))); //Irish Sea
-    assert (!Ireland.containsMapPoint(new MapPoint(53.347309, -5.681383))); //Irish Sea
-    assert (!UnitedKingdom.containsMapPoint(new MapPoint(50.39, -1.7))); //English Channel
+    assert (NewMexico.contains(35, -106)); //Albuquerque
+    assert (!China.contains(35, -106)); //Albuquerque
+    assert (China.contains(40, 116)); //Beijing
+    assert (China.contains(31.2, 121.5)); //Shanghai
+    //assert (UnitedKingdom.contains(51.5, -0.13)); //London
+    //assert (UnitedKingdom.contains(54.5970, -5.93)); //Belfast, Northern Ireland
+    assert (!UnitedKingdom.contains(53.349925, -6.270475)); //Dublin, Ireland
+    assert (Ireland.contains(53.349925, -6.270475)); //Dublin, Ireland
+    assert (!UnitedKingdom.contains(53.347309, -5.681383)); //Irish Sea
+    assert (!Ireland.contains(53.347309, -5.681383)); //Irish Sea
+    assert (!UnitedKingdom.contains(50.39, -1.7)); //English Channel
 
 
     return true;
@@ -202,35 +202,6 @@ public class Model
     return true;
   }
 
-  private void addGeographyToTerritories(ArrayList<GeographicArea> geography)
-  {
-    // Collections.sort(geography, new Comparator<GeographicArea>() {
-    //   @Override
-    //   public int compare(GeographicArea a1, GeographicArea a2) {
-    //     return a1.getName().compareTo(a2.getName());
-    //   }
-    // });
-
-    for (GeographicArea area : geography)
-    {
-      boolean foundTerritory = false;
-      for (Territory territory : territoryList)
-      {
-        if (territory.getName().equals(area.getName()))
-        {
-          territory.addGeographicArea(area);
-          foundTerritory = true;
-          break;
-        }
-      }
-      if (!foundTerritory)
-      {
-        System.out.println("***************** Area[" + area.getName() + "] Does not belong to a territory");
-      }
-    }
-  }
-
-
   public int getCurrentYear()
   {
     return currentYear;
@@ -243,11 +214,15 @@ public class Model
 
   public Territory getTerritory(MapPoint mapPoint)
   {
+    return getTerritory(mapPoint.latitude, mapPoint.longitude);
+  }
+
+  public Territory getTerritory(double latitude, double longitude)
+  {
     for (Territory territory : territoryList)
     {
-      if (territory.containsMapPoint(mapPoint)) return territory;
+      if (territory.contains(latitude, longitude)) return territory;
     }
-
     return null;
   }
 
@@ -262,9 +237,9 @@ public class Model
   }
 
 
-  public ArrayList<GeographicArea> getGeographicBoundary(EnumRegion regionCode)
+  public GeographicArea getGeographicArea(EnumRegion regionCode)
   {
-    return regionList[regionCode.ordinal()].getGeographicBoundary();
+    return regionList[regionCode.ordinal()].getGeographicArea();
   }
 
 
@@ -835,7 +810,6 @@ public class Model
     return new Picture("assets/WorldMap_MollweideProjection.png");
   }
 
-
   /**
    * This method is used only for testing the geographic boundaries.<br>
    * Given a Picture frame containing a Mollweide would map projection and a territory,
@@ -849,23 +823,84 @@ public class Model
     Point pixel = new Point();
 
     Graphics2D gfx = pic.getOffScreenGraphics();
+
+    GeographicArea geographicArea = territory.getGeographicArea();
+    Area boundary = geographicArea.getPerimeter();
+
+    gfx.setColor(Color.WHITE);
+    int lastX = Integer.MAX_VALUE;
+    int lastY = Integer.MAX_VALUE;
+    int startX = Integer.MAX_VALUE;
+    int startY = Integer.MAX_VALUE;
+
+    double[] coords = new double[6];
+
+    PathIterator path = boundary.getPathIterator(null);
+    while(!path.isDone())
+    {
+        int type = path.currentSegment(coords);
+        path.next();
+        //map.setPoint(pixel, mapPoint.latitude, mapPoint.longitude);
+        //System.out.println("("+coords[1]+", "+ coords[0]+")");
+        map.setPoint(pixel, coords[1], coords[0]);
+        if (type == PathIterator.SEG_LINETO)
+        {
+          gfx.drawLine(lastX, lastY, pixel.x, pixel.y);
+        }
+        else if(type == PathIterator.SEG_MOVETO)
+        {
+          startX = pixel.x;
+          startY = pixel.y;
+        }
+        else if(type == PathIterator.SEG_CLOSE)
+        {
+          gfx.drawLine(lastX, lastY, startX, startY);
+        }
+        else
+        {
+          System.out.println("************ ERROR ***********");
+        }
+
+        lastX = pixel.x;
+        lastY = pixel.y;
+    }
+    pic.repaint();
+
+  }
+
+
+
+  /**
+   * This method is used only for testing the geographic boundaries.<br>
+   * Given a Picture frame containing a Mollweide would map projection and a territory,
+   * it draws the boundary of that territory on the map using different colors for
+   * disconnected segments (islands) of the territory.
+   */
+  public void drawBoundaryUsingMapPoints(Picture pic, Territory territory)
+  {
+    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
+
+    Point pixel = new Point();
+
+    Graphics2D gfx = pic.getOffScreenGraphics();
     Color[] colorList = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN,
       Color.BLUE, Color.MAGENTA};
 
     int colorIdx = 0;
-    ArrayList<GeographicArea> geographicAreaList = territory.getGeographicBoundary();
+    GeographicArea geographicArea = territory.getGeographicArea();
+    ArrayList<ArrayList> islandList = geographicArea.getIslandList();
 
-    gfx.setColor(Color.WHITE);
-    for (GeographicArea boundary : geographicAreaList)
+    for (ArrayList<MapPoint> boundary :islandList)
     {
-      //gfx.setColor(colorList[colorIdx]);
+      gfx.setColor(colorList[colorIdx]);
 
-      ArrayList<MapPoint> perimeter = boundary.getPerimeter();
       int lastX = Integer.MAX_VALUE;
       int lastY = Integer.MAX_VALUE;
-      for (MapPoint mapPoint : perimeter)
+
+      for (MapPoint mapPoint : boundary)
       {
         map.setPoint(pixel, mapPoint.latitude, mapPoint.longitude);
+
 
         //System.out.println(mapPoint + " ["+pixel.x+", "+pixel.y+"]");
 
@@ -880,7 +915,31 @@ public class Model
       if (colorIdx >= colorList.length) colorIdx = colorList.length - 1;
     }
     pic.repaint();
+  }
 
+  public void drawAllTiles(Picture pic, Region region, Color color)
+  {
+    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
+
+    Point pixel = new Point();
+
+    Graphics2D gfx = pic.getOffScreenGraphics();
+
+    gfx.setColor(color);
+
+    ArrayList<Territory> myTerritoryList = region.getTerritoryList();
+    for (Territory territory : myTerritoryList)
+    {
+      ArrayList<LandTile> tileList = territory.getLandTiles();
+
+      for (LandTile tile : tileList)
+      {
+        map.setPoint(pixel, tile.getLatitude(), tile.getLongitude());
+
+        gfx.fillOval(pixel.x-1, pixel.y-1, 3, 3);
+      }
+    }
+    pic.repaint();
   }
 
 
@@ -932,17 +991,32 @@ public class Model
 
     Picture pic = model.testShowMapProjection();
 
+
+
+
+
     for (int n = 0; n < 10; n++)
     {
+
+      for (EnumRegion regionID : EnumRegion.values())
+      {
+        Region region = model.getRegion(regionID);
+        model.drawAllTiles(pic, region, regionID.getColor());
+      }
+
+      for (EnumRegion regionID : EnumRegion.values())
+      {
+        Region region = model.getRegion(regionID);
+        model.drawBoundary(pic, region);
+      }
+      try
+      {
+        Thread.sleep(2000);
+      } catch (InterruptedException e) { }
+
       for (Constant.Month month : Constant.Month.values())
       {
         model.drawRain(pic, 2009, month);
-
-        Territory territory = model.getTerritory("China");
-        model.drawBoundary(pic, territory);
-
-        territory = model.getTerritory("Italy");
-        model.drawBoundary(pic, territory);
 
         try
         {

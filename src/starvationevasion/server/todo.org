@@ -1,0 +1,179 @@
+#+TITLE: Server project management
+
+* Issues
+** DONE Establish connection with client
+   CLOSED: [2016-01-19 Tue 19:06]
+** DONE Create a connection to WebSocket
+   CLOSED: <2016-01-24 Sun>
+** DONE Create interfaces for connection types
+   CLOSED: [2016-02-01 Mon 14:19]
+** DONE Design protocol connection.
+   Using a class called payload to hold data
+   Sever will only get requests
+   Client will only get responses
+   JSON still needs work
+   CLOSED: [2016-02-12 Fri 19:10]
+** DONE Write toJSON
+   Had a classmate to part of this however
+   this may not be the best approach
+   CLOSED: [2016-02-12 Fri 19:12]
+** TODO Handle ending the game
+** TODO Add robustness for setting players
+   Currently the Server only checks to make sure there are 
+   enough players.... We need to check if there are enough 
+   AI and enough Human
+** TODO Voting
+*** TASK check if we are waiting on a player that matters {See ~PolicyCard.java~ required region votes}
+*** DONE Send results of the voting phase.
+    CLOSED: [2016-04-17 Sun 00:07]
+** TODO Restarting game has a bug
+   if we restart there is a bug. The worker itself is still responsive
+   but i am unable to issue commands that require server state to be
+   changed or killing ai. 
+** TODO refactor (simplify) web handshake code
+   #+BEGIN_SRC java 
+   String wstring = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+   MessageDigest sha = MessageDigest.getInstance("SHA1");
+   String secWsAccept =
+   Base64.encodeBytes(sha.digest((requestMap.get("Sec-WebSocket-Key") + wstring).getBytes()));
+   #+END_SRC
+** TODO [BUG] Webclient looses connection when world data is being sent
+   This only happens when the game first begins! very frusterating
+   getting CLOSE_ABNORMAL 1006 error on client side.js
+   https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
+** TODO [BUG] Disconnect is not complete
+   the socket is not completly closing. 
+   to see run ./Game monitor run webclient and refresh page. you can
+   see the connection stays in CLOSE_WAIT
+** TODO [BUG] Disconnect of a NON player
+   Currently there is an issue that causes the advancePhase() to stop
+   working if there is a client that looses connection during a broadca
+** TODO Finish impl. JSON
+*** TASK Write Constructors that task JSONDocument as arg
+   The constructor body will needs to take the json apart and 
+   fill in the values from JSON. The caller will the in
+   Payload class. There will need to be Major Refactor.   
+*** TASK Make sure all json can be converted into a POJO
+    There is a payload make sure that its contents is converted
+    properly.
+** TASK Refactor and move the classes that are used by client and server to the "common" package
+** TODO make request a network object
+   
+** TODO [BUG] during handshake
+   This can be reproduced if you create a connection with netcat
+   nc foodgame.cs.unm.edu 5555 
+   the next step would be to initiate a handshake by sending
+   client<enter>
+   then one more time
+   <enter> to send the newline
+   but we need a timeout if the handshake fails.
+
+
+* Features that need to be added
+** DONE Database persist users
+   CLOSED: [2016-04-14 Thu 19:28]
+** DONE Asymmetric Encryption
+   CLOSED: [2016-04-14 Thu 19:27]
+** TODO Add compression option to compress stream data
+   This is important because of WebSockets. When we send world data
+   every once in a while we get kicked off because there is too much
+   data being sent at once
+** TODO Make tmux accessible to all users
+   This will allow us to all have access to the same monitoring system
+   and be able to restart and issue commands.
+*** TASK test out the ~./Game env~ command
+** TODO User to update 
+** TODO Add last login timestamp to user
+** TODO send a response to client if the command that was issued requires admin or login
+** TODO make sure tostring is working 
+   make sure the plain text works to send 
+   use netcat
+
+* Documentation
+** TODO show how to connect via unencrypted
+   "JavaClient"
+   "client"
+** TODO show how to connect via encrypted connection
+   Order matters
+   "RSA-..." then send "JavaClient"
+   "RSA-..." then send "client"
+
+
+* Notes
+  System notes
+   - Server :: Responsible for creating: creating workers, advancing
+               game, loading users, supplying methods for accessing
+               sim, filtered users.
+     - Events
+     - Responsibilities
+       + Accepting connections
+       + Create handshake
+       + IO strategies
+       + reset game
+       + advance game
+       + game state
+       + broadcasting messages
+   - Worker :: Holds a given socket connection. 1 to 1 relationship of
+               workers to connected clients
+     - Events
+       1. Reads/Writes to stream using read/write strategy
+       2. Request is either generated based on return of strategy or
+          casted into one.
+       3. Request is sent to Handler
+       4. Handler sends down chain of responsibility until a handler
+          processes the request to which the handling of the request is
+          stopped.
+     - Responsibilities
+       + Holding Read write strategy for given client
+       + Holds User reference
+       + Shutting down stream
+       + reading from client stream (receiving data)
+       + writing to client stream (sending data)
+   - db :: Package that contains classes to persist data 
+     + Database - currently using sqlite
+     + Support for Creating, Reading. (Update, delete)
+   - NetworkData :: Class that wraps data for sending. Wraps
+                    payload, destination and/or type, time, message.
+     + Response only sent to client
+     + Request only sent to server
+   - Strategies :: abstraction that allows different writing-to, and
+                   reading-from, streams.
+     + SecureStream :: Most lowest level of a stream Reading and
+                       writing both inherit (encryptable)
+       + JavaObject :: serialization
+         - Sends/Recieves either a Serialized SealedObject or NetworkObject
+       + Socket :: sends and recieves JSON
+       + WebSocket :: sends and recieves JSON
+       + PlainText :: toString()
+   - Sendable :: interface that arrgrigates, JSON, Serializable, Type  
+   - Encryptable :: Interface that provides methods to encrypt and decrypt
+   - handlers :: package that contians all the classes that handle
+                 requests. Responses are sent during the handling.
+     + AdminTaskHandler :: Tasks only for admin
+     + CardHandler :: Requests that pertain to cards
+     + ChatHander :: Requests about Chats (sending)
+     + DataHandler :: Requests for data
+     + LoginHandler :: Requests for logining in (need to add logout)
+                       rename to SessionHandler???
+     + PermissionFilter :: Stops requests from proceeding if they have
+          not been logged in.
+     + UserHandler :: Requests about users
+       1. getting users
+       2. getting logged in users
+       3. getting ready users
+       4. getting user by username or region
+       5. creating user (add updating)
+     + VoteHandler :: Handler for voting
+       1. vote up
+       2. vote down (not really doing much)
+   - User :: Object that contains data about a connected client.
+     - User attributes
+       + username
+       + password
+       + salt
+     - Game attributes
+       + region
+       + hand
+       + drafts
+       
+             

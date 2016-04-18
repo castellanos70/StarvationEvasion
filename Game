@@ -5,6 +5,12 @@
 # email: javierc@cs.unm.edu
 
 
+# This is really only for foodgame server
+env () {
+    # if the envronment is not started create one
+    sg foodgame 'command tmux -S /tmp/foodgame-tmux attach -t default || command tmux -S /tmp/foodgame-tmux new-session -s default'
+}
+
 make_javadoc () {
     rm -rf doc/
     mkdir doc
@@ -111,6 +117,9 @@ then
 elif [ "$1" == "monitor" ]
 then
      monitor_connections
+elif [ "$1" == "env" ]
+then
+     env
 else
     echo "Command not found"
 fi

@@ -248,11 +248,33 @@ public class Model
 
   public Territory getTerritory(String name)
   {
-    for (Territory territory : territoryList)
+
+    //System.out.println("getTerritory("+name+")");
+    int start = 0;
+    int end = territoryList.size()-1;
+    int i = end/2;
+
+    while (end >= start)
     {
-      if (territory.getName().equals(name)) return territory;
+      Territory territory = territoryList.get(i);
+
+      int result = name.compareTo(territory.getName());
+      //System.out.println("    "+territory.getName() + ", result="+result + ": "+start+", "+i+", "+end);
+
+      if (result < 0) end = i-1;
+      else if (result > 0) start = i+1;
+      else return territory;
+
+      i = (end+start)/2;
+
+      //System.out.println("           "+start+", "+i+", "+end);
     }
     return null;
+    //for (Territory territory : territoryList)
+    //{
+    //  if (territory.getName().equals(name)) return territory;
+    //}
+    //return null;
   }
 
 

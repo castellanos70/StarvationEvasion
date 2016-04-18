@@ -62,7 +62,12 @@ public class GeographicArea implements Sendable
     shape.lineTo(firstX, firstY);
 
     Area area = new Area(shape);
-    assert(area.isSingular());
+    //assert(area.isSingular());
+
+    if (!area.isSingular())
+    {
+      System.out.println("ERROR: GeographicArea.addToPerimeter() Shape not a simple polygon: "+ name);
+    }
 
     perimeter.add(area);
   }

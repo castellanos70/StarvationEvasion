@@ -1,19 +1,21 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.*;
-import starvationevasion.sim.io.*;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
 import starvationevasion.sim.events.Hurricane;
 import starvationevasion.sim.io.GeographyXMLparser;
-
+import starvationevasion.sim.io.ProductionCSVLoader;
+import starvationevasion.sim.io.SpecialEventCSVLoader;
 import starvationevasion.util.Picture;
 
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.PathIterator;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -192,6 +194,7 @@ public class Model
 
   private boolean assertLandTiles()
   {
+    /*
     for (Territory territory : territoryList)
     {
       float area = territory.getLandTotal();
@@ -199,6 +202,22 @@ public class Model
         area + ", tile count=" + territory.getLandTiles().size() +
         ", land per tile = " + area / territory.getLandTiles().size());
     }
+    */
+
+    for (Region region : regionList)
+    {
+      int totalTiles = 0;
+      ArrayList<Territory> myTerritories = region.getTerritoryList();
+      for (Territory territory : myTerritories)
+      {
+        totalTiles += territory.getLandTiles().size();
+      }
+
+      float area = region.getLandTotal();
+      System.out.println("LandTiles: " + region.getName() + ": area=" +
+        area + ", tile count=" + totalTiles + ", land per tile = " + area / totalTiles);
+    }
+
     return true;
   }
 
@@ -255,9 +274,6 @@ public class Model
    */
   private void instantiateRegions()
   {
-    if (DEBUG) System.out.println("Model.instantiateRegions() Enter");
-
-
     for (int i = 0; i < EnumRegion.SIZE; i++)
     {
       regionList[i] = new Region(EnumRegion.values()[i]);
@@ -278,7 +294,6 @@ public class Model
         regionList[i].aggregateTerritoryData(year);
       }
     }
-
 
     //try{cropLoader = new CropCSVLoader();} catch (Throwable t){ System.out.println("CROP_LOADER "+t);}
     //cropZoneDatum = cropLoader.getCategoryData();
@@ -816,7 +831,7 @@ public class Model
    * it draws the boundary of that territory on the map using different colors for
    * disconnected segments (islands) of the territory.
    */
-  public void drawBoundary(Picture pic, Territory territory)
+  public void drawBoundary(Picture pic, Territory territory, Color color)
   {
     MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
 
@@ -827,7 +842,7 @@ public class Model
     GeographicArea geographicArea = territory.getGeographicArea();
     Area boundary = geographicArea.getPerimeter();
 
-    gfx.setColor(Color.WHITE);
+    gfx.setColor(color);
     int lastX = Integer.MAX_VALUE;
     int lastY = Integer.MAX_VALUE;
     int startX = Integer.MAX_VALUE;
@@ -1007,11 +1022,11 @@ public class Model
       for (EnumRegion regionID : EnumRegion.values())
       {
         Region region = model.getRegion(regionID);
-        model.drawBoundary(pic, region);
+        model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5));
       }
       try
       {
-        Thread.sleep(2000);
+        Thread.sleep(3000);
       } catch (InterruptedException e) { }
 
       for (Constant.Month month : Constant.Month.values())

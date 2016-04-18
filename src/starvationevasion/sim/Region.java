@@ -89,18 +89,15 @@ public class Region extends Territory
   {
     setPopulation(year, 0);
     setUndernourished(year, 0);
-    setLandTotal(0);
+    setFarmLand(year,0);
 
     for (Territory territory : territoryList)
     {
-      int n = getPopulation(year) + territory.getPopulation(year);
-      setPopulation(year, n);
+      setPopulation(year, getPopulation(year) + territory.getPopulation(year));
 
-      n = getUndernourished(year) + territory.getUndernourished(year);
-      setUndernourished(year, n);
+      setUndernourished(year, getUndernourished(year) + territory.getUndernourished(year));
 
-      n = getLandTotal() + territory.getLandTotal();
-      setLandTotal(n);
+      setFarmLand(year, getFarmLand(year) + territory.getFarmLand(year));
     }
   }
 
@@ -123,6 +120,10 @@ public class Region extends Territory
     territoryList.add(territory);
     Area perimeter = getGeographicArea().getPerimeter();
     perimeter.add(territory.getGeographicArea().getPerimeter());
+
+    setLandTotal(getLandTotal() + territory.getLandTotal());
+
+    //System.out.println("Region="+getName()+", territory="+ territory.getName() +", cumLand="+getLandTotal());
   }
 
 

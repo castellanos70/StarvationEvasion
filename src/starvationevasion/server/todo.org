@@ -150,16 +150,16 @@
        3. Creates an instance of simulator
        4. opens socket and listens
        5. if a connection is received
-	  a. calls setConnection
-	  b. read writers are set as well as encryption
+	      a. calls setConnection
+	      b. read writers are set as well as encryption
        6. Task loop is set up and calls update
-	  a. watches player count until reaches max
-	  b. starts ai's
-	  c. calls ~begin()~
+	      a. watches player count until reaches max
+	      b. starts ai's
+	      c. calls ~begin()~
           d. begin sends broadcast
-	  e. begin calls draft
-	  f. draft calls vote
-	  g. vote calls draw (back to e)
+	      e. begin calls draft
+	      f. draft calls vote
+	      g. vote calls draw (back to e)
      - Responsibilities
        + Accepting connections
        + Create handshake
@@ -169,7 +169,7 @@
        + game state
        + broadcasting messages
    - Worker :: Holds a given socket connection. 1 to 1 relationship of
-              workers to connected clients
+               workers to connected clients
      - Events
        1. Reads/Writes to stream using read/write strategy
        2. Request is either generated based on return of strategy or
@@ -192,7 +192,7 @@
      + Response only sent to client
      + Request only sent to server
    - Strategies :: abstraction that allows different writing-to, and
-                  reading-from, streams.
+                   reading-from, streams.
      + SecureStream :: Most lowest level of a stream Reading and
                        writing both inherit (encryptable)
        + JavaObject :: serialization
@@ -204,30 +204,30 @@
    - Encryptable :: Interface that provides methods to encrypt and decrypt
    - handlers :: package that contains all the classes that handle
                 requests. Responses are sent during the handling. Has a reference to server, client
-    + AdminTaskHandler :: Tasks only for admin
-    + CardHandler :: Requests that pertain to cards
-    + ChatHandler :: Requests about Chats (sending)
-    + DataHandler :: Requests for data
-    + LoginHandler :: Requests for logging in (need to add logout)
+     + AdminTaskHandler :: Tasks only for admin
+     + CardHandler :: Requests that pertain to cards
+     + ChatHandler :: Requests about Chats (sending)
+     + DataHandler :: Requests for data
+     + LoginHandler :: Requests for logging in (need to add logout)
                        rename to SessionHandler???
-    + PermissionFilter :: Stops requests from proceeding if they have
-          not been logged in.
-    + UserHandler :: Requests about users
+     + PermissionFilter :: Stops requests from proceeding if they have
+                           not been logged in.
+     + UserHandler :: Requests about users
        1. getting users
        2. getting logged in users
        3. getting ready users
        4. getting user by username or region
        5. creating user (add updating)
-    + VoteHandler :: Handler for voting
+     + VoteHandler :: Handler for voting
        1. vote up
        2. vote down (not really doing much)
    - User :: Object that contains data about a connected client.
-    - Persisted fields
+     - Persisted fields
        + username
        + password
        + salt
        + region
-    - User transient
+     - User transient
        + actions remaining
        + policies discarded
        + drafts 
@@ -236,11 +236,11 @@
        + isplaying
        + isLoggedin 
        + worker
-    - User attributes
+     - User attributes
        + username
        + password
        + salt
-    - Game attributes
+     - Game attributes
        + region
        + hand
        + draft

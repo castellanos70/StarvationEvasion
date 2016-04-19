@@ -1,25 +1,17 @@
 package starvationevasion.sim.io;
 
-import org.xml.sax.XMLReader;
-import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.InputSource;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import starvationevasion.common.GeographicArea;
 import starvationevasion.common.MapPoint;
 import starvationevasion.sim.Model;
 import starvationevasion.sim.Territory;
+
+import javax.xml.parsers.SAXParserFactory;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by winston on 3/21/15.
@@ -95,7 +87,7 @@ public class GeographyXMLparser extends DefaultHandler
         //regionType = qName;
         break;
       case "area":
-
+      case "hole":
         break;
 
       case "name":
@@ -157,7 +149,12 @@ public class GeographyXMLparser extends DefaultHandler
     {
       if (qName.equals("area"))
       {
-        territory.getGeographicArea().addToPerimeter(new ArrayList<>(tmpPerimeterSet));
+        territory.getGeographicArea().addToPerimeter(new ArrayList<>(tmpPerimeterSet), GeographicArea.BoundaryType.ISLAND);
+        tmpPerimeterSet.clear();
+      }
+      else if (qName.equals("hole"))
+      {
+        territory.getGeographicArea().addToPerimeter(new ArrayList<>(tmpPerimeterSet), GeographicArea.BoundaryType.HOLE);
         tmpPerimeterSet.clear();
       }
     }

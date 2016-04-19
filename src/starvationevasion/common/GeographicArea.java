@@ -13,6 +13,7 @@ import java.util.ArrayList;
 public class GeographicArea implements Sendable
 {
   private final String name;
+  public enum BoundaryType {ISLAND, HOLE};
 
   /**
    * boundaryList is an ArrayList of an ArrayList of MapPoints.<br>.
@@ -43,7 +44,7 @@ public class GeographicArea implements Sendable
    * calculation, will work with the untransformed latitude and longitude coordinates.
    * @param island
    */
-  public void addToPerimeter(ArrayList<MapPoint> island)
+  public void addToPerimeter(ArrayList<MapPoint> island, BoundaryType type)
   {
     islandList.add(island);
 
@@ -69,7 +70,8 @@ public class GeographicArea implements Sendable
       System.out.println("ERROR: GeographicArea.addToPerimeter() Shape not a simple polygon: "+ name);
     }
 
-    perimeter.add(area);
+    if (type == BoundaryType.ISLAND) perimeter.add(area);
+    else perimeter.subtract(area);
   }
 
   public ArrayList<ArrayList>getIslandList() {return islandList;}

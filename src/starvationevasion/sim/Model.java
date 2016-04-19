@@ -103,6 +103,14 @@ public class Model
   private int currentYear;
 
 
+  /**
+   * List of all territories. A copy of each pointer stored in this list is
+   * placed in territoryList of the region to which that territory belongs.<br><br>
+   *
+   * This list is build from a data file when the model loads and is never changed.<br><br>
+   *
+   * This list must be in lexicographic order.
+   */
   private ArrayList<Territory> territoryList;
 
   // The set of world regions includes all of the regions in the enum, plus an
@@ -238,14 +246,40 @@ public class Model
 
   public Territory getTerritory(double latitude, double longitude)
   {
+    //This is the code that should actually be used.
     for (Territory territory : territoryList)
     {
       if (territory.contains(latitude, longitude)) return territory;
     }
     return null;
+
+
+    //This code is used for debug only.
+    /*
+    Territory found = null;
+    for (Territory territory : territoryList)
+    {
+      if (territory.contains(latitude, longitude))
+      {
+        if (found != null)
+        {
+          System.out.println("ERROR: Point ["+latitude+", "+longitude+
+            "] in two territories: " + found.getName() + " & " + territory.getName());
+        }
+        found = territory;
+      }
+    }
+    return found;
+    */
   }
 
 
+  /**
+   * Uses binary search to fine the given name in the territory list.
+   * @param name of territory
+   * @return reference to the unique territory with the given name or null if there does not
+   * exist a territory with the given name in territoryList
+   */
   public Territory getTerritory(String name)
   {
 

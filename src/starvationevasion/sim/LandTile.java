@@ -1,6 +1,8 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.*;
+import starvationevasion.common.Constant;
+import starvationevasion.common.EnumFood;
+import starvationevasion.common.Util;
 import starvationevasion.sim.io.CSVReader;
 
 import java.text.DateFormat;
@@ -292,8 +294,6 @@ public class LandTile
     Date dateStart = new Date();
     System.out.println("LandTile.load() Loading Climate Data: " +dateFormat.format(dateStart));
 
-
-
     //Read the latitude longitude coordinates of each record in the PATH_CLIMATE_PREFIX files.
     CSVReader fileReader = new CSVReader(PATH_COORDINATES, 1);
     String[] fieldList;
@@ -309,10 +309,19 @@ public class LandTile
       tileList.add(tile);
 
 
-      if ((territory == null) || (!territory.getName().equals(fieldList[2])))
+      //if ((territory == null) || (!territory.getName().equals(fieldList[2])))
+      //{
+      //  territory = model.getTerritory(fieldList[2]);
+      //}
+
+      if ((territory == null) || (!territory.contains(latitude, longitude)))
       {
-        territory = model.getTerritory(fieldList[2]);
+        territory = model.getTerritory(latitude, longitude);
       }
+
+      if (territory != null) territory.addLandTile(tile);
+
+
         //assert(territory.containsMapPoint(new MapPoint(latitude,longitude)));
         //if (!territory.containsMapPoint(new MapPoint(latitude,longitude)))
         //{
@@ -334,7 +343,7 @@ public class LandTile
       //}
 
 
-      territory.addLandTile(tile);
+
 
 
     }

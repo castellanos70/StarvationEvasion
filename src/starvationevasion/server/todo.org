@@ -44,13 +44,13 @@
    String secWsAccept =
    Base64.encodeBytes(sha.digest((requestMap.get("Sec-WebSocket-Key") + wstring).getBytes()));
    #+END_SRC
-** TODO Webclient looses connection when world data is being sent	:BUG:
+** TODO Web-client looses connection when world data is being sent	:BUG:
    This only happens when the game first begins! very frustrating
    getting CLOSE_ABNORMAL 1006 error on client side.js
    https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
 ** TODO Disconnect is not complete					:BUG:
    the socket is not completely closing.
-   to see run ./Game monitor run webclient and refresh page. you can
+   to see run ./Game monitor run web-client and refresh page. you can
    see the connection stays in CLOSE_WAIT
 ** TODO Disconnect of a NON player					:BUG:
    Currently there is an issue that causes the advancePhase() to stop
@@ -103,15 +103,15 @@
    1
 
 
-* Archecture
+* Architecture
 ** The server has too many responsibilities and needs to be cleaned up
-   Think about abstracting differnt aspects IDEAS
+   Think about abstracting different aspects IDEAS
    - Game could be its own class <-----Like this idea--------
      + this game class could deal with a list of users
      + server still keeps count of players then hands off list of players to game
    - Connections could be handled by a manager.
      + the server starts a connection manager
-       - Manager is reponsible for creating, removing connections.
+       - Manager is responsible for creating, removing connections.
 
 
 * Documentation
@@ -170,7 +170,7 @@
        + reading from client stream (receiving data)
        + writing to client stream (sending data)
   - db :: Package that contains classes to persist data 
-     + Database - currently using sqlite
+     + Database - currently using SQLite
      + Support for Creating, Reading. (Update, delete)
   - NetworkData :: Class that wraps data for sending. Wraps
                    payload, destination and/or type, time, message.
@@ -191,9 +191,9 @@
                 requests. Responses are sent during the handling. Has a reference to server, client
     + AdminTaskHandler :: Tasks only for admin
     + CardHandler :: Requests that pertain to cards
-    + ChatHander :: Requests about Chats (sending)
+    + ChatHandler :: Requests about Chats (sending)
     + DataHandler :: Requests for data
-    + LoginHandler :: Requests for logining in (need to add logout)
+    + LoginHandler :: Requests for logging in (need to add logout)
                        rename to SessionHandler???
     + PermissionFilter :: Stops requests from proceeding if they have
           not been logged in.

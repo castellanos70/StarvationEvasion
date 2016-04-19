@@ -102,6 +102,21 @@
    if "text" is found set the writer to plain text
    1
 
+** TODO [0%] Make every anon user unique 
+*** TODO replace anon with unique string 
+    generate a random string ~java.util.UUID.randomUUID().toString()~
+    instead of "ANON"
+*** TODO make that user reachable
+    also need to for every NEW worker added, the user needs to be 
+    saved in the servers ~userList~ and NOT added to DB.
+
+** TODO Add a logout endpoint
+   Inside of the ~UserHandler.java~ add the impl. 
+   Should set the user of the worker to 
+   #+BEGIN_SRC java 
+   getClient().setUser(new User())
+   #+END_SRC
+
 
 * Architecture
 ** The server has too many responsibilities and needs to be cleaned up
@@ -123,10 +138,10 @@
    "RSA-..." then send "JavaClient"
    "RSA-..." then send "client"
 
-   
+
 * Notes
-  System notes
-  - Server :: Responsible for creating: creating workers, advancing
+** System notes
+   - Server :: Responsible for creating: creating workers, advancing
               game, loading users, supplying methods for accessing
               sim, filtered users.
      - Events
@@ -153,7 +168,7 @@
        + advance game
        + game state
        + broadcasting messages
-  - Worker :: Holds a given socket connection. 1 to 1 relationship of
+   - Worker :: Holds a given socket connection. 1 to 1 relationship of
               workers to connected clients
      - Events
        1. Reads/Writes to stream using read/write strategy
@@ -169,14 +184,14 @@
        + Shutting down stream
        + reading from client stream (receiving data)
        + writing to client stream (sending data)
-  - db :: Package that contains classes to persist data 
+   - db :: Package that contains classes to persist data 
      + Database - currently using SQLite
      + Support for Creating, Reading. (Update, delete)
-  - NetworkData :: Class that wraps data for sending. Wraps
+   - NetworkData :: Class that wraps data for sending. Wraps
                    payload, destination and/or type, time, message.
      + Response only sent to client
      + Request only sent to server
-  - Strategies :: abstraction that allows different writing-to, and
+   - Strategies :: abstraction that allows different writing-to, and
                   reading-from, streams.
      + SecureStream :: Most lowest level of a stream Reading and
                        writing both inherit (encryptable)
@@ -185,9 +200,9 @@
        + Socket :: sends and receives JSON
        + WebSocket :: sends and receives JSON
        + PlainText :: toString()
-  - Sendable :: interface that aggregates, JSON, Serializable, Type
-  - Encryptable :: Interface that provides methods to encrypt and decrypt
-  - handlers :: package that contains all the classes that handle
+   - Sendable :: interface that aggregates, JSON, Serializable, Type
+   - Encryptable :: Interface that provides methods to encrypt and decrypt
+   - handlers :: package that contains all the classes that handle
                 requests. Responses are sent during the handling. Has a reference to server, client
     + AdminTaskHandler :: Tasks only for admin
     + CardHandler :: Requests that pertain to cards
@@ -206,7 +221,7 @@
     + VoteHandler :: Handler for voting
        1. vote up
        2. vote down (not really doing much)
-  - User :: Object that contains data about a connected client.
+   - User :: Object that contains data about a connected client.
     - Persisted fields
        + username
        + password
@@ -228,6 +243,18 @@
     - Game attributes
        + region
        + hand
-       + drafts
-       
-             
+       + draft
+
+** Adding Endpoint
+   1. Add enum to ~server/model/Endpoint.java~. The string inside is 
+      what the client or user would send or type (respectivly) to the sever
+   2. Open one of the handlers that would logically fit the category of 
+      the new endpoint. 
+      a. if it doesnt fit into any of the categories of the current handlers
+      b. create a new handler and ~extend AbstractHandler~
+      c. open ~Handler.java~ and add the new handler to the chain of 
+         responsibility. NOTE: there is a login filter that is responsible for 
+         filtering requests that require login. If this endpoint requires login, 
+         add after.
+   3. add a new check if the reqest's destination is the endpoint
+   4. Fill in the if statement.

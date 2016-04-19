@@ -1011,7 +1011,7 @@ public class Model
         gfx.fillOval(pixel.x-1, pixel.y-1, 3, 3);
       }
     }
-    pic.repaint();
+
   }
 
 
@@ -1063,14 +1063,11 @@ public class Model
 
     Picture pic = model.testShowMapProjection();
 
-    //Territory territory = model.getTerritory("South Africa");
+    //Territory territory = model.getTerritory("Italy");
     //model.drawBoundaryUsingMapPoints(pic, territory);
-
-
 
     for (int n = 0; n < 10; n++)
     {
-
       for (EnumRegion regionID : EnumRegion.values())
       {
         Region region = model.getRegion(regionID);
@@ -1082,6 +1079,7 @@ public class Model
         Region region = model.getRegion(regionID);
         model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5));
       }
+      pic.repaint();
       try
       {
         Thread.sleep(3000);

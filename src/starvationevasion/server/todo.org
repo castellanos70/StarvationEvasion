@@ -32,7 +32,7 @@
      Impl. decision is to reset everyone, maybe reset only AI.
      Do we kill AI?
 *** TODO Race condition on starting game?
-     There might be a race condition when begining a game and AI's are sitting waiting. 
+     There might be a race condition when beginning a game and AI's are sitting waiting.
      They send a ready very quickly...
      Reproduce: Start a game. let it finish. issue a restart command. (at this point AI's that were playing
      should still not be "players" [users that sent ready]). start 2 new ai so that game will begin.
@@ -45,11 +45,11 @@
    Base64.encodeBytes(sha.digest((requestMap.get("Sec-WebSocket-Key") + wstring).getBytes()));
    #+END_SRC
 ** TODO Webclient looses connection when world data is being sent	:BUG:
-   This only happens when the game first begins! very frusterating
+   This only happens when the game first begins! very frustrating
    getting CLOSE_ABNORMAL 1006 error on client side.js
    https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
 ** TODO Disconnect is not complete					:BUG:
-   the socket is not completly closing. 
+   the socket is not completely closing.
    to see run ./Game monitor run webclient and refresh page. you can
    see the connection stays in CLOSE_WAIT
 ** TODO Disconnect of a NON player					:BUG:
@@ -59,7 +59,7 @@
 *** TODO [50%] Write the ~toJSON()~ methods for all objects that are Sendable
 **** DONE Write methods
 **** TODO Check they are all done.
-     I havent had a chance to review all the sendable objects.
+     I haven't had a chance to review all the sendable objects.
 *** TODO Write Constructors that task JSONDocument as arg
     The constructor body will needs to take the json apart and 
     fill in the values from JSON. The caller will the in
@@ -102,6 +102,7 @@
    if "text" is found set the writer to plain text
    1
 
+
 * Archecture
 ** The server has too many responsibilities and needs to be cleaned up
    Think about abstracting differnt aspects IDEAS
@@ -133,7 +134,7 @@
        2. saves all the users to a array list for "cache" (could be a lookup)
        3. Creates an instance of simulator
        4. opens socket and listens
-       5. if a connection is recieved 
+       5. if a connection is received
 	  a. calls setConnection
 	  b. read writers are set as well as encryption
        6. Task loop is set up and calls update
@@ -180,13 +181,13 @@
      + SecureStream :: Most lowest level of a stream Reading and
                        writing both inherit (encryptable)
        + JavaObject :: serialization
-         - Sends/Recieves either a Serialized SealedObject or NetworkObject
-       + Socket :: sends and recieves JSON
-       + WebSocket :: sends and recieves JSON
+         - Sends/Receives either a Serialized SealedObject or NetworkObject
+       + Socket :: sends and receives JSON
+       + WebSocket :: sends and receives JSON
        + PlainText :: toString()
-  - Sendable :: interface that arrgrigates, JSON, Serializable, Type  
+  - Sendable :: interface that aggregates, JSON, Serializable, Type
   - Encryptable :: Interface that provides methods to encrypt and decrypt
-  - handlers :: package that contians all the classes that handle
+  - handlers :: package that contains all the classes that handle
                 requests. Responses are sent during the handling. Has a reference to server, client
     + AdminTaskHandler :: Tasks only for admin
     + CardHandler :: Requests that pertain to cards
@@ -213,7 +214,7 @@
        + region
     - User transient
        + actions remaining
-       + policies dicarded
+       + policies discarded
        + drafts 
        + drafts voteable
        + isdone

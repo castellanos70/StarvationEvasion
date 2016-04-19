@@ -15,10 +15,6 @@
    Client will only get responses
    JSON still needs work
    CLOSED: [2016-02-12 Fri 19:10]
-** DONE Write toJSON
-   Had a classmate to part of this however
-   this may not be the best approach
-   CLOSED: [2016-02-12 Fri 19:12]
 ** TODO Handle ending the game
 ** TODO Add robustness for setting players
    Currently the Server only checks to make sure there are 
@@ -99,9 +95,22 @@
 ** TODO [#C] User to update 
 ** TODO Add last login timestamp to user
 ** TODO send a response to client if the command that was issued requires admin or login
-** TODO make sure tostring is working 
-   make sure the plain text works to send 
-   use netcat
+** TODO make sure tostring is implemented in all Sendable classes 
+   make sure the plain text works to send
+** TODO create a new plain text client
+   Add a check for "text" in server setStream
+   if "text" is found set the writer to plain text
+   1
+
+* Archecture
+** The server has too many responsibilities and needs to be cleaned up
+   Think about abstracting differnt aspects IDEAS
+   - Game could be its own class <-----Like this idea--------
+     + this game class could deal with a list of users
+     + server still keeps count of players then hands off list of players to game
+   - Connections could be handled by a manager.
+     + the server starts a connection manager
+       - Manager is reponsible for creating, removing connections.
 
 
 * Documentation
@@ -113,7 +122,7 @@
    "RSA-..." then send "JavaClient"
    "RSA-..." then send "client"
 
-
+   
 * Notes
   System notes
   - Server :: Responsible for creating: creating workers, advancing

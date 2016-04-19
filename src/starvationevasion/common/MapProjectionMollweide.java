@@ -13,9 +13,11 @@ public class MapProjectionMollweide
 
   private int pixelWidth;
   private int pixelHeight;
+  private double centralMeridian = 0;
 
   private double scaleX;
   private double scaleY;
+
 
   public MapProjectionMollweide(int pixelWidth, int pixelHeight)
   {
@@ -25,6 +27,28 @@ public class MapProjectionMollweide
     scaleY = (pixelHeight / 2.0) / ROOT2;
   }
 
+
+
+  public void setCentralMeridian(double degrees)
+  {
+    if (Math.abs(degrees) > 180.0)
+    {
+      throw new IllegalArgumentException(
+        "MapProjectionMollweide.setCentralMeridian("+degrees +
+        "): Argument out of bounds error.");
+    }
+    centralMeridian = degrees*DEG_TO_RAD;
+  }
+
+
+  /**
+   *  * <li> Latitude</li>
+   * <li> </li>
+    *@param pixel This is output. By making it an argument, rather than a returned value, the
+   *              same memoryu
+   * @param latitude  ranges from -90 to 90. North latitude is positive.
+   * @param longitude ranges from -180 to 180. East longitude is positive.
+   */
   public void setPoint(Point pixel, double latitude, double longitude)
   {
     double lon = (longitude * DEG_TO_RAD);//convert to radians
@@ -49,7 +73,11 @@ public class MapProjectionMollweide
     }
     //System.out.println("count="+count);
 
-    double x = CX*lon*Math.cos(theta);
+    double lon2 = lon - centralMeridian;
+    if (lon2 > Math.PI) lon2 = -Math.PI + (lon2 - Math.PI);
+    else if (lon2 < -Math.PI) lon2 = Math.PI + (lon2 + Math.PI);
+
+    double x = CX*lon2*Math.cos(theta);
     double y = ROOT2*Math.sin(theta);
     pixel.x = pixelWidth/2  +(int)(scaleX * x);
     pixel.y = pixelHeight/2 -(int)(scaleY * y);

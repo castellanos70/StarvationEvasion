@@ -600,7 +600,6 @@ public class Territory
             {
               System.out.println("**ERROR** Reading " + TERRITORY_DATA_PATH + " in Territory.territoryLoader");
               System.out.println("          Reading Record#" + territoryList.size() + " Territory="+territory.name);
-
               System.out.println("          Game Region not recognized: " + fieldList[i]);
               System.exit(0);
             }

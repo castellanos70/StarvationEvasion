@@ -958,6 +958,7 @@ public class Model
   {
     MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
 
+
     Point pixel = new Point();
 
     Graphics2D gfx = pic.getOffScreenGraphics();
@@ -1028,7 +1029,8 @@ public class Model
 
     Picture pic = model.testShowMapProjection();
 
-
+    //Territory territory = model.getTerritory("South Africa");
+    //model.drawBoundaryUsingMapPoints(pic, territory);
 
 
 
@@ -1054,12 +1056,8 @@ public class Model
       for (Constant.Month month : Constant.Month.values())
       {
         model.drawRain(pic, 2009, month);
-
-        try
-        {
-          Thread.sleep(2000);
-        } catch (InterruptedException e) { }
       }
     }
+
   }
 }

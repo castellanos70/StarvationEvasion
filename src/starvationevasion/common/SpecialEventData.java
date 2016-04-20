@@ -18,11 +18,6 @@ public class SpecialEventData implements Sendable
     public static final int SIZE = values().length;
   }
 
-  public enum EnumMonth
-  {
-    January, February, March, April, May, June,
-    July, August, September, October, November, December
-  }
 
 
   public float latitude;
@@ -37,7 +32,7 @@ public class SpecialEventData implements Sendable
   public EnumSpecialEvent type;
   public String eventName;
   public int year;
-  public EnumMonth month;
+  public Constant.Month month;
   public int durationInMonths;
   public ArrayList<MapPoint> locationList = new ArrayList<>();
   public ArrayList<EnumRegion> regions = new ArrayList<>();
@@ -58,7 +53,7 @@ public class SpecialEventData implements Sendable
     this.year = year;
   }
 
-  public void setMonth (EnumMonth month)
+  public void setMonth (Constant.Month month)
   {
     this.month = month;
   }
@@ -159,7 +154,7 @@ public class SpecialEventData implements Sendable
     dollarsInDamage = (long) json.getNumber("damage-in-dollars");
     type = EnumSpecialEvent.valueOf(json.getString("type"));
     year = (int) json.getNumber("year");
-    month = EnumMonth.valueOf(json.getString("month"));
+    month = Constant.Month.valueOf(json.getString("month"));
     durationInMonths = (int) json.getNumber("duration-in-months");
 
     List<Object> jLocParse = json.get("locationList").array();

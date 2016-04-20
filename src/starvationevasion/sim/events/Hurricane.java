@@ -28,6 +28,6 @@ public class Hurricane extends AbstractEvent
 
   public MapPoint getLocation()
   {
-    return getLandArea().getCapitolLocation();
+    return getLandArea().getCenter();
   }
 }

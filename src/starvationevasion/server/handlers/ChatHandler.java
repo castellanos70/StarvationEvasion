@@ -35,7 +35,7 @@ public class ChatHandler extends AbstractHandler
         request.getPayload().remove("to-username");
       }
 
-      request.getPayload().put("from", getClient().getUsername());
+      request.getPayload().put("from", getClient().getUser().getUsername());
 
       if (to.equals("ALL"))
       {

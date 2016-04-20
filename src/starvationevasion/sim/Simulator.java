@@ -29,8 +29,7 @@ public class Simulator
   private Model model;
 
   /**
-   * This constructor does not initialize the model. Rather it checks to there are valid
-   * Game constants prior to beginning
+   * Allocate memory and read massive data files.
    */
   public Simulator()
   {
@@ -38,40 +37,31 @@ public class Simulator
     assert ((Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR) % Constant.YEARS_PER_TURN == 0);
     assert ((Constant.LAST_YEAR - (Constant.FIRST_GAME_YEAR+1)) % Constant.YEARS_PER_TURN == 0);
 
+    LOGGER.info("Loading and initializing model");
+    model = new Model();
+
+    assert (assertSimulatorPreGameData());
     init();
   }
 
   /**
-   *
-   * This should be called once at the start of each game by the Server.
-   * Initializes the model
-   * Generates a random 80 card deck for each player (both
-   * human and AI players)
-   *
-   * This is not in the constructor but rather a new method so that
-   * games can be restarted without new objects and allowing a
-   * final object instantiated once
+   * This is called by the constructor to initialize the model.
+   * It may also be called to restart the model without needing to
+   * reallocate memory and without reloading the large data files.
    */
   public void init()
   {
-    // Model instantiation parses all of the XML and CSV.
-    //
-    LOGGER.info("Loading and initializing model");
-    model = new Model();
-
     LOGGER.info("Starting Simulator: year=" + Constant.FIRST_GAME_YEAR);
-
+    model.init();
     for (EnumRegion playerRegion : EnumRegion.US_REGIONS)
     {
       playerDeck[playerRegion.ordinal()] = new CardDeck(playerRegion);
     }
-    assert (assertSimulatorPreGameData());
   }
 
 
   private boolean assertSimulatorPreGameData()
   {
-    assert (model.getCurrentYear() == Constant.FIRST_GAME_YEAR);
     for (int year = Constant.FIRST_DATA_YEAR; year < model.getCurrentYear(); year++)
     {
       WorldData world = model.getWorldData(year);
@@ -164,16 +154,18 @@ public class Simulator
     return dataList;
   }
 
-  public  ArrayList<GeographicArea>[] getRegionBoundaries()
+  public  GeographicArea[] getRegionBoundaries()
   {
-    ArrayList<GeographicArea>[] boundaryList = new ArrayList[EnumRegion.SIZE];
+    GeographicArea[] boundaryList = new GeographicArea[EnumRegion.SIZE];
 
     for (EnumRegion region : EnumRegion.values())
     {
-      boundaryList[region.ordinal()] = model.getGeographicBoundary(region);
+      boundaryList[region.ordinal()] = model.getGeographicArea(region);
     }
     return boundaryList;
   }
+
+
 
   /**
    * FROM ONE THREAD ONLY, the Server should call nextTurn(cards) when it is ready to advance the
@@ -349,7 +341,7 @@ public class Simulator
     for (EnumRegion regionEnum : EnumRegion.values())
     {
       Region region = model.getRegion(regionEnum);
-      if (region.containsMapPoint(mapPoint)) return regionEnum;
+      if (region.contains(mapPoint)) return regionEnum;
     }
     return null;
   }
@@ -375,6 +367,11 @@ public class Simulator
    */
   public static void main(String[] args)
   {
+    System.out.println("==========================================================================");
+    System.out.println("      Running Test entry point: starvationevasion.sim.Simulator()");
+    System.out.println("==========================================================================");
+
+
     // Configure a debug output stream for dumping verbose simulatoin data.
     //
     String tmpdir = System.getProperty("java.io.tmpdir");
@@ -402,7 +399,10 @@ public class Simulator
     //
     LOGGER.setLevel(Level.INFO);
 
-    Simulator sim = new Simulator();
+
+    Simulator sim = new Simulator(); //Allocates memory and reads LARGE data files.
+    //To restart without reloading everything call sim.init();
+
 
     String startingHandMsg = "Starting Hands: \n";
 

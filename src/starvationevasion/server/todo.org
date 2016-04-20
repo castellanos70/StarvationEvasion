@@ -1,0 +1,260 @@
+#+TITLE: Server project management
+#+PRIORITIES: A B C
+#+TAGS: BUG
+
+* Issues
+** DONE Establish connection with client
+   CLOSED: [2016-01-19 Tue 19:06]
+** DONE Create a connection to WebSocket
+   CLOSED: <2016-01-24 Sun>
+** DONE Create interfaces for connection types
+   CLOSED: [2016-02-01 Mon 14:19]
+** DONE Design protocol connection.
+   Using a class called payload to hold data
+   Sever will only get requests
+   Client will only get responses
+   JSON still needs work
+   CLOSED: [2016-02-12 Fri 19:10]
+** TODO Handle ending the game
+** TODO Add robustness for setting players
+   Currently the Server only checks to make sure there are 
+   enough players.... We need to check if there are enough 
+   AI and enough Human
+** TODO [50%] Voting
+*** TODO check if we are waiting on a player that matters {See ~PolicyCard.java~ required region votes}
+*** DONE Send results of the voting phase.
+    CLOSED: [2016-04-17 Sun 00:07]
+** TODO [0%] [#A] Restarting game! 				:BUG:
+*** TODO If we issue a command during waiting, the worker itself is still responsive
+    but i am unable to issue commands that require server state to be
+    changed or killing ai. Reproduce: login as admin and issue a restart game. 
+*** TODO Make sure Players are reset to non players
+     Impl. decision is to reset everyone, maybe reset only AI.
+     Do we kill AI?
+*** TODO Race condition on starting game?
+     There might be a race condition when beginning a game and AI's are sitting waiting.
+     They send a ready very quickly...
+     Reproduce: Start a game. let it finish. issue a restart command. (at this point AI's that were playing
+     should still not be "players" [users that sent ready]). start 2 new ai so that game will begin.
+     The game will fail. Notice that there are 4 players.
+** TODO refactor (simplify) web handshake code
+   #+BEGIN_SRC java 
+   String wstring = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+   MessageDigest sha = MessageDigest.getInstance("SHA1");
+   String secWsAccept =
+   Base64.encodeBytes(sha.digest((requestMap.get("Sec-WebSocket-Key") + wstring).getBytes()));
+   #+END_SRC
+** TODO Web-client looses connection when world data is being sent	:BUG:
+   This only happens when the game first begins! very frustrating
+   getting CLOSE_ABNORMAL 1006 error on client side.js
+   https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
+** TODO Disconnect is not complete					:BUG:
+   the socket is not completely closing.
+   to see run ./Game monitor run web-client and refresh page. you can
+   see the connection stays in CLOSE_WAIT
+** TODO Disconnect of a NON player					:BUG:
+   Currently there is an issue that causes the advancePhase() to stop
+   working if there is a client that looses connection during a broadca
+** TODO [#B] Finish impl. JSON
+*** TODO [50%] Write the ~toJSON()~ methods for all objects that are Sendable
+**** DONE Write methods
+**** TODO Check they are all done.
+     I haven't had a chance to review all the sendable objects.
+*** TODO Write Constructors that task JSONDocument as arg
+    The constructor body will needs to take the json apart and 
+    fill in the values from JSON. The caller will the in
+    Payload class. There will need to be Major Refactor.   
+*** TODO Make sure all json can be converted into a POJO
+    There is a payload make sure that its contents is converted
+    properly.
+** TASK Refactor and move the classes that are used by client and server to the "common" package
+** TODO make request a network object   
+** TODO [#B] during handshake						:BUG:
+   This can be reproduced if you create a connection with netcat
+   nc foodgame.cs.unm.edu 5555 
+   the next step would be to initiate a handshake by sending
+   client<enter>
+   then one more time
+   <enter> to send the newline
+   but we need a timeout if the handshake fails.
+
+
+* Features that need to be added
+** DONE Database persist users
+   CLOSED: [2016-04-14 Thu 19:28]
+** DONE Asymmetric Encryption
+   CLOSED: [2016-04-14 Thu 19:27]
+** TODO Add compression option to compress stream data
+   This is important because of WebSockets. When we send world data
+   every once in a while we get kicked off because there is too much
+   data being sent at once
+** TODO [#C] Make tmux accessible to all users
+   This will allow us to all have access to the same monitoring system
+   and be able to restart and issue commands.
+*** TASK test out the ~./Game env~ command
+** TODO [#C] User to update 
+** TODO Add last login timestamp to user
+** TODO send a response to client if the command that was issued requires admin or login
+** TODO make sure tostring is implemented in all Sendable classes 
+   make sure the plain text works to send
+** TODO create a new plain text client
+   Add a check for "text" in server setStream
+   if "text" is found set the writer to plain text
+   1
+
+** TODO [0%] Make every anon user unique 
+*** TODO replace anon with unique string 
+    generate a random string ~java.util.UUID.randomUUID().toString()~
+    instead of "ANON"
+*** TODO make that user reachable
+    also need to for every NEW worker added, the user needs to be 
+    saved in the servers ~userList~ and NOT added to DB.
+
+** TODO Add a logout endpoint
+   Inside of the ~UserHandler.java~ add the impl. 
+   Should set the user of the worker to 
+   #+BEGIN_SRC java 
+   getClient().setUser(new User())
+   #+END_SRC
+
+
+* Architecture
+** The server has too many responsibilities and needs to be cleaned up
+   Think about abstracting different aspects IDEAS
+   - Game could be its own class <-----Like this idea--------
+     + this game class could deal with a list of users
+     + server still keeps count of players then hands off list of players to game
+   - Connections could be handled by a manager.
+     + the server starts a connection manager
+       - Manager is responsible for creating, removing connections.
+
+
+* Documentation
+** TODO [#A] show how to connect via unencrypted
+   "JavaClient"
+   "client"
+** TODO [#A] show how to connect via encrypted connection
+   Order matters
+   "RSA-..." then send "JavaClient"
+   "RSA-..." then send "client"
+
+
+* Notes
+** System notes
+   - Server :: Responsible for creating: creating workers, advancing
+              game, loading users, supplying methods for accessing
+              sim, filtered users.
+     - Events
+       1. Opens connection to DB
+       2. saves all the users to a array list for "cache" (could be a lookup)
+       3. Creates an instance of simulator
+       4. opens socket and listens
+       5. if a connection is received
+	      a. calls setConnection
+	      b. read writers are set as well as encryption
+       6. Task loop is set up and calls update
+	      a. watches player count until reaches max
+	      b. starts ai's
+	      c. calls ~begin()~
+          d. begin sends broadcast
+	      e. begin calls draft
+	      f. draft calls vote
+	      g. vote calls draw (back to e)
+     - Responsibilities
+       + Accepting connections
+       + Create handshake
+       + IO strategies
+       + reset game
+       + advance game
+       + game state
+       + broadcasting messages
+   - Worker :: Holds a given socket connection. 1 to 1 relationship of
+               workers to connected clients
+     - Events
+       1. Reads/Writes to stream using read/write strategy
+       2. Request is either generated based on return of strategy or
+          casted into one.
+       3. Request is sent to Handler
+       4. Handler sends down chain of responsibility until a handler
+          processes the request to which the handling of the request is
+          stopped.
+     - Responsibilities
+       + Holding Read write strategy for given client
+       + Holds User reference
+       + Shutting down stream
+       + reading from client stream (receiving data)
+       + writing to client stream (sending data)
+   - db :: Package that contains classes to persist data 
+     + Database - currently using SQLite
+     + Support for Creating, Reading. (Update, delete)
+   - NetworkData :: Class that wraps data for sending. Wraps
+                   payload, destination and/or type, time, message.
+     + Response only sent to client
+     + Request only sent to server
+   - Strategies :: abstraction that allows different writing-to, and
+                   reading-from, streams.
+     + SecureStream :: Most lowest level of a stream Reading and
+                       writing both inherit (encryptable)
+       + JavaObject :: serialization
+         - Sends/Receives either a Serialized SealedObject or NetworkObject
+       + Socket :: sends and receives JSON
+       + WebSocket :: sends and receives JSON
+       + PlainText :: toString()
+   - Sendable :: interface that aggregates, JSON, Serializable, Type
+   - Encryptable :: Interface that provides methods to encrypt and decrypt
+   - handlers :: package that contains all the classes that handle
+                requests. Responses are sent during the handling. Has a reference to server, client
+     + AdminTaskHandler :: Tasks only for admin
+     + CardHandler :: Requests that pertain to cards
+     + ChatHandler :: Requests about Chats (sending)
+     + DataHandler :: Requests for data
+     + LoginHandler :: Requests for logging in (need to add logout)
+                       rename to SessionHandler???
+     + PermissionFilter :: Stops requests from proceeding if they have
+                           not been logged in.
+     + UserHandler :: Requests about users
+       1. getting users
+       2. getting logged in users
+       3. getting ready users
+       4. getting user by username or region
+       5. creating user (add updating)
+     + VoteHandler :: Handler for voting
+       1. vote up
+       2. vote down (not really doing much)
+   - User :: Object that contains data about a connected client.
+     - Persisted fields
+       + username
+       + password
+       + salt
+       + region
+     - User transient
+       + actions remaining
+       + policies discarded
+       + drafts 
+       + drafts voteable
+       + isdone
+       + isplaying
+       + isLoggedin 
+       + worker
+     - User attributes
+       + username
+       + password
+       + salt
+     - Game attributes
+       + region
+       + hand
+       + draft
+
+** Adding Endpoint
+   1. Add enum to ~server/model/Endpoint.java~. The string inside is 
+      what the client or user would send or type (respectivly) to the sever
+   2. Open one of the handlers that would logically fit the category of 
+      the new endpoint. 
+      a. if it doesnt fit into any of the categories of the current handlers
+      b. create a new handler and ~extend AbstractHandler~
+      c. open ~Handler.java~ and add the new handler to the chain of 
+         responsibility. NOTE: there is a login filter that is responsible for 
+         filtering requests that require login. If this endpoint requires login, 
+         add after.
+   3. add a new check if the reqest's destination is the endpoint
+   4. Fill in the if statement.

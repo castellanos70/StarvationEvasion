@@ -5,37 +5,88 @@ import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 
-import java.awt.*;
-import java.util.List;
+import java.awt.geom.Area;
+import java.awt.geom.Path2D;
+import java.util.ArrayList;
 
 
-
-/**
- * Represent a homogeneous area. Defined by a perimeter and various planting
- * attributes. The class acts as a kind of container for the parsed XML data.
- *
- * @author winston riley
- */
 public class GeographicArea implements Sendable
 {
-  public final static MapConverter mapConverter = new MapConverter();
-  private List<MapPoint> perimeter;
   private final String name;
+  public enum BoundaryType {ISLAND, HOLE};
 
-  private Polygon mapSpacePoly;
+  /**
+   * boundaryList is an ArrayList of an ArrayList of MapPoints.<br>.
+   * Each ArrayList of MapPoints is the perimeter of <b><i>one continuous segment</i></b> of
+   * the GeographicArea. <br><br>
+   *
+   * For example, a GeographicArea consisting of six islands would be represented as a
+   * boundaryList of six array lists where each array list is the perimeter of one of
+   * one of the islands.
+   */
+  private ArrayList<ArrayList> islandList = new ArrayList<>();
+
+  private Area perimeter = new Area();
 
   public GeographicArea(String name)
   { this.name = name;
     //System.out.println("++++++++++++++++++++++++GeographicArea("+name+")");
   }
 
-  public boolean containsMapPoint(MapPoint mapPoint)
-  {
-    if (mapSpacePoly == null) mapSpacePoly = mapConverter.regionToPolygon(this);
 
-    Point point = mapConverter.mapPointToPoint(mapPoint);
-    return mapSpacePoly.contains(point);
+  /**
+   * This method converts an ordered set of MapPoints to a closed java.awt.geom.Path2D.
+   * The path is then added to adds that path to a java.awt.geom.Area. <br><br>
+   *
+   * java.awt.geom.Path2D expects points to be 2D cartesian coordinates; however
+   * this method adds untransformed latitude and longitude points. While this creates a distorted space
+   * that cannot correctly measure distances, the methods we need contains() and perimeter
+   * calculation, will work with the untransformed latitude and longitude coordinates.
+   * @param island
+   */
+  public void addToPerimeter(ArrayList<MapPoint> island, BoundaryType type)
+  {
+    islandList.add(island);
+
+    Path2D.Double shape = new Path2D.Double();
+
+    MapPoint firstPoint = island.get(0);
+    double firstX = firstPoint.longitude;
+    double firstY = firstPoint.latitude;
+    shape.moveTo(firstX, firstY);
+
+    for (int i=1; i<island.size(); i++)
+    {
+      MapPoint mapPoint = island.get(i);
+      shape.lineTo(mapPoint.longitude, mapPoint.latitude);
+    }
+    shape.lineTo(firstX, firstY);
+
+    Area area = new Area(shape);
+    //assert(area.isSingular());
+
+    if (!area.isSingular())
+    {
+      System.out.println("ERROR: GeographicArea.addToPerimeter() Shape not a simple polygon: "+ name);
+    }
+
+    if (type == BoundaryType.ISLAND) perimeter.add(area);
+    else perimeter.subtract(area);
   }
+
+  public ArrayList<ArrayList>getIslandList() {return islandList;}
+
+
+  public boolean contains(MapPoint mapPoint)
+  {
+    return contains(mapPoint.latitude, mapPoint.longitude);
+  }
+
+  public boolean contains(double latitude, double longitude)
+  {
+    return perimeter.contains(longitude,latitude);
+  }
+
 
   public String getName()
   {
@@ -48,15 +99,15 @@ public class GeographicArea implements Sendable
     return Type.AREA;
   }
 
-  public List<MapPoint> getPerimeter()
+  public Area getPerimeter()
   {
     return perimeter;
   }
 
-  public void setPerimeter(List<MapPoint> perimeter)
-  {
-    this.perimeter = perimeter;
-  }
+
+
+
+
 
   public String toString()
   {
@@ -68,11 +119,12 @@ public class GeographicArea implements Sendable
   @Override
   public JSONDocument toJSON ()
   {
+    /*
     JSONDocument json = JSONDocument.createObject();
     json.setString("name", name);
     JSONDocument jsonPerim = JSONDocument.createArray(perimeter.size());
     int i =0;
-    for (MapPoint mapPoint : perimeter)
+    for (MapPoint mapPoint : perimeterMapPoints)
     {
       jsonPerim.set(i, mapPoint.toJSON());
       i++;
@@ -80,6 +132,8 @@ public class GeographicArea implements Sendable
     json.set("perimeter", jsonPerim);
 
     return json;
+    */
+    return null;
   }
 
   @Override

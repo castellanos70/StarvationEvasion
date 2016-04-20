@@ -3,6 +3,7 @@ package starvationevasion.common;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -45,6 +46,15 @@ public class Util
 
     return y2;
   }
+
+  public static Color brighten(Color color, double percentage)
+  {
+    int r = (int)Math.min(255.0,color.getRed()*(1.0+percentage));
+    int g = (int)Math.min(255.0,color.getGreen()*(1.0+percentage));
+    int b = (int)Math.min(255.0,color.getBlue()*(1.0+percentage));
+    return new Color(r,g,b);
+  }
+
 
 
   public static SecretKey endServerHandshake (Socket s, KeyPair keyPair)

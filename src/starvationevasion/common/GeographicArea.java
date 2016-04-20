@@ -5,74 +5,86 @@ import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 
-import java.awt.*;
 import java.awt.geom.Area;
-import java.awt.geom.Point2D;
+import java.awt.geom.Path2D;
 import java.util.ArrayList;
 
 
-/**
- * Represent a homogeneous area. Defined by a perimeter and various planting
- * attributes. The class acts as a kind of container for the parsed XML data.
- *
- * @author winston riley
- */
 public class GeographicArea implements Sendable
 {
-  private static final double SCALING_FACTOR = 10;
-  private static final MapPoint DEFAULT_REF = new MapPoint(0, 0);
-  private ArrayList<MapPoint> perimeter;
   private final String name;
+  public enum BoundaryType {ISLAND, HOLE};
 
-  private Polygon mapSpacePoly;
+  /**
+   * boundaryList is an ArrayList of an ArrayList of MapPoints.<br>.
+   * Each ArrayList of MapPoints is the perimeter of <b><i>one continuous segment</i></b> of
+   * the GeographicArea. <br><br>
+   *
+   * For example, a GeographicArea consisting of six islands would be represented as a
+   * boundaryList of six array lists where each array list is the perimeter of one of
+   * one of the islands.
+   */
+  private ArrayList<ArrayList> islandList = new ArrayList<>();
+
+  private Area perimeter = new Area();
 
   public GeographicArea(String name)
   { this.name = name;
     //System.out.println("++++++++++++++++++++++++GeographicArea("+name+")");
   }
 
-  public Polygon getPolygon()
-  {
-    if (mapSpacePoly == null) mapSpacePoly = regionToPolygon(this);
-    return mapSpacePoly;
-  }
-
-  public boolean containsMapPoint(MapPoint mapPoint)
-  {
-    if (mapSpacePoly == null) mapSpacePoly = regionToPolygon(this);
-
-    Point point = mapPointToPoint(mapPoint);
-    return mapSpacePoly.contains(point);
-  }
 
   /**
-   * Convert a MapPoint (lat, lon) to a graphics-space point, assuming the parallel
-   * of no distortion is the equator.  This is a Plate-Caree projection.
+   * This method converts an ordered set of MapPoints to a closed java.awt.geom.Path2D.
+   * The path is then added to adds that path to a java.awt.geom.Area. <br><br>
    *
-   * @param mp MapPoint to convert
-   * @return a Point in graphics-space
+   * java.awt.geom.Path2D expects points to be 2D cartesian coordinates; however
+   * this method adds untransformed latitude and longitude points. While this creates a distorted space
+   * that cannot correctly measure distances, the methods we need contains() and perimeter
+   * calculation, will work with the untransformed latitude and longitude coordinates.
+   * @param island
    */
-  public Point mapPointToPoint(MapPoint mp)
+  public void addToPerimeter(ArrayList<MapPoint> island, BoundaryType type)
   {
-    int x = (int) (lonToX(mp.longitude));
-    int y = (int) (latToY(mp.latitude));
-    return new Point(x, y);
+    islandList.add(island);
+
+    Path2D.Double shape = new Path2D.Double();
+
+    MapPoint firstPoint = island.get(0);
+    double firstX = firstPoint.longitude;
+    double firstY = firstPoint.latitude;
+    shape.moveTo(firstX, firstY);
+
+    for (int i=1; i<island.size(); i++)
+    {
+      MapPoint mapPoint = island.get(i);
+      shape.lineTo(mapPoint.longitude, mapPoint.latitude);
+    }
+    shape.lineTo(firstX, firstY);
+
+    Area area = new Area(shape);
+    //assert(area.isSingular());
+
+    if (!area.isSingular())
+    {
+      System.out.println("ERROR: GeographicArea.addToPerimeter() Shape not a simple polygon: "+ name);
+    }
+
+    if (type == BoundaryType.ISLAND) perimeter.add(area);
+    else perimeter.subtract(area);
   }
 
+  public ArrayList<ArrayList>getIslandList() {return islandList;}
 
-  /**
-   * Convert a Point in graphics-space to a MapPoint assuming the parallel of no
-   * distortion is  the equator.  This converts from a Plate-Caree projection back
-   * to lat and lon
-   *
-   * @param p Point to convert
-   * @return A MapPoint, reversing the projection defined by this class
-   */
-  public MapPoint pointToMapPoint(Point2D p)
+
+  public boolean contains(MapPoint mapPoint)
   {
-    // Y is latitude, X is longitude.
-    //
-    return new MapPoint(-p.getY() / SCALING_FACTOR, p.getX() / SCALING_FACTOR);
+    return contains(mapPoint.latitude, mapPoint.longitude);
+  }
+
+  public boolean contains(double latitude, double longitude)
+  {
+    return perimeter.contains(longitude,latitude);
   }
 
 
@@ -87,118 +99,15 @@ public class GeographicArea implements Sendable
     return Type.AREA;
   }
 
-  public ArrayList<MapPoint> getPerimeter()
+  public Area getPerimeter()
   {
     return perimeter;
   }
 
-  public void setPerimeter(ArrayList<MapPoint> perimeter)
-  {
-    this.perimeter = perimeter;
-  }
-
-  /**
-   * Converts a GeographicArea to a Polygon in graphics-space
-   *
-   * @param r region object to be transformed.
-   * @return a Polygon representing the passed GeographicArea, appropriately scaled and converted
-   */
-  public Polygon regionToPolygon(GeographicArea r)
-  {
-
-    Polygon poly = new Polygon();
-    for (MapPoint mPoint : r.getPerimeter())
-    {
-      int x = (int) lonToX(mPoint.longitude);
-      int y = (int) latToY(mPoint.latitude);
-      poly.addPoint(x, y);
-    }
-
-    return poly;
-  }
 
 
-  /**
-   * Convert longitude to graphics X, assuming a reference point of (0,0) in
-   * spherical coords.
-   *
-   * @param lon decimal longitude to convert
-   * @return longitude, scaled and projected in X
-   */
-  private double lonToX(double lon)
-  {
-    return lonToX(lon, DEFAULT_REF);
-  }
-
-  /**
-   * Convert latitude to graphics Y, assuming (0,0) is the point of reference
-   * in the spherical coord system
-   *
-   * @param lat
-   * @return the latitude, scaled and projected in Y
-   */
-  private double latToY(double lat)
-  {
-    return latToY(lat, DEFAULT_REF);
-  }
 
 
-  /**
-   * Convert latitude to graphics Y given a point of reference
-   *
-   * @param lat
-   * @param refPoint
-   * @return the latitude, scaled and projected in Y
-   */
-  private double latToY(double lat, MapPoint refPoint)
-  {
-    return -lat * SCALING_FACTOR; /* silly, but keeps API consistent */
-  }
-
-
-  /**
-   * Convert longitude to graphics X, given a reference point in spherical
-   * coords
-   *
-   * @param lon      decimal longitude to convert
-   * @param refPoint mapPoint of reference
-   * @return longitude, scaled and projected in X
-   */
-  private double lonToX(double lon, MapPoint refPoint)
-  {
-    return lon * Math.cos(Math.toRadians(refPoint.latitude)) * SCALING_FACTOR;
-  }
-
-  public static boolean validate(GeographicArea region)
-  {
-    for (MapPoint mp : region.getPerimeter())
-    {
-      if (! isValidMapPoint(mp) )
-      {
-        System.out.println("****ERROR**** GeographicArea.validate("+region.getName()+") Invalid Map Point: "+mp);
-      }
-    }
-
-    // check to make sure all region polygons are simple.
-    Area area = new Area(region.regionToPolygon(region));
-    boolean isSingular = area.isSingular();
-
-    if (!isSingular)
-    {
-      System.out.println("****ERROR**** GeographicArea.validate("+region.getName()+") Invalid GeographicArea shape");
-    }
-
-    return true;
-  }
-
-
-  private static boolean isValidMapPoint(MapPoint mapPoint)
-  {
-
-    return Math.abs(mapPoint.latitude) <= 90.00 &&
-      Math.abs(mapPoint.longitude) <= 180.00;
-
-  }
 
   public String toString()
   {
@@ -210,11 +119,12 @@ public class GeographicArea implements Sendable
   @Override
   public JSONDocument toJSON ()
   {
+    /*
     JSONDocument json = JSONDocument.createObject();
     json.setString("name", name);
     JSONDocument jsonPerim = JSONDocument.createArray(perimeter.size());
     int i =0;
-    for (MapPoint mapPoint : perimeter)
+    for (MapPoint mapPoint : perimeterMapPoints)
     {
       jsonPerim.set(i, mapPoint.toJSON());
       i++;
@@ -222,6 +132,8 @@ public class GeographicArea implements Sendable
     json.set("perimeter", jsonPerim);
 
     return json;
+    */
+    return null;
   }
 
   @Override

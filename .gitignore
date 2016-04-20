@@ -4,6 +4,7 @@ out
 bin
 .settings
 *.iml
+*.xml
 .classpath
 .project
 *~

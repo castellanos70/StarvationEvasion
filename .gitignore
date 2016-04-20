@@ -1,6 +1,7 @@
 .git
 .idea
 out
+_windows
 bin
 .settings
 *.iml

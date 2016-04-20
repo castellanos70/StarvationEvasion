@@ -69,7 +69,8 @@
     properly.
 ** TASK Refactor and move the classes that are used by client and server to the "common" package
 ** TODO make request a network object   
-** TODO [#B] during handshake						:BUG:
+** DONE [#B] during handshake                                           :BUG:
+   CLOSED: [2016-04-20 Wed 12:22]
    This can be reproduced if you create a connection with netcat
    nc foodgame.cs.unm.edu 5555 
    the next step would be to initiate a handshake by sending

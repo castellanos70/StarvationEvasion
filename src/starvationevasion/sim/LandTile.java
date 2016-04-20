@@ -1,6 +1,8 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.*;
+import starvationevasion.common.Constant;
+import starvationevasion.common.EnumFood;
+import starvationevasion.common.Util;
 import starvationevasion.sim.io.CSVReader;
 
 import java.text.DateFormat;
@@ -42,10 +44,7 @@ public class LandTile
   /**
    * Each record of PATH_COORDINATES must be in a one-to-one,
    * ordered matching with each record in each month of each annual file of PATH_CLIMATE_PREFIX.
-   * TODO: Currently Chris Wu has too many records in the PATH_CLIMATE_PREFIX files and the
-   * climate data does not match at all with the coordinates in PATH_COORDINATES.
    */
-
   private static final String PATH_COORDINATES = "/sim/climate/ArableCoordinates.csv";
   private static final String PATH_CLIMATE_PREFIX = "/sim/climate/Climate_Historical_";
 
@@ -295,8 +294,6 @@ public class LandTile
     Date dateStart = new Date();
     System.out.println("LandTile.load() Loading Climate Data: " +dateFormat.format(dateStart));
 
-
-
     //Read the latitude longitude coordinates of each record in the PATH_CLIMATE_PREFIX files.
     CSVReader fileReader = new CSVReader(PATH_COORDINATES, 1);
     String[] fieldList;
@@ -312,17 +309,43 @@ public class LandTile
       tileList.add(tile);
 
 
-      if ((territory == null) || (!territory.getName().equals(fieldList[2])))
+      //if ((territory == null) || (!territory.getName().equals(fieldList[2])))
+      //{
+      //  territory = model.getTerritory(fieldList[2]);
+      //}
+
+      if ((territory == null) || (!territory.contains(latitude, longitude)))
       {
-        territory = model.getTerritory(fieldList[2]);
+        territory = model.getTerritory(latitude, longitude);
+      }
+
+      if (territory != null) territory.addLandTile(tile);
+
+
         //assert(territory.containsMapPoint(new MapPoint(latitude,longitude)));
         //if (!territory.containsMapPoint(new MapPoint(latitude,longitude)))
         //{
         //  System.out.println("*********** ERROR " + territory.getName() + " does not contain " + new MapPoint(latitude,longitude));
         //}
+      //Territory territory2 = model.getTerritory(latitude, longitude);
+      //if (territory != territory2)
+      //{
+      //  String name = null;
+      //  if (territory2 != null) name=territory2.getName();
+      //  System.out.println("*********** ERROR " + territory.getName() + " != " + name
+      //    + ", ["+tile.getLatitude()+", " + tile.getLongitude());
+      //}
+      //else
+      //{
+      //  System.out.println("=========== GOOD " + territory.getName()
+      //    + ", ["+tile.getLatitude()+", " + tile.getLongitude());
+//
+      //}
 
-      }
-      territory.addLandTile(tile);
+
+
+
+
     }
     fileReader.close();
 
@@ -338,7 +361,7 @@ public class LandTile
 
     try
     {
-      ZipFile file = new ZipFile(model.getClass().getResource(path).getFile());
+      ZipFile file = new ZipFile(model.getClass().getResource(path).toURI().getPath());
       Enumeration<? extends ZipEntry> entries = file.entries();
 
       //Open sub-file for each month of year.

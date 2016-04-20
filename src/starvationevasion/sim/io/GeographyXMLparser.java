@@ -1,26 +1,17 @@
-package starvationevasion.sim.io.XMLparsers;
+package starvationevasion.sim.io;
 
-import org.xml.sax.XMLReader;
-import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.InputSource;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import starvationevasion.common.GeographicArea;
 import starvationevasion.common.MapPoint;
+import starvationevasion.sim.Model;
+import starvationevasion.sim.Territory;
+
+import javax.xml.parsers.SAXParserFactory;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by winston on 3/21/15.
@@ -31,19 +22,43 @@ import starvationevasion.common.MapPoint;
  */
 public class GeographyXMLparser extends DefaultHandler
 {
-  // this flag should be turned on when development team receives finalized
-  // country xml data.
-  private static boolean REGION_VALIDATION = false;
   private static String BORDERS_DIR = "/sim/geography";
   private static String BORDERS_INDEX = BORDERS_DIR + "/PolygonBoarders.txt";
 
-  private ArrayList<GeographicArea> geographicAreaList;
+  private Model model;
   private Locator locator;
   private String territoryName;
-
-  private GeographicArea tmpGeographicArea;
-  private List<MapPoint> tmpPerimeterSet;
+  private Territory territory;
+  private ArrayList<MapPoint> tmpPerimeterSet;
   private boolean name;
+
+  public GeographyXMLparser(Model model)
+  {
+    this.model = model;
+    try
+    {
+      XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
+      xmlReader.setContentHandler(this);
+
+      ArrayList<String> filesToRead = readIndex(BORDERS_INDEX);
+      //System.out.println("GeographyXMLparser.generateRegions() filesToRead="+filesToRead.size());
+      for (String fileName: filesToRead)
+      {
+        //System.out.println("     fileName="+fileName);
+        String resourcePath = BORDERS_DIR + '/' + fileName;
+        InputStream resourceStream = GeographyXMLparser.class.getResourceAsStream(resourcePath);
+
+        BufferedInputStream inputStream = new BufferedInputStream(resourceStream);
+        xmlReader.parse(new InputSource(inputStream));
+      }
+    }
+    catch (Exception e)
+    {
+      System.out.println(e.getMessage());
+      e.printStackTrace();
+      System.exit(1);
+    }
+  }
 
 
   @Override
@@ -55,13 +70,11 @@ public class GeographyXMLparser extends DefaultHandler
   @Override
   public void startDocument() throws SAXException
   {
-    tmpPerimeterSet = new LinkedList<>();
+    tmpPerimeterSet = new ArrayList<>();
     territoryName = null;
   }
 
   @Override
-  //public void startElement(String uri, String localName,
-  //                         String qName, Attributes attributes) throws SAXException
   public void startElement(String uri, String localName,
                            String qName, Attributes attributes) throws SAXException
   {
@@ -74,7 +87,7 @@ public class GeographyXMLparser extends DefaultHandler
         //regionType = qName;
         break;
       case "area":
-        tmpGeographicArea = new GeographicArea(territoryName);
+      case "hole":
         break;
 
       case "name":
@@ -119,7 +132,13 @@ public class GeographyXMLparser extends DefaultHandler
       }
 
       territoryName = new String(ch, start, length);
-      //System.out.println("!!!!!!!!!!!!!!!! GeographyXMLparser.characters() territoryName="+territoryName);
+      //System.out.println("GeographyXMLparser.startElement(case=name): territoryName="+territoryName);
+
+      territory = model.getTerritory(territoryName);
+      if (territory == null)
+      {
+        System.out.println("*******ERROR*****: GeographyXMLparser.characters(): Territory Not Found: "+territoryName);
+      }
     }
   }
 
@@ -130,11 +149,12 @@ public class GeographyXMLparser extends DefaultHandler
     {
       if (qName.equals("area"))
       {
-        // save and reset....
-        tmpGeographicArea.setPerimeter(new ArrayList<>(tmpPerimeterSet));
-
-        if (REGION_VALIDATION) GeographicArea.validate(tmpGeographicArea);
-        geographicAreaList.add(tmpGeographicArea);
+        territory.getGeographicArea().addToPerimeter(new ArrayList<>(tmpPerimeterSet), GeographicArea.BoundaryType.ISLAND);
+        tmpPerimeterSet.clear();
+      }
+      else if (qName.equals("hole"))
+      {
+        territory.getGeographicArea().addToPerimeter(new ArrayList<>(tmpPerimeterSet), GeographicArea.BoundaryType.HOLE);
         tmpPerimeterSet.clear();
       }
     }
@@ -146,56 +166,9 @@ public class GeographyXMLparser extends DefaultHandler
     }
   }
 
-  public ArrayList<GeographicArea> getGeography()
-  {
-    if (geographicAreaList == null)
-    {
-      try
-      {
-        // Generate the sorted list of territories.
-        //
-        generateRegions();
-      }
-      catch (Exception ex)
-      {
-        ex.printStackTrace();
-        Logger.getGlobal().log(Level.SEVERE, "Error parsing region list", ex);
-        System.exit(0);
-      }
-    }
-    return geographicAreaList;
-  }
 
-  /**
-  * private method to generate the set of geographical regions
-  **/
-  private void generateRegions()
-  {
-    try
-    {
-      geographicAreaList = new ArrayList<>();
-      XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-      xmlReader.setContentHandler(this);
 
-      ArrayList<String> filesToRead = readIndex(BORDERS_INDEX);
-      //System.out.println("GeographyXMLparser.generateRegions() filesToRead="+filesToRead.size());
-      for (String fileName: filesToRead)
-      {
-        //System.out.println("     fileName="+fileName);
-        String resourcePath = BORDERS_DIR + '/' + fileName;
-        InputStream resourceStream = GeographyXMLparser.class.getResourceAsStream(resourcePath);
 
-        BufferedInputStream inputStream = new BufferedInputStream(resourceStream);
-        xmlReader.parse(new InputSource(inputStream));
-      }
-    }
-    catch (Exception e)
-    {
-      System.out.println(e.getMessage());
-      e.printStackTrace();
-      System.exit(1);
-    }
-  }
 
   public static ArrayList<String> readIndex(String indexPath)
   {

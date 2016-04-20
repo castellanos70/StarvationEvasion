@@ -41,6 +41,11 @@ public class MapPoint implements Sendable
 
   public MapPoint(double latitude, double longitude)
   {
+    if (Math.abs(latitude) > 90.0 || Math.abs(longitude) > 180.00)
+    {
+      throw new IllegalArgumentException("MapPoint("+latitude+", " + longitude +
+        "): Argument out of bounds error.");
+    }
     this.latitude = latitude;
     this.longitude = longitude;
   }

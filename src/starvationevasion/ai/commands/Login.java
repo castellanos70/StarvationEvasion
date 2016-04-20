@@ -2,6 +2,7 @@ package starvationevasion.ai.commands;
 
 import starvationevasion.ai.AI;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.Util;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.Request;
@@ -23,34 +24,33 @@ public class Login extends AbstractCommand
   @Override
   public boolean run ()
   {
-    if (!requestSent && getClient().getUsers().size() == 0)
-    {
-      getClient().send(new RequestFactory().build(getClient().getStartNanoSec(),
-                                            Endpoint.USERS_LOGGED_IN));
-      requestSent = true;
-      return true;
-    }
-    if (chosenUsername.isEmpty())
-    {
-      for (String aiName : AI_NAMES)
-      {
-        if (!getClient().getUsers().stream().anyMatch(user -> user.getUsername().equals(aiName)))
-        {
-          chosenUsername = aiName;
-          break;
-        }
-      }
-
-      return true;
-    }
+//    if (!requestSent && getClient().getUsers().size() == 0)
+//    {
+//      getClient().send(new RequestFactory().build(getClient().getStartNanoSec(),
+//                                            Endpoint.USERS_LOGGED_IN));
+//      requestSent = true;
+//      return true;
+//    }
+//    if (chosenUsername.isEmpty())
+//    {
+//      for (String aiName : AI_NAMES)
+//      {
+//        if (!getClient().getUsers().stream().anyMatch(user -> user.getUsername().equals(aiName)))
+//        {
+//          chosenUsername = aiName;
+//          break;
+//        }
+//      }
+//
+//      return true;
+//    }
 
     if (getClient().getUser() == null)
     {
-
-      getClient().send(new RequestFactory().login(getClient().getStartNanoSec(),
-                                            chosenUsername,
-                                            "bot",
-                                            null));
+      getClient().send(new RequestFactory().login(12312,
+                                                  "Emma",
+                                                  "bot",
+                                                  null));
       return true;
     }
     return false;

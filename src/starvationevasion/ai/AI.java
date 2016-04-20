@@ -2,31 +2,22 @@ package starvationevasion.ai;
 
 
 import starvationevasion.ai.commands.*;
-import starvationevasion.common.Constant;
 import starvationevasion.common.PolicyCard;
-import starvationevasion.common.Util;
 import starvationevasion.common.WorldData;
 import starvationevasion.server.model.*;
+import starvationevasion.util.SocketConnection;
+import starvationevasion.util.listeners.SocketEventListener;
+import starvationevasion.util.events.AuthenticationEvent;
+import starvationevasion.util.events.Event;
+import starvationevasion.util.events.SocketConnectionEvent;
 
-import javax.crypto.*;
-import java.io.*;
-import java.net.Socket;
-import java.net.SocketException;
-import java.security.InvalidKeyException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
 
-public class AI
+public class AI implements SocketEventListener
 {
-  private Socket clientSocket;
-
-  private DataInputStream reader;
-  private DataOutputStream writer;
 
   private User u;
   private ArrayList<User> users = new ArrayList<>();
@@ -40,26 +31,22 @@ public class AI
   // time of server start
   private double startNanoSec = 0;
 
-  private StreamListener listener;
+//  private StreamListener listener;
   private volatile boolean isRunning = true;
+
+  private volatile boolean isConnected = false;
+  private final SocketConnection connection;
 
   private Stack<Command> commands = new Stack<>();
 
-  private SecretKey serverKey;
-  private Cipher aesCipher;
-  private KeyPair rsaKey;
+
 
   private AI (String host, int portNumber)
   {
-    setupSecurity();
-    while (!openConnection(host, portNumber))
-    {
-    }
-    listener = new StreamListener();
-    System.out.println("AI: Starting listener = : " + listener);
-    listener.start();
-    commands.add(new GameState(this));
-    commands.add(new Uptime(this));
+    connection = new SocketConnection("localhost", 5555, this);
+
+//    commands.add(new GameState(this));
+//    commands.add(new Uptime(this));
     commands.add(new Login(this));
 
 
@@ -67,49 +54,7 @@ public class AI
 
   }
 
-  private boolean openConnection (String host, int portNumber)
-  {
 
-    try
-    {
-      clientSocket = new Socket(host, portNumber);
-    }
-    catch(Exception e)
-    {
-      System.err.println("Client Error: Could not open connection to " + host
-                                 + " on port " + portNumber);
-      e.printStackTrace();
-      isRunning = false;
-      return false;
-    }
-
-    try
-    {
-      writer = new DataOutputStream(clientSocket.getOutputStream());
-    }
-    catch(Exception e)
-    {
-      e.printStackTrace();
-      return false;
-    }
-
-
-    try
-    {
-      reader = new DataInputStream(clientSocket.getInputStream());
-    }
-    catch(IOException e)
-    {
-      e.printStackTrace();
-      return false;
-    }
-    isRunning = true;
-
-    Util.startServerHandshake(clientSocket, rsaKey, "JavaClient");
-
-    return true;
-
-  }
 
   private void listenToUserRequests ()
   {
@@ -118,7 +63,7 @@ public class AI
       try
       {
         // if commands is empty check again
-        if (commands.size() == 0 || serverKey == null)
+        if (commands.size() == 0 || !isConnected)
         {
           continue;
         }
@@ -178,205 +123,37 @@ public class AI
     return users;
   }
 
-  /**
-   * StreamListener
-   *
-   * Handles reading stream from socket. The data is then outputted
-   * to the console for user.
-   */
-  private class StreamListener extends Thread
+  public void send(Request request)
   {
-
-    public void run ()
-    {
-      serverKey = Util.endServerHandshake(clientSocket, rsaKey);
-      while(isRunning)
-      {
-        read();
-      }
-    }
-
-    private void read ()
-    {
-      try
-      {
-        Response response = readObject();
-
-        if (response.getType().equals(Type.AUTH_SUCCESS))
-        {
-          u = (User) response.getPayload().getData();
-
-          send(new RequestFactory().chat(startNanoSec,
-                                   "ALL",
-                                   "Hi, I am " + u.getUsername() + ". I'll be playing using (crappy) AI.",
-                                   null));
-
-          System.out.println("Hi, I am " + u.getUsername() + ". I'll be playing using (crappy) AI.");
-        }
-        else if (response.getType().equals(Type.AUTH_ERROR))
-        {
-          System.out.println("Error logging in");
-          isRunning = false;
-        }
-        else if (response.getType().equals(Type.USER))
-        {
-          if (u != null && u.getUsername().equals(((User) response.getPayload().getData()).getUsername()))
-          {
-            u = (User) response.getPayload().getData();
-          }
-
-        }
-        else if (response.getType().equals(Type.TIME))
-        {
-          startNanoSec = (double) response.getPayload().get("data");
-        }
-        else if (response.getType().equals(Type.WORLD_DATA_LIST))
-        {
-          // System.out.println("Getting a list of WorldData's");
-          worldData = (ArrayList<WorldData>) response.getPayload().getData();
-        }
-        else if (response.getType().equals(Type.USERS_LOGGED_IN_LIST))
-        {
-          // System.out.println("Getting a list of ready users");
-          users = (ArrayList<User>) response.getPayload().getData();
-        }
-        else if (response.getType().equals(Type.WORLD_DATA))
-        {
-          // System.out.println("Getting a list of WorldData's");
-          worldData.add((WorldData) response.getPayload().getData());
-        }
-        else if (response.getType().equals(Type.GAME_STATE))
-        {
-          // System.out.println("Getting state of server");
-          state = (starvationevasion.server.model.State) response.getPayload().getData();
-          if (state == starvationevasion.server.model.State.VOTING)
-          {
-            AI.this.commands.add(new Vote(AI.this));
-          }
-          else if (state == starvationevasion.server.model.State.DRAFTING)
-          {
-            AI.this.commands.add(new Draft(AI.this));
-          }
-          else if (state == starvationevasion.server.model.State.DRAWING)
-          {
-            // AI.this.commands.add(new Draft(AI.this));
-            commands.clear();
-          }
-        }
-        else if (response.getType().equals(Type.DRAFTED) || response.getType().equals(Type.DRAFTED_INTO_VOTE))
-        {
-          String msg = response.getPayload().getMessage();
-          if (msg == null)
-          {
-            // PolicyCard card = (PolicyCard) response.getPayload().getData();
-            // getUser().getHand().remove(card.getCardType());
-          }
-          else
-          {
-            System.out.println(msg);
-          }
-        }
-        else if (response.getType().equals(Type.VOTE_BALLOT))
-        {
-          ballot = (List<PolicyCard>) response.getPayload().getData();
-        }
-
-      }
-      catch(EOFException e)
-      {
-        isRunning = false;
-        System.out.println("Lost server, press enter to shutdown.");
-
-      }
-      catch(SocketException e)
-      {
-        isRunning = false;
-        System.out.println("Lost server");
-        System.out.println("Shutting down...");
-
-      }
-      catch(NoSuchAlgorithmException e)
-      {
-        isRunning = false;
-        System.out.println("Will not be able to decrypt");
-        System.exit(1);
-      }
-      catch(IOException e)
-      {
-        isRunning = false;
-        System.out.println("Error reading");
-      }
-      catch(InvalidKeyException e)
-      {
-        System.out.println("Key is not valid");
-      }
-      catch(ClassNotFoundException e)
-      {
-        isRunning = false;
-        System.out.println("Class not found!");
-      }
-    }
+    System.out.println(request);
+    connection.send(request);
   }
 
-  private Response readObject () throws IOException, ClassNotFoundException, InvalidKeyException, NoSuchAlgorithmException
+  @Override
+  public void onReceive (Event e)
   {
-    int ch1 = reader.read();
-    int ch2 = reader.read();
-    int ch3 = reader.read();
-    int ch4 = reader.read();
 
-    if ((ch1 | ch2 | ch3 | ch4) < 0)
+    System.out.println("e = " + e);
+
+    if (e instanceof AuthenticationEvent.Success)
     {
-      throw new EOFException();
+      u = ((AuthenticationEvent.Success) e).getData();
+      System.out.println(u.toJSON().toJSON());
     }
-    int size = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+    if (e instanceof AuthenticationEvent.Fail)
+    {
+      System.out.println("wrong");
+    }
+    else if (e instanceof SocketConnectionEvent.Success)
+    {
+      isConnected = true;
+    }
+    else if (e instanceof SocketConnectionEvent.Fail)
+    {
+      isConnected = false;
+    }
 
-    byte[] encObject = new byte[size];
-
-    reader.readFully(encObject);
-    ByteArrayInputStream in = new ByteArrayInputStream(encObject);
-    ObjectInputStream is = new ObjectInputStream(in);
-    SealedObject sealedObject = (SealedObject) is.readObject();
-    Response response = (Response) sealedObject.getObject(serverKey);
-    is.close();
-    in.close();
-
-    return response;
   }
-
-  public void send (Request request)
-  {
-    try
-    {
-      aesCipher.init(Cipher.ENCRYPT_MODE, serverKey);
-      SealedObject sealedObject = new SealedObject(request, aesCipher);
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(baos);
-      oos.writeObject(sealedObject);
-      oos.close();
-
-
-      writer.flush();
-      byte[] bytes = baos.toByteArray();
-      writer.writeInt(bytes.length);
-      writer.write(bytes);
-      writer.flush();
-      baos.close();
-    }
-    catch(IOException e)
-    {
-      e.printStackTrace();
-    }
-    catch(InvalidKeyException e)
-    {
-      e.printStackTrace();
-    }
-    catch(IllegalBlockSizeException e)
-    {
-      e.printStackTrace();
-    }
-  }
-
 
   public static void main (String[] args)
   {
@@ -400,20 +177,6 @@ public class AI
     new AI(host, port);
 
   }
-  private void setupSecurity ()
-  {
-    try
-    {
-      final KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
 
-      keyGen.initialize(1024);
-      rsaKey = keyGen.generateKeyPair();
-      aesCipher = Cipher.getInstance(Constant.DATA_ALGORITHM);
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
-  }
 }
 

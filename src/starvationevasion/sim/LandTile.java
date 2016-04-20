@@ -361,7 +361,7 @@ public class LandTile
 
     try
     {
-      ZipFile file = new ZipFile(model.getClass().getResource(path).getFile());
+      ZipFile file = new ZipFile(model.getClass().getResource(path).toURI().getPath());
       Enumeration<? extends ZipEntry> entries = file.entries();
 
       //Open sub-file for each month of year.

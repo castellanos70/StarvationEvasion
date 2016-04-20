@@ -494,7 +494,7 @@ public class Territory
    */
   public boolean contains(MapPoint mapPoint)
   {
-    return contains(mapPoint);
+    return getGeographicArea().contains(mapPoint);
   }
 
 

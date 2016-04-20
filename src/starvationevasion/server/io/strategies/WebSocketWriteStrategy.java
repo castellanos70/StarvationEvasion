@@ -27,7 +27,7 @@ public class WebSocketWriteStrategy extends AbstractWriteStrategy
   public void write (Sendable s) throws IOException
   {
     // Here I am going to assume if a client is using a websocket they want JSON
-    byte[] rawData = s.toJSON().toJSON().getBytes();
+    byte[] rawData = s.toJSON().toJSON().getBytes("UTF-8");
 
     int frameCount = 0;
     byte[] frame = new byte[10];

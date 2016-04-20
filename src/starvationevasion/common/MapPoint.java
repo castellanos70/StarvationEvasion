@@ -49,7 +49,7 @@ public class MapPoint implements Sendable
   @Override
   public String toString()
   {
-    return String.format("Location{%.2f, %.2f}", latitude, longitude);
+    return String.format("Location{%.3f, %.3f}", latitude, longitude);
   }
 
   @Override

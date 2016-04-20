@@ -5,7 +5,11 @@ import starvationevasion.sim.io.CSVReader;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 
 /**
@@ -35,21 +39,21 @@ public class LandTile
     static int SIZE = values().length;
   }
 
-  private static final String PATH_CLIMATE_DIR = "/sim/climate/Climate_";
+  /**
+   * Each record of PATH_COORDINATES must be in a one-to-one,
+   * ordered matching with each record in each month of each annual file of PATH_CLIMATE_PREFIX.
+   * TODO: Currently Chris Wu has too many records in the PATH_CLIMATE_PREFIX files and the
+   * climate data does not match at all with the coordinates in PATH_COORDINATES.
+   */
 
-  private enum FileHeaders
+  private static final String PATH_COORDINATES = "/sim/climate/ArableCoordinates.csv";
+  private static final String PATH_CLIMATE_PREFIX = "/sim/climate/Climate_Historical_";
+
+  private static int PATH_COORDINATES_FIELD_COUNT = 3; //Latitude,Longitude,Territory
+
+
+  private enum DataHeaders
   {
-    Latitude,          //Latitude ranges from -90 to 90. North latitude is positive.
-    Longitude;        //Longitude ranges from -180 to 180. East longitude is positive.
-    static int SIZE = values().length;
-  }
-
-
-  /*
-    private enum FileHeaders
-  {
-    Latitude,          //Latitude ranges from -90 to 90. North latitude is positive.
-    Longitude,        //Longitude ranges from -180 to 180. East longitude is positive.
     TempMonthLow,     //Temperature Monthly Low (deg C).
     TempMonthHigh,    //Temperature Monthly High (deg C).
     TempMeanDailyLow, //Temperature Mean Daily Low  (deg C).
@@ -57,8 +61,6 @@ public class LandTile
     Rain;             //Precipitation Mean Daily (kg/m2, which is the same as millimeters height).
     static int SIZE = values().length;
   }
-
-   */
 
   public enum Field
   {
@@ -96,6 +98,9 @@ public class LandTile
 
   public float getField(Field field, int year, Constant.Month month)
   {
+    //System.out.println("getField("+field+" , " + year + ", " + month + ") rain=" +
+    //data[0][month.ordinal()][field.ordinal()]);
+
     int lowIdx = 0;
     int lowYear = Constant.FIRST_DATA_YEAR;
     for (RawDataYears yearEnum : RawDataYears.values())
@@ -289,67 +294,123 @@ public class LandTile
   {
     Date dateStart = new Date();
     System.out.println("LandTile.load() Loading Climate Data: " +dateFormat.format(dateStart));
-    int preGameYears = Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR;
 
-    int year = 2000;
-    int month = 7;
-    int yearIdx = year - Constant.FIRST_DATA_YEAR;
-    String monthStr = String.format("%02d", month+1);
-    String path = PATH_CLIMATE_DIR + year + '_' +monthStr + ".csv";
 
-    //CSVReader fileReader = new CSVReader(path, 0);
-    CSVReader fileReader = new CSVReader("/sim/climate/Viable_Coordinates.csv",0);
 
-    //Check header
-    String[] fieldList = fileReader.readRecord(FileHeaders.SIZE);
-
-    for (FileHeaders header : FileHeaders.values())
-    {
-      int i = header.ordinal();
-      if (!header.name().equals(fieldList[i]))
-      {
-        System.out.println("**ERROR** Reading " + path +
-          ": Expected header[" + i + "]=" + header + ", Found: " + fieldList[i]);
-        System.exit(1);
-      }
-    }
-    fileReader.trashRecord();
-
-    // read until end of file is found
+    //Read the latitude longitude coordinates of each record in the PATH_CLIMATE_PREFIX files.
+    CSVReader fileReader = new CSVReader(PATH_COORDINATES, 1);
+    String[] fieldList;
     Territory territory = null;
-    while ((fieldList = fileReader.readRecord(FileHeaders.SIZE)) != null)
-    {
-      //System.out.println("ProductionCSVLoader(): record="+fieldList[0]+", "+fieldList[2]+", len="+fieldList.length);
 
+    ArrayList<LandTile> tileList = new ArrayList<>();
+
+    while ((fieldList = fileReader.readRecord(PATH_COORDINATES_FIELD_COUNT)) != null)
+    {
       float latitude = Float.parseFloat(fieldList[0]);
       float longitude = Float.parseFloat(fieldList[1]);
       LandTile tile = new LandTile(latitude, longitude);
-      MapPoint mapPoint = new MapPoint(latitude, longitude);
-      if ((territory == null) || (!territory.containsMapPoint(mapPoint)))
-      {
-        territory = model.getTerritory(mapPoint);
-      }
-      if (territory == null)
-      {
-        System.out.println("LandTile: ERROR: ["+latitude+", "+longitude+"] not a territory");
-        continue;
-      }
+      tileList.add(tile);
 
+
+      if ((territory == null) || (!territory.getName().equals(fieldList[2])))
+      {
+        territory = model.getTerritory(fieldList[2]);
+        //assert(territory.containsMapPoint(new MapPoint(latitude,longitude)));
+        //if (!territory.containsMapPoint(new MapPoint(latitude,longitude)))
+        //{
+        //  System.out.println("*********** ERROR " + territory.getName() + " does not contain " + new MapPoint(latitude,longitude));
+        //}
+
+      }
       territory.addLandTile(tile);
-
-
-      for (int i=2; i<FileHeaders.SIZE; i++)
-      {
-        int ii = i-2;
-        float value= Float.parseFloat(fieldList[i]);
-
-        tile.data[yearIdx][month][ii] = value;
-      }
     }
     fileReader.close();
+
+
+    //Climate data is stored in .zip files by year where each year contains subfiles for each
+    // month. The locations of each record in the PATH_CLIMATE_PREFIX files is given by
+    // its record number matched with record numbers of PATH_COORDINATES.
+    int preGameYears = Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR;
+
+    int year = 2000;
+    //int yearIdx = year - Constant.FIRST_DATA_YEAR;
+    String path = PATH_CLIMATE_PREFIX + year + ".zip";
+
+    try
+    {
+      ZipFile file = new ZipFile(model.getClass().getResource(path).getFile());
+      Enumeration<? extends ZipEntry> entries = file.entries();
+
+      //Open sub-file for each month of year.
+      int month = 0;
+      while (entries.hasMoreElements())
+      { ZipEntry entry = entries.nextElement();
+        System.out.printf("File: %s\n", entry.getName());
+        //extractEntry(entry, file.getInputStream(entry));
+
+        fileReader = new CSVReader(file.getInputStream(entry), 2);
+
+        int recordIdx = 0;
+        //Read each record of file.
+        while ((fieldList = fileReader.readRecord(DataHeaders.SIZE)) != null)
+        {
+          LandTile tile = tileList.get(recordIdx);
+
+          //System.out.println("rain="+fieldList[DataHeaders.Rain.ordinal()]+" at " + tile.latitude + ", " + tile.latitude);
+          //Read each field of record.
+          for (int i=0; i<DataHeaders.SIZE; i++)
+          {
+            float value= Float.parseFloat(fieldList[i]);
+
+            //TODO: Now we only have data from 2000, so for now, just copy the values for
+            //every year we should be reading.
+            for (int yearIdx=0; yearIdx<RawDataYears.SIZE; yearIdx++)
+            { tile.data[yearIdx][month][i] = value;
+
+              //if (yearIdx == 0 && month == System.out.println("rain="+fieldList[DataHeaders.Rain.ordinal()]+" at " + tile.latitude + ", " + tile.latitude);
+
+            }
+          }
+          recordIdx++;
+        }
+        fileReader.close();
+        month++;
+      }
+      file.close();
+
+    }
+    catch (Exception e)
+    {
+      System.out.println(e.getMessage());
+      e.printStackTrace();
+      System.exit(0);
+    }
+
+
+
+
+
     Date dateDone = new Date();
     double deltaSec = (dateDone.getTime() - dateStart.getTime())/1000.0;
     System.out.println("LandTile.load() Done: elapsed sec=" +deltaSec);
 
   }
-}
+
+
+  /**
+   * Utility method to read data from InputStream
+   */
+  /*
+  private static void extractEntry(final ZipEntry entry, InputStream is) throws IOException
+  { String exractedFile = OUTPUT_DIR + entry.getName();
+    FileOutputStream fos = null; try { fos = new FileOutputStream(exractedFile);
+    final byte[] buf = new byte[BUFFER_SIZE];
+    int read = 0; int length;
+    while ((length = is.read(buf, 0, buf.length)) >= 0)
+    { fos.write(buf, 0, length);
+    }
+  }
+  catch (IOException ioex) { fos.close(); }
+  }
+*/
+ }

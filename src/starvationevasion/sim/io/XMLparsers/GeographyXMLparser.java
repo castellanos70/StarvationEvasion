@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import starvationevasion.sim.io.GeographyValidator;
 import starvationevasion.common.GeographicArea;
 import starvationevasion.common.MapPoint;
 
@@ -44,7 +43,6 @@ public class GeographyXMLparser extends DefaultHandler
 
   private GeographicArea tmpGeographicArea;
   private List<MapPoint> tmpPerimeterSet;
-  private GeographyValidator regionValidator = new GeographyValidator();
   private boolean name;
 
 
@@ -135,7 +133,7 @@ public class GeographyXMLparser extends DefaultHandler
         // save and reset....
         tmpGeographicArea.setPerimeter(new ArrayList<>(tmpPerimeterSet));
 
-        if (REGION_VALIDATION) regionValidator.validate(tmpGeographicArea);
+        if (REGION_VALIDATION) GeographicArea.validate(tmpGeographicArea);
         geographicAreaList.add(tmpGeographicArea);
         tmpPerimeterSet.clear();
       }

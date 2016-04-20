@@ -224,8 +224,12 @@ public class Server
                             .anyMatch(user -> user.getUsername().equals(u.getUsername()));
     if (!found)
     {
-      userTransaction.create(u);
-      userList.add(u);
+      User created = userTransaction.create(u);
+      if (created == null)
+      {
+        return false;
+      }
+      userList.add(created);
       return true;
     }
     return false;

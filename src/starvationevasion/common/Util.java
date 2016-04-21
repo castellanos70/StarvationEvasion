@@ -10,9 +10,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.KeyPair;
 import java.security.PrivateKey;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static starvationevasion.common.Constant.ANON_NAME_ARRAY;
@@ -103,6 +102,19 @@ public class Util
 
   public static final String[] names = new String[ANON_NAME_ARRAY.length];
 
+  /**
+   * This is used for creating http responses
+   * Internal use of server only.
+   * @return String of the current datetime for valid HTTP header response
+   */
+  public static final String getServerTime ()
+  {
+    Calendar calendar = Calendar.getInstance();
+    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+    dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+    return dateFormat.format(calendar.getTime());
+  }
 
   public static String generateName () {
     return ANON_NAME_ARRAY[Util.rand.nextInt(ANON_NAME_ARRAY.length)]

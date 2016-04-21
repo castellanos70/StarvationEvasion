@@ -13,6 +13,9 @@ import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import static starvationevasion.common.Constant.ANON_NAME_ARRAY;
 
 /**
  * public static methods that might be useful in as utilities.
@@ -95,6 +98,15 @@ public class Util
       System.out.println("There was an error starting handshake.");
     }
 
+  }
+
+
+  public static final String[] names = new String[ANON_NAME_ARRAY.length];
+
+
+  public static String generateName () {
+    return ANON_NAME_ARRAY[Util.rand.nextInt(ANON_NAME_ARRAY.length)]
+              + "-" + Long.valueOf(String.valueOf(System.currentTimeMillis()), 16);
   }
 
   public static String decrypt(byte[] text, PrivateKey key)

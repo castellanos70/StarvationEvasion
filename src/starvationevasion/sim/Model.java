@@ -185,8 +185,8 @@ public class Model
     assert (!China.contains(35, -106)); //Albuquerque
     assert (China.contains(40, 116)); //Beijing
     assert (China.contains(31.2, 121.5)); //Shanghai
-    //assert (UnitedKingdom.contains(51.5, -0.13)); //London
-    //assert (UnitedKingdom.contains(54.5970, -5.93)); //Belfast, Northern Ireland
+    assert (UnitedKingdom.contains(51.5, -0.13)); //London
+    assert (UnitedKingdom.contains(54.5970, -5.93)); //Belfast, Northern Ireland
     assert (!UnitedKingdom.contains(53.349925, -6.270475)); //Dublin, Ireland
     assert (Ireland.contains(53.349925, -6.270475)); //Dublin, Ireland
     assert (!UnitedKingdom.contains(53.347309, -5.681383)); //Irish Sea

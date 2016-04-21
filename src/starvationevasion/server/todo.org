@@ -45,9 +45,9 @@
    Base64.encodeBytes(sha.digest((requestMap.get("Sec-WebSocket-Key") + wstring).getBytes()));
    #+END_SRC
 ** TODO Web-client looses connection when world data is being sent	:BUG:
-   This only happens when the game first begins! very frustrating
-   getting CLOSE_ABNORMAL 1006 error on client side.js
-   https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
+   This is due to there being too much data being sent to client
+   For now ~WorldData.java~'s toJSON is only sending US regions 
+   until we either gzip it.
 ** TODO Disconnect is not complete					:BUG:
    the socket is not completely closing.
    to see run ./Game monitor run web-client and refresh page. you can
@@ -95,19 +95,21 @@
 *** TASK test out the ~./Game env~ command
 ** TODO [#C] User to update 
 ** TODO Add last login timestamp to user
-** TODO send a response to client if the command that was issued requires admin or login
-** TODO make sure tostring is implemented in all Sendable classes 
+** DONE send a response to client if the command that was issued requires admin or login
+   CLOSED: [2016-04-21 Thu 10:42]
+** DONE make sure tostring is implemented in all Sendable classes 
+   CLOSED: [2016-04-21 Thu 10:36]
    make sure the plain text works to send
 ** TODO create a new plain text client
    Add a check for "text" in server setStream
    if "text" is found set the writer to plain text
    1
 
-** TODO [0%] Make every anon user unique 
-*** TODO replace anon with unique string 
+** DONE [100%] Make every anon user unique 
+*** DONE replace anon with unique string 
     generate a random string ~java.util.UUID.randomUUID().toString()~
     instead of "ANON"
-*** TODO make that user reachable
+*** DONE make that user reachable
     also need to for every NEW worker added, the user needs to be 
     saved in the servers ~userList~ and NOT added to DB.
 

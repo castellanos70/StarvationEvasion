@@ -20,20 +20,21 @@ public class User implements Encryptable, Sendable
   public volatile transient int policyCardsDiscarded = 0;
   public volatile transient int drafts = 0;
   public volatile transient int draftVoteCard = 0;
-  public volatile boolean isDone = false;
+  public transient boolean isDone = false; // cannot be volatile since
 
-  public transient Worker worker;
+  private transient Worker worker;
   private transient String salt;
+  private transient volatile boolean isLoggedIn = false;
+  private transient boolean isPlaying = false;
 
-  private String username = "Anon";
-  private String password = "";
+  private String username;
+  private String password;
   private EnumRegion region;
-  private boolean isLoggedIn = false;
-  private boolean isPlaying = false;
-  private volatile ArrayList<EnumPolicy> hand = new ArrayList<>();
+  private volatile ArrayList<EnumPolicy> hand;
 
   public User()
   {
+    this("");
   }
 
   public User (String username, String password, EnumRegion region, ArrayList<EnumPolicy> hand)
@@ -42,6 +43,11 @@ public class User implements Encryptable, Sendable
     this.hand = hand;
     this.region = region;
     this.password = Encryptable.bytesToHex(encrypt(password.getBytes()));
+  }
+
+  public User (String username)
+  {
+    this(username, "", null, new ArrayList<>());
   }
 
   /**
@@ -110,6 +116,7 @@ public class User implements Encryptable, Sendable
    *
    * @return true if logged in
    */
+  @Transient
   public boolean isLoggedIn ()
   {
     return isLoggedIn;
@@ -120,6 +127,7 @@ public class User implements Encryptable, Sendable
    *
    * @param loggedIn user's logged in status. false if not logged in
    */
+  @Transient
   public void setLoggedIn (boolean loggedIn)
   {
     isLoggedIn = loggedIn;
@@ -130,6 +138,7 @@ public class User implements Encryptable, Sendable
    *
    * @return true if playing
    */
+  @Transient
   public boolean isPlaying ()
   {
     return isPlaying;
@@ -140,6 +149,7 @@ public class User implements Encryptable, Sendable
    *
    * @param playing true if playing
    */
+  @Transient
   public void setPlaying (boolean playing)
   {
     isPlaying = playing;
@@ -246,7 +256,7 @@ public class User implements Encryptable, Sendable
   @Override
   public Encryptable setEncrypted (boolean encrypted, SecretKey key)
   {
-    return null;
+    throw new NotImplementedException();
   }
 
   @Override
@@ -285,10 +295,10 @@ public class User implements Encryptable, Sendable
   @Transient
   public void reset ()
   {
-    actionsRemaining=2;
-    policyCardsDiscarded=0;
-    drafts=0;
-    draftVoteCard=0;
+    actionsRemaining = 2;
+    policyCardsDiscarded = 0;
+    drafts = 0;
+    draftVoteCard = 0;
     isDone = false;
   }
 }

@@ -72,6 +72,13 @@ public class AdminTaskHandler extends AbstractHandler
       }
 
     }
+    else
+    {
+      getClient().send(new ResponseFactory().build(server.uptime(),
+                                                   null,
+                                                   Type.ERROR,
+                                                   "You do not have permission to do this."));
+    }
 
     return false;
   }

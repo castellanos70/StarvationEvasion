@@ -85,33 +85,44 @@ public class UserHandler extends AbstractHandler
                                              Type.USERS_READY_LIST));
       return true;
     }
-    else if (request.getDestination().equals(Endpoint.READY) && getClient().loggedIn())
+    else if (request.getDestination().equals(Endpoint.READY) && getClient().getUser().isLoggedIn())
     {
-      User _u = getClient().getUser();
-
-      if (_u != null)
+      if (server.getGameState() == State.LOGIN)
       {
-        _u.setPlaying(true);
+        User _u = getClient().getUser();
 
-        // addPlayer() will set the region if not already set.
-        boolean isPlaying = server.addPlayer(_u);
-        if (isPlaying)
+        if (_u != null)
         {
-          getClient().send(new ResponseFactory().build(server.uptime(),
-                                                 null,
-                                                 Type.BROADCAST, "Success"
-          ));
-        }
-        else
-        {
-          getClient().send(new ResponseFactory().build(server.uptime(),
-                                                 null,
-                                                 Type.BROADCAST, "Sorry, " + _u.getUsername() + " there was an error." + " " +_u.getRegion().name()
-          ));
-        }
+          _u.setPlaying(true);
 
+          // addPlayer() will set the region if not already set.
+          boolean isPlaying = server.addPlayer(_u);
+          if (isPlaying)
+          {
+            getClient().send(new ResponseFactory().build(server.uptime(),
+                                                         null,
+                                                         Type.BROADCAST, "Success"
+            ));
+          }
+          else
+          {
+            getClient().send(new ResponseFactory().build(server.uptime(),
+                                                         null,
+                                                         Type.BROADCAST,
+                                                         "Sorry, " + _u.getUsername() +
+                                                                 " there was an error." +
+                                                                 " " + _u.getRegion().name()
+            ));
+          }
+
+        }
       }
-
+      else
+      {
+        getClient().send(new ResponseFactory().build(server.uptime(),
+                                                     null,
+                                                     Type.BROADCAST, "Game has already started"));
+      }
       return true;
     }
     else if (request.getDestination().equals(Endpoint.USER_READ))

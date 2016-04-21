@@ -15,15 +15,9 @@ import starvationevasion.server.model.db.backends.Backend;
 import starvationevasion.server.model.db.backends.Sqlite;
 import starvationevasion.sim.Simulator;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
+import javax.crypto.*;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
@@ -39,16 +33,18 @@ public class Server
 {
   private ServerSocket serverSocket;
   // List of all the workers
-  private LinkedList<Worker> allConnections = new LinkedList<>();
+  private final LinkedList<Worker> allConnections = new LinkedList<>();
 
   private LinkedList<Process> processes = new LinkedList<>();
+
+  private ArrayList<User> playerCache = new ArrayList<>();
 
   private long startNanoSec = 0;
   private long endNanoSec = 0;
   private final Simulator simulator;
 
   // list of ALL the users
-  private final List<User> userList = Collections.synchronizedList(new ArrayList<>());
+  private final List<User> userList = new ArrayList<>();//Collections.synchronizedList(new ArrayList<>());
 
   private State currentState = State.LOGIN;
   private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -140,6 +136,8 @@ public class Server
   {
 
     String host = "";
+    Worker worker = null;
+    Socket potentialClient = null;
     try
     {
       host = InetAddress.getLocalHost().getHostName();
@@ -150,26 +148,33 @@ public class Server
     }
     while(isWaiting)
     {
-      //System.out.println("Server(" + host + "): waiting for Connection on port: " + port);
       try
       {
-        Socket client = serverSocket.accept();
-        System.out.println(dateFormat.format(date) + " Server: new Connection request recieved.");
-        System.out.println(dateFormat.format(date) + " Server " + client.getRemoteSocketAddress());
-        Worker worker = new Worker(client, this);
+        potentialClient = serverSocket.accept();
+        System.out.println(dateFormat.format(date) + " Server: new Connection request received.");
+        worker = new Worker(potentialClient, this);
 
-        setStreamType(worker, client);
+        setStreamType(worker, potentialClient);
         worker.start();
-        System.out.println(dateFormat.format(date) + " Server: Connected to ");
+        System.out.println(dateFormat.format(date) + " Server: Connected to " + potentialClient.getRemoteSocketAddress());
         worker.setName("worker" + uptimeString());
 
         allConnections.add(worker);
+        userList.add(worker.getUser());
 
       }
       catch(IOException e)
       {
         // System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
         // e.printStackTrace();
+      }
+      catch(HandshakeException e)
+      {
+        if (worker != null)
+        {
+          worker.shutdown();
+          System.out.println(dateFormat.format(date) + " Server: Failed to complete handshake. Closing connection");
+        }
       }
       catch(Exception e)
       {
@@ -224,8 +229,12 @@ public class Server
                             .anyMatch(user -> user.getUsername().equals(u.getUsername()));
     if (!found)
     {
-      userTransaction.create(u);
-      userList.add(u);
+      User created = userTransaction.create(u);
+      if (created == null)
+      {
+        return false;
+      }
+      userList.add(created);
       return true;
     }
     return false;
@@ -253,15 +262,19 @@ public class Server
 
   public void broadcast (Response response)
   {
+    int i = 0;
     try
     {
-      allConnections.stream().filter(Worker::isRunning).forEach(worker -> {
-        worker.send(response);
-      });
+      for (; i < allConnections.size(); i++)
+      {
+        allConnections.get(i).send(response);
+      }
     }
     catch(Exception e)
     {
-      cleanConnectionList();
+      System.out.println("Error sending message " + e.getMessage());
+      System.out.println(allConnections.get(i).getName() +
+                                 " User: " + allConnections.get(i).getUser().getUsername());
     }
   }
 
@@ -303,14 +316,15 @@ public class Server
   {
     stopGame();
     broadcast(new ResponseFactory().build(uptime(), currentState, Type.BROADCAST, "Game restarted."));
-    userList.forEach(User::reset);
+    for (User user : userList)
+    {
+      user.reset();
+      user.setHand(new ArrayList<>());
+      user.setPlaying(false);
+    }
+    playerCache.clear();
     simulator.init();
 
-    for (User user : getPlayers())
-    {
-      user.getHand().clear();
-    }
-    // enactedPolicyCards.clear();
     for (int i = 0; i < _drafted.length; i++)
     {
       _drafted[i] = new PolicyCard[2];
@@ -329,15 +343,12 @@ public class Server
 
   public List<User> getPlayers ()
   {
-    return userList.stream()
-                   .filter(user -> user.isPlaying())
-                   .collect(Collectors.toList());
+    return playerCache;
   }
 
   public int getPlayerCount ()
   {
-    return (int) getPlayers().stream()
-                             .count();
+    return playerCache.size();
   }
 
   public synchronized boolean addPlayer (User u)
@@ -354,14 +365,22 @@ public class Server
       availableRegions.remove(loc);
       u.setPlaying(true);
       // players.add(u);
-      return true;
     }
     else
     {
       u.setRegion(availableRegions.get(Util.randInt(0, availableRegions.size() - 1)));
       u.setPlaying(true);
-      return true;
     }
+
+    playerCache = new ArrayList<>();
+    for (User user : userList)
+    {
+      if (user.isPlaying())
+      {
+        playerCache.add(user);
+      }
+    }
+    return true;
   }
 
   public List<EnumRegion> getAvailableRegions ()
@@ -439,20 +458,6 @@ public class Server
                                           new Payload(_list),
                                           Type.VOTE_BALLOT));
 
-    startNanoSec = System.currentTimeMillis();
-    endNanoSec = startNanoSec + currentState.getDuration();
-    while(true)
-    {
-      if (endNanoSec < System.currentTimeMillis())
-      {
-        break;
-      }
-      boolean allDone = getPlayers().stream().allMatch(user -> user.isDone);
-      if (allDone)
-      {
-        break;
-      }
-    }
     waitAndAdvance(Server.this::draw);
     return null;
   }
@@ -464,6 +469,7 @@ public class Server
   private Void draw ()
   {
     ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>();
+    ArrayList<PolicyCard> _list = new ArrayList<>();
 
 
     for (PolicyCard[] policyCards : _drafted)
@@ -475,17 +481,15 @@ public class Server
         {
           enactedPolicyCards.add(p);
         }
+        _list.add(p);
         simulator.discard(p.getOwner(), p.getCardType());
       }
     }
+    VoteData voteData = new VoteData(_list, enactedPolicyCards, _drafted);
+    broadcast(new ResponseFactory().build(uptime(), voteData, Type.VOTE_RESULTS));
 
     currentState = State.DRAWING;
     broadcastStateChange();
-
-    for (int i = 0; i < EnumRegion.US_REGIONS.length; i++)
-    {
-      _drafted[i] = new PolicyCard[2];
-    }
 
 
     for (User user : getPlayers())
@@ -505,16 +509,24 @@ public class Server
       System.out.println("There is " + enactedPolicyCards.size() + " cards being enacted.");
       broadcast(new ResponseFactory().build(uptime(), new Payload(worldData), Type.WORLD_DATA_LIST));
     }
+    // clear the votes
+    for (int i = 0; i < EnumRegion.US_REGIONS.length; i++)
+    {
+      // the 2d array is organized by regions that drafted card
+      if (_drafted[i] == null) continue;
+      for (int j = 0; j < 2; j++)
+      {
+        if (_drafted[i][j] == null) continue;
+        _drafted[i][j].clearVotes();
+      }
+      _drafted[i] = new PolicyCard[2];
+    }
 
     if (simulator.getCurrentYear() >= Constant.LAST_YEAR)
     {
       currentState = State.END;
       broadcastStateChange();
       isPlaying = false;
-      for (int i = 0; i < processes.size(); i++)
-      {
-        killAI();
-      }
       return null;
     }
 
@@ -612,7 +624,7 @@ public class Server
    *
    * @return boolean true if web-socket
    */
-  private void setStreamType (Worker worker, Socket s) throws NoSuchAlgorithmException, NoSuchPaddingException, IOException
+  private void setStreamType (Worker worker, Socket s) throws NoSuchAlgorithmException, NoSuchPaddingException, IOException, InterruptedException
   {
     // Handling websocket
     // StringBuilder reading = new StringBuilder();
@@ -623,15 +635,22 @@ public class Server
     ReadStrategy<String> reader = worker.getReader();
     SecretKey myDesKey = null;
     boolean encrypted = false;
-
+    boolean success = false;
+    int secs = 0;
+    s.setSoTimeout(3000);
     ReadStrategy discoveredReader = worker.getReader();
     WriteStrategy discoveredWriter = worker.getWriter();
 
-    while(true)
+    while(secs < 3)
     {
       try
       {
         line = reader.read();
+      }
+      catch(SocketTimeoutException e)
+      {
+        secs++;
+        continue;
       }
       catch(Exception e)
       {
@@ -648,29 +667,40 @@ public class Server
         {
           discoveredReader = new JavaObjectReadStrategy(s, null);
           discoveredWriter = new JavaObjectWriteStrategy(s, null);
+          success = true;
           break;
         }
         else if (line.contains("client"))
         {
+          success = true;
           break;
         }
         else if(line.equals("\r\n"))
         {
           // use the plain text writer to send following data
-          worker.setWriter(new PlainTextWriteStrategy(s, null));
+          // worker.setWriter(new PlainTextWriteStrategy(s, null));
           // Send plan text to the web socket.
-          ((PlainTextWriteStrategy) worker.getWriter())
-                  .getWriter().println("HTTP/1.1 101 Switching Protocols\n" +
-                                               "Upgrade: websocket\n" +
-                                               "Connection: Upgrade\n" +
-                                               "Sec-WebSocket-Accept: " + socketKey + "\r\n");
+          worker.getWriter().getStream().writeUTF("HTTP/1.1 101 Web Socket Protocol Handshake\n" +
+                                                          "Upgrade: WebSocket\n" +
+                                                          "Connection: Upgrade\n" +
+                                                          "Sec-WebSocket-Accept: " + socketKey + "\r\n\r\n");
 
+          worker.getWriter().getStream().flush();
           // assume the client accepted socket key and set up stream readers
           discoveredReader = new WebSocketReadStrategy(s, null);
           discoveredWriter =  new WebSocketWriteStrategy(s, null);
+          success = true;
           break;
         }
 
+      }
+      if (line.contains("GET"))
+      {
+        discoveredWriter  = new HTTPWriteStrategy(s, null);
+        Payload _data = new Payload();
+        _data.putMessage("HTTP responses are coming soon!");
+        worker.send(new ResponseFactory().build(uptime(), _data, Type.ERROR));
+        break;
       }
 
       // reading.append(line);
@@ -693,9 +723,14 @@ public class Server
       }
     }
 
+    if (!success)
+    {
+      throw new HandshakeException();
+    }
+    // setting back to default blocking
+    s.setSoTimeout(0);
     if (encrypted)
     {
-      System.out.println("Encrypted!");
       worker.getWriter().getStream().write(socketKeyBytes);
       worker.getWriter().getStream().flush();
       worker.setReader(discoveredReader);
@@ -721,9 +756,10 @@ public class Server
     int con = 0;
     for (int i = 0; i < allConnections.size(); i++)
     {
-      if (allConnections.get(i).getUsername().isEmpty() || !allConnections.get(i).isRunning() )
+      if (!allConnections.get(i).isRunning())
       {
-        allConnections.remove(i);
+        User u = allConnections.remove(i).getUser();
+        u.setLoggedIn(false);
         con++;
       }
     }
@@ -737,7 +773,6 @@ public class Server
   private void broadcastStateChange ()
   {
     getPlayers().stream().forEach(user -> user.isDone = false);
-    // System.out.println(currentState);
     broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE));
   }
 
@@ -781,6 +816,7 @@ public class Server
     {
       for (int i = 0; i < _drafted[card.getOwner().ordinal()].length; i++)
       {
+        if (_drafted[card.getOwner().ordinal()][i] == null) continue;
         if (_drafted[card.getOwner().ordinal()][i].getCardType().equals(card.getCardType()))
         {
           _drafted[card.getOwner().ordinal()][i].addEnactingRegion(user);
@@ -825,7 +861,7 @@ public class Server
     if (processes.size() > 0)
     {
       Process p = processes.poll();
-      p.destroy();
+      p.destroyForcibly();
       try
       {
         p.waitFor();
@@ -877,7 +913,7 @@ public class Server
         }
         catch(Exception e)
         {
-          System.out.println("could not advance trying again");
+          System.out.println("Could not advance game.");
         }
       }
     }

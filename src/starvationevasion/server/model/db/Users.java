@@ -1,13 +1,15 @@
 package starvationevasion.server.model.db;
 
+import org.sqlite.SQLiteDataSource;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.server.io.NotImplementedException;
 import starvationevasion.server.model.User;
 import starvationevasion.server.model.db.backends.Backend;
+import starvationevasion.server.model.db.backends.Sqlite;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 
 
@@ -123,7 +125,21 @@ public class Users extends Transaction<User>
   public <V> void update (V username, User data)
   {
     dirty = true;
-    throw new NotImplementedException();
+    LinkedHashSet<Object> values = new LinkedHashSet<>();
+    // We cannot allow username change unless we add ID to user.
+    // values.add(data.getUsername());
+    values.add(data.getPassword());
+    values.add(data.getSalt());
+    values.add(data.getRegion());
+
+    LinkedHashSet<String> cols = new LinkedHashSet<>();
+    // cols.add("username");
+    cols.add("password");
+    cols.add("salt");
+    cols.add("region");
+
+    getDb().update("user", "where username='" + username + "'", cols, values);
+    getDb().close();
   }
 
 

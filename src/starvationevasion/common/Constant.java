@@ -1,12 +1,37 @@
 package starvationevasion.common;
 
 
+import java.awt.*;
 
 /**
  * This class contains all constant values used throughout the Starvation Evasion game.
  */
 public class Constant
 {
+  public static final String[] AI_NAMES =
+          {"Emma", "Olivia", "Noah", "Sophia", "Liam", "Mason", "Isabella", "Jacob", "William", "Ethan"};
+
+  public static final String[] ANON_NAME_ARRAY = {
+          "Ashley", " Wasinger",
+          "Shizue", " Dodd",
+          "Monroe", " Strauch",
+          "Arline", " Downard",
+          "Lenora", " Ponds",
+          "Wilber", " Moreles",
+          "Mariah", " Fretz",
+          "Shila", " Causby",
+          "Brett", " Friedrichs",
+          "Tamera", " Colman",
+          "Margareta", " Haygood",
+          "Joanie", " Dearmond",
+          "Sherrill", " Reuter",
+          "Ashlea", " Esch",
+          "Adena", " Booker",
+          "Travis", " Ruffo",
+          "Lita", " Meltzer",
+          "Jonie", " Landgraf",
+          "Jeffie", " Wasserman",
+          "Kellie", " Dieguez"};
 
   public static final String DATA_ALGORITHM = "AES";
 
@@ -98,4 +123,21 @@ public class Constant
   public static final long DRAWING_TIME = 5*1000;
 
   public static final long VOTING_TIME = 3*60*1000;
+
+
+
+  public static final Color COLOR_KHAKI = new Color(195, 176, 145);
+  public static final Color COLOR_BUFF = new Color(240, 220, 130);
+  public static final Color COLOR_AMBER = new Color(255, 191, 0);
+  public static final Color COLOR_MOSS = new Color(138, 154, 91);
+  public static final Color COLOR_FOREST = new Color(34, 139, 34);
+
+
+  public static final Color[] COLOR_MOISTURE_LIST =
+  { COLOR_KHAKI, new Color(221, 198, 135), COLOR_BUFF, new Color(242, 213, 97),
+    COLOR_AMBER, new Color(224,188,8), new Color(191,171,50), new Color(159,161,74),
+    COLOR_MOSS, new Color(119,151,81), new Color(91,147,65), new Color(62,143,50),
+    COLOR_FOREST, new Color(28,132,28), new Color(12,114,12), new Color(0,100,0),
+    new Color(19, 90, 39), new Color(86, 53, 173), new Color(105, 43, 212)
+  };
 }

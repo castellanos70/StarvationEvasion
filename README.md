@@ -21,10 +21,10 @@ Each player client is started on a separate computer and connects to the server 
 ## Compilation and Project Configuration
 
 <ul>
-<li>Project Settings: -> Libraries -> javafx-mx, sqlite-jdbc-3.8.11.2</li>
+<li>Libraries: javafx-mx, sqlite-jdbc-3.8.11.2</li>
 <li>Source Folders: src, libs</li>
 <li>Resource Folders: data, assets</li>
-<li>Run Folder bin</li>
+<li>Run Folder: bin</li>
 <li>Dependencies: JDK 1.8, javafx-mx, sqlite-jdbc-3.8.11.2</li>
 </ul>
 

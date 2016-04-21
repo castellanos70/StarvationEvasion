@@ -3,8 +3,7 @@ package starvationevasion.sim;
 import starvationevasion.common.*;
 import starvationevasion.sim.io.CSVReader;
 
-import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 
 public class Territory
 {
@@ -49,8 +48,11 @@ public class Territory
   private float humanDevelopmentIndex;
 
 
-
-  private int landTotal;  //in square kilometers
+  /*
+   * Unit: square kilometers.<br>
+   * The total land area of the Earth is 148,940,000 km2. Thus, and int is sufficient.
+   */
+  private int landTotal;
 
   /**
    * Agricultural land refers to the share of land area that is arable,
@@ -64,11 +66,10 @@ public class Territory
    * This category includes land under flowering shrubs, fruit trees, nut trees,
    * and vines, but excludes land under trees grown for wood or timber. Permanent
    * pasture is land used for five or more years for forage, including natural and
-   * cultivated crops.
+   * cultivated crops.<br>
+   * Unit: square kilometers.
    */
-
-  private int[] landFarm = new int[Model.YEARS_OF_DATA]; // in square kilometers
-  private int[][] landCrop = new int[Model.YEARS_OF_DATA][EnumFood.SIZE];  // in square kilometers
+  private int[] farmLandTotal = new int[Model.YEARS_OF_DATA]; // in square kilometers
 
   private int[] cultivationMethod = new int[EnumFarmMethod.SIZE]; //percentage [0,100]
   private double[] cropNeedPerCapita = new double[EnumFood.SIZE]; //metric tons per person per year.
@@ -108,18 +109,14 @@ public class Territory
   private enum EnumHeader
   { territory,	region,	population2000,
     population2010,	population2014,	population2025,	population2050,
-    undernourished, landArea,	farmLand1981,	farmLand2014,	organic,	gmo;
+    undernourished, landArea,	farmLand2000,	farmLand2009,	organic,	gmo;
 
     public static final int SIZE = values().length;
   };
 
 
-  public static final MapConverter converter = new MapConverter();
-
-  //private final Area totalArea = new Area();
-  private final ArrayList<GeographicArea> geographicAreaList = new ArrayList<>();
-  private Collection<LandTile> landTiles  = new ArrayList<>();
-  private MapPoint capitolLocation;
+  private GeographicArea geographicArea;
+  private ArrayList<LandTile> landTiles  = new ArrayList<>();
 
   /*
    * The region to which this country belongs.
@@ -135,6 +132,7 @@ public class Territory
   public Territory(String name)
   {
     this.name = name;
+    geographicArea = new GeographicArea(name);
   }
 
 
@@ -190,12 +188,20 @@ public class Territory
 
 
     //Assume the first year undernourished data is for 2000 (which is false as it is for 1990).
-    //Assume the percentage of undernourished in each country remains unchanged from 2000 through 2015 (also false).
+    //Assume the percentage of undernourished in each country remains unchanged from 2000 through 2019 (also false).
     double undernourishedPercent = (double)undernourished[0]/(double)population[0];
 
     for (i=1; i<=numYearsBeforeModel; i++)
     { undernourished[i] = (int)(population[i]*undernourishedPercent);
     }
+
+
+    for (int yearIdx=1; yearIdx<9; yearIdx++)
+    {
+      farmLandTotal[yearIdx] =
+        (int) Util.linearInterpolate(0, yearIdx, 9, farmLandTotal[0], farmLandTotal[9]);
+    }
+
   }
 
 
@@ -448,13 +454,13 @@ public class Territory
     landTotal = squareKm;
   }
 
-  public int getLandFarm(int year)
+  public int getFarmLand(int year)
   {
-    return landFarm[year-Constant.FIRST_DATA_YEAR];
+    return farmLandTotal[year-Constant.FIRST_DATA_YEAR];
   }
-  public void setLandFarm(int year, int squareKm)
+  public void setFarmLand(int year, int squareKm)
   {
-    landFarm[year-Constant.FIRST_DATA_YEAR] = squareKm;
+    farmLandTotal[year-Constant.FIRST_DATA_YEAR] = squareKm;
   }
 
 
@@ -464,7 +470,7 @@ public class Territory
   /**
    * @return country's collection of 100km2 tiles
    */
-  final public Collection<LandTile> getLandTiles()
+  public ArrayList<LandTile> getLandTiles()
   {
     return landTiles;
   }
@@ -472,54 +478,13 @@ public class Territory
   /**
    * @param tile LandTile to add to country
    */
-  final public void addLandTile(LandTile tile)
+  public void addLandTile(LandTile tile)
   {
     landTiles.add(tile);
   }
 
-  // generate the capital by finding the center of the largest landmass.
-  // this method can only be called after the Country's regions have been set.
-  //
-  private MapPoint calCapitolLocation()
-  {
-    if (geographicAreaList== null) throw new RuntimeException("(!) regions not set!");
-    if (geographicAreaList.isEmpty()) throw new RuntimeException("(!) no regions !");
 
-    int maxArea = 0;
-    Polygon largest = null;
 
-    for (GeographicArea area : geographicAreaList)
-    {
-      Polygon poly = converter.regionToPolygon(area);
-      int landArea = (int) (poly.getBounds().getWidth() * poly.getBounds().getHeight());
-      if (landArea >= maxArea)
-      {
-        largest = poly;
-        maxArea = landArea;
-      }
-    }
-
-    int x = (int) largest.getBounds().getCenterX();
-    int y = (int) largest.getBounds().getCenterY();
-
-    return converter.pointToMapPoint(new Point(x, y));
-  }
-
-  /**
-   * returns the point representing the shipping location of that country.<br>
-   *
-   * (!) note: this method can only be called after the Country's regions have
-   * been set.
-   *
-   * @return map point representing the lat and lon location of the Country's
-   * capitol.
-   */
-  public MapPoint getCapitolLocation()
-  {
-    if (capitolLocation == null)  capitolLocation = calCapitolLocation();
-
-    return capitolLocation;
-  }
 
   /**
    * Used to link land tiles to a country.
@@ -527,33 +492,22 @@ public class Territory
    * @param mapPoint mapPoint that is being testing for inclusing
    * @return true is mapPoint is found inside country.
    */
-  public boolean containsMapPoint(MapPoint mapPoint)
+  public boolean contains(MapPoint mapPoint)
   {
-    if (geographicAreaList == null)
-    {
-      throw new RuntimeException("(!)REGIONS NOT SET YET");
-    }
-
-    for (GeographicArea area : geographicAreaList)
-    {
-      if (area.containsMapPoint(mapPoint)) return true;
-    }
-    return false;
+    return geographicArea.contains(mapPoint);
   }
 
 
-  public void addGeographicArea(GeographicArea area)
+  public boolean contains(double latitude, double longitude)
   {
-    geographicAreaList.add(area);
-    //totalArea.add(new Area(converter.regionToPolygon(area)));
+    return geographicArea.contains(latitude, longitude);
   }
 
-  /**
-   * @return regions
-   */
-  public ArrayList<GeographicArea> getGeographicBoundary()
+
+
+  public GeographicArea getGeographicArea()
   {
-    return geographicAreaList;
+    return geographicArea;
   }
 
   public String toString()
@@ -567,7 +521,10 @@ public class Territory
   }
 
 
-
+  public MapPoint getCenter()
+  {
+    return null;
+  }
 
 
 
@@ -643,7 +600,6 @@ public class Territory
             {
               System.out.println("**ERROR** Reading " + TERRITORY_DATA_PATH + " in Territory.territoryLoader");
               System.out.println("          Reading Record#" + territoryList.size() + " Territory="+territory.name);
-
               System.out.println("          Game Region not recognized: " + fieldList[i]);
               System.exit(0);
             }
@@ -660,13 +616,13 @@ public class Territory
             territory.undernourished[0] = value;  break;
           case landArea: territory.landTotal = value; break;
 
-          case farmLand1981:
+          case farmLand2000:
             //Convert input percentage value to square km.
             //Note: multiplying by value before division could cause integer overflow.
-            territory.landFarm[0] = (int)(territory.landTotal * (value/100.0));
+            territory.setFarmLand(2000, (int)(territory.landTotal * (value/100.0)));
             break;
-          case farmLand2014:
-            territory.setLandFarm(2015, (int)(territory.landTotal * (value/100.0)));
+          case farmLand2009:
+            territory.setFarmLand(2009, (int)(territory.landTotal * (value/100.0)));
             break;
 
           case organic: territory.setMethod(EnumFarmMethod.ORGANIC, (int) value); break;

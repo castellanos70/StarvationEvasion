@@ -1,20 +1,28 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.*;
-import starvationevasion.sim.io.*;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
 import starvationevasion.sim.events.Hurricane;
-import starvationevasion.sim.io.XMLparsers.GeographyXMLparser;
+import starvationevasion.sim.io.GeographyXMLparser;
+import starvationevasion.sim.io.ProductionCSVLoader;
+import starvationevasion.sim.io.SpecialEventCSVLoader;
+import starvationevasion.util.Picture;
 
-import java.util.*;
+import java.awt.*;
+import java.awt.geom.Area;
+import java.awt.geom.PathIterator;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * The Simulator class is the main API for the Server to interact with the simulator.
  * This Model class is home to the calculations supporting that API.
- *
+ * <p>
  * Each currentYear the model advances, the model applies:
  * <ol>
  * <li>Most Policy Card Effects: Any changes in land use, fertilizer use, and world
@@ -71,14 +79,13 @@ import java.util.logging.Logger;
  * adjusted. These are then used to calculate the country's HDI.</li>
  * <li>Player Region Income: Each player receives tax revenue calculated as a percentage
  * of the player's region's total net farm income with any relevant enacted policy applied.</li>
- </ol>
+ * </ol>
  */
 
 
 public class Model
 {
   public static double EVENT_CHANCE = 0.02;
-  public static final String BG_DATA_PATH = "/sim/geography/ne_50m_land.kml";
 
   EnumRegion debugRegion = EnumRegion.USA_CALIFORNIA;
   private final static Logger LOGGER = Logger.getGlobal(); // getLogger(Model.class.getName())
@@ -86,7 +93,7 @@ public class Model
   // Verbosity of debug information during startup
   //
   private final static Level debugLevel = Level.FINE;
-  public static final int YEARS_OF_DATA = 1+Constant.LAST_YEAR - Constant.FIRST_DATA_YEAR;
+  public static final int YEARS_OF_DATA = 1 + Constant.LAST_YEAR - Constant.FIRST_DATA_YEAR;
 
   private final static boolean DEBUG = true;
 
@@ -96,6 +103,14 @@ public class Model
   private int currentYear;
 
 
+  /**
+   * List of all territories. A copy of each pointer stored in this list is
+   * placed in territoryList of the region to which that territory belongs.<br><br>
+   *
+   * This list is build from a data file when the model loads and is never changed.<br><br>
+   *
+   * This list must be in lexicographic order.
+   */
   private ArrayList<Territory> territoryList;
 
   // The set of world regions includes all of the regions in the enum, plus an
@@ -113,20 +128,8 @@ public class Model
 
   public Model()
   {
-    currentYear = Constant.FIRST_GAME_YEAR;
-
-    ArrayList<GeographicArea> geography = new GeographyXMLparser().getGeography();
-    //System.out.println("geography.size()="+geography.size());
-    //for (int i=0; i<geography.size(); i++)
-    //{
-    //  System.out.println("     " + geography.get(i).getName());
-    //}
-
     territoryList = Territory.territoryLoader();
-
-    //System.out.println("territoryList.size()=" + territoryList.size());
-
-    addGeographyToTerritories(geography);
+    new GeographyXMLparser(this);
 
     assert (assertTerritoryGeography());
 
@@ -136,15 +139,20 @@ public class Model
 
     cropData = new CropData();
 
-    //LandTile.load(this);
-    //assert (assertLandTiles());
+    LandTile.load(this);
+    assert (assertLandTiles());
 
-    for (int i = 0; i< YEARS_OF_DATA; i++)
+    for (int i = 0; i < YEARS_OF_DATA; i++)
     {
       worldData[i] = new WorldData();
-      if (i<Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR)
-      populateWorldData(Constant.FIRST_DATA_YEAR+i);
+      if (i < Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR)
+      { populateWorldData(Constant.FIRST_DATA_YEAR + i); }
     }
+  }
+
+  public void init()
+  {
+    currentYear = Constant.FIRST_GAME_YEAR;
   }
 
   private boolean assertTerritoryGeography()
@@ -173,106 +181,147 @@ public class Model
     assert (NewMexico != null);
     assert (China != null);
     assert (UnitedKingdom != null);
-    assert (NewMexico.containsMapPoint(new MapPoint(35,-106))); //Albuquerque
-    assert (!China.containsMapPoint(new MapPoint(35,-106))); //Albuquerque
-    assert (China.containsMapPoint(new MapPoint(40,116))); //Beijing
-    assert (China.containsMapPoint(new MapPoint(31.2, 121.5))); //Shanghai
-    assert (UnitedKingdom.containsMapPoint(new MapPoint(51.5,-0.13))); //London
-    assert (UnitedKingdom.containsMapPoint(new MapPoint(54.5970, -5.93))); //Belfast, Northern Ireland
-    assert (!UnitedKingdom.containsMapPoint(new MapPoint(53.349925, -6.270475))); //Dublin, Ireland
-    assert (Ireland.containsMapPoint(new MapPoint(53.349925, -6.270475))); //Dublin, Ireland
-    assert (!UnitedKingdom.containsMapPoint(new MapPoint(53.347309, -5.681383))); //Irish Sea
-    assert (!Ireland.containsMapPoint(new MapPoint(53.347309, -5.681383))); //Irish Sea
-    assert (!UnitedKingdom.containsMapPoint(new MapPoint(50.39, -1.7))); //English Channel
+    assert (NewMexico.contains(35, -106)); //Albuquerque
+    assert (!China.contains(35, -106)); //Albuquerque
+    assert (China.contains(40, 116)); //Beijing
+    assert (China.contains(31.2, 121.5)); //Shanghai
+    assert (UnitedKingdom.contains(51.5, -0.13)); //London
+    assert (UnitedKingdom.contains(54.5970, -5.93)); //Belfast, Northern Ireland
+    assert (!UnitedKingdom.contains(53.349925, -6.270475)); //Dublin, Ireland
+    assert (Ireland.contains(53.349925, -6.270475)); //Dublin, Ireland
+    assert (!UnitedKingdom.contains(53.347309, -5.681383)); //Irish Sea
+    assert (!Ireland.contains(53.347309, -5.681383)); //Irish Sea
+    assert (!UnitedKingdom.contains(50.39, -1.7)); //English Channel
+
+
     return true;
   }
+
+
 
 
   private boolean assertLandTiles()
   {
+    /*
     for (Territory territory : territoryList)
     {
       float area = territory.getLandTotal();
-      System.out.println("LandTiles: " + territory.getName() + ": area="+
-       area + ", tile count=" + territory.getLandTiles().size() +
-        ", land per tile = " + area/territory.getLandTiles().size());
+      System.out.println("LandTiles: " + territory.getName() + ": area=" +
+        area + ", tile count=" + territory.getLandTiles().size() +
+        ", land per tile = " + area / territory.getLandTiles().size());
     }
+    */
+
+    for (Region region : regionList)
+    {
+      int totalTiles = 0;
+      ArrayList<Territory> myTerritories = region.getTerritoryList();
+      for (Territory territory : myTerritories)
+      {
+        totalTiles += territory.getLandTiles().size();
+      }
+
+      float area = region.getLandTotal();
+      System.out.println("LandTiles: " + region.getName() + ": area=" +
+        area + ", tile count=" + totalTiles + ", land per tile = " + area / totalTiles);
+    }
+
     return true;
   }
 
-  private void addGeographyToTerritories(ArrayList<GeographicArea> geography)
+  public int getCurrentYear()
   {
-     // Collections.sort(geography, new Comparator<GeographicArea>() {
-     //   @Override
-     //   public int compare(GeographicArea a1, GeographicArea a2) {
-     //     return a1.getName().compareTo(a2.getName());
-     //   }
-     // });
-
-      for (GeographicArea area : geography)
-      {
-        boolean foundTerritory = false;
-        for (Territory territory : territoryList)
-        {
-          if (territory.getName().equals(area.getName()))
-          {
-            territory.addGeographicArea(area);
-            foundTerritory = true;
-            break;
-          }
-        }
-        if (!foundTerritory)
-        {
-          System.out.println("***************** Area["+area.getName()+"] Does not belong to a territory");
-        }
-      }
+    return currentYear;
   }
-
-
-
-  public int getCurrentYear() {return currentYear;}
 
   public Region getRegion(EnumRegion r)
   {
     return regionList[r.ordinal()];
   }
 
-  /*
-   * @param latitude  Latitude ranges from -90 to 90. North latitude is positive.
-   * @param longitude Longitude ranges from -180 to 180. East longitude is positive.
-   * @return The territory containing the given latitude and longitude or null if the given location
-   * is not within a game territory.
+  public Territory getTerritory(MapPoint mapPoint)
+  {
+    return getTerritory(mapPoint.latitude, mapPoint.longitude);
+  }
 
   public Territory getTerritory(double latitude, double longitude)
   {
-    MapPoint mapPoint = new MapPoint(latitude, longitude);
+    //This is the code that should actually be used.
     for (Territory territory : territoryList)
     {
-      if (territory.containsMapPoint(mapPoint)) return territory;
+      if (territory.contains(latitude, longitude)) return territory;
     }
     return null;
-  }
-  */
-  public Territory getTerritory(MapPoint mapPoint)
-  {
+
+
+    //This code is used for debug only.
+    /*
+    Territory found = null;
     for (Territory territory : territoryList)
     {
-      if (territory.containsMapPoint(mapPoint)) return territory;
+      if (territory.contains(latitude, longitude))
+      {
+        if (found != null)
+        {
+          System.out.println("ERROR: Point ["+latitude+", "+longitude+
+            "] in two territories: " + found.getName() + " & " + territory.getName());
+        }
+        found = territory;
+      }
     }
-    return null;
+    return found;
+    */
   }
 
 
-  public ArrayList<GeographicArea> getGeographicBoundary(EnumRegion regionCode)
+  /**
+   * Uses binary search to fine the given name in the territory list.
+   * @param name of territory
+   * @return reference to the unique territory with the given name or null if there does not
+   * exist a territory with the given name in territoryList
+   */
+  public Territory getTerritory(String name)
   {
-    return regionList[regionCode.ordinal()].getGeographicBoundary();
+
+    //System.out.println("getTerritory("+name+")");
+    int start = 0;
+    int end = territoryList.size()-1;
+    int i = end/2;
+
+    while (end >= start)
+    {
+      Territory territory = territoryList.get(i);
+
+      int result = name.compareTo(territory.getName());
+      //System.out.println("    "+territory.getName() + ", result="+result + ": "+start+", "+i+", "+end);
+
+      if (result < 0) end = i-1;
+      else if (result > 0) start = i+1;
+      else return territory;
+
+      i = (end+start)/2;
+
+      //System.out.println("           "+start+", "+i+", "+end);
+    }
+    return null;
+    //for (Territory territory : territoryList)
+    //{
+    //  if (territory.getName().equals(name)) return territory;
+    //}
+    //return null;
   }
+
+
+  public GeographicArea getGeographicArea(EnumRegion regionCode)
+  {
+    return regionList[regionCode.ordinal()].getGeographicArea();
+  }
+
 
   public List<AbstractEvent> getSpecialEvents()
   {
     return specialEvents;
   }
-
 
 
   /**
@@ -281,10 +330,7 @@ public class Model
    */
   private void instantiateRegions()
   {
-    if (DEBUG) System.out.println("Model.instantiateRegions() Enter");
-
-
-    for (int i=0; i<EnumRegion.SIZE; i++)
+    for (int i = 0; i < EnumRegion.SIZE; i++)
     {
       regionList[i] = new Region(EnumRegion.values()[i]);
     }
@@ -297,14 +343,13 @@ public class Model
       regionList[regionIdx].addTerritory(territory);
     }
 
-    for (int i=0; i<EnumRegion.SIZE; i++)
+    for (int i = 0; i < EnumRegion.SIZE; i++)
     {
-      for (int year=Constant.FIRST_DATA_YEAR; year<Constant.FIRST_GAME_YEAR; year++)
-      { regionList[i].aggregateTerritoryData(year);
+      for (int year = Constant.FIRST_DATA_YEAR; year < Constant.FIRST_GAME_YEAR; year++)
+      {
+        regionList[i].aggregateTerritoryData(year);
       }
     }
-
-
 
     //try{cropLoader = new CropCSVLoader();} catch (Throwable t){ System.out.println("CROP_LOADER "+t);}
     //cropZoneDatum = cropLoader.getCategoryData();
@@ -316,12 +361,12 @@ public class Model
     //
     //for (Region region : regionList)
     //{ // Roll up the population and undernourished for each region.
-      //
+    //
     //  region.updatePopulation(Constant.FIRST_YEAR);
 
-      // Update the initial yield.
-      //
-     // region.estimateInitialYield();
+    // Update the initial yield.
+    //
+    // region.estimateInitialYield();
     //}
 
     //for (Region region : regionList) region.estimateInitialBudget(cropLoader.getCategoryData());
@@ -338,10 +383,10 @@ public class Model
     //
     //for (EnumRegion region : EnumRegion.values())
     //{
-      // TODO : The tile optimization function will only work if we have the
-      // CropClimateData structure correctly populated for each of the crops.
-      //
-      // calculate OTHER_CROPS temp & rain requirements for each country
+    // TODO : The tile optimization function will only work if we have the
+    // CropClimateData structure correctly populated for each of the crops.
+    //
+    // calculate OTHER_CROPS temp & rain requirements for each country
     //  for (Territory state : regionList[region.ordinal()].getTerritoryList())
     //  {
 
@@ -363,15 +408,11 @@ public class Model
   }
 
 
-
-
   /**
-   *
    * @return the simulation currentYear that has just finished.
    */
   protected int nextYear(ArrayList<PolicyCard> cards)
   {
-
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
     //applyPolicies(); // Not started.
@@ -400,7 +441,8 @@ public class Model
 
 
     //if (debugLevel.intValue() < Level.INFO.intValue())
-    //{ Simulator.dbg.println("******************************************* FINAL Stats for " + debugRegion + " in " + currentYear);
+    //{ Simulator.dbg.println("******************************************* FINAL Stats for " + debugRegion + " in " +
+    // currentYear);
     //  printRegion(regionList[debugRegion.ordinal()], currentYear);
     //}
 
@@ -417,15 +459,17 @@ public class Model
     WorldData data = worldData[yearIdx];
     data.year = year;
 
-    for (int i=0; i< EnumFood.SIZE; i++)
-    for (EnumFood food : EnumFood.values())
+    for (int i = 0; i < EnumFood.SIZE; i++)
     {
-      data.foodPrice[food.ordinal()] = cropData.getPrice(year, food);
+      for (EnumFood food : EnumFood.values())
+      {
+        data.foodPrice[food.ordinal()] = cropData.getPrice(year, food);
+      }
     }
 
 
     //Region Data
-    for (int i=0; i<EnumRegion.SIZE; i++)
+    for (int i = 0; i < EnumRegion.SIZE; i++)
     {
       RegionData region = data.regionData[i];
       region.population = regionList[i].getPopulation(year);
@@ -456,7 +500,6 @@ public class Model
   }
 
 
-
   protected WorldData getWorldData(int year)
   {
     int yearIdx = year - Constant.FIRST_DATA_YEAR;
@@ -471,7 +514,7 @@ public class Model
     int y0 = territory.getPopulation(year0);
     int y1 = territory.getPopulation(year1);
 
-    for (int i = year0 + 1 ; i < year1 ; i += 1)
+    for (int i = year0 + 1; i < year1; i += 1)
     {
       double y = y0 + (y1 - y0) * (((double) i - year0) / (year1 - year0));
       territory.setPopulation(i, (int) y);
@@ -483,7 +526,8 @@ public class Model
   private void applyPolicies()
   {
     if (debugLevel.intValue() < Level.INFO.intValue())
-    { Simulator.dbg.println("******************************************* Applying policies");
+    {
+      Simulator.dbg.println("******************************************* Applying policies");
     }
   }
 
@@ -497,7 +541,8 @@ public class Model
     // with a fit quadratic equation.
     //
     if (debugLevel.intValue() < Level.INFO.intValue())
-    { Simulator.dbg.println("******************************************* Updating land use");
+    {
+      Simulator.dbg.println("******************************************* Updating land use");
     }
   }
 
@@ -520,7 +565,8 @@ public class Model
     // TODO: 12/6/2015 Alfred is working on this.
     //
     if (debugLevel.intValue() < Level.INFO.intValue())
-    { Simulator.dbg.println("******************************************* Generating special events");
+    {
+      Simulator.dbg.println("******************************************* Generating special events");
     }
 
     //check current currentYear.
@@ -560,7 +606,7 @@ public class Model
         {
           // do a hurricane
           Region us = regionList[EnumRegion.SIZE];
-          int idx = rand.nextInt(us.getTerritoryList().size()-1) + 1;
+          int idx = rand.nextInt(us.getTerritoryList().size() - 1) + 1;
           for (Territory territory : us.getTerritoryList())
           {
             if (idx == 0)
@@ -603,7 +649,8 @@ public class Model
   private void updateFarmProductYield()
   {
     if (debugLevel.intValue() < Level.INFO.intValue())
-    { Simulator.dbg.println("******************************************* Updating farm product yield");
+    {
+      Simulator.dbg.println("******************************************* Updating farm product yield");
     }
 
     // Iterate over all of the regions, including the book keeping regions.  Each
@@ -613,18 +660,20 @@ public class Model
     //
     for (Region region : regionList)
     {
-        region.updateYield(currentYear);
+      region.updateYield(currentYear);
     }
 
     if (debugLevel.intValue() < Level.INFO.intValue())
-    { printCropYield(regionList[debugRegion.ordinal()], currentYear);
+    {
+      printCropYield(regionList[debugRegion.ordinal()], currentYear);
     }
   }
 
   private void updateFarmProductNeed()
   {
     if (debugLevel.intValue() < Level.INFO.intValue())
-    { Simulator.dbg.println("******************************************* Updating farm product need");
+    {
+      Simulator.dbg.println("******************************************* Updating farm product need");
     }
 
     // Iterate over only the game regions.
@@ -635,7 +684,8 @@ public class Model
     }
 
     if (debugLevel.intValue() < Level.INFO.intValue())
-    { printCropNeed(regionList[debugRegion.ordinal()], currentYear);
+    {
+      printCropNeed(regionList[debugRegion.ordinal()], currentYear);
     }
   }
 
@@ -659,7 +709,8 @@ public class Model
     //
   }
 
-  private void updateHumanDevelopmentIndex(){
+  private void updateHumanDevelopmentIndex()
+  {
     // TODO: HDI is updated in the roll-up of the territoryList into regions, based on the
     // undernourished factor.
     //
@@ -668,7 +719,7 @@ public class Model
   private void loadExistingSpecialEvents()
   {
     SpecialEventCSVLoader loader = null;
-    try{loader = new SpecialEventCSVLoader();} catch (Throwable t) {}
+    try {loader = new SpecialEventCSVLoader();} catch (Throwable t) {}
     specialEventDatum = loader.getEventData();
   }
 
@@ -684,7 +735,8 @@ public class Model
     // Print each territory.
     //
     for (Territory territory : region.getTerritoryList())
-    { Simulator.dbg.print("\t" + territory.getName() + ": ");
+    {
+      Simulator.dbg.print("\t" + territory.getName() + ": ");
       //for (EnumFood food : EnumFood.values()) Simulator.dbg.print(" " + territory.getCropNeedPerCapita(food));
       Simulator.dbg.println();
     }
@@ -705,7 +757,8 @@ public class Model
     // Print each territory.
     //
     for (Territory territory : region.getTerritoryList())
-    { Simulator.dbg.print("\t" + territory.getName() + ": ");
+    {
+      Simulator.dbg.print("\t" + territory.getName() + ": ");
       //for (EnumFood food : EnumFood.values()) Simulator.dbg.print(" " + territory.getCropYield(food));
       Simulator.dbg.println();
     }
@@ -721,20 +774,7 @@ public class Model
     }
     Simulator.dbg.println();
   }
-/*
-  public void printCurrentClimate(Region region, int year)
-  {
-    // Print just the cell at the capital.
-    //
-    Simulator.dbg.println("Region " + region.getName() + " climate : ");
-    for (Territory territory : region.getTerritoryList())
-    {
-      MapPoint capitol = territory.getCapitolLocation();
-      LandTile tile = tileManager.getTile(capitol.longitude, capitol.latitude);
-      Simulator.dbg.println("\t" + territory.getName() + ": " + tile);
-    }
-  }
-*/
+
 
   public void printRegions(boolean verbose)
   {
@@ -759,14 +799,16 @@ public class Model
   {
     Simulator.dbg.println("Region : " + region.getName());
     Simulator.dbg.print("\tTerritories : ");
-    for (Territory territory : region.getTerritoryList()) {
+    for (Territory territory : region.getTerritoryList())
+    {
       Simulator.dbg.print("\t" + territory.getName());
     }
     Simulator.dbg.println();
 
     printData(region, year, "");
 
-    for (Territory territory : region.getTerritoryList()) {
+    for (Territory territory : region.getTerritoryList())
+    {
       if (debugLevel.intValue() <= Level.FINER.intValue()) printData(territory, year, "\t");
       if (debugLevel.intValue() <= Level.FINEST.intValue())
       {
@@ -811,7 +853,8 @@ public class Model
     Simulator.dbg.println();
 
     Simulator.dbg.print(prefix + "\tlandCrop : ");
-    //for (EnumFood food : EnumFood.values()) Simulator.dbg.print("\t" + unit.getCropLand(food)); // Yes, they named it backwards.
+    //for (EnumFood food : EnumFood.values()) Simulator.dbg.print("\t" + unit.getCropLand(food)); // Yes, they named
+    // it backwards.
     Simulator.dbg.println();
 
     if (unit instanceof Territory)
@@ -823,5 +866,230 @@ public class Model
       //for (EnumFarmMethod method : EnumFarmMethod.values()) Simulator.dbg.print("\t" + unit.getMethod(method));
       Simulator.dbg.println();
     }
+  }
+
+
+  /**
+   * This method is used only for testing the geographic boundaries.<br>
+   * It displays a javax.swing.JFrame containing a Mollweide projection of the
+   * world to be drawn on using drawBoundary(Picture pic, Territory territory);
+   *
+   * @return reference to the created JFrame.
+   */
+  public Picture testShowMapProjection()
+  {
+    return new Picture("assets/WorldMap_MollweideProjection.png");
+  }
+
+  /**
+   * This method is used only for testing the geographic boundaries.<br>
+   * Given a Picture frame containing a Mollweide would map projection and a territory,
+   * it draws the boundary of that territory on the map using different colors for
+   * disconnected segments (islands) of the territory.
+   */
+  public void drawBoundary(Picture pic, Territory territory, Color color)
+  {
+    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
+
+    Point pixel = new Point();
+
+    Graphics2D gfx = pic.getOffScreenGraphics();
+
+    GeographicArea geographicArea = territory.getGeographicArea();
+    Area boundary = geographicArea.getPerimeter();
+
+    gfx.setColor(color);
+    int lastX = Integer.MAX_VALUE;
+    int lastY = Integer.MAX_VALUE;
+    int startX = Integer.MAX_VALUE;
+    int startY = Integer.MAX_VALUE;
+
+    double[] coords = new double[6];
+
+    PathIterator path = boundary.getPathIterator(null);
+    while(!path.isDone())
+    {
+        int type = path.currentSegment(coords);
+        path.next();
+        //map.setPoint(pixel, mapPoint.latitude, mapPoint.longitude);
+        //System.out.println("("+coords[1]+", "+ coords[0]+")");
+        map.setPoint(pixel, coords[1], coords[0]);
+        if (type == PathIterator.SEG_LINETO)
+        {
+          gfx.drawLine(lastX, lastY, pixel.x, pixel.y);
+        }
+        else if(type == PathIterator.SEG_MOVETO)
+        {
+          startX = pixel.x;
+          startY = pixel.y;
+        }
+        else if(type == PathIterator.SEG_CLOSE)
+        {
+          gfx.drawLine(lastX, lastY, startX, startY);
+        }
+        else
+        {
+          System.out.println("************ ERROR ***********");
+        }
+
+        lastX = pixel.x;
+        lastY = pixel.y;
+    }
+    pic.repaint();
+
+  }
+
+
+
+  /**
+   * This method is used only for testing the geographic boundaries.<br>
+   * Given a Picture frame containing a Mollweide would map projection and a territory,
+   * it draws the boundary of that territory on the map using different colors for
+   * disconnected segments (islands) of the territory.
+   */
+  public void drawBoundaryUsingMapPoints(Picture pic, Territory territory)
+  {
+    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
+
+    Point pixel = new Point();
+
+    Graphics2D gfx = pic.getOffScreenGraphics();
+    Color[] colorList = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN,
+      Color.BLUE, Color.MAGENTA};
+
+    int colorIdx = 0;
+    GeographicArea geographicArea = territory.getGeographicArea();
+    ArrayList<ArrayList> islandList = geographicArea.getIslandList();
+
+    for (ArrayList<MapPoint> boundary :islandList)
+    {
+      gfx.setColor(colorList[colorIdx]);
+
+      int lastX = Integer.MAX_VALUE;
+      int lastY = Integer.MAX_VALUE;
+
+      for (MapPoint mapPoint : boundary)
+      {
+        map.setPoint(pixel, mapPoint.latitude, mapPoint.longitude);
+
+
+        //System.out.println(mapPoint + " ["+pixel.x+", "+pixel.y+"]");
+
+        if (lastX != Integer.MAX_VALUE)
+        {
+          gfx.drawLine(lastX, lastY, pixel.x, pixel.y);
+        }
+        lastX = pixel.x;
+        lastY = pixel.y;
+      }
+      colorIdx++;
+      if (colorIdx >= colorList.length) colorIdx = colorList.length - 1;
+    }
+    pic.repaint();
+  }
+
+  public void drawAllTiles(Picture pic, Region region, Color color)
+  {
+    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
+
+
+    Point pixel = new Point();
+
+    Graphics2D gfx = pic.getOffScreenGraphics();
+
+    gfx.setColor(color);
+
+    ArrayList<Territory> myTerritoryList = region.getTerritoryList();
+    for (Territory territory : myTerritoryList)
+    {
+      ArrayList<LandTile> tileList = territory.getLandTiles();
+
+      for (LandTile tile : tileList)
+      {
+        map.setPoint(pixel, tile.getLatitude(), tile.getLongitude());
+
+        gfx.fillOval(pixel.x-1, pixel.y-1, 3, 3);
+      }
+    }
+
+  }
+
+
+  public void drawRain(Picture pic, int year, Constant.Month month)
+  {
+    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
+
+    Point pixel = new Point();
+
+    Graphics2D gfx = pic.getOffScreenGraphics();
+
+    for (Territory territory : territoryList)
+    {
+      ArrayList<LandTile> tileList = territory.getLandTiles();
+
+      for (LandTile tile : tileList)
+      {
+        map.setPoint(pixel, tile.getLatitude(), tile.getLongitude());
+
+        double rain = tile.getField(LandTile.Field.RAIN, year, month);
+
+        int colorIdx = (int) ((rain / 20.0) * Constant.COLOR_MOISTURE_LIST.length);
+        if (colorIdx < 0) colorIdx = 0;
+        if (colorIdx >= Constant.COLOR_MOISTURE_LIST.length) colorIdx = Constant.COLOR_MOISTURE_LIST.length - 1;
+        gfx.setColor(Constant.COLOR_MOISTURE_LIST[colorIdx]);
+
+        gfx.fillOval(pixel.x - 1, pixel.y - 1, 3, 3);
+      }
+    }
+    pic.repaint();
+
+  }
+
+
+  /**
+   * Testing entry point. This creates an instance of the model which, among other things,
+   * loads the world territories. This test program then creates a JFrame displaying a world
+   * map and a few example territories drawn on that map.
+   *
+   * @param args are ignored
+   */
+  public static void main(String[] args)
+  {
+    System.out.println("==========================================================================");
+    System.out.println("      Running Test entry point: starvationevasion.sim.Model()");
+    System.out.println("==========================================================================");
+
+    Model model = new Model();
+
+    Picture pic = model.testShowMapProjection();
+
+    //Territory territory = model.getTerritory("Italy");
+    //model.drawBoundaryUsingMapPoints(pic, territory);
+
+    for (int n = 0; n < 10; n++)
+    {
+      for (EnumRegion regionID : EnumRegion.values())
+      {
+        Region region = model.getRegion(regionID);
+        model.drawAllTiles(pic, region, regionID.getColor());
+      }
+
+      for (EnumRegion regionID : EnumRegion.values())
+      {
+        Region region = model.getRegion(regionID);
+        model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5));
+      }
+      pic.repaint();
+      try
+      {
+        Thread.sleep(3000);
+      } catch (InterruptedException e) { }
+
+      for (Constant.Month month : Constant.Month.values())
+      {
+        model.drawRain(pic, 2009, month);
+      }
+    }
+
   }
 }

@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * I tried to make a good comment here but it failed really hard.
+ * This interface MUST be implemented by any client that communicates with the server, this includes
+ * the game player as well as any AI objects. This will create a uniform way that
+ * the server knows how it can interact with any of its clients.
  */
 public interface CommClient
 {

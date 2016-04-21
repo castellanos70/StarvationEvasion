@@ -63,6 +63,7 @@ public class LoginHandler extends AbstractHandler
                                                                               password.getBytes()));
       if (s.getPassword().equals(hash))
       {
+        server.getUserList().remove(getClient().getUser());
         s.setLoggedIn(true);
         getClient().setUser(s);
         s.setWorker(getClient());

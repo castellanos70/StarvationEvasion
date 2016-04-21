@@ -5,8 +5,10 @@ package starvationevasion.server;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import starvationevasion.common.Util;
 import starvationevasion.server.handlers.Handler;
 import starvationevasion.server.io.*;
+import starvationevasion.server.io.strategies.HTTPWriteStrategy;
 import starvationevasion.server.io.strategies.SocketReadStrategy;
 import starvationevasion.server.io.strategies.SocketWriteStrategy;
 import starvationevasion.server.model.*;
@@ -16,6 +18,7 @@ import javax.crypto.IllegalBlockSizeException;
 import java.io.*;
 import java.net.Socket;
 import java.security.InvalidKeyException;
+import java.util.ArrayList;
 
 /**
  *  Worker that holds connection, writer, reader, and user information
@@ -23,7 +26,7 @@ import java.security.InvalidKeyException;
 public class Worker extends Thread
 {
   private Socket client;
-  private String username = "ANON";
+  private String username = Util.generateName();
   private volatile boolean isRunning = true;
   private final Server server;
   private final Handler handler;
@@ -33,7 +36,8 @@ public class Worker extends Thread
 
   private final DataOutputStream outStream;
   private final DataInputStream inStream;
-  private User user = new User("ANON", "", null, null);
+  private User user = new User(username);
+  private String httpRequest;
 
 
   public Worker (Socket client, Server server)
@@ -121,8 +125,10 @@ public class Worker extends Thread
     {
       try
       {
+        // need to refactor to be able to replace abstract our the
+        Object _raw = null;
 
-        Object _raw = reader.read();
+        _raw = reader.read();
 
         Request request = null;
 
@@ -150,7 +156,7 @@ public class Worker extends Thread
 
           request = new Request(arr[0], arr[1], string);
         }
-
+        // still need to be able to call handle
         handler.handle(request);
       }
       catch(EndpointException e)

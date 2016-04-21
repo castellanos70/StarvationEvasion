@@ -6,10 +6,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 
 public class Sqlite implements Backend
@@ -120,6 +117,10 @@ public class Sqlite implements Backend
 
         if (value instanceof String)
         {
+          if (((String) value).isEmpty())
+          {
+            value = "NULL";
+          }
           stringBuilder.append("'").append(value).append("'");
         }
         else if (value instanceof Number)
@@ -163,6 +164,43 @@ public class Sqlite implements Backend
       e.printStackTrace();
     }
     return null;
+  }
+
+  @Override
+  public ResultSet update (String table, String where, Set<String> cols, Set<Object> values)
+  {
+    try
+    {
+      Statement statement = connection.createStatement();
+
+      StringBuilder _sb = new StringBuilder();
+      _sb.append("UPDATE ").append(table).append(" set ");
+
+      int i = 0;
+      ArrayList vals = new ArrayList<>(values);
+      for (String col : cols)
+      {
+        _sb.append(col).append(" = ").append(vals.get(i));
+        i++;
+      }
+
+      _sb.append(where).append(";");
+      statement.execute(_sb.toString());
+
+    }
+    catch(SQLException e)
+    {
+      e.printStackTrace();
+    }
+
+
+    return null;
+  }
+
+  @Override
+  public void delete (String table, String where)
+  {
+
   }
 
 

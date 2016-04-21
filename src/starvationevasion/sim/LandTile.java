@@ -48,7 +48,7 @@ public class LandTile
   private static final String PATH_COORDINATES = "/sim/climate/ArableCoordinates.csv";
   private static final String PATH_CLIMATE_PREFIX = "/sim/climate/Climate_Historical_";
 
-  private static int PATH_COORDINATES_FIELD_COUNT = 3; //Latitude,Longitude,Territory
+  private static int PATH_COORDINATES_FIELD_COUNT = 2; //Latitude,Longitude
 
 
   private enum DataHeaders
@@ -320,30 +320,6 @@ public class LandTile
       }
 
       if (territory != null) territory.addLandTile(tile);
-
-
-        //assert(territory.containsMapPoint(new MapPoint(latitude,longitude)));
-        //if (!territory.containsMapPoint(new MapPoint(latitude,longitude)))
-        //{
-        //  System.out.println("*********** ERROR " + territory.getName() + " does not contain " + new MapPoint(latitude,longitude));
-        //}
-      //Territory territory2 = model.getTerritory(latitude, longitude);
-      //if (territory != territory2)
-      //{
-      //  String name = null;
-      //  if (territory2 != null) name=territory2.getName();
-      //  System.out.println("*********** ERROR " + territory.getName() + " != " + name
-      //    + ", ["+tile.getLatitude()+", " + tile.getLongitude());
-      //}
-      //else
-      //{
-      //  System.out.println("=========== GOOD " + territory.getName()
-      //    + ", ["+tile.getLatitude()+", " + tile.getLongitude());
-//
-      //}
-
-
-
 
 
     }

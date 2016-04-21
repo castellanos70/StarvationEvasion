@@ -108,7 +108,10 @@ public class UserHandler extends AbstractHandler
           {
             getClient().send(new ResponseFactory().build(server.uptime(),
                                                          null,
-                                                         Type.BROADCAST, "Sorry, " + _u.getUsername() + " there was an error." + " " + _u.getRegion().name()
+                                                         Type.BROADCAST,
+                                                         "Sorry, " + _u.getUsername() +
+                                                                 " there was an error." +
+                                                                 " " + _u.getRegion().name()
             ));
           }
 

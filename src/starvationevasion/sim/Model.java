@@ -103,6 +103,14 @@ public class Model
   private int currentYear;
 
 
+  /**
+   * List of all territories. A copy of each pointer stored in this list is
+   * placed in territoryList of the region to which that territory belongs.<br><br>
+   *
+   * This list is build from a data file when the model loads and is never changed.<br><br>
+   *
+   * This list must be in lexicographic order.
+   */
   private ArrayList<Territory> territoryList;
 
   // The set of world regions includes all of the regions in the enum, plus an
@@ -177,8 +185,8 @@ public class Model
     assert (!China.contains(35, -106)); //Albuquerque
     assert (China.contains(40, 116)); //Beijing
     assert (China.contains(31.2, 121.5)); //Shanghai
-    //assert (UnitedKingdom.contains(51.5, -0.13)); //London
-    //assert (UnitedKingdom.contains(54.5970, -5.93)); //Belfast, Northern Ireland
+    assert (UnitedKingdom.contains(51.5, -0.13)); //London
+    assert (UnitedKingdom.contains(54.5970, -5.93)); //Belfast, Northern Ireland
     assert (!UnitedKingdom.contains(53.349925, -6.270475)); //Dublin, Ireland
     assert (Ireland.contains(53.349925, -6.270475)); //Dublin, Ireland
     assert (!UnitedKingdom.contains(53.347309, -5.681383)); //Irish Sea
@@ -238,14 +246,40 @@ public class Model
 
   public Territory getTerritory(double latitude, double longitude)
   {
+    //This is the code that should actually be used.
     for (Territory territory : territoryList)
     {
       if (territory.contains(latitude, longitude)) return territory;
     }
     return null;
+
+
+    //This code is used for debug only.
+    /*
+    Territory found = null;
+    for (Territory territory : territoryList)
+    {
+      if (territory.contains(latitude, longitude))
+      {
+        if (found != null)
+        {
+          System.out.println("ERROR: Point ["+latitude+", "+longitude+
+            "] in two territories: " + found.getName() + " & " + territory.getName());
+        }
+        found = territory;
+      }
+    }
+    return found;
+    */
   }
 
 
+  /**
+   * Uses binary search to fine the given name in the territory list.
+   * @param name of territory
+   * @return reference to the unique territory with the given name or null if there does not
+   * exist a territory with the given name in territoryList
+   */
   public Territory getTerritory(String name)
   {
 
@@ -977,7 +1011,7 @@ public class Model
         gfx.fillOval(pixel.x-1, pixel.y-1, 3, 3);
       }
     }
-    pic.repaint();
+
   }
 
 
@@ -1029,14 +1063,11 @@ public class Model
 
     Picture pic = model.testShowMapProjection();
 
-    //Territory territory = model.getTerritory("South Africa");
+    //Territory territory = model.getTerritory("Italy");
     //model.drawBoundaryUsingMapPoints(pic, territory);
-
-
 
     for (int n = 0; n < 10; n++)
     {
-
       for (EnumRegion regionID : EnumRegion.values())
       {
         Region region = model.getRegion(regionID);
@@ -1048,6 +1079,7 @@ public class Model
         Region region = model.getRegion(regionID);
         model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5));
       }
+      pic.repaint();
       try
       {
         Thread.sleep(3000);

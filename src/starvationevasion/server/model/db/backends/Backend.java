@@ -45,6 +45,23 @@ public interface Backend
   ResultSet select (String table, String where);
 
   /**
+   * Query data
+   *
+   * @param table name of the table to be queried from
+   * @param where where statement.
+   * @return set of rows.
+   */
+  ResultSet update (String table, String where, Set<String> cols, Set<Object> values);
+
+  /**
+   * Query data
+   *
+   * @param table name of the table to be queried from
+   * @param where where statement.
+   */
+  void delete (String table, String where);
+
+  /**
    * Close the connection to the database.
    */
   void close();

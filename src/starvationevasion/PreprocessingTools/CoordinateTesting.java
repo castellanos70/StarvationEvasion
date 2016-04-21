@@ -15,8 +15,8 @@ import java.util.zip.ZipOutputStream;
  */
 public class CoordinateTesting
 {
-  private final int MAX_LAT = 720;//maximum number of latitude
-  private final int MAX_LON = 1440;//maximum number of longitudes
+//  private final int MAX_LAT = 720;//maximum number of latitude
+//  private final int MAX_LON = 1440;//maximum number of longitudes
   private final double degrees = 0.25;//resolution
   private final double DEFAULT_LAT = -89.875;//starting latitude from the climate data
   private final double DEFAULT_LON = 0.125;//starting longitude from the climate data
@@ -63,8 +63,8 @@ public class CoordinateTesting
     CoordinateTesting test = new CoordinateTesting();
 
     test.findViablePoints(test.viable);
-    test.readAndWrite(2000, 2000, 1, test.HISTORICAL, "Historical");//do Historical data
-    test.makeZipArchive("Historical", 2000);
+    test.readAndWrite(2000, 2005, 1, test.HISTORICAL, "Historical");//do Historical data
+//    test.makeZipArchive("Historical", 2000);
     test.readAndWrite(2010, 2050, 5, test.RCP45, "RCP45");
     test.readAndWrite(2010, 2050, 5, test.RCP85, "RCP85");
   }
@@ -203,7 +203,7 @@ public class CoordinateTesting
   private void makeZipArchive(String title, int year)
   {
     String suffix = ".csv";
-    String zipFile = PREFIX +"Climate_"+ title + "_" + year + "_" + "archive.zip";
+    String zipFile = PREFIX +"Climate_"+ title + "_" + year + "_" + "set.zip";
     try
     {
       // create byte buffer
@@ -241,12 +241,12 @@ public class CoordinateTesting
 
     try
     {
-      String fileName = PREFIX + "Climate_Viable_Coordinates.csv";
+      String fileName = PREFIX + "Updated_Climate_Viable_Coordinates.csv";
 
       File file = new File(fileName);
 
       if (file.createNewFile())
-      {
+      {//if the file does not already exist, make it
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
         bufferedWriter.write("Latitude, Longitude\nlatitude, longitude");
         for (double lat = DEFAULT_LAT; lat <= 90; lat += degrees)
@@ -265,13 +265,14 @@ public class CoordinateTesting
         bufferedWriter.close();
       }
       else
-      {
+      {//if the file exists, read the file
         FileReader fileReader = new FileReader(file);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         String line;
         String delimiter = "[, ]+";
         String[] parsed;
-
+        line = bufferedReader.readLine();
+        line = bufferedReader.readLine();
         //each line of the file is a latitude coordinate
         while ((line = bufferedReader.readLine()) != null)
         {

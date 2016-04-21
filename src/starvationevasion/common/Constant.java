@@ -8,6 +8,30 @@ import java.awt.*;
  */
 public class Constant
 {
+  public static final String[] AI_NAMES =
+          {"Emma", "Olivia", "Noah", "Sophia", "Liam", "Mason", "Isabella", "Jacob", "William", "Ethan"};
+
+  public static final String[] ANON_NAME_ARRAY = {
+          "Ashley", " Wasinger",
+          "Shizue", " Dodd",
+          "Monroe", " Strauch",
+          "Arline", " Downard",
+          "Lenora", " Ponds",
+          "Wilber", " Moreles",
+          "Mariah", " Fretz",
+          "Shila", " Causby",
+          "Brett", " Friedrichs",
+          "Tamera", " Colman",
+          "Margareta", " Haygood",
+          "Joanie", " Dearmond",
+          "Sherrill", " Reuter",
+          "Ashlea", " Esch",
+          "Adena", " Booker",
+          "Travis", " Ruffo",
+          "Lita", " Meltzer",
+          "Jonie", " Landgraf",
+          "Jeffie", " Wasserman",
+          "Kellie", " Dieguez"};
 
   public static final String DATA_ALGORITHM = "AES";
 

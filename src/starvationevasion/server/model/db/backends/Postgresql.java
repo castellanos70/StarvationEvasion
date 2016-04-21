@@ -63,6 +63,18 @@ public class Postgresql implements Backend
   }
 
   @Override
+  public ResultSet update (String table, String where, Set<String> cols, Set<Object> values)
+  {
+    return null;
+  }
+
+  @Override
+  public void delete (String table, String where)
+  {
+
+  }
+
+  @Override
   public void close ()
   {
     try

@@ -15,15 +15,9 @@ import starvationevasion.server.model.db.backends.Backend;
 import starvationevasion.server.model.db.backends.Sqlite;
 import starvationevasion.sim.Simulator;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
+import javax.crypto.*;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
@@ -140,6 +134,8 @@ public class Server
   {
 
     String host = "";
+    Worker worker = null;
+    Socket potentialClient = null;
     try
     {
       host = InetAddress.getLocalHost().getHostName();
@@ -153,14 +149,14 @@ public class Server
       //System.out.println("Server(" + host + "): waiting for Connection on port: " + port);
       try
       {
-        Socket client = serverSocket.accept();
-        System.out.println(dateFormat.format(date) + " Server: new Connection request recieved.");
-        System.out.println(dateFormat.format(date) + " Server " + client.getRemoteSocketAddress());
-        Worker worker = new Worker(client, this);
+        potentialClient = serverSocket.accept();
+        System.out.println(dateFormat.format(date) + " Server: new Connection request received.");
+        //System.out.println(dateFormat.format(date) + " Server " + client.getRemoteSocketAddress());
+        worker = new Worker(potentialClient, this);
 
-        setStreamType(worker, client);
+        setStreamType(worker, potentialClient);
         worker.start();
-        System.out.println(dateFormat.format(date) + " Server: Connected to ");
+        System.out.println(dateFormat.format(date) + " Server: Connected to " + potentialClient.getRemoteSocketAddress());
         worker.setName("worker" + uptimeString());
 
         allConnections.add(worker);
@@ -170,6 +166,14 @@ public class Server
       {
         // System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
         // e.printStackTrace();
+      }
+      catch(HandshakeException e)
+      {
+        if (worker != null)
+        {
+          worker.shutdown();
+          System.out.println(dateFormat.format(date) + " Server: Failed to complete handshake. Closing connection");
+        }
       }
       catch(Exception e)
       {
@@ -224,8 +228,12 @@ public class Server
                             .anyMatch(user -> user.getUsername().equals(u.getUsername()));
     if (!found)
     {
-      userTransaction.create(u);
-      userList.add(u);
+      User created = userTransaction.create(u);
+      if (created == null)
+      {
+        return false;
+      }
+      userList.add(created);
       return true;
     }
     return false;
@@ -606,7 +614,7 @@ public class Server
    *
    * @return boolean true if web-socket
    */
-  private void setStreamType (Worker worker, Socket s) throws NoSuchAlgorithmException, NoSuchPaddingException, IOException
+  private void setStreamType (Worker worker, Socket s) throws NoSuchAlgorithmException, NoSuchPaddingException, IOException, InterruptedException
   {
     // Handling websocket
     // StringBuilder reading = new StringBuilder();
@@ -617,15 +625,22 @@ public class Server
     ReadStrategy<String> reader = worker.getReader();
     SecretKey myDesKey = null;
     boolean encrypted = false;
-
+    boolean success = false;
+    int secs = 0;
+    s.setSoTimeout(3000);
     ReadStrategy discoveredReader = worker.getReader();
     WriteStrategy discoveredWriter = worker.getWriter();
 
-    while(true)
+    while(secs < 3)
     {
       try
       {
         line = reader.read();
+      }
+      catch(SocketTimeoutException e)
+      {
+        secs++;
+        continue;
       }
       catch(Exception e)
       {
@@ -642,10 +657,12 @@ public class Server
         {
           discoveredReader = new JavaObjectReadStrategy(s, null);
           discoveredWriter = new JavaObjectWriteStrategy(s, null);
+          success = true;
           break;
         }
         else if (line.contains("client"))
         {
+          success = true;
           break;
         }
         else if(line.equals("\r\n"))
@@ -662,6 +679,7 @@ public class Server
           // assume the client accepted socket key and set up stream readers
           discoveredReader = new WebSocketReadStrategy(s, null);
           discoveredWriter =  new WebSocketWriteStrategy(s, null);
+          success = true;
           break;
         }
 
@@ -687,6 +705,12 @@ public class Server
       }
     }
 
+    if (!success)
+    {
+      throw new HandshakeException();
+    }
+    // setting back to default blocking
+    s.setSoTimeout(0);
     if (encrypted)
     {
       System.out.println("Encrypted!");

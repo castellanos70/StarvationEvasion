@@ -160,6 +160,7 @@ public class Server
         worker.setName("worker" + uptimeString());
 
         allConnections.add(worker);
+        userList.add(worker.getUser());
 
       }
       catch(IOException e)

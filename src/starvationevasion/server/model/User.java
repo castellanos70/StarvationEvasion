@@ -27,13 +27,14 @@ public class User implements Encryptable, Sendable
   private transient volatile boolean isLoggedIn = false;
   private transient boolean isPlaying = false;
 
-  private String username = "Anon";
-  private String password = "";
+  private String username;
+  private String password;
   private EnumRegion region;
-  private volatile ArrayList<EnumPolicy> hand = new ArrayList<>();
+  private volatile ArrayList<EnumPolicy> hand;
 
   public User()
   {
+    this("");
   }
 
   public User (String username, String password, EnumRegion region, ArrayList<EnumPolicy> hand)
@@ -42,6 +43,11 @@ public class User implements Encryptable, Sendable
     this.hand = hand;
     this.region = region;
     this.password = Encryptable.bytesToHex(encrypt(password.getBytes()));
+  }
+
+  public User (String username)
+  {
+    this(username, "", null, new ArrayList<>());
   }
 
   /**
@@ -250,7 +256,7 @@ public class User implements Encryptable, Sendable
   @Override
   public Encryptable setEncrypted (boolean encrypted, SecretKey key)
   {
-    return null;
+    throw new NotImplementedException();
   }
 
   @Override

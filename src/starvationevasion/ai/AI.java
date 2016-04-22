@@ -8,7 +8,10 @@ import starvationevasion.common.Util;
 import starvationevasion.common.WorldData;
 import starvationevasion.server.model.*;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SealedObject;
+import javax.crypto.SecretKey;
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
@@ -388,13 +391,12 @@ public class AI
     {
       host = args[0];
       port = Integer.parseInt(args[1]);
-      if (port < 1)
-      {
-        throw new Exception();
-      }
+
     }
+
     catch(Exception e)
     {
+      System.out.println("Usage: hostname port");
       System.exit(0);
     }
     new AI(host, port);

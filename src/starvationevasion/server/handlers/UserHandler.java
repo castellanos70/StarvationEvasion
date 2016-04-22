@@ -5,7 +5,8 @@ package starvationevasion.server.handlers;
  */
 
 import starvationevasion.common.EnumRegion;
-import starvationevasion.server.*;
+import starvationevasion.server.Server;
+import starvationevasion.server.Worker;
 import starvationevasion.server.model.*;
 
 import java.util.ArrayList;

@@ -6,8 +6,13 @@ package starvationevasion.server;
  */
 
 import starvationevasion.common.*;
-import starvationevasion.server.io.*;
-import starvationevasion.server.io.strategies.*;
+import starvationevasion.server.io.HandshakeException;
+import starvationevasion.server.io.ReadStrategy;
+import starvationevasion.server.io.WriteStrategy;
+import starvationevasion.server.io.strategies.JavaObjectReadStrategy;
+import starvationevasion.server.io.strategies.JavaObjectWriteStrategy;
+import starvationevasion.server.io.strategies.WebSocketReadStrategy;
+import starvationevasion.server.io.strategies.WebSocketWriteStrategy;
 import starvationevasion.server.model.*;
 import starvationevasion.server.model.db.Transaction;
 import starvationevasion.server.model.db.Users;
@@ -15,14 +20,20 @@ import starvationevasion.server.model.db.backends.Backend;
 import starvationevasion.server.model.db.backends.Sqlite;
 import starvationevasion.sim.Simulator;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.net.*;
-import java.security.*;
+import java.security.KeyFactory;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.*;
-import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 

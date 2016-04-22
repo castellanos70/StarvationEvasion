@@ -1,16 +1,13 @@
 package starvationevasion.ai.commands;
 
 import starvationevasion.ai.AI;
-import starvationevasion.common.EnumRegion;
 import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Payload;
-import starvationevasion.server.model.Request;
 import starvationevasion.server.model.RequestFactory;
+
+import static starvationevasion.common.Constant.AI_NAMES;
 
 public class Login extends AbstractCommand
 {
-  private static final String[] AI_NAMES =
-          {"Emma", "Olivia", "Noah", "Sophia", "Liam", "Mason", "Isabella", "Jacob", "William", "Ethan"};
 
   private String chosenUsername = "";
   private boolean requestSent = false;

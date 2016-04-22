@@ -139,8 +139,7 @@ public enum EnumRegion implements Sendable
    */
   public boolean isUS()
   {
-    if ((getBit() | allUSRegionBits()) != 0) return true;
-    return false;
+    return (getBit() & allUSRegionBits()) != 0;
   }
 
   private Color[] REGION_COLOR =

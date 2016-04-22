@@ -44,9 +44,11 @@ public class Server
 {
   private ServerSocket serverSocket;
   // List of all the workers
-  private LinkedList<Worker> allConnections = new LinkedList<>();
+  private final LinkedList<Worker> allConnections = new LinkedList<>();
 
   private LinkedList<Process> processes = new LinkedList<>();
+
+  private ArrayList<User> playerCache = new ArrayList<>();
 
   private long startNanoSec = 0;
   private long endNanoSec = 0;
@@ -157,12 +159,10 @@ public class Server
     }
     while(isWaiting)
     {
-      //System.out.println("Server(" + host + "): waiting for Connection on port: " + port);
       try
       {
         potentialClient = serverSocket.accept();
         System.out.println(dateFormat.format(date) + " Server: new Connection request received.");
-        //System.out.println(dateFormat.format(date) + " Server " + client.getRemoteSocketAddress());
         worker = new Worker(potentialClient, this);
 
         setStreamType(worker, potentialClient);
@@ -171,6 +171,7 @@ public class Server
         worker.setName("worker" + uptimeString());
 
         allConnections.add(worker);
+        userList.add(worker.getUser());
 
       }
       catch(IOException e)
@@ -272,16 +273,19 @@ public class Server
 
   public void broadcast (Response response)
   {
+    int i = 0;
     try
     {
-      for (int i = 0; i < allConnections.size(); i++)
+      for (; i < allConnections.size(); i++)
       {
         allConnections.get(i).send(response);
       }
     }
     catch(Exception e)
     {
-      System.out.println("Error sending message");
+      System.out.println("Error sending message " + e.getMessage());
+      System.out.println(allConnections.get(i).getName() +
+                                 " User: " + allConnections.get(i).getUser().getUsername());
     }
   }
 
@@ -329,6 +333,7 @@ public class Server
       user.setHand(new ArrayList<>());
       user.setPlaying(false);
     }
+    playerCache.clear();
     simulator.init();
 
     for (int i = 0; i < _drafted.length; i++)
@@ -349,15 +354,12 @@ public class Server
 
   public List<User> getPlayers ()
   {
-    return userList.stream()
-                   .filter(user -> user.isPlaying())
-                   .collect(Collectors.toList());
+    return playerCache;
   }
 
   public int getPlayerCount ()
   {
-    return (int) getPlayers().stream()
-                             .count();
+    return playerCache.size();
   }
 
   public synchronized boolean addPlayer (User u)
@@ -374,14 +376,22 @@ public class Server
       availableRegions.remove(loc);
       u.setPlaying(true);
       // players.add(u);
-      return true;
     }
     else
     {
       u.setRegion(availableRegions.get(Util.randInt(0, availableRegions.size() - 1)));
       u.setPlaying(true);
-      return true;
     }
+
+    playerCache = new ArrayList<>();
+    for (User user : userList)
+    {
+      if (user.isPlaying())
+      {
+        playerCache.add(user);
+      }
+    }
+    return true;
   }
 
   public List<EnumRegion> getAvailableRegions ()
@@ -695,6 +705,14 @@ public class Server
         }
 
       }
+      if (line.contains("GET"))
+      {
+        discoveredWriter  = new HTTPWriteStrategy(s, null);
+        Payload _data = new Payload();
+        _data.putMessage("HTTP responses are coming soon!");
+        worker.send(new ResponseFactory().build(uptime(), _data, Type.ERROR));
+        break;
+      }
 
       // reading.append(line);
       if (line.contains("Sec-WebSocket-Key:"))
@@ -724,7 +742,6 @@ public class Server
     s.setSoTimeout(0);
     if (encrypted)
     {
-      System.out.println("Encrypted!");
       worker.getWriter().getStream().write(socketKeyBytes);
       worker.getWriter().getStream().flush();
       worker.setReader(discoveredReader);
@@ -752,8 +769,7 @@ public class Server
     {
       if (!allConnections.get(i).isRunning())
       {
-        User u = allConnections.get(i).getUser();
-        allConnections.remove(i);
+        User u = allConnections.remove(i).getUser();
         u.setLoggedIn(false);
         con++;
       }

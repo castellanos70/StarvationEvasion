@@ -119,21 +119,18 @@ public class GeographicArea implements Sendable
   @Override
   public JSONDocument toJSON ()
   {
-    /*
     JSONDocument json = JSONDocument.createObject();
     json.setString("name", name);
-    JSONDocument jsonPerim = JSONDocument.createArray(perimeter.size());
-    int i =0;
-    for (MapPoint mapPoint : perimeterMapPoints)
-    {
-      jsonPerim.set(i, mapPoint.toJSON());
-      i++;
-    }
-    json.set("perimeter", jsonPerim);
+//    JSONDocument jsonPerim = JSONDocument.createArray(perimeter.);
+//    int i =0;
+//    for (MapPoint mapPoint : perimeterMapPoints)
+//    {
+//      jsonPerim.set(i, mapPoint.toJSON());
+//      i++;
+//    }
+//    json.set("perimeter", jsonPerim);
 
     return json;
-    */
-    return null;
   }
 
   @Override

@@ -178,7 +178,7 @@ public class RegionData implements Sendable
     {
       _farmArray.setNumber(i, farmArea[i]);
     }
-    json.set("farmArea", _farmArray);
+    json.set("farm-area", _farmArray);
 
     return json;
   }
@@ -213,7 +213,7 @@ public class RegionData implements Sendable
       foodExported[i] = (int) exportArray.get(i);
     }
 
-    List<Object> farmArray = json.get("farmArea").array();
+    List<Object> farmArray = json.get("farm-area").array();
     for (int i = 0; i < farmArray.size(); i++)
     {
       farmArea[i] = (int) farmArray.get(i);

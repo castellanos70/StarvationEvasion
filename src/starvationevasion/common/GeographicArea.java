@@ -104,11 +104,6 @@ public class GeographicArea implements Sendable
     return perimeter;
   }
 
-
-
-
-
-
   public String toString()
   {
     return "GeographicArea{" +

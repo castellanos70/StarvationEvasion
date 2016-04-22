@@ -1017,6 +1017,7 @@ public class Model
 
   public void drawRain(Picture pic, int year, Constant.Month month)
   {
+    System.out.println("drawRain(year="+year+", " + month +")");
     MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
 
     Point pixel = new Point();
@@ -1087,7 +1088,7 @@ public class Model
 
       for (Constant.Month month : Constant.Month.values())
       {
-        model.drawRain(pic, 2009, month);
+        model.drawRain(pic, 2000+n, month);
       }
     }
 

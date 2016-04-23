@@ -18,7 +18,6 @@ import javax.crypto.IllegalBlockSizeException;
 import java.io.*;
 import java.net.Socket;
 import java.security.InvalidKeyException;
-import java.util.ArrayList;
 
 /**
  *  Worker that holds connection, writer, reader, and user information
@@ -37,7 +36,7 @@ public class Worker extends Thread
   private final DataOutputStream outStream;
   private final DataInputStream inStream;
   private User user = new User(username);
-  private String httpRequest;
+  private HttpParse httpRequest;
 
 
   public Worker (Socket client, Server server)
@@ -120,6 +119,34 @@ public class Worker extends Thread
   
   public void run ()
   {
+    if (writer instanceof HTTPWriteStrategy)
+    {
+      String destination;
+      destination = httpRequest.getRequestLine().replace("GET", "");
+      destination = destination.replace("PUT", "");
+
+      destination = destination.replace("HTTP/1.1", "");
+      destination = destination.replace("/", "").trim();
+      if (!destination.isEmpty())
+      {
+
+        Request request = null;
+        try
+        {
+          request = new Request(server.uptimeString(), destination, httpRequest.getMessageBody());
+        }
+        catch(EndpointException e)
+        {
+          send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "Not found"));
+          shutdown();
+        }
+
+        handler.handle(request);
+      }
+
+      shutdown();
+    }
+
 
     while(isRunning)
     {
@@ -221,5 +248,10 @@ public class Worker extends Thread
   public User getUser()
   {
     return user;
+  }
+
+  public void handleDirectly (HttpParse paresr)
+  {
+    this.httpRequest = paresr;
   }
 }

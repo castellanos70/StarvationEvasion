@@ -108,7 +108,7 @@ public class AI
     }
     isRunning = true;
 
-    Util.startServerHandshake(clientSocket, rsaKey, "JavaClient");
+    Util.startServerHandshake(clientSocket, rsaKey, Util.Accept.POJO);
 
     return true;
 

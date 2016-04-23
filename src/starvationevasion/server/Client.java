@@ -114,7 +114,7 @@ class Client
     isRunning = true;
     // write.println("client");
 
-    Util.startServerHandshake(clientSocket, rsaKey, "client");
+    Util.startServerHandshake(clientSocket, rsaKey, Util.Accept.JSON);
     return true;
 
   }

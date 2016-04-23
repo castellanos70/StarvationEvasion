@@ -27,7 +27,10 @@ public class JavaObjectWriteStrategy extends AbstractWriteStrategy
   }
 
   @Override
-  public void write (Sendable s) throws IOException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException
+  public void write (Sendable s) throws IOException,
+                                        BadPaddingException,
+                                        InvalidKeyException,
+                                        IllegalBlockSizeException
   {
     Serializable serializable = s;
 

@@ -1,5 +1,7 @@
 package starvationevasion.common;
 
+import starvationevasion.server.model.DataType;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -12,7 +14,6 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import static starvationevasion.common.Constant.ANON_NAME_ARRAY;
 
@@ -79,7 +80,8 @@ public class Util
     return null;
   }
 
-  public static void startServerHandshake (Socket s, KeyPair keyPair, String streamType)
+
+  public static void startServerHandshake (Socket s, KeyPair keyPair, DataType accept)
   {
     // first
     byte[] publicKey = keyPair.getPublic().getEncoded();
@@ -89,7 +91,12 @@ public class Util
     {
       PrintWriter write = new PrintWriter(s.getOutputStream(), true);
 
-      write.print("RSA-Socket-Key: " + pubKeyStr + "\n" + streamType +"\n");
+      write.print("GET / HTTP/1.1" + "\r\n" +
+                          "RSA-Socket-Key: " + pubKeyStr + "\r\n" +
+                          "Accept: " + accept.toString() +"\r\n" +
+                          "Connection: Upgrade\r\n"+
+                          "\r\n");
+
       write.flush();
     }
     catch(IOException e)

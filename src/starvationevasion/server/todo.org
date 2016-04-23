@@ -44,11 +44,11 @@
    String secWsAccept =
    Base64.encodeBytes(sha.digest((requestMap.get("Sec-WebSocket-Key") + wstring).getBytes()));
    #+END_SRC
-** TODO Web-client looses connection when world data is being sent	:BUG:
+** DONE Web-client looses connection when world data is being sent      :BUG:
    This is due to there being too much data being sent to client
    For now ~WorldData.java~'s toJSON is only sending US regions 
    until we either gzip it.
-** TODO Disconnect is not complete					:BUG:
+** DONE Disconnect is not complete                                      :BUG:
    the socket is not completely closing.
    to see run ./Game monitor run web-client and refresh page. you can
    see the connection stays in CLOSE_WAIT

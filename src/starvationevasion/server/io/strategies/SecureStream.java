@@ -18,13 +18,15 @@ abstract class SecureStream implements Encryptable
   private SecretKey key;
   private Cipher aesCipher;
 
-  public SecureStream setEncrypted (boolean encrypted) throws NoSuchAlgorithmException, NoSuchPaddingException
+  public SecureStream setEncrypted (boolean encrypted) throws NoSuchAlgorithmException,
+                                                              NoSuchPaddingException
   {
     return setEncrypted(encrypted, null);
   }
 
   @Override
-  public SecureStream setEncrypted (boolean encrypted, SecretKey key) throws NoSuchPaddingException, NoSuchAlgorithmException
+  public SecureStream setEncrypted (boolean encrypted, SecretKey key) throws NoSuchPaddingException,
+                                                                             NoSuchAlgorithmException
   {
     this.key = key;
     isEncrypted = encrypted;
@@ -41,20 +43,26 @@ abstract class SecureStream implements Encryptable
   }
 
   @Override
-  public byte[] encrypt (byte[] msg) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException
+  public byte[] encrypt (byte[] msg) throws InvalidKeyException,
+                                            BadPaddingException,
+                                            IllegalBlockSizeException
   {
     aesCipher.init(Cipher.ENCRYPT_MODE, key);
     return aesCipher.doFinal(msg);
   }
 
   @Override
-  public byte[] decrypt (byte[] msg) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException
+  public byte[] decrypt (byte[] msg) throws InvalidKeyException,
+                                            BadPaddingException,
+                                            IllegalBlockSizeException
   {
     aesCipher.init(Cipher.DECRYPT_MODE, key);
     return aesCipher.doFinal(msg);
   }
 
-  protected String decrypt(String data) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException
+  protected String decrypt(String data) throws BadPaddingException,
+                                               InvalidKeyException,
+                                               IllegalBlockSizeException
   {
     byte[] dataBytes = DatatypeConverter.parseBase64Binary(data.trim());
 
@@ -63,20 +71,29 @@ abstract class SecureStream implements Encryptable
     return sl;
   }
 
-  protected String encrypt(String data) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException
+  protected String encrypt(String data) throws BadPaddingException,
+                                               InvalidKeyException,
+                                               IllegalBlockSizeException
   {
     byte[] _data = data.getBytes();
     String ss = DatatypeConverter.printBase64Binary(encrypt(_data));
     return ss;
   }
 
-  protected Serializable encrypt(Serializable data) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException, IOException
+  protected Serializable encrypt(Serializable data) throws BadPaddingException,
+                                                           InvalidKeyException,
+                                                           IllegalBlockSizeException,
+                                                           IOException
   {
     aesCipher.init(Cipher.ENCRYPT_MODE, key);
     return new SealedObject(data, aesCipher);
   }
 
-  protected Serializable decrypt(Serializable data) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException, IOException, ClassNotFoundException
+  protected Serializable decrypt(Serializable data) throws BadPaddingException,
+                                                           InvalidKeyException,
+                                                           IllegalBlockSizeException,
+                                                           IOException,
+                                                           ClassNotFoundException
   {
     aesCipher.init(Cipher.DECRYPT_MODE, key);
     return (Serializable) ((SealedObject) data).getObject(aesCipher);

@@ -18,7 +18,6 @@ import javax.crypto.IllegalBlockSizeException;
 import java.io.*;
 import java.net.Socket;
 import java.security.InvalidKeyException;
-import java.util.ArrayList;
 
 /**
  *  Worker that holds connection, writer, reader, and user information
@@ -37,7 +36,7 @@ public class Worker extends Thread
   private final DataOutputStream outStream;
   private final DataInputStream inStream;
   private User user = new User(username);
-  private String httpRequest;
+  private HttpParse httpRequest;
 
 
   public Worker (Socket client, Server server)
@@ -120,15 +119,41 @@ public class Worker extends Thread
   
   public void run ()
   {
+    if (writer instanceof HTTPWriteStrategy)
+    {
+      String destination;
+      destination = httpRequest.getRequestLine().replace("GET", "");
+      destination = destination.replace("PUT", "");
+
+      destination = destination.replace("HTTP/1.1", "");
+      destination = destination.replace("/", "").trim();
+      if (!destination.isEmpty())
+      {
+
+        Request request = null;
+        try
+        {
+          request = new Request(server.uptimeString(), destination, httpRequest.getMessageBody());
+        }
+        catch(EndpointException e)
+        {
+          send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "Not found"));
+          shutdown();
+        }
+
+        handler.handle(request);
+      }
+
+      shutdown();
+    }
+
 
     while(isRunning)
     {
       try
       {
         // need to refactor to be able to replace abstract our the
-        Object _raw = null;
-
-        _raw = reader.read();
+        Object _raw = reader.read();
 
         Request request = null;
 
@@ -150,7 +175,7 @@ public class Worker extends Thread
           String[] arr = string.split("\\s+");
           if (arr.length < 2)
           {
-            send(new ResponseFactory().build(server.uptime(), null, Type.BROADCAST, "Invalid command args"));
+            send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "'" + _raw + "' is an invalid command"));
             continue;
           }
 
@@ -162,7 +187,7 @@ public class Worker extends Thread
       catch(EndpointException e)
       {
         System.out.println("Invalid endpoint!");
-        send(new ResponseFactory().build(server.uptime(), null, Type.BROADCAST, "Invalid endpoint"));
+        send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "Invalid endpoint"));
       }
       catch(IOException e)
       {
@@ -173,19 +198,22 @@ public class Worker extends Thread
       catch(ClassNotFoundException e)
       {
         System.out.println("Invalid Class was received");
-        send(new ResponseFactory().build(server.uptime(), null, Type.BROADCAST, "Invalid Class"));
+        send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "Invalid Class"));
       }
       catch(BadPaddingException e)
       {
         System.out.println("Error padding encryption");
+        send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "Invalid padding"));
       }
       catch(IllegalBlockSizeException e)
       {
         System.out.println("Block is too large");
+        send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "Invalid Encryption"));
       }
       catch(InvalidKeyException e)
       {
         System.out.println("Key is incorrect.");
+        send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "Invalid Key"));
       }
     }
   }
@@ -221,5 +249,10 @@ public class Worker extends Thread
   public User getUser()
   {
     return user;
+  }
+
+  public void handleDirectly (HttpParse paresr)
+  {
+    this.httpRequest = paresr;
   }
 }

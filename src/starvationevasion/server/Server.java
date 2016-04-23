@@ -15,14 +15,20 @@ import starvationevasion.server.model.db.backends.Backend;
 import starvationevasion.server.model.db.backends.Sqlite;
 import starvationevasion.sim.Simulator;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.net.*;
-import java.security.*;
+import java.security.KeyFactory;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.*;
-import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
@@ -165,15 +171,16 @@ public class Server
       }
       catch(IOException e)
       {
-        // System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
-        // e.printStackTrace();
+//         System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
+         //e.printStackTrace();
       }
-      catch(HandshakeException e)
+      catch(NetworkException e)
       {
         if (worker != null)
         {
           worker.shutdown();
           System.out.println(dateFormat.format(date) + " Server: Failed to complete handshake. Closing connection");
+          System.out.println("\t" + e.getMessage());
         }
       }
       catch(Exception e)
@@ -322,7 +329,7 @@ public class Server
       user.setHand(new ArrayList<>());
       user.setPlaying(false);
     }
-    playerCache.clear();
+    playerCache = new ArrayList<>();
     simulator.init();
 
     for (int i = 0; i < _drafted.length; i++)
@@ -624,28 +631,41 @@ public class Server
    *
    * @return boolean true if web-socket
    */
-  private void setStreamType (Worker worker, Socket s) throws NoSuchAlgorithmException, NoSuchPaddingException, IOException, InterruptedException
+  private void setStreamType (Worker worker, Socket s) throws
+                                                       NoSuchAlgorithmException,
+                                                       NoSuchPaddingException,
+                                                       IOException,
+                                                       InterruptedException
   {
     // Handling websocket
-    // StringBuilder reading = new StringBuilder();
+     StringBuilder reading = new StringBuilder();
     String line = "";
-    String key = "";
     String socketKey = "";
-    byte[] socketKeyBytes = new byte[128];
+    byte[] encryptedKey = new byte[128];
     ReadStrategy<String> reader = worker.getReader();
-    SecretKey myDesKey = null;
+    SecretKey secretKey = null;
     boolean encrypted = false;
     boolean success = false;
     int secs = 0;
+    int length = 0;
     s.setSoTimeout(3000);
     ReadStrategy discoveredReader = worker.getReader();
     WriteStrategy discoveredWriter = worker.getWriter();
+
+    HttpParse paresr = new HttpParse();
 
     while(secs < 3)
     {
       try
       {
         line = reader.read();
+        reading.append(line);
+        if (line.startsWith("Content-Length"))
+        {
+          String number = line.replaceAll("[^0-9]", "").trim();
+          length = Integer.valueOf(number);
+        }
+        secs = 0;
       }
       catch(SocketTimeoutException e)
       {
@@ -658,85 +678,109 @@ public class Server
         return;
       }
 
-      //System.out.println((int)line.charAt(0));
-      // check if the end of line or if data was found.
-      if (line.trim().equals("client") || line.equals("\r\n") || line.trim().equals("JavaClient"))
+      if(line.equals("\r\n"))
       {
-
-        if (line.contains("JavaClient"))
-        {
-          discoveredReader = new JavaObjectReadStrategy(s, null);
-          discoveredWriter = new JavaObjectWriteStrategy(s, null);
-          success = true;
-          break;
-        }
-        else if (line.contains("client"))
-        {
-          success = true;
-          break;
-        }
-        else if(line.equals("\r\n"))
-        {
-          // use the plain text writer to send following data
-          // worker.setWriter(new PlainTextWriteStrategy(s, null));
-          // Send plan text to the web socket.
-          worker.getWriter().getStream().writeUTF("HTTP/1.1 101 Web Socket Protocol Handshake\n" +
-                                                          "Upgrade: WebSocket\n" +
-                                                          "Connection: Upgrade\n" +
-                                                          "Sec-WebSocket-Accept: " + socketKey + "\r\n\r\n");
-
-          worker.getWriter().getStream().flush();
-          // assume the client accepted socket key and set up stream readers
-          discoveredReader = new WebSocketReadStrategy(s, null);
-          discoveredWriter =  new WebSocketWriteStrategy(s, null);
-          success = true;
-          break;
-        }
-
-      }
-      if (line.contains("GET"))
-      {
-        discoveredWriter  = new HTTPWriteStrategy(s, null);
-        Payload _data = new Payload();
-        _data.putMessage("HTTP responses are coming soon!");
-        worker.send(new ResponseFactory().build(uptime(), _data, Type.ERROR));
+        success = true;
         break;
-      }
-
-      // reading.append(line);
-      if (line.contains("Sec-WebSocket-Key:"))
-      {
-        // removing whitespace (includes nl, cr)
-        key = line.replace("Sec-WebSocket-Key: ", "").trim();
-        socketKey = Server.handshake(key);
-      }
-      else if (line.contains("RSA-Socket-Key:"))
-      {
-        encrypted = true;
-        key = line.replace("RSA-Socket-Key: ", "").trim();
-
-        KeyGenerator keygenerator = KeyGenerator.getInstance(Constant.DATA_ALGORITHM);
-        keygenerator.init(128);
-
-        myDesKey = keygenerator.generateKey();
-        socketKeyBytes = Server.asymmetricHandshake(Base64.getEncoder().encodeToString(myDesKey.getEncoded()), key);
       }
     }
 
     if (!success)
     {
-      throw new HandshakeException();
+      throw new HandshakeException("Header was not properly read.");
     }
+
+    if (length > 0)
+    {
+      byte[] messageBytes = new byte[length];
+      reader.getStream().read(messageBytes);
+      reading.append(new String(messageBytes));
+    }
+
+    paresr.parseRequest(reading.toString());
+
+    String connectionType = paresr.getHeaderParam("Connection");
+    String acceptType = paresr.getHeaderParam("Accept");
+
+
+    if (connectionType.equals("Upgrade"))
+    {
+      System.out.println(dateFormat.format(date) + " Server: Connected to socket.");
+      if (acceptType == null || acceptType.equals(DataType.JSON.toString()))
+      {
+        if (paresr.getHeaderParam("User-Agent") != null)
+        {
+          System.out.println("\tServer: Web client.");
+          discoveredReader = new WebSocketReadStrategy(s, null);
+          discoveredWriter = new WebSocketWriteStrategy(s, null);
+        }
+        else
+        {
+          System.out.println("\tServer: JSON client.");
+          discoveredReader = new SocketReadStrategy(s, null);
+          discoveredWriter = new SocketWriteStrategy(s, null);
+        }
+      }
+      else if (acceptType.equals(DataType.POJO.toString()))
+      {
+        System.out.println("\tServer: Java client.");
+        discoveredReader = new JavaObjectReadStrategy(s, null);
+        discoveredWriter = new JavaObjectWriteStrategy(s, null);
+      }
+      else if (acceptType.equals(DataType.TEXT.toString()))
+      {
+        throw new NotImplementedException();
+      }
+
+      if (paresr.getHeaderParam("RSA-Socket-Key") != null)
+      {
+        System.out.println("\tServer: Encrypted Socket.");
+        KeyGenerator keygenerator = KeyGenerator.getInstance(Constant.DATA_ALGORITHM);
+        keygenerator.init(128);
+
+        secretKey = keygenerator.generateKey();
+        encryptedKey = Server.asymmetricHandshake(
+                Base64.getEncoder().encodeToString(secretKey.getEncoded()),
+                paresr.getHeaderParam("RSA-Socket-Key"));
+
+        encrypted = true;
+      }
+      else if (paresr.getHeaderParam("Sec-WebSocket-Key") != null)
+      {
+        System.out.println("\tServer: Encrypted WS.");
+        socketKey = Server.handshake(paresr.getHeaderParam("Sec-WebSocket-Key"));
+        encrypted = true;
+      }
+    }
+    else if (connectionType.equals("keep-alive"))
+    {
+      System.out.println(dateFormat.format(date) + " Server: HTTP request.");
+      worker.setWriter(new HTTPWriteStrategy(s, null));
+      worker.handleDirectly(paresr);
+      return;
+    }
+
+
     // setting back to default blocking
     s.setSoTimeout(0);
     if (encrypted)
     {
-      worker.getWriter().getStream().write(socketKeyBytes);
+      if (paresr.getHeaderParam("User-Agent") != null)
+      {
+        worker.getWriter().getStream().writeUTF("HTTP/1.1 101 Web Socket Protocol Handshake\n" +
+                                                        "Upgrade: WebSocket\n" +
+                                                        "Connection: Upgrade\n" +
+                                                        "Sec-WebSocket-Accept: " + socketKey + "\r\n\r\n");
+      }
+      else
+      {
+        worker.getWriter().getStream().write(encryptedKey);
+      }
       worker.getWriter().getStream().flush();
       worker.setReader(discoveredReader);
       worker.setWriter(discoveredWriter);
-      worker.getWriter().setEncrypted(true, myDesKey);
-      worker.getReader().setEncrypted(true, myDesKey);
+      worker.getWriter().setEncrypted(true, secretKey);
+      worker.getReader().setEncrypted(true, secretKey);
     }
     else
     {
@@ -744,7 +788,6 @@ public class Server
       worker.setReader(discoveredReader);
       worker.setWriter(discoveredWriter);
     }
-
 
   }
 
@@ -913,7 +956,10 @@ public class Server
         }
         catch(Exception e)
         {
-          System.out.println("Could not advance game.");
+          System.out.println("Could not advance. Stopping game.");
+          System.out.println("Error: " + e.getMessage());
+          stopGame();
+          return;
         }
       }
     }

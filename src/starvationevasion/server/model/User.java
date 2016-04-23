@@ -32,7 +32,7 @@ public class User implements Encryptable, Sendable
   private EnumRegion region;
   private volatile ArrayList<EnumPolicy> hand;
 
-  public User()
+  public User ()
   {
     this("");
   }

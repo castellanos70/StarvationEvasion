@@ -696,7 +696,7 @@ public class Server
     if (connectionType.equals("Upgrade"))
     {
       System.out.println(dateFormat.format(date) + " Server: Connected to socket.");
-      if (acceptType == null || acceptType.equals(Util.Accept.JSON.toString()))
+      if (acceptType == null || acceptType.equals(DataType.JSON.toString()))
       {
         if (paresr.getHeaderParam("User-Agent") != null)
         {
@@ -711,13 +711,13 @@ public class Server
           discoveredWriter = new SocketWriteStrategy(s, null);
         }
       }
-      else if (acceptType.equals(Util.Accept.POJO.toString()))
+      else if (acceptType.equals(DataType.POJO.toString()))
       {
         System.out.println("\tServer: Java client.");
         discoveredReader = new JavaObjectReadStrategy(s, null);
         discoveredWriter = new JavaObjectWriteStrategy(s, null);
       }
-      else if (acceptType.equals(Util.Accept.TEXT.toString()))
+      else if (acceptType.equals(DataType.TEXT.toString()))
       {
         throw new NotImplementedException();
       }

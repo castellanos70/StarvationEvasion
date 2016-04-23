@@ -7,6 +7,7 @@ package starvationevasion.server;
 
 import starvationevasion.common.Constant;
 import starvationevasion.common.Util;
+import starvationevasion.server.model.DataType;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -114,7 +115,7 @@ class Client
     isRunning = true;
     // write.println("client");
 
-    Util.startServerHandshake(clientSocket, rsaKey, Util.Accept.JSON);
+    Util.startServerHandshake(clientSocket, rsaKey, DataType.JSON);
     return true;
 
   }

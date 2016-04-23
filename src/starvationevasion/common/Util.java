@@ -66,9 +66,7 @@ public class Util
     byte[] sdf = new byte[128];
     try
     {
-      System.out.println("Gettting the key handshake.");
       s.getInputStream().read(sdf);
-      System.out.println(Arrays.toString(sdf));
       String decryptedMsg = decrypt(sdf, keyPair.getPrivate());
 
       byte[] msg = Base64.getDecoder().decode(decryptedMsg);

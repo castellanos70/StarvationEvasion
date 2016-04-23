@@ -21,7 +21,10 @@ public interface WriteStrategy extends Encryptable
    * @param <T> Class of the object; however, must be Sendable
    * @throws IOException When there is an error writing to stream
    */
-  <T extends Sendable> void write (T s) throws IOException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException;
+  <T extends Sendable> void write (T s) throws IOException,
+                                               BadPaddingException,
+                                               InvalidKeyException,
+                                               IllegalBlockSizeException;
 
   /**
    * Close the stream

@@ -34,9 +34,6 @@ class Client
   // read the socket
   private BufferedReader reader;
 
-  // time of server start
-  private long startNanoSec;
-  private volatile long lastInventoryUpdate;
   private Scanner keyboard;
   // writes to user
   private ClientListener listener;
@@ -54,8 +51,10 @@ class Client
 
     keyboard = new Scanner(System.in);
 
-    while (!openConnection(host, portNumber))
+    if (!openConnection(host, portNumber))
     {
+      System.out.println("Could not connect. Exiting...");
+      System.exit(-1);
     }
 
     listener = new ClientListener();
@@ -188,13 +187,6 @@ class Client
     }
   }
 
-
-  private String timeDiff()
-  {
-    long nanoSecDiff = System.nanoTime() - startNanoSec;
-    double secDiff = (double) nanoSecDiff / 1000000000.0;
-    return String.format("%.3f", secDiff);
-  }
 
   public static void main(String[] args)
   {

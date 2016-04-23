@@ -22,7 +22,7 @@ public class HttpParse
   /**
    * Parse and HTTP/Handshake request.
    */
-  public void parseRequest (String request) throws IOException
+  public void parseRequest (String request) throws HttpException, IOException
   {
     BufferedReader reader = new BufferedReader(new StringReader(request));
 
@@ -78,21 +78,21 @@ public class HttpParse
   }
 
 
-  private void putHeader (String header)
+  private void putHeader (String header) throws HttpException
   {
     int idx = header.indexOf(":");
     if (idx == -1)
     {
-      throw new RuntimeException();
+      throw new HttpException("Header token is not properly formatted");
     }
     _headers.put(header.substring(0, idx), header.substring(idx + 1, header.length()).trim());
   }
 
-  private void setRequestLine (String requestLine)
+  private void setRequestLine (String requestLine) throws HttpException
   {
     if (requestLine == null || requestLine.length() == 0)
     {
-      throw new RuntimeException();
+      throw new HttpException("Request line is not properly formatted");
     }
     _requestLine = requestLine;
   }

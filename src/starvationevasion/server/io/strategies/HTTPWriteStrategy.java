@@ -25,7 +25,10 @@ public class HTTPWriteStrategy extends AbstractWriteStrategy
   }
 
   @Override
-  public void write (Sendable s) throws IOException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException
+  public void write (Sendable s) throws IOException,
+                                        BadPaddingException,
+                                        InvalidKeyException,
+                                        IllegalBlockSizeException
   {
     String _jsonString = s.toJSON().toJSON();
     StringBuilder _sb = new StringBuilder();

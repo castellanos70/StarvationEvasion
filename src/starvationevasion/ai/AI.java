@@ -321,7 +321,10 @@ public class AI
     }
   }
 
-  private Response readObject () throws IOException, ClassNotFoundException, InvalidKeyException, NoSuchAlgorithmException
+  private Response readObject () throws IOException,
+                                        ClassNotFoundException,
+                                        InvalidKeyException,
+                                        NoSuchAlgorithmException
   {
     int ch1 = reader.read();
     int ch2 = reader.read();

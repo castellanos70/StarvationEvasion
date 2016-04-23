@@ -171,15 +171,16 @@ public class Server
       }
       catch(IOException e)
       {
-        // System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
-        // e.printStackTrace();
+//         System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
+         //e.printStackTrace();
       }
-      catch(HandshakeException e)
+      catch(NetworkException e)
       {
         if (worker != null)
         {
           worker.shutdown();
           System.out.println(dateFormat.format(date) + " Server: Failed to complete handshake. Closing connection");
+          System.out.println("\t" + e.getMessage());
         }
       }
       catch(Exception e)
@@ -630,7 +631,11 @@ public class Server
    *
    * @return boolean true if web-socket
    */
-  private void setStreamType (Worker worker, Socket s) throws NoSuchAlgorithmException, NoSuchPaddingException, IOException, InterruptedException
+  private void setStreamType (Worker worker, Socket s) throws
+                                                       NoSuchAlgorithmException,
+                                                       NoSuchPaddingException,
+                                                       IOException,
+                                                       InterruptedException
   {
     // Handling websocket
      StringBuilder reading = new StringBuilder();
@@ -678,6 +683,11 @@ public class Server
         success = true;
         break;
       }
+    }
+
+    if (!success)
+    {
+      throw new HandshakeException("Header was not properly read.");
     }
 
     if (length > 0)
@@ -751,10 +761,6 @@ public class Server
     }
 
 
-    if (!success)
-    {
-      throw new HandshakeException();
-    }
     // setting back to default blocking
     s.setSoTimeout(0);
     if (encrypted)
@@ -782,6 +788,7 @@ public class Server
       worker.setReader(discoveredReader);
       worker.setWriter(discoveredWriter);
     }
+
   }
 
   /**

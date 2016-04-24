@@ -91,7 +91,8 @@ public class Server
 
 
     // startNanoSec = System.nanoTime();
-    simulator = null;//new Simulator();
+    simulator = new Simulator();
+    // simulator = null;
 
     try
     {

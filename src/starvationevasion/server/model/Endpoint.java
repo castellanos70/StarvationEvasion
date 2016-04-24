@@ -6,7 +6,7 @@ package starvationevasion.server.model;
  */
 
 
-public enum Endpoint
+public enum Endpoint implements Renderable<Void>
 {
   /**
    * Create a User
@@ -15,12 +15,26 @@ public enum Endpoint
    */
   USER_CREATE("user_create"),
 
+  USER_NEW("user_new") {
+    @Override
+    public String getViewPath ()
+    {
+      return "user/new.html";
+    }
+  },
+
   /**
    * Get more information about a user
    * Handled by {@link starvationevasion.server.handlers.UserHandler}
    * Required Payload: username:string or region:EnumRegion
    */
-  USER_READ("user_read"),
+  USER_READ("user_read"){
+    @Override
+    public String getViewPath ()
+    {
+      return "user/show.html";
+    }
+  },
 
   /**
    * Update current user "profile"
@@ -34,7 +48,13 @@ public enum Endpoint
    * Handled by {@link starvationevasion.server.handlers.UserHandler}
    * No Payload
    */
-  USERS("users"),
+  USERS("users"){
+    @Override
+    public String getViewPath ()
+    {
+      return "user/list.html";
+    }
+  },
 
   /**
    * Get a list of all the logged in users
@@ -192,10 +212,19 @@ public enum Endpoint
    */
   DONE("done"),
 
-  DELETE_AND_DRAW_CARDS("delete_and_draw_cards");
+  DELETE_AND_DRAW_CARDS("delete_and_draw_cards"),
+
+  NOT_FOUND("not_found") {
+    @Override
+    public String getViewPath ()
+    {
+      return "404.html";
+    }
+  };
 
 
   private String url;
+  private String viewPath = "base.html";
 
   Endpoint(String url)
   {
@@ -205,5 +234,18 @@ public enum Endpoint
   public String getUrl ()
   {
     return url;
+  }
+
+  @Override
+  public String getViewPath ()
+  {
+   return viewPath;
+  }
+
+  @Override
+  public Void setViewPath(String s)
+  {
+    viewPath = s;
+    return null;
   }
 }

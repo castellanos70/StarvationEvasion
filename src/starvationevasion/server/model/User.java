@@ -31,6 +31,7 @@ public class User implements Encryptable, Sendable
   private String password;
   private EnumRegion region;
   private volatile ArrayList<EnumPolicy> hand;
+   private boolean anonymous = false;
 
   public User ()
   {
@@ -300,5 +301,25 @@ public class User implements Encryptable, Sendable
     drafts = 0;
     draftVoteCard = 0;
     isDone = false;
+  }
+
+  public void setAnonymous (boolean anonymous)
+  {
+    this.anonymous = anonymous;
+  }
+
+  public boolean isAnonymous ()
+  {
+    return anonymous;
+  }
+
+  @Override
+  public boolean equals (Object obj)
+  {
+    if (obj instanceof User)
+    {
+      return this.username.equals(((User) obj).getUsername());
+    }
+    return false;
   }
 }

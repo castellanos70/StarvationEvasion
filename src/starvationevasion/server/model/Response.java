@@ -7,6 +7,7 @@ package starvationevasion.server.model;
 
 public class Response extends NetworkData
 {
+  private Request initiator;
 
   public <T extends Payload> Response (double time, T data, String msg, Type type)
   {
@@ -33,13 +34,17 @@ public class Response extends NetworkData
     super(time, data, type);
   }
 
-//  public Response(double time, Payload daya)
-//  {
-//
-//  }
 
-//  public Response(double time, String daya)
-//  {
-//
-//  }
+
+  public Request getInitiator ()
+  {
+    return initiator;
+  }
+
+  public Response setInitiator (Request request)
+  {
+    initiator = request;
+    return this;
+  }
+
 }

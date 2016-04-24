@@ -7,6 +7,9 @@ package starvationevasion.server;
 
 import starvationevasion.common.*;
 import starvationevasion.server.io.*;
+import starvationevasion.server.io.formatters.Format;
+import starvationevasion.server.io.formatters.JSONFormat;
+import starvationevasion.server.io.formatters.POJOFormat;
 import starvationevasion.server.io.strategies.*;
 import starvationevasion.server.model.*;
 import starvationevasion.server.model.db.Transaction;
@@ -88,7 +91,7 @@ public class Server
 
 
     // startNanoSec = System.nanoTime();
-    simulator = new Simulator();
+    simulator = null;//new Simulator();
 
     try
     {
@@ -172,7 +175,7 @@ public class Server
       catch(IOException e)
       {
 //         System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
-         //e.printStackTrace();
+//         e.printStackTrace();
       }
       catch(NetworkException e)
       {
@@ -185,7 +188,7 @@ public class Server
       }
       catch(Exception e)
       {
-        // e.printStackTrace();
+         e.printStackTrace();
       }
       finally
       {
@@ -651,6 +654,7 @@ public class Server
     s.setSoTimeout(3000);
     ReadStrategy discoveredReader = worker.getReader();
     WriteStrategy discoveredWriter = worker.getWriter();
+    Format<?,?> formatter = null;
 
     HttpParse paresr = new HttpParse();
 
@@ -708,7 +712,7 @@ public class Server
       System.out.println(dateFormat.format(date) + " Server: Connected to socket.");
       if (acceptType == null || acceptType.equals(DataType.JSON.toString()))
       {
-        if (paresr.getHeaderParam("User-Agent") != null)
+        if (paresr.getHeaderParam("Upgrade") != null && paresr.getHeaderParam("Upgrade").equals("websocket"))
         {
           System.out.println("\tServer: Web client.");
           discoveredReader = new WebSocketReadStrategy(s, null);
@@ -720,12 +724,14 @@ public class Server
           discoveredReader = new SocketReadStrategy(s, null);
           discoveredWriter = new SocketWriteStrategy(s, null);
         }
+        discoveredWriter.setFormatter(DataType.JSON);
       }
       else if (acceptType.equals(DataType.POJO.toString()))
       {
         System.out.println("\tServer: Java client.");
         discoveredReader = new JavaObjectReadStrategy(s, null);
         discoveredWriter = new JavaObjectWriteStrategy(s, null);
+        discoveredWriter.setFormatter(DataType.POJO);
       }
       else if (acceptType.equals(DataType.TEXT.toString()))
       {
@@ -755,7 +761,19 @@ public class Server
     else if (connectionType.equals("keep-alive"))
     {
       System.out.println(dateFormat.format(date) + " Server: HTTP request.");
-      worker.setWriter(new HTTPWriteStrategy(s, null));
+      discoveredWriter = new HTTPWriteStrategy(s, null);
+
+      if (acceptType.equals(DataType.JSON.toString()))
+      {
+        System.out.println("\tServer: JSON client.");
+        discoveredWriter.setFormatter(DataType.JSON);
+      }
+      else
+      {
+        System.out.println("\tServer: HTML client.");
+        discoveredWriter.setFormatter(DataType.HTML);
+      }
+      worker.setWriter(discoveredWriter);
       worker.handleDirectly(paresr);
       return;
     }
@@ -803,6 +821,10 @@ public class Server
       {
         User u = allConnections.remove(i).getUser();
         u.setLoggedIn(false);
+        if (u.isAnonymous())
+        {
+          userList.remove(u);
+        }
         con++;
       }
     }

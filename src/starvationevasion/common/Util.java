@@ -68,7 +68,6 @@ public class Util
     {
       s.getInputStream().read(sdf);
       String decryptedMsg = decrypt(sdf, keyPair.getPrivate());
-      System.out.println(decryptedMsg);
 
       byte[] msg = Base64.getDecoder().decode(decryptedMsg);
       return  new SecretKeySpec(msg, "AES");

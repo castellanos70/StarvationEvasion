@@ -7,6 +7,7 @@ package starvationevasion.server;
 
 import starvationevasion.common.Util;
 import starvationevasion.server.handlers.Handler;
+import starvationevasion.server.handlers.LoginHandler;
 import starvationevasion.server.io.*;
 import starvationevasion.server.io.strategies.HTTPWriteStrategy;
 import starvationevasion.server.io.strategies.SocketReadStrategy;
@@ -15,9 +16,13 @@ import starvationevasion.server.model.*;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.*;
 import java.net.Socket;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.StringTokenizer;
 
 /**
  *  Worker that holds connection, writer, reader, and user information
@@ -41,6 +46,7 @@ public class Worker extends Thread
 
   public Worker (Socket client, Server server)
   {
+    this.user.setAnonymous(true);
     this.writer = new SocketWriteStrategy(client);
     this.reader = new SocketReadStrategy(client);
     this.outStream = writer.getStream();
@@ -51,6 +57,13 @@ public class Worker extends Thread
     this.server = server;
     this.handler = new Handler(server, this);
 
+  }
+
+  @Override
+  public synchronized void start ()
+  {
+    isRunning = true;
+    super.start();
   }
 
   /**
@@ -68,7 +81,7 @@ public class Worker extends Thread
    * Send message to client.
    *
    */
-  public synchronized <T extends Sendable> void send (T data)
+  public synchronized void send (Response data)
   {
     try
     {
@@ -93,6 +106,14 @@ public class Worker extends Thread
     {
       System.out.println("Error writing to stream");
       shutdown();
+    }
+    catch(NoSuchAlgorithmException e)
+    {
+      e.printStackTrace();
+    }
+    catch(NoSuchPaddingException e)
+    {
+      e.printStackTrace();
     }
 
   }
@@ -127,24 +148,41 @@ public class Worker extends Thread
 
       destination = destination.replace("HTTP/1.1", "");
       destination = destination.replace("/", "").trim();
+
+      // not supported
+//      if (false && httpRequest.getHeaderParam("Authorization") != null)
+//      {
+//        httpRequest.getHeaderParam("Authorization");
+//        String _rawAuth = httpRequest.getHeaderParam("Authorization").replace("Basic", "").trim();
+//        _rawAuth = new String(Base64.getDecoder().decode(_rawAuth));
+//        StringTokenizer tokenizer = new StringTokenizer(_rawAuth, ":");
+//
+//        if (tokenizer.countTokens() <= 1 || !LoginHandler.authenticate(server, this, tokenizer.nextToken(), tokenizer.nextToken()))
+//        {
+//          send(new ResponseFactory().build(server.uptime(), null, Type.AUTH_ERROR, "Incorrect username or password"));
+//          shutdown();
+//          return;
+//        }
+//      }
+
       if (!destination.isEmpty())
       {
 
         Request request = null;
-        try
+
+        request = new Request(server.uptimeString(), destination, httpRequest.getMessageBody());
+        if (request.getDestination() == Endpoint.NOT_FOUND)
         {
-          request = new Request(server.uptimeString(), destination, httpRequest.getMessageBody());
-        }
-        catch(EndpointException e)
-        {
-          send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "Not found"));
+          send(new ResponseFactory().build(server.uptime(), null, Type.NOT_FOUND, "Not found", request));
           shutdown();
+          return;
         }
 
         handler.handle(request);
       }
 
       shutdown();
+      return;
     }
 
 
@@ -180,14 +218,14 @@ public class Worker extends Thread
           }
 
           request = new Request(arr[0], arr[1], string);
+          if (request.getDestination() == Endpoint.NOT_FOUND)
+          {
+            send(new ResponseFactory().build(server.uptime(), null, Type.NOT_FOUND, "Not found", request));
+            continue;
+          }
         }
         // still need to be able to call handle
         handler.handle(request);
-      }
-      catch(EndpointException e)
-      {
-        System.out.println("Invalid endpoint!");
-        send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "Invalid endpoint"));
       }
       catch(IOException e)
       {

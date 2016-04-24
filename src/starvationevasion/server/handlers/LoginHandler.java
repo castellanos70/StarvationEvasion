@@ -30,7 +30,7 @@ public class LoginHandler extends AbstractHandler
       String uname = (String) request.getPayload().get("username");
       String pwd = (String) request.getPayload().get("password");
 
-      boolean auth = authenticate(uname, pwd);
+      boolean auth = authenticate(server, getClient(), uname, pwd);
       if (auth)
       {
         getClient().send(new ResponseFactory().build(server.uptime(),
@@ -52,7 +52,7 @@ public class LoginHandler extends AbstractHandler
     return false;
   }
 
-  private boolean authenticate(String username, String password)
+  public static boolean authenticate(Server server, Worker worker, String username, String password)
   {
     User s = server.getUserByUsername(username);
 
@@ -63,10 +63,10 @@ public class LoginHandler extends AbstractHandler
                                                                               password.getBytes()));
       if (s.getPassword().equals(hash))
       {
-        server.getUserList().remove(getClient().getUser());
+        server.getUserList().remove(worker.getUser());
         s.setLoggedIn(true);
-        getClient().setUser(s);
-        s.setWorker(getClient());
+        worker.setUser(s);
+        s.setWorker(worker);
         return true;
       }
     }

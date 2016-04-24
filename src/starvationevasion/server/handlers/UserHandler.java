@@ -27,6 +27,15 @@ public class UserHandler extends AbstractHandler
       getClient().getUser().isDone = true;
       return true;
     }
+    if (request.getDestination().equals(Endpoint.USER_NEW))
+    {
+      getClient().send(new ResponseFactory().build(server.uptime(),
+                                                   null,
+                                                   Type.USER,
+                                                   "",
+                                                   request));
+      return true;
+    }
     if (request.getDestination().equals(Endpoint.USER_CREATE))
     {
 
@@ -43,9 +52,9 @@ public class UserHandler extends AbstractHandler
         catch(Exception e)
         {
           getClient().send(new ResponseFactory().build(server.uptime(),
-                                                 null,
-                                                 Type.CREATE_ERROR, "Not a valid region. Remove completely to get a better result"
-          ));
+                                                       null,
+                                                       Type.CREATE_ERROR,
+                                                       "Not a valid region. Remove completely to get a better result"));
           return true;
         }
       }
@@ -69,7 +78,7 @@ public class UserHandler extends AbstractHandler
     {
       getClient().send(new ResponseFactory().build(server.uptime(),
                                              new Payload(server.getUserList()),
-                                             Type.USERS));
+                                             Type.USERS, "", request));
       return true;
     }
     else if (request.getDestination().equals(Endpoint.USERS_LOGGED_IN))

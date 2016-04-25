@@ -61,14 +61,26 @@ public enum Endpoint implements Renderable<Void>
    * Handled by {@link starvationevasion.server.handlers.UserHandler}
    * No Payload
    */
-  USERS_LOGGED_IN("users_logged_in"),
+  USERS_LOGGED_IN("users_logged_in"){
+    @Override
+    public String getViewPath ()
+    {
+      return USERS.getViewPath();
+    }
+  },
 
   /**
    * Get a list of all the users ready to play the game
    * Handled by {@link starvationevasion.server.handlers.UserHandler}
    * No Payload
    */
-  USERS_READY("users_ready"),
+  USERS_READY("users_ready"){
+    @Override
+    public String getViewPath ()
+    {
+      return USERS.getViewPath();
+    }
+  },
 
   /**
    * Login to the server

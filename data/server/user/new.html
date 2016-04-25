@@ -53,7 +53,7 @@
                 <button class="btn btn-default" id="create-btn">Create</button>
             </div>
             <div class="col-md-6">
-                <pre></pre>
+                <pre id="response"></pre>
             </div>
         </div>
 
@@ -68,7 +68,36 @@
         integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
         crossorigin="anonymous"></script>
 
+<script>
+    $( document ).ready(function() {
+        $('#create-btn').click(function () {
 
+            var data = {
+                username: $('#username').val(),
+                password: $('#pwd').val()
+            };
+
+            $.ajax({
+                url: '/user_create',
+                type: "POST",
+                data: JSON.stringify(data),
+                contentType: "application/json; charset=utf-8",
+                accepts: {
+                    text: "application/json"
+                },
+                dataType: "json",
+                success: function(data){
+                    $("#response").empty();
+                    $("#response").append(JSON.stringify(data, null, 2));
+                }
+            });
+
+        });
+
+
+    });
+
+</script>
 </body>
 
 </html>

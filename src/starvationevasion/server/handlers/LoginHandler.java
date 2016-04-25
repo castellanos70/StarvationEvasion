@@ -24,7 +24,9 @@ public class LoginHandler extends AbstractHandler
       {
         getClient().send(new ResponseFactory().build(server.uptime(),
                                                      getClient().getUser(),
-                                                     Type.ERROR, "Already logged in"));
+                                                     Type.ERROR,
+                                                     "Already logged in",
+                                                     request));
         return true;
       }
       String uname = (String) request.getPayload().get("username");
@@ -34,16 +36,18 @@ public class LoginHandler extends AbstractHandler
       if (auth)
       {
         getClient().send(new ResponseFactory().build(server.uptime(),
-                                               server.getUserByUsername(uname),
-                                               Type.AUTH_SUCCESS, "SUCCESS"
-        ));
+                                                     server.getUserByUsername(uname),
+                                                     Type.AUTH_SUCCESS,
+                                                     "SUCCESS",
+                                                     request));
       }
       else
       {
         getClient().send(new ResponseFactory().build(server.uptime(),
-                                               null,
-                                               Type.AUTH_ERROR, "Username or password incorrect."
-        ));
+                                                     null,
+                                                     Type.AUTH_ERROR,
+                                                     "Username or password incorrect.",
+                                                     request));
       }
 
       return true;

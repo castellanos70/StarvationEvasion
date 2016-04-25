@@ -21,7 +21,11 @@ public class PermissionFilter extends AbstractHandler
     boolean isLoggedIn = !getClient().getUser().isLoggedIn();
     if (isLoggedIn)
     {
-      getClient().send(new ResponseFactory().build(server.uptime(), null, Type.AUTH, "You must be logged in."));
+      getClient().send(new ResponseFactory().build(server.uptime(),
+                                                   null,
+                                                   Type.AUTH,
+                                                   "You must be logged in.",
+                                                   request));
     }
     return isLoggedIn;
   }

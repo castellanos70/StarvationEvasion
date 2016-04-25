@@ -145,6 +145,7 @@ public class Worker extends Thread
       String destination;
       destination = httpRequest.getRequestLine().replace("GET", "");
       destination = destination.replace("PUT", "");
+      destination = destination.replace("POST", "");
 
       destination = destination.replace("HTTP/1.1", "");
       destination = destination.replace("/", "").trim();

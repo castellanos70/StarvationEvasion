@@ -764,7 +764,7 @@ public class Server
       System.out.println(dateFormat.format(date) + " Server: HTTP request.");
       discoveredWriter = new HTTPWriteStrategy(s, null);
 
-      if (acceptType.equals(DataType.JSON.toString()))
+      if (acceptType.contains(DataType.JSON.toString()))
       {
         System.out.println("\tServer: JSON client.");
         discoveredWriter.setFormatter(DataType.JSON);

@@ -22,31 +22,36 @@ public class HTMLFormat extends Format<Sendable, String>
   {
 
     FileInputStream fileIn = null;
+    byte[] data1 = new byte[0];
+    boolean filenotfound = false;
     try
     {
-      fileIn = new FileInputStream("data/server/"+ ((Response) data).getInitiator().getDestination().getViewPath());
+      fileIn = new FileInputStream("data/server/"+ ((Response) data).getView());
     }
     catch(Exception e)
     {
       e.printStackTrace();
+      filenotfound = true;
     }
 
-
-    byte[] bytes = new byte[1024];
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-    int length;
-    while((length = fileIn.read(bytes)) != -1)
+    if (!filenotfound)
     {
-      bos.write(bytes, 0, length);
+      byte[] bytes = new byte[1024];
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
+      int length;
+      while((length = fileIn.read(bytes)) != -1)
+      {
+        bos.write(bytes, 0, length);
+
+      }
+      bos.flush();
+      bos.close();
+      data1 = bos.toByteArray();
+      fileIn.close();
     }
-    bos.flush();
-    bos.close();
-    byte[] data1 = bos.toByteArray();
 
     String dataStr = new String(data1, "UTF-8");
-    fileIn.close();
     return dataStr;
   }
 

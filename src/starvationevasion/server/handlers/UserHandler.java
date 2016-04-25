@@ -5,8 +5,8 @@ package starvationevasion.server.handlers;
  */
 
 import starvationevasion.common.EnumRegion;
+import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
-import starvationevasion.server.Worker;
 import starvationevasion.server.model.*;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class UserHandler extends AbstractHandler
 {
 
-  public UserHandler (Server server, Worker client)
+  public UserHandler (Server server, Connector client)
   {
     super(server, client);
   }

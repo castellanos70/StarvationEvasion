@@ -4,13 +4,13 @@ package starvationevasion.server.handlers;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
-import starvationevasion.server.Worker;
+import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
 import starvationevasion.server.model.*;
 
 public class LoginHandler extends AbstractHandler
 {
-  public LoginHandler (Server server, Worker client)
+  public LoginHandler (Server server, Connector client)
   {
     super(server, client);
   }
@@ -56,7 +56,7 @@ public class LoginHandler extends AbstractHandler
     return false;
   }
 
-  public static boolean authenticate(Server server, Worker worker, String username, String password)
+  public static boolean authenticate(Server server, Connector worker, String username, String password)
   {
     User s = server.getUserByUsername(username);
 

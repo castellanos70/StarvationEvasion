@@ -1,15 +1,15 @@
 package starvationevasion.server.handlers;
 
 
+import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
-import starvationevasion.server.Worker;
 import starvationevasion.server.model.Request;
 import starvationevasion.server.model.ResponseFactory;
 import starvationevasion.server.model.Type;
 
 public class PermissionFilter extends AbstractHandler
 {
-  public PermissionFilter (Server server, Worker client)
+  public PermissionFilter (Server server, Connector client)
   {
     super(server, client);
   }

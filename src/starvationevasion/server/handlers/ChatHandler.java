@@ -5,14 +5,14 @@ package starvationevasion.server.handlers;
  */
 
 import starvationevasion.common.EnumRegion;
-import starvationevasion.server.Worker;
+import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
 import starvationevasion.server.model.*;
 
 
 public class ChatHandler extends AbstractHandler
 {
-  public ChatHandler (Server server, Worker client)
+  public ChatHandler (Server server, Connector client)
   {
     super(server, client);
   }

@@ -41,7 +41,7 @@ public class HTTPWriteStrategy extends AbstractWriteStrategy
     StringBuilder _sb = new StringBuilder();
     _sb.append(s.getType().getHeaderString()).append("\r\n");
     _sb.append("Date: ").append(Util.getServerTime()).append("\r\n");
-    _sb.append("Content-Type: ").append(this.toString()).append("\r\n");
+    _sb.append("Content-Type: ").append(getFormatter().toString()).append("\r\n");
 
 
 

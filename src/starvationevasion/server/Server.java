@@ -8,8 +8,6 @@ package starvationevasion.server;
 import starvationevasion.common.*;
 import starvationevasion.server.io.*;
 import starvationevasion.server.io.formatters.Format;
-import starvationevasion.server.io.formatters.JSONFormat;
-import starvationevasion.server.io.formatters.POJOFormat;
 import starvationevasion.server.io.strategies.*;
 import starvationevasion.server.model.*;
 import starvationevasion.server.model.db.Transaction;
@@ -42,7 +40,7 @@ public class Server
 {
   private ServerSocket serverSocket;
   // List of all the workers
-  private final LinkedList<Worker> allConnections = new LinkedList<>();
+  private final HashMap<Class, LinkedList<Connector>> connections = new HashMap<>();
 
   private LinkedList<Process> processes = new LinkedList<>();
 
@@ -80,6 +78,9 @@ public class Server
 
   public Server (int portNumber)
   {
+    connections.put(Temporary.class, new LinkedList<>());
+    connections.put(Persistent.class, new LinkedList<>());
+
     userTransaction = new Users(db);
     Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
 
@@ -146,8 +147,8 @@ public class Server
   {
 
     String host = "";
-    Worker worker = null;
     Socket potentialClient = null;
+    Connector connector = null;
     try
     {
       host = InetAddress.getLocalHost().getHostName();
@@ -162,27 +163,33 @@ public class Server
       {
         potentialClient = serverSocket.accept();
         System.out.println(dateFormat.format(date) + " Server: new Connection request received.");
-        worker = new Worker(potentialClient, this);
 
-        setStreamType(worker, potentialClient);
-        worker.start();
-        System.out.println(dateFormat.format(date) + " Server: Connected to " + potentialClient.getRemoteSocketAddress());
-        worker.setName("worker" + uptimeString());
-
-        allConnections.add(worker);
-        userList.add(worker.getUser());
-
-      }
-      catch(IOException e)
-      {
-//         System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
-//         e.printStackTrace();
-      }
-      catch(NetworkException e)
-      {
-        if (worker != null)
+        connector = setStreamType(potentialClient);
+        if (connector == null)
         {
-          worker.shutdown();
+          potentialClient.close();
+          continue;
+        }
+
+        connector.start();
+        System.out.println(dateFormat.format(date) + " Server: Connected to " + potentialClient.getRemoteSocketAddress());
+
+        connections.get(connector.getConnectionType()).add(connector);
+        if (connector.getConnectionType() == Persistent.class)
+        {
+          userList.add(connector.getUser());
+        }
+
+      }
+      catch(SocketTimeoutException e)
+      {
+        // This occurs when no one has connected
+      }
+      catch(IOException | NetworkException e)
+      {
+        if (connector != null)
+        {
+          connector.shutdown();
           System.out.println(dateFormat.format(date) + " Server: Failed to complete handshake. Closing connection");
           System.out.println("\t" + e.getMessage());
         }
@@ -274,6 +281,7 @@ public class Server
   public void broadcast (Response response)
   {
     int i = 0;
+    LinkedList<Connector> allConnections = connections.get(Persistent.class);
     try
     {
       for (; i < allConnections.size(); i++)
@@ -284,7 +292,7 @@ public class Server
     catch(Exception e)
     {
       System.out.println("Error sending message " + e.getMessage());
-      System.out.println(allConnections.get(i).getName() +
+      System.out.println(allConnections.get(i) +
                                  " User: " + allConnections.get(i).getUser().getUsername());
     }
   }
@@ -293,22 +301,21 @@ public class Server
   {
     System.out.println(dateFormat.format(date) + " Killing server.");
     isWaiting = false;
-    for (Worker connection : allConnections)
-    {
-      connection.send(new ResponseFactory().build(uptime(),
+
+    broadcast(new ResponseFactory().build(uptime(),
                                             currentState,
-                                            Type.BROADCAST, "Server will shutdown in 3 sec"
-      ));
-    }
+                                            Type.BROADCAST, "Server will shutdown in 3 sec"));
 
     try
     {
       Thread.sleep(3100);
-      for (Worker connection : allConnections)
+      for (Map.Entry<Class, LinkedList<Connector>> entry : connections.entrySet())
       {
-        connection.shutdown();
+        for (Connector connector : entry.getValue())
+        {
+          connector.shutdown();
+        }
       }
-
     }
     catch(InterruptedException ex)
     {
@@ -630,12 +637,11 @@ public class Server
   /**
    * Set up the worker with proper streams
    *
-   * @param worker worker that is holding the socket connection
    * @param s socket that is opened
    *
    * @return boolean true if web-socket
    */
-  private void setStreamType (Worker worker, Socket s) throws
+  private Connector setStreamType (Socket s) throws
                                                        NoSuchAlgorithmException,
                                                        NoSuchPaddingException,
                                                        IOException,
@@ -646,15 +652,15 @@ public class Server
     String line = "";
     String socketKey = "";
     byte[] encryptedKey = new byte[128];
-    ReadStrategy<String> reader = worker.getReader();
+    SocketReadStrategy reader = new SocketReadStrategy(s);
     SecretKey secretKey = null;
     boolean encrypted = false;
     boolean success = false;
     int secs = 0;
     int length = 0;
     s.setSoTimeout(3000);
-    ReadStrategy discoveredReader = worker.getReader();
-    WriteStrategy discoveredWriter = worker.getWriter();
+    ReadStrategy discoveredReader = null;// = worker.getReader();
+    WriteStrategy discoveredWriter = null;// = worker.getWriter();
     Format<?,?> formatter = null;
 
     HttpParse paresr = new HttpParse();
@@ -680,7 +686,7 @@ public class Server
       catch(Exception e)
       {
         e.printStackTrace();
-        return;
+        return null;
       }
 
       if(line.equals("\r\n"))
@@ -692,7 +698,8 @@ public class Server
 
     if (!success)
     {
-      throw new HandshakeException("Header was not properly read.");
+      System.out.println("Header was not properly read.");
+      return null;
     }
 
     if (length > 0)
@@ -736,7 +743,7 @@ public class Server
       }
       else if (acceptType.equals(DataType.TEXT.toString()))
       {
-        throw new NotImplementedException();
+        return null;
       }
 
       if (paresr.getHeaderParam("RSA-Socket-Key") != null)
@@ -774,12 +781,15 @@ public class Server
         System.out.println("\tServer: HTML client.");
         discoveredWriter.setFormatter(DataType.HTML);
       }
+
+      Temporary worker = new Temporary(s, this);
+
       worker.setWriter(discoveredWriter);
       worker.handleDirectly(paresr);
-      return;
+      return worker;
     }
 
-
+    Persistent worker = new Persistent(s, this);
     // setting back to default blocking
     s.setSoTimeout(0);
     if (encrypted)
@@ -808,6 +818,7 @@ public class Server
       worker.setWriter(discoveredWriter);
     }
 
+    return worker;
   }
 
   /**
@@ -816,17 +827,21 @@ public class Server
   private void cleanConnectionList ()
   {
     int con = 0;
-    for (int i = 0; i < allConnections.size(); i++)
+
+    for (Map.Entry<Class, LinkedList<Connector>> entry : connections.entrySet())
     {
-      if (!allConnections.get(i).isRunning())
+      for (int i = 0; i < entry.getValue().size(); i++)
       {
-        User u = allConnections.remove(i).getUser();
-        u.setLoggedIn(false);
-        if (u.isAnonymous())
+        if (!entry.getValue().get(i).isRunning())
         {
-          userList.remove(u);
+          User u = entry.getValue().remove(i).getUser();
+          u.setLoggedIn(false);
+          if (u.isAnonymous())
+          {
+            userList.remove(u);
+          }
+          con++;
         }
-        con++;
       }
     }
     // check if any removed. Show removed count

@@ -834,13 +834,15 @@ public class Server
       {
         if (!entry.getValue().get(i).isRunning())
         {
-          User u = entry.getValue().remove(i).getUser();
+          Connector connector = entry.getValue().remove(i);
+          User u = connector.getUser();
           u.setLoggedIn(false);
           if (u.isAnonymous())
           {
             userList.remove(u);
           }
           con++;
+          connector.shutdown();
         }
       }
     }

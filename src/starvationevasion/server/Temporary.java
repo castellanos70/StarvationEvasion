@@ -60,6 +60,7 @@ public class Temporary extends Connector
 
         getHandler().handle(request);
       }
+      break;
 
     }
     shutdown();

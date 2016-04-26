@@ -2,7 +2,6 @@ package starvationevasion.communication;
 
 import starvationevasion.common.EnumRegion;
 import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Request;
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 

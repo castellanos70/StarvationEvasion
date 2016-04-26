@@ -1,9 +1,7 @@
 package starvationevasion.communication;
 
-import starvationevasion.ai.commands.*;
 import starvationevasion.common.PolicyCard;
 import starvationevasion.common.WorldData;
-import starvationevasion.communication.commands.*;
 import starvationevasion.communication.commands.Command;
 import starvationevasion.communication.commands.Draft;
 import starvationevasion.communication.commands.GameState;
@@ -13,7 +11,6 @@ import starvationevasion.communication.commands.Vote;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.Type;
 import starvationevasion.server.model.User;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;

@@ -5,7 +5,6 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 import starvationevasion.common.Util;
 import starvationevasion.server.model.*;
-
 import javax.crypto.Cipher;
 import javax.crypto.SealedObject;
 import javax.crypto.SecretKey;
@@ -16,8 +15,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -33,8 +31,8 @@ public class CommModule implements Communication
   private final AtomicBoolean IS_RUNNING = new AtomicBoolean(false);
   private final HashMap<Type, ResponseListener> RESPONSE_MAP = new HashMap<>(10);
   // Responses that don't have a listener go here until a listener is made available
-  private final HashMap<Type, LinkedList<Response>> SHELVED_RESPONSES = new HashMap<>(10);
-  private final ConcurrentLinkedDeque<Response> RESPONSE_EVENTS = new ConcurrentLinkedDeque<>();
+  private final HashMap<Type, ConcurrentLinkedQueue<Response>> SHELVED_RESPONSES = new HashMap<>(10);
+  private final ConcurrentLinkedQueue<Response> RESPONSE_EVENTS = new ConcurrentLinkedQueue<>();
 
   // Non-final variables
   private Socket clientSocket;
@@ -302,7 +300,7 @@ public class CommModule implements Communication
       int size = RESPONSE_EVENTS.size(); // Get a snapshot of the size (prevents sync issues)
       for (int i = 0; i < size; i++)
       {
-        Response response = RESPONSE_EVENTS.pop();
+        Response response = RESPONSE_EVENTS.poll();
         Type type = response.getType();
         ResponseListener listener = RESPONSE_MAP.get(type);
         // If no listener is present, shelve the response for when (if) one is made available later
@@ -314,7 +312,7 @@ public class CommModule implements Communication
         // Check to see if there are existing shelved responses that need attention
         if (SHELVED_RESPONSES.containsKey(type))
         {
-          LinkedList<Response> shelvedResponses = SHELVED_RESPONSES.get(type);
+          ConcurrentLinkedQueue<Response> shelvedResponses = SHELVED_RESPONSES.get(type);
           for (Response shelvedResponse : shelvedResponses) listener.processResponse(type,
                                                                                      shelvedResponse.getPayload().getData());
           shelvedResponses.clear();
@@ -392,7 +390,8 @@ public class CommModule implements Communication
     try
     {
       LOCK.lock();
-      if (!SHELVED_RESPONSES.containsKey(response.getType())) SHELVED_RESPONSES.put(response.getType(), new LinkedList<>());
+      if (!SHELVED_RESPONSES.containsKey(response.getType())) SHELVED_RESPONSES.put(response.getType(),
+                                                                                    new ConcurrentLinkedQueue<>());
       SHELVED_RESPONSES.get(response.getType()).add(response);
     }
     finally

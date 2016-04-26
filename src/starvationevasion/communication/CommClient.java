@@ -11,6 +11,7 @@ import java.util.Collection;
  * the game player as well as any AI objects. This will create a uniform way that
  * the server knows how it can interact with any of its clients.
  */
+@Deprecated
 public interface CommClient
 {
   void setStartNanoSec(double nanoSec);

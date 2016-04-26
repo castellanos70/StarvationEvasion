@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @authorJavier Chavez (javierc@cs.unm.edu), George Boujaoude, Justin Hall
  */
+@Deprecated
 public class CommModule
 {
   private final CommClient CLIENT;

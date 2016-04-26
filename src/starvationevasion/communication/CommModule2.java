@@ -26,7 +26,7 @@ public class CommModule2 implements Communication
    * @return true if the request was successful and false if not
    */
   @Override
-  public boolean send(String... data)
+  public boolean send(String ... data)
   {
     return false;
   }

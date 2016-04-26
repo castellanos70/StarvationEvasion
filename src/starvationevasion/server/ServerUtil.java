@@ -14,7 +14,7 @@ public class ServerUtil
   public static Process StartAIProcess(String[] command/*, String hostname, int port, String username, String password*/)
   {
     ProcessBuilder processBuilder = new ProcessBuilder(command);
-    processBuilder.inheritIO();
+    // processBuilder.inheritIO();
     // final Map<String, String> environment = processBuilder.environment();
 //    environment.put("SEHOSTNAME", hostname);
 //    environment.put("SEPORT", "" + port);

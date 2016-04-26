@@ -31,7 +31,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -66,7 +65,9 @@ public class Server
   // bool that listen for connections is looping over
   private boolean isWaiting = true;
 
-  public static int TOTAL_PLAYERS = 2;
+  public static int TOTAL_HUMAN_PLAYERS = 0;
+  public static int TOTAL_AI_PLAYERS = 2;
+  public static int TOTAL_PLAYERS = TOTAL_HUMAN_PLAYERS + TOTAL_AI_PLAYERS;
 
   // Create a backend, currently sqlite
   private final Backend db = new Sqlite(Constant.DB_LOCATION);
@@ -388,6 +389,10 @@ public class Server
 
   public synchronized boolean addPlayer (User u)
   {
+    if (getPlayerCount() == TOTAL_PLAYERS || currentState.ordinal() > State.LOGIN.ordinal())
+    {
+      return false;
+    }
     EnumRegion _region = u.getRegion();
 
     if (_region != null)
@@ -925,8 +930,14 @@ public class Server
   }
 
 
-  public void startAI()
+  public boolean startAI()
   {
+
+    if (TOTAL_PLAYERS  == getPlayerCount() || processes.size() == TOTAL_AI_PLAYERS)
+    {
+      return false;
+    }
+
     Process p = ServerUtil.StartAIProcess(new String[]{"java",
                                                        "-XX:+OptimizeStringConcat",
                                                        "-XX:+UseCodeCacheFlushing",
@@ -939,6 +950,7 @@ public class Server
     {
       processes.add(p);
     }
+    return true;
   }
 
   public void killAI()

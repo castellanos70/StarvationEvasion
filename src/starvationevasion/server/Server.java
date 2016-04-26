@@ -75,7 +75,7 @@ public class Server
   public static int TOTAL_HUMAN_PLAYERS = 0;
   public static int TOTAL_AI_PLAYERS = 2;
   public static int TOTAL_PLAYERS = TOTAL_HUMAN_PLAYERS + TOTAL_AI_PLAYERS;
-  public static final int TIMEOUT = 3;
+  public static final long TIMEOUT = 3; // seconds
 
   // Create a backend, currently sqlite
   private final Backend db = new Sqlite(Constant.DB_LOCATION);
@@ -178,7 +178,7 @@ public class Server
           }
         });
 
-        connector = connectorFuture.get(TIMEOUT, TimeUnit.SECONDS);
+        connector = connectorFuture.get(1L, TimeUnit.SECONDS);
         if (connector == null)
         {
           potentialClient.close();
@@ -685,7 +685,7 @@ public class Server
     SecretKey secretKey = null;
     boolean encrypted = false;
     int length = 0;
-    s.setSoTimeout(500);
+    s.setSoTimeout(1000);
     float tryCount = 0;
     ReadStrategy discoveredReader = null;// = worker.getReader();
     WriteStrategy discoveredWriter = null;// = worker.getWriter();
@@ -708,7 +708,12 @@ public class Server
       catch(SocketTimeoutException e)
       {
         tryCount++;
-        System.out.format("%.1f second(s) until connection closes.", TIMEOUT - (tryCount/2f));
+        System.out.format("%.1f second(s) until connection closes.\n",  TIMEOUT - tryCount);
+        if ((TIMEOUT - tryCount) <= 0)
+        {
+          s.close();
+          return null;
+        }
         continue;
       }
       catch(Exception e)

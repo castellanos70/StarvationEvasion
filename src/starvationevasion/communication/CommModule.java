@@ -1,10 +1,12 @@
 package starvationevasion.communication;
 
 import starvationevasion.common.Constant;
+import starvationevasion.common.PolicyCard;
 import starvationevasion.common.Util;
 import starvationevasion.server.model.*;
 
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SealedObject;
 import javax.crypto.SecretKey;
 import java.io.*;
@@ -184,7 +186,23 @@ public class CommModule implements Communication
   public boolean send(Endpoint endpoint, Sendable data, String message)
   {
     updateCurrentTime();
-    return false;
+    Request request;
+    if (endpoint == null) return false;
+
+    // Figure out how to build the request and then build it using RequestFactory
+    if (data == null) request = new RequestFactory().build(elapsedTime, endpoint);
+    else
+    {
+      if (message == null) request = new RequestFactory().build(elapsedTime, data, endpoint);
+      else request = new RequestFactory().build(elapsedTime, data, message, endpoint);
+    }
+
+    // Check to see if anything went wrong
+    if (request == null) return false;
+
+    // Send the built request
+    send(request);
+    return true;
   }
 
   /**
@@ -200,10 +218,18 @@ public class CommModule implements Communication
    * @return true if the request succeeded and false if anything went wrong
    */
   @Override
-  public <T> boolean sendChat(T destination, String text, Object data)
+  public <T, E> boolean sendChat(T destination, String text, E data)
   {
     updateCurrentTime();
-    return false;
+    // TODO find a way to let any type of data be passed into chat
+    Request request = new RequestFactory().chat(elapsedTime, destination, text, (PolicyCard)data);
+
+    // Check to see if anything went wrong
+    if (request == null) return false;
+
+    // Send the request
+    send(request);
+    return true;
   }
 
   /**
@@ -386,6 +412,38 @@ public class CommModule implements Communication
 
   private void updateCurrentTime()
   {
-    elapsedTime = System.nanoTime() - startNanoSec;
+    try
+    {
+      if (!LOCK.tryLock()) return; // Lock is busy - updating the time isn't super important, so don't block
+      elapsedTime = System.nanoTime() - startNanoSec;
+    }
+    finally
+    {
+      LOCK.unlock();
+    }
+  }
+
+  public void send (Request request)
+  {
+    try
+    {
+      aesCipher.init(Cipher.ENCRYPT_MODE, serverKey);
+      SealedObject sealedObject = new SealedObject(request, aesCipher);
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(sealedObject);
+      oos.close();
+
+      writer.flush();
+      byte[] bytes = baos.toByteArray();
+      writer.writeInt(bytes.length);
+      writer.write(bytes);
+      writer.flush();
+      baos.close();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
   }
 }

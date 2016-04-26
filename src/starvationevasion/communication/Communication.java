@@ -83,9 +83,10 @@ public interface Communication
    * @param text chat text
    * @param data extra data (optional - can be null)
    * @param <T> type of destination (String, EnumRegion)
+   * @param <E> type of data (PolicyCard only at the moment)
    * @return true if the request succeeded and false if anything went wrong
    */
-  <T> boolean sendChat(T destination, String text, Object data);
+  <T, E> boolean sendChat(T destination, String text, E data);
 
   /**
    * Note :: No responses should be pushed to their respective listeners until an external source

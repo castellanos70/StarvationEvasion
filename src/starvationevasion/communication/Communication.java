@@ -45,6 +45,14 @@ public interface Communication
   double getStartNanoTime();
 
   /**
+   * Returns the current connection state of the module. If at any point the module loses connection
+   * with the server, this will return false.
+   *
+   * @return true if connected to the server and false if not
+   */
+  boolean isConnected();
+
+  /**
    * This method takes an unspecified number of arguments. When called, these arguments form
    * the data that will be packaged up and sent over the network to the server.
    *

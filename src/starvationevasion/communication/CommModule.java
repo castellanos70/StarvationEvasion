@@ -65,13 +65,13 @@ public class CommModule implements Communication
 
         if (response.getType().equals(Type.AUTH_ERROR))
         {
-          error("Failed to login");
+          commError("Failed to login");
           dispose();
         }
       }
       catch (Exception e)
       {
-        error("Error reading response from server");
+        commError("Error reading response from server");
         e.printStackTrace();
         dispose();
       }
@@ -104,7 +104,7 @@ public class CommModule implements Communication
   /**
    * Constructs a new CommModule with the given host/port combo. It will attempt
    * to make a connection and if it does not succeed within 10 seconds, the CommModule
-   * will timeout and close the program with an error code.
+   * will timeout and close the program with an commError code.
    *
    * @param host host to connect to
    * @param port port to connect through
@@ -120,6 +120,7 @@ public class CommModule implements Communication
     aesCipher = generateAESCipher();
 
     // Try to establish a connection and timeout after MAX_SECONDS if not
+    commPrint("Attempting to connect to host " + host + ", port " + port);
     while (deltaSeconds < MAX_SECONDS)
     {
       IS_RUNNING.set(openConnection(host, port));
@@ -130,9 +131,11 @@ public class CommModule implements Communication
     // See if the connect attempt went badly
     if (!IS_RUNNING.get())
     {
-      error("Failed to establish connection at host " + host + ", port " + port + " within " + MAX_SECONDS + " seconds.");
+      commError("Failed to establish connection at host " + host + ", port " + port + " within " + MAX_SECONDS + " " +
+                "seconds.");
       return;
     }
+    commPrint("Connection successful");
 
     // This handles setting the startNanoTime variable
     setResponseListener(Type.TIME, (type, data) -> setStartTime((Double)data));
@@ -347,7 +350,7 @@ public class CommModule implements Communication
     }
     catch (IOException e)
     {
-      error("Could not dispose properly");
+      commError("Could not dispose properly");
       e.printStackTrace();
       System.exit(-1);
     }
@@ -398,7 +401,12 @@ public class CommModule implements Communication
     }
   }
 
-  private void error(String message)
+  public void commPrint(String message)
+  {
+    System.out.println("Client: " + message);
+  }
+
+  private void commError(String message)
   {
     System.err.println("Client: " + message);
   }

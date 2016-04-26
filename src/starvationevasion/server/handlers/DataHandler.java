@@ -6,15 +6,15 @@ package starvationevasion.server.handlers;
 
 import starvationevasion.common.GeographicArea;
 import starvationevasion.common.WorldData;
+import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
-import starvationevasion.server.Worker;
 import starvationevasion.server.model.*;
 
 import java.util.ArrayList;
 
 public class DataHandler extends AbstractHandler
 {
-  public DataHandler (Server server, Worker client)
+  public DataHandler (Server server, Connector client)
   {
     super(server, client);
   }
@@ -71,7 +71,7 @@ public class DataHandler extends AbstractHandler
 
       if (polygons)
       {
-        ArrayList<GeographicArea>[] geographicAreaList = server.getSimulator().getRegionBoundaries();
+        GeographicArea[] geographicAreaList = server.getSimulator().getRegionBoundaries();
         data.put("geographic-data", geographicAreaList);
       }
 

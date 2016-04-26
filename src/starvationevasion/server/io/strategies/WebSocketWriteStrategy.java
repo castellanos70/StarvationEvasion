@@ -4,10 +4,17 @@ package starvationevasion.server.io.strategies;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import starvationevasion.server.model.Response;
 import starvationevasion.server.model.Sendable;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 public class WebSocketWriteStrategy extends AbstractWriteStrategy
 {
@@ -24,10 +31,16 @@ public class WebSocketWriteStrategy extends AbstractWriteStrategy
   }
 
   @Override
-  public void write (Sendable s) throws IOException
+  public void write (Response s) throws IOException,
+                                        BadPaddingException,
+                                        InvalidKeyException,
+                                        IllegalBlockSizeException,
+                                        NoSuchPaddingException,
+                                        NoSuchAlgorithmException
   {
     // Here I am going to assume if a client is using a websocket they want JSON
-    byte[] rawData = s.toJSON().toJSON().getBytes("UTF-8");
+    getFormatter().getEncryption().setEncrypted(false);
+    byte[] rawData = getFormatter().format(s);
 
     int frameCount = 0;
     byte[] frame = new byte[10];

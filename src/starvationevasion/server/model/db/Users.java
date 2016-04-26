@@ -123,7 +123,21 @@ public class Users extends Transaction<User>
   public <V> void update (V username, User data)
   {
     dirty = true;
-    throw new NotImplementedException();
+    LinkedHashSet<Object> values = new LinkedHashSet<>();
+    // We cannot allow username change unless we add ID to user.
+    // values.add(data.getUsername());
+    values.add(data.getPassword());
+    values.add(data.getSalt());
+    values.add(data.getRegion());
+
+    LinkedHashSet<String> cols = new LinkedHashSet<>();
+    // cols.add("username");
+    cols.add("password");
+    cols.add("salt");
+    cols.add("region");
+
+    getDb().update("user", "where username='" + username + "'", cols, values);
+    getDb().close();
   }
 
 

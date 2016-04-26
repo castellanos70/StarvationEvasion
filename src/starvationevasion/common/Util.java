@@ -1,17 +1,21 @@
 package starvationevasion.common;
 
+import starvationevasion.server.model.DataType;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.KeyPair;
 import java.security.PrivateKey;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static starvationevasion.common.Constant.ANON_NAME_ARRAY;
 
 /**
  * public static methods that might be useful in as utilities.
@@ -46,6 +50,15 @@ public class Util
     return y2;
   }
 
+  public static Color brighten(Color color, double percentage)
+  {
+    int r = (int)Math.min(255.0,color.getRed()*(1.0+percentage));
+    int g = (int)Math.min(255.0,color.getGreen()*(1.0+percentage));
+    int b = (int)Math.min(255.0,color.getBlue()*(1.0+percentage));
+    return new Color(r,g,b);
+  }
+
+
 
   public static SecretKey endServerHandshake (Socket s, KeyPair keyPair)
   {
@@ -67,7 +80,8 @@ public class Util
     return null;
   }
 
-  public static void startServerHandshake (Socket s, KeyPair keyPair, String streamType)
+
+  public static void startServerHandshake (Socket s, KeyPair keyPair, DataType accept)
   {
     // first
     byte[] publicKey = keyPair.getPublic().getEncoded();
@@ -77,7 +91,12 @@ public class Util
     {
       PrintWriter write = new PrintWriter(s.getOutputStream(), true);
 
-      write.print("RSA-Socket-Key: " + pubKeyStr + "\n" + streamType +"\n");
+      write.print("GET / HTTP/1.1" + "\r\n" +
+                          "RSA-Socket-Key: " + pubKeyStr + "\r\n" +
+                          "Accept: " + accept.toString() +"\r\n" +
+                          "Connection: Upgrade\r\n"+
+                          "\r\n");
+
       write.flush();
     }
     catch(IOException e)
@@ -85,6 +104,28 @@ public class Util
       System.out.println("There was an error starting handshake.");
     }
 
+  }
+
+
+  public static final String[] names = new String[ANON_NAME_ARRAY.length];
+
+  /**
+   * This is used for creating http responses
+   * Internal use of server only.
+   * @return String of the current datetime for valid HTTP header response
+   */
+  public static final String getServerTime ()
+  {
+    Calendar calendar = Calendar.getInstance();
+    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+    dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+    return dateFormat.format(calendar.getTime());
+  }
+
+  public static String generateName () {
+    return ANON_NAME_ARRAY[Util.rand.nextInt(ANON_NAME_ARRAY.length)]
+              + "-" + Long.valueOf(String.valueOf(System.currentTimeMillis()), 16);
   }
 
   public static String decrypt(byte[] text, PrivateKey key)

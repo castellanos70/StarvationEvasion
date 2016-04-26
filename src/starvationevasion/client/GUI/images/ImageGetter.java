@@ -231,7 +231,7 @@ public class ImageGetter implements ImageConstants
     veggies64 = new Image("farmProductIcons/FarmProduct_VEGGIES_64x64.png");
   }
 
-  // TODO: replace an equation that loads all images into an array. --Joel
+
   private void initialize256()
   {
     citrus256 = new Image("farmProductIcons/FarmProduct_CITRUS_256x256.png");

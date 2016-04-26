@@ -2,11 +2,14 @@ package starvationevasion.server.io.strategies;
 
 
 import starvationevasion.common.Util;
+import starvationevasion.server.model.Response;
 import starvationevasion.server.model.Sendable;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.security.InvalidKeyException;
@@ -25,19 +28,28 @@ public class HTTPWriteStrategy extends AbstractWriteStrategy
   }
 
   @Override
-  public void write (Sendable s) throws IOException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException
+  public void write (Response s) throws IOException,
+                                        BadPaddingException,
+                                        InvalidKeyException,
+                                        IllegalBlockSizeException
   {
-    String _jsonString = s.toJSON().toJSON();
+
+    // _sb.append("Cache-Control: public, no-cache=\"Authorization\"\r\n");
+    // _sb.append("Content-Length:").append(_sb.toString().length()).append("\r\n");
+
+    // set HTTP headers
     StringBuilder _sb = new StringBuilder();
-
-    // Here I am going to assume if a client is using a standard socket they want JSON
-    _sb.append("HTTP/1.0 200 OK\r\n");
+    _sb.append(s.getType().getHeaderString()).append("\r\n");
     _sb.append("Date: ").append(Util.getServerTime()).append("\r\n");
-    _sb.append("Content-Type: application/json\r\n");
-    _sb.append("\r\n");
+    _sb.append("Content-Type: ").append(getFormatter().toString()).append("\r\n");
 
-    _sb.append(_jsonString);
+
+
+    _sb.append("\r\n");
+    _sb.append(getFormatter().convertWithInjection(s, s.toJSON().toJSON()));
+
     getStream().write(_sb.toString().getBytes());
     getStream().flush();
+    // fileIn.close();
   }
 }

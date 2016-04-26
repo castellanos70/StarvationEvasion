@@ -1,8 +1,8 @@
 package starvationevasion.client.Logic;
 
 import starvationevasion.client.Networking.Client;
-import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.policies.EnumPolicy;
 
 /**
  * Manages communication with client and chatnode

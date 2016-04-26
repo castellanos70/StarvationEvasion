@@ -4,19 +4,19 @@ package starvationevasion.server.handlers;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.policies.EnumPolicy;
+import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.server.Connector;
+import starvationevasion.server.Server;
+import starvationevasion.server.model.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
-import starvationevasion.common.EnumPolicy;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.PolicyCard;
-import starvationevasion.server.Server;
-import starvationevasion.server.Worker;
-import starvationevasion.server.model.*;
-
 public class CardHandler extends AbstractHandler
 {
-  public CardHandler (Server server, Worker client)
+  public CardHandler (Server server, Connector client)
   {
     super(server, client);
   }

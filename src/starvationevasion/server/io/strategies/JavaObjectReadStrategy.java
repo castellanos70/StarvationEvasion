@@ -27,7 +27,11 @@ public class JavaObjectReadStrategy extends AbstractReadStrategy<Request>
   }
 
   @Override
-  public Request read () throws IOException, ClassNotFoundException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException
+  public Request read () throws IOException,
+                                ClassNotFoundException,
+                                BadPaddingException,
+                                InvalidKeyException,
+                                IllegalBlockSizeException
   {
     // we are always expecting an integer that represents the size of the byte array
     int ch1 = getStream().read();

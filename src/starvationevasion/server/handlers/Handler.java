@@ -4,7 +4,7 @@ package starvationevasion.server.handlers;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
-import starvationevasion.server.Worker;
+import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
 import starvationevasion.server.model.Request;
 
@@ -14,7 +14,7 @@ import starvationevasion.server.model.Request;
 public class Handler
 {
   private AbstractHandler handler;
-  private Worker worker;
+  private Connector worker;
 
   /**
    * Constructor that sets the chain of command succession.
@@ -22,7 +22,7 @@ public class Handler
    * @param server server
    * @param worker worker that this handler belongs to.
    */
-  public Handler (Server server, Worker worker)
+  public Handler (Server server, Connector worker)
   {
     this.worker = worker;
     // building the chain of responsibility

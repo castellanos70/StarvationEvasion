@@ -3,6 +3,8 @@ package starvationevasion.client.GUI.DraftLayout;
 import javafx.scene.Node;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import starvationevasion.client.GUI.DraftLayout.ProductBar.ProductBar;
+import starvationevasion.client.GUI.DraftLayout.hand.Hand;
 import starvationevasion.client.GUI.DraftLayout.map.Map;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.Popups.DiscardDisplay;

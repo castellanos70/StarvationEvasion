@@ -2,8 +2,14 @@ package starvationevasion.ai.commands;
 
 
 import starvationevasion.ai.AI;
-import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.RequestFactory;
+import starvationevasion.common.*;
+import starvationevasion.common.policies.CovertIntelligencePolicy;
+import starvationevasion.common.policies.EfficientIrrigationIncentivePolicy;
+import starvationevasion.common.policies.EthanolTaxCreditChangePolicy;
+import starvationevasion.common.policies.FertilizerSubsidyPolicy;
+import starvationevasion.server.model.*;
+
+import java.util.Random;
 
 public class Hand extends AbstractCommand
 {

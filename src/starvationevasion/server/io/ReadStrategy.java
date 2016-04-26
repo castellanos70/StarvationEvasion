@@ -22,11 +22,7 @@ public interface ReadStrategy<Result> extends Encryptable
    * @throws IOException            when there is an error with connection
    * @throws ClassNotFoundException When a object is sent and not found
    */
-  Result read () throws IOException,
-                        ClassNotFoundException,
-                        BadPaddingException,
-                        InvalidKeyException,
-                        IllegalBlockSizeException;
+  Result read () throws IOException, ClassNotFoundException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException;
 
   /**
    * Shutdown the reading

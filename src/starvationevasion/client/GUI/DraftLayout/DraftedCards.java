@@ -1,5 +1,6 @@
 package starvationevasion.client.GUI.DraftLayout;
 
+import starvationevasion.client.GUI.DraftLayout.hand.ClientPolicyCard;
 import javafx.scene.layout.GridPane;
 
 /**

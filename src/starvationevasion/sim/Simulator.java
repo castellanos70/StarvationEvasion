@@ -2,8 +2,6 @@ package starvationevasion.sim;
 
 
 import starvationevasion.common.*;
-import starvationevasion.common.policies.EnumPolicy;
-import starvationevasion.common.policies.PolicyCard;
 import starvationevasion.sim.events.AbstractEvent;
 
 import java.io.*;

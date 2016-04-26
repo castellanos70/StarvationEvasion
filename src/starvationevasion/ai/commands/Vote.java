@@ -2,8 +2,9 @@ package starvationevasion.ai.commands;
 
 
 import starvationevasion.ai.AI;
+import starvationevasion.common.PolicyCard;
 import starvationevasion.common.Util;
-import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.common.policies.InternationalFoodReliefProgramPolicy;
 import starvationevasion.server.model.*;
 
 public class Vote extends AbstractCommand

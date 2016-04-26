@@ -6,6 +6,7 @@ import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.sim.Region;
 
+import java.lang.Integer;
 import java.util.logging.Logger;
 
 /**
@@ -79,6 +80,7 @@ public class ProductionCSVLoader
         {
           case year:
             year = Integer.parseInt(fieldList[i]);
+            //TODO: for now, data is 1981, but this should be changed
             if (year < Constant.FIRST_DATA_YEAR) year = Constant.FIRST_DATA_YEAR;
             break;
           case category:

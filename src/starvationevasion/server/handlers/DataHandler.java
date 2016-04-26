@@ -6,15 +6,15 @@ package starvationevasion.server.handlers;
 
 import starvationevasion.common.GeographicArea;
 import starvationevasion.common.WorldData;
-import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
+import starvationevasion.server.Worker;
 import starvationevasion.server.model.*;
 
 import java.util.ArrayList;
 
 public class DataHandler extends AbstractHandler
 {
-  public DataHandler (Server server, Connector client)
+  public DataHandler (Server server, Worker client)
   {
     super(server, client);
   }

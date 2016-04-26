@@ -34,18 +34,13 @@ public interface Encryptable
   int NONCE_SIZE = 32;
   final Random r = new SecureRandom();
 
-  byte[] encrypt (byte[] msg) throws InvalidKeyException,
-                                     BadPaddingException,
-                                     IllegalBlockSizeException;
+  byte[] encrypt (byte[] msg) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException;
 
-  byte[] decrypt (byte[] msg) throws InvalidKeyException,
-                                     BadPaddingException,
-                                     IllegalBlockSizeException;
+  byte[] decrypt (byte[] msg) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException;
 
   boolean isEncrypted ();
 
-  Encryptable setEncrypted (boolean encrypted, SecretKey key) throws NoSuchPaddingException,
-                                                                     NoSuchAlgorithmException;
+  Encryptable setEncrypted (boolean encrypted, SecretKey key) throws NoSuchPaddingException, NoSuchAlgorithmException;
 
   static String generateKey ()
   {

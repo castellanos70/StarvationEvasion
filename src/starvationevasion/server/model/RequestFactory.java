@@ -2,7 +2,7 @@ package starvationevasion.server.model;
 
 
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.common.PolicyCard;
 
 /**
  * Class that creates requests.

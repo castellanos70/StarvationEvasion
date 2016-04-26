@@ -5,11 +5,11 @@ import com.sun.javafx.tk.Toolkit;
 import javafx.application.Platform;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
 import starvationevasion.client.GUI.DraftLayout.DraftLayout;
-import starvationevasion.client.GUI.DraftLayout.Hand;
+import starvationevasion.client.GUI.DraftLayout.hand.Hand;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.VotingLayout.VotingLayout;
 import starvationevasion.client.Networking.Client;
-import starvationevasion.common.policies.EnumPolicy;
+import starvationevasion.common.EnumPolicy;
 
 import java.util.ArrayList;
 import java.util.Arrays;

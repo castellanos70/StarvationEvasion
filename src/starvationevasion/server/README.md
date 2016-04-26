@@ -38,14 +38,6 @@ ssh -N -L 666:localhost:5555 username@peterbilt.cs.unm.edu
 
 After you have your tunnel, you can start your client.
 
-### Starting client
-
-Connection without Encryption
-
-```bash
-"GET / HTTP/1.1\r\n "Connection-type: " + streamType +"\r\n\r\n"
-"GET / HTTP/1.1\r\nRSA-Socket-Key: " + pubKeyStr + "\r\n" + "Connection-type: " + streamType +"\r\n\r\n"
-```
 
 # Invoking
 Commands shall be formatted as:

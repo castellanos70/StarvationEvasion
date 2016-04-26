@@ -1,15 +1,15 @@
 package starvationevasion.server.handlers;
 
 
-import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
+import starvationevasion.server.Worker;
 import starvationevasion.server.model.Request;
 import starvationevasion.server.model.ResponseFactory;
 import starvationevasion.server.model.Type;
 
 public class PermissionFilter extends AbstractHandler
 {
-  public PermissionFilter (Server server, Connector client)
+  public PermissionFilter (Server server, Worker client)
   {
     super(server, client);
   }
@@ -21,11 +21,7 @@ public class PermissionFilter extends AbstractHandler
     boolean isLoggedIn = !getClient().getUser().isLoggedIn();
     if (isLoggedIn)
     {
-      getClient().send(new ResponseFactory().build(server.uptime(),
-                                                   null,
-                                                   Type.AUTH,
-                                                   "You must be logged in.",
-                                                   request));
+      getClient().send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "You must be logged in."));
     }
     return isLoggedIn;
   }

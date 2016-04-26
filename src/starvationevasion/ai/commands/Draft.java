@@ -1,15 +1,12 @@
 package starvationevasion.ai.commands;
 
 import starvationevasion.ai.AI;
-import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.Util;
-import starvationevasion.common.policies.EnumPolicy;
-import starvationevasion.common.policies.PolicyCard;
-import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Payload;
-import starvationevasion.server.model.RequestFactory;
-import starvationevasion.server.model.State;
+import starvationevasion.common.*;
+import starvationevasion.common.policies.CovertIntelligencePolicy;
+import starvationevasion.common.policies.EfficientIrrigationIncentivePolicy;
+import starvationevasion.common.policies.EthanolTaxCreditChangePolicy;
+import starvationevasion.common.policies.FertilizerSubsidyPolicy;
+import starvationevasion.server.model.*;
 
 import java.util.ArrayList;
 
@@ -152,25 +149,74 @@ public class Draft extends AbstractCommand
     {
       return;
     }
+    EnumFood[] foods = card.getValidTargetFoods();
+    EnumRegion[] regions = card.getValidTargetRegions();
 
-    ArrayList<Integer> legalValueList = card.getOptionsOfVariable();
-    EnumFood[] food=card.getValidTargetFoods();
-    EnumRegion[] regions=card.getValidTargetRegions();
-
-    if (legalValueList == null) card.setX(0);
-    else
+    if (foods != null)
     {
-      card.setX(legalValueList.get(Util.rand.nextInt(legalValueList.size())));
+      card.setTargetFood(foods[0]);
+    }
+    if (regions != null)
+    {
+      card.setTargetRegion(regions[0]);
     }
 
+    for (PolicyCard.EnumVariable variable : PolicyCard.EnumVariable.values())
+    {
+      if (card.getRequiredVariables(variable) != null)
+      {
+        int amt = 0;
+        // Contextually setting variable
+        if (card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.MILLION_DOLLAR))
+        {
+          amt = Util.randInt(1, 20);
+        }
+        else if (card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.PERCENT))
+        {
+          if (card instanceof EfficientIrrigationIncentivePolicy)
+          {
+            amt = Util.randInt(50, 80);
+          }
+          else if (card instanceof EthanolTaxCreditChangePolicy || card instanceof FertilizerSubsidyPolicy)
+          {
+            amt = Util.randInt(20, 40);
+          }
+          else
+          {
+            amt = Util.randInt(1, 100);
+          }
+        }
+        else if (card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.UNIT))
+        {
+          amt = Util.randInt(1, 10);
+        }
 
-    if(food!=null)
-    {
-      card.setTargetFood(food[Util.rand.nextInt(food.length)]);
-    }
-    if(regions!=null)
-    {
-      card.setTargetRegion(regions[Util.rand.nextInt(regions.length)]);
+        if (variable.name().equals("X"))
+        {
+          card.setX(amt);
+          if (card instanceof CovertIntelligencePolicy)
+          {
+            if (Util.rand.nextBoolean())
+            {
+              card.setX(2);
+            }
+            else
+            {
+              card.setX(7);
+            }
+            break;
+          }
+        }
+        else if (variable.name().equals("Y"))
+        {
+          card.setY(amt);
+        }
+        else if (variable.name().equals("Z"))
+        {
+          card.setZ(amt);
+        }
+      }
+
     }
   }
 }

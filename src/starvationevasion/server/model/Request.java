@@ -22,9 +22,18 @@ public class Request implements Sendable
    *
    * @throws EndpointException when an endpoint is not found
    */
-  public Request (String... data)
+  public Request (String... data) throws EndpointException
   {
     this.time = Double.parseDouble(data[0]);
+    try
+    {
+      this.destination = Endpoint.valueOf(data[1].toUpperCase());
+
+    }
+    catch(IllegalArgumentException e)
+    {
+      throw new EndpointException("Endpoint for " + data[1] + " was not found.");
+    }
 
     data[2] = data[2].replace(data[0] + " ", "");
     data[2] = data[2].replace(data[1], "");
@@ -35,18 +44,6 @@ public class Request implements Sendable
       JSONDocument _json = JSON.Parser.toJSON(data[2]);
       this.data.putAll(_json.object());
     }
-
-    try
-    {
-      this.destination = Endpoint.valueOf(data[1].toUpperCase());
-
-    }
-    catch(IllegalArgumentException e)
-    {
-      destination = Endpoint.NOT_FOUND;
-      System.out.println("Endpoint for " + data[1] + " was not found.");
-    }
-
   }
 
   public Request (double time, Endpoint destination)

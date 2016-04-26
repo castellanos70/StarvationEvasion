@@ -7,7 +7,6 @@ package starvationevasion.server;
 
 import starvationevasion.common.Constant;
 import starvationevasion.common.Util;
-import starvationevasion.server.model.DataType;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -34,6 +33,9 @@ class Client
   // read the socket
   private BufferedReader reader;
 
+  // time of server start
+  private long startNanoSec;
+  private volatile long lastInventoryUpdate;
   private Scanner keyboard;
   // writes to user
   private ClientListener listener;
@@ -51,10 +53,8 @@ class Client
 
     keyboard = new Scanner(System.in);
 
-    if (!openConnection(host, portNumber))
+    while (!openConnection(host, portNumber))
     {
-      System.out.println("Could not connect. Exiting...");
-      System.exit(-1);
     }
 
     listener = new ClientListener();
@@ -114,7 +114,7 @@ class Client
     isRunning = true;
     // write.println("client");
 
-    Util.startServerHandshake(clientSocket, rsaKey, DataType.JSON);
+    Util.startServerHandshake(clientSocket, rsaKey, "client");
     return true;
 
   }
@@ -187,6 +187,13 @@ class Client
     }
   }
 
+
+  private String timeDiff()
+  {
+    long nanoSecDiff = System.nanoTime() - startNanoSec;
+    double secDiff = (double) nanoSecDiff / 1000000000.0;
+    return String.format("%.3f", secDiff);
+  }
 
   public static void main(String[] args)
   {

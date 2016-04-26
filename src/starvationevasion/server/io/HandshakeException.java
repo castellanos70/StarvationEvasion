@@ -1,10 +1,6 @@
 package starvationevasion.server.io;
 
 
-public class HandshakeException extends NetworkException
+public class HandshakeException extends RuntimeException
 {
-  public HandshakeException (String string)
-  {
-    super(string);
-  }
 }

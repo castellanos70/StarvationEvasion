@@ -1,7 +1,6 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.Constant;
-import starvationevasion.common.EnumCropZone;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.Util;
 import starvationevasion.sim.io.CSVReader;
@@ -38,7 +37,7 @@ import java.util.zip.ZipFile;
 public class LandTile
 {
   public enum RawDataYears
-  { y2000, y2005, y2010, y2015, y2020, y2025, y2030, y2035, y2040, y2045, y2050;
+  { y2000, y2001, y2002, y2003, y2004, y2005, y2010, y2015, y2020, y2025, y2030, y2035, y2040, y2045, y2050;
     static int SIZE = values().length;
   }
 
@@ -47,10 +46,7 @@ public class LandTile
    * ordered matching with each record in each month of each annual file of PATH_CLIMATE_PREFIX.
    */
   private static final String PATH_COORDINATES = "/sim/climate/ArableCoordinates.csv";
-  private static final String PATH_CLIMATE = "/sim/climate/Climate_";
-  private static final String PREFIX_HISTORICAL = "Historical";
-  private static final String PREFIX_RCP45 = "RCP45";
-  private static final String PREFIX_RCP85 = "RCP85";
+  private static final String PATH_CLIMATE_PREFIX = "/sim/climate/Climate_Historical_";
 
   private static int PATH_COORDINATES_FIELD_COUNT = 2; //Latitude,Longitude
 
@@ -296,25 +292,27 @@ public class LandTile
   public static void load(Model model)
   {
     Date dateStart = new Date();
-
-    String representativeConcentrationPathway = PREFIX_RCP45;
-    if (Util.rand.nextBoolean()) representativeConcentrationPathway = PREFIX_RCP85;
-    System.out.println("LandTile.load() Loading Climate Data ["+representativeConcentrationPathway+
-         "]: " +dateFormat.format(dateStart));
+    System.out.println("LandTile.load() Loading Climate Data: " +dateFormat.format(dateStart));
 
     //Read the latitude longitude coordinates of each record in the PATH_CLIMATE_PREFIX files.
-    CSVReader coorFileReader = new CSVReader(PATH_COORDINATES, 1);
+    CSVReader fileReader = new CSVReader(PATH_COORDINATES, 1);
     String[] fieldList;
     Territory territory = null;
 
     ArrayList<LandTile> tileList = new ArrayList<>();
 
-    while ((fieldList = coorFileReader.readRecord(PATH_COORDINATES_FIELD_COUNT)) != null)
+    while ((fieldList = fileReader.readRecord(PATH_COORDINATES_FIELD_COUNT)) != null)
     {
       float latitude = Float.parseFloat(fieldList[0]);
       float longitude = Float.parseFloat(fieldList[1]);
       LandTile tile = new LandTile(latitude, longitude);
       tileList.add(tile);
+
+
+      //if ((territory == null) || (!territory.getName().equals(fieldList[2])))
+      //{
+      //  territory = model.getTerritory(fieldList[2]);
+      //}
 
       if ((territory == null) || (!territory.contains(latitude, longitude)))
       {
@@ -325,72 +323,70 @@ public class LandTile
 
 
     }
-    coorFileReader.close();
+    fileReader.close();
 
 
     //Climate data is stored in .zip files by year where each year contains subfiles for each
     // month. The locations of each record in the PATH_CLIMATE_PREFIX files is given by
     // its record number matched with record numbers of PATH_COORDINATES.
+    int preGameYears = Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR;
 
-    for (RawDataYears yearEnum : RawDataYears.values())
+    int year = 2000;
+    //int yearIdx = year - Constant.FIRST_DATA_YEAR;
+    String path = PATH_CLIMATE_PREFIX + year + ".zip";
+
+    try
     {
-      //For now, just read in climate data through 2015.
-      if (yearEnum.ordinal() > RawDataYears.y2015.ordinal()) break;
+      ZipFile file = new ZipFile(model.getClass().getResource(path).toURI().getPath());
+      Enumeration<? extends ZipEntry> entries = file.entries();
 
-      String yearStr =  yearEnum.name().substring(1);
-      int year =  Integer.parseInt(yearStr);
-      String prefix = PREFIX_HISTORICAL;
-      if (year > 2005) prefix = representativeConcentrationPathway;
+      //Open sub-file for each month of year.
+      int month = 0;
+      while (entries.hasMoreElements())
+      { ZipEntry entry = entries.nextElement();
+        System.out.printf("File: %s\n", entry.getName());
+        //extractEntry(entry, file.getInputStream(entry));
 
-      String path = PATH_CLIMATE + prefix + "_"+yearStr + ".zip";
+        fileReader = new CSVReader(file.getInputStream(entry), 2);
 
-      try
-      {
-        System.out.printf("     Archive: %s\n", path);
-        ZipFile zipFile = new ZipFile(model.getClass().getResource(path).toURI().getPath());
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        int recordIdx = 0;
+        //Read each record of file.
+        while ((fieldList = fileReader.readRecord(DataHeaders.SIZE)) != null)
+        {
+          LandTile tile = tileList.get(recordIdx);
 
-        //Open sub-file for each month of year.
-        int month = 0;
-        while (entries.hasMoreElements())
-        { ZipEntry entry = entries.nextElement();
-          //System.out.printf("     File: %s\n", entry.getName());
-          //extractEntry(entry, file.getInputStream(entry));
-
-          CSVReader subfileReader = new CSVReader(zipFile.getInputStream(entry), 2);
-
-          int recordIdx = 0;
-          //Read each record of file.
-          while ((fieldList = subfileReader.readRecord(DataHeaders.SIZE)) != null)
+          //System.out.println("rain="+fieldList[DataHeaders.Rain.ordinal()]+" at " + tile.latitude + ", " + tile.latitude);
+          //Read each field of record.
+          for (int i=0; i<DataHeaders.SIZE; i++)
           {
-            LandTile tile = tileList.get(recordIdx);
+            float value= Float.parseFloat(fieldList[i]);
 
-            //System.out.println("rain="+fieldList[DataHeaders.Rain.ordinal()]+" at " + tile.latitude + ", " + tile.latitude);
-            //Read each field of record.
-            for (int i=0; i<DataHeaders.SIZE; i++)
-            {
-              float value= Float.parseFloat(fieldList[i]);
-
-              //System.out.printf("     tile[%d].data[%d][%d][%d]=%f\n", recordIdx.yearEnum.ordinal(),month,i,value);
-              tile.data[yearEnum.ordinal()][month][i] = value;
+            //TODO: Now we only have data from 2000, so for now, just copy the values for
+            //every year we should be reading.
+            for (int yearIdx=0; yearIdx<RawDataYears.SIZE; yearIdx++)
+            { tile.data[yearIdx][month][i] = value;
 
               //if (yearIdx == 0 && month == System.out.println("rain="+fieldList[DataHeaders.Rain.ordinal()]+" at " + tile.latitude + ", " + tile.latitude);
 
             }
-            recordIdx++;
           }
-          subfileReader.close();
-          month++;
+          recordIdx++;
         }
-        zipFile.close();
+        fileReader.close();
+        month++;
       }
-      catch (Exception e)
-      {
-        System.out.println(e.getMessage());
-        e.printStackTrace();
-        System.exit(0);
-      }
+      file.close();
+
     }
+    catch (Exception e)
+    {
+      System.out.println(e.getMessage());
+      e.printStackTrace();
+      System.exit(0);
+    }
+
+
+
 
 
     Date dateDone = new Date();
@@ -398,4 +394,22 @@ public class LandTile
     System.out.println("LandTile.load() Done: elapsed sec=" +deltaSec);
 
   }
+
+
+  /**
+   * Utility method to read data from InputStream
+   */
+  /*
+  private static void extractEntry(final ZipEntry entry, InputStream is) throws IOException
+  { String exractedFile = OUTPUT_DIR + entry.getName();
+    FileOutputStream fos = null; try { fos = new FileOutputStream(exractedFile);
+    final byte[] buf = new byte[BUFFER_SIZE];
+    int read = 0; int length;
+    while ((length = is.read(buf, 0, buf.length)) >= 0)
+    { fos.write(buf, 0, length);
+    }
+  }
+  catch (IOException ioex) { fos.close(); }
+  }
+*/
  }

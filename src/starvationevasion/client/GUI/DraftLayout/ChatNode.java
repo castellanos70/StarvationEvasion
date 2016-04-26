@@ -11,11 +11,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import starvationevasion.client.Networking.Client;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Logic.ChatManager;
-import starvationevasion.client.Networking.Client;
+import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.policies.EnumPolicy;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -14,5 +14,4 @@ public class Tuple<T, U>
     this.a = a;
     this.b = b;
   }
-
 }

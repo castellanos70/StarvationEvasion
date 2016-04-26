@@ -10,7 +10,7 @@ import starvationevasion.client.GUI.DraftLayout.GraphNode;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.SummaryBar;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.common.PolicyCard;
 
 import java.util.ArrayList;
 

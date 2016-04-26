@@ -1,12 +1,8 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.Constant;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.Util;
-import starvationevasion.common.policies.EnumPolicy;
+import starvationevasion.common.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * Each player region as a unique collection of 80 policy cards that make up that player's

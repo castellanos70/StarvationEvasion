@@ -75,6 +75,7 @@ public class Server
   public static int TOTAL_HUMAN_PLAYERS = 0;
   public static int TOTAL_AI_PLAYERS = 2;
   public static int TOTAL_PLAYERS = TOTAL_HUMAN_PLAYERS + TOTAL_AI_PLAYERS;
+  public static final int TIMEOUT = 3;
 
   // Create a backend, currently sqlite
   private final Backend db = new Sqlite(Constant.DB_LOCATION);
@@ -177,7 +178,7 @@ public class Server
           }
         });
 
-        connector = connectorFuture.get(3L, TimeUnit.SECONDS);
+        connector = connectorFuture.get(TIMEOUT, TimeUnit.SECONDS);
         if (connector == null)
         {
           potentialClient.close();
@@ -670,14 +671,13 @@ public class Server
    *
    * @return boolean true if web-socket
    */
-  private Connector setStreamType (Socket s) throws
-                                                       NoSuchAlgorithmException,
-                                                       NoSuchPaddingException,
-                                                       IOException,
-                                                       InterruptedException
+  private Connector setStreamType (Socket s) throws NoSuchAlgorithmException,
+                                                    NoSuchPaddingException,
+                                                    IOException,
+                                                    InterruptedException
   {
     // Handling websocket
-     StringBuilder reading = new StringBuilder();
+    StringBuilder reading = new StringBuilder();
     String line = "";
     String socketKey = "";
     byte[] encryptedKey = new byte[128];
@@ -685,10 +685,10 @@ public class Server
     SecretKey secretKey = null;
     boolean encrypted = false;
     int length = 0;
-    s.setSoTimeout(3000);
+    s.setSoTimeout(500);
+    float tryCount = 0;
     ReadStrategy discoveredReader = null;// = worker.getReader();
     WriteStrategy discoveredWriter = null;// = worker.getWriter();
-    Format<?,?> formatter = null;
 
     HttpParse paresr = new HttpParse();
 
@@ -703,6 +703,13 @@ public class Server
           String number = line.replaceAll("[^0-9]", "").trim();
           length = Integer.valueOf(number);
         }
+        tryCount = 0;
+      }
+      catch(SocketTimeoutException e)
+      {
+        tryCount++;
+        System.out.format("%.1f second(s) until connection closes.", TIMEOUT - (tryCount/2f));
+        continue;
       }
       catch(Exception e)
       {

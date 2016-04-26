@@ -2,10 +2,9 @@ package starvationevasion.communication;
 
 import starvationevasion.common.Constant;
 import starvationevasion.common.Util;
-import starvationevasion.server.model.Request;
+import starvationevasion.server.model.*;
 
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SealedObject;
 import javax.crypto.SecretKey;
 import java.io.*;
@@ -13,106 +12,349 @@ import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Abstract class for a series of communication modules that are to be used by
- * both the user's client and the ai's client when communicating with this server.
+ * Implements Communication interface.
  *
- * By separating the server-client communication code, it not only reduces code duplication
- * but allows for a standard between both the user and ai clients to be established.
- *
- * @author Javier Chavez (javierc@cs.unm.edu), George Boujaoude, Justin Hall
+ * @author Javier Chavez (javierc@cs.unm.edu), Justin Hall, George Boujaoude
  */
-@Deprecated
-public class CommModule
+public class CommModule implements Communication
 {
-  private final CommClient CLIENT;
-  private final AtomicBoolean BRIDGE_ESTABLISHED = new AtomicBoolean();
+  // Final variables
+  private final ReentrantLock LOCK = new ReentrantLock(); // Used for synchronization
+  private final AtomicBoolean IS_RUNNING = new AtomicBoolean(false);
+  private final HashMap<Type, ResponseListener> RESPONSE_MAP = new HashMap<>(10);
+  // Responses that don't have a listener go here until a listener is made available
+  private final HashMap<Type, LinkedList<Response>> SHELVED_RESPONSES = new HashMap<>(10);
+  private final ConcurrentLinkedDeque<Response> RESPONSE_EVENTS = new ConcurrentLinkedDeque<>();
+
+  // Non-final variables
   private Socket clientSocket;
   private DataInputStream reader;
   private DataOutputStream writer;
-  private KeyPair rsaKey;
-  private Cipher aesCipher;
-  private SecretKey serverKey;
+  private double startNanoSec = 0;
+  private double elapsedTime = 0;
 
-  public CommModule(CommClient client, String host, int port)
+  private SecretKey serverKey;
+  private Cipher aesCipher;
+  private KeyPair rsaKey;
+
+  private class StreamListener extends Thread
   {
-    CLIENT = client;
-    long timeStamp = System.currentTimeMillis();
+    @Override
+    public void run()
+    {
+      serverKey = Util.endServerHandshake(clientSocket, rsaKey);
+      while (IS_RUNNING.get()) read();
+    }
+
+    private void read()
+    {
+      try
+      {
+        Response response = readObject();
+        RESPONSE_EVENTS.add(response);
+
+        if (response.getType().equals(Type.AUTH_ERROR))
+        {
+          error("Failed to login");
+          dispose();
+        }
+      }
+      catch (Exception e)
+      {
+        error("Error reading response from server");
+        e.printStackTrace();
+        dispose();
+      }
+    }
+
+    private Response readObject () throws IOException, ClassNotFoundException, InvalidKeyException, NoSuchAlgorithmException
+    {
+      int ch1 = reader.read();
+      int ch2 = reader.read();
+      int ch3 = reader.read();
+      int ch4 = reader.read();
+
+      if ((ch1 | ch2 | ch3 | ch4) < 0) throw new EOFException();
+      int size = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+
+      byte[] encObject = new byte[size];
+
+      reader.readFully(encObject);
+      ByteArrayInputStream in = new ByteArrayInputStream(encObject);
+      ObjectInputStream is = new ObjectInputStream(in);
+      SealedObject sealedObject = (SealedObject) is.readObject();
+      Response response = (Response) sealedObject.getObject(serverKey);
+      is.close();
+      in.close();
+
+      return response;
+    }
+  }
+
+  /**
+   * Constructs a new CommModule with the given host/port combo. It will attempt
+   * to make a connection and if it does not succeed within 10 seconds, the CommModule
+   * will timeout and close the program with an error code.
+   *
+   * @param host host to connect to
+   * @param port port to connect through
+   */
+  public CommModule(String host, int port)
+  {
+    final long millisecondTimeStamp = System.currentTimeMillis();
+    final double MAX_SECONDS = 10.0;
     double deltaSeconds = 0.0;
-    double maxSeconds = 10.0;
 
     // Set up the key and cipher
     rsaKey = generateRSAKey();
     aesCipher = generateAESCipher();
 
-    // Attempt to make a connection, but timeout after the given number of seconds
-    while (deltaSeconds < maxSeconds)
+    // Try to establish a connection and timeout after MAX_SECONDS if not
+    while (deltaSeconds < MAX_SECONDS)
     {
-      if (openConnection(host, port)) break; // break if a connection was made
-      deltaSeconds += (System.currentTimeMillis() - timeStamp) / 1000.0; // convert to seconds
-      timeStamp = System.currentTimeMillis();
+      IS_RUNNING.set(openConnection(host, port));
+      if (IS_RUNNING.get()) break;
+      deltaSeconds = (System.currentTimeMillis() - millisecondTimeStamp) / 1000.0;
     }
 
-    // Make sure that everything went alright
-    if (!BRIDGE_ESTABLISHED.get())
+    // See if the connect attempt went badly
+    if (!IS_RUNNING.get())
     {
-      commError("Connection timeout - failed to establish a connection within " +
-                maxSeconds + " seconds");
-      System.exit(-1);
+      error("Failed to establish connection at host " + host + ", port " + port + " within " + MAX_SECONDS + " seconds.");
+      return;
+    }
+
+    // This handles setting the startNanoTime variable
+    setResponseListener(Type.TIME, (type, data) -> setStartTime((Double)data));
+
+    // Start the listener
+    new StreamListener().start();
+  }
+
+  /**
+   * This gets the starting nano time that was received from the server. Note that server responses
+   * of type TIME include this data, but this means that no listener needs to be bound to this type
+   * as the Communication module will manage this itself.
+   *
+   * @return starting nano time from the server
+   */
+  @Override
+  public double getStartNanoTime()
+  {
+    return startNanoSec;
+  }
+
+  /**
+   * Returns the current connection state of the module. If at any point the module loses connection
+   * with the server, this will return false.
+   *
+   * @return true if connected to the server and false if not
+   */
+  @Override
+  public boolean isConnected()
+  {
+    return IS_RUNNING.get();
+  }
+
+  /**
+   * Note :: Check the Endpoint that you are using before you set data to null - some are safe
+   * to use without extra data associate with them while some are not (If they say "No Payload"
+   * with their comment block, it should be fine to not include extra data). See
+   * starvationevasion.server.model.Endpoint for more information.
+   * <p>
+   * Attempts to send a new request to the server tagged with the given endpoint. The "data" field
+   * is potentially optional, while the "message" field is entirely optional. Put null for both of
+   * these if you do not wish to use them.
+   *
+   * @param endpoint endpoint to tag the request with
+   * @param data     Sendable object to attach to the request - the most common type for this is Payload
+   *                 (see starvationevasion.server.model.Payload for more information)
+   * @param message  optional message to attach - this *must* be null if data is also null
+   * @return true if the request was sent successfully and false if anything went wrong
+   */
+  @Override
+  public boolean send(Endpoint endpoint, Sendable data, String message)
+  {
+    updateCurrentTime();
+    return false;
+  }
+
+  /**
+   * This function attempts to send a new chat request to the server. Note that for destination,
+   * the only two types that can be placed here (at the moment) are String and EnumRegion.
+   * <p>
+   * The "data" field is for attaching extra data to the chat request. At the moment the only
+   * supported type is PolicyCard.
+   *
+   * @param destination where to send the chat
+   * @param text        chat text
+   * @param data        extra data (optional - can be null)
+   * @return true if the request succeeded and false if anything went wrong
+   */
+  @Override
+  public <T> boolean sendChat(T destination, String text, Object data)
+  {
+    updateCurrentTime();
+    return false;
+  }
+
+  /**
+   * Note :: No responses should be pushed to their respective listeners until an external source
+   * (Ex: AI/UI client) requests that the Communication module do so. This avoids the issue
+   * of requiring these listeners to be thread-safe. See pushResponseEvents().
+   * <p>
+   * This binds a response listener to a type. The type represents one of the possible responses that
+   * can be generated by the server and pushed to a Communication module. These responses often
+   * contain data from the server, so the listener itself will receive this data so that it can
+   * push it to whoever needs it. For example, if the type was USER, it means that the server has just
+   * sent an entire serialized User over the network (it can be cast directly to a User object).
+   *
+   * @param type     type to listen for
+   * @param listener listener to bind to - see starvationevasion.communication.ResponseListener
+   */
+  @Override
+  public void setResponseListener(Type type, ResponseListener listener)
+  {
+    if (!IS_RUNNING.get()) return;
+    try
+    {
+      LOCK.lock();
+      RESPONSE_MAP.put(type, listener);
+    }
+    finally
+    {
+      LOCK.unlock();
     }
   }
 
-  public void send (Request request)
+  /**
+   * When this is called, the entire list of response events that were sent from the server since the last
+   * time this was called will be pushed to their listeners (if no listener was bound, these events
+   * should be shelved until a listener is bound).
+   * <p>
+   * A good data structure to consider about for this is a FIFO list so that older events are processed
+   * first, and newer commands are processed last in case they need to override/alter the outcome
+   * of the older events.
+   */
+  @Override
+  public void pushResponseEvents()
   {
     try
     {
-      aesCipher.init(Cipher.ENCRYPT_MODE, serverKey);
-      SealedObject sealedObject = new SealedObject(request, aesCipher);
-      ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-      ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);
-      objectOut.writeObject(sealedObject);
-      objectOut.close();
-
-      writer.flush();
-      byte[] bytes = byteOut.toByteArray();
-      writer.writeInt(bytes.length);
-      writer.write(bytes);
-      writer.flush();
-      byteOut.close();
+      LOCK.lock();
+      int size = RESPONSE_EVENTS.size(); // Get a snapshot of the size (prevents sync issues)
+      for (int i = 0; i < size; i++)
+      {
+        Response response = RESPONSE_EVENTS.pop();
+        Type type = response.getType();
+        ResponseListener listener = RESPONSE_MAP.get(type);
+        // If no listener is present, shelve the response for when (if) one is made available later
+        if (listener == null)
+        {
+          shelveResponse(response);
+          continue;
+        }
+        // Check to see if there are existing shelved responses that need attention
+        if (SHELVED_RESPONSES.containsKey(type))
+        {
+          LinkedList<Response> shelvedResponses = SHELVED_RESPONSES.get(type);
+          for (Response shelvedResponse : shelvedResponses) listener.processResponse(type,
+                                                                                     shelvedResponse.getPayload().getData());
+          shelvedResponses.clear();
+          SHELVED_RESPONSES.remove(type);
+        }
+        // Now process the current response
+        listener.processResponse(type, response.getPayload().getData());
+      }
     }
-    catch (IOException | InvalidKeyException | IllegalBlockSizeException e)
+    finally
     {
+      LOCK.unlock();
+    }
+  }
+
+  /**
+   * Disposes of this module. All existing threads should be shut down and data cleared out.
+   * <p>
+   * The object is not meant to be used in any way after this is called.
+   */
+  @Override
+  public void dispose()
+  {
+    if (!IS_RUNNING.get()) return; // Already disposed/the connection never succeeded
+    IS_RUNNING.set(false);
+    while(RESPONSE_EVENTS.size() > 0) pushResponseEvents(); // Clear out the events
+    RESPONSE_MAP.clear();
+    try
+    {
+      writer.close();
+      reader.close();
+      clientSocket.close();
+    }
+    catch (IOException e)
+    {
+      error("Could not dispose properly");
       e.printStackTrace();
+      System.exit(-1);
     }
   }
 
   private boolean openConnection(String host, int port)
   {
-    BRIDGE_ESTABLISHED.set(true); // let's hope for the best
     try
     {
       clientSocket = new Socket(host, port);
-      reader = new DataInputStream(clientSocket.getInputStream());
       writer = new DataOutputStream(clientSocket.getOutputStream());
+      reader = new DataInputStream(clientSocket.getInputStream());
     }
     catch (IOException e)
     {
-      commError("Could now open a connection to " + host + " on port " + port);
-      e.printStackTrace();
-      BRIDGE_ESTABLISHED.set(false);
+      return false; // Problem connecting
     }
-
-    // Start the handshake and let the server know what type of client we are
     Util.startServerHandshake(clientSocket, rsaKey, "JavaClient");
-
-    return BRIDGE_ESTABLISHED.get();
+    return true;
   }
 
-  private void commError(String error)
+  private void setStartTime(double time)
   {
-    System.err.println("Client: " + error);
+    if (!IS_RUNNING.get()) return;
+    try
+    {
+      LOCK.lock();
+      startNanoSec = time;
+    }
+    finally
+    {
+      LOCK.unlock();
+    }
+  }
+
+  private void shelveResponse(Response response)
+  {
+    if (!IS_RUNNING.get()) return;
+    try
+    {
+      LOCK.lock();
+      if (!SHELVED_RESPONSES.containsKey(response.getType())) SHELVED_RESPONSES.put(response.getType(), new LinkedList<>());
+      SHELVED_RESPONSES.get(response.getType()).add(response);
+    }
+    finally
+    {
+      LOCK.unlock();
+    }
+  }
+
+  private void error(String message)
+  {
+    System.err.println("Client: " + message);
   }
 
   private KeyPair generateRSAKey()
@@ -140,5 +382,10 @@ public class CommModule
       e.printStackTrace();
     }
     return null;
+  }
+
+  private void updateCurrentTime()
+  {
+    elapsedTime = System.nanoTime() - startNanoSec;
   }
 }

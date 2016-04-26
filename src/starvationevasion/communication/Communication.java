@@ -1,5 +1,7 @@
 package starvationevasion.communication;
 
+import starvationevasion.server.model.Endpoint;
+import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 
 /**
@@ -31,7 +33,7 @@ import starvationevasion.server.model.Type;
  *         keep a list of changes since the last time the AI/UI client requested the latest
  *         data.
  *
- * @author Justin Hall, George Boujaoude
+ * @author Javier Chavez (javierc@cs.unm.edu), Justin Hall, George Boujaoude
  */
 public interface Communication
 {
@@ -53,23 +55,37 @@ public interface Communication
   boolean isConnected();
 
   /**
-   * This method takes an unspecified number of arguments. When called, these arguments form
-   * the data that will be packaged up and sent over the network to the server.
+   * Note :: Check the Endpoint that you are using before you set data to null - some are safe
+   *         to use without extra data associate with them while some are not (If they say "No Payload"
+   *         with their comment block, it should be fine to not include extra data). See
+   *         starvationevasion.server.model.Endpoint for more information.
    *
-   * @param data Data to package and send to the server. Format for data ::
+   * Attempts to send a new request to the server tagged with the given endpoint. The "data" field
+   * is potentially optional, while the "message" field is entirely optional. Put null for both of
+   * these if you do not wish to use them.
    *
-   *             data[0] should always contain the current time (will be parsed as a double)
-   *
-   *             data[1] should contain the endpoint as a String (see starvationevasion.server.model.Endpoint)
-   *                     - the server interprets each in a specific way
-   *
-   *             data[2] this is not specifically required, but depending on the Endpoint you used, it
-   *                     may be needed - if the comment above the enum says "No Payload", data[2] isn't
-   *                     needed
-   *
-   * @return true if the request was successful and false if not
+   * @param endpoint endpoint to tag the request with
+   * @param data Sendable object to attach to the request - the most common type for this is Payload
+   *             (see starvationevasion.server.model.Payload for more information)
+   * @param message optional message to attach - this *must* be null if data is also null
+   * @return true if the request was sent successfully and false if anything went wrong
    */
-  boolean send(String ... data);
+  boolean send(Endpoint endpoint, Sendable data, String message);
+
+  /**
+   * This function attempts to send a new chat request to the server. Note that for destination,
+   * the only two types that can be placed here (at the moment) are String and EnumRegion.
+   *
+   * The "data" field is for attaching extra data to the chat request. At the moment the only
+   * supported type is PolicyCard.
+   *
+   * @param destination where to send the chat
+   * @param text chat text
+   * @param data extra data (optional - can be null)
+   * @param <T> type of destination (String, EnumRegion)
+   * @return true if the request succeeded and false if anything went wrong
+   */
+  <T> boolean sendChat(T destination, String text, Object data);
 
   /**
    * Note :: No responses should be pushed to their respective listeners until an external source

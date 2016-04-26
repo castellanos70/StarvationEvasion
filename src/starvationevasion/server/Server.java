@@ -256,6 +256,10 @@ public class Server
 
   public boolean createUser (User u)
   {
+    if (u.getUsername() == null || u.getUsername().trim().isEmpty())
+    {
+      return false;
+    }
     boolean found = userList.stream()
                             .anyMatch(user -> user.getUsername().equals(u.getUsername()));
     if (!found)

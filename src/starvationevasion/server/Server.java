@@ -6,7 +6,12 @@ package starvationevasion.server;
  */
 
 import starvationevasion.common.*;
-import starvationevasion.server.io.*;
+import starvationevasion.common.policies.EnumPolicy;
+import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.server.io.HttpParse;
+import starvationevasion.server.io.NetworkException;
+import starvationevasion.server.io.ReadStrategy;
+import starvationevasion.server.io.WriteStrategy;
 import starvationevasion.server.io.formatters.Format;
 import starvationevasion.server.io.strategies.*;
 import starvationevasion.server.model.*;
@@ -21,7 +26,9 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import java.io.IOException;
-import java.net.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -31,7 +38,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 

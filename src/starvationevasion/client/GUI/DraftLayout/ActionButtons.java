@@ -8,8 +8,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import starvationevasion.client.GUI.DraftLayout.hand.ClientPolicyCard;
-import starvationevasion.client.GUI.DraftLayout.hand.Hand;
 import starvationevasion.client.GUI.GUI;
 
 import java.util.ArrayList;

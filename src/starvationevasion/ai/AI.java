@@ -3,9 +3,9 @@ package starvationevasion.ai;
 
 import starvationevasion.ai.commands.*;
 import starvationevasion.common.Constant;
-import starvationevasion.common.PolicyCard;
 import starvationevasion.common.Util;
 import starvationevasion.common.WorldData;
+import starvationevasion.common.policies.PolicyCard;
 import starvationevasion.server.model.*;
 
 import javax.crypto.Cipher;

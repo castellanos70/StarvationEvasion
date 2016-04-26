@@ -4,7 +4,7 @@ package starvationevasion.server.handlers;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
-import starvationevasion.common.PolicyCard;
+import starvationevasion.common.policies.PolicyCard;
 import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
 import starvationevasion.server.model.*;

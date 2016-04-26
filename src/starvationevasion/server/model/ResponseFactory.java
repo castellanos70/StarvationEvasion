@@ -59,4 +59,10 @@ public class ResponseFactory
   }
 
 
+  public Response build (double time, Sendable data, Type type, String message, Request request)
+  {
+    Response response = new ResponseFactory().build(time, data, type);
+    response.getPayload().putMessage(message);
+    return response.setInitiator(request);
+  }
 }

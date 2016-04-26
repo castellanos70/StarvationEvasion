@@ -7,7 +7,7 @@ package starvationevasion.server.model;
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.server.Worker;
+import starvationevasion.server.Connector;
 import starvationevasion.server.io.NotImplementedException;
 
 import javax.crypto.SecretKey;
@@ -22,7 +22,7 @@ public class User implements Encryptable, Sendable
   public volatile transient int draftVoteCard = 0;
   public transient boolean isDone = false; // cannot be volatile since
 
-  private transient Worker worker;
+  private transient Connector worker;
   private transient String salt;
   private transient volatile boolean isLoggedIn = false;
   private transient boolean isPlaying = false;
@@ -31,6 +31,7 @@ public class User implements Encryptable, Sendable
   private String password;
   private EnumRegion region;
   private volatile ArrayList<EnumPolicy> hand;
+   private boolean anonymous = false;
 
   public User ()
   {
@@ -198,13 +199,13 @@ public class User implements Encryptable, Sendable
   }
 
   @Transient
-  public synchronized Worker getWorker ()
+  public synchronized Connector getWorker ()
   {
     return worker;
   }
 
   @Transient
-  public User setWorker (Worker worker)
+  public User setWorker (Connector worker)
   {
     this.worker = worker;
     return this;
@@ -300,5 +301,25 @@ public class User implements Encryptable, Sendable
     drafts = 0;
     draftVoteCard = 0;
     isDone = false;
+  }
+
+  public void setAnonymous (boolean anonymous)
+  {
+    this.anonymous = anonymous;
+  }
+
+  public boolean isAnonymous ()
+  {
+    return anonymous;
+  }
+
+  @Override
+  public boolean equals (Object obj)
+  {
+    if (obj instanceof User)
+    {
+      return this.username.equals(((User) obj).getUsername());
+    }
+    return false;
   }
 }

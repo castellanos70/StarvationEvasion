@@ -71,7 +71,7 @@ public class CommModule implements Communication
       }
       catch (Exception e)
       {
-        commError("Error reading response from server");
+        commError("Error reading response from server - shutting down");
         e.printStackTrace();
         dispose();
       }

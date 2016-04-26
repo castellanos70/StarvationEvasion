@@ -36,6 +36,15 @@ import starvationevasion.server.model.Type;
 public interface Communication
 {
   /**
+   * This gets the starting nano time that was received from the server. Note that server responses
+   * of type TIME include this data, but this means that no listener needs to be bound to this type
+   * as the Communication module will manage this itself.
+   *
+   * @return starting nano time from the server
+   */
+  double getStartNanoTime();
+
+  /**
    * This method takes an unspecified number of arguments. When called, these arguments form
    * the data that will be packaged up and sent over the network to the server.
    *

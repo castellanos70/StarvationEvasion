@@ -1,14 +1,10 @@
 package starvationevasion.communication;
 
-import starvationevasion.common.PolicyCard;
 import starvationevasion.common.WorldData;
-import starvationevasion.ai.commands.Command;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.User;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Stack;
 
 /**
  * This interface MUST be implemented by any client that communicates with the server, this includes
@@ -17,21 +13,7 @@ import java.util.Stack;
  */
 public interface CommClient
 {
-  Collection<WorldData> getWorldData();
-
-  double getStartNanoSec();
-
-  State getState();
-
-  User getUser();
-
-  CommModule getCommModule();
-
-  List<PolicyCard> getBallot();
-
-  Collection<User> getUsers();
-
-  Stack<Command> getCommands();
+  void setStartNanoSec(double nanoSec);
 
   void setWorldData(Collection<WorldData> data);
 
@@ -40,6 +22,4 @@ public interface CommClient
   void setUser(User user);
 
   void setUsers(Collection<User> users);
-
-  void setCommands(Stack<Command> commands);
 }

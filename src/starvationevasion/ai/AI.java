@@ -62,7 +62,6 @@ public class AI
     commands.add(new Uptime(this));
     commands.add(new Login(this));
 
-
     listenToUserRequests();
 
   }

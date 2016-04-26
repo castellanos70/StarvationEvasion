@@ -30,7 +30,8 @@ import java.security.spec.X509EncodedKeySpec;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Callable;
+import java.util.concurrent.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -74,6 +75,8 @@ public class Server
   private final Transaction<User> userTransaction;
   private volatile long counter = 0;
   private volatile boolean isPlaying = false;
+  private final ExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+  private Future<Connector> connectorFuture;
 
 
   public Server (int portNumber)
@@ -146,17 +149,9 @@ public class Server
   private void waitForConnection (int port)
   {
 
-    String host = "";
     Socket potentialClient = null;
     Connector connector = null;
-    try
-    {
-      host = InetAddress.getLocalHost().getHostName();
-    }
-    catch(UnknownHostException e)
-    {
-      e.printStackTrace();
-    }
+
     while(isWaiting)
     {
       try
@@ -164,7 +159,17 @@ public class Server
         potentialClient = serverSocket.accept();
         System.out.println(dateFormat.format(date) + " Server: new Connection request received.");
 
-        connector = setStreamType(potentialClient);
+        final Socket finalPotentialClient = potentialClient;
+        connectorFuture = executorService.submit(new Callable<Connector>()
+        {
+          @Override
+          public Connector call () throws Exception
+          {
+            return setStreamType(finalPotentialClient);
+          }
+        });
+
+        connector = connectorFuture.get(3L, TimeUnit.SECONDS);
         if (connector == null)
         {
           potentialClient.close();
@@ -180,6 +185,14 @@ public class Server
           userList.add(connector.getUser());
         }
 
+      }
+      catch(TimeoutException e)
+      {
+        connectorFuture.cancel(true);
+        if (connector != null)
+        {
+          connector.shutdown();
+        }
       }
       catch(SocketTimeoutException e)
       {
@@ -655,8 +668,6 @@ public class Server
     SocketReadStrategy reader = new SocketReadStrategy(s);
     SecretKey secretKey = null;
     boolean encrypted = false;
-    boolean success = false;
-    int secs = 0;
     int length = 0;
     s.setSoTimeout(3000);
     ReadStrategy discoveredReader = null;// = worker.getReader();
@@ -665,7 +676,7 @@ public class Server
 
     HttpParse paresr = new HttpParse();
 
-    while(secs < 3)
+    while(true)
     {
       try
       {
@@ -676,12 +687,6 @@ public class Server
           String number = line.replaceAll("[^0-9]", "").trim();
           length = Integer.valueOf(number);
         }
-        secs = 0;
-      }
-      catch(SocketTimeoutException e)
-      {
-        secs++;
-        continue;
       }
       catch(Exception e)
       {
@@ -691,15 +696,8 @@ public class Server
 
       if(line.equals("\r\n"))
       {
-        success = true;
         break;
       }
-    }
-
-    if (!success)
-    {
-      System.out.println("Header was not properly read.");
-      return null;
     }
 
     if (length > 0)
@@ -781,7 +779,7 @@ public class Server
         System.out.println("\tServer: HTML client.");
         discoveredWriter.setFormatter(DataType.HTML);
       }
-
+      s.setSoTimeout(0);
       Temporary worker = new Temporary(s, this);
 
       worker.setWriter(discoveredWriter);

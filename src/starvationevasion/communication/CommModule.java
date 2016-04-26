@@ -1,12 +1,12 @@
 package starvationevasion.communication;
 
 import starvationevasion.common.Constant;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 import starvationevasion.common.Util;
 import starvationevasion.server.model.*;
 
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SealedObject;
 import javax.crypto.SecretKey;
 import java.io.*;
@@ -164,6 +164,26 @@ public class CommModule implements Communication
   public boolean isConnected()
   {
     return IS_RUNNING.get();
+  }
+
+  /**
+   * Attempts to send a new login request to the server with the given information.
+   *
+   * @param username username as a string
+   * @param password password as a string
+   * @param region   region associated with the logging-in user
+   * @return true if the request succeeded in sending and false if not (NOTE :: This *does not* reflect
+   * the status of the login - only whether the request was sent or not)
+   */
+  @Override
+  public boolean login(String username, String password, EnumRegion region)
+  {
+    updateCurrentTime();
+    Request request = new RequestFactory().login(elapsedTime, username, password, region);
+    // Check to see if anything went wrong
+    if (request == null) return false;
+    send(request);
+    return true;
   }
 
   /**

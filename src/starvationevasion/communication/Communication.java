@@ -1,6 +1,8 @@
 package starvationevasion.communication;
 
+import starvationevasion.common.EnumRegion;
 import starvationevasion.server.model.Endpoint;
+import starvationevasion.server.model.Request;
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 
@@ -53,6 +55,16 @@ public interface Communication
    * @return true if connected to the server and false if not
    */
   boolean isConnected();
+
+  /**
+   * Attempts to send a new login request to the server with the given information.
+   * @param username username as a string
+   * @param password password as a string
+   * @param region region associated with the logging-in user
+   * @return true if the request succeeded in sending and false if not (NOTE :: This *does not* reflect
+   *         the status of the login - only whether the request was sent or not)
+   */
+  boolean login(String username, String password, EnumRegion region);
 
   /**
    * Note :: Check the Endpoint that you are using before you set data to null - some are safe

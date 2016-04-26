@@ -7,7 +7,7 @@ import starvationevasion.server.model.Type;
  * by a Communication module). When these responses occur, the Communication module
  * will push the data to the listener.
  *
- * @author: Justin Hall, George Boujaoude
+ * @author Justin Hall, George Boujaoude
  */
 public interface ResponseListener
 {

@@ -5,7 +5,7 @@ import starvationevasion.server.model.Type;
 /**
  * Implements Communication interface.
  *
- * @author: Justin Hall, George Boujaoude
+ * @author Justin Hall, George Boujaoude
  */
 public class CommModule2 implements Communication
 {

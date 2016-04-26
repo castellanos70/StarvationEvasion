@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * By separating the server-client communication code, it not only reduces code duplication
  * but allows for a standard between both the user and ai clients to be established.
  *
- * @authorJavier Chavez (javierc@cs.unm.edu), George Boujaoude, Justin Hall
+ * @author Javier Chavez (javierc@cs.unm.edu), George Boujaoude, Justin Hall
  */
 @Deprecated
 public class CommModule

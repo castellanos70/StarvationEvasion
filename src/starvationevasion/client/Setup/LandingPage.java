@@ -46,7 +46,7 @@ public class LandingPage extends Application
   private final String NO_HOST = "Could not connect to host, try again";
 
 private Client client;
-  GridPane root = new GridPane();
+  Pane root = new Pane();
   Button singlePlayer = new Button();
   Button multiPlayer = new Button();
   Button confirm = new Button();
@@ -96,9 +96,9 @@ private Client client;
     ivLogo.setTranslateY(bounds.getHeight() / 5 * 3);
     menu = new Menu();
 
-    menuRoot.getChildren().addAll(imgView, menu, ivLogo);
+    root.getChildren().addAll(imgView, menu, ivLogo);
 
-    Scene menuScene = new Scene(menuRoot);
+    Scene menuScene = new Scene(root);
     primaryStage.setTitle("Starvation Evasion");
     primaryStage.setScene(menuScene);
     primaryStage.show();
@@ -207,7 +207,7 @@ private Client client;
       VBox menu0 = new VBox(1);
 
       menu0.setTranslateX(50);
-      menu0.setTranslateY(bounds.getHeight() / 4 * 3);
+      menu0.setTranslateY(bounds.getHeight() / 4*3);
 
       MenuButton btnSinglePlayer = new MenuButton("  SINGLE PLAYER");
       btnSinglePlayer.setOnMouseClicked(event ->
@@ -319,7 +319,7 @@ private Client client;
       menu0.getChildren().addAll(btnSinglePlayer, btnJoinNetwork, btnHostNetwork, btnOptions, btnTutorial, btnExit);
       Rectangle bg = new Rectangle(bounds.getWidth(), bounds.getHeight());
       bg.setFill(Color.GRAY);
-      bg.setOpacity(0.1);
+      bg.setOpacity(0.15);
 
       getChildren().addAll(bg, menu0);
     }
@@ -391,27 +391,33 @@ private Client client;
 
   private void setLogin()
   {
+    GridPane temp = new GridPane();
+    
+    temp.getChildren().clear();
+    temp.add(unameLabel, 0, 1);
+    temp.add(uname, 0, 2);
+    temp.add(passwdLabel, 0, 3);
+    temp.add(passwd, 0, 4);
+    temp.add(confirm, 1, 1);
+    temp.add(createUser, 1, 2);
+    temp.add(loginAsAdmin, 1, 3);
+    temp.add(createUserWithRegion, 1, 4);
+    temp.add(comboBox, 1, 5);
     root.getChildren().clear();
-    root.add(unameLabel, 0, 1);
-    root.add(uname, 0, 2);
-    root.add(passwdLabel, 0, 3);
-    root.add(passwd, 0, 4);
-    root.add(confirm, 1, 1);
-    root.add(createUser, 1, 2);
-    root.add(loginAsAdmin, 1, 3);
-    root.add(createUserWithRegion, 1, 4);
-    root.add(comboBox, 1, 5);
+    root.getChildren().add(temp);
   }
 
   private void setBasicLogin()
-  {
+  { GridPane temp = new GridPane();
+    temp.getChildren().clear();
+    temp.add(unameLabel, 0, 1);
+    temp.add(uname, 0, 2);
+    temp.add(passwdLabel, 0, 3);
+    temp.add(passwd, 0, 4);
+    temp.add(confirm, 1, 1);
+    temp.add(createUser, 1, 2);
     root.getChildren().clear();
-    root.add(unameLabel, 0, 1);
-    root.add(uname, 0, 2);
-    root.add(passwdLabel, 0, 3);
-    root.add(passwd, 0, 4);
-    root.add(confirm, 1, 1);
-    root.add(createUser, 1, 2);
+    root.getChildren().add(temp);
 //    root.add(loginAsAdmin,1,3);
 //    root.add(createUserWithRegion,1,4);
 //    root.add(comboBox,1,5);
@@ -429,9 +435,11 @@ private Client client;
 //    regions=client.getAvailableRegion();
 //    regionList= FXCollections.observableArrayList(regions);
 //    comboBox=new ComboBox(regionList);
+    GridPane temp = new GridPane();
     root.getChildren().clear();
     // root.add(comboBox,0,0);
-    root.add(startGame, 0, 1);
+    temp.add(startGame, 0, 1);
+    root.getChildren().add(temp);
   }
 
   @Override

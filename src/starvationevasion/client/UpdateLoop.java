@@ -3,6 +3,8 @@ package starvationevasion.client;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
@@ -21,25 +23,31 @@ import java.util.Arrays;
  */
 public class UpdateLoop extends Application
 {
+  private int width = 300;
+  private int height = 250;
   private Client client;
-  GridPane root = new GridPane();
-  Button singlePlayer=new Button();
-  Button multiPlayer=new Button();
-  Button confirm = new Button();
-  Button multiConfirm = new Button();
-  Label unameLabel = new Label("Username");
-  TextField uname = new TextField();
-  Label passwdLabel = new Label("Password");
-  PasswordField passwd = new PasswordField();
-  Button createUser=new Button("Create new User");
-  Button loginAsAdmin =new Button("Login as Admin");
-  Button createUserWithRegion=new Button("Create with Region");
-  ArrayList<EnumRegion> regions=new ArrayList<>(Arrays.asList(EnumRegion.US_REGIONS));
-  ObservableList<EnumRegion> regionList= FXCollections.observableArrayList(regions);
-  ComboBox comboBox=new ComboBox(regionList);
+  private GridPane root = new GridPane();
+  private Button login = new Button("Login");
+  private Label usernameLabel = new Label("Username");
+  private TextField username = new TextField();
+  private Label passwordLabel = new Label("Password");
+  private PasswordField password = new PasswordField();
+  private Button createUser=new Button("Create User");
   @Override
   public void start(Stage stage)
   {
     stage.setTitle("Login");
+    //Sets up the initial stage
+    root.setAlignment(Pos.CENTER);
+    root.setHgap(10);
+    root.setVgap(10);
+    stage.setScene(new Scene(root, width, height));
+    root.add(usernameLabel, 0, 0);
+    root.add(username, 0, 1);
+    root.add(passwordLabel, 0, 2);
+    root.add(password, 0, 3);
+    root.add(login,0,4);
+    root.add(createUser,1,4);
+    stage.show();
   }
 }

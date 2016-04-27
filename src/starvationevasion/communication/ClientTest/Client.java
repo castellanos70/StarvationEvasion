@@ -43,6 +43,9 @@ public class Client
     COMM = new CommModule(host, port);
     isRunning = COMM.isConnected();
 
+    // Create the ChatManager
+    chatManager = new ChatManager(COMM);
+
     // Set up the response listeners
     COMM.setResponseListener(Type.AUTH_SUCCESS, (type, data) ->
     {
@@ -60,17 +63,25 @@ public class Client
     COMM.setResponseListener(Type.USERS_LOGGED_IN_LIST, (type, data) -> users = (ArrayList<User>)data);
     COMM.setResponseListener(Type.WORLD_DATA, (type, data) -> worldData.add((WorldData)data));
     COMM.setResponseListener(Type.VOTE_BALLOT, (type, data) -> ballot = (List<PolicyCard>)data);
-    COMM.setResponseListener(Type.GAME_STATE, (type, data) -> state = (State)data);
+    COMM.setResponseListener(Type.GAME_STATE, (type, data) ->
+    {
+      System.out.println("called");
+      state = (State)data;
+      updateState();
+    });
 
     // Create the LocalDataContainer
     container = new LocalDataContainer(this);
-    // Create the ChatManager
-    chatManager = new ChatManager(COMM);
   }
 
   public boolean isRunning()
   {
     return isRunning;
+  }
+
+  public void sendReady()
+  {
+    COMM.send(Endpoint.READY, null, null);
   }
 
   public ArrayList<EnumPolicy> getHand()
@@ -160,11 +171,40 @@ public class Client
 
   public boolean login(String username, String password, EnumRegion region)
   {
+    // Try to create the user first - this should fail if it already exists, which
+    // is exactly what we want
+    Payload data = new Payload();
+    data.put("username", username);
+    data.put("password", password);
+    data.put("region", region);
+    COMM.send(Endpoint.USER_CREATE, data, null);
+    // Return the result of sending the login request
     return COMM.login(username, password, region);
   }
 
   public void shutdown()
   {
     COMM.dispose();
+  }
+
+  private void updateState()
+  {
+    switch (state)
+    {
+      case DRAWING:
+        if(!gui.isDraftingPhase())
+        {
+          gui.resetVotingPhase();
+          gui.switchScenes();
+        }
+        break;
+      case VOTING:
+        if(gui.isDraftingPhase())
+        {
+          gui.resetDraftingPhase();
+          gui.switchScenes();
+        }
+        break;
+    }
   }
 }

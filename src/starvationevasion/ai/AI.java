@@ -16,6 +16,7 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -33,6 +34,8 @@ import starvationevasion.ai.commands.Uptime;
 import starvationevasion.ai.commands.Vote;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.SpecialEventData;
@@ -68,6 +71,10 @@ public class AI
   private volatile boolean isRunning = true;
   public int numTurns = 0;
   private Stack<Command> commands = new Stack<>();
+  public int worldDataSize = 0;
+  public LinkedList<String> policySampleSpace = new LinkedList<String>();
+  public LinkedList<String> foodSampleSpace = new LinkedList<String>();
+  public LinkedList<String> regionSampleSpace = new LinkedList<String>();
 
   /*
    * Factors used as map keys to keep track of and store events that are
@@ -100,6 +107,7 @@ public class AI
 
   private AI(String host, int portNumber)
   {
+    createMapAndLists();
     setupSecurity();
     while (!openConnection(host, portNumber))
     {
@@ -118,11 +126,32 @@ public class AI
    * Jeffrey McCall Create the EnumMap that will be passed to Draft.java which
    * will aid the AI in making decisions about which card to draft.
    */
-  private void createEnumMap()
+  private void createMapAndLists()
   {
     for (int i = 0; i < WorldFactors.values().length; i++)
     {
       factorMap.put(WorldFactors.values()[i], new ArrayList<Object[]>());
+    }
+    for (int i = 0; i < EnumPolicy.values().length; i++)
+    {
+      for (int h = 0; h < 3; h++)
+      {
+        policySampleSpace.add(EnumPolicy.values()[i].name());
+      }
+    }
+    for (int i = 0; i < EnumFood.values().length; i++)
+    {
+      for (int h = 0; h < 3; h++)
+      {
+        foodSampleSpace.add(EnumFood.values()[i].name());
+      }
+    }
+    for (int i = 0; i < EnumRegion.values().length; i++)
+    {
+      for (int h = 0; h < 3; h++)
+      {
+        regionSampleSpace.add(EnumRegion.values()[i].name());
+      }
     }
   }
 
@@ -134,10 +163,9 @@ public class AI
    */
   private void aggregateData()
   {
+    worldDataSize += 2;
     region = u.region.name();
-    factorMap.clear();
-    createEnumMap();
-    for (int i = 0; i < worldData.size(); i++)
+    for (int i = worldData.size() - 2; i < worldData.size(); i++)
     {
       Double[] seaLevel =
       { worldData.get(i).seaLevel };

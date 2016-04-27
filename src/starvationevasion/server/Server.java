@@ -489,6 +489,7 @@ public class Server
    */
   private Void draw()
   {
+    System.out.println("Now drawing");
     ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>();
     ArrayList<PolicyCard> _list = new ArrayList<>();
 
@@ -510,10 +511,8 @@ public class Server
     VoteData voteData = new VoteData(_list, enactedPolicyCards, _drafted);
     broadcast(
         new ResponseFactory().build(uptime(), voteData, Type.VOTE_RESULTS));
-
     currentState = State.DRAWING;
     broadcastStateChange();
-
     for (User user : getPlayers())
     {
       drawByUser(user);
@@ -546,7 +545,6 @@ public class Server
       }
       _drafted[i] = new PolicyCard[2];
     }
-
     if (simulator.getCurrentYear() >= Constant.LAST_YEAR)
     {
       currentState = State.END;

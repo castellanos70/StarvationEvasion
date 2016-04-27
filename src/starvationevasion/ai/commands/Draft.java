@@ -2,7 +2,6 @@ package starvationevasion.ai.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Stream;
@@ -42,8 +41,9 @@ public class Draft extends AbstractCommand
   Integer lastFoodIncome = new Integer(0);
   Long lastFoodImported = new Long(0);
   Long lastFoodExported = new Long(0);
-  int probModifier = 0;
+  boolean moreThanOne = false;
   int z = 0;
+  int probModifier = 0;
   int draftIndex = 0;
 
   public Draft(AI client, String region)
@@ -154,31 +154,6 @@ public class Draft extends AbstractCommand
     int i = 0;
     boolean draftSent = false;
     Random rand = new Random();
-    LinkedList<String> policySampleSpace = new LinkedList<String>();
-    LinkedList<String> foodSampleSpace = new LinkedList<String>();
-    LinkedList<String> regionSampleSpace = new LinkedList<String>();
-    for (i = 0; i < EnumPolicy.values().length; i++)
-    {
-      for (int h = 0; h < 3; h++)
-      {
-        policySampleSpace.add(EnumPolicy.values()[i].name());
-      }
-    }
-    for (i = 0; i < EnumFood.values().length; i++)
-    {
-      for (int h = 0; h < 3; h++)
-      {
-        foodSampleSpace.add(EnumFood.values()[i].name());
-      }
-    }
-    for (i = 0; i < EnumRegion.values().length; i++)
-    {
-      for (int h = 0; h < 3; h++)
-      {
-        regionSampleSpace.add(EnumRegion.values()[i].name());
-      }
-    }
-    i = 0;
     if (numTurns == 0)
     {
       int firstRandNum = rand.nextInt(7);
@@ -236,28 +211,24 @@ public class Draft extends AbstractCommand
       lastFoodExported = (long) 0;
       if (lastCard1.getTargetFood() != null)
       {
-        distributeProbabilities(playAgain, foodSampleSpace, lastCard1, "food");
+        distributeProbabilities(playAgain, lastCard1, "food");
       }
       if (lastCard1.getTargetRegion() != null)
       {
-        distributeProbabilities(playAgain, regionSampleSpace, lastCard1,
-            "region");
+        distributeProbabilities(playAgain, lastCard1, "region");
       }
-      distributeProbabilities(playAgain, policySampleSpace, lastCard1,
-          "policy");
+      distributeProbabilities(playAgain, lastCard1, "policy");
       if (lastCard2.getTargetFood() != null)
       {
-        distributeProbabilities(playAgain, foodSampleSpace, lastCard2, "food");
+        distributeProbabilities(playAgain, lastCard2, "food");
       }
       if (lastCard2.getTargetRegion() != null)
       {
-        distributeProbabilities(playAgain, regionSampleSpace, lastCard2,
-            "region");
+        distributeProbabilities(playAgain, lastCard2, "region");
       }
-      distributeProbabilities(playAgain, policySampleSpace, lastCard2,
-          "policy");
-      draftCards(rand, policySampleSpace, foodSampleSpace, regionSampleSpace);
-      draftCards(rand, policySampleSpace, foodSampleSpace, regionSampleSpace);
+      distributeProbabilities(playAgain, lastCard2, "policy");
+      draftCards(rand);
+      draftCards(rand);
       draftedCard = true;
       draftSent = true;
       tries = 2;
@@ -299,8 +270,7 @@ public class Draft extends AbstractCommand
     // tries = 2;
   }
 
-  public void draftCards(Random rand, LinkedList<String> policySampleSpace,
-      LinkedList<String> foodSampleSpace, LinkedList<String> regionSampleSpace)
+  public void draftCards(Random rand)
   {
     PolicyCard card = null;
     ArrayList<String> currentHand = new ArrayList<String>();
@@ -313,8 +283,8 @@ public class Draft extends AbstractCommand
     String policy = "";
     do
     {
-      int policyIndex = rand.nextInt(policySampleSpace.size());
-      policy = policySampleSpace.get(policyIndex);
+      int policyIndex = rand.nextInt(getClient().policySampleSpace.size());
+      policy = getClient().policySampleSpace.get(policyIndex);
     } while (!currentHand.contains(policy));
     EnumPolicy currentPolicy = policyMap.get(policy);
     card = PolicyCard.create(getClient().getUser().getRegion(), currentPolicy);
@@ -334,8 +304,8 @@ public class Draft extends AbstractCommand
       String food = "";
       do
       {
-        int foodIndex = rand.nextInt(foodSampleSpace.size());
-        food = foodSampleSpace.get(foodIndex);
+        int foodIndex = rand.nextInt(getClient().foodSampleSpace.size());
+        food = getClient().foodSampleSpace.get(foodIndex);
       } while (!validFoods.contains(food));
       currentFood = foodMap.get(food);
     }
@@ -355,8 +325,8 @@ public class Draft extends AbstractCommand
       String region = "";
       do
       {
-        int regionIndex = rand.nextInt(regionSampleSpace.size());
-        region = regionSampleSpace.get(regionIndex);
+        int regionIndex = rand.nextInt(getClient().regionSampleSpace.size());
+        region = getClient().regionSampleSpace.get(regionIndex);
       } while (!validRegions.contains(region));
       currentRegion = regionMap.get(region);
     }
@@ -386,69 +356,140 @@ public class Draft extends AbstractCommand
    * @return The index of the value that was altered in the array as well as the
    *         new value that it was changed to.
    */
-  public void distributeProbabilities(int playAgain,
-      LinkedList<String> sampleSpace, PolicyCard card, String type)
+  public void distributeProbabilities(int playAgain, PolicyCard card,
+      String type)
   {
     if (playAgain == -1)
     {
-      for (int i = 0; i < sampleSpace.size(); i++)
+      if (type.equals("food"))
       {
-        if (type.equals("food"))
+        for (int i = 0; i < getClient().foodSampleSpace.size(); i++)
         {
-          if (card.getTargetFood().name().equals(sampleSpace.get(i)))
+          if (card.getTargetFood().name()
+              .equals(getClient().foodSampleSpace.get(i)))
           {
-            sampleSpace.remove(i);
+            z = 0;
+            moreThanOne = false;
+            getClient().foodSampleSpace.forEach(food ->
+            {
+              if (card.getTargetFood().name().equals(food))
+              {
+                z++;
+              }
+              if (z > 1)
+              {
+                moreThanOne = true;
+              }
+            });
+            if (moreThanOne)
+            {
+              getClient().foodSampleSpace.remove(i);
+            }
             return;
           }
-        } else if (type.equals("region"))
+        }
+        if (type.equals("region"))
         {
-          if (card.getTargetRegion().name().equals(sampleSpace.get(i)))
+          for (int i = 0; i < getClient().regionSampleSpace.size(); i++)
           {
-            sampleSpace.remove(i);
-            return;
+            if (card.getTargetRegion().name()
+                .equals(getClient().regionSampleSpace.get(i)))
+            {
+              z = 0;
+              moreThanOne = false;
+              getClient().regionSampleSpace.forEach(food ->
+              {
+                if (card.getTargetFood().name().equals(food))
+                {
+                  z++;
+                }
+                if (z > 1)
+                {
+                  moreThanOne = true;
+                }
+              });
+              if (moreThanOne)
+              {
+                getClient().regionSampleSpace.remove(i);
+              }
+              return;
+            }
           }
-        } else if (type.equals("policy"))
+        }
+        if (type.equals("policy"))
         {
-          if (card.getPolicyName().equals(sampleSpace.get(i)))
+          for (int i = 0; i < getClient().policySampleSpace.size(); i++)
           {
-            sampleSpace.remove(i);
-            return;
+            if (card.getPolicyName()
+                .equals(getClient().policySampleSpace.get(i)))
+            {
+              z = 0;
+              moreThanOne = false;
+              getClient().policySampleSpace.forEach(food ->
+              {
+                if (card.getTargetFood().name().equals(food))
+                {
+                  z++;
+                }
+                if (z > 1)
+                {
+                  moreThanOne = true;
+                }
+              });
+              if (moreThanOne)
+              {
+                getClient().policySampleSpace.remove(i);
+              }
+              return;
+            }
           }
         }
       }
     } else if (playAgain == 1)
     {
-      for (int i = 0; i < sampleSpace.size(); i++)
+      if (type.equals("food"))
       {
-        if (type.equals("food"))
+        for (int i = 0; i < getClient().foodSampleSpace.size(); i++)
         {
-          if (card.getTargetFood().name().equals(sampleSpace.get(i)))
+          if (card.getTargetFood().name()
+              .equals(getClient().foodSampleSpace.get(i)))
           {
             for (int h = 0; h < 12; h++)
             {
-              sampleSpace.add(i, card.getTargetFood().name());
+              getClient().foodSampleSpace.add(i, card.getTargetFood().name());
             }
             return;
           }
-        } else if (type.equals("region"))
+        }
+        if (type.equals("region"))
         {
-          if (card.getTargetRegion().name().equals(sampleSpace.get(i)))
+          for (int i = 0; i < getClient().regionSampleSpace.size(); i++)
           {
-            for (int h = 0; h < 12; h++)
+            if (card.getTargetRegion().name()
+                .equals(getClient().regionSampleSpace.get(i)))
             {
-              sampleSpace.add(i, card.getTargetRegion().name());
+              for (int h = 0; h < 12; h++)
+              {
+                getClient().regionSampleSpace.add(i,
+                    card.getTargetRegion().name());
+              }
+              return;
             }
-            return;
           }
-        } else if (type.equals("policy"))
+        }
+        if (type.equals("policy"))
         {
-          if (card.getPolicyName().equals(sampleSpace.get(i)))
+          for (int i = 0; i < getClient().policySampleSpace.size(); i++)
           {
-            for (int h = 0; h < 12; h++)
+            if (card.getPolicyName()
+                .equals(getClient().policySampleSpace.get(i)))
             {
-              sampleSpace.add(i, card.getPolicyName());
+              for (int h = 0; h < 12; h++)
+              {
+                getClient().policySampleSpace.add(i, card.getPolicyName());
+              }
+              return;
             }
-            return;
           }
         }
       }
@@ -478,16 +519,17 @@ public class Draft extends AbstractCommand
     Integer lastRevenueBalance = new Integer(0);
     Double lastUndernourished = new Double(0);
     Double lastHdi = new Double(0);
-    System.out.println("World data size:" + getClient().worldData.size());
-    for (int h = 0; h < getClient().worldData.size(); h++)
+    for (int h = getClient().worldDataSize
+        - 4; h < getClient().worldDataSize; h++)
     {
-      if (h == 0)
+      if (h == getClient().worldDataSize - 4
+          || h == getClient().worldDataSize - 3)
       {
-        lastRevenueBalance = (Integer) getClient().factorMap
+        lastRevenueBalance += (Integer) getClient().factorMap
             .get(WorldFactors.REVENUEBALANCE).get(h)[0];
-        lastUndernourished = (Double) getClient().factorMap
+        lastUndernourished += (Double) getClient().factorMap
             .get(WorldFactors.UNDERNOURISHED).get(h)[0];
-        lastHdi = (Double) getClient().factorMap.get(WorldFactors.HDI)
+        lastHdi += (Double) getClient().factorMap.get(WorldFactors.HDI)
             .get(h)[0];
         Stream.of(getClient().factorMap.get(WorldFactors.FOODPRODUCED).get(h))
             .forEach(val ->
@@ -512,11 +554,11 @@ public class Draft extends AbstractCommand
       }
       if (h == 1)
       {
-        revenueBalance = (Integer) getClient().factorMap
+        revenueBalance += (Integer) getClient().factorMap
             .get(WorldFactors.REVENUEBALANCE).get(h)[0];
-        undernourished = (Double) getClient().factorMap
+        undernourished += (Double) getClient().factorMap
             .get(WorldFactors.UNDERNOURISHED).get(h)[0];
-        hdi = (Double) getClient().factorMap.get(WorldFactors.HDI).get(h)[0];
+        hdi += (Double) getClient().factorMap.get(WorldFactors.HDI).get(h)[0];
         Stream.of(getClient().factorMap.get(WorldFactors.FOODPRODUCED).get(h))
             .forEach(val ->
             {

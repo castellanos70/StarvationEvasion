@@ -11,29 +11,31 @@ import starvationevasion.server.model.State;
 import java.util.ArrayList;
 
 /**
- * This interface is primarily to allow multiple versions of Client to be implemented without
- * causing issues with registering them with the GUI.
- *
- * A class that implements Client is not required to be thread-safe. This is left up to individual
- * implementations to decide if it's necessary or not.
- *
- * @author Justin Hall, George Boujaoude
+ * Proof of concept.
  */
-public interface Client
+public class ClientTest implements Client
 {
   /**
    * Gets the region associated with this client.
    *
    * @return region
    */
-  EnumRegion getRegion();
+  @Override
+  public EnumRegion getRegion()
+  {
+    return null;
+  }
 
   /**
    * Gets the hand maintained by this client at the present time.
    *
    * @return array list containing hand data.
    */
-  ArrayList<EnumPolicy> getHand();
+  @Override
+  public ArrayList<EnumPolicy> getHand()
+  {
+    return null;
+  }
 
   /**
    * Returns the chat manager maintained by this client. A chat manager should interface
@@ -41,42 +43,66 @@ public interface Client
    *
    * @return valid chat manager
    */
-  ChatManager getChatManager();
+  @Override
+  public ChatManager getChatManager()
+  {
+    return null;
+  }
 
   /**
    * Gets the communication module.
    *
    * @return communication module
    */
-  CommModule getCommunicationModule();
+  @Override
+  public CommModule getCommunicationModule()
+  {
+    return null;
+  }
 
   /**
    * This should return a valid state for this client (as received from server).
    *
    * @return last-valid state sent to the client
    */
-  State getState();
+  @Override
+  public State getState()
+  {
+    return null;
+  }
 
   /**
    * Gets a list of policy cards that this client currently has.
    *
    * @return list of policy cards
    */
-  ArrayList<PolicyCard> getVotingCards();
+  @Override
+  public ArrayList<PolicyCard> getVotingCards()
+  {
+    return null;
+  }
 
   /**
    * Gets the GUI object that was registered with this client.
    *
    * @return gui
    */
-  GUI getGui();
+  @Override
+  public GUI getGui()
+  {
+    return null;
+  }
 
   /**
    * Sets the GUI for this client.
    *
    * @param gui valid gui reference
    */
-  void setGUI(GUI gui);
+  @Override
+  public void setGUI(GUI gui)
+  {
+
+  }
 
   /**
    * This should send a request to the server to login. The return statement only reflects
@@ -86,17 +112,25 @@ public interface Client
    * @param password password to try
    * @return true if the request was sent and false if the send failed
    */
-  boolean loginToServer(String username, String password);
+  @Override
+  public boolean loginToServer(String username, String password)
+  {
+    return false;
+  }
 
   /**
    * Attempts to register a new account with the server.
    *
    * @param username username to create
    * @param password password to associate
-   * @param region region tied to this user
+   * @param region   region tied to this user
    * @return true if the request was sent and false if the send failed
    */
-  boolean createUser(String username, String password, EnumRegion region);
+  @Override
+  public boolean createUser(String username, String password, EnumRegion region)
+  {
+    return false;
+  }
 
   /**
    * Asks the client to vote the given card up.
@@ -104,7 +138,11 @@ public interface Client
    * @param card card to vote up
    * @return true if the vote up request was sent and false if the send failed
    */
-  boolean voteUp(PolicyCard card);
+  @Override
+  public boolean voteUp(PolicyCard card)
+  {
+    return false;
+  }
 
   /**
    * Asks the client to vote the given card down.
@@ -112,21 +150,33 @@ public interface Client
    * @param card card to vote down
    * @return true if the vote up request was sent and false if the send failed
    */
-  boolean voteDown(PolicyCard card);
+  @Override
+  public boolean voteDown(PolicyCard card)
+  {
+    return false;
+  }
 
   /**
    * Tells the client to send a ready request.
    *
    * @return true if the ready request was sent and false if the send failed
    */
-  boolean ready();
+  @Override
+  public boolean ready()
+  {
+    return false;
+  }
 
   /**
    * Tells the client to send a done request to the server so it can move forward.
    *
    * @return true if the done request was sent and false if the send failed
    */
-  boolean done();
+  @Override
+  public boolean done()
+  {
+    return false;
+  }
 
   /**
    * Tries to draft the given card (interfaces with server).
@@ -134,7 +184,11 @@ public interface Client
    * @param card card to draft
    * @return true if the draft request was sent and false if the send failed
    */
-  boolean draftCard(PolicyCard card);
+  @Override
+  public boolean draftCard(PolicyCard card)
+  {
+    return false;
+  }
 
   /**
    * Tries to discard the given card (interfaces with server).
@@ -142,12 +196,20 @@ public interface Client
    * @param card card to discard
    * @return true if the discard request was sent and false if the send failed
    */
-  boolean discardCard(PolicyCard card);
+  @Override
+  public boolean discardCard(PolicyCard card)
+  {
+    return false;
+  }
 
   /**
    * Shuts down the client. It is not meant to be used at all after this is called.
    */
-  void shutdown();
+  @Override
+  public void shutdown()
+  {
+
+  }
 
   /**
    * When called, this should perform all necessary updates to keep the client up to date with
@@ -155,6 +217,9 @@ public interface Client
    *
    * @param deltaSeconds change in seconds since the last time this function was called
    */
-  void update(double deltaSeconds);
-}
+  @Override
+  public void update(double deltaSeconds)
+  {
 
+  }
+}

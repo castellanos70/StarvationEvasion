@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import starvationevasion.client.Networking.Client;
+import starvationevasion.client.Networking.DeprecatedClient;
 import starvationevasion.common.EnumRegion;
 
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class LandingPage extends Application
     singlePlayer.setOnAction(actionEvent -> {
       try
       {
-        client = new Client("localhost", 5555);
+        client = new DeprecatedClient("localhost", 5555);
         setBasicLogin();
       }catch(Exception e)
       {
@@ -76,7 +77,7 @@ public class LandingPage extends Application
 
     multiPlayer.setOnAction(e ->
     {
-      client=new Client("foodgame.cs.unm.edu",5555);
+      client=new DeprecatedClient("foodgame.cs.unm.edu",5555);
       setBasicLogin();
     });
 
@@ -86,7 +87,7 @@ public class LandingPage extends Application
       {
         errorMessage(WRONG_COMBO);
       }
-     else if(!client.loginToServer(uname.getText(),passwd.getText()))
+     else if(!client.loginToServer(uname.getText(), passwd.getText()))
      {
         errorMessage(WRONG_COMBO);
      }else
@@ -128,7 +129,7 @@ public class LandingPage extends Application
     startGame.setOnAction(event ->
     {
       client.ready();
-      client.openGUI();
+      //client.openGUI();
       stage.close();
     });
     //Sets up the initial stage
@@ -193,7 +194,7 @@ public class LandingPage extends Application
   }
   @Override
   public void stop(){
-    client.closeAll();
+    client.shutdown();
   }
   private void errorMessage(  String message)
   {

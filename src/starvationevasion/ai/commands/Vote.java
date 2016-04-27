@@ -2,20 +2,22 @@ package starvationevasion.ai.commands;
 
 
 import starvationevasion.ai.AI;
-import starvationevasion.common.PolicyCard;
 import starvationevasion.common.Util;
-import starvationevasion.common.policies.InternationalFoodReliefProgramPolicy;
+import starvationevasion.common.policies.PolicyCard;
 import starvationevasion.server.model.*;
 
 public class Vote extends AbstractCommand
 {
   private int tries = 2;
-
   public Vote (AI client)
   {
     super(client);
   }
-
+  @Override
+  public String commandString()
+  {
+    return "Vote";
+  }
   @Override
   public boolean run ()
   {

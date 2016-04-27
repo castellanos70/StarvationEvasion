@@ -13,7 +13,11 @@ public class Uptime extends AbstractCommand
   {
     super(client);
   }
-
+  @Override
+  public String commandString()
+  {
+    return "Uptime";
+  }
   @Override
   public boolean run ()
   {

@@ -9,12 +9,17 @@ public class GameState extends AbstractCommand
 {
 
   private boolean sentReady = false;
+  
 
   public GameState (AI client)
   {
     super(client);
   }
-
+  @Override
+  public String commandString()
+  {
+    return "GameState";
+  }
   @Override
   public boolean run ()
   {

@@ -1,10 +1,10 @@
 package starvationevasion.ai.commands;
 
+import static starvationevasion.common.Constant.AI_NAMES;
+
 import starvationevasion.ai.AI;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.RequestFactory;
-
-import static starvationevasion.common.Constant.AI_NAMES;
 
 public class Login extends AbstractCommand
 {
@@ -16,7 +16,11 @@ public class Login extends AbstractCommand
   {
     super(client);
   }
-
+  @Override
+  public String commandString()
+  {
+    return "Login";
+  }
   @Override
   public boolean run ()
   {

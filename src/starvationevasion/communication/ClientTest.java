@@ -1,6 +1,11 @@
 package starvationevasion.communication;
 
+import javafx.stage.Stage;
+import starvationevasion.client.GUI.GUI;
+import starvationevasion.client.Logic.ChatManager;
+//import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.common.Constant;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
 import starvationevasion.common.policies.PolicyCard;
 import starvationevasion.communication.CommModule;
@@ -53,6 +58,12 @@ public class ClientTest
   private KeyPair rsaKey;
   //private volatile boolean isRunning = true; *** Already from AITest.java
 
+  //---- GUI stuff
+  private GUI gui;
+  private LocalDataContainer localDataContainer;
+  private ArrayList<EnumRegion> availableRegion;
+
+
   ClientTest(String host, int port)
   {
     // Sets up the comm module to be used by the client
@@ -77,6 +88,9 @@ public class ClientTest
     COMM.setResponseListener(Type.WORLD_DATA, (type, data) -> worldData.add((WorldData)data));
     COMM.setResponseListener(Type.VOTE_BALLOT, (type, data) -> ballot = (List<PolicyCard>)data);
     COMM.setResponseListener(Type.GAME_STATE, (type, data) -> state = (State)data);
+
+    localDataContainer=new LocalDataContainer(this);
+    localDataContainer.init();
 
     listenToUserRequests();
     COMM.dispose();
@@ -114,5 +128,65 @@ public class ClientTest
     }
   }
 
+
+  public void openGUI()
+  {
+    gui=new GUI(this,localDataContainer);
+    Stage guiStage=new Stage();
+    gui.start(guiStage);
+    gui.start(guiStage);
+  }
+
+  private void guiStateManagement(State state)
+  {
+    switch (state)
+    {
+      case LOGIN:
+        return;
+      case BEGINNING:
+        return;
+      case DRAWING:
+        if(!gui.isDraftingPhase())
+        {
+          gui.resetVotingPhase();
+          gui.switchScenes();
+        }
+        break;
+      case DRAFTING:
+
+        break;
+      case VOTING:
+        if(gui.isDraftingPhase())
+        {
+          gui.resetDraftingPhase();
+          gui.switchScenes();
+        }
+        break;
+      case WIN:
+        break;
+      case LOSE:
+        break;
+      case END:
+        break;
+      case TRANSITION:
+        break;
+    }
+  }
+
+  public GUI getGui(){return gui;}
+  public ChatManager getChatManager(){return  chatManager;}
+  public EnumRegion getRegion(){return region;}
+  public State getState()
+  {
+    return state;
+  }
+  public ArrayList<EnumRegion> getAvailableRegion()
+  {
+    return availableRegion;
+  }
+  public ArrayList<PolicyCard> getVotingCards()
+  {
+    return votingCards;
+  }
 
 }

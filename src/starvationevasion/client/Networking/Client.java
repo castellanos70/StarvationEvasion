@@ -477,7 +477,7 @@ public class Client
             loginSuccessful=true;
             recivedMessege=true;
 
-          }else if(response.getType().equals(Type.AUTH_SUCCESS))
+          }else if(response.getType().equals(Type.AUTH_ERROR))
           {
             loginSuccessful=false;
             recivedMessege=true;

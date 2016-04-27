@@ -214,7 +214,7 @@ public class DeprecatedClient implements Client
 
     data.put("username", user);
     data.put("password", pass);
-    data.put("region",EnumRegion.USA_SOUTHEAST);
+    data.put("region", EnumRegion.USA_SOUTHEAST);
     f.setData(data);
     sendRequest(f);
     return true;
@@ -264,6 +264,19 @@ public class DeprecatedClient implements Client
     sendRequest(f);
     return true;
   }
+
+  /**
+   * Checks to see if the client is still running. This might return false if something
+   * like the server disconnected.
+   *
+   * @return true if running and false if not
+   */
+  @Override
+  public boolean isRunning()
+  {
+    return isRunning;
+  }
+
   public void sendChatMessage(String message,EnumRegion toRegion)
   {
     // Create a request to login

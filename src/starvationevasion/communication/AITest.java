@@ -71,7 +71,6 @@ public class AITest
         commands.clear();
       }
     });
-
     listenToUserRequests();
     COMM.dispose();
   }

@@ -150,6 +150,7 @@ public class GUI extends Application
 
     primaryStage.setOnCloseRequest(event2 ->
     {
+      stop();
 //      primaryStage.close();
 //      mainGameLoop.stop();
     });

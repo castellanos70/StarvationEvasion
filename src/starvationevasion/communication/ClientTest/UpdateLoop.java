@@ -31,7 +31,7 @@ public class UpdateLoop extends Application
     GUI gui=new GUI(client, client.getLocalDataContainer());
     Stage guiStage=new Stage();
     gui.start(guiStage);
-    //stage.close();
+    stage.close();
     client.setGUI(gui);
   }
 

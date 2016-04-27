@@ -2,7 +2,7 @@ package starvationevasion.communication.commands;
 
 
 import starvationevasion.ai.AI;
-import starvationevasion.common.PolicyCard;
+import starvationevasion.common.policies.PolicyCard;
 import starvationevasion.common.Util;
 import starvationevasion.communication.AITest;
 import starvationevasion.server.model.*;

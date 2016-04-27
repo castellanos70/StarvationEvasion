@@ -2,7 +2,7 @@ package starvationevasion.communication;
 
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.PolicyCard;
+import starvationevasion.common.policies.PolicyCard;
 import starvationevasion.common.Util;
 import starvationevasion.server.model.*;
 import javax.crypto.Cipher;
@@ -366,7 +366,8 @@ public class CommModule implements Communication
     {
       return false; // Problem connecting
     }
-    Util.startServerHandshake(clientSocket, rsaKey, "JavaClient");
+    // POJO = Plain Old Java Object
+    Util.startServerHandshake(clientSocket, rsaKey, DataType.POJO);
     return true;
   }
 

@@ -1,6 +1,6 @@
 package starvationevasion.communication;
 
-import starvationevasion.common.PolicyCard;
+import starvationevasion.common.policies.PolicyCard;
 import starvationevasion.common.WorldData;
 import starvationevasion.communication.commands.Command;
 import starvationevasion.communication.commands.Draft;

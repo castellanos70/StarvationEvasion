@@ -1,15 +1,13 @@
-package starvationevasion.communication.commands;
+package starvationevasion.communication.AITest.commands;
 
 
-import starvationevasion.ai.AI;
-import starvationevasion.communication.AITest;
+import starvationevasion.communication.AITest.AI;
 import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.RequestFactory;
 
 public class Uptime extends AbstractCommand
 {
 
-  public Uptime (AITest client)
+  public Uptime (AI client)
   {
     super(client);
   }

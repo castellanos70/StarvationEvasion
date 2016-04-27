@@ -1,9 +1,7 @@
-package starvationevasion.communication.commands;
+package starvationevasion.communication.AITest.commands;
 
-import starvationevasion.ai.AI;
-import starvationevasion.communication.AITest;
+import starvationevasion.communication.AITest.AI;
 import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Request;
 import starvationevasion.server.model.State;
 
 public class GameState extends AbstractCommand
@@ -11,7 +9,7 @@ public class GameState extends AbstractCommand
 
   private boolean sentReady = false;
 
-  public GameState (AITest client)
+  public GameState (AI client)
   {
     super(client);
   }

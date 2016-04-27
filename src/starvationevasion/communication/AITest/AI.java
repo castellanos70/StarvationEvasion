@@ -1,13 +1,15 @@
-package starvationevasion.communication;
+package starvationevasion.communication.AITest;
 
 import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.common.WorldData;
-import starvationevasion.communication.commands.Command;
-import starvationevasion.communication.commands.Draft;
-import starvationevasion.communication.commands.GameState;
-import starvationevasion.communication.commands.Login;
-import starvationevasion.communication.commands.Uptime;
-import starvationevasion.communication.commands.Vote;
+import starvationevasion.communication.CommModule;
+import starvationevasion.communication.Communication;
+import starvationevasion.communication.AITest.commands.Command;
+import starvationevasion.communication.AITest.commands.Draft;
+import starvationevasion.communication.AITest.commands.GameState;
+import starvationevasion.communication.AITest.commands.Login;
+import starvationevasion.communication.AITest.commands.Uptime;
+import starvationevasion.communication.AITest.commands.Vote;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.Type;
 import starvationevasion.server.model.User;
@@ -18,7 +20,7 @@ import java.util.Stack;
 /**
  * This is just a test/proof-of-concept for the CommModule implementation of the Communication interface.
  */
-public class AITest
+public class AI
 {
   private final CommModule COMM;
   private User u;
@@ -29,7 +31,7 @@ public class AITest
   private Stack<Command> commands = new Stack<>();
   private volatile boolean isRunning = true;
 
-  public AITest(String host, int port)
+  public AI(String host, int port)
   {
     COMM = new CommModule(host, port);
     isRunning = COMM.isConnected();
@@ -59,11 +61,11 @@ public class AITest
       state = (State)data;
       if (state == starvationevasion.server.model.State.VOTING)
       {
-        AITest.this.commands.add(new Vote(AITest.this));
+        AI.this.commands.add(new Vote(AI.this));
       }
       else if (state == starvationevasion.server.model.State.DRAFTING)
       {
-        AITest.this.commands.add(new Draft(AITest.this));
+        AI.this.commands.add(new Draft(AI.this));
       }
       else if (state == starvationevasion.server.model.State.DRAWING)
       {
@@ -164,6 +166,6 @@ public class AITest
       System.exit(0);
     }
 
-    new AITest(host, port);
+    new AI(host, port);
   }
 }

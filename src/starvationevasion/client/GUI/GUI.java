@@ -151,7 +151,7 @@ public class GUI extends Application
   @Override
   public void stop()
   {
-    client.closeAll();
+    client.shutdown();
   }
 
   /**

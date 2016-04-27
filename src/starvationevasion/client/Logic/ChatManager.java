@@ -24,8 +24,8 @@ public class ChatManager
    */
   public void sendChatToServer(String message,EnumRegion region,EnumPolicy card)
   {
-
-    client.sendChatMessage(client.getRegion().toString()+": "+message,region);
+    client.getCommunicationModule().sendChat(region, region.toString() + ": " + message, card);
+    //client.sendChatMessage(client.getRegion().toString()+": "+message,region);
     chat+=message+"\n";
   }
 

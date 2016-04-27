@@ -3,6 +3,8 @@ package starvationevasion.server.model.db.backends;
 
 import java.sql.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Sqlite implements Backend
@@ -10,6 +12,7 @@ public class Sqlite implements Backend
   private final String url;
   private Connection connection = null;
   private Properties properties = null;
+  private final static Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
 
   public Sqlite(String url)
   {
@@ -22,10 +25,11 @@ public class Sqlite implements Backend
     try
     {
       connection = DriverManager.getConnection(url);
+      LOG.info("Connected to SQLite");
     }
     catch(SQLException e)
     {
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "Connection error", e);
       return false;
     }
     return true;
@@ -65,7 +69,7 @@ public class Sqlite implements Backend
     }
     catch(SQLException e)
     {
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "SQLite creating table", e);
     }
   }
 
@@ -142,7 +146,7 @@ public class Sqlite implements Backend
     }
     catch(SQLException e)
     {
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "SQLite inserting", e);
     }
   }
 
@@ -157,7 +161,7 @@ public class Sqlite implements Backend
     }
     catch(SQLException e)
     {
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "SQLite selecting", e);
     }
     return null;
   }
@@ -186,7 +190,7 @@ public class Sqlite implements Backend
     }
     catch(SQLException e)
     {
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "SQLite updating", e);
     }
 
 
@@ -205,16 +209,18 @@ public class Sqlite implements Backend
   {
     if (connection == null)
     {
+      LOG.fine("Already closed");
       return;
     }
 
     try
     {
       connection.close();
+      LOG.info("Closed DB");
     }
     catch(SQLException e)
     {
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "SQLite closing", e);
     }
   }
 }

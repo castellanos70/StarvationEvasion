@@ -9,7 +9,7 @@ import starvationevasion.client.GUI.DraftLayout.Hand;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.VotingLayout.VotingLayout;
 import starvationevasion.client.Networking.Client;
-import starvationevasion.common.policies.EnumPolicy;
+import starvationevasion.common.gamecards.EnumPolicy;
 
 import java.util.ArrayList;
 import java.util.Arrays;

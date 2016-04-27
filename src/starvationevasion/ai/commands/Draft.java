@@ -4,8 +4,8 @@ import starvationevasion.ai.AI;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Util;
-import starvationevasion.common.policies.EnumPolicy;
-import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.common.gamecards.EnumPolicy;
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.RequestFactory;
@@ -19,7 +19,7 @@ public class Draft extends AbstractCommand
   private boolean draftedCard = false;
   private boolean discarded = false;
   private boolean drawn = false;
-  private PolicyCard cardDrafted;
+  private GameCard cardDrafted;
   private int tries = 2;
 
   public Draft (AI client)
@@ -83,7 +83,7 @@ public class Draft extends AbstractCommand
 
     for (EnumPolicy policy : getClient().getUser().getHand())
     {
-      PolicyCard _card = PolicyCard.create(getClient().getUser().getRegion(), policy);
+      GameCard _card = GameCard.create(getClient().getUser().getRegion(), policy);
       // dont remove the card we just drafted!!!
       if (cardDrafted != null && policy != cardDrafted.getCardType() && Util.rand.nextBoolean())
       {
@@ -105,13 +105,13 @@ public class Draft extends AbstractCommand
 
   private void randomlySetDraftedCard ()
   {
-    PolicyCard card = null;
+    GameCard card = null;
 
     int i = 0;
     boolean draftSent = false;
     for (EnumPolicy policy : getClient().getUser().getHand())
     {
-      card = PolicyCard.create(getClient().getUser().getRegion(), policy);
+      card = GameCard.create(getClient().getUser().getRegion(), policy);
 
         if (card.votesRequired() == 0 || !draftSent)
         {
@@ -146,7 +146,7 @@ public class Draft extends AbstractCommand
     tries = 2;
   }
 
-  private void setupCard(PolicyCard card)
+  private void setupCard(GameCard card)
   {
     if (card == null)
     {

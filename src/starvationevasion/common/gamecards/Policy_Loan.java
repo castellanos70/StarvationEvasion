@@ -1,4 +1,4 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import starvationevasion.common.EnumRegion;
 
@@ -19,7 +19,7 @@ import starvationevasion.common.EnumRegion;
  * 2.5 million + 10% of remaining balance are transferred from card owner
  * back to the target player.
  */
-public class Policy_Loan extends PolicyCard
+public class Policy_Loan extends GameCard
 {
     public static final String TITLE = "Loan";
 

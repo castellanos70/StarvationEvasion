@@ -1,4 +1,4 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
 
@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * effects world regions in direct proportion to that regions import levels of the
  * effected food categories.
 */
-public class Policy_MyPlatePromotionCampaign extends PolicyCard
+public class Policy_MyPlatePromotionCampaign extends GameCard
 {
   public static final String TITLE =
      "MyPlate Promotion Campaign";

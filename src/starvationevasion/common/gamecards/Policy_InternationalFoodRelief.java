@@ -1,4 +1,4 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
 
@@ -27,7 +27,7 @@ import java.util.ArrayList;
  * direct reduction of supply without effect on demand (since those to whom the
  * relief is delivered are presumed to lack the resources to have been part of the demand).
 */
-public class Policy_InternationalFoodRelief extends PolicyCard
+public class Policy_InternationalFoodRelief extends GameCard
 {
 
   public static final String TITLE =

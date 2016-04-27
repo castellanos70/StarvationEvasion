@@ -1,5 +1,5 @@
 
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
 
@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * X% of the money that the sim estimates is spent for improved irrigation
  * is deducted from the regions tax revenue at the start of the next turn.
 */
-public class Policy_EfficientIrrigationIncentive extends PolicyCard
+public class Policy_EfficientIrrigationIncentive extends GameCard
 {
   public static final String TITLE =
       "Efficient Irrigation Incentive";

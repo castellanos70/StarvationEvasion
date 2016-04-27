@@ -7,8 +7,8 @@ import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
-import starvationevasion.common.policies.EnumPolicy;
-import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.common.gamecards.EnumPolicy;
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.server.model.*;
 
 import java.io.*;
@@ -43,7 +43,7 @@ public class Client
   private boolean loginSuccessful;
   private boolean recivedMessege=false;
   private State state;
-  private ArrayList<PolicyCard> votingCards;
+  private ArrayList<GameCard> votingCards;
 
   private GUI gui;
 
@@ -81,7 +81,7 @@ public class Client
   {
     return availableRegion;
   }
-  public ArrayList<PolicyCard> getVotingCards()
+  public ArrayList<GameCard> getVotingCards()
   {
     return votingCards;
   }
@@ -191,7 +191,7 @@ public class Client
     f.setData(data);
     sendRequest(f);
   }
-  public void draftCard(PolicyCard card)
+  public void draftCard(GameCard card)
   {
     Request f = new Request(startNanoSec, Endpoint.DRAFT_CARD);
     Payload data = new Payload();
@@ -201,7 +201,7 @@ public class Client
     // Create a payload (this is the class that stores Sendable information)
     sendRequest(f);
   }
-  public void voteUp(PolicyCard card)
+  public void voteUp(GameCard card)
   {
     Request f = new Request(startNanoSec, Endpoint.VOTE_UP);
     Payload data = new Payload();
@@ -211,7 +211,7 @@ public class Client
     // Create a payload (this is the class that stores Sendable information)
     sendRequest(f);
   }
-  public void voteDown(PolicyCard card)
+  public void voteDown(GameCard card)
   {
     Request f = new Request(startNanoSec, Endpoint.VOTE_DOWN);
     Payload data = new Payload();
@@ -221,7 +221,7 @@ public class Client
     // Create a payload (this is the class that stores Sendable information)
     sendRequest(f);
   }
-  public void discardCard(PolicyCard card)
+  public void discardCard(GameCard card)
   {
     Request f = new Request(startNanoSec, Endpoint.DELETE_CARD);
     Payload data = new Payload();

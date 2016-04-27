@@ -1,7 +1,7 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.*;
-import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
 import starvationevasion.sim.events.Hurricane;
@@ -412,7 +412,7 @@ public class Model
   /**
    * @return the simulation currentYear that has just finished.
    */
-  protected int nextYear(ArrayList<PolicyCard> cards)
+  protected int nextYear(ArrayList<GameCard> cards)
   {
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 

@@ -5,7 +5,7 @@ import starvationevasion.ai.commands.*;
 import starvationevasion.common.Constant;
 import starvationevasion.common.Util;
 import starvationevasion.common.WorldData;
-import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.server.model.*;
 
 import javax.crypto.Cipher;
@@ -38,7 +38,7 @@ public class AI
 
   private ArrayList<WorldData> worldData;
 
-  private List<PolicyCard> ballot;
+  private List<GameCard> ballot;
 
   // time of server start
   private double startNanoSec = 0;
@@ -171,7 +171,7 @@ public class AI
     return commands;
   }
 
-  public List<PolicyCard> getBallot ()
+  public List<GameCard> getBallot ()
   {
     return ballot;
   }
@@ -281,7 +281,7 @@ public class AI
         }
         else if (response.getType().equals(Type.VOTE_BALLOT))
         {
-          ballot = (List<PolicyCard>) response.getPayload().getData();
+          ballot = (List<GameCard>) response.getPayload().getData();
         }
 
       }

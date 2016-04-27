@@ -1,4 +1,4 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import starvationevasion.common.EnumFood;
 
@@ -15,7 +15,7 @@ import starvationevasion.common.EnumFood;
  * the fertilizer on existing crops causing a change in yield and a change in
  * fertilizer run off.
 */
-public class Policy_FertilizerSubsidy extends PolicyCard
+public class Policy_FertilizerSubsidy extends GameCard
 {
 
   public static final String TITLE =

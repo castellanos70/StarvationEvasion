@@ -1,4 +1,4 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.model.Sendable;

@@ -1,5 +1,5 @@
 
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import starvationevasion.common.EnumFood;
 
@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * Benefit yield is an ease-in-out cubic bezier function of effective
  * dollars spent and grains.
 */
-public class Policy_ResearchInsectResistanceGrain extends PolicyCard
+public class Policy_ResearchInsectResistanceGrain extends GameCard
 {
 
   public static final String TITLE =

@@ -1,4 +1,4 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import starvationevasion.common.EnumRegion;
 
@@ -17,7 +17,7 @@ import starvationevasion.common.EnumRegion;
  * time spending permanently reduces the regions penalty function.<br><br>
  * If approved, each US region must pay $10 million.
 */
-public class Policy_EducateTheWomenCampaign extends PolicyCard
+public class Policy_EducateTheWomenCampaign extends GameCard
 {
 
   public static final String TITLE =

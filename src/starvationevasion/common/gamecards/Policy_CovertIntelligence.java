@@ -1,4 +1,4 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import starvationevasion.common.EnumRegion;
 
@@ -12,7 +12,7 @@ import starvationevasion.common.EnumRegion;
  * be set at the start of the game rather than cards being randomly picked at draw
  * time.
 */
-public class Policy_CovertIntelligence extends PolicyCard
+public class Policy_CovertIntelligence extends GameCard
 {
   public static final String TITLE =
       "Covert Intelligence";

@@ -1,9 +1,9 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
 
 
-public class Policy_FarmInfrastructureSubSaharan extends PolicyCard
+public class Policy_FarmInfrastructureSubSaharan extends GameCard
 {
 
   public static final String TITLE =

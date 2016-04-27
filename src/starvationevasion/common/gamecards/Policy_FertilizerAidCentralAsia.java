@@ -1,16 +1,15 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
 
-
-public class Policy_FertilizerAidSubSaharan extends PolicyCard
+public class Policy_FertilizerAidCentralAsia extends GameCard
 {
 
   public static final String TITLE =
-    "Fertilizer Aid to Oceania";
+    "Fertilizer Aid to Central Asia";
 
   public static final String TEXT =
-    "Each region of the United States sends X million dollars in fertilizer to Oceania.";
+    "Each region of the United States sends X million dollars in fertilizer to Central Asia.";
 
 
   /**

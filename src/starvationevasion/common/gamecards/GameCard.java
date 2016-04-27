@@ -1,4 +1,4 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumFood;
@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * Use the validate() method to verify all needed parameters of the policy
  * are defined in range.
  */
-public abstract class PolicyCard implements Sendable
+public abstract class GameCard implements Sendable
 {
   private EnumPolicy type;
 
@@ -91,7 +91,7 @@ public abstract class PolicyCard implements Sendable
    * @param type The policy card type to be constructed.
    * @return new instance of a policy card.
    */
-  public static PolicyCard create(EnumRegion owner, EnumPolicy type)
+  public static GameCard create(EnumRegion owner, EnumPolicy type)
   {
     if (!owner.isUS())
     {
@@ -101,7 +101,7 @@ public abstract class PolicyCard implements Sendable
 
 
 
-    PolicyCard myCard = null;
+    GameCard myCard = null;
     switch (type) {
       case Policy_CleanRiverIncentive:
         myCard = new Policy_CleanRiverIncentive();
@@ -547,9 +547,9 @@ public abstract class PolicyCard implements Sendable
   public boolean equals(Object o)
   {
     if (this == o) return true;
-    if (!(o instanceof PolicyCard)) return false;
+    if (!(o instanceof GameCard)) return false;
 
-    PolicyCard that = (PolicyCard) o;
+    GameCard that = (GameCard) o;
 
     if (approvedRegionBits != that.approvedRegionBits) return false;
     if (varX != that.varX) return false;

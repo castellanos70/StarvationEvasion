@@ -1,4 +1,4 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
 
@@ -13,7 +13,7 @@ import java.util.ArrayList;
  *
  * Model Effects: <br><br>
  */
-public class Policy_EthanolTaxCreditChange extends PolicyCard
+public class Policy_EthanolTaxCreditChange extends GameCard
 {
 
   public static final String TITLE =

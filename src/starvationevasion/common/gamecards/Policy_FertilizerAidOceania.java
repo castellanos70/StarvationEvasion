@@ -1,4 +1,4 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
 
@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * time spending permanently reduces the regions penalty function.<br><br>.
  */
 
-public class Policy_FertilizerAidOceania extends PolicyCard
+public class Policy_FertilizerAidOceania extends GameCard
 {
 
   public static final String TITLE =

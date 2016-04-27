@@ -1,17 +1,16 @@
-package starvationevasion.communication.commands;
+package starvationevasion.communication.AITest.commands;
 
 
-import starvationevasion.ai.AI;
 import starvationevasion.common.policies.PolicyCard;
 import starvationevasion.common.Util;
-import starvationevasion.communication.AITest;
+import starvationevasion.communication.AITest.AI;
 import starvationevasion.server.model.*;
 
 public class Vote extends AbstractCommand
 {
   private int tries = 2;
 
-  public Vote (AITest client)
+  public Vote (AI client)
   {
     super(client);
   }

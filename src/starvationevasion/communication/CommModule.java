@@ -47,11 +47,12 @@ public class CommModule implements Communication
 
   private class StreamListener extends Thread
   {
+    private boolean encounteredError = false;
     @Override
     public void run()
     {
       serverKey = Util.endServerHandshake(clientSocket, rsaKey);
-      while (IS_RUNNING.get()) read();
+      while (IS_RUNNING.get() && !encounteredError) read();
     }
 
     private void read()
@@ -59,13 +60,15 @@ public class CommModule implements Communication
       try
       {
         Response response = readObject();
+        // Result of readObject should not be null - assume fatal error if it is (Ex: socket was closed)
+        if (response == null)
+        {
+          encounteredError = true;
+          return;
+        }
         RESPONSE_EVENTS.add(response);
 
-        if (response.getType().equals(Type.AUTH_ERROR))
-        {
-          commError("Failed to login");
-          dispose();
-        }
+        if (response.getType().equals(Type.AUTH_ERROR)) commError("Failed to login");
       }
       catch (Exception e)
       {
@@ -77,24 +80,31 @@ public class CommModule implements Communication
 
     private Response readObject () throws IOException, ClassNotFoundException, InvalidKeyException, NoSuchAlgorithmException
     {
-      int ch1 = reader.read();
-      int ch2 = reader.read();
-      int ch3 = reader.read();
-      int ch4 = reader.read();
+      Response response = null;
+      try
+      {
+        int ch1 = reader.read();
+        int ch2 = reader.read();
+        int ch3 = reader.read();
+        int ch4 = reader.read();
 
-      if ((ch1 | ch2 | ch3 | ch4) < 0) throw new EOFException();
-      int size = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+        if ((ch1 | ch2 | ch3 | ch4) < 0) throw new EOFException();
+        int size = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
 
-      byte[] encObject = new byte[size];
+        byte[] encObject = new byte[size];
 
-      reader.readFully(encObject);
-      ByteArrayInputStream in = new ByteArrayInputStream(encObject);
-      ObjectInputStream is = new ObjectInputStream(in);
-      SealedObject sealedObject = (SealedObject) is.readObject();
-      Response response = (Response) sealedObject.getObject(serverKey);
-      is.close();
-      in.close();
-
+        reader.readFully(encObject);
+        ByteArrayInputStream in = new ByteArrayInputStream(encObject);
+        ObjectInputStream is = new ObjectInputStream(in);
+        SealedObject sealedObject = (SealedObject) is.readObject();
+        response = (Response) sealedObject.getObject(serverKey);
+        is.close();
+        in.close();
+      }
+      catch (Exception e)
+      {
+        // Ignore
+      }
       return response;
     }
   }
@@ -340,6 +350,7 @@ public class CommModule implements Communication
     IS_RUNNING.set(false);
     while(RESPONSE_EVENTS.size() > 0) pushResponseEvents(); // Clear out the events
     RESPONSE_MAP.clear();
+
     try
     {
       writer.close();

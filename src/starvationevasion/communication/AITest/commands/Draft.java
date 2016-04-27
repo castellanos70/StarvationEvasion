@@ -1,9 +1,8 @@
-package starvationevasion.communication.commands;
+package starvationevasion.communication.AITest.commands;
 
-import starvationevasion.ai.AI;
 import starvationevasion.common.*;
 import starvationevasion.common.policies.*;
-import starvationevasion.communication.AITest;
+import starvationevasion.communication.AITest.AI;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.RequestFactory;
@@ -20,7 +19,7 @@ public class Draft extends AbstractCommand
   private PolicyCard cardDrafted;
   private int tries = 2;
 
-  public Draft (AITest client)
+  public Draft (AI client)
   {
     super(client);
   }

@@ -1,9 +1,7 @@
-package starvationevasion.communication.commands;
+package starvationevasion.communication.AITest.commands;
 
-import starvationevasion.ai.AI;
-import starvationevasion.communication.AITest;
+import starvationevasion.communication.AITest.AI;
 import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.RequestFactory;
 
 import static starvationevasion.common.Constant.AI_NAMES;
 
@@ -13,7 +11,7 @@ public class Login extends AbstractCommand
   private String chosenUsername = "";
   private boolean requestSent = false;
 
-  public Login (AITest client)
+  public Login (AI client)
   {
     super(client);
   }

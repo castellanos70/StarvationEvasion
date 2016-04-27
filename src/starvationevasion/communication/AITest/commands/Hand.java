@@ -1,16 +1,14 @@
-package starvationevasion.communication.commands;
+package starvationevasion.communication.AITest.commands;
 
 
-import starvationevasion.ai.AI;
-import starvationevasion.communication.AITest;
+import starvationevasion.communication.AITest.AI;
 import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.RequestFactory;
 
 public class Hand extends AbstractCommand
 {
 
   private int tries = 3;
-  public Hand (AITest client)
+  public Hand (AI client)
   {
     super(client);
   }

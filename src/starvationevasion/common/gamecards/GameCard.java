@@ -80,7 +80,15 @@ public abstract class GameCard implements Sendable
    * This field is ignored if not require by this policy.
    */
   private int varX;
-
+  
+  //=========================================================================================
+  /**
+   * Cards can sometimes be used/played at different times. For example, the "Filibuster" 
+   * card is one that is only played during the voting phase, while any of the policy cards
+   * must be played during the planning phase. This is a list of what game states that the
+   * card can be played in.
+   */
+  private ArrayList<EnumGameState> usableStates;
 
   //=========================================================================================
   /**
@@ -261,10 +269,24 @@ public abstract class GameCard implements Sendable
    */
   public void setX(int x) {varX = x;}
 
+  
+  
+  //=========================================================================================
+  /**
+   * @param the game states in which it is valid to use this card.
+   */
+  public ArrayList<EnumGameState> getUsableStates() {return usableStates;}
+
+  
+  
+  //=========================================================================================
+  /**
+   * @param states ArrayList of states of when this card can be played.
+   */
+  public void setUsableStates(ArrayList<EnumGameState> states) {states = usableStates;}
 
 
-
-
+  
   //=========================================================================================
   /**
    * Some policy cards require a target region.
@@ -275,6 +297,10 @@ public abstract class GameCard implements Sendable
   public void setTargetRegion(EnumRegion region)
   { targetRegion = region;
   }
+
+
+
+
 
 
 

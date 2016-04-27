@@ -1,5 +1,6 @@
 package starvationevasion.communication.ClientTest;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -24,6 +25,28 @@ public class UpdateLoop extends Application
   private Label passwordLabel = new Label("Password");
   private PasswordField passwordTextField = new PasswordField();
 
+  public void notifyOfLoginSuccess()
+  {
+    new AnimationTimer()
+    {
+
+      /**
+       * This method needs to be overridden by extending classes. It is going to
+       * be called in every frame while the {@code AnimationTimer} is active.
+       *
+       * @param now The timestamp of the current frame given in nanoseconds. This
+       *            value will be the same for all {@code AnimationTimers} called
+       *            during one frame.
+       */
+      @Override
+      public void handle(long now)
+      {
+        System.out.println("I'm running!!!!!!!!!!");
+        client.update();
+      }
+    }.start();
+  }
+
   /**
    * The main entry point for all JavaFX applications.
    * The start method is called after the init method has returned,
@@ -44,7 +67,8 @@ public class UpdateLoop extends Application
   {
     stage.setTitle("Login");
     stage.setOnCloseRequest(this::closeWindow);
-    client = new Client("localhost", 5555);
+    client = new Client(this, "localhost", 5555);
+    if (!client.isRunning()) System.exit(-1);
     login.setOnAction((event) ->
     {
       client.login(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.ARCTIC_AMERICA);

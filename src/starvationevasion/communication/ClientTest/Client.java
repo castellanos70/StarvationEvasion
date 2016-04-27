@@ -46,7 +46,7 @@ public class Client
   private GUI gui;
   private ArrayList<EnumRegion> availableRegion;
 
-  public Client(String host, int port)
+  public Client(UpdateLoop loop, String host, int port)
   {
     // Sets up the comm module to be used by the client
     COMM = new CommModule(host, port);
@@ -55,6 +55,7 @@ public class Client
     // Set up the response listeners
     COMM.setResponseListener(Type.AUTH_SUCCESS, (type, data) ->
     {
+      loop.notifyOfLoginSuccess(); // Let the main loop know we logged in
       u = (User)data;
       COMM.sendChat("ALL", "Human user: " + u.getUsername() + " just connected to the game", null);
     });

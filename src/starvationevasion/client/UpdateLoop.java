@@ -1,5 +1,6 @@
 package starvationevasion.client;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -20,6 +21,9 @@ public class UpdateLoop extends Application
 {
   private int width = 300;
   private int height = 250;
+  private Stage stage;
+  private long millisecondTimeStamp = System.currentTimeMillis();
+  private double deltaSeconds;
   private Client client;
   private GridPane root = new GridPane();
   private Button login = new Button("Login");
@@ -50,7 +54,9 @@ public class UpdateLoop extends Application
     });
 
     client = new ClientTest("localhost", 5555);
+    this.stage = stage;
     stage.setTitle("Login");
+    stage.setOnCloseRequest((event) -> client.shutdown());
     //Sets up the initial stage
     root.setAlignment(Pos.CENTER);
     root.setHgap(10);
@@ -63,6 +69,29 @@ public class UpdateLoop extends Application
     root.add(login,0,4);
     root.add(createUser,1,4);
     stage.show();
+    startGameLoop();
+  }
+
+  private void startGameLoop()
+  {
+    new AnimationTimer()
+    {
+      @Override
+      public void handle(long time)
+      {
+        deltaSeconds = (System.currentTimeMillis() - millisecondTimeStamp) / 1000.0;
+        millisecondTimeStamp = System.currentTimeMillis();
+        client.update(deltaSeconds);
+        if (!client.isRunning()) stop();
+      }
+
+      public void stop()
+      {
+        super.stop();
+        stage.close();
+      }
+
+    }.start();
   }
 
   public static void main(String[] args)

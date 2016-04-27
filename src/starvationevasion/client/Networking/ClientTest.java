@@ -2,6 +2,7 @@ package starvationevasion.client.Networking;
 
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Logic.ChatManager;
+import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
@@ -16,11 +17,13 @@ import java.util.ArrayList;
 public class ClientTest implements Client
 {
   private final CommModule COMM;
+  private final LocalDataContainer CONTAINER;
   private boolean isRunning = false;
 
   public ClientTest(String host, int port)
   {
     COMM = new CommModule(host, port);
+    CONTAINER = new LocalDataContainer(this);
     isRunning = COMM.isConnected();
   }
 

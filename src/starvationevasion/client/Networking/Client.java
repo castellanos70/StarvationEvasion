@@ -145,6 +145,14 @@ public interface Client
   boolean discardCard(PolicyCard card);
 
   /**
+   * Checks to see if the client is still running. This might return false if something
+   * like the server disconnected.
+   *
+   * @return true if running and false if not
+   */
+  boolean isRunning();
+
+  /**
    * Shuts down the client. It is not meant to be used at all after this is called.
    */
   void shutdown();

@@ -15,6 +15,15 @@ import java.util.ArrayList;
  */
 public class ClientTest implements Client
 {
+  private final CommModule COMM;
+  private boolean isRunning = false;
+
+  public ClientTest(String host, int port)
+  {
+    COMM = new CommModule(host, port);
+    isRunning = COMM.isConnected();
+  }
+
   /**
    * Gets the region associated with this client.
    *
@@ -203,6 +212,18 @@ public class ClientTest implements Client
   }
 
   /**
+   * Checks to see if the client is still running. This might return false if something
+   * like the server disconnected.
+   *
+   * @return true if running and false if not
+   */
+  @Override
+  public boolean isRunning()
+  {
+    return isRunning;
+  }
+
+  /**
    * Shuts down the client. It is not meant to be used at all after this is called.
    */
   @Override
@@ -220,6 +241,9 @@ public class ClientTest implements Client
   @Override
   public void update(double deltaSeconds)
   {
+    isRunning = COMM.isConnected();
 
+    // Check to see if any new server responses have come in since the last iteration of this loop
+    COMM.pushResponseEvents();
   }
 }

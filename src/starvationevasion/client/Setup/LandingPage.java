@@ -129,7 +129,7 @@ public class LandingPage extends Application
     startGame.setOnAction(event ->
     {
       client.ready();
-      //client.openGUI();
+      ((DeprecatedClient)client).openGUI();
       stage.close();
     });
     //Sets up the initial stage

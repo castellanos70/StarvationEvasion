@@ -462,7 +462,7 @@ public class CommModule implements Communication
     }
   }
 
-  public void send (Request request)
+  private void send (Request request)
   {
     try
     {

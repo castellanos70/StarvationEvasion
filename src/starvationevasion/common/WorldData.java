@@ -101,10 +101,17 @@ public class WorldData implements Sendable
       _eventArray.set(i, eventList.get(i).toJSON());
     }
 
+    // getting only us regions!!!!!! this is due to the data being too large for JS client
     JSONDocument _regionArray = JSONDocument.createArray(regionData.length);
+    int y = 0;
     for (int i = 0; i < regionData.length; i++)
     {
-      _regionArray.set(i, regionData[i].toJSON());
+      //_regionArray.set(i, regionData[i].toJSON());
+      if (regionData[i].region.isUS())
+      {
+        _regionArray.set(y, regionData[i].toJSON());
+        y++;
+      }
     }
 
     JSONDocument _foodPriceArray = JSONDocument.createArray(foodPrice.length);
@@ -113,11 +120,9 @@ public class WorldData implements Sendable
       _foodPriceArray.setNumber(i, foodPrice[i]);
     }
 
-
     json.set("events", _eventArray);
     json.set("food-prices", _foodPriceArray);
     json.set("regions", _regionArray);
-
 
     return json;
   }

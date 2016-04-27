@@ -1,5 +1,7 @@
 package starvationevasion.common;
 
+import starvationevasion.server.model.DataType;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -10,9 +12,12 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.security.KeyPair;
 import java.security.PrivateKey;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Random;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static starvationevasion.common.Constant.ANON_NAME_ARRAY;
 
 /**
  * public static methods that might be useful in as utilities.
@@ -59,42 +64,75 @@ public class Util
 
   public static SecretKey endServerHandshake (Socket s, KeyPair keyPair)
   {
+    Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
+    LOG.fine("Ready to read handshake response from server");
     // first
     byte[] sdf = new byte[128];
     try
     {
       s.getInputStream().read(sdf);
       String decryptedMsg = decrypt(sdf, keyPair.getPrivate());
-
+      LOG.fine("Received my streams private key: " + decryptedMsg);
       byte[] msg = Base64.getDecoder().decode(decryptedMsg);
       return  new SecretKeySpec(msg, "AES");
 
     }
     catch(IOException e)
     {
-      System.out.println("There was an error ending handshake.");
+      LOG.log(Level.SEVERE, "There was an error ending handshake.", e);
     }
+    LOG.fine("Successful connection :]");
     return null;
   }
 
-  public static void startServerHandshake (Socket s, KeyPair keyPair, String streamType)
+
+  public static void startServerHandshake (Socket s, KeyPair keyPair, DataType accept)
   {
     // first
     byte[] publicKey = keyPair.getPublic().getEncoded();
     String pubKeyStr = Base64.getEncoder().encodeToString(publicKey);
-
+    Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
+    LOG.fine("Sending socket request to server");
     try
     {
       PrintWriter write = new PrintWriter(s.getOutputStream(), true);
 
-      write.print("RSA-Socket-Key: " + pubKeyStr + "\n" + streamType +"\n");
+      write.print("GET / HTTP/1.1" + "\r\n" +
+                          "RSA-Socket-Key: " + pubKeyStr + "\r\n" +
+                          "Accept: " + accept.toString() +"\r\n" +
+                          "Connection: Upgrade\r\n"+
+                          "\r\n");
+
       write.flush();
+      LOG.fine("Sent request to initiate handshake");
     }
     catch(IOException e)
     {
-      System.out.println("There was an error starting handshake.");
+      LOG.log(Level.SEVERE, "There was an error starting handshake.", e);
     }
 
+  }
+
+
+  public static final String[] names = new String[ANON_NAME_ARRAY.length];
+
+  /**
+   * This is used for creating http responses
+   * Internal use of server only.
+   * @return String of the current datetime for valid HTTP header response
+   */
+  public static final String getServerTime ()
+  {
+    Calendar calendar = Calendar.getInstance();
+    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+    dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+    return dateFormat.format(calendar.getTime());
+  }
+
+  public static String generateName () {
+    return ANON_NAME_ARRAY[Util.rand.nextInt(ANON_NAME_ARRAY.length)]
+              + "-" + Long.valueOf(String.valueOf(System.currentTimeMillis()), 16);
   }
 
   public static String decrypt(byte[] text, PrivateKey key)

@@ -4,22 +4,20 @@ package starvationevasion.server.handlers;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
-import starvationevasion.server.Worker;
 import starvationevasion.server.model.Request;
-import starvationevasion.server.model.Response;
-import starvationevasion.server.model.User;
 
 /**
  * Generic handler. Mainly to forces subclasses to implement handleRequestImpl method
  */
 public abstract class AbstractHandler
 {
-  private final Worker client;
+  private final Connector client;
   protected AbstractHandler m_successor;
   protected final Server server;
 
-  public AbstractHandler (Server server, Worker client)
+  public AbstractHandler (Server server, Connector client)
   {
     this.server = server;
     this.client = client;
@@ -44,7 +42,7 @@ public abstract class AbstractHandler
   }
 
 
-  public Worker getClient ()
+  public Connector getClient ()
   {
     return client;
   }

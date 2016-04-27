@@ -1,6 +1,7 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.*;
+import starvationevasion.common.policies.PolicyCard;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
 import starvationevasion.sim.events.Hurricane;
@@ -185,8 +186,8 @@ public class Model
     assert (!China.contains(35, -106)); //Albuquerque
     assert (China.contains(40, 116)); //Beijing
     assert (China.contains(31.2, 121.5)); //Shanghai
-    //assert (UnitedKingdom.contains(51.5, -0.13)); //London
-    //assert (UnitedKingdom.contains(54.5970, -5.93)); //Belfast, Northern Ireland
+    assert (UnitedKingdom.contains(51.5, -0.13)); //London
+    assert (UnitedKingdom.contains(54.5970, -5.93)); //Belfast, Northern Ireland
     assert (!UnitedKingdom.contains(53.349925, -6.270475)); //Dublin, Ireland
     assert (Ireland.contains(53.349925, -6.270475)); //Dublin, Ireland
     assert (!UnitedKingdom.contains(53.347309, -5.681383)); //Irish Sea
@@ -1017,6 +1018,7 @@ public class Model
 
   public void drawRain(Picture pic, int year, Constant.Month month)
   {
+    System.out.println("drawRain(year="+year+", " + month +")");
     MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
 
     Point pixel = new Point();
@@ -1087,7 +1089,7 @@ public class Model
 
       for (Constant.Month month : Constant.Month.values())
       {
-        model.drawRain(pic, 2009, month);
+        model.drawRain(pic, 2000+n, month);
       }
     }
 

@@ -11,8 +11,7 @@ public abstract class NetworkData implements Sendable
   private String message;// header
   private double time = 0f;
 
-  public <T extends Payload> NetworkData(double time, T data, String msg,
-      Type type)
+  public <T extends Payload> NetworkData(double time, T data, String msg, Type type)
   {
     this.time = time;
     this.data = data;

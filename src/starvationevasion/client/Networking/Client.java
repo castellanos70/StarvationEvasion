@@ -5,10 +5,10 @@ import javafx.stage.Stage;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.client.Logic.LocalDataContainer;
-import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.PolicyCard;
 import starvationevasion.common.WorldData;
+import starvationevasion.common.policies.EnumPolicy;
+import starvationevasion.common.policies.PolicyCard;
 import starvationevasion.server.model.*;
 
 import java.io.*;
@@ -240,7 +240,7 @@ public class Client
     Payload data = new Payload();
     data.putData("chat");
     data.put("to-region",toRegion.name());
-    data.put("card", EnumPolicy.Clean_River_Incentive);
+    data.put("card", EnumPolicy.Policy_CleanRiverIncentive);
     data.put("text",message);
     f.setData(data);
    sendRequest(f);

@@ -3,12 +3,15 @@ package starvationevasion.ai;
 
 import starvationevasion.ai.commands.*;
 import starvationevasion.common.Constant;
-import starvationevasion.common.PolicyCard;
 import starvationevasion.common.Util;
 import starvationevasion.common.WorldData;
+import starvationevasion.common.policies.PolicyCard;
 import starvationevasion.server.model.*;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SealedObject;
+import javax.crypto.SecretKey;
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
@@ -105,7 +108,7 @@ public class AI
     }
     isRunning = true;
 
-    Util.startServerHandshake(clientSocket, rsaKey, "JavaClient");
+    Util.startServerHandshake(clientSocket, rsaKey, DataType.POJO);
 
     return true;
 
@@ -318,7 +321,10 @@ public class AI
     }
   }
 
-  private Response readObject () throws IOException, ClassNotFoundException, InvalidKeyException, NoSuchAlgorithmException
+  private Response readObject () throws IOException,
+                                        ClassNotFoundException,
+                                        InvalidKeyException,
+                                        NoSuchAlgorithmException
   {
     int ch1 = reader.read();
     int ch2 = reader.read();
@@ -388,13 +394,12 @@ public class AI
     {
       host = args[0];
       port = Integer.parseInt(args[1]);
-      if (port < 1)
-      {
-        throw new Exception();
-      }
+
     }
+
     catch(Exception e)
     {
+      System.out.println("Usage: hostname port");
       System.exit(0);
     }
     new AI(host, port);

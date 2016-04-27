@@ -1,15 +1,10 @@
 package starvationevasion.server.model.db.backends;
 
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.sql.*;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Sqlite implements Backend
@@ -17,6 +12,7 @@ public class Sqlite implements Backend
   private final String url;
   private Connection connection = null;
   private Properties properties = null;
+  private final static Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
 
   public Sqlite(String url)
   {
@@ -29,10 +25,11 @@ public class Sqlite implements Backend
     try
     {
       connection = DriverManager.getConnection(url);
+      LOG.info("Connected to SQLite");
     }
     catch(SQLException e)
     {
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "Connection error", e);
       return false;
     }
     return true;
@@ -72,7 +69,7 @@ public class Sqlite implements Backend
     }
     catch(SQLException e)
     {
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "SQLite creating table", e);
     }
   }
 
@@ -120,6 +117,10 @@ public class Sqlite implements Backend
 
         if (value instanceof String)
         {
+          if (((String) value).isEmpty())
+          {
+            value = "NULL";
+          }
           stringBuilder.append("'").append(value).append("'");
         }
         else if (value instanceof Number)
@@ -145,7 +146,7 @@ public class Sqlite implements Backend
     }
     catch(SQLException e)
     {
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "SQLite inserting", e);
     }
   }
 
@@ -160,9 +161,46 @@ public class Sqlite implements Backend
     }
     catch(SQLException e)
     {
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "SQLite selecting", e);
     }
     return null;
+  }
+
+  @Override
+  public ResultSet update (String table, String where, Set<String> cols, Set<Object> values)
+  {
+    try
+    {
+      Statement statement = connection.createStatement();
+
+      StringBuilder _sb = new StringBuilder();
+      _sb.append("UPDATE ").append(table).append(" set ");
+
+      int i = 0;
+      ArrayList vals = new ArrayList<>(values);
+      for (String col : cols)
+      {
+        _sb.append(col).append(" = ").append(vals.get(i));
+        i++;
+      }
+
+      _sb.append(where).append(";");
+      statement.execute(_sb.toString());
+
+    }
+    catch(SQLException e)
+    {
+      LOG.log(Level.SEVERE, "SQLite updating", e);
+    }
+
+
+    return null;
+  }
+
+  @Override
+  public void delete (String table, String where)
+  {
+
   }
 
 
@@ -171,16 +209,18 @@ public class Sqlite implements Backend
   {
     if (connection == null)
     {
+      LOG.fine("Already closed");
       return;
     }
 
     try
     {
       connection.close();
+      LOG.info("Closed DB");
     }
     catch(SQLException e)
     {
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "SQLite closing", e);
     }
   }
 }

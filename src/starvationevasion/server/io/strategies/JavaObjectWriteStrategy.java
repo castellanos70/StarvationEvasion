@@ -4,6 +4,7 @@ package starvationevasion.server.io.strategies;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import starvationevasion.server.model.Response;
 import starvationevasion.server.model.Sendable;
 
 import javax.crypto.BadPaddingException;
@@ -27,22 +28,14 @@ public class JavaObjectWriteStrategy extends AbstractWriteStrategy
   }
 
   @Override
-  public void write (Sendable s) throws IOException, BadPaddingException, InvalidKeyException, IllegalBlockSizeException
+  public void write (Response s) throws IOException,
+                                        BadPaddingException,
+                                        InvalidKeyException,
+                                        IllegalBlockSizeException
   {
-    Serializable serializable = s;
 
-    if (isEncrypted())
-    {
-      serializable = encrypt(s);
-    }
+    byte[] bytes = getFormatter().format(s);
 
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ObjectOutputStream oos = new ObjectOutputStream(baos);
-    oos.writeObject(serializable);
-    oos.close();
-
-    byte[] bytes = baos.toByteArray();
-    baos.close();
     getStream().writeInt(bytes.length);
     getStream().write(bytes);
     getStream().flush();

@@ -4,10 +4,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
-import starvationevasion.client.GUI.DraftLayout.hand.ClientPolicyCard;
+import starvationevasion.client.GUI.DraftLayout.ClientPolicyCard;
 import starvationevasion.client.GUI.GUI;
-import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.policies.EnumPolicy;
 
 /**
  * Defines the StackPane where a card may be placed for voting purposes in the VotingLayout

@@ -4,14 +4,14 @@ package starvationevasion.server.handlers;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
-import starvationevasion.common.PolicyCard;
-import starvationevasion.server.Worker;
+import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
 import starvationevasion.server.model.*;
 
 public class VoteHandler extends AbstractHandler
 {
-  public VoteHandler (Server server, Worker client)
+  public VoteHandler (Server server, Connector client)
   {
     super(server, client);
   }

@@ -6,7 +6,8 @@ import starvationevasion.sim.Simulator;
 
 import java.awt.*;
 import java.io.*;
-import java.util.*;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 

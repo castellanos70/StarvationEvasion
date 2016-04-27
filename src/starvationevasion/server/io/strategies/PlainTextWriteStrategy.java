@@ -4,6 +4,7 @@ package starvationevasion.server.io.strategies;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import starvationevasion.server.model.Response;
 import starvationevasion.server.model.Sendable;
 
 import java.io.DataOutputStream;
@@ -34,7 +35,7 @@ public class PlainTextWriteStrategy extends AbstractWriteStrategy
   }
 
   @Override
-  public void write (Sendable s) throws IOException
+  public void write (Response s) throws IOException
   {
     //
     writer.println(s.toString());

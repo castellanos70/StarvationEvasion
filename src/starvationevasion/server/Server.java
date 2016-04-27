@@ -6,7 +6,13 @@ package starvationevasion.server;
  */
 
 import starvationevasion.common.*;
-import starvationevasion.server.io.*;
+import starvationevasion.common.policies.EnumPolicy;
+import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.server.io.HttpParse;
+import starvationevasion.server.io.NetworkException;
+import starvationevasion.server.io.ReadStrategy;
+import starvationevasion.server.io.WriteStrategy;
+import starvationevasion.server.io.formatters.Format;
 import starvationevasion.server.io.strategies.*;
 import starvationevasion.server.model.*;
 import starvationevasion.server.model.db.Transaction;
@@ -15,15 +21,23 @@ import starvationevasion.server.model.db.backends.Backend;
 import starvationevasion.server.model.db.backends.Sqlite;
 import starvationevasion.sim.Simulator;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import java.io.IOException;
-import java.net.*;
-import java.security.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.security.KeyFactory;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.*;
-import java.text.SimpleDateFormat;
 import java.text.DateFormat;
-import java.util.concurrent.Callable;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 
@@ -33,7 +47,7 @@ public class Server
 {
   private ServerSocket serverSocket;
   // List of all the workers
-  private final LinkedList<Worker> allConnections = new LinkedList<>();
+  private final HashMap<Class, LinkedList<Connector>> connections = new HashMap<>();
 
   private LinkedList<Process> processes = new LinkedList<>();
 
@@ -58,7 +72,10 @@ public class Server
   // bool that listen for connections is looping over
   private boolean isWaiting = true;
 
-  public static int TOTAL_PLAYERS = 2;
+  public static int TOTAL_HUMAN_PLAYERS = 0;
+  public static int TOTAL_AI_PLAYERS = 2;
+  public static int TOTAL_PLAYERS = TOTAL_HUMAN_PLAYERS + TOTAL_AI_PLAYERS;
+  public static final long TIMEOUT = 3; // seconds
 
   // Create a backend, currently sqlite
   private final Backend db = new Sqlite(Constant.DB_LOCATION);
@@ -67,10 +84,15 @@ public class Server
   private final Transaction<User> userTransaction;
   private volatile long counter = 0;
   private volatile boolean isPlaying = false;
+  private final ExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+  private Future<Connector> connectorFuture;
 
 
   public Server (int portNumber)
   {
+    connections.put(Temporary.class, new LinkedList<>());
+    connections.put(Persistent.class, new LinkedList<>());
+
     userTransaction = new Users(db);
     Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
 
@@ -83,6 +105,7 @@ public class Server
 
     // startNanoSec = System.nanoTime();
     simulator = new Simulator();
+    // simulator = null;
 
     try
     {
@@ -135,50 +158,67 @@ public class Server
   private void waitForConnection (int port)
   {
 
-    String host = "";
-    Worker worker = null;
     Socket potentialClient = null;
-    try
-    {
-      host = InetAddress.getLocalHost().getHostName();
-    }
-    catch(UnknownHostException e)
-    {
-      e.printStackTrace();
-    }
+    Connector connector = null;
+
     while(isWaiting)
     {
       try
       {
         potentialClient = serverSocket.accept();
         System.out.println(dateFormat.format(date) + " Server: new Connection request received.");
-        worker = new Worker(potentialClient, this);
 
-        setStreamType(worker, potentialClient);
-        worker.start();
-        System.out.println(dateFormat.format(date) + " Server: Connected to " + potentialClient.getRemoteSocketAddress());
-        worker.setName("worker" + uptimeString());
-
-        allConnections.add(worker);
-        userList.add(worker.getUser());
-
-      }
-      catch(IOException e)
-      {
-        // System.out.println(dateFormat.format(date) + " Server error: Failed to connect to client.");
-        // e.printStackTrace();
-      }
-      catch(HandshakeException e)
-      {
-        if (worker != null)
+        final Socket finalPotentialClient = potentialClient;
+        connectorFuture = executorService.submit(new Callable<Connector>()
         {
-          worker.shutdown();
+          @Override
+          public Connector call () throws Exception
+          {
+            return setStreamType(finalPotentialClient);
+          }
+        });
+
+        connector = connectorFuture.get(1L, TimeUnit.SECONDS);
+        if (connector == null)
+        {
+          potentialClient.close();
+          continue;
+        }
+
+        connector.start();
+        System.out.println(dateFormat.format(date) + " Server: Connected to " + potentialClient.getRemoteSocketAddress());
+
+        connections.get(connector.getConnectionType()).add(connector);
+        if (connector.getConnectionType() == Persistent.class)
+        {
+          userList.add(connector.getUser());
+        }
+
+      }
+      catch(TimeoutException e)
+      {
+        connectorFuture.cancel(true);
+        if (connector != null)
+        {
+          connector.shutdown();
+        }
+      }
+      catch(SocketTimeoutException e)
+      {
+        // This occurs when no one has connected
+      }
+      catch(IOException | NetworkException e)
+      {
+        if (connector != null)
+        {
+          connector.shutdown();
           System.out.println(dateFormat.format(date) + " Server: Failed to complete handshake. Closing connection");
+          System.out.println("\t" + e.getMessage());
         }
       }
       catch(Exception e)
       {
-        // e.printStackTrace();
+         e.printStackTrace();
       }
       finally
       {
@@ -225,6 +265,10 @@ public class Server
 
   public boolean createUser (User u)
   {
+    if (u.getUsername() == null || u.getUsername().trim().isEmpty())
+    {
+      return false;
+    }
     boolean found = userList.stream()
                             .anyMatch(user -> user.getUsername().equals(u.getUsername()));
     if (!found)
@@ -263,6 +307,7 @@ public class Server
   public void broadcast (Response response)
   {
     int i = 0;
+    LinkedList<Connector> allConnections = connections.get(Persistent.class);
     try
     {
       for (; i < allConnections.size(); i++)
@@ -273,7 +318,7 @@ public class Server
     catch(Exception e)
     {
       System.out.println("Error sending message " + e.getMessage());
-      System.out.println(allConnections.get(i).getName() +
+      System.out.println(allConnections.get(i) +
                                  " User: " + allConnections.get(i).getUser().getUsername());
     }
   }
@@ -282,22 +327,21 @@ public class Server
   {
     System.out.println(dateFormat.format(date) + " Killing server.");
     isWaiting = false;
-    for (Worker connection : allConnections)
-    {
-      connection.send(new ResponseFactory().build(uptime(),
+
+    broadcast(new ResponseFactory().build(uptime(),
                                             currentState,
-                                            Type.BROADCAST, "Server will shutdown in 3 sec"
-      ));
-    }
+                                            Type.BROADCAST, "Server will shutdown in 3 sec"));
 
     try
     {
       Thread.sleep(3100);
-      for (Worker connection : allConnections)
+      for (Map.Entry<Class, LinkedList<Connector>> entry : connections.entrySet())
       {
-        connection.shutdown();
+        for (Connector connector : entry.getValue())
+        {
+          connector.shutdown();
+        }
       }
-
     }
     catch(InterruptedException ex)
     {
@@ -322,7 +366,7 @@ public class Server
       user.setHand(new ArrayList<>());
       user.setPlaying(false);
     }
-    playerCache.clear();
+    playerCache = new ArrayList<>();
     simulator.init();
 
     for (int i = 0; i < _drafted.length; i++)
@@ -353,6 +397,10 @@ public class Server
 
   public synchronized boolean addPlayer (User u)
   {
+    if (getPlayerCount() == TOTAL_PLAYERS || currentState.ordinal() > State.LOGIN.ordinal())
+    {
+      return false;
+    }
     EnumRegion _region = u.getRegion();
 
     if (_region != null)
@@ -619,124 +667,175 @@ public class Server
   /**
    * Set up the worker with proper streams
    *
-   * @param worker worker that is holding the socket connection
    * @param s socket that is opened
    *
    * @return boolean true if web-socket
    */
-  private void setStreamType (Worker worker, Socket s) throws NoSuchAlgorithmException, NoSuchPaddingException, IOException, InterruptedException
+  private Connector setStreamType (Socket s) throws NoSuchAlgorithmException,
+                                                    NoSuchPaddingException,
+                                                    IOException,
+                                                    InterruptedException
   {
     // Handling websocket
-    // StringBuilder reading = new StringBuilder();
+    StringBuilder reading = new StringBuilder();
     String line = "";
-    String key = "";
     String socketKey = "";
-    byte[] socketKeyBytes = new byte[128];
-    ReadStrategy<String> reader = worker.getReader();
-    SecretKey myDesKey = null;
+    byte[] encryptedKey = new byte[128];
+    SocketReadStrategy reader = new SocketReadStrategy(s);
+    SecretKey secretKey = null;
     boolean encrypted = false;
-    boolean success = false;
-    int secs = 0;
-    s.setSoTimeout(3000);
-    ReadStrategy discoveredReader = worker.getReader();
-    WriteStrategy discoveredWriter = worker.getWriter();
+    int length = 0;
+    s.setSoTimeout(1000);
+    float tryCount = 0;
+    ReadStrategy discoveredReader = null;// = worker.getReader();
+    WriteStrategy discoveredWriter = null;// = worker.getWriter();
 
-    while(secs < 3)
+    HttpParse paresr = new HttpParse();
+
+    while(true)
     {
       try
       {
         line = reader.read();
+        reading.append(line);
+        if (line.startsWith("Content-Length"))
+        {
+          String number = line.replaceAll("[^0-9]", "").trim();
+          length = Integer.valueOf(number);
+        }
+        tryCount = 0;
       }
       catch(SocketTimeoutException e)
       {
-        secs++;
+        tryCount++;
+        System.out.format("%.1f second(s) until connection closes.\n",  TIMEOUT - tryCount);
+        if ((TIMEOUT - tryCount) <= 0)
+        {
+          s.close();
+          return null;
+        }
         continue;
       }
       catch(Exception e)
       {
         e.printStackTrace();
-        return;
+        return null;
       }
 
-      //System.out.println((int)line.charAt(0));
-      // check if the end of line or if data was found.
-      if (line.trim().equals("client") || line.equals("\r\n") || line.trim().equals("JavaClient"))
+      if(line.equals("\r\n"))
       {
-
-        if (line.contains("JavaClient"))
-        {
-          discoveredReader = new JavaObjectReadStrategy(s, null);
-          discoveredWriter = new JavaObjectWriteStrategy(s, null);
-          success = true;
-          break;
-        }
-        else if (line.contains("client"))
-        {
-          success = true;
-          break;
-        }
-        else if(line.equals("\r\n"))
-        {
-          // use the plain text writer to send following data
-          // worker.setWriter(new PlainTextWriteStrategy(s, null));
-          // Send plan text to the web socket.
-          worker.getWriter().getStream().writeUTF("HTTP/1.1 101 Web Socket Protocol Handshake\n" +
-                                                          "Upgrade: WebSocket\n" +
-                                                          "Connection: Upgrade\n" +
-                                                          "Sec-WebSocket-Accept: " + socketKey + "\r\n\r\n");
-
-          worker.getWriter().getStream().flush();
-          // assume the client accepted socket key and set up stream readers
-          discoveredReader = new WebSocketReadStrategy(s, null);
-          discoveredWriter =  new WebSocketWriteStrategy(s, null);
-          success = true;
-          break;
-        }
-
-      }
-      if (line.contains("GET"))
-      {
-        discoveredWriter  = new HTTPWriteStrategy(s, null);
-        Payload _data = new Payload();
-        _data.putMessage("HTTP responses are coming soon!");
-        worker.send(new ResponseFactory().build(uptime(), _data, Type.ERROR));
         break;
       }
+    }
 
-      // reading.append(line);
-      if (line.contains("Sec-WebSocket-Key:"))
+    if (length > 0)
+    {
+      byte[] messageBytes = new byte[length];
+      reader.getStream().read(messageBytes);
+      reading.append(new String(messageBytes));
+    }
+
+    paresr.parseRequest(reading.toString());
+
+    String connectionType = paresr.getHeaderParam("Connection");
+    String acceptType = paresr.getHeaderParam("Accept");
+
+
+    if (connectionType.equals("Upgrade"))
+    {
+      System.out.println(dateFormat.format(date) + " Server: Connected to socket.");
+      if (acceptType == null || acceptType.equals(DataType.JSON.toString()))
       {
-        // removing whitespace (includes nl, cr)
-        key = line.replace("Sec-WebSocket-Key: ", "").trim();
-        socketKey = Server.handshake(key);
+        if (paresr.getHeaderParam("Upgrade") != null && paresr.getHeaderParam("Upgrade").equals("websocket"))
+        {
+          System.out.println("\tServer: Web client.");
+          discoveredReader = new WebSocketReadStrategy(s, null);
+          discoveredWriter = new WebSocketWriteStrategy(s, null);
+        }
+        else
+        {
+          System.out.println("\tServer: JSON client.");
+          discoveredReader = new SocketReadStrategy(s, null);
+          discoveredWriter = new SocketWriteStrategy(s, null);
+        }
+        discoveredWriter.setFormatter(DataType.JSON);
       }
-      else if (line.contains("RSA-Socket-Key:"))
+      else if (acceptType.equals(DataType.POJO.toString()))
       {
-        encrypted = true;
-        key = line.replace("RSA-Socket-Key: ", "").trim();
+        System.out.println("\tServer: Java client.");
+        discoveredReader = new JavaObjectReadStrategy(s, null);
+        discoveredWriter = new JavaObjectWriteStrategy(s, null);
+        discoveredWriter.setFormatter(DataType.POJO);
+      }
+      else if (acceptType.equals(DataType.TEXT.toString()))
+      {
+        return null;
+      }
 
+      if (paresr.getHeaderParam("RSA-Socket-Key") != null)
+      {
+        System.out.println("\tServer: Encrypted Socket.");
         KeyGenerator keygenerator = KeyGenerator.getInstance(Constant.DATA_ALGORITHM);
         keygenerator.init(128);
 
-        myDesKey = keygenerator.generateKey();
-        socketKeyBytes = Server.asymmetricHandshake(Base64.getEncoder().encodeToString(myDesKey.getEncoded()), key);
+        secretKey = keygenerator.generateKey();
+        encryptedKey = Server.asymmetricHandshake(
+                Base64.getEncoder().encodeToString(secretKey.getEncoded()),
+                paresr.getHeaderParam("RSA-Socket-Key"));
+
+        encrypted = true;
+      }
+      else if (paresr.getHeaderParam("Sec-WebSocket-Key") != null)
+      {
+        System.out.println("\tServer: Encrypted WS.");
+        socketKey = Server.handshake(paresr.getHeaderParam("Sec-WebSocket-Key"));
+        encrypted = true;
       }
     }
-
-    if (!success)
+    else if (connectionType.equals("keep-alive"))
     {
-      throw new HandshakeException();
+      System.out.println(dateFormat.format(date) + " Server: HTTP request.");
+      discoveredWriter = new HTTPWriteStrategy(s, null);
+
+      if (acceptType.contains(DataType.JSON.toString()))
+      {
+        System.out.println("\tServer: JSON client.");
+        discoveredWriter.setFormatter(DataType.JSON);
+      }
+      else
+      {
+        System.out.println("\tServer: HTML client.");
+        discoveredWriter.setFormatter(DataType.HTML);
+      }
+      s.setSoTimeout(0);
+      Temporary worker = new Temporary(s, this);
+
+      worker.setWriter(discoveredWriter);
+      worker.handleDirectly(paresr);
+      return worker;
     }
+
+    Persistent worker = new Persistent(s, this);
     // setting back to default blocking
     s.setSoTimeout(0);
     if (encrypted)
     {
-      worker.getWriter().getStream().write(socketKeyBytes);
+      if (paresr.getHeaderParam("User-Agent") != null)
+      {
+        worker.getWriter().getStream().writeUTF("HTTP/1.1 101 Web Socket Protocol Handshake\n" +
+                                                        "Upgrade: WebSocket\n" +
+                                                        "Connection: Upgrade\n" +
+                                                        "Sec-WebSocket-Accept: " + socketKey + "\r\n\r\n");
+      }
+      else
+      {
+        worker.getWriter().getStream().write(encryptedKey);
+      }
       worker.getWriter().getStream().flush();
       worker.setReader(discoveredReader);
       worker.setWriter(discoveredWriter);
-      worker.getWriter().setEncrypted(true, myDesKey);
-      worker.getReader().setEncrypted(true, myDesKey);
+      worker.getWriter().setEncrypted(true, secretKey);
+      worker.getReader().setEncrypted(true, secretKey);
     }
     else
     {
@@ -745,7 +844,7 @@ public class Server
       worker.setWriter(discoveredWriter);
     }
 
-
+    return worker;
   }
 
   /**
@@ -754,13 +853,23 @@ public class Server
   private void cleanConnectionList ()
   {
     int con = 0;
-    for (int i = 0; i < allConnections.size(); i++)
+
+    for (Map.Entry<Class, LinkedList<Connector>> entry : connections.entrySet())
     {
-      if (!allConnections.get(i).isRunning())
+      for (int i = 0; i < entry.getValue().size(); i++)
       {
-        User u = allConnections.remove(i).getUser();
-        u.setLoggedIn(false);
-        con++;
+        if (!entry.getValue().get(i).isRunning())
+        {
+          Connector connector = entry.getValue().remove(i);
+          User u = connector.getUser();
+          u.setLoggedIn(false);
+          if (u.isAnonymous())
+          {
+            userList.remove(u);
+          }
+          con++;
+          connector.shutdown();
+        }
       }
     }
     // check if any removed. Show removed count
@@ -840,8 +949,14 @@ public class Server
   }
 
 
-  public void startAI()
+  public boolean startAI()
   {
+
+    if (TOTAL_PLAYERS  == getPlayerCount() || processes.size() == TOTAL_AI_PLAYERS)
+    {
+      return false;
+    }
+
     Process p = ServerUtil.StartAIProcess(new String[]{"java",
                                                        "-XX:+OptimizeStringConcat",
                                                        "-XX:+UseCodeCacheFlushing",
@@ -854,6 +969,7 @@ public class Server
     {
       processes.add(p);
     }
+    return true;
   }
 
   public void killAI()
@@ -913,7 +1029,10 @@ public class Server
         }
         catch(Exception e)
         {
-          System.out.println("Could not advance game.");
+          System.out.println("Could not advance. Stopping game.");
+          System.out.println("Error: " + e.getMessage());
+          stopGame();
+          return;
         }
       }
     }

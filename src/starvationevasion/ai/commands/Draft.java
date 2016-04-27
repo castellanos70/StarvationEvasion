@@ -1,7 +1,6 @@
 package starvationevasion.ai.commands;
 
 import java.util.ArrayList;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -11,22 +10,18 @@ import java.util.stream.Stream;
 import starvationevasion.ai.AI;
 import starvationevasion.ai.AI.WorldFactors;
 import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.EnumRegion;
+import starvationevasion.common.PolicyCard;
 import starvationevasion.common.Util;
-import starvationevasion.common.Util;
-import starvationevasion.common.policies.EnumPolicy;
-import starvationevasion.common.policies.PolicyCard;
-import starvationevasion.common.policies.Policy_EfficientIrrigationIncentive;
-import starvationevasion.common.policies.Policy_EthanolTaxCreditChange;
-import starvationevasion.common.policies.Policy_FertilizerSubsidy;
+import starvationevasion.common.policies.CovertIntelligencePolicy;
+import starvationevasion.common.policies.EfficientIrrigationIncentivePolicy;
+import starvationevasion.common.policies.EthanolTaxCreditChangePolicy;
+import starvationevasion.common.policies.FertilizerSubsidyPolicy;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.RequestFactory;
 import starvationevasion.server.model.State;
-
-
 
 public class Draft extends AbstractCommand
 {
@@ -51,7 +46,7 @@ public class Draft extends AbstractCommand
   int z = 0;
   int draftIndex = 0;
 
-  public Draft(AI client,String region)
+  public Draft(AI client, String region)
   {
     super(client);
     this.numTurns = client.numTurns;
@@ -65,11 +60,11 @@ public class Draft extends AbstractCommand
   }
 
   @Override
-  public boolean run ()
+  public boolean run()
   {
-//    System.out.println("Drafted: " + draftedCard +
-//                               "\nDiscarded: " + discarded +
-//                               "\nDrawn: " + drawn);
+    // System.out.println("Drafted: " + draftedCard +
+    // "\nDiscarded: " + discarded +
+    // "\nDrawn: " + drawn);
 
     if (!getClient().getState().equals(State.DRAFTING) && tries > 0)
     {
@@ -80,35 +75,38 @@ public class Draft extends AbstractCommand
       }
     }
 
-
-
     if (getClient().getState().equals(State.DRAFTING))
     {
 
       if (!draftedCard)
       {
         randomlySetDraftedCard();
-        return true;
+        getClient().send(new RequestFactory().build(
+            getClient().getStartNanoSec(), new Payload(), Endpoint.DONE));
+        return false;
       }
 
-      if (!discarded && getClient().getUser().getHand().size() > 0)
-      {
-        if (!Util.rand.nextBoolean())
-        {
-          randomlyDiscard();
-        }
+      // if (!discarded && getClient().getUser().getHand().size() > 0)
+      // {
+      // if (!Util.rand.nextBoolean())
+      // {
+      // randomlyDiscard();
+      // }
+      //
+      // return true;
+      // }
+      // getClient().send(new
+      // RequestFactory().build(getClient().getStartNanoSec(),
+      // new Payload(), Endpoint.DONE));
 
-        return true;
-      }
-      getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), new Payload(), Endpoint.DONE));
-
-//      if (!drawn && getClient().getUser().getHand().size() < 7)
-//      {
-//        Request request = new Request(getClient().getStartNanoSec(), Endpoint.DRAW_CARD);
-//        getClient().send(request);
-//        drawn = true;
-//        return true;
-//      }
+      // if (!drawn && getClient().getUser().getHand().size() < 7)
+      // {
+      // Request request = new Request(getClient().getStartNanoSec(),
+      // Endpoint.DRAW_CARD);
+      // getClient().send(request);
+      // drawn = true;
+      // return true;
+      // }
 
     }
     return false;
@@ -199,13 +197,13 @@ public class Draft extends AbstractCommand
           card = PolicyCard.create(getClient().getUser().getRegion(), policy);
           EnumFood[] foods = card.getValidTargetFoods();
           EnumRegion[] regions = card.getValidTargetRegions();
-          EnumFood food=null;
-          if(foods!=null)
+          EnumFood food = null;
+          if (foods != null)
           {
             food = foods[rand.nextInt(foods.length)];
           }
-          EnumRegion region=null;
-          if(regions!=null)
+          EnumRegion region = null;
+          if (regions != null)
           {
             region = regions[rand.nextInt(regions.length)];
           }
@@ -222,7 +220,8 @@ public class Draft extends AbstractCommand
       tries = 2;
     } else
     {
-      System.out.println("Last hand size:"+getClient().draftedCards.get(numTurns-1).size());
+      System.out.println("Last hand size:"
+          + getClient().draftedCards.get(numTurns - 1).size());
       PolicyCard lastCard1 = getClient().draftedCards.get(numTurns - 1).get(0);
       PolicyCard lastCard2 = getClient().draftedCards.get(numTurns - 1).get(1);
       int playAgain = 0;
@@ -260,7 +259,7 @@ public class Draft extends AbstractCommand
       draftCards(rand, policySampleSpace, foodSampleSpace, regionSampleSpace);
       draftCards(rand, policySampleSpace, foodSampleSpace, regionSampleSpace);
       draftedCard = true;
-      draftSent=true;
+      draftSent = true;
       tries = 2;
     }
     // for (EnumPolicy policy : getClient().getUser().getHand())
@@ -473,16 +472,16 @@ public class Draft extends AbstractCommand
   {
     int overallPercentDecrease = 0;
     int overallPercentIncrease = 0;
-    Integer revenueBalance=new Integer(0);
-    Double undernourished=new Double(0);
-    Double hdi=new Double(0);
-    Integer lastRevenueBalance=new Integer(0);
-    Double lastUndernourished=new Double(0);
-    Double lastHdi=new Double(0);
-    System.out.println("World data size:"+getClient().worldData.size());
-    for(int h=0;h<getClient().worldData.size();h++)
+    Integer revenueBalance = new Integer(0);
+    Double undernourished = new Double(0);
+    Double hdi = new Double(0);
+    Integer lastRevenueBalance = new Integer(0);
+    Double lastUndernourished = new Double(0);
+    Double lastHdi = new Double(0);
+    System.out.println("World data size:" + getClient().worldData.size());
+    for (int h = 0; h < getClient().worldData.size(); h++)
     {
-      if(h==0)
+      if (h == 0)
       {
         lastRevenueBalance = (Integer) getClient().factorMap
             .get(WorldFactors.REVENUEBALANCE).get(h)[0];
@@ -491,117 +490,117 @@ public class Draft extends AbstractCommand
         lastHdi = (Double) getClient().factorMap.get(WorldFactors.HDI)
             .get(h)[0];
         Stream.of(getClient().factorMap.get(WorldFactors.FOODPRODUCED).get(h))
-          .forEach(val ->
-          {
-            lastFoodProduced += (Long) val;
-          });
+            .forEach(val ->
+            {
+              lastFoodProduced += (Long) val;
+            });
         Stream.of(getClient().factorMap.get(WorldFactors.FOODINCOME).get(h))
-          .forEach(val ->
-          {
-            lastFoodIncome += (Integer) val;
-          });
+            .forEach(val ->
+            {
+              lastFoodIncome += (Integer) val;
+            });
         Stream.of(getClient().factorMap.get(WorldFactors.FOODIMPORTED).get(h))
-          .forEach(val ->
-          {
-            lastFoodImported += (Long) val;
-          });
+            .forEach(val ->
+            {
+              lastFoodImported += (Long) val;
+            });
         Stream.of(getClient().factorMap.get(WorldFactors.FOODEXPORTED).get(h))
-          .forEach(val ->
-          {
-            lastFoodExported += (Long) val;
-          });
+            .forEach(val ->
+            {
+              lastFoodExported += (Long) val;
+            });
       }
-      if(h==1)
+      if (h == 1)
       {
         revenueBalance = (Integer) getClient().factorMap
             .get(WorldFactors.REVENUEBALANCE).get(h)[0];
-        undernourished = (Double) getClient().factorMap.get(WorldFactors.UNDERNOURISHED)
-            .get(h)[0];
+        undernourished = (Double) getClient().factorMap
+            .get(WorldFactors.UNDERNOURISHED).get(h)[0];
         hdi = (Double) getClient().factorMap.get(WorldFactors.HDI).get(h)[0];
         Stream.of(getClient().factorMap.get(WorldFactors.FOODPRODUCED).get(h))
-          .forEach(val ->
-          {
-            foodProduced += (Long) val;
-          });
+            .forEach(val ->
+            {
+              foodProduced += (Long) val;
+            });
         Stream.of(getClient().factorMap.get(WorldFactors.FOODINCOME).get(h))
-          .forEach(val ->
-          {
-            foodIncome += (Integer) val;
-          });
+            .forEach(val ->
+            {
+              foodIncome += (Integer) val;
+            });
         Stream.of(getClient().factorMap.get(WorldFactors.FOODIMPORTED).get(h))
-          .forEach(val ->
-          {
-            foodImported += (Long) val;
-          });
+            .forEach(val ->
+            {
+              foodImported += (Long) val;
+            });
         Stream.of(getClient().factorMap.get(WorldFactors.FOODEXPORTED).get(h))
-          .forEach(val ->
-          {
-            foodExported += (Long) val;
-          });
+            .forEach(val ->
+            {
+              foodExported += (Long) val;
+            });
         Object[][] numArray =
+        {
+            { lastRevenueBalance, revenueBalance },
+            { lastUndernourished, undernourished },
+            { lastHdi, hdi },
+            { lastFoodProduced, foodProduced },
+            { lastFoodIncome, foodIncome },
+            { lastFoodImported, foodImported },
+            { lastFoodExported, foodExported } };
+        for (int i = 0; i < 7; i++)
+        {
+          if (i == 0 || i == 4)
           {
-              { lastRevenueBalance, revenueBalance },
-              { lastUndernourished, undernourished },
-              { lastHdi, hdi },
-              { lastFoodProduced, foodProduced },
-              { lastFoodIncome, foodIncome },
-              { lastFoodImported, foodImported },
-              { lastFoodExported, foodExported } };
-          for (int i = 0; i < 7; i++)
+            int percentChange = percentChangeInt((int) numArray[i][0],
+                (int) numArray[i][1]);
+            if (percentChange < 0)
+            {
+              overallPercentDecrease += (percentChange * -1);
+            } else if (percentChange > 0)
+            {
+              overallPercentIncrease += percentChange;
+            }
+          } else if (i == 1)
           {
-            if (i == 0 || i == 4)
+            double percentChange = percentChangeDouble((double) numArray[i][0],
+                (double) numArray[i][1]);
+            if (percentChange > 0)
             {
-              int percentChange = percentChangeInt((int) numArray[i][0],
-                  (int) numArray[i][1]);
-              if (percentChange < 0)
-              {
-                overallPercentDecrease += (percentChange * -1);
-              } else if (percentChange > 0)
-              {
-                overallPercentIncrease += percentChange;
-              }
-            } else if (i == 1)
+              overallPercentDecrease += percentChange;
+            } else if (percentChange < 0)
             {
-              double percentChange = percentChangeDouble((double) numArray[i][0],
-                  (double) numArray[i][1]);
-              if (percentChange > 0)
-              {
-                overallPercentDecrease += percentChange;
-              } else if (percentChange < 0)
-              {
-                overallPercentIncrease += (percentChange * -1);
-              }
-            } else if (i == 2)
+              overallPercentIncrease += (percentChange * -1);
+            }
+          } else if (i == 2)
+          {
+            double percentChange = percentChangeDouble((double) numArray[i][0],
+                (double) numArray[i][1]);
+            if (percentChange < 0)
             {
-              double percentChange = percentChangeDouble((double) numArray[i][0],
-                  (double) numArray[i][1]);
-              if (percentChange < 0)
-              {
-                overallPercentDecrease += (percentChange * -1);
-              } else if (percentChange > 0)
-              {
-                overallPercentIncrease += percentChange;
-              }
-            } else if (i == 3 || i > 4)
+              overallPercentDecrease += (percentChange * -1);
+            } else if (percentChange > 0)
             {
-              long percentChange = percentChangeLong((long) numArray[i][0],
-                  (long) numArray[i][1]);
-              if (percentChange < 0)
-              {
-                overallPercentDecrease += (percentChange * -1);
-              } else if (percentChange > 0)
-              {
-                overallPercentIncrease += percentChange;
-              }
+              overallPercentIncrease += percentChange;
+            }
+          } else if (i == 3 || i > 4)
+          {
+            long percentChange = percentChangeLong((long) numArray[i][0],
+                (long) numArray[i][1]);
+            if (percentChange < 0)
+            {
+              overallPercentDecrease += (percentChange * -1);
+            } else if (percentChange > 0)
+            {
+              overallPercentIncrease += percentChange;
             }
           }
-          if (overallPercentIncrease > overallPercentDecrease)
-          {
-            return 1;
-          } else if (overallPercentDecrease > overallPercentIncrease)
-          {
-            return -1;
-          }
+        }
+        if (overallPercentIncrease > overallPercentDecrease)
+        {
+          return 1;
+        } else if (overallPercentDecrease > overallPercentIncrease)
+        {
+          return -1;
+        }
       }
     }
     return 0;
@@ -640,18 +639,18 @@ public class Draft extends AbstractCommand
     }
   }
 
-  private void setupCard(PolicyCard card,EnumFood food,EnumRegion region)
+  private void setupCard(PolicyCard card, EnumFood food, EnumRegion region)
   {
     if (card == null)
     {
       return;
     }
 
-    if(food!=null)
+    if (food != null)
     {
       card.setTargetFood(food);
     }
-    if(region!=null)
+    if (region != null)
     {
       card.setTargetRegion(region);
     }
@@ -661,26 +660,26 @@ public class Draft extends AbstractCommand
       {
         int amt = 0;
         // Contextually setting variable
-        if (card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.MILLION_DOLLAR))
+        if (card.getRequiredVariables(variable)
+            .equals(PolicyCard.EnumVariableUnit.MILLION_DOLLAR))
         {
           amt = Util.randInt(1, 20);
-        }
-        else if (card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.PERCENT))
+        } else if (card.getRequiredVariables(variable)
+            .equals(PolicyCard.EnumVariableUnit.PERCENT))
         {
           if (card instanceof EfficientIrrigationIncentivePolicy)
           {
             amt = Util.randInt(50, 80);
-          }
-          else if (card instanceof EthanolTaxCreditChangePolicy || card instanceof FertilizerSubsidyPolicy)
+          } else if (card instanceof EthanolTaxCreditChangePolicy
+              || card instanceof FertilizerSubsidyPolicy)
           {
             amt = Util.randInt(20, 40);
-          }
-          else
+          } else
           {
             amt = Util.randInt(1, 100);
           }
-        }
-        else if (card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.UNIT))
+        } else if (card.getRequiredVariables(variable)
+            .equals(PolicyCard.EnumVariableUnit.UNIT))
         {
           amt = Util.randInt(1, 10);
         }
@@ -693,19 +692,16 @@ public class Draft extends AbstractCommand
             if (Util.rand.nextBoolean())
             {
               card.setX(2);
-            }
-            else
+            } else
             {
               card.setX(7);
             }
             break;
           }
-        }
-        else if (variable.name().equals("Y"))
+        } else if (variable.name().equals("Y"))
         {
           card.setY(amt);
-        }
-        else if (variable.name().equals("Z"))
+        } else if (variable.name().equals("Z"))
         {
           card.setZ(amt);
         }

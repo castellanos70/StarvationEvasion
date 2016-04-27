@@ -6,7 +6,12 @@ import java.util.ArrayList;
 
 import javax.crypto.SecretKey;
 
-import javafx.concurrent.Worker;
+import com.oracle.javafx.jmx.json.JSONDocument;
+
+import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.server.Worker;
+import starvationevasion.server.io.NotImplementedException;
 
 public class User implements Encryptable, Sendable
 {

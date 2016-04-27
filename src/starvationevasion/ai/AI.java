@@ -1,6 +1,5 @@
 package starvationevasion.ai;
 
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -9,20 +8,6 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
-
-import starvationevasion.ai.commands.*;
-import starvationevasion.common.Constant;
-import starvationevasion.common.Util;
-import starvationevasion.common.WorldData;
-import starvationevasion.common.policies.PolicyCard;
-import starvationevasion.server.model.*;
-
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.SealedObject;
-import javax.crypto.SecretKey;
-import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.security.InvalidKeyException;
@@ -48,6 +33,7 @@ import starvationevasion.ai.commands.Uptime;
 import starvationevasion.ai.commands.Vote;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
+import starvationevasion.common.PolicyCard;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.SpecialEventData;
 import starvationevasion.common.Util;
@@ -151,10 +137,10 @@ public class AI
     region = u.region.name();
     factorMap.clear();
     createEnumMap();
-    for(int i=0;i<worldData.size();i++)
+    for (int i = 0; i < worldData.size(); i++)
     {
       Double[] seaLevel =
-        { worldData.get(i).seaLevel };
+      { worldData.get(i).seaLevel };
       factorMap.get(WorldFactors.SEALEVEL).add(seaLevel);
       eventList.clear();
       if (worldData.get(i).eventList.size() > 0)
@@ -255,7 +241,7 @@ public class AI
     }
     isRunning = true;
 
-    Util.startServerHandshake(clientSocket, rsaKey, DataType.POJO);
+    Util.startServerHandshake(clientSocket, rsaKey, "JavaClient");
 
     return true;
 
@@ -277,7 +263,8 @@ public class AI
         Command c = commands.peek();
 
         boolean runAgain = c.run();
-
+        System.out.println("State:" + c.commandString());
+        System.out.println(runAgain);
         // if it does not need to run again pop
         if (!runAgain)
         {
@@ -400,7 +387,7 @@ public class AI
           {
             aggregateData();
             draftedCards.add(new ArrayList<PolicyCard>());
-            Draft newDraft = new Draft(AI.this,region);
+            Draft newDraft = new Draft(AI.this, region);
             AI.this.commands.add(newDraft);
             numTurns++;
           } else if (state == starvationevasion.server.model.State.DRAWING)
@@ -456,10 +443,8 @@ public class AI
     }
   }
 
- private Response readObject () throws IOException,
-                                        ClassNotFoundException,
-                                        InvalidKeyException,
-                                        NoSuchAlgorithmException
+  private Response readObject() throws IOException, ClassNotFoundException,
+      InvalidKeyException, NoSuchAlgorithmException
   {
     int ch1 = reader.read();
     int ch2 = reader.read();
@@ -528,8 +513,7 @@ public class AI
       {
         throw new Exception();
       }
-    } 
-    catch(Exception e)
+    } catch (Exception e)
     {
       System.out.println("Usage: hostname port");
       System.exit(0);

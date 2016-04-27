@@ -1,0 +1,16 @@
+.chart-title {
+    -fx-font-size: 14;
+   -fx-text-fill: #ffffff;
+}
+
+.axis-label {
+    -fx-font-size: 14;
+    -fx-text-fill: #ffffff;
+}
+
+.chart-line-symbol
+{
+        -fx-background-insets: 0, 2;
+        -fx-background-radius: 10px;
+        -fx-padding: 5px;
+}

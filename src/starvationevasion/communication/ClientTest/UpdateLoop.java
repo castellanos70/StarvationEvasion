@@ -12,6 +12,7 @@ import starvationevasion.common.EnumRegion;
 
 public class UpdateLoop extends Application
 {
+  private Stage stage;
   private int width=300;
   private int height=250;
   private final String WRONG_COMBO="Wrong username/password combo";
@@ -27,24 +28,11 @@ public class UpdateLoop extends Application
 
   public void notifyOfLoginSuccess()
   {
-    new AnimationTimer()
-    {
-
-      /**
-       * This method needs to be overridden by extending classes. It is going to
-       * be called in every frame while the {@code AnimationTimer} is active.
-       *
-       * @param now The timestamp of the current frame given in nanoseconds. This
-       *            value will be the same for all {@code AnimationTimers} called
-       *            during one frame.
-       */
-      @Override
-      public void handle(long now)
-      {
-        System.out.println("I'm running!!!!!!!!!!");
-        client.update();
-      }
-    }.start();
+    GUI gui=new GUI(client, client.getLocalDataContainer());
+    Stage guiStage=new Stage();
+    gui.start(guiStage);
+    //stage.close();
+    client.setGUI(gui);
   }
 
   /**
@@ -65,6 +53,7 @@ public class UpdateLoop extends Application
   @Override
   public void start(Stage stage) throws Exception
   {
+    this.stage = stage;
     stage.setTitle("Login");
     stage.setOnCloseRequest(this::closeWindow);
     client = new Client(this, "localhost", 5555);
@@ -84,6 +73,25 @@ public class UpdateLoop extends Application
     root.add(login,0,5);
     stage.setScene(new Scene(root, width, height));
     stage.show();
+
+    // Start the main loop
+    new AnimationTimer()
+    {
+
+      /**
+       * This method needs to be overridden by extending classes. It is going to
+       * be called in every frame while the {@code AnimationTimer} is active.
+       *
+       * @param now The timestamp of the current frame given in nanoseconds. This
+       *            value will be the same for all {@code AnimationTimers} called
+       *            during one frame.
+       */
+      @Override
+      public void handle(long now)
+      {
+        client.update();
+      }
+    }.start();
   }
 
   private void closeWindow(WindowEvent e)

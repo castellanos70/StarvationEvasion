@@ -1,28 +1,15 @@
 package starvationevasion.communication.ClientTest;
 
-import javafx.stage.Stage;
-import starvationevasion.client.GUI.GUI;
-import starvationevasion.client.Logic.ChatManager;
-//import starvationevasion.client.Logic.LocalDataContainer;
+import starvationevasion.client.Logic.*;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
+import starvationevasion.common.policies.EnumPolicy;
 import starvationevasion.common.policies.PolicyCard;
-import starvationevasion.communication.AITest.commands.Command;
 import starvationevasion.communication.CommModule;
-import starvationevasion.server.model.State;
-import starvationevasion.server.model.Type;
-import starvationevasion.server.model.User;
+import starvationevasion.server.model.*;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import java.io.BufferedReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
-import java.util.Stack;
 
 /**
  * This Client class is a re-write of Client.java.
@@ -41,9 +28,13 @@ public class Client
   private ArrayList<WorldData> worldData;
   private List<PolicyCard> ballot;
   private volatile boolean isRunning = true;
+  private volatile boolean called = false;
+  private ChatManager chatManager;
 
   //---- GUI stuff
   private GUI gui;
+  private LocalDataContainer container;
+  private EnumRegion region;
   private ArrayList<EnumRegion> availableRegion;
 
   public Client(UpdateLoop loop, String host, int port)
@@ -70,6 +61,11 @@ public class Client
     COMM.setResponseListener(Type.WORLD_DATA, (type, data) -> worldData.add((WorldData)data));
     COMM.setResponseListener(Type.VOTE_BALLOT, (type, data) -> ballot = (List<PolicyCard>)data);
     COMM.setResponseListener(Type.GAME_STATE, (type, data) -> state = (State)data);
+
+    // Create the LocalDataContainer
+    container = new LocalDataContainer(this);
+    // Create the ChatManager
+    chatManager = new ChatManager(COMM);
   }
 
   public boolean isRunning()
@@ -77,11 +73,89 @@ public class Client
     return isRunning;
   }
 
+  public ArrayList<EnumPolicy> getHand()
+  {
+    return null;
+  }
+
+  public void draftCard(PolicyCard card)
+  {
+
+  }
+
+  public void discardCard(PolicyCard card)
+  {
+
+  }
+
+  public void voteUp(PolicyCard card)
+  {
+    Payload data = new Payload();
+    data.putData(card);
+    data.put("card", card);
+    COMM.send(Endpoint.VOTE_UP, data, null);
+  }
+
+  public void voteDown(PolicyCard card)
+  {
+    Payload data = new Payload();
+    data.putData(card);
+    data.put("card", card);
+    COMM.send(Endpoint.VOTE_DOWN, data, null);
+  }
+
+  public void done()
+  {
+    COMM.send(Endpoint.DONE, null, null);
+  }
+
+  public ChatManager getChatManager()
+  {
+    return chatManager;
+  }
+
+  public State getState()
+  {
+    return state;
+  }
+
+  public ArrayList<PolicyCard> getVotingCards()
+  {
+    return null;
+  }
+
   public void update()
   {
     isRunning = COMM.isConnected(); // Check the state of the comm module
+    if (!isRunning) return;
 
     COMM.pushResponseEvents(); // Push responses received from server since last call to this function
+  }
+
+  public GUI getGUI()
+  {
+    return gui;
+  }
+
+  public EnumRegion getRegion()
+  {
+    return region;
+  }
+
+  public void setGUI(GUI gui)
+  {
+    called = true;
+    this.gui = gui;
+  }
+
+  public LocalDataContainer getLocalDataContainer()
+  {
+    return container;
+  }
+
+  public void setRegion(EnumRegion region)
+  {
+    this.region = region;
   }
 
   public boolean login(String username, String password, EnumRegion region)

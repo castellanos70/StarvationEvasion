@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class Connector extends Thread
 {
@@ -35,9 +37,13 @@ public abstract class Connector extends Thread
   private final DataInputStream inStream;
   private User user = new User(username);
 
+  private final static Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
+  private final static Level logLevel = Level.FINEST;
+
 
   public Connector (Socket client, Server server)
   {
+    LOG.setLevel(logLevel);
     this.user.setAnonymous(true);
     this.writer = new SocketWriteStrategy(client);
     this.reader = new SocketReadStrategy(client);
@@ -81,22 +87,22 @@ public abstract class Connector extends Thread
     }
     catch(BadPaddingException e)
     {
-      System.out.println("Contains incorrect padding");
+      LOG.info("Contains incorrect padding");
       shutdown();
     }
     catch(IllegalBlockSizeException e)
     {
-      System.out.println("Block is incorrect");
+      LOG.info("Block is incorrect");
       shutdown();
     }
     catch(InvalidKeyException e)
     {
-      System.out.println("Key is invalid");
+      LOG.info("Key is invalid");
       shutdown();
     }
     catch(IOException e)
     {
-      System.out.println("Error writing to stream");
+      LOG.info("Error writing to stream");
       shutdown();
     }
     catch(NoSuchAlgorithmException e)
@@ -121,7 +127,7 @@ public abstract class Connector extends Thread
     }
     catch(IOException e)
     {
-      System.out.println("There was an error shutting down");
+      LOG.info("There was an error shutting down");
     }
     if (user != null)
     {

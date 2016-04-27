@@ -14,6 +14,8 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static starvationevasion.common.Constant.ANON_NAME_ARRAY;
 
@@ -62,21 +64,24 @@ public class Util
 
   public static SecretKey endServerHandshake (Socket s, KeyPair keyPair)
   {
+    Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
+    LOG.fine("Ready to read handshake response from server");
     // first
     byte[] sdf = new byte[128];
     try
     {
       s.getInputStream().read(sdf);
       String decryptedMsg = decrypt(sdf, keyPair.getPrivate());
-
+      LOG.fine("Received my streams private key: " + decryptedMsg);
       byte[] msg = Base64.getDecoder().decode(decryptedMsg);
       return  new SecretKeySpec(msg, "AES");
 
     }
     catch(IOException e)
     {
-      System.out.println("There was an error ending handshake.");
+      LOG.log(Level.SEVERE, "There was an error ending handshake.", e);
     }
+    LOG.fine("Successful connection :]");
     return null;
   }
 
@@ -86,7 +91,8 @@ public class Util
     // first
     byte[] publicKey = keyPair.getPublic().getEncoded();
     String pubKeyStr = Base64.getEncoder().encodeToString(publicKey);
-
+    Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
+    LOG.fine("Sending socket request to server");
     try
     {
       PrintWriter write = new PrintWriter(s.getOutputStream(), true);
@@ -98,10 +104,11 @@ public class Util
                           "\r\n");
 
       write.flush();
+      LOG.fine("Sent request to initiate handshake");
     }
     catch(IOException e)
     {
-      System.out.println("There was an error starting handshake.");
+      LOG.log(Level.SEVERE, "There was an error starting handshake.", e);
     }
 
   }

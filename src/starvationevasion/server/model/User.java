@@ -5,8 +5,8 @@ package starvationevasion.server.model;
  */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.policies.EnumPolicy;
 import starvationevasion.server.Connector;
 import starvationevasion.server.io.NotImplementedException;
 
@@ -28,7 +28,7 @@ public class User implements Encryptable, Sendable
   private transient boolean isPlaying = false;
 
   private String username;
-  private String password;
+  private transient String password;
   private EnumRegion region;
   private volatile ArrayList<EnumPolicy> hand;
    private boolean anonymous = false;
@@ -272,9 +272,12 @@ public class User implements Encryptable, Sendable
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
 
     json.setString("username", username);
-    json.setString("password", password);
+    // json.setString("password", password);
     json.setString("region", String.valueOf(region));
     json.setString("type", getType().name());
+    // json.setString("last-login", time);
+    json.setBoolean("online", isLoggedIn);
+    json.setBoolean("playing", isPlaying);
 
     JSONDocument _hand = JSONDocument.createArray(hand.size());
     for (int i = 0; i < hand.size(); i++)

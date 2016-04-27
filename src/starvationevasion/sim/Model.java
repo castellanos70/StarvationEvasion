@@ -1,6 +1,7 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.*;
+import starvationevasion.common.policies.PolicyCard;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
 import starvationevasion.sim.events.Hurricane;

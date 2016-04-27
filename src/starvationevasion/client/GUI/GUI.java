@@ -7,7 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
 import starvationevasion.client.GUI.DraftLayout.DraftLayout;
-import starvationevasion.client.GUI.DraftLayout.hand.Hand;
+import starvationevasion.client.GUI.DraftLayout.Hand;
 import starvationevasion.client.GUI.DraftLayout.map.GamePhaseMapController;
 import starvationevasion.client.GUI.DraftLayout.map.MapController;
 import starvationevasion.client.GUI.Graphs.GraphManager;
@@ -19,8 +19,8 @@ import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.client.Logic.MainGameLoop;
 import starvationevasion.client.Networking.Client;
 import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.policies.EnumPolicy;
 
 import java.util.ArrayList;
 import java.util.Arrays;

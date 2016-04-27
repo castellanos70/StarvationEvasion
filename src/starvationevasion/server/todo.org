@@ -16,7 +16,8 @@
    JSON still needs work
    CLOSED: [2016-02-12 Fri 19:10]
 ** TODO Handle ending the game
-** TODO Add robustness for setting players
+** DONE Add robustness for setting players
+   CLOSED: [2016-04-26 Tue 10:05]
    Currently the Server only checks to make sure there are 
    enough players.... We need to check if there are enough 
    AI and enough Human
@@ -24,7 +25,8 @@
 *** TODO check if we are waiting on a player that matters {See ~PolicyCard.java~ required region votes}
 *** DONE Send results of the voting phase.
     CLOSED: [2016-04-17 Sun 00:07]
-** TODO [0%] [#A] Restarting game! 				:BUG:
+** DONE [0%] [#A] Restarting game!                                      :BUG:
+   CLOSED: [2016-04-26 Tue 10:05]
 *** TODO If we issue a command during waiting, the worker itself is still responsive
     but i am unable to issue commands that require server state to be
     changed or killing ai. Reproduce: login as admin and issue a restart game. 
@@ -52,7 +54,8 @@
    the socket is not completely closing.
    to see run ./Game monitor run web-client and refresh page. you can
    see the connection stays in CLOSE_WAIT
-** TODO Disconnect of a NON player					:BUG:
+** DONE Disconnect of a NON player                                      :BUG:
+   CLOSED: [2016-04-26 Tue 10:04]
    Currently there is an issue that causes the advancePhase() to stop
    working if there is a client that looses connection during a broadca
 ** TODO [#B] Finish impl. JSON
@@ -70,7 +73,7 @@
 ** TASK Refactor and move the classes that are used by client and server to the "common" package
 ** TODO make request a network object   
 ** DONE [#B] during handshake                                           :BUG:
-   CLOSED: [2016-04-20 Wed 12:22]
+   CLOSED: [2016-04-26 Tue 10:04]
    This can be reproduced if you create a connection with netcat
    nc foodgame.cs.unm.edu 5555 
    the next step would be to initiate a handshake by sending
@@ -93,7 +96,7 @@
    This will allow us to all have access to the same monitoring system
    and be able to restart and issue commands.
 *** TASK test out the ~./Game env~ command
-** TODO [#C] User to update 
+** TODO [#C] User to Update and Delete 
 ** TODO Add last login timestamp to user
 ** DONE send a response to client if the command that was issued requires admin or login
    CLOSED: [2016-04-21 Thu 10:42]
@@ -120,6 +123,11 @@
    getClient().setUser(new User())
    #+END_SRC
 
+** TODO Logging
+*** Create a logger in server
+    replace system out statements with logger.[info, debug, warning, severe]
+*** Create logger for other aspects of server
+    replace system out with logger
 
 * Architecture
 ** The server has too many responsibilities and needs to be cleaned up

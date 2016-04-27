@@ -3,7 +3,7 @@ package starvationevasion.client.GUI.images;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.policies.EnumPolicy;
 
 /**
  * Created by jmweisburd on 11/15/15.
@@ -43,15 +43,6 @@ public class ImageGetter implements ImageConstants
   private static Image discardLeftArrowSmall;
   private static Image discardRightArrowSmall;
 
-  private String leftArm;
-  private String rightArm;
-  private String head;
-  private String leftLeg;
-  private String rightLeg;
-  private String wingedDragonOfRa;
-  private String sliferTheSkyDragon;
-  private String obeliskTheTormentor;
-  private String kuriboh;
   private Image undoButton;
   private ImageView voteIcon;
 
@@ -73,20 +64,12 @@ public class ImageGetter implements ImageConstants
     undoButton = new Image("ActionButtons/undoResized.png");
     voteIcon = new ImageView("cardImages/vote.png");
 
-    leftArm = "cardImages/left2.jpg";
-    rightArm = "cardImages/right2.jpg";
-    head = "cardImages/head2.png";
-    leftLeg = "cardImages/leftLeg.jpg";
-    rightLeg = "cardImages/rightLeg.jpg";
-    wingedDragonOfRa = "cardImages/wingedDragonOfRaw.jpg";
-    sliferTheSkyDragon = "cardImages/slifer.jpg";
-    obeliskTheTormentor = "cardImages/obeliskTheTormentor.jpg";
-    kuriboh = "cardImages/kuriboh.jpg";
 
     background = new Image("background.png");
   }
 
   /**
+   * TODO: replace this long switch with an array index --Joel
    * Gets the food image of the EnumFood passed in 256x256
    * 
    * @param type
@@ -128,7 +111,7 @@ public class ImageGetter implements ImageConstants
 
   /**
    * Gets the food image of the EnumFood passed in 64x64
-   * 
+   *  TODO: replace this long switch with an array index --Joel
    * @param type
    *          food type
    * @return image of food type
@@ -218,55 +201,20 @@ public class ImageGetter implements ImageConstants
 
   /**
    * Gets the image for the cards
-   * 
+   * TODO: do not read and create a new image each time you want to use it.
+   *    Load and create card images at start (or on first use) Then keep. --Joel
    * @param policy
    *          policy card you want to get an image for
    * @return image of the policy card
    */
   public ImageView getImageForCard(EnumPolicy policy)
   {
-
-    switch (policy)
-    {
-      case Clean_River_Incentive:
-        return new ImageView(new Image(head, ImageConstants.INIT_CARD_WIDTH * 8,
-            ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
-      case Fertilizer_Subsidy:
-        return new ImageView(
-            new Image(leftArm, ImageConstants.INIT_CARD_WIDTH * 8,
-                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
-      case Educate_the_Women_Campaign:
-        return new ImageView(
-            new Image(rightArm, ImageConstants.INIT_CARD_WIDTH * 8,
-                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
-      case Covert_Intelligence:
-        return new ImageView(
-            new Image(leftLeg, ImageConstants.INIT_CARD_WIDTH * 8,
-                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
-      case Efficient_Irrigation_Incentive:
-        return new ImageView(
-            new Image(rightLeg, ImageConstants.INIT_CARD_WIDTH * 8,
-                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
-      case Ethanol_Tax_Credit_Change:
-        return new ImageView(
-            new Image(wingedDragonOfRa, ImageConstants.INIT_CARD_WIDTH * 8,
-                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
-      case Foreign_Aid_for_Farm_Infrastructure:
-        return new ImageView(
-            new Image(obeliskTheTormentor, ImageConstants.INIT_CARD_WIDTH * 8,
-                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
-      case GMO_Seed_Insect_Resistance_Research:
-        return new ImageView(
-            new Image(sliferTheSkyDragon, ImageConstants.INIT_CARD_WIDTH * 8,
-                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
-      default:
-        return new ImageView(
-            new Image(kuriboh, ImageConstants.INIT_CARD_WIDTH * 8,
-                ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
-    }
+    return new ImageView(new Image(policy.getImagePath(), ImageConstants.INIT_CARD_WIDTH * 8,
+      ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
 
   }
 
+  // TODO: replace an equation that loads all images into an array. --Joel
   private void initialize64()
   {
     citrus64 = new Image("farmProductIcons/FarmProduct_CITRUS_64x64.png");
@@ -282,6 +230,7 @@ public class ImageGetter implements ImageConstants
     special64 = new Image("farmProductIcons/FarmProduct_SPECIAL_64x64.png");
     veggies64 = new Image("farmProductIcons/FarmProduct_VEGGIES_64x64.png");
   }
+
 
   private void initialize256()
   {

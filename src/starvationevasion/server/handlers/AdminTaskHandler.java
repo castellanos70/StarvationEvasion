@@ -39,7 +39,18 @@ public class AdminTaskHandler extends AbstractHandler
       }
       else if (request.getDestination().equals(Endpoint.AI))
       {
-        server.startAI();
+        if(server.startAI())
+        {
+          server.broadcast(new ResponseFactory().build(server.uptime(),
+                                                       null,
+                                                       Type.SUCCESS, "Starting AI"));
+        }
+        else
+        {
+          server.broadcast(new ResponseFactory().build(server.uptime(),
+                                                       null,
+                                                       Type.ERROR, "Was not able to start AI. Too many players."));
+        }
         return true;
       }
       else if (request.getDestination().equals(Endpoint.KILL_AI))

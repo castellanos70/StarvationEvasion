@@ -1,7 +1,6 @@
 package starvationevasion.server.io.formatters;
 
 
-import starvationevasion.server.io.NotImplementedException;
 import starvationevasion.server.io.strategies.SecureStream;
 import starvationevasion.server.model.Sendable;
 

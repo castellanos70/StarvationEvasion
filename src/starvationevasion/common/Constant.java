@@ -2,6 +2,7 @@ package starvationevasion.common;
 
 
 import java.awt.*;
+import java.util.logging.Level;
 
 /**
  * This class contains all constant values used throughout the Starvation Evasion game.
@@ -38,6 +39,8 @@ public class Constant
   public static final String ASYM_ALGORITHM = "RSA";
 
   public static final String TERMINATION = "\n";
+
+  public static final Level LOG_LEVEL = Level.INFO;
 
   public enum Stream {
     CLIENT, OBJECT, SECURE_CLIENT;

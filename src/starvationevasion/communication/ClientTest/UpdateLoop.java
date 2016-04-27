@@ -33,6 +33,7 @@ public class UpdateLoop extends Application
     gui.start(guiStage);
     stage.close();
     client.setGUI(gui);
+    //client.sendReady();
   }
 
   /**

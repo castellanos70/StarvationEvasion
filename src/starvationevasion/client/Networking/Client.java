@@ -84,9 +84,10 @@ public interface Client
    *
    * @param username username to use
    * @param password password to try
+   * @param region region for the user
    * @return true if the request was sent and false if the send failed
    */
-  boolean loginToServer(String username, String password);
+  boolean loginToServer(String username, String password, EnumRegion region);
 
   /**
    * Attempts to register a new account with the server.

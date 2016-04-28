@@ -68,7 +68,10 @@ public class CommModule implements Communication
         }
         RESPONSE_EVENTS.add(response);
 
-        if (response.getType().equals(Type.AUTH_ERROR)) commError("Failed to login");
+        if (response.getType().equals(Type.AUTH_SUCCESS)) commPrint("Login successful");
+        else if (response.getType().equals(Type.AUTH_ERROR)) commError("Failed to login");
+        else if (response.getType().equals(Type.CREATE_SUCCESS)) commPrint("Created user successfully");
+        else if (response.getType().equals(Type.CREATE_ERROR)) commError("Failed to create user");
       }
       catch (Exception e)
       {

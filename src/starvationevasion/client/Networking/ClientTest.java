@@ -3,11 +3,15 @@ package starvationevasion.client.Networking;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.client.Logic.LocalDataContainer;
+import starvationevasion.client.UpdateLoop;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.communication.CommModule;
+import starvationevasion.server.model.Endpoint;
+import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.State;
+import starvationevasion.server.model.Type;
 
 import java.util.ArrayList;
 
@@ -16,15 +20,22 @@ import java.util.ArrayList;
  */
 public class ClientTest implements Client
 {
+  private final UpdateLoop GAME_LOOP;
   private final CommModule COMM;
   private final LocalDataContainer CONTAINER;
+  private final ChatManager CHAT;
   private boolean isRunning = false;
+  private GUI gui;
 
-  public ClientTest(String host, int port)
+  public ClientTest(UpdateLoop gameLoop, String host, int port)
   {
+    GAME_LOOP = gameLoop;
     COMM = new CommModule(host, port);
     CONTAINER = new LocalDataContainer(this);
+    CHAT = new ChatManager(this);
     isRunning = COMM.isConnected();
+
+    COMM.setResponseListener(Type.AUTH_SUCCESS, (type, data) -> gameLoop.notifyOfSuccessfulLogin());
   }
 
   /**
@@ -58,7 +69,7 @@ public class ClientTest implements Client
   @Override
   public ChatManager getChatManager()
   {
-    return null;
+    return CHAT;
   }
 
   /**
@@ -69,7 +80,7 @@ public class ClientTest implements Client
   @Override
   public CommModule getCommunicationModule()
   {
-    return null;
+    return COMM;
   }
 
   /**
@@ -102,7 +113,7 @@ public class ClientTest implements Client
   @Override
   public GUI getGui()
   {
-    return null;
+    return gui;
   }
 
   /**
@@ -113,7 +124,7 @@ public class ClientTest implements Client
   @Override
   public void setGUI(GUI gui)
   {
-
+    this.gui = gui;
   }
 
   /**
@@ -125,9 +136,9 @@ public class ClientTest implements Client
    * @return true if the request was sent and false if the send failed
    */
   @Override
-  public boolean loginToServer(String username, String password)
+  public boolean loginToServer(String username, String password, EnumRegion region)
   {
-    return false;
+    return COMM.login(username, password, region);
   }
 
   /**
@@ -141,7 +152,11 @@ public class ClientTest implements Client
   @Override
   public boolean createUser(String username, String password, EnumRegion region)
   {
-    return false;
+    Payload data = new Payload();
+    data.put("username", username);
+    data.put("password", password);
+    data.put("region", region);
+    return COMM.send(Endpoint.USER_CREATE, data, null);
   }
 
   /**
@@ -176,7 +191,7 @@ public class ClientTest implements Client
   @Override
   public boolean ready()
   {
-    return false;
+    return COMM.send(Endpoint.READY, null, null);
   }
 
   /**
@@ -187,7 +202,7 @@ public class ClientTest implements Client
   @Override
   public boolean done()
   {
-    return false;
+    return COMM.send(Endpoint.DONE, null, null);
   }
 
   /**
@@ -232,7 +247,8 @@ public class ClientTest implements Client
   @Override
   public void shutdown()
   {
-
+    COMM.dispose();
+    isRunning = false;
   }
 
   /**
@@ -245,6 +261,7 @@ public class ClientTest implements Client
   public void update(double deltaSeconds)
   {
     isRunning = COMM.isConnected();
+    if (!isRunning) return;
 
     // Check to see if any new server responses have come in since the last iteration of this loop
     COMM.pushResponseEvents();

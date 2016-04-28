@@ -113,15 +113,12 @@ public class DeprecatedClient implements Client
 
   /**
    * Send a login request to Server
-   * @param userName
-   * @param pass
-   * @return
    */
-  public boolean loginToServer(String userName,String pass)
+  public boolean loginToServer(String username, String password, EnumRegion region)
   {
     System.out.println("Client.loginToServer");
     this.userName=userName;
-    sendRequest(new RequestFactory().login(startNanoSec, userName, pass, null));
+    sendRequest(new RequestFactory().login(startNanoSec, userName, password, region));
     return true;
   }
 

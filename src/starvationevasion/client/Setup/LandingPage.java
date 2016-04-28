@@ -87,7 +87,7 @@ public class LandingPage extends Application
       {
         errorMessage(WRONG_COMBO);
       }
-     else if(!client.loginToServer(uname.getText(), passwd.getText()))
+     else if(!client.loginToServer(uname.getText(), passwd.getText(), null))
      {
         errorMessage(WRONG_COMBO);
      }else

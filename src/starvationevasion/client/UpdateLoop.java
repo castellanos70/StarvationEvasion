@@ -7,8 +7,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Networking.Client;
 import starvationevasion.client.Networking.ClientTest;
+import starvationevasion.common.EnumRegion;
 
 /**
  * Since the AI has already been converted to use the new CommModule, this is a proof
@@ -33,6 +35,15 @@ public class UpdateLoop extends Application
   private PasswordField password = new PasswordField();
   private Button createUser=new Button("Create User");
 
+  public void notifyOfSuccessfulLogin()
+  {
+    System.out.println("Starting game . . .");
+    GUI gui = new GUI(client, null);
+    gui.start(new Stage());
+    client.setGUI(gui);
+    stage.close();
+  }
+
   @Override
   public void start(Stage stage)
   {
@@ -43,6 +54,7 @@ public class UpdateLoop extends Application
         System.err.println("ERROR: Not connected to server");
         return;
       }
+      client.loginToServer(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.ARCTIC_AMERICA);
     });
     createUser.setOnAction((event) ->
     {
@@ -51,9 +63,10 @@ public class UpdateLoop extends Application
         System.err.println("ERROR: Not connected to server");
         return;
       }
+      client.createUser(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.ARCTIC_AMERICA);
     });
 
-    client = new ClientTest("localhost", 5555);
+    client = new ClientTest(this, "localhost", 5555);
     this.stage = stage;
     stage.setTitle("Login");
     stage.setOnCloseRequest((event) -> client.shutdown());

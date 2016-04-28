@@ -225,7 +225,7 @@ public class Util
     for(int i = 0; i < cropRatings.length; i++)
     {
       //gives index of enum
-      int index = (packedRatings & (3 << (2* i))) >> (2 * i);
+      int index = (packedRatings & (3 << (2 * i))) >> (2 * i);
       //find corresponding
       cropRatings[i] = EnumCropZone.values()[index];
     }
@@ -233,7 +233,7 @@ public class Util
   }
 
   /**
-   * unpacks coordinatesq1 of a single landTile.
+   * unpacks coordinates of a single landTile.
    * each coordinate is rounded to 2 decimal places.
    * @param    packedCoordinates    32 bit number used to store latitude and longitude
    * @return   a MapPoint object containing latitude and longitude of landTile
@@ -241,8 +241,8 @@ public class Util
   public static MapPoint unpackTileCoordinates(int packedCoordinates)
   {
     //mask off first 16 bits for latitude, last 16 bits for longitude
-    double latitude  = (double)(packedCoordinates & lowMask) / 100.0 ;
-    double longitude = ((double)((packedCoordinates & highMask) >> 16) / 100.0 );
-    return new MapPoint((float)latitude , (float)longitude);
+    float latitude  = (float)((packedCoordinates & lowMask) / 100.0) ;
+    float longitude = (float)(((packedCoordinates & highMask) >> 16) / 100.0 );
+    return new MapPoint(latitude , longitude);
   }
 }

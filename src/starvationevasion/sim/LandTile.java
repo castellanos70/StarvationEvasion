@@ -1,9 +1,6 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.Constant;
-import starvationevasion.common.EnumCropZone;
-import starvationevasion.common.EnumFood;
-import starvationevasion.common.Util;
+import starvationevasion.common.*;
 import starvationevasion.sim.io.CSVReader;
 
 import java.text.DateFormat;
@@ -287,6 +284,66 @@ public class LandTile
 
   }
 
+
+  /**
+   * The loadLocations method is intended to be called once by the client to load the latitude longitude coordinates
+   * of each of the server's internal LandTiles. There are approximately 250,000 of these locations.<br><br>
+   *
+   * At the start of each turn, the client should get ??????? object containing a bit packed byte array
+   * of EnumCropZone values. Each object contains the EnumCropZone value for each of the 12 food products
+   * for each of tile location. <br><br>
+   *
+   * The ????? class comes with accessor functions providing convenient access to the bit packed data.
+   */
+  public static ArrayList<MapPoint> loadLocations()
+  {
+    return loadLocations(null);
+  }
+
+
+  /**
+   *
+   *
+   * Given the game's full list of regions, this static method reads the climate data files,
+   * creates a LandTile for each location and adds each LandTile to the territory within the
+   * region to which it belongs.
+   * @param model the model.
+   */
+  public static ArrayList<MapPoint> loadLocations(Model model)
+  {
+    //Read the latitude longitude coordinates of each record in the PATH_CLIMATE_PREFIX files.
+    CSVReader fileReader = new CSVReader(PATH_COORDINATES, 1);
+    String[] fieldList;
+    Territory territory = null;
+
+    ArrayList<MapPoint> locationList = null;
+    ArrayList<LandTile> tileList = null;
+    if (model == null) locationList = new ArrayList<>();
+    else tileList = new ArrayList<>();
+
+    while ((fieldList = fileReader.readRecord(PATH_COORDINATES_FIELD_COUNT)) != null)
+    {
+      float latitude = Float.parseFloat(fieldList[0]);
+      float longitude = Float.parseFloat(fieldList[1]);
+      if (model == null)
+      {
+        locationList.add(new MapPoint(latitude, longitude));
+      }
+      else
+      { LandTile tile = new LandTile(latitude, longitude);
+        tileList.add(tile);
+        if ((territory == null) || (!territory.contains(latitude, longitude)))
+        {
+          territory = model.getTerritory(latitude, longitude);
+        }
+
+        if (territory != null) territory.addLandTile(tile);
+      }
+    }
+    fileReader.close();
+    return locationList; //null if, model != null.
+  }
+
   /**
    * Given the game's full list of regions, this static method reads the climate data files,
    * creates a LandTile for each location and adds each LandTile to the territory within the
@@ -396,6 +453,5 @@ public class LandTile
     Date dateDone = new Date();
     double deltaSec = (dateDone.getTime() - dateStart.getTime())/1000.0;
     System.out.println("LandTile.load() Done: elapsed sec=" +deltaSec);
-
   }
  }

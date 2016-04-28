@@ -26,7 +26,7 @@ public class MapPoint implements Sendable
    * (+North to-South) at the poles.
    * Lines of constant latitude, or parallels, run east-west as circles parallel to the equator.
    */
-  public double latitude;
+  public float latitude;
 
   /**
    * Specifies the east-west position of a point on the Earth's surface.
@@ -37,9 +37,9 @@ public class MapPoint implements Sendable
    * from 0 degrees at the Prime Meridian to +180 degrees eastward and ?180 degrees westward.
    * Points with the same longitude lie in lines running from the North Pole to the South Pole.
    */
-  public double longitude;
+  public float longitude;
 
-  public MapPoint(double latitude, double longitude)
+  public MapPoint(float latitude, float longitude)
   {
     if (Math.abs(latitude) > 90.0 || Math.abs(longitude) > 180.00)
     {
@@ -73,8 +73,8 @@ public class MapPoint implements Sendable
   public void fromJSON (Object doc)
   {
     JSONDocument json = JSON.Parser.toJSON(doc);
-    latitude = (double) json.getNumber("latitude");
-    longitude = (double) json.getNumber("longitude");
+    latitude = (float) json.getNumber("latitude");
+    longitude = (float) json.getNumber("longitude");
   }
 
   @Override

@@ -1065,11 +1065,14 @@ public class Model
 
     Picture pic = model.testShowMapProjection();
 
-    //Territory territory = model.getTerritory("Somalia");
+    //Territory territory = model.getTerritory("Morocco");
     //model.drawBoundaryUsingMapPoints(pic, territory);
 
-    //Territory territory = model.getTerritory("Somalia");
-    //model.drawBoundary(pic, territory, Color.RED);
+    //territory = model.getTerritory("Mauritania");
+    //model.drawBoundary(pic, territory, Color.WHITE);
+
+    //territory = model.getTerritory("Algeria");
+    //model.drawBoundary(pic, territory, Color.GREEN);
 
     //territory = model.getTerritory("Mexico");
     //model.drawBoundary(pic, territory, Color.RED);

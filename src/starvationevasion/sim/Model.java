@@ -139,9 +139,14 @@ public class Model
     ProductionCSVLoader.load(regionList);
 
     cropData = new CropData();
-
+    
     LandTile.load(this);
     assert (assertLandTiles());
+    
+    LandTile.updateCropRatings(cropData);
+    
+//    //returns poor
+//     System.out.println(regionList[0].getTerritoryList().get(0).getLandTiles().get(0).getCropRatings()[0]);
 
     for (int i = 0; i < YEARS_OF_DATA; i++)
     {
@@ -1063,35 +1068,35 @@ public class Model
 
     Model model = new Model();
 
-    Picture pic = model.testShowMapProjection();
+    // Picture pic = model.testShowMapProjection();
 
-    //Territory territory = model.getTerritory("Italy");
-    //model.drawBoundaryUsingMapPoints(pic, territory);
+    // Territory territory = model.getTerritory("Italy");
+    // model.drawBoundaryUsingMapPoints(pic, territory);
 
-    for (int n = 0; n < 10; n++)
-    {
-      for (EnumRegion regionID : EnumRegion.values())
-      {
-        Region region = model.getRegion(regionID);
-        model.drawAllTiles(pic, region, regionID.getColor());
-      }
-
-      for (EnumRegion regionID : EnumRegion.values())
-      {
-        Region region = model.getRegion(regionID);
-        model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5));
-      }
-      pic.repaint();
-      try
-      {
-        Thread.sleep(3000);
-      } catch (InterruptedException e) { }
-
-      for (Constant.Month month : Constant.Month.values())
-      {
-        model.drawRain(pic, 2000+n, month);
-      }
-    }
+    // for (int n = 0; n < 10; n++)
+    // {
+    // for (EnumRegion regionID : EnumRegion.values())
+    // {
+    // Region region = model.getRegion(regionID);
+    // model.drawAllTiles(pic, region, regionID.getColor());
+    // }
+    //
+    // for (EnumRegion regionID : EnumRegion.values())
+    // {
+    // Region region = model.getRegion(regionID);
+    // model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5));
+    // }
+    // pic.repaint();
+    // try
+    // {
+    // Thread.sleep(3000);
+    // } catch (InterruptedException e) { }
+    //
+    // for (Constant.Month month : Constant.Month.values())
+    // {
+    // model.drawRain(pic, 2000+n, month);
+    // }
+    // }
 
   }
 }

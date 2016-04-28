@@ -43,7 +43,7 @@ public class LandTile
   }
 
   public static short[] PACKED_CROP_RATINGS;
-  public static short[] PACKED_TILE_COORDINATES;
+  public static int[] PACKED_TILE_COORDINATES;
   /**
    * Each record of PATH_COORDINATES must be in a one-to-one,
    * ordered matching with each record in each month of each annual file of PATH_CLIMATE_PREFIX.
@@ -170,12 +170,12 @@ public class LandTile
     PACKED_CROP_RATINGS[index] = packedRating;
 
     //lat and lon rounded to 2 decimal places
-    short packedLatLon = 0;
-    short roundedLat = (short)Math.round(tile.getLatitude()  * 100);
-    short roundedLon = (short)Math.round(tile.getLongitude() * 100);
-    //pack lat onto first 8 bits, lon onto next 8 bits
+    int packedLatLon = 0;
+    int roundedLat = Math.round(tile.getLatitude()  * 100);
+    int roundedLon = Math.round(tile.getLongitude() * 100);
+    //pack lat onto first 16 bits, lon onto next 16 bits
     packedLatLon |= (roundedLat << 0);
-    packedLatLon |= (roundedLon << 8);
+    packedLatLon |= (roundedLon << 16);
     PACKED_TILE_COORDINATES[index] = packedLatLon;
 
   }
@@ -571,7 +571,7 @@ public class LandTile
     System.out.println("LandTile.updateCropRatings() Starting");
     CROP_DATA = data;
     PACKED_CROP_RATINGS = new short[TILE_LIST.size()];
-    PACKED_TILE_COORDINATES = new short[TILE_LIST.size()];
+    PACKED_TILE_COORDINATES = new int[TILE_LIST.size()];
     int index = 0;
     for (LandTile tile : TILE_LIST)
     { // For each crop, find the EnumCropZone

@@ -40,7 +40,20 @@ public class Util
     return rand.nextFloat() <= likeliness;
   }
 
-  private static short bitMask = 255;
+  private static int lowMask = loadMask(0,16);
+  private static int highMask = loadMask(16,32);
+
+  private static int loadMask(int start, int end)
+  {
+    int mask = 0;
+    for(int i = start ; i< end;i++)
+    {
+      mask |= 1<< i;
+    }
+    return mask;
+  }
+
+
 
   public static float linearInterpolate(float x1, float x2, float x3, float y1, float y3)
   {
@@ -222,15 +235,14 @@ public class Util
   /**
    * unpacks coordinatea of a single landTile.
    * each coordinate is rounded to 2 decimal places.
-   * @param    packedCoordinates    16 bit number used to store latitude and longitude
+   * @param    packedCoordinates    32 bit number used to store latitude and longitude
    * @return   a MapPoint object containing latitude and longitude of landTile
    */
   public static MapPoint unpackTileCoordinates(short packedCoordinates)
   {
-    //mast off firt 8 bits for latitude, last 8 bits for longitude
-    double latitude = (double)(packedCoordinates & bitMask) / 100.0 ;
-    double longitude = (double)(packedCoordinates & ~bitMask) / 100.0 ;
-    return new MapPoint(latitude , longitude);
-
+    //mask off first 16 bits for latitude, last 16 bits for longitude
+    double latitude  = (double)(packedCoordinates & lowMask) / 100.0 ;
+    double longitude = ((double)((packedCoordinates & highMask) >> 16) / 100.0 );
+    return new MapPoint((float)latitude , (float)longitude);
   }
 }

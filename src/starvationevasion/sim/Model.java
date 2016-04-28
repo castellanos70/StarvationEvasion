@@ -334,7 +334,7 @@ public class Model
     return LandTile.PACKED_CROP_RATINGS;
   }
 
-  public short[] getPackedTileCoordinates()
+  public int[] getPackedTileCoordinates()
   {
     return LandTile.PACKED_TILE_COORDINATES;
   }

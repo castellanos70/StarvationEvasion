@@ -6,8 +6,8 @@ package starvationevasion.server;
  */
 
 import starvationevasion.common.*;
-import starvationevasion.common.policies.EnumPolicy;
-import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.common.gamecards.EnumPolicy;
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.server.io.HttpParse;
 import starvationevasion.server.io.NetworkException;
 import starvationevasion.server.io.ReadStrategy;
@@ -69,7 +69,7 @@ public class Server
   // list of available regions
   private final List<EnumRegion> availableRegions = new ArrayList<>(EnumRegion.US_REGIONS.length);
 
-  private final PolicyCard[][] _drafted = new PolicyCard[EnumRegion.US_REGIONS.length][2];
+  private final GameCard[][] _drafted = new GameCard[EnumRegion.US_REGIONS.length][2];
 
   // bool that listen for connections is looping over
   private boolean isWaiting = true;
@@ -379,7 +379,7 @@ public class Server
 
     for (int i = 0; i < _drafted.length; i++)
     {
-      _drafted[i] = new PolicyCard[2];
+      _drafted[i] = new GameCard[2];
     }
     isPlaying = true;
     currentState = State.LOGIN;
@@ -497,12 +497,12 @@ public class Server
   {
     currentState = State.VOTING;
 
-    ArrayList<PolicyCard> _list = new ArrayList<>();
+    ArrayList<GameCard> _list = new ArrayList<>();
     synchronized(_drafted)
     {
-      for (PolicyCard[] policyCards : _drafted)
+      for (GameCard[] policyCards : _drafted)
       {
-        for (PolicyCard policyCard : policyCards)
+        for (GameCard policyCard : policyCards)
         {
           if (policyCard != null)
           {
@@ -528,13 +528,13 @@ public class Server
   {
     LOG.fine("Server.draw");
 
-    ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>();
-    ArrayList<PolicyCard> _list = new ArrayList<>();
+    ArrayList<GameCard> enactedPolicyCards = new ArrayList<>();
+    ArrayList<GameCard> _list = new ArrayList<>();
 
 
-    for (PolicyCard[] policyCards : _drafted)
+    for (GameCard[] policyCards : _drafted)
     {
-      for (PolicyCard p : policyCards)
+      for (GameCard p : policyCards)
       {
         if (p == null) continue;
         if (p.votesRequired() == 0 || p.getEnactingRegionCount() > p.votesRequired())
@@ -580,7 +580,7 @@ public class Server
         if (_drafted[i][j] == null) continue;
         _drafted[i][j].clearVotes();
       }
-      _drafted[i] = new PolicyCard[2];
+      _drafted[i] = new GameCard[2];
     }
 
     if (simulator.getCurrentYear() >= Constant.LAST_YEAR)
@@ -935,7 +935,7 @@ public class Server
   }
 
 
-  public void draftCard (PolicyCard card, User u)
+  public void draftCard (GameCard card, User u)
   {
     synchronized (_drafted)
     {
@@ -943,7 +943,7 @@ public class Server
     }
   }
 
-  public boolean addVote (PolicyCard card, EnumRegion user)
+  public boolean addVote (GameCard card, EnumRegion user)
   {
     synchronized(_drafted)
     {

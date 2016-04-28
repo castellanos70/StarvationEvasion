@@ -1,9 +1,8 @@
-package starvationevasion.ai.commands;
+package starvationevasion.communication.AITest.commands;
 
-
-import starvationevasion.ai.AI;
-import starvationevasion.common.Util;
 import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.Util;
+import starvationevasion.communication.AITest.AI;
 import starvationevasion.server.model.*;
 
 public class Vote extends AbstractCommand
@@ -55,14 +54,15 @@ public class Vote extends AbstractCommand
             }
 
 
-            Request request = new RequestFactory().build(getClient().getStartNanoSec(), card, endpoint);
+            //Request request = new RequestFactory().build(getClient().getStartNanoSec(), card, endpoint);
 
-            getClient().send(request);
-
+            //getClient().send(request);
+            getClient().getCommModule().send(endpoint, card, null);
 
           }
         }
-        getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), new Payload(), Endpoint.DONE));
+        getClient().getCommModule().send(Endpoint.DONE, new Payload(), null);
+        //getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), new Payload(), Endpoint.DONE));
       }
 
 

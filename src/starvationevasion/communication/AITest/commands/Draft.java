@@ -1,11 +1,8 @@
-package starvationevasion.ai.commands;
+package starvationevasion.communication.AITest.commands;
 
-import starvationevasion.ai.AI;
-import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.Util;
-import starvationevasion.common.gamecards.EnumPolicy;
-import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.*;
+import starvationevasion.common.gamecards.*;
+import starvationevasion.communication.AITest.AI;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.RequestFactory;
@@ -63,7 +60,8 @@ public class Draft extends AbstractCommand
 
         return true;
       }
-      getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), new Payload(), Endpoint.DONE));
+      //getClient().getCommModule().send(new RequestFactory().build(getClient().getStartNanoSec(), new Payload(), Endpoint.DONE));
+      getClient().getCommModule().send(Endpoint.DONE, new Payload(), null);
 
 //      if (!drawn && getClient().getUser().getHand().size() < 7)
 //      {
@@ -94,11 +92,7 @@ public class Draft extends AbstractCommand
     int idx = getClient().getUser().getHand().indexOf(discard);
     if(idx >= 0)
     {
-
-      getClient().send(new RequestFactory().build(getClient().getStartNanoSec(),
-                                            discard,
-                                            Endpoint.DELETE_CARD));
-
+      getClient().getCommModule().send(Endpoint.DELETE_CARD, discard, null);
     }
     discarded = true;
   }
@@ -116,7 +110,8 @@ public class Draft extends AbstractCommand
         if (card.votesRequired() == 0 || !draftSent)
         {
           setupCard(card);
-          getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), card, Endpoint.DRAFT_CARD));
+          getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
+          //getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), card, Endpoint.DRAFT_CARD));
           draftedCard = true;
           draftSent = true;
           if (i == 0)

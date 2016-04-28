@@ -6,7 +6,7 @@ package starvationevasion.server.model;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.policies.EnumPolicy;
+import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.server.Connector;
 import starvationevasion.server.io.NotImplementedException;
 

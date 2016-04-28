@@ -1,4 +1,4 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumFood;
@@ -7,6 +7,7 @@ import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 /**
  * PolicyCard is the structure used by the Client, Server and Simulator.
@@ -26,7 +27,7 @@ import java.util.ArrayList;
  * Use the validate() method to verify all needed parameters of the policy
  * are defined in range.
  */
-public abstract class PolicyCard implements Sendable
+public abstract class GameCard implements Sendable
 {
   private EnumPolicy type;
 
@@ -80,7 +81,15 @@ public abstract class PolicyCard implements Sendable
    * This field is ignored if not require by this policy.
    */
   private int varX;
-
+  
+  //=========================================================================================
+  /**
+   * Cards can sometimes be used/played at different times. For example, the "Filibuster" 
+   * card is one that is only played during the voting phase, while any of the policy cards
+   * must be played during the planning phase. This is a list of what game states that the
+   * card can be played in.
+   */
+  private EnumSet<EnumGameState> usableStates;
 
   //=========================================================================================
   /**
@@ -91,7 +100,7 @@ public abstract class PolicyCard implements Sendable
    * @param type The policy card type to be constructed.
    * @return new instance of a policy card.
    */
-  public static PolicyCard create(EnumRegion owner, EnumPolicy type)
+  public static GameCard create(EnumRegion owner, EnumPolicy type)
   {
     if (!owner.isUS())
     {
@@ -101,7 +110,7 @@ public abstract class PolicyCard implements Sendable
 
 
 
-    PolicyCard myCard = null;
+    GameCard myCard = null;
     switch (type) {
       case Policy_CleanRiverIncentive:
         myCard = new Policy_CleanRiverIncentive();
@@ -261,10 +270,24 @@ public abstract class PolicyCard implements Sendable
    */
   public void setX(int x) {varX = x;}
 
+  
+  
+  //=========================================================================================
+  /**
+   * @param the game states in which it is valid to use this card.
+   */
+  public EnumSet<EnumGameState> getUsableStates() {return usableStates;}
+
+  
+  
+  //=========================================================================================
+  /**
+   * @param states ArrayList of states of when this card can be played.
+   */
+  public void setUsableStates(EnumSet<EnumGameState> states) {states = usableStates;}
 
 
-
-
+  
   //=========================================================================================
   /**
    * Some policy cards require a target region.
@@ -275,6 +298,10 @@ public abstract class PolicyCard implements Sendable
   public void setTargetRegion(EnumRegion region)
   { targetRegion = region;
   }
+
+
+
+
 
 
 
@@ -547,9 +574,9 @@ public abstract class PolicyCard implements Sendable
   public boolean equals(Object o)
   {
     if (this == o) return true;
-    if (!(o instanceof PolicyCard)) return false;
+    if (!(o instanceof GameCard)) return false;
 
-    PolicyCard that = (PolicyCard) o;
+    GameCard that = (GameCard) o;
 
     if (approvedRegionBits != that.approvedRegionBits) return false;
     if (varX != that.varX) return false;

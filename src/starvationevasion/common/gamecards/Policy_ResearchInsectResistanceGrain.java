@@ -1,10 +1,12 @@
 
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import starvationevasion.common.EnumFood;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
+//TODO: Convert to a research-type card
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
@@ -23,7 +25,7 @@ import java.util.ArrayList;
  * Benefit yield is an ease-in-out cubic bezier function of effective
  * dollars spent and grains.
 */
-public class Policy_ResearchInsectResistanceGrain extends PolicyCard
+public class Policy_ResearchInsectResistanceGrain extends GameCard
 {
 
   public static final String TITLE =
@@ -32,6 +34,14 @@ public class Policy_ResearchInsectResistanceGrain extends PolicyCard
   public static final String TEXT =
     "Each participating region spends X million dollars to fund GMO seed research " +
     "for increasing insect resistance of a grain crop.";
+  
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
+  public Policy_ResearchInsectResistanceGrain()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
 
   /**
    * The number of votes required for this policy.  A value of 1 means that

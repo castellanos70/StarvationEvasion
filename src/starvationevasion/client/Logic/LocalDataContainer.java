@@ -8,7 +8,7 @@ import starvationevasion.client.Networking.Client;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.WorldData;
-import starvationevasion.common.policies.EnumPolicy;
+import starvationevasion.common.gamecards.EnumPolicy;
 
 import java.util.HashMap;
 

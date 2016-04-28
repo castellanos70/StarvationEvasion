@@ -1,7 +1,7 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.*;
-import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
 import starvationevasion.sim.events.Hurricane;
@@ -426,7 +426,7 @@ public class Model
   /**
    * @return the simulation currentYear that has just finished.
    */
-  protected int nextYear(ArrayList<PolicyCard> cards)
+  protected int nextYear(ArrayList<GameCard> cards)
   {
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
@@ -1077,35 +1077,44 @@ public class Model
 
     Model model = new Model();
 
-    // Picture pic = model.testShowMapProjection();
+    Picture pic = model.testShowMapProjection();
 
-    // Territory territory = model.getTerritory("Italy");
-    // model.drawBoundaryUsingMapPoints(pic, territory);
+    //Territory territory = model.getTerritory("Morocco");
+    //model.drawBoundaryUsingMapPoints(pic, territory);
 
-    // for (int n = 0; n < 10; n++)
-    // {
-    // for (EnumRegion regionID : EnumRegion.values())
-    // {
-    // Region region = model.getRegion(regionID);
-    // model.drawAllTiles(pic, region, regionID.getColor());
-    // }
-    //
-    // for (EnumRegion regionID : EnumRegion.values())
-    // {
-    // Region region = model.getRegion(regionID);
-    // model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5));
-    // }
-    // pic.repaint();
-    // try
-    // {
-    // Thread.sleep(3000);
-    // } catch (InterruptedException e) { }
-    //
-    // for (Constant.Month month : Constant.Month.values())
-    // {
-    // model.drawRain(pic, 2000+n, month);
-    // }
-    // }
+    //territory = model.getTerritory("Mauritania");
+    //model.drawBoundary(pic, territory, Color.WHITE);
+
+    //territory = model.getTerritory("Algeria");
+    //model.drawBoundary(pic, territory, Color.GREEN);
+
+    //territory = model.getTerritory("Mexico");
+    //model.drawBoundary(pic, territory, Color.RED);
+
+    for (int n = 0; n < 10; n++)
+    {
+      for (EnumRegion regionID : EnumRegion.values())
+      {
+        Region region = model.getRegion(regionID);
+        model.drawAllTiles(pic, region, regionID.getColor());
+      }
+
+      for (EnumRegion regionID : EnumRegion.values())
+      {
+        Region region = model.getRegion(regionID);
+        model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5));
+      }
+      pic.repaint();
+      try
+      {
+        Thread.sleep(3000);
+      } catch (InterruptedException e) { }
+
+      for (Constant.Month month : Constant.Month.values())
+      {
+        model.drawRain(pic, 2000+n, month);
+      }
+    }
 
   }
 }

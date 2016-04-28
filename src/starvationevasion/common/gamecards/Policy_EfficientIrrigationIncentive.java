@@ -1,7 +1,8 @@
 
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -26,7 +27,7 @@ import java.util.ArrayList;
  * X% of the money that the sim estimates is spent for improved irrigation
  * is deducted from the regions tax revenue at the start of the next turn.
 */
-public class Policy_EfficientIrrigationIncentive extends PolicyCard
+public class Policy_EfficientIrrigationIncentive extends GameCard
 {
   public static final String TITLE =
       "Efficient Irrigation Incentive";
@@ -35,7 +36,13 @@ public class Policy_EfficientIrrigationIncentive extends PolicyCard
       "From now through the start of the next turn, X% of money spent by farmers " +
       "in player\'s region for improved irrigation efficiency is tax deductible.";
 
-
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
+  public Policy_EfficientIrrigationIncentive()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
 
 
   /**

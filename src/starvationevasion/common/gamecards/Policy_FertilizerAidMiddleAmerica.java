@@ -1,16 +1,25 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
-public class Policy_FertilizerAidCentralAsia extends PolicyCard
+
+public class Policy_FertilizerAidMiddleAmerica extends GameCard
 {
 
   public static final String TITLE =
-    "Fertilizer Aid to Central Asia";
+    "Fertilizer Aid to Middle America.";
 
   public static final String TEXT =
-    "Each region of the United States sends X million dollars in fertilizer to Central Asia.";
+    "Each region of the United States sends X million dollars in fertilizer to Middle America.";
 
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
+  public Policy_FertilizerAidMiddleAmerica()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
 
   /**
    * {@inheritDoc}

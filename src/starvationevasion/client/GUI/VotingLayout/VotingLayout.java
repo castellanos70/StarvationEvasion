@@ -10,7 +10,7 @@ import starvationevasion.client.GUI.DraftLayout.GraphNode;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.SummaryBar;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.common.gamecards.GameCard;
 
 import java.util.ArrayList;
 
@@ -82,7 +82,7 @@ public class VotingLayout extends GridPane
 //            BackgroundSize.DEFAULT)));
   }
   public boolean hasReceivedCards(){return receivedCards;}
-  public void setCards(PolicyCard[] cards)
+  public void setCards(GameCard[] cards)
   {
    // for (int i = 0; i < ; i++)
     {
@@ -94,12 +94,12 @@ public class VotingLayout extends GridPane
   {
 
   }
-  public void updateCardSpaces(ArrayList<PolicyCard> cards)
+  public void updateCardSpaces(ArrayList<GameCard> cards)
   {
     if(cards!=null)
     {
       receivedCards =true;
-      for(PolicyCard card: cards)
+      for(GameCard card: cards)
       {
         int index=getIndexOfRegion(card.getOwner());
         if(card.votesRequired()==0)

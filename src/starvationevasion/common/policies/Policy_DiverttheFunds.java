@@ -1,8 +1,9 @@
 package starvationevasion.common.policies;
 
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.gamecards.GameCard;
 
-public class Policy_DiverttheFunds extends PolicyCard
+public class Policy_DiverttheFunds extends GameCard
 {
 
   public static String TITLE = "Divert the Funds";

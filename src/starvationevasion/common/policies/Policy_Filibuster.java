@@ -1,8 +1,9 @@
 package starvationevasion.common.policies;
 
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.gamecards.GameCard;
 
-public class Policy_Filibuster extends PolicyCard
+public class Policy_Filibuster extends GameCard
 {
 
   public static final String TITLE = "Filibuster";

@@ -1,6 +1,6 @@
 package starvationevasion.communication;
 
-import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.common.WorldData;
 import starvationevasion.communication.commands.Command;
 import starvationevasion.communication.commands.Draft;
@@ -25,7 +25,7 @@ public class AITest
   private ArrayList<User> users = new ArrayList<>();
   private State state = null;
   private ArrayList<WorldData> worldData;
-  private List<PolicyCard> ballot;
+  private List<GameCard> ballot;
   private Stack<Command> commands = new Stack<>();
   private volatile boolean isRunning = true;
 
@@ -53,7 +53,7 @@ public class AITest
     COMM.setResponseListener(Type.WORLD_DATA_LIST, (type, data) -> worldData = (ArrayList<WorldData>)data);
     COMM.setResponseListener(Type.USERS_LOGGED_IN_LIST, (type, data) -> users = (ArrayList<User>)data);
     COMM.setResponseListener(Type.WORLD_DATA, (type, data) -> worldData.add((WorldData)data));
-    COMM.setResponseListener(Type.VOTE_BALLOT, (type, data) -> ballot = (List<PolicyCard>)data);
+    COMM.setResponseListener(Type.VOTE_BALLOT, (type, data) -> ballot = (List<GameCard>)data);
     COMM.setResponseListener(Type.GAME_STATE, (type, data) ->
     {
       state = (State)data;
@@ -138,7 +138,7 @@ public class AITest
     return commands;
   }
 
-  public List<PolicyCard> getBallot ()
+  public List<GameCard> getBallot ()
   {
     return ballot;
   }

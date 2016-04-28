@@ -2,7 +2,7 @@ package starvationevasion.communication;
 
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.common.Util;
 import starvationevasion.server.model.*;
 import javax.crypto.Cipher;
@@ -243,7 +243,7 @@ public class CommModule implements Communication
   {
     updateCurrentTime();
     // TODO find a way to let any type of data be passed into chat
-    Request request = new RequestFactory().chat(elapsedTime, destination, text, (PolicyCard)data);
+    Request request = new RequestFactory().chat(elapsedTime, destination, text, (GameCard)data);
 
     // Check to see if anything went wrong
     if (request == null) return false;

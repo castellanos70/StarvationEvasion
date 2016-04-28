@@ -4,7 +4,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.policies.EnumPolicy;
+import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.sim.CardDeck;
 
 import java.util.ArrayList;

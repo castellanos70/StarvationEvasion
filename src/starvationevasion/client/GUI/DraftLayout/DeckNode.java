@@ -7,7 +7,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.policies.EnumPolicy;
+import starvationevasion.common.gamecards.EnumPolicy;
 
 
 /**

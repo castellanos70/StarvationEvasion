@@ -2,7 +2,8 @@ package starvationevasion.common;
 
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-import starvationevasion.common.policies.PolicyCard;
+
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 
@@ -12,31 +13,31 @@ import java.util.List;
 
 public class VoteData implements Sendable
 {
-  private ArrayList<PolicyCard> ballot = new ArrayList<>();
-  private ArrayList<PolicyCard> enacted = new ArrayList<>();
-  private PolicyCard[][] cards = new PolicyCard[EnumRegion.US_REGIONS.length][2];
+  private ArrayList<GameCard> ballot = new ArrayList<>();
+  private ArrayList<GameCard> enacted = new ArrayList<>();
+  private GameCard[][] cards = new GameCard[EnumRegion.US_REGIONS.length][2];
 
 
-  public VoteData(ArrayList<PolicyCard> ballot, ArrayList<PolicyCard> enacted, PolicyCard[][] cards)
+  public VoteData(ArrayList<GameCard> ballot, ArrayList<GameCard> enacted, GameCard[][] cards)
   {
     this.ballot = ballot;
     this.enacted = enacted;
     this.cards = cards;
   }
 
-  public ArrayList<PolicyCard> getBallot ()
+  public ArrayList<GameCard> getBallot ()
   {
     return ballot;
   }
 
-  public ArrayList<PolicyCard> getEnacted ()
+  public ArrayList<GameCard> getEnacted ()
   {
     return enacted;
   }
 
   public int getVotes(EnumRegion region)
   {
-    for (PolicyCard card : cards[region.ordinal()])
+    for (GameCard card : cards[region.ordinal()])
     {
       if (card.votesRequired() > 0)
       {
@@ -46,7 +47,7 @@ public class VoteData implements Sendable
     return -1;
   }
 
-  public List<PolicyCard> getRegionCards (EnumRegion region)
+  public List<GameCard> getRegionCards (EnumRegion region)
   {
     return Arrays.asList(cards[region.ordinal()]);
   }

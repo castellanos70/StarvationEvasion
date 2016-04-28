@@ -1,4 +1,6 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
+
+import java.util.EnumSet;
 
 import starvationevasion.common.EnumRegion;
 
@@ -19,13 +21,21 @@ import starvationevasion.common.EnumRegion;
  * 2.5 million + 10% of remaining balance are transferred from card owner
  * back to the target player.
  */
-public class Policy_Loan extends PolicyCard
+public class Policy_Loan extends GameCard
 {
     public static final String TITLE = "Loan";
 
     public static final String TEXT =
       "Target player region lends you $25 million at 10% interest for 10 years. "+
         "Annual loan payments are automatically paid on December 31st of each year.";
+    
+    public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+        EnumSet.of(EnumGameState.PLANNING_STATE);
+    
+    public Policy_Loan()
+    {
+      this.setUsableStates(PLAY_STATES);
+    }
 
     /**
      * The number of votes required for this policy.  A value of 0 means that

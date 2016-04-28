@@ -19,8 +19,8 @@ import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Util;
-import starvationevasion.common.policies.EnumPolicy;
-import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.common.gamecards.EnumPolicy;
+import starvationevasion.common.gamecards.GameCard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +35,7 @@ public class ClientPolicyCard extends VBox
   private boolean isFlipped=false;
   private ImageView view;
   private EnumRegion owner;
-  private PolicyCard policy;
+  private GameCard policy;
   private EnumPolicy enumPolicy;
   private GUI gui;
   private boolean drafted=false;
@@ -60,7 +60,7 @@ public class ClientPolicyCard extends VBox
   public ClientPolicyCard(EnumRegion owner, EnumPolicy policy, GUI gui)
   {
     this.owner=owner;
-    this.policy=PolicyCard.create(owner,policy);
+    this.policy=GameCard.create(owner,policy);
     enumPolicy=policy;
     this.gui=gui;
    setBasicCard();
@@ -71,7 +71,7 @@ public class ClientPolicyCard extends VBox
    * Gets the policy card and assigns values to the policy card
    * @return a Valid Policy Card
    */
-  public PolicyCard getPolicyCard()
+  public GameCard getPolicyCard()
   {
     if(xVal!=0)policy.setX(xVal);
     else policy.setX(1);

@@ -1,8 +1,10 @@
 
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
+//TODO: Figure out a way to include when the card can be played on the Javadoc
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
@@ -22,7 +24,7 @@ import java.util.ArrayList;
  * more expensive seeds,  natural pest controls, and landscape for reduced run-off.<br><br>
  * The Y% tax break is applied to the regions tax revenue on the next turn.
 */
-public class Policy_CleanRiverIncentive extends PolicyCard
+public class Policy_CleanRiverIncentive extends GameCard
 {
   public static final String TITLE =
       "Clean River Incentive";
@@ -30,6 +32,14 @@ public class Policy_CleanRiverIncentive extends PolicyCard
   public static final String TEXT =
       "X% tax break for farmers in my region who reduce by 20% the outflow of "+
       "pesticides and fertilizers from their farms into the rivers.";
+  
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
+  public Policy_CleanRiverIncentive()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
 
   /**
    * {@inheritDoc}

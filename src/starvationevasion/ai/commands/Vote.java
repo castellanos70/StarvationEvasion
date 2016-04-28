@@ -3,7 +3,7 @@ package starvationevasion.ai.commands;
 
 import starvationevasion.ai.AI;
 import starvationevasion.common.Util;
-import starvationevasion.common.policies.PolicyCard;
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.server.model.*;
 
 public class Vote extends AbstractCommand
@@ -38,7 +38,7 @@ public class Vote extends AbstractCommand
       {
         System.out.println("Ballot got it. With size: " + getClient().getBallot().size());
 
-        for (PolicyCard card : getClient().getBallot())
+        for (GameCard card : getClient().getBallot())
         {
 
           // if (card.getOwner() != getClient().getUser().getRegion()) // Testing

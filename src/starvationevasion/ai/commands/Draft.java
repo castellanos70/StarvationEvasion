@@ -292,6 +292,7 @@ public class Draft extends AbstractCommand
     ArrayList<String> validFoods = new ArrayList<>();
     Map<String, EnumFood> foodMap = new HashMap<>();
     EnumFood currentFood = null;
+    z = 0;
     if (foods != null)
     {
       Stream.of(foods).forEach(food ->

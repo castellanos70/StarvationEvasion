@@ -320,6 +320,7 @@ public class Draft extends AbstractCommand
           {
             currentPolicy = policy;
             regionFound = true;
+            regionString = getClient().getUser().region.name();
             break;
           }
         }

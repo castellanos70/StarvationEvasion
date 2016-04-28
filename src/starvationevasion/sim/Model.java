@@ -329,6 +329,15 @@ public class Model
     return specialEvents;
   }
 
+  public short[] getPackedCropRatings()
+  {
+    return LandTile.PACKED_CROP_RATINGS;
+  }
+
+  public short[] getPackedTileCoordinates()
+  {
+    return LandTile.PACKED_TILE_COORDINATES;
+  }
 
   /**
    * A Region is the base political unit exposed to the player.

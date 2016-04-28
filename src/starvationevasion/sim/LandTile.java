@@ -42,6 +42,8 @@ public class LandTile
     static int SIZE = values().length;
   }
 
+  public static short[] PACKED_CROP_RATINGS;
+  public static short[] PACKED_TILE_COORDINATES;
   /**
    * Each record of PATH_COORDINATES must be in a one-to-one,
    * ordered matching with each record in each month of each annual file of PATH_CLIMATE_PREFIX.
@@ -56,8 +58,7 @@ public class LandTile
   
   private static CropData CROP_DATA;
   private static ArrayList<LandTile> TILE_LIST;
-  private static short[] PACKED_CROP_RATINGS;
-  private static short[] PACKED_TILE_COORDINATES;
+
   private enum DataHeaders
   {
     TempMonthLow,     //Temperature Monthly Low (deg C).

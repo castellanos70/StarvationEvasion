@@ -20,7 +20,7 @@ import starvationevasion.client.Logic.MainGameLoop;
 import starvationevasion.client.Networking.Client;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.policies.EnumPolicy;
+import starvationevasion.common.gamecards.EnumPolicy;
 
 import java.util.ArrayList;
 import java.util.Arrays;

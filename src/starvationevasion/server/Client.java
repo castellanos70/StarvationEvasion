@@ -114,7 +114,9 @@ class Client
     isRunning = true;
     // write.println("client");
 
+    System.out.println(">>> Starting Handshake\t1/2");
     Util.startServerHandshake(clientSocket, rsaKey, DataType.JSON);
+    System.out.println(">>> Starting Handshake\t2/2");
     return true;
 
   }
@@ -224,6 +226,7 @@ class Client
   {
     public void run()
     {
+      System.out.println("");
       serverKey = Util.endServerHandshake(clientSocket, rsaKey);
 
       while (isRunning)

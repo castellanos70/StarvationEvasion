@@ -1,4 +1,6 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
+
+import java.util.EnumSet;
 
 import starvationevasion.common.EnumFood;
 
@@ -15,7 +17,7 @@ import starvationevasion.common.EnumFood;
  * the fertilizer on existing crops causing a change in yield and a change in
  * fertilizer run off.
 */
-public class Policy_FertilizerSubsidy extends PolicyCard
+public class Policy_FertilizerSubsidy extends GameCard
 {
 
   public static final String TITLE =
@@ -25,6 +27,13 @@ public class Policy_FertilizerSubsidy extends PolicyCard
       "This policy offers a subsidy of 20% rebate to farmers in your region purchasing " +
       "commercial fertilizer or feed supplements for target crop or live stock.";
 
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
+  public Policy_FertilizerSubsidy()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
 
   /**
    * {@inheritDoc}

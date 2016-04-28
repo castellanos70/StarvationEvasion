@@ -1,6 +1,7 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -16,7 +17,7 @@ import java.util.ArrayList;
  * effects world regions in direct proportion to that regions import levels of the
  * effected food categories.
 */
-public class Policy_MyPlatePromotionCampaign extends PolicyCard
+public class Policy_MyPlatePromotionCampaign extends GameCard
 {
   public static final String TITLE =
      "MyPlate Promotion Campaign";
@@ -25,7 +26,13 @@ public class Policy_MyPlatePromotionCampaign extends PolicyCard
      "You spend X million dollars on an advertising campaign within your region promoting " +
      "public awareness of the United States Department of Agriculture's MyPlate nutrition guide.";
 
-
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
+  public Policy_MyPlatePromotionCampaign()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
 
   /**
    * {@inheritDoc}

@@ -1,22 +1,10 @@
-package starvationevasion.common.policies;
+package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 
-/**
- * Title: {@value #TITLE}<br><br>
- * Game Text: {@value #TEXT}<br><br>
- *
- * Draft Affects: When drafting this policy, player selects X million dollars.<br><br>
- *
- * Votes Required: Automatic<br><br>
- *
- * Model Effects: model needs four control points of each ease-in-out cubic Bezier
- * function giving investment verses food trade penalty function reduction. This one
- * time spending permanently reduces the regions penalty function.<br><br>.
- */
-
-public class Policy_FertilizerAidOceania extends PolicyCard
+public class Policy_FertilizerAidSubSaharan extends GameCard
 {
 
   public static final String TITLE =
@@ -25,6 +13,13 @@ public class Policy_FertilizerAidOceania extends PolicyCard
   public static final String TEXT =
     "Each region of the United States sends X million dollars in fertilizer to Oceania.";
 
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
+  public Policy_FertilizerAidSubSaharan()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
 
   /**
    * {@inheritDoc}

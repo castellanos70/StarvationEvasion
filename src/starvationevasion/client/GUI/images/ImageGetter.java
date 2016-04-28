@@ -3,7 +3,7 @@ package starvationevasion.client.GUI.images;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import starvationevasion.common.EnumFood;
-import starvationevasion.common.policies.EnumPolicy;
+import starvationevasion.common.gamecards.EnumPolicy;
 
 /**
  * Created by jmweisburd on 11/15/15.

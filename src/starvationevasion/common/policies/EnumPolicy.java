@@ -21,7 +21,12 @@ public enum EnumPolicy implements Sendable
   Policy_InternationalFoodRelief,
   Policy_Loan,
   Policy_MyPlatePromotionCampaign,
-  Policy_ResearchInsectResistanceGrain;
+  Policy_ResearchInsectResistanceGrain,
+  Policy_Filibuster,
+  Policy_Fundraiser,
+  Policy_DiverttheFunds,
+  Policy_SharetheKnowledge;
+  
 
   public String getImagePath()
   {

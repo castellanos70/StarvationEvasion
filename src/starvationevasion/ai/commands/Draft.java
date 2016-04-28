@@ -398,6 +398,12 @@ public class Draft extends AbstractCommand
     setupCard(card, currentFood, currentRegion);
     getClient().send(new RequestFactory().build(getClient().getStartNanoSec(),
         card, Endpoint.DRAFT_CARD));
+    if(card.votesRequired() != 0)
+    {
+      String message = "I am drafing "+card.getTitle()+". Will you support it?";
+      getClient().send(new RequestFactory().chat(getClient().getStartNanoSec(),"ALL", 
+      message, card));
+    }
     cardDrafted = card;
     draftedCards[draftIndex] = card;
     getClient().draftedCards.get(numTurns).add(card);

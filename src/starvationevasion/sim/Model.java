@@ -1065,8 +1065,14 @@ public class Model
 
     Picture pic = model.testShowMapProjection();
 
-    //Territory territory = model.getTerritory("Italy");
-    //model.drawBoundaryUsingMapPoints(pic, territory);
+    Territory territory = model.getTerritory("Somalia");
+    model.drawBoundaryUsingMapPoints(pic, territory);
+
+    //Territory territory = model.getTerritory("Somalia");
+    //model.drawBoundary(pic, territory, Color.RED);
+
+    //territory = model.getTerritory("Mexico");
+    //model.drawBoundary(pic, territory, Color.RED);
 
     for (int n = 0; n < 10; n++)
     {

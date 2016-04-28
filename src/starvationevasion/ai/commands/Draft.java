@@ -1,6 +1,7 @@
 package starvationevasion.ai.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -42,6 +43,8 @@ public class Draft extends AbstractCommand
   Long lastFoodImported = new Long(0);
   Long lastFoodExported = new Long(0);
   boolean moreThanOne = false;
+  boolean pickThisRegion=false;
+  double pickThisRegionChance=.75;
   int z = 0;
   int probModifier = 0;
   int draftIndex = 0;
@@ -193,8 +196,10 @@ public class Draft extends AbstractCommand
         i++;
       }
       tries = 2;
-    } else
+    } 
+    else
     {
+      pickThisRegion=false;
       System.out.println("Last hand size:"
           + getClient().draftedCards.get(numTurns - 1).size());
       PolicyCard lastCard1 = getClient().draftedCards.get(numTurns - 1).get(0);
@@ -269,10 +274,16 @@ public class Draft extends AbstractCommand
     // draftedCard = true;
     // tries = 2;
   }
-
+  public void checkOtherFactors()
+  {
+    
+  }
   public void draftCards(Random rand)
   {
     PolicyCard card = null;
+    EnumRegion currentRegion = null;
+    String regionString = "";
+    boolean regionFound=false;
     ArrayList<String> currentHand = new ArrayList<String>();
     Map<String, EnumPolicy> policyMap = new HashMap<>();
     for (EnumPolicy policy : getClient().getUser().getHand())
@@ -280,18 +291,65 @@ public class Draft extends AbstractCommand
       currentHand.add(policy.name());
       policyMap.put(policy.name(), policy);
     }
-    String policy = "";
-    do
+    String policyString = "";
+    EnumPolicy currentPolicy =null;
+    if(!pickThisRegion)
     {
-      int policyIndex = rand.nextInt(getClient().policySampleSpace.size());
-      policy = getClient().policySampleSpace.get(policyIndex);
-    } while (!currentHand.contains(policy));
-    EnumPolicy currentPolicy = policyMap.get(policy);
+      do
+      {
+        int policyIndex = rand.nextInt(getClient().policySampleSpace.size());
+        policyString = getClient().policySampleSpace.get(policyIndex);
+      }while (!currentHand.contains(policyString));
+      currentPolicy = policyMap.get(policyString);
+    }
+    else
+    {
+      double chance=rand.nextDouble();
+      if(chance<=pickThisRegionChance)
+      {
+        for (EnumPolicy policy : getClient().getUser().getHand())
+        {
+          card = PolicyCard.create(getClient().getUser().getRegion(), policy);
+          ArrayList<String> regions=new ArrayList<String>();
+          EnumRegion[] regionArray=card.getValidTargetRegions();
+          if(regionArray!=null)
+          {
+            Stream.of(regionArray).forEach(region->regions.add(region.name()));
+          }
+          if(regions.contains(getClient().getUser().region.name()))
+          {
+            currentPolicy=policy;
+            regionFound=true;
+            break;
+          }
+        }
+        if(currentPolicy==null)
+        {
+          do
+          {
+            int policyIndex = rand.nextInt(getClient().policySampleSpace.size());
+            policyString = getClient().policySampleSpace.get(policyIndex);
+          }while (!currentHand.contains(policyString));
+          currentPolicy = policyMap.get(policyString);
+        }
+      }
+      else if(chance>pickThisRegionChance)
+      {
+        do
+        {
+          int policyIndex = rand.nextInt(getClient().policySampleSpace.size());
+          policyString = getClient().policySampleSpace.get(policyIndex);
+        }while (!currentHand.contains(policyString));
+        currentPolicy = policyMap.get(policyString);
+      //TODO add a way to discard and redraw cards so that the AI can try to get different cards. 
+      }
+    }
     card = PolicyCard.create(getClient().getUser().getRegion(), currentPolicy);
     EnumFood[] foods = card.getValidTargetFoods();
     ArrayList<String> validFoods = new ArrayList<>();
     Map<String, EnumFood> foodMap = new HashMap<>();
     EnumFood currentFood = null;
+    z=0;
     if (foods != null)
     {
       Stream.of(foods).forEach(food ->
@@ -312,8 +370,7 @@ public class Draft extends AbstractCommand
     EnumRegion[] regions = card.getValidTargetRegions();
     ArrayList<String> validRegions = new ArrayList<String>();
     Map<String, EnumRegion> regionMap = new HashMap<>();
-    EnumRegion currentRegion = null;
-    if (regions != null)
+    if(regions!=null)
     {
       Stream.of(regions).forEach(region ->
       {
@@ -322,13 +379,19 @@ public class Draft extends AbstractCommand
         z++;
       });
       z = 0;
-      String region = "";
+    }
+    if (regions != null && !regionFound)
+    {
       do
       {
         int regionIndex = rand.nextInt(getClient().regionSampleSpace.size());
-        region = getClient().regionSampleSpace.get(regionIndex);
-      } while (!validRegions.contains(region));
-      currentRegion = regionMap.get(region);
+        regionString = getClient().regionSampleSpace.get(regionIndex);
+      } while (!validRegions.contains(regionString));
+      currentRegion = regionMap.get(regionString);
+    }
+    if(regionFound)
+    {
+      currentRegion = regionMap.get(regionString);
     }
     setupCard(card, currentFood, currentRegion);
     getClient().send(new RequestFactory().build(getClient().getStartNanoSec(),
@@ -641,6 +704,10 @@ public class Draft extends AbstractCommand
           return 1;
         } else if (overallPercentDecrease > overallPercentIncrease)
         {
+          if(overallPercentDecrease>=20)
+          {
+            pickThisRegion=true;
+          }
           return -1;
         }
       }

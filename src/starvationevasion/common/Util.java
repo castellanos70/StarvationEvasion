@@ -40,6 +40,7 @@ public class Util
     return rand.nextFloat() <= likeliness;
   }
 
+  private static short bitMask = 255;
 
   public static float linearInterpolate(float x1, float x2, float x3, float y1, float y3)
   {
@@ -196,5 +197,40 @@ public class Util
       if (!f.isHidden()) files.add(f.getPath());
     }
     return files;
+  }
+
+  /**
+   * unpacks crop ratings for a single land tile.
+   * example of use:
+   * cropRatings[EnumFood.CROP_FOODS[EnumFood.CITRUS.ordinal()]] returns rating for citrus
+   * @param    packedRatings    16 bit number used to store ratings for 8 crops
+   * @return   an array of ratings for each crop
+   */
+  public static EnumCropZone[] unpackCropRatings(short packedRatings)
+  {
+    EnumCropZone[] cropRatings = new EnumCropZone[EnumFood.CROP_FOODS.length];
+    for(int i = 0; i < cropRatings.length; i++)
+    {
+      //gives index of enum
+      int index = (packedRatings & (3 << (2* i))) >> (2 * i);
+      //find corresponding
+      cropRatings[i] = EnumCropZone.values()[index];
+    }
+    return cropRatings;
+  }
+
+  /**
+   * unpacks coordinatea of a single landTile.
+   * each coordinate is rounded to 2 decimal places.
+   * @param    packedCoordinates    16 bit number used to store latitude and longitude
+   * @return   a MapPoint object containing latitude and longitude of landTile
+   */
+  public static MapPoint unpackTileCoordinates(short packedCoordinates)
+  {
+    //mast off firt 8 bits for latitude, last 8 bits for longitude
+    double latitude = (double)(packedCoordinates & bitMask) / 100.0 ;
+    double longitude = (double)(packedCoordinates & ~bitMask) / 100.0 ;
+    return new MapPoint(latitude , longitude);
+
   }
 }

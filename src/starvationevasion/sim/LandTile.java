@@ -56,7 +56,8 @@ public class LandTile
   
   private static CropData CROP_DATA;
   private static ArrayList<LandTile> TILE_LIST;
-
+  private static short[] PACKED_CROP_RATINGS;
+  private static short[] PACKED_TILE_COORDINATES;
   private enum DataHeaders
   {
     TempMonthLow,     //Temperature Monthly Low (deg C).
@@ -155,6 +156,28 @@ public class LandTile
   
   public EnumCropZone[] getCropRatings() { return cropRatings; }
 
+
+  private static void packData(LandTile tile, int index)
+  {
+    //short to store ratings for each crop : 2 bits for each of the 8 crops, 16 bits total.
+    short packedRating = 0;
+    //pack 2 bits at a time
+    for(int i = 0; i < tile.cropRatings.length;i++)
+    {
+      packedRating |= (tile.cropRatings[i].ordinal() << (2*i));
+    }
+    PACKED_CROP_RATINGS[index] = packedRating;
+
+    //lat and lon rounded to 2 decimal places
+    short packedLatLon = 0;
+    short roundedLat = (short)Math.round(tile.getLatitude()  * 100);
+    short roundedLon = (short)Math.round(tile.getLongitude() * 100);
+    //pack lat onto first 8 bits, lon onto next 8 bits
+    packedLatLon |= (roundedLat << 0);
+    packedLatLon |= (roundedLon << 8);
+    PACKED_TILE_COORDINATES[index] = packedLatLon;
+
+  }
 
 
 
@@ -546,7 +569,9 @@ public class LandTile
   {
     System.out.println("LandTile.updateCropRatings() Starting");
     CROP_DATA = data;
-
+    PACKED_CROP_RATINGS = new short[TILE_LIST.size()];
+    PACKED_TILE_COORDINATES = new short[TILE_LIST.size()];
+    int index = 0;
     for (LandTile tile : TILE_LIST)
     { // For each crop, find the EnumCropZone
       // value
@@ -554,6 +579,8 @@ public class LandTile
       {
         tile.cropRatings[i] = tile.rateTileForCrop(EnumFood.CROP_FOODS[i]);
       }
+      packData(tile, index);
+      index++;
     }
     System.out.println("LandTile.updateCropRatings() Done");
   }

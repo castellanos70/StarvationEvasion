@@ -233,7 +233,7 @@ public class Util
   }
 
   /**
-   * unpacks coordinatea of a single landTile.
+   * unpacks coordinates of a single landTile.
    * each coordinate is rounded to 2 decimal places.
    * @param    packedCoordinates    32 bit number used to store latitude and longitude
    * @return   a MapPoint object containing latitude and longitude of landTile

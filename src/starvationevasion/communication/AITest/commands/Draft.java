@@ -1,13 +1,8 @@
 package starvationevasion.communication.AITest.commands;
 
 import starvationevasion.common.*;
-//<<<<<<< 1325dbe0936d98abae9ff74c3fdcae00953915be:src/starvationevasion/communication/commands/Draft.java
 import starvationevasion.common.gamecards.*;
-//import starvationevasion.communication.AITest;
-//=======
-//import starvationevasion.common.policies.*;
 import starvationevasion.communication.AITest.AI;
-//>>>>>>> Refactors AITest, ClientTest, Updates CommModule:src/starvationevasion/communication/AITest/commands/Draft.java
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.RequestFactory;

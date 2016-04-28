@@ -57,7 +57,10 @@ public class AI
 
   private User u;
   private ArrayList<User> users = new ArrayList<>();
-
+  
+  private ArrayList<User> allies = new ArrayList<>();
+  private ArrayList<User> enemies = new ArrayList<>();
+  
   private State state = null;
 
   public ArrayList<WorldData> worldData;

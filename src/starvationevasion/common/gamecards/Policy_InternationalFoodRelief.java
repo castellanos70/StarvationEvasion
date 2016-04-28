@@ -1,6 +1,7 @@
 package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -37,6 +38,14 @@ public class Policy_InternationalFoodRelief extends GameCard
     "Each participating region spends X million dollars to purchase " +
     "from its local farmers surplus commodity food for redistribution to where it is" +
       "most needed.";
+  
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
+  public Policy_InternationalFoodRelief()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
 
   /* The number of votes required for this policy.  A value of 1 means that
    * only one player must vote to enact this policy.

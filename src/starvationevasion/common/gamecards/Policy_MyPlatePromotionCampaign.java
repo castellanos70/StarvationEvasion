@@ -1,6 +1,7 @@
 package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -25,7 +26,13 @@ public class Policy_MyPlatePromotionCampaign extends GameCard
      "You spend X million dollars on an advertising campaign within your region promoting " +
      "public awareness of the United States Department of Agriculture's MyPlate nutrition guide.";
 
-
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
+  public Policy_MyPlatePromotionCampaign()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
 
   /**
    * {@inheritDoc}

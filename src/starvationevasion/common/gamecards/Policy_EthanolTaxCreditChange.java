@@ -1,6 +1,7 @@
 package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -24,7 +25,14 @@ public class Policy_EthanolTaxCreditChange extends GameCard
       "to a Y% tax credit to cost of ethanol production, including " +
       "cellulosic ethanol. This policy changes that to X%.";
 
-
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
+  public Policy_EthanolTaxCreditChange()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
+  
   /**
    * {@inheritDoc}
   */

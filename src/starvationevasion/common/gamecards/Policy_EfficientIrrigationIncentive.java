@@ -2,6 +2,7 @@
 package starvationevasion.common.gamecards;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -35,7 +36,13 @@ public class Policy_EfficientIrrigationIncentive extends GameCard
       "From now through the start of the next turn, X% of money spent by farmers " +
       "in player\'s region for improved irrigation efficiency is tax deductible.";
 
-
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
+  public Policy_EfficientIrrigationIncentive()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
 
 
   /**

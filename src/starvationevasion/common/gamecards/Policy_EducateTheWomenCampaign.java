@@ -1,5 +1,7 @@
 package starvationevasion.common.gamecards;
 
+import java.util.EnumSet;
+
 import starvationevasion.common.EnumRegion;
 
 
@@ -27,6 +29,14 @@ public class Policy_EducateTheWomenCampaign extends GameCard
       "The US sends a total of $70 million to educate woman of the target world " +
       "region including reading, basic business and farming techniques.";
 
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
+  public Policy_EducateTheWomenCampaign()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
+  
   /**
    * The number of votes required for this policy to be enacted.
    */

@@ -7,6 +7,7 @@ import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 /**
  * PolicyCard is the structure used by the Client, Server and Simulator.
@@ -88,7 +89,7 @@ public abstract class GameCard implements Sendable
    * must be played during the planning phase. This is a list of what game states that the
    * card can be played in.
    */
-  private ArrayList<EnumGameState> usableStates;
+  private EnumSet<EnumGameState> usableStates;
 
   //=========================================================================================
   /**
@@ -275,7 +276,7 @@ public abstract class GameCard implements Sendable
   /**
    * @param the game states in which it is valid to use this card.
    */
-  public ArrayList<EnumGameState> getUsableStates() {return usableStates;}
+  public EnumSet<EnumGameState> getUsableStates() {return usableStates;}
 
   
   
@@ -283,7 +284,7 @@ public abstract class GameCard implements Sendable
   /**
    * @param states ArrayList of states of when this card can be played.
    */
-  public void setUsableStates(ArrayList<EnumGameState> states) {states = usableStates;}
+  public void setUsableStates(EnumSet<EnumGameState> states) {states = usableStates;}
 
 
   

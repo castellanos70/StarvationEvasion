@@ -4,7 +4,9 @@ package starvationevasion.common.gamecards;
 import starvationevasion.common.EnumFood;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
+//TODO: Convert to a research-type card
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
@@ -32,6 +34,14 @@ public class Policy_ResearchInsectResistanceGrain extends GameCard
   public static final String TEXT =
     "Each participating region spends X million dollars to fund GMO seed research " +
     "for increasing insect resistance of a grain crop.";
+  
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
+  public Policy_ResearchInsectResistanceGrain()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
 
   /**
    * The number of votes required for this policy.  A value of 1 means that

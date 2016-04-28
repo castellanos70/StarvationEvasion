@@ -1,5 +1,7 @@
 package starvationevasion.common.gamecards;
 
+import java.util.EnumSet;
+
 import starvationevasion.common.EnumRegion;
 
 /**
@@ -23,6 +25,14 @@ public class Policy_CovertIntelligence extends GameCard
       "During the voting phase, other players will see that you have " +
       "played this card, but not know its target.";
 
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
+  public Policy_CovertIntelligence()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
+  
   /**
    * {@inheritDoc}
   */

@@ -5,7 +5,7 @@ package starvationevasion.ai.personality;
  * for any Starvation Evasion AI personality.
  * @author Antonio Griego
  */
-public class AbstractPersonality
+public abstract class AbstractPersonality
 {
   public static enum PersonalityType { ALTRUISTIC, BALANCED, SELFISH, UNDEFINED };
 

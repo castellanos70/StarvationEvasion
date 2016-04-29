@@ -5,6 +5,7 @@ import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.client.UpdateLoop;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.communication.CommModule;
@@ -26,6 +27,10 @@ public class ClientTest implements Client
   private final ChatManager CHAT;
   private boolean isRunning = false;
   private GUI gui;
+  private EnumRegion region = EnumRegion.ARCTIC_AMERICA; // TODO fix this
+  private ArrayList<GameCard> votingCards;
+  private ArrayList<EnumPolicy> hand;
+  private State state;
 
   public ClientTest(UpdateLoop gameLoop, String host, int port)
   {
@@ -35,7 +40,37 @@ public class ClientTest implements Client
     CHAT = new ChatManager(this);
     isRunning = COMM.isConnected();
 
+    CONTAINER.init();
     COMM.setResponseListener(Type.AUTH_SUCCESS, (type, data) -> gameLoop.notifyOfSuccessfulLogin());
+    COMM.setResponseListener(Type.VOTE_BALLOT, (type, data) ->
+    {
+      votingCards = (ArrayList<GameCard>)data;
+      gui.getVotingLayout().updateCardSpaces(votingCards);
+    });
+    COMM.setResponseListener(Type.USER_HAND, (type, data) ->
+    {
+      System.out.println("Got user hand");
+      hand = (ArrayList<EnumPolicy>)data;
+    });
+    COMM.setResponseListener(Type.WORLD_DATA_LIST, (type, data) ->
+    {
+      System.out.println("Got world data list");
+      ArrayList<WorldData> world = (ArrayList<WorldData>)data;
+      for (WorldData worldData : world) CONTAINER.updateGameState(worldData);
+    });
+    COMM.setResponseListener(Type.WORLD_DATA, (type, data) ->
+    {
+      System.out.println("Got single piece of world data");
+      CONTAINER.updateGameState((WorldData)data);
+    });
+    COMM.setResponseListener(Type.GAME_STATE, (type, data) ->
+    {
+      state = (State)data;
+      System.out.println("Got game state update " + state);
+      if(state.equals(State.DRAWING)) readHand();
+      respondToStateChange();
+    });
+    //COMM.setResponseListener(Type.VOTE_BALLOT, (type, data) -> )
   }
 
   /**
@@ -46,7 +81,7 @@ public class ClientTest implements Client
   @Override
   public EnumRegion getRegion()
   {
-    return null;
+    return region;
   }
 
   /**
@@ -57,7 +92,7 @@ public class ClientTest implements Client
   @Override
   public ArrayList<EnumPolicy> getHand()
   {
-    return null;
+    return hand;
   }
 
   /**
@@ -91,7 +126,7 @@ public class ClientTest implements Client
   @Override
   public State getState()
   {
-    return null;
+    return state;
   }
 
   /**
@@ -102,7 +137,7 @@ public class ClientTest implements Client
   @Override
   public ArrayList<GameCard> getVotingCards()
   {
-    return null;
+    return votingCards;
   }
 
   /**
@@ -168,7 +203,10 @@ public class ClientTest implements Client
   @Override
   public boolean voteUp(GameCard card)
   {
-    return false;
+    Payload data = new Payload();
+    data.putData(card);
+    data.put("card", card);
+    return COMM.send(Endpoint.VOTE_UP, data, null);
   }
 
   /**
@@ -180,7 +218,10 @@ public class ClientTest implements Client
   @Override
   public boolean voteDown(GameCard card)
   {
-    return false;
+    Payload data = new Payload();
+    data.putData(card);
+    data.put("card", card);
+    return COMM.send(Endpoint.VOTE_DOWN, data, null);
   }
 
   /**
@@ -214,7 +255,9 @@ public class ClientTest implements Client
   @Override
   public boolean draftCard(GameCard card)
   {
-    return false;
+    Payload data = new Payload();
+    data.putData(card.getCardType());
+    return COMM.send(Endpoint.DELETE_CARD, data, null);
   }
 
   /**
@@ -265,5 +308,24 @@ public class ClientTest implements Client
 
     // Check to see if any new server responses have come in since the last iteration of this loop
     COMM.pushResponseEvents();
+  }
+
+  private void respondToStateChange()
+  {
+    if (state == State.DRAWING && !gui.isDraftingPhase())
+    {
+      gui.resetVotingPhase();
+      gui.switchScenes();
+    }
+    else if (state == State.VOTING && gui.isDraftingPhase())
+    {
+      gui.resetDraftingPhase();
+      gui.switchScenes();
+    }
+  }
+
+  private void readHand()
+  {
+    COMM.send(Endpoint.HAND_READ, null, null);
   }
 }

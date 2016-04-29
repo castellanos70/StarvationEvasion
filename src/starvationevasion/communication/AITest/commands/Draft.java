@@ -1,15 +1,21 @@
 package starvationevasion.communication.AITest.commands;
 
-import starvationevasion.common.*;
-import starvationevasion.common.gamecards.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.stream.Stream;
+
+import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.Util;
+import starvationevasion.common.gamecards.EnumPolicy;
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.communication.AITest.AI;
+import starvationevasion.communication.AITest.AI.WorldFactors;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
-import starvationevasion.server.model.RequestFactory;
 import starvationevasion.server.model.State;
-
-import java.util.ArrayList;
-
 
 public class Draft extends AbstractCommand
 {
@@ -17,19 +23,44 @@ public class Draft extends AbstractCommand
   private boolean discarded = false;
   private boolean drawn = false;
   private GameCard cardDrafted;
+  private GameCard[] draftedCards = new GameCard[2];
   private int tries = 2;
+  private int numTurns = 0;
+  // The region that the AI represents.
+  String region = "";
+  Long foodProduced = new Long(0);
+  Integer foodIncome = new Integer(0);
+  Long foodImported = new Long(0);
+  Long foodExported = new Long(0);
+  Long lastFoodProduced = new Long(0);
+  Integer lastFoodIncome = new Integer(0);
+  Long lastFoodImported = new Long(0);
+  Long lastFoodExported = new Long(0);
+  boolean moreThanOne = false;
+  boolean pickThisRegion = false;
+  double pickThisRegionChance = .75;
+  int z = 0;
+  int probModifier = 0;
+  int draftIndex = 0;
 
-  public Draft (AI client)
+  public Draft(AI client)
   {
     super(client);
+    this.numTurns = client.numTurns;
   }
 
   @Override
-  public boolean run ()
+  public String commandString()
   {
-//    System.out.println("Drafted: " + draftedCard +
-//                               "\nDiscarded: " + discarded +
-//                               "\nDrawn: " + drawn);
+    return "Draft";
+  }
+
+  @Override
+  public boolean run()
+  {
+    // System.out.println("Drafted: " + draftedCard +
+    // "\nDiscarded: " + discarded +
+    // "\nDrawn: " + drawn);
 
     if (!getClient().getState().equals(State.DRAFTING) && tries > 0)
     {
@@ -40,132 +71,707 @@ public class Draft extends AbstractCommand
       }
     }
 
-
-
     if (getClient().getState().equals(State.DRAFTING))
     {
 
       if (!draftedCard)
       {
         randomlySetDraftedCard();
-        return true;
+        getClient().getCommModule().send(Endpoint.DONE, new Payload(), null);
+        return false;
       }
 
-      if (!discarded && getClient().getUser().getHand().size() > 0)
-      {
-        if (!Util.rand.nextBoolean())
-        {
-          randomlyDiscard();
-        }
+      // if (!discarded && getClient().getUser().getHand().size() > 0)
+      // {
+      // if (!Util.rand.nextBoolean())
+      // {
+      // randomlyDiscard();
+      // }
+      //
+      // return true;
+      // }
+      // getClient().send(new
+      // RequestFactory().build(getClient().getStartNanoSec(),
+      // new Payload(), Endpoint.DONE));
 
-        return true;
-      }
-      //getClient().getCommModule().send(new RequestFactory().build(getClient().getStartNanoSec(), new Payload(), Endpoint.DONE));
-      getClient().getCommModule().send(Endpoint.DONE, new Payload(), null);
-
-//      if (!drawn && getClient().getUser().getHand().size() < 7)
-//      {
-//        Request request = new Request(getClient().getStartNanoSec(), Endpoint.DRAW_CARD);
-//        getClient().send(request);
-//        drawn = true;
-//        return true;
-//      }
+      // if (!drawn && getClient().getUser().getHand().size() < 7)
+      // {
+      // Request request = new Request(getClient().getStartNanoSec(),
+      // Endpoint.DRAW_CARD);
+      // getClient().send(request);
+      // drawn = true;
+      // return true;
+      // }
 
     }
     return false;
   }
 
-  private void randomlyDiscard ()
+  private void randomlyDiscard()
   {
     EnumPolicy discard = null;
 
     for (EnumPolicy policy : getClient().getUser().getHand())
     {
-      GameCard _card = GameCard.create(getClient().getUser().getRegion(), policy);
+      GameCard card = GameCard.create(getClient().getUser().getRegion(),
+          policy);
       // dont remove the card we just drafted!!!
-      if (cardDrafted != null && policy != cardDrafted.getCardType() && Util.rand.nextBoolean())
+      if (cardDrafted != null && policy != cardDrafted.getCardType()
+          && Util.rand.nextBoolean())
       {
         discard = policy;
         break;
       }
     }
     int idx = getClient().getUser().getHand().indexOf(discard);
-    if(idx >= 0)
+    if (idx >= 0)
     {
+
       getClient().getCommModule().send(Endpoint.DELETE_CARD, discard, null);
+
     }
     discarded = true;
   }
 
-  private void randomlySetDraftedCard ()
+  /**
+   * Jeffrey McCall If this is the first turn, then randomly choose the card to
+   * draft. If this is not the first turn, then evaluate choice of next card to
+   * draft according to how things turned out after the last turn. If after the
+   * last turn, there was an overall decrease in factors that are relevant to
+   * this AI's region, then it is less likely that the AI will again choose that
+   * food, region or policy.
+   */
+  private void randomlySetDraftedCard()
   {
     GameCard card = null;
 
     int i = 0;
     boolean draftSent = false;
-    for (EnumPolicy policy : getClient().getUser().getHand())
+    Random rand = new Random();
+    if (numTurns == 0)
     {
-      card = GameCard.create(getClient().getUser().getRegion(), policy);
-
-        if (card.votesRequired() == 0 || !draftSent)
+      int firstRandNum = rand.nextInt(7);
+      int secondRandNum = 0;
+      do
+      {
+        secondRandNum = rand.nextInt(7);
+      } while (secondRandNum == firstRandNum);
+      for (EnumPolicy policy : getClient().getUser().getHand())
+      {
+        if (i == firstRandNum || i == secondRandNum)
         {
-          setupCard(card);
+          // TODO will have to change this in the future. Cards will be changed
+          // to not have BOTH a
+          // target region and target food to set, it will be one of each.
+          card = GameCard.create(getClient().getUser().getRegion(), policy);
+          EnumFood[] foods = card.getValidTargetFoods();
+          EnumRegion[] regions = card.getValidTargetRegions();
+          EnumFood food = null;
+          if (foods != null)
+          {
+            food = foods[rand.nextInt(foods.length)];
+          }
+          EnumRegion region = null;
+          if (regions != null)
+          {
+            region = regions[rand.nextInt(regions.length)];
+          }
+          setupCard(card, food, region);
           getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
-          //getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), card, Endpoint.DRAFT_CARD));
           draftedCard = true;
           draftSent = true;
-          if (i == 0)
-          {
-            continue;
-          }
-          if ( i == getClient().getUser().getHand().size()-1)
-          {
-            return;
-          }
-
+          cardDrafted = card;
+          getClient().draftedCards.get(numTurns).add(card);
         }
-      i++;
-    }
-    setupCard(card);
-
-    if (card == null)
+        i++;
+      }
+      tries = 2;
+    } else
     {
-      return;
+      pickThisRegion = false;
+      System.out.println("Last hand size:"
+          + getClient().draftedCards.get(numTurns - 1).size());
+      GameCard lastCard1 = getClient().draftedCards.get(numTurns - 1).get(0);
+      GameCard lastCard2 = getClient().draftedCards.get(numTurns - 1).get(1);
+      int playAgain = 0;
+      playAgain = checkLastPlay();
+      foodProduced = (long) 0;
+      foodIncome = 0;
+      foodImported = (long) 0;
+      foodExported = (long) 0;
+      lastFoodProduced = (long) 0;
+      lastFoodIncome = 0;
+      lastFoodImported = (long) 0;
+      lastFoodExported = (long) 0;
+      if (lastCard1.getTargetFood() != null)
+      {
+        distributeProbabilities(playAgain, lastCard1, "food");
+      }
+      if (lastCard1.getTargetRegion() != null)
+      {
+        distributeProbabilities(playAgain, lastCard1, "region");
+      }
+      distributeProbabilities(playAgain, lastCard1, "policy");
+      if (lastCard2.getTargetFood() != null)
+      {
+        distributeProbabilities(playAgain, lastCard2, "food");
+      }
+      if (lastCard2.getTargetRegion() != null)
+      {
+        distributeProbabilities(playAgain, lastCard2, "region");
+      }
+      distributeProbabilities(playAgain, lastCard2, "policy");
+      draftCards(rand);
+      draftCards(rand);
+      draftedCard = true;
+      draftSent = true;
+      tries = 2;
     }
-
-    new RequestFactory().build(getClient().getStartNanoSec(),
-                         card,
-                         Endpoint.DRAFT_CARD);
-    cardDrafted = card;
-    draftedCard = true;
-    tries = 2;
+    // for (EnumPolicy policy : getClient().getUser().getHand())
+    // {
+    // card = PolicyCard.create(getClient().getUser().getRegion(), policy);
+    //
+    // if (card.votesRequired() == 0 || !draftSent)
+    // {
+    // setupCard(card);
+    // getClient().send(new RequestFactory()
+    // .build(getClient().getStartNanoSec(), card, Endpoint.DRAFT_CARD));
+    // draftedCard = true;
+    // draftSent = true;
+    // if (i == 0)
+    // {
+    // continue;
+    // }
+    // if (i == getClient().getUser().getHand().size() - 1)
+    // {
+    // return;
+    // }
+    //
+    // }
+    // i++;
+    // }
+    // setupCard(card);
+    //
+    // if (card == null)
+    // {
+    // return;
+    // }
+    //
+    // new RequestFactory().build(getClient().getStartNanoSec(), card,
+    // Endpoint.DRAFT_CARD);
+    // cardDrafted = card;
+    // draftedCard = true;
+    // tries = 2;
   }
 
-  private void setupCard(GameCard card)
+  public void checkOtherFactors()
+  {
+
+  }
+
+  public void draftCards(Random rand)
+  {
+    GameCard card = null;
+    EnumRegion currentRegion = null;
+    String regionString = "";
+    boolean regionFound = false;
+    ArrayList<String> currentHand = new ArrayList<String>();
+    Map<String, EnumPolicy> policyMap = new HashMap<>();
+    for (EnumPolicy policy : getClient().getUser().getHand())
+    {
+      currentHand.add(policy.name());
+      policyMap.put(policy.name(), policy);
+    }
+    String policyString = "";
+    EnumPolicy currentPolicy = null;
+    if (!pickThisRegion)
+    {
+      do
+      {
+        int policyIndex = rand.nextInt(getClient().policySampleSpace.size());
+        policyString = getClient().policySampleSpace.get(policyIndex);
+      } while (!currentHand.contains(policyString));
+      currentPolicy = policyMap.get(policyString);
+    } else
+    {
+      double chance = rand.nextDouble();
+      if (chance <= pickThisRegionChance)
+      {
+        for (EnumPolicy policy : getClient().getUser().getHand())
+        {
+          card = GameCard.create(getClient().getUser().getRegion(), policy);
+          ArrayList<String> regions = new ArrayList<String>();
+          EnumRegion[] regionArray = card.getValidTargetRegions();
+          if (regionArray != null)
+          {
+            Stream.of(regionArray)
+                .forEach(region -> regions.add(region.name()));
+          }
+          if (regions.contains(getClient().getUser().getRegion().name()))
+          {
+            currentPolicy = policy;
+            regionFound = true;
+            regionString = getClient().getUser().getRegion().name();
+            break;
+          }
+        }
+        if (currentPolicy == null)
+        {
+          do
+          {
+            int policyIndex = rand
+                .nextInt(getClient().policySampleSpace.size());
+            policyString = getClient().policySampleSpace.get(policyIndex);
+          } while (!currentHand.contains(policyString));
+          currentPolicy = policyMap.get(policyString);
+        }
+      } else if (chance > pickThisRegionChance)
+      {
+        do
+        {
+          int policyIndex = rand.nextInt(getClient().policySampleSpace.size());
+          policyString = getClient().policySampleSpace.get(policyIndex);
+        } while (!currentHand.contains(policyString));
+        currentPolicy = policyMap.get(policyString);
+        // TODO add a way to discard and redraw cards so that the AI can try to
+        // get different cards.
+      }
+    }
+    card = GameCard.create(getClient().getUser().getRegion(), currentPolicy);
+    EnumFood[] foods = card.getValidTargetFoods();
+    ArrayList<String> validFoods = new ArrayList<>();
+    Map<String, EnumFood> foodMap = new HashMap<>();
+    EnumFood currentFood = null;
+    z = 0;
+    z = 0;
+    if (foods != null)
+    {
+      Stream.of(foods).forEach(food ->
+      {
+        validFoods.add(food.name());
+        foodMap.put(food.name(), foods[z]);
+        z++;
+      });
+      z = 0;
+      String food = "";
+      do
+      {
+        int foodIndex = rand.nextInt(getClient().foodSampleSpace.size());
+        food = getClient().foodSampleSpace.get(foodIndex);
+      } while (!validFoods.contains(food));
+      currentFood = foodMap.get(food);
+    }
+    EnumRegion[] regions = card.getValidTargetRegions();
+    ArrayList<String> validRegions = new ArrayList<String>();
+    Map<String, EnumRegion> regionMap = new HashMap<>();
+    if (regions != null)
+    {
+      Stream.of(regions).forEach(region ->
+      {
+        validRegions.add(region.name());
+        regionMap.put(region.name(), regions[z]);
+        z++;
+      });
+      z = 0;
+    }
+    if (regions != null && !regionFound)
+    {
+      do
+      {
+        int regionIndex = rand.nextInt(getClient().regionSampleSpace.size());
+        regionString = getClient().regionSampleSpace.get(regionIndex);
+      } while (!validRegions.contains(regionString));
+      currentRegion = regionMap.get(regionString);
+    }
+    if (regionFound)
+    {
+      currentRegion = regionMap.get(regionString);
+    }
+    setupCard(card, currentFood, currentRegion);
+    getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
+    if (card.votesRequired() != 0)
+    {
+      String message = "I am drafing " + card.getTitle()
+          + ". Will you support it?";
+      // getClient().send(new
+      // RequestFactory().chat(getClient().getStartNanoSec(),
+      // "ALL", message, card));
+    }
+    cardDrafted = card;
+    draftedCards[draftIndex] = card;
+    getClient().draftedCards.get(numTurns).add(card);
+    draftIndex++;
+  }
+
+  /**
+   * Jeffrey McCall This method will change the probability values in an array
+   * of probability values. The probability is decreased if playAgain==-1. It is
+   * increased if playAgain==1.
+   * 
+   * @param playAgain
+   *          An int value which determines how the probability is altered.
+   * @param sampleSpace
+   *          The linkedlist of Strings that represents what values will be
+   *          chosen for the next card that is played.
+   * @param card
+   *          The policy card that was played last turn that we are checking.
+   * @param type
+   *          The type of item that the probabilities relate to.
+   * @return The index of the value that was altered in the array as well as the
+   *         new value that it was changed to.
+   */
+  public void distributeProbabilities(int playAgain, GameCard card, String type)
+  {
+    if (playAgain == -1)
+    {
+      if (type.equals("food"))
+      {
+        for (int i = 0; i < getClient().foodSampleSpace.size(); i++)
+        {
+          if (card.getTargetFood().name()
+              .equals(getClient().foodSampleSpace.get(i)))
+          {
+            z = 0;
+            moreThanOne = false;
+            getClient().foodSampleSpace.forEach(food ->
+            {
+              if (card.getTargetFood().name().equals(food))
+              {
+                z++;
+              }
+              if (z > 1)
+              {
+                moreThanOne = true;
+              }
+            });
+            if (moreThanOne)
+            {
+              getClient().foodSampleSpace.remove(i);
+            }
+            return;
+          }
+        }
+        if (type.equals("region"))
+        {
+          for (int i = 0; i < getClient().regionSampleSpace.size(); i++)
+          {
+            if (card.getTargetRegion().name()
+                .equals(getClient().regionSampleSpace.get(i)))
+            {
+              z = 0;
+              moreThanOne = false;
+              getClient().regionSampleSpace.forEach(food ->
+              {
+                if (card.getTargetFood().name().equals(food))
+                {
+                  z++;
+                }
+                if (z > 1)
+                {
+                  moreThanOne = true;
+                }
+              });
+              if (moreThanOne)
+              {
+                getClient().regionSampleSpace.remove(i);
+              }
+              return;
+            }
+          }
+        }
+        if (type.equals("policy"))
+        {
+          for (int i = 0; i < getClient().policySampleSpace.size(); i++)
+          {
+            if (card.getPolicyName()
+                .equals(getClient().policySampleSpace.get(i)))
+            {
+              z = 0;
+              moreThanOne = false;
+              getClient().policySampleSpace.forEach(food ->
+              {
+                if (card.getTargetFood().name().equals(food))
+                {
+                  z++;
+                }
+                if (z > 1)
+                {
+                  moreThanOne = true;
+                }
+              });
+              if (moreThanOne)
+              {
+                getClient().policySampleSpace.remove(i);
+              }
+              return;
+            }
+          }
+        }
+      }
+    } else if (playAgain == 1)
+    {
+      if (type.equals("food"))
+      {
+        for (int i = 0; i < getClient().foodSampleSpace.size(); i++)
+        {
+          if (card.getTargetFood().name()
+              .equals(getClient().foodSampleSpace.get(i)))
+          {
+            for (int h = 0; h < 12; h++)
+            {
+              getClient().foodSampleSpace.add(i, card.getTargetFood().name());
+            }
+            return;
+          }
+        }
+        if (type.equals("region"))
+        {
+          for (int i = 0; i < getClient().regionSampleSpace.size(); i++)
+          {
+            if (card.getTargetRegion().name()
+                .equals(getClient().regionSampleSpace.get(i)))
+            {
+              for (int h = 0; h < 12; h++)
+              {
+                getClient().regionSampleSpace.add(i,
+                    card.getTargetRegion().name());
+              }
+              return;
+            }
+          }
+        }
+        if (type.equals("policy"))
+        {
+          for (int i = 0; i < getClient().policySampleSpace.size(); i++)
+          {
+            if (card.getPolicyName()
+                .equals(getClient().policySampleSpace.get(i)))
+            {
+              for (int h = 0; h < 12; h++)
+              {
+                getClient().policySampleSpace.add(i, card.getPolicyName());
+              }
+              return;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Jeffrey McCall Go through the relevant regional factors to determine how
+   * things have worsened or improved since the last turn. If the amount of
+   * decrease of factors is greater than the increase, then this method will
+   * return -1 and the card in question will be less likely to get played this
+   * turn. If the amount of decrease is equal to the increase, than 0 is
+   * returned and the likelihood of the card getting played this turn is
+   * unaffected. If there was an overall improvement of factors greater than the
+   * decrease, then it is more likely that the policy card will get drafted
+   * again.
+   * 
+   * @return -1, 0 or 1
+   */
+  private int checkLastPlay()
+  {
+    int overallPercentDecrease = 0;
+    int overallPercentIncrease = 0;
+    Integer revenueBalance = new Integer(0);
+    Double undernourished = new Double(0);
+    Double hdi = new Double(0);
+    Integer lastRevenueBalance = new Integer(0);
+    Double lastUndernourished = new Double(0);
+    Double lastHdi = new Double(0);
+    for (int h = getClient().worldDataSize
+        - 4; h < getClient().worldDataSize; h++)
+    {
+      if (h == getClient().worldDataSize - 4
+          || h == getClient().worldDataSize - 3)
+      {
+        lastRevenueBalance += (Integer) getClient().factorMap
+            .get(WorldFactors.REVENUEBALANCE).get(h)[0];
+        lastUndernourished += (Double) getClient().factorMap
+            .get(WorldFactors.UNDERNOURISHED).get(h)[0];
+        lastHdi += (Double) getClient().factorMap.get(WorldFactors.HDI)
+            .get(h)[0];
+        Stream.of(getClient().factorMap.get(WorldFactors.FOODPRODUCED).get(h))
+            .forEach(val ->
+            {
+              lastFoodProduced += (Long) val;
+            });
+        Stream.of(getClient().factorMap.get(WorldFactors.FOODINCOME).get(h))
+            .forEach(val ->
+            {
+              lastFoodIncome += (Integer) val;
+            });
+        Stream.of(getClient().factorMap.get(WorldFactors.FOODIMPORTED).get(h))
+            .forEach(val ->
+            {
+              lastFoodImported += (Long) val;
+            });
+        Stream.of(getClient().factorMap.get(WorldFactors.FOODEXPORTED).get(h))
+            .forEach(val ->
+            {
+              lastFoodExported += (Long) val;
+            });
+      }
+      if (h == 1)
+      {
+        revenueBalance += (Integer) getClient().factorMap
+            .get(WorldFactors.REVENUEBALANCE).get(h)[0];
+        undernourished += (Double) getClient().factorMap
+            .get(WorldFactors.UNDERNOURISHED).get(h)[0];
+        hdi += (Double) getClient().factorMap.get(WorldFactors.HDI).get(h)[0];
+        Stream.of(getClient().factorMap.get(WorldFactors.FOODPRODUCED).get(h))
+            .forEach(val ->
+            {
+              foodProduced += (Long) val;
+            });
+        Stream.of(getClient().factorMap.get(WorldFactors.FOODINCOME).get(h))
+            .forEach(val ->
+            {
+              foodIncome += (Integer) val;
+            });
+        Stream.of(getClient().factorMap.get(WorldFactors.FOODIMPORTED).get(h))
+            .forEach(val ->
+            {
+              foodImported += (Long) val;
+            });
+        Stream.of(getClient().factorMap.get(WorldFactors.FOODEXPORTED).get(h))
+            .forEach(val ->
+            {
+              foodExported += (Long) val;
+            });
+        Object[][] numArray =
+        {
+            { lastRevenueBalance, revenueBalance },
+            { lastUndernourished, undernourished },
+            { lastHdi, hdi },
+            { lastFoodProduced, foodProduced },
+            { lastFoodIncome, foodIncome },
+            { lastFoodImported, foodImported },
+            { lastFoodExported, foodExported } };
+        for (int i = 0; i < 7; i++)
+        {
+          if (i == 0 || i == 4)
+          {
+            int percentChange = percentChangeInt((int) numArray[i][0],
+                (int) numArray[i][1]);
+            if (percentChange < 0)
+            {
+              overallPercentDecrease += (percentChange * -1);
+            } else if (percentChange > 0)
+            {
+              overallPercentIncrease += percentChange;
+            }
+          } else if (i == 1)
+          {
+            double percentChange = percentChangeDouble((double) numArray[i][0],
+                (double) numArray[i][1]);
+            if (percentChange > 0)
+            {
+              overallPercentDecrease += percentChange;
+            } else if (percentChange < 0)
+            {
+              overallPercentIncrease += (percentChange * -1);
+            }
+          } else if (i == 2)
+          {
+            double percentChange = percentChangeDouble((double) numArray[i][0],
+                (double) numArray[i][1]);
+            if (percentChange < 0)
+            {
+              overallPercentDecrease += (percentChange * -1);
+            } else if (percentChange > 0)
+            {
+              overallPercentIncrease += percentChange;
+            }
+          } else if (i == 3 || i > 4)
+          {
+            long percentChange = percentChangeLong((long) numArray[i][0],
+                (long) numArray[i][1]);
+            if (percentChange < 0)
+            {
+              overallPercentDecrease += (percentChange * -1);
+            } else if (percentChange > 0)
+            {
+              overallPercentIncrease += percentChange;
+            }
+          }
+        }
+        if (overallPercentIncrease > overallPercentDecrease)
+        {
+          return 1;
+        } else if (overallPercentDecrease > overallPercentIncrease)
+        {
+          if (overallPercentDecrease >= 20)
+          {
+            pickThisRegion = true;
+          }
+          return -1;
+        }
+      }
+    }
+    return 0;
+  }
+
+  private int percentChangeInt(int originalVal, int newVal)
+  {
+    if (originalVal != 0)
+    {
+      return ((originalVal - newVal) / originalVal) * 100;
+    } else
+    {
+      return 0;
+    }
+  }
+
+  private double percentChangeDouble(double originalVal, double newVal)
+  {
+    if (originalVal != 0)
+    {
+      return ((originalVal - newVal) / originalVal) * 100;
+    } else
+    {
+      return 0;
+    }
+  }
+
+  private long percentChangeLong(long originalVal, long newVal)
+  {
+    if (originalVal != 0)
+    {
+      return ((originalVal - newVal) / originalVal) * 100;
+    } else
+    {
+      return 0;
+    }
+  }
+
+  private void setupCard(GameCard card, EnumFood food, EnumRegion region)
   {
     if (card == null)
     {
       return;
     }
 
-    ArrayList<Integer> legalValueList = card.getOptionsOfVariable();
-    EnumFood[] food=card.getValidTargetFoods();
-    EnumRegion[] regions=card.getValidTargetRegions();
+    if (food != null)
+    {
+      card.setTargetFood(food);
+    }
+    if (region != null)
+    {
+      card.setTargetRegion(region);
+    }
 
-    if (legalValueList == null) card.setX(0);
+    ArrayList<Integer> legalValueList = card.getOptionsOfVariable();
+
+    if (legalValueList == null)
+      card.setX(0);
     else
     {
       card.setX(legalValueList.get(Util.rand.nextInt(legalValueList.size())));
     }
-
-
-    if(food!=null)
-    {
-      card.setTargetFood(food[Util.rand.nextInt(food.length)]);
-    }
-    if(regions!=null)
-    {
-      card.setTargetRegion(regions[Util.rand.nextInt(regions.length)]);
-    }
   }
+
 }

@@ -1,15 +1,9 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.Constant;
-import starvationevasion.common.EnumCropZone;
-import starvationevasion.common.EnumFood;
-import starvationevasion.common.Util;
+import starvationevasion.common.*;
 import starvationevasion.sim.io.CSVReader;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -46,7 +40,8 @@ public class LandTile
    * Each record of PATH_COORDINATES must be in a one-to-one,
    * ordered matching with each record in each month of each annual file of PATH_CLIMATE_PREFIX.
    */
-  private static final String PATH_COORDINATES = "/sim/climate/ArableCoordinates.csv";
+  private static final String PATH_COORDINATES = "/sim/climate/";
+  private static final String COORDINATE_FILENAME = "ArableCoordinates";
   private static final String PATH_CLIMATE = "/sim/climate/Climate_";
   private static final String PREFIX_HISTORICAL = "Historical";
   private static final String PREFIX_RCP45 = "RCP45";
@@ -82,10 +77,14 @@ public class LandTile
    * curCrop == null indicates there that no crop is currently planted in this LandTile.
    */
   private EnumFood curCrop = null;
+  
+  /**
+   * cropRatings[EnumFood.CITRUS.ordinal()] returns this LandTiles rating for
+   * citrus.
+   */
+  private EnumCropZone[] cropRatings = new EnumCropZone[EnumFood.SIZE];
 
   private float[][][] data = new float[RawDataYears.SIZE][Constant.Month.SIZE][Field.SIZE];
-
-  private static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
 
   /**
@@ -144,58 +143,15 @@ public class LandTile
     curCrop = crop;
   }
   public EnumFood getCrop() { return curCrop; }
-
-
-
-
-
-  /**
-   * Rates tile's suitability for a particular crop.
-   * @param crop  crop for which we want rating (wheat, corn, rice, or soy)
-   * @return EnumCropZone (IDEAL, ACCEPTABLE, or POOR)
-   * @throws NullPointerException if called with argument EnumFood.OTHER_CROPS, will throw an
-   * exception because OTHER_CROPS required climate varies by country;
-   * rating cannot be calculated using crop alone.
-   */
-  public EnumCropZone rateTileForCrop(EnumFood crop) throws NullPointerException
+  
+  public EnumCropZone[] getCropRatings() { return cropRatings; }
+  
+  public void updateRating(EnumCropZone[] ratings)
   {
-    /*
-    CropZoneData data = CropZoneData.mapFood(crop);
-    if (data == null)
+    for(int i = 0; i < cropRatings.length; i++)
     {
-      //Logger.getGlobal().log(Level.SEVERE, "Couldn't find crop climate data for " + crop + ". Defaulting to POOR.");
-      return EnumCropZone.POOR;
+      cropRatings[i] = ratings[i];
     }
-
-    int cropDayT = data.dayTemp;
-    int cropNightT = data.nightTemp;
-    int cropMaxT = data.maxTemp;
-    int cropMinT = data.minTemp;
-    int cropMaxR = data.maxRain;
-    int cropMinR = data.minRain;
-
-    double tRange = cropDayT - cropNightT;                               // tempRange is crop's optimum day-night temp range
-    double rRange = cropMaxR - cropMinR;                                 // rainRange is crop's optimum Rainfall range
-    if (isBetween(avgDayTemp, cropNightT, cropDayT) &&
-      isBetween(avgNightTemp, cropNightT, cropDayT) &&
-      isBetween(rainfall, cropMinR, cropMaxR) &&
-      maxAnnualTemp <= cropMaxT && minAnnualTemp >= cropMinT)
-    {
-      return EnumCropZone.IDEAL;
-    }
-    else if (isBetween(avgDayTemp, cropNightT - 0.3 * tRange, cropDayT + 0.3 * tRange) &&
-      isBetween(avgNightTemp, cropNightT - 0.3 * tRange, cropDayT + 0.3 * tRange) &&
-      isBetween(rainfall, cropMinR - 0.3 * rRange, cropMaxR + 0.3 * rRange) &&
-      maxAnnualTemp <= cropMaxT && minAnnualTemp >= cropMinT)
-    {
-      return EnumCropZone.ACCEPTABLE;
-    }
-    else
-    {
-      return EnumCropZone.POOR;                                               // otherwise tile is POOR for crop
-    }
-    */
-    return null;
   }
 
   /**
@@ -264,19 +220,6 @@ public class LandTile
     return zonePercent * usePercent;
   }
 
-  private boolean isBetween(Number numToTest, Number lowVal, Number highVal)
-  {
-    if (numToTest.doubleValue() >= lowVal.doubleValue() && numToTest.doubleValue() <= highVal.doubleValue())
-    {
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-
   @Override
   public String toString()
   {
@@ -288,49 +231,101 @@ public class LandTile
   }
 
   /**
-   * Given the game's full list of regions, this static method reads the climate data files,
-   * creates a LandTile for each location and adds each LandTile to the territory within the
-   * region to which it belongs.
-   * @param model the model.
+   * This loadLocations method without arguments is intended to be called once by the client to load the latitude longitude coordinates
+   * of each of the server's internal LandTiles. There are approximately 250,000 of these locations.<br><br>
+   *
+   * At the start of each turn, the client should get ??????? object containing a bit packed byte array
+   * of EnumCropZone values. Each object contains the EnumCropZone value for each of the 12 food products
+   * for each of tile location. <br><br>
+   *
+   * The ????? class comes with accessor functions providing convenient access to the bit packed data.
    */
-  public static void load(Model model)
+  public static ArrayList<MapPoint> loadLocations()
   {
-    Date dateStart = new Date();
+    return loadLocations(null, null);
+  }
 
+
+  /**
+   * This loadLocations method does one of two very different things:
+   * 1) The client calls this indirectly by calling loadLocations(). Then loadLocations() calls
+   *    loadLocations(null). In this case, the method reads the LandTile locations and returns them as
+   *    an array of MapPoints.
+   *
+   * 2) The simulator calls this on the server side with an instance of Model. In this case,
+   *    the method reads all the LandTile locations, creates a LandTile for each location,
+   *    queries model for the territory containing each LandTile and adds each land tile to
+   *    the territory containing it.
+   *
+   * @param model null when called by the client. When called by the simulator, model is an instance
+   *              of Model.
+   * @param tileList null when called by the client. When called by the simulator, tileList
+   *                 is a list of all LandTiles.
+   * @return If called by the client, this returns an ArrayList<MapPoint> of all tile locations.
+   * If called by the server, returns null.
+   */
+  public static ArrayList<MapPoint> loadLocations(Model model, ArrayList<LandTile> tileList)
+  {
+    String zipPath = PATH_COORDINATES + COORDINATE_FILENAME + ".zip";
+    ArrayList<MapPoint> mapList = null;
+    try
+    {
+      ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(zipPath).toURI().getPath());
+      ZipEntry entry = zipFile.getEntry(COORDINATE_FILENAME+".csv");
+
+      CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
+
+      String[] fieldList;
+      Territory territory = null;
+
+      if (model == null) mapList = new ArrayList<>();
+
+      while ((fieldList = fileReader.readRecord(PATH_COORDINATES_FIELD_COUNT)) != null)
+      {
+        float latitude = Float.parseFloat(fieldList[0]);
+        float longitude = Float.parseFloat(fieldList[1]);
+        if (model == null)
+        {
+          mapList.add(new MapPoint(latitude, longitude));
+        }
+        else
+        { LandTile tile = new LandTile(latitude, longitude);
+          tileList.add(tile);
+          if ((territory == null) || (!territory.contains(latitude, longitude)))
+          {
+            territory = model.getTerritory(latitude, longitude);
+          }
+
+          if (territory != null) territory.addLandTile(tile);
+        }
+      }
+      fileReader.close();
+    }
+    catch (Exception e)
+    {
+      System.out.println(e.getMessage()+"\n     Cannot read file: "+zipPath);
+      e.printStackTrace();
+      System.exit(0);
+    }
+    return mapList; //null if called by the simulator (model != null).
+  }
+
+  /**
+   * Given the game's full list of regions, this static method reads the climate data files,
+   * and sets the values in associated LandTile.
+   * @param tileList ArrayList of all LandTiles. Pointers to each LandTile can be accessed
+   *                 through the model, but not in a single list. The model has a list of
+   *                 territories and each territory has a list of LandTiles that it contains.
+   *                 Using the ArrayList is much faster than getting the LandTiles form the territories
+   *                 because the index of each LandTile is equal to the record number of each record of
+   *                 climate data in each file (and there are over 250,000 LandTiles with climate data
+   *                 for each of 12 months for multiple years).
+   */
+  public static void loadClimate(ArrayList<LandTile> tileList)
+  {
     String representativeConcentrationPathway = PREFIX_RCP45;
     if (Util.rand.nextBoolean()) representativeConcentrationPathway = PREFIX_RCP85;
-    System.out.println("LandTile.load() Loading Climate Data ["+representativeConcentrationPathway+
-         "]: " +dateFormat.format(dateStart));
-
-    //Read the latitude longitude coordinates of each record in the PATH_CLIMATE_PREFIX files.
-    CSVReader coorFileReader = new CSVReader(PATH_COORDINATES, 1);
-    String[] fieldList;
-    Territory territory = null;
-
-    ArrayList<LandTile> tileList = new ArrayList<>();
-
-    while ((fieldList = coorFileReader.readRecord(PATH_COORDINATES_FIELD_COUNT)) != null)
-    {
-      float latitude = Float.parseFloat(fieldList[0]);
-      float longitude = Float.parseFloat(fieldList[1]);
-      LandTile tile = new LandTile(latitude, longitude);
-      tileList.add(tile);
-
-      if ((territory == null) || (!territory.contains(latitude, longitude)))
-      {
-        territory = model.getTerritory(latitude, longitude);
-      }
-
-      if (territory != null) territory.addLandTile(tile);
-
-
-    }
-    coorFileReader.close();
-
-
-    //Climate data is stored in .zip files by year where each year contains subfiles for each
-    // month. The locations of each record in the PATH_CLIMATE_PREFIX files is given by
-    // its record number matched with record numbers of PATH_COORDINATES.
+    System.out.println("LandTile.loadClimate() ["+representativeConcentrationPathway +"]");
 
     for (RawDataYears yearEnum : RawDataYears.values())
     {
@@ -347,7 +342,7 @@ public class LandTile
       try
       {
         System.out.printf("     Archive: %s\n", path);
-        ZipFile zipFile = new ZipFile(model.getClass().getResource(path).toURI().getPath());
+        ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(path).toURI().getPath());
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
         //Open sub-file for each month of year.
@@ -357,11 +352,12 @@ public class LandTile
           //System.out.printf("     File: %s\n", entry.getName());
           //extractEntry(entry, file.getInputStream(entry));
 
-          CSVReader subfileReader = new CSVReader(zipFile.getInputStream(entry), 2);
+          CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 2);
 
+          String[] fieldList;
           int recordIdx = 0;
           //Read each record of file.
-          while ((fieldList = subfileReader.readRecord(DataHeaders.SIZE)) != null)
+          while ((fieldList = fileReader.readRecord(DataHeaders.SIZE)) != null)
           {
             LandTile tile = tileList.get(recordIdx);
 
@@ -379,7 +375,7 @@ public class LandTile
             }
             recordIdx++;
           }
-          subfileReader.close();
+          fileReader.close();
           month++;
         }
         zipFile.close();
@@ -391,11 +387,5 @@ public class LandTile
         System.exit(0);
       }
     }
-
-
-    Date dateDone = new Date();
-    double deltaSec = (dateDone.getTime() - dateStart.getTime())/1000.0;
-    System.out.println("LandTile.load() Done: elapsed sec=" +deltaSec);
-
   }
  }

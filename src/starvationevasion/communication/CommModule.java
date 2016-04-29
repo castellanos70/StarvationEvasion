@@ -51,7 +51,6 @@ public class CommModule implements Communication
     @Override
     public void run()
     {
-      serverKey = Util.endServerHandshake(clientSocket, rsaKey);
       while (IS_RUNNING.get() && !encounteredError) read();
     }
 
@@ -126,9 +125,8 @@ public class CommModule implements Communication
     final double MAX_SECONDS = 10.0;
     double deltaSeconds = 0.0;
 
-    // Set up the key and cipher
+    // Set up the key
     rsaKey = generateRSAKey();
-    aesCipher = generateAESCipher();
 
     // Try to establish a connection and timeout after MAX_SECONDS if not
     commPrint("Attempting to connect to host " + host + ", port " + port);
@@ -138,6 +136,9 @@ public class CommModule implements Communication
       if (IS_RUNNING.get()) break;
       deltaSeconds = (System.currentTimeMillis() - millisecondTimeStamp) / 1000.0;
     }
+
+    // Generate the aes cipher
+    aesCipher = generateAESCipher();
 
     // See if the connect attempt went badly
     if (!IS_RUNNING.get())
@@ -382,6 +383,7 @@ public class CommModule implements Communication
     }
     // POJO = Plain Old Java Object
     Util.startServerHandshake(clientSocket, rsaKey, DataType.POJO);
+    serverKey = Util.endServerHandshake(clientSocket, rsaKey);
     return true;
   }
 

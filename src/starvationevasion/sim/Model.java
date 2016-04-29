@@ -148,11 +148,12 @@ public class Model
     ArrayList<LandTile> tileList = new ArrayList<>();
     LandTile.loadLocations(this, tileList);
     LandTile.loadClimate(tileList);
-
+    tileList.clear();
 
     Date dateDone = new Date();
     double deltaSec = (dateDone.getTime() - dateStart.getTime())/1000.0;
     System.out.println("LandTile.load() Done: elapsed sec=" +deltaSec);
+
 
     assert (assertLandTiles());
 
@@ -1077,7 +1078,7 @@ public class Model
 
     Picture pic = model.testShowMapProjection();
 
-    //Territory territory = model.getTerritory("Morocco");
+    //Territory territory = model.getTerritory("Indonesia");
     //model.drawBoundaryUsingMapPoints(pic, territory);
 
     //territory = model.getTerritory("Mauritania");

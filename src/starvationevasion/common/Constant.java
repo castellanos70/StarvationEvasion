@@ -42,10 +42,7 @@ public class Constant
 
   public static final Level LOG_LEVEL = Level.INFO;
 
-  public enum Stream {
-    CLIENT, OBJECT, SECURE_CLIENT;
 
-  }
 
   /**
    * Month names in calendar order where:<br>

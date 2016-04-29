@@ -40,7 +40,8 @@ public class LandTile
    * Each record of PATH_COORDINATES must be in a one-to-one,
    * ordered matching with each record in each month of each annual file of PATH_CLIMATE_PREFIX.
    */
-  private static final String PATH_COORDINATES = "/sim/climate/ArableCoordinates.csv";
+  private static final String PATH_COORDINATES = "/sim/climate/";
+  private static final String COORDINATE_FILENAME = "ArableCoordinates";
   private static final String PATH_CLIMATE = "/sim/climate/Climate_";
   private static final String PREFIX_HISTORICAL = "Historical";
   private static final String PREFIX_RCP45 = "RCP45";
@@ -316,34 +317,47 @@ public class LandTile
    */
   public static ArrayList<MapPoint> loadLocations(Model model, ArrayList<LandTile> tileList)
   {
-    //Read the latitude longitude coordinates of each record in the PATH_CLIMATE_PREFIX files.
-    CSVReader fileReader = new CSVReader(PATH_COORDINATES, 1);
-    String[] fieldList;
-    Territory territory = null;
-
+    String zipPath = PATH_COORDINATES + COORDINATE_FILENAME + ".zip";
     ArrayList<MapPoint> mapList = null;
-    if (model == null) mapList = new ArrayList<>();
-
-    while ((fieldList = fileReader.readRecord(PATH_COORDINATES_FIELD_COUNT)) != null)
+    try
     {
-      float latitude = Float.parseFloat(fieldList[0]);
-      float longitude = Float.parseFloat(fieldList[1]);
-      if (model == null)
-      {
-        mapList.add(new MapPoint(latitude, longitude));
-      }
-      else
-      { LandTile tile = new LandTile(latitude, longitude);
-        tileList.add(tile);
-        if ((territory == null) || (!territory.contains(latitude, longitude)))
-        {
-          territory = model.getTerritory(latitude, longitude);
-        }
+      ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(zipPath).toURI().getPath());
+      ZipEntry entry = zipFile.getEntry(COORDINATE_FILENAME+".csv");
 
-        if (territory != null) territory.addLandTile(tile);
+      CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
+
+      String[] fieldList;
+      Territory territory = null;
+
+      if (model == null) mapList = new ArrayList<>();
+
+      while ((fieldList = fileReader.readRecord(PATH_COORDINATES_FIELD_COUNT)) != null)
+      {
+        float latitude = Float.parseFloat(fieldList[0]);
+        float longitude = Float.parseFloat(fieldList[1]);
+        if (model == null)
+        {
+          mapList.add(new MapPoint(latitude, longitude));
+        }
+        else
+        { LandTile tile = new LandTile(latitude, longitude);
+          tileList.add(tile);
+          if ((territory == null) || (!territory.contains(latitude, longitude)))
+          {
+            territory = model.getTerritory(latitude, longitude);
+          }
+
+          if (territory != null) territory.addLandTile(tile);
+        }
       }
+      fileReader.close();
     }
-    fileReader.close();
+    catch (Exception e)
+    {
+      System.out.println(e.getMessage()+"\n     Cannot read file: "+zipPath);
+      e.printStackTrace();
+      System.exit(0);
+    }
     return mapList; //null if called by the simulator (model != null).
   }
 
@@ -362,7 +376,7 @@ public class LandTile
   {
     String representativeConcentrationPathway = PREFIX_RCP45;
     if (Util.rand.nextBoolean()) representativeConcentrationPathway = PREFIX_RCP85;
-    System.out.println("LandTile.loadClimate() ["+representativeConcentrationPathway);
+    System.out.println("LandTile.loadClimate() ["+representativeConcentrationPathway +"]");
 
     for (RawDataYears yearEnum : RawDataYears.values())
     {

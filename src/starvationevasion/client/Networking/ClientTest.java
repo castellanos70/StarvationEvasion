@@ -9,10 +9,7 @@ import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.communication.CommModule;
-import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Payload;
-import starvationevasion.server.model.State;
-import starvationevasion.server.model.Type;
+import starvationevasion.server.model.*;
 
 import java.util.ArrayList;
 
@@ -27,7 +24,7 @@ public class ClientTest implements Client
   private final ChatManager CHAT;
   private boolean isRunning = false;
   private GUI gui;
-  private EnumRegion region = EnumRegion.ARCTIC_AMERICA; // TODO fix this
+  private EnumRegion region;
   private ArrayList<GameCard> votingCards;
   private ArrayList<EnumPolicy> hand;
   private State state;
@@ -69,6 +66,16 @@ public class ClientTest implements Client
       System.out.println("Got game state update " + state);
       if(state.equals(State.DRAWING)) readHand();
       respondToStateChange();
+    });
+    COMM.setResponseListener(Type.USER_HAND, (type, data) ->
+    {
+      System.out.println("Got user hand");
+      hand = (ArrayList<EnumPolicy>)data;
+    });
+    COMM.setResponseListener(Type.USER, (type, data) ->
+    {
+      System.out.println("Got user information " + data);
+      region = (EnumRegion)data;
     });
     //COMM.setResponseListener(Type.VOTE_BALLOT, (type, data) -> )
   }

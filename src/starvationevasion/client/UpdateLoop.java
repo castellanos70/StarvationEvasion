@@ -67,7 +67,8 @@ public class UpdateLoop extends Application
       client.createUser(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.ARCTIC_AMERICA);
     });
 
-    client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
+    //client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
+    client = new ClientTest(this, "localhost", 5555);
     this.stage = stage;
     stage.setTitle("Login");
     stage.setOnCloseRequest((event) -> client.shutdown());

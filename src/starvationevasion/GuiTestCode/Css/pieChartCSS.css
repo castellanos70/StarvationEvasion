@@ -1,0 +1,19 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+.chart-pie-label-line {
+    -fx-stroke: #FFFFFF;
+    -fx-fill: #FFFFFF;
+}
+
+.chart-title {
+  -fx-text-fill: #FFFFFF;
+  -fx-font-size: 1.6em;
+}
+
+.chart-pie-label {
+    -fx-fill: #FFFFFF;
+    -fx-font-size: 1em;
+} 
+.chart-legend {
+   -fx-background-color: rgba(255, 255, 255, 0.35);
+}

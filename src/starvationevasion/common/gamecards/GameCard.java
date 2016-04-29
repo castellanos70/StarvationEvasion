@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 /**
- * PolicyCard is the structure used by the Client, Server and Simulator.
+ * GameCard is the structure used by the Client, Server and Simulator.
  * It holds all the data needed by the Simulator to implement the effects
  * of a a policy drafted and enacted by a player.<br><br>
  *
@@ -20,9 +20,9 @@ import java.util.EnumSet;
  *
  * If the client does extend this class, DO NOT send the extended class
  * to the Server. This will cause the transmission of unused data causing
- * needed network lag. Rather, use the clone(PolicyCard source) method to
- * create a new PolicyCard that will copy the parts of your extended
- * policyCard that actually need to be sent.<br><br>
+ * needed network lag. Rather, use the clone(GameCard source) method to
+ * create a new GameCard that will copy the parts of your extended
+ * gameCard that actually need to be sent.<br><br>
  *
  * Use the validate() method to verify all needed parameters of the policy
  * are defined in range.
@@ -33,7 +33,7 @@ public abstract class GameCard implements Sendable
 
   //=========================================================================================
   /**
-   * Every policy card must have an owner. This is the player region from who's deck the
+   * Every game card must have an owner. This is the player region from who's deck the
    * card was drawn. Note all automatic policy cards are enacted by the owner and only
    * the owner (enactingRegionBits is ignored).
    */
@@ -74,8 +74,8 @@ public abstract class GameCard implements Sendable
 
   //=========================================================================================
   /**
-   * Some policy cards require quantity X, Y and/or Z.
-   * The units of these values are depend on the particular policy.
+   * Some game cards require quantity X.
+   * The units of this value depend on the particular policy.
    * Use {@link #getValidTargetRegions() validTargetRegions()} method to
    * get the valid target regions of this policy card.<br><br>.
    * This field is ignored if not require by this policy.
@@ -191,7 +191,7 @@ public abstract class GameCard implements Sendable
   //=========================================================================================
 
   /**
-   * @return the owner of this policy card
+   * @return the owner of this game card
    */
   public EnumRegion getOwner()
   {
@@ -217,23 +217,31 @@ public abstract class GameCard implements Sendable
 
   //=========================================================================================
   /**
-   * In the abstract Policy class, this method returns the default
-   * behavior of a policy card (votesRequired() = 0).
-   * If a class extending Policy is not automatic, then it must override this method.
+   * In the abstract GameCard class, this method returns the default
+   * behavior of a gamecard card (votesRequired() = 0).
+   * If a class extending GameCard is not automatic, then it must override this method.
    * @return 0 if the policy is automatic. Otherwise, returns the number of
    * votes required for the policy to be enacted.<br>
    * Note: This will always return a number that is
    *   no smaller than the number of regions returned by getRegionsEligibleToVote().
    */
   public int votesRequired() {return 0;}
+  
+//=========================================================================================
+  /**
+   * In the abstract GameCard class, this method returns the default
+   * Action Point cost of a Policy Card, 1.  If a class that extends GameCard costs
+   * more than one Action Point to use, it will override this method.
+   */
+  public int actionPointCost() {return 1;}
 
 
 
   //=========================================================================================
   /**
-   * In the abstract Policy class, this method returns the default
+   * In the abstract GameCard class, this method returns the default
    * behavior of a policy card (voteWaitForAll() = false).
-   * If a class extending Policy is not automatic and requires waiting,
+   * If a class extending GameCard is not automatic and requires waiting,
    * then it must override this method.
    * @return true if voting should continue until all eligible players
    * have voted on this policy. Return false if voting should stop as soon as
@@ -245,10 +253,10 @@ public abstract class GameCard implements Sendable
 
   //=========================================================================================
   /**
-   * In the abstract Policy class, this method returns the default
+   * In the abstract GameCard class, this method returns the default
    * behavior of a policy card (isEligibleToVote() = false if the policy is
    * automatic and true for any region if not automatic).
-   * If a class extending Policy requires different behavior, then it must override this method.
+   * If a class extending GameCard requires different behavior, then it must override this method.
    * @param playerRegion being queried.
    * @return true if and only if the given playerRegion is eligible to vote on this
    * particular policy
@@ -527,11 +535,11 @@ public abstract class GameCard implements Sendable
   /**
    * This method provides general validation checking of the policy card.<br><br>
    *
-   * Between the time when a PolicyCard is instantiated and drafted, it must have various fields
+   * Between the time when a GameCard is instantiated and drafted, it must have various fields
    * set. Which fields must be set and the ranges of those fields is dependant on
-   * each particular subclass of PolicyCard. <br><br>
+   * each particular subclass of GameCard. <br><br>
    *
-   * PolicyCard subclasses that need validation beyond what can be inferred from it's
+   * GameCard subclasses that need validation beyond what can be inferred from it's
    * required fields should override this class, but open the override with super.validate().
    *
    * Note: A policy that requires votes, may not have sufficient votes to be <b>enacted</b>,
@@ -551,7 +559,7 @@ public abstract class GameCard implements Sendable
    *
    * Additionally, at the end of the voting phase, the Server must tell the simulator
    * which voting policies did not get enacted (by calling the simulator's
-   * discard(EnumRegion playerRegion, PolicyCard card) method.
+   * discard(EnumRegion playerRegion, GameCard card) method.
    *
    * @return null if the policy is valid. Otherwise, returns an error message.
    */

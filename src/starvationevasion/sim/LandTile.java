@@ -42,8 +42,6 @@ public class LandTile
     static int SIZE = values().length;
   }
 
-  public static short[] PACKED_CROP_RATINGS;
-  public static int[] PACKED_TILE_COORDINATES;
   
   /**
    * Each record of PATH_COORDINATES must be in a one-to-one,
@@ -169,27 +167,6 @@ public class LandTile
     System.out.println(cropRatings[i]);
   }
 
-  private static void packData(LandTile tile, int index)
-  {
-    //short to store ratings for each crop : 2 bits for each of the 8 crops, 16 bits total.
-    short packedRating = 0;
-    //pack 2 bits at a time
-    for(int i = 0; i < tile.cropRatings.length;i++)
-    {
-      packedRating |= (tile.cropRatings[i].ordinal() << (2*i));
-    }
-    PACKED_CROP_RATINGS[index] = packedRating;
-
-    //lat and lon rounded to 2 decimal places
-    int packedLatLon = 0;
-    int roundedLat = Math.round(tile.getLatitude()  * 100);
-    int roundedLon = Math.round(tile.getLongitude() * 100);
-    //pack lat onto first 16 bits, lon onto next 16 bits
-    packedLatLon |= (roundedLat << 0);
-    packedLatLon |= (roundedLon << 16);
-    PACKED_TILE_COORDINATES[index] = packedLatLon;
-
-  }
 
   /**
    * Rate tile's suitability for a particular country's  other crops.
@@ -274,7 +251,7 @@ public class LandTile
    * @param model the model.
    * @return the total amount of LandTiles
    */
-  public static void load(Model model)
+  public static int load(Model model)
   {
     Date dateStart = new Date();
 
@@ -377,6 +354,7 @@ public class LandTile
     Date dateDone = new Date();
     double deltaSec = (dateDone.getTime() - dateStart.getTime())/1000.0;
     System.out.println("LandTile.load() Done: elapsed sec=" +deltaSec);
+    return tileList.size();
   }
   
 //  /**

@@ -103,7 +103,7 @@ public class Model
   private CropData cropData;
 
   private int currentYear;
-
+  private final int totalTiles;
 
   /**
    * List of all territories. A copy of each pointer stored in this list is
@@ -127,6 +127,7 @@ public class Model
 
   private List<AbstractEvent> specialEvents = new ArrayList<>();
 
+  private PackedTileData packedTileData;
 
   public Model()
   {
@@ -140,10 +141,12 @@ public class Model
     ProductionCSVLoader.load(regionList);
 
     cropData = new CropData();
-    
-    LandTile.load(this);
+
+    totalTiles = LandTile.load(this);
     assert (assertLandTiles());
-    
+
+    packedTileData = new PackedTileData(totalTiles);
+
     updateCropRatings();
 
     for (int i = 0; i < YEARS_OF_DATA; i++)
@@ -327,14 +330,9 @@ public class Model
     return specialEvents;
   }
 
-  public short[] getPackedCropRatings()
+  public PackedTileData getPackedTileData()
   {
-    return LandTile.PACKED_CROP_RATINGS;
-  }
-
-  public int[] getPackedTileCoordinates()
-  {
-    return LandTile.PACKED_TILE_COORDINATES;
+    return packedTileData;
   }
 
   /**
@@ -750,14 +748,20 @@ public class Model
         landTiles = regionList[i].getTerritoryList().get(j).getLandTiles();
         
         for (LandTile tile : landTiles)
-        { // For each crop, find the EnumCropZone
-          // value
+        {
+          // For each crop, find the EnumCropZone value
           for (int k = 0; k < EnumFood.CROP_FOODS.length; k++)
           {
             ratings[k] = rateTileForCrop(EnumFood.CROP_FOODS[k], tile);
-            tile.updateRating(ratings);
           }
-//          packData(tile, index);
+
+          //for now, all 4 non crop foods get an ideal rating
+          for (int m = 0; m < 4; m++)
+          {
+            ratings[m + EnumFood.CROP_FOODS.length] = EnumCropZone.IDEAL;
+          }
+          tile.updateRating(ratings);
+          packedTileData.packData(tile , index);
           index++;
         }
       }

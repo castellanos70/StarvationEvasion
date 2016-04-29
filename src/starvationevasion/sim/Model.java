@@ -838,16 +838,16 @@ public class Model
     // these values per month
     float tileMonthlyLowT;
     float tileMonthlyHighT;
-    float tileMeanDailyLowT;
-    float tileMeanDailyHighT;
+    // float tileMeanDailyLowT;
+    // float tileMeanDailyHighT;
     // float tileRain;
     
     // Necessary crop data from given crop.
-    int idealHigh = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_HIGH, crop);
-    int idealLow = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_LOW, crop);
-    int tempMax = cropData.getData(CropData.Field.TEMPERATURE_MAX, crop);
-    int tempMin = cropData.getData(CropData.Field.TEMPERATURE_MIN, crop);
-    int growdays = cropData.getData(CropData.Field.GROW_DAYS, crop);
+    int cropIdealHigh = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_HIGH, crop);
+    int cropIdealLow = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_LOW, crop);
+    // int tempMax = cropData.getData(CropData.Field.TEMPERATURE_MAX, crop);
+    int cropTempMin = cropData.getData(CropData.Field.TEMPERATURE_MIN, crop);
+    int cropGrowdays = cropData.getData(CropData.Field.GROW_DAYS, crop);
     // int waterRequired = cropData.getData(CropData.Field.WATER, crop);
 
     // Iterate through each month checking if suitable conditions exist for
@@ -859,24 +859,25 @@ public class Model
           currentMonth);
       tileMonthlyHighT = tile.getField(Field.TEMP_MONTHLY_HIGH, Constant.FIRST_GAME_YEAR - 1,
           currentMonth);
-      tileMeanDailyLowT = tile.getField(Field.TEMP_MEAN_DAILY_LOW, Constant.FIRST_GAME_YEAR - 1,
-          currentMonth);
-      tileMeanDailyHighT = tile.getField(Field.TEMP_MEAN_DAILY_HIGH, Constant.FIRST_GAME_YEAR - 1,
-          currentMonth);
+          // tileMeanDailyLowT = tile.getField(Field.TEMP_MEAN_DAILY_LOW,
+          // Constant.FIRST_GAME_YEAR - 1,
+          // currentMonth);
+          // tileMeanDailyHighT = tile.getField(Field.TEMP_MEAN_DAILY_HIGH,
+          // Constant.FIRST_GAME_YEAR - 1,
+          // currentMonth);
           // tileRain = getField(Field.RAIN, Constant.FIRST_GAME_YEAR-1,
           // currentMonth);
 
       // If the temperatures are Acceptable
-      if (isBetween(tileMonthlyLowT, tempMin, tempMax) && isBetween(tileMonthlyHighT, tempMin,
-          tempMax))
+      if(tileMonthlyLowT > cropTempMin)
       {
         // Add the total amount of days in the current month to the
         // current running grow days
         consecutiveAcceptableGrowDays += currentMonth.days();
 
         // Now check if the temperatures are ideal
-        if (isBetween(tileMonthlyLowT, idealLow, idealHigh) && isBetween(tileMonthlyHighT, idealLow,
-            idealHigh))
+        if (isBetween(tileMonthlyLowT, cropIdealLow, cropIdealHigh) && isBetween(tileMonthlyHighT,
+            cropIdealLow, cropIdealHigh))
         {
           // Add total days in current month to the current running ideal
           // grow days
@@ -884,7 +885,7 @@ public class Model
 
           // If we find that this tile is Ideal for the given crop,
           // just return immediately
-          if (consecutiveIdealGrowDays >= growdays)
+          if (consecutiveIdealGrowDays >= cropGrowdays)
           {
             return EnumCropZone.IDEAL;
           }
@@ -903,7 +904,7 @@ public class Model
           consecutiveIdealGrowDays = 0;
         }
 
-        if (consecutiveAcceptableGrowDays >= growdays)
+        if (consecutiveAcceptableGrowDays >= cropGrowdays)
         {
           // If we find that this tile is at least acceptable, set to
           // true
@@ -941,14 +942,14 @@ public class Model
 
     // Check if the beginning + the end of a year result in an ideal tile
     // for the given crop
-    if (consecutiveIdealGrowDays + consecutiveIdealBufferValue >= growdays)
+    if (consecutiveIdealGrowDays + consecutiveIdealBufferValue >= cropGrowdays)
     {
       return EnumCropZone.IDEAL;
     }
     // Else check if we ever found a period that is deemed acceptable or if
     // the beginning + end of a year results in an acceptable tile for the crop
     else if (isAcceptable || consecutiveAcceptableGrowDays
-        + consecutiveAcceptableBufferValue >= growdays)
+        + consecutiveAcceptableBufferValue >= cropGrowdays)
     {
       return EnumCropZone.ACCEPTABLE;
     }

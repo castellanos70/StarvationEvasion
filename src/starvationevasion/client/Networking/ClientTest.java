@@ -75,7 +75,11 @@ public class ClientTest implements Client
     COMM.setResponseListener(Type.USER, (type, data) ->
     {
       System.out.println("Got user information " + data);
-      region = (EnumRegion)data;
+      region = ((User)data).getRegion();
+      hand = ((User)data).getHand();
+      gui.setAssignedRegion(region);
+      gui.setCardsInHand(getHand());
+      gui.getDraftLayout().getHand().setHand(getHand().toArray(new EnumPolicy[hand.size()]));
     });
     //COMM.setResponseListener(Type.VOTE_BALLOT, (type, data) -> )
   }

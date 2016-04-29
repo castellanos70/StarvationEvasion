@@ -1,30 +1,5 @@
 package starvationevasion.server;
 
-
-/**
- * @author Javier Chavez (javierc@cs.unm.edu)
- */
-
-import starvationevasion.common.*;
-import starvationevasion.common.gamecards.EnumPolicy;
-import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.server.io.HttpParse;
-import starvationevasion.server.io.NetworkException;
-import starvationevasion.server.io.ReadStrategy;
-import starvationevasion.server.io.WriteStrategy;
-import starvationevasion.server.io.formatters.Format;
-import starvationevasion.server.io.strategies.*;
-import starvationevasion.server.model.*;
-import starvationevasion.server.model.db.Transaction;
-import starvationevasion.server.model.db.Users;
-import starvationevasion.server.model.db.backends.Backend;
-import starvationevasion.server.model.db.backends.Sqlite;
-import starvationevasion.sim.Simulator;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -36,12 +11,64 @@ import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
+import starvationevasion.common.Constant;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.Util;
+import starvationevasion.common.VoteData;
+import starvationevasion.common.WorldData;
+import starvationevasion.common.gamecards.EnumPolicy;
+import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.server.io.HttpParse;
+import starvationevasion.server.io.NetworkException;
+import starvationevasion.server.io.ReadStrategy;
+import starvationevasion.server.io.WriteStrategy;
+import starvationevasion.server.io.strategies.HTTPWriteStrategy;
+import starvationevasion.server.io.strategies.JavaObjectReadStrategy;
+import starvationevasion.server.io.strategies.JavaObjectWriteStrategy;
+import starvationevasion.server.io.strategies.SocketReadStrategy;
+import starvationevasion.server.io.strategies.SocketWriteStrategy;
+import starvationevasion.server.io.strategies.WebSocketReadStrategy;
+import starvationevasion.server.io.strategies.WebSocketWriteStrategy;
+import starvationevasion.server.model.DataType;
+import starvationevasion.server.model.Payload;
+import starvationevasion.server.model.Response;
+import starvationevasion.server.model.ResponseFactory;
+import starvationevasion.server.model.State;
+import starvationevasion.server.model.Type;
+import starvationevasion.server.model.User;
+import starvationevasion.server.model.db.Transaction;
+import starvationevasion.server.model.db.Users;
+import starvationevasion.server.model.db.backends.Backend;
+import starvationevasion.server.model.db.backends.Sqlite;
+import starvationevasion.sim.Simulator;
 
 /**
  */
@@ -60,14 +87,16 @@ public class Server
   private final Simulator simulator;
 
   // list of ALL the users
-  private final List<User> userList = new ArrayList<>();//Collections.synchronizedList(new ArrayList<>());
+  private final List<User> userList = new ArrayList<>();// Collections.synchronizedList(new
+                                                        // ArrayList<>());
 
   private State currentState = State.LOGIN;
   private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
   private Date date = new Date();
 
   // list of available regions
-  private final List<EnumRegion> availableRegions = new ArrayList<>(EnumRegion.US_REGIONS.length);
+  private final List<EnumRegion> availableRegions = new ArrayList<>(
+      EnumRegion.US_REGIONS.length);
 
   private final GameCard[][] _drafted = new GameCard[EnumRegion.US_REGIONS.length][2];
 
@@ -86,13 +115,13 @@ public class Server
   private final Transaction<User> userTransaction;
   private volatile long counter = 0;
   private volatile boolean isPlaying = false;
-  private final ExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+  private final ExecutorService executorService = Executors
+      .newSingleThreadScheduledExecutor();
   private Future<Connector> connectorFuture;
-
 
   private final static Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
 
-  public Server (int portNumber)
+  public Server(int portNumber)
   {
     LOG.setLevel(Constant.LOG_LEVEL);
 
@@ -108,7 +137,6 @@ public class Server
       userList.add(user);
     }
 
-
     // startNanoSec = System.nanoTime();
     simulator = new Simulator();
     // simulator = null;
@@ -117,8 +145,7 @@ public class Server
     {
       serverSocket = new ServerSocket(portNumber);
       serverSocket.setSoTimeout(10);
-    }
-    catch(IOException e)
+    } catch (IOException e)
     {
       LOG.severe("Server error: Opening socket failed.");
       System.exit(-1);
@@ -128,7 +155,7 @@ public class Server
     new Timer().schedule(new TimerTask()
     {
       @Override
-      public void run ()
+      public void run()
       {
         update();
       }
@@ -138,39 +165,39 @@ public class Server
 
   }
 
-
   /**
    * Get the time of server spawn time to a given time.
    *
-   * @param curr is the current time
+   * @param curr
+   *          is the current time
    *
    * @return difference time in seconds
    */
-  public double getTimeDiff (long curr)
+  public double getTimeDiff(long curr)
   {
     long nanoSecDiff = curr - startNanoSec;
     return nanoSecDiff / 1000000000.0;
   }
 
-
   /**
    * Wait for a connection.
    *
-   * TODO: Refactor waiting to use a NON-Blocking Input/Output. Look at ServerSocketChannel
+   * TODO: Refactor waiting to use a NON-Blocking Input/Output. Look at
+   * ServerSocketChannel
    *
-   * @param port port to listen on.
+   * @param port
+   *          port to listen on.
    */
-  private void waitForConnection (int port)
+  private void waitForConnection(int port)
   {
 
     Socket potentialClient = null;
     Connector connector = null;
-    LOG.info("Listening host:port " +
-                     serverSocket.getInetAddress().getHostName() +
-                     ":" +
-                     serverSocket.getLocalPort());
+    LOG.info(
+        "Listening host:port " + serverSocket.getInetAddress().getHostName()
+            + ":" + serverSocket.getLocalPort());
 
-    while(isWaiting)
+    while (isWaiting)
     {
       try
       {
@@ -182,7 +209,7 @@ public class Server
         connectorFuture = executorService.submit(new Callable<Connector>()
         {
           @Override
-          public Connector call () throws Exception
+          public Connector call() throws Exception
           {
             return setStreamType(finalPotentialClient);
           }
@@ -196,7 +223,8 @@ public class Server
         }
 
         connector.start();
-        LOG.info("Server: Connected to " + potentialClient.getRemoteSocketAddress());
+        LOG.info(
+            "Server: Connected to " + potentialClient.getRemoteSocketAddress());
 
         connections.get(connector.getConnectionType()).add(connector);
         if (connector.getConnectionType() == Persistent.class)
@@ -204,8 +232,7 @@ public class Server
           userList.add(connector.getUser());
         }
 
-      }
-      catch(TimeoutException e)
+      } catch (TimeoutException e)
       {
         connectorFuture.cancel(true);
         if (connector != null)
@@ -213,49 +240,43 @@ public class Server
           LOG.info("Shutting down Connection due to timeout");
           connector.shutdown();
         }
-      }
-      catch(SocketTimeoutException e)
+      } catch (SocketTimeoutException e)
       {
         // This occurs when no one has connected
-      }
-      catch(IOException | NetworkException e)
+      } catch (IOException | NetworkException e)
       {
         if (connector != null)
         {
           connector.shutdown();
           LOG.log(Level.SEVERE, "Shutting down Connection due connector IO", e);
         }
-      }
-      catch(Exception e)
+      } catch (Exception e)
       {
         LOG.log(Level.SEVERE, "Unknown error", e);
-      }
-      finally
+      } finally
       {
         cleanConnectionList();
       }
     }
   }
 
-
-  public String uptimeString ()
+  public String uptimeString()
   {
     return String.format("%.3f", uptime());
   }
 
-  public double uptime ()
+  public double uptime()
   {
     long nanoSecDiff = System.nanoTime() - startNanoSec;
     return nanoSecDiff / 1000000000.0;
   }
 
-
-  public synchronized Simulator getSimulator ()
+  public synchronized Simulator getSimulator()
   {
     return simulator;
   }
 
-  public synchronized User getUserByUsername (String username)
+  public synchronized User getUserByUsername(String username)
   {
     for (User user : userList)
     {
@@ -268,19 +289,19 @@ public class Server
     return null;
   }
 
-  public List<User> getUserList ()
+  public List<User> getUserList()
   {
     return userList;
   }
 
-  public boolean createUser (User u)
+  public boolean createUser(User u)
   {
     if (u.getUsername() == null || u.getUsername().trim().isEmpty())
     {
       return false;
     }
     boolean found = userList.stream()
-                            .anyMatch(user -> user.getUsername().equals(u.getUsername()));
+        .anyMatch(user -> user.getUsername().equals(u.getUsername()));
     if (!found)
     {
       User created = userTransaction.create(u);
@@ -294,27 +315,23 @@ public class Server
     return false;
   }
 
-
-  public int getLoggedInCount ()
+  public int getLoggedInCount()
   {
-    return (int) getLoggedInUsers().stream()
-                                   .count();
+    return (int) getLoggedInUsers().stream().count();
   }
 
-  public List<User> getLoggedInUsers ()
+  public List<User> getLoggedInUsers()
   {
-    return userList.stream()
-                   .filter(user -> user.isLoggedIn())
-                   .collect(Collectors.toList());
+    return userList.stream().filter(user -> user.isLoggedIn())
+        .collect(Collectors.toList());
   }
 
-  public int getUserCount ()
+  public int getUserCount()
   {
     return userList.size();
   }
 
-
-  public void broadcast (Response response)
+  public void broadcast(Response response)
   {
     int i = 0;
     LinkedList<Connector> allConnections = connections.get(Persistent.class);
@@ -324,34 +341,32 @@ public class Server
       {
         allConnections.get(i).send(response);
       }
-    }
-    catch(Exception e)
+    } catch (Exception e)
     {
       LOG.log(Level.INFO, "Unknown error while trying to broadcast", e);
     }
   }
 
-  public void killServer ()
+  public void killServer()
   {
     LOG.severe("Killing server");
     isWaiting = false;
 
-    broadcast(new ResponseFactory().build(uptime(),
-                                            currentState,
-                                            Type.BROADCAST, "Server will shutdown in 3 sec"));
+    broadcast(new ResponseFactory().build(uptime(), currentState,
+        Type.BROADCAST, "Server will shutdown in 3 sec"));
 
     try
     {
       Thread.sleep(3100);
-      for (Map.Entry<Class, LinkedList<Connector>> entry : connections.entrySet())
+      for (Map.Entry<Class, LinkedList<Connector>> entry : connections
+          .entrySet())
       {
         for (Connector connector : entry.getValue())
         {
           connector.shutdown();
         }
       }
-    }
-    catch(InterruptedException ex)
+    } catch (InterruptedException ex)
     {
       Thread.currentThread().interrupt();
     }
@@ -359,15 +374,16 @@ public class Server
     System.exit(1);
   }
 
-  public State getGameState ()
+  public State getGameState()
   {
-      return currentState;
+    return currentState;
   }
 
-  public void restartGame ()
+  public void restartGame()
   {
     stopGame();
-    broadcast(new ResponseFactory().build(uptime(), currentState, Type.BROADCAST, "Game restarted."));
+    broadcast(new ResponseFactory().build(uptime(), currentState,
+        Type.BROADCAST, "Game restarted."));
     for (User user : userList)
     {
       user.reset();
@@ -386,26 +402,28 @@ public class Server
     broadcastStateChange();
   }
 
-  public void stopGame ()
+  public void stopGame()
   {
     currentState = State.END;
     isPlaying = false;
-    broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE, "Game has been stopped."));
+    broadcast(new ResponseFactory().build(uptime(), currentState,
+        Type.GAME_STATE, "Game has been stopped."));
   }
 
-  public List<User> getPlayers ()
+  public List<User> getPlayers()
   {
     return playerCache;
   }
 
-  public int getPlayerCount ()
+  public int getPlayerCount()
   {
     return playerCache.size();
   }
 
-  public synchronized boolean addPlayer (User u)
+  public synchronized boolean addPlayer(User u)
   {
-    if (getPlayerCount() == TOTAL_PLAYERS || currentState.ordinal() > State.LOGIN.ordinal())
+    if (getPlayerCount() == TOTAL_PLAYERS
+        || currentState.ordinal() > State.LOGIN.ordinal())
     {
       LOG.info("Too many players. not adding " + u.toString());
       return false;
@@ -422,10 +440,10 @@ public class Server
       availableRegions.remove(loc);
       u.setPlaying(true);
       // players.add(u);
-    }
-    else
+    } else
     {
-      u.setRegion(availableRegions.get(Util.randInt(0, availableRegions.size() - 1)));
+      u.setRegion(
+          availableRegions.get(Util.randInt(0, availableRegions.size() - 1)));
       u.setPlaying(true);
     }
 
@@ -441,7 +459,7 @@ public class Server
     return true;
   }
 
-  public List<EnumRegion> getAvailableRegions ()
+  public List<EnumRegion> getAvailableRegions()
   {
     return availableRegions;
   }
@@ -451,11 +469,11 @@ public class Server
    *
    * Users are delt cards and world data is sent out.
    */
-  private Void begin ()
+  private Void begin()
   {
 
-    ArrayList<WorldData> worldDataList = simulator.getWorldData(Constant.FIRST_DATA_YEAR,
-                                                                Constant.FIRST_GAME_YEAR - 1);
+    ArrayList<WorldData> worldDataList = simulator
+        .getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR - 1);
 
     currentState = State.BEGINNING;
     broadcastStateChange();
@@ -465,21 +483,21 @@ public class Server
     {
       drawByUser(user);
       user.reset();
-      user.getWorker().send(new ResponseFactory().build(uptime(),
-                                                  user,
-                                                  Type.USER));
+      user.getWorker()
+          .send(new ResponseFactory().build(uptime(), user, Type.USER));
     }
 
-    broadcast(new ResponseFactory().build(uptime(), new Payload(worldDataList), Type.WORLD_DATA_LIST));
+    broadcast(new ResponseFactory().build(uptime(), new Payload(worldDataList),
+        Type.WORLD_DATA_LIST));
     draft();
     return null;
   }
 
   /**
-   * Sets the state to drafting and schedules a new task.
-   * Drafting allows for users to discard and draw new cards
+   * Sets the state to drafting and schedules a new task. Drafting allows for
+   * users to discard and draw new cards
    */
-  private Void draft ()
+  private Void draft()
   {
     currentState = State.DRAFTING;
     broadcastStateChange();
@@ -490,15 +508,15 @@ public class Server
   }
 
   /**
-   * Sets the state to vote and schedules a new draw task
-   * Allows users to send votes on cards
+   * Sets the state to vote and schedules a new draw task Allows users to send
+   * votes on cards
    */
-  private Void vote ()
+  private Void vote()
   {
     currentState = State.VOTING;
 
     ArrayList<GameCard> _list = new ArrayList<>();
-    synchronized(_drafted)
+    synchronized (_drafted)
     {
       for (GameCard[] policyCards : _drafted)
       {
@@ -512,32 +530,31 @@ public class Server
       }
     }
     broadcastStateChange();
-    broadcast(new ResponseFactory().build(uptime(),
-                                          new Payload(_list),
-                                          Type.VOTE_BALLOT));
+    broadcast(new ResponseFactory().build(uptime(), new Payload(_list),
+        Type.VOTE_BALLOT));
 
     waitAndAdvance(Server.this::draw);
     return null;
   }
 
-
   /**
    * Draw cards for all users
    */
-  private Void draw ()
+  private Void draw()
   {
     LOG.fine("Server.draw");
 
     ArrayList<GameCard> enactedPolicyCards = new ArrayList<>();
     ArrayList<GameCard> _list = new ArrayList<>();
 
-
     for (GameCard[] policyCards : _drafted)
     {
       for (GameCard p : policyCards)
       {
-        if (p == null) continue;
-        if (p.votesRequired() == 0 || p.getEnactingRegionCount() > p.votesRequired())
+        if (p == null)
+          continue;
+        if (p.votesRequired() == 0
+            || p.getEnactingRegionCount() > p.votesRequired())
         {
           enactedPolicyCards.add(p);
         }
@@ -546,38 +563,41 @@ public class Server
       }
     }
     VoteData voteData = new VoteData(_list, enactedPolicyCards, _drafted);
-    broadcast(new ResponseFactory().build(uptime(), voteData, Type.VOTE_RESULTS));
+    broadcast(
+        new ResponseFactory().build(uptime(), voteData, Type.VOTE_RESULTS));
 
     currentState = State.DRAWING;
     broadcastStateChange();
-
 
     for (User user : getPlayers())
     {
       drawByUser(user);
       user.reset();
 
-      user.getWorker().send(new ResponseFactory().build(uptime(),
-                                                  user,
-                                                  Type.USER));
+      user.getWorker()
+          .send(new ResponseFactory().build(uptime(), user, Type.USER));
     }
 
     // make sure there is no other thread calling the sim before advancing
-    synchronized(simulator)
+    synchronized (simulator)
     {
-      if(LOG.isLoggable(Level.FINEST))
-        LOG.finest("There is " + enactedPolicyCards.size() + " cards being enacted.");
+      if (LOG.isLoggable(Level.FINEST))
+        LOG.finest(
+            "There is " + enactedPolicyCards.size() + " cards being enacted.");
       ArrayList<WorldData> worldData = simulator.nextTurn(enactedPolicyCards);
-      broadcast(new ResponseFactory().build(uptime(), new Payload(worldData), Type.WORLD_DATA_LIST));
+      broadcast(new ResponseFactory().build(uptime(), new Payload(worldData),
+          Type.WORLD_DATA_LIST));
     }
     // clear the votes
     for (int i = 0; i < EnumRegion.US_REGIONS.length; i++)
     {
       // the 2d array is organized by regions that drafted card
-      if (_drafted[i] == null) continue;
+      if (_drafted[i] == null)
+        continue;
       for (int j = 0; j < 2; j++)
       {
-        if (_drafted[i][j] == null) continue;
+        if (_drafted[i][j] == null)
+          continue;
         _drafted[i][j].clearVotes();
       }
       _drafted[i] = new GameCard[2];
@@ -585,7 +605,7 @@ public class Server
 
     if (simulator.getCurrentYear() >= Constant.LAST_YEAR)
     {
-      if(LOG.isLoggable(Level.INFO))
+      if (LOG.isLoggable(Level.INFO))
       {
         LOG.info("Ending game");
       }
@@ -605,28 +625,29 @@ public class Server
    *
    * Mainly to start the game and clean the connection list
    */
-  private void update ()
+  private void update()
   {
     if (getPlayerCount() == TOTAL_PLAYERS && currentState == State.LOGIN)
     {
       isPlaying = true;
       currentState = State.BEGINNING;
-      broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE, "Game will begin in 10s"));
+      broadcast(new ResponseFactory().build(uptime(), currentState,
+          Type.GAME_STATE, "Game will begin in 10s"));
       waitAndAdvance(this::begin);
     }
   }
 
-
   /**
    * Handle a handshake with web client
    *
-   * @param x Key received from client
+   * @param x
+   *          Key received from client
    *
    * @return Hashed key that is to be given back to client for auth check.
    */
-  private static String handshake (String x)
+  private static String handshake(String x)
   {
-    if(LOG.isLoggable(Level.FINEST))
+    if (LOG.isLoggable(Level.FINEST))
     {
       LOG.finest("Handshake with " + x);
     }
@@ -643,8 +664,7 @@ public class Server
     try
     {
       digest = MessageDigest.getInstance("SHA-1");
-    }
-    catch(NoSuchAlgorithmException e)
+    } catch (NoSuchAlgorithmException e)
     {
       e.printStackTrace();
       return "";
@@ -657,7 +677,8 @@ public class Server
 
   }
 
-  private static byte[] asymmetricHandshake (String desKey, String clientPublicKey)
+  private static byte[] asymmetricHandshake(String desKey,
+      String clientPublicKey)
   {
     PublicKey pubKey = null;
     byte[] cipherText = null;
@@ -675,8 +696,7 @@ public class Server
       cipher.init(Cipher.ENCRYPT_MODE, pubKey);
 
       cipherText = cipher.doFinal(desKey.getBytes());
-    }
-    catch (Exception e)
+    } catch (Exception e)
     {
       LOG.log(Level.SEVERE, "Exception ");
     }
@@ -687,14 +707,13 @@ public class Server
   /**
    * Set up the worker with proper streams
    *
-   * @param s socket that is opened
+   * @param s
+   *          socket that is opened
    *
    * @return boolean true if web-socket
    */
-  private Connector setStreamType (Socket s) throws NoSuchAlgorithmException,
-                                                    NoSuchPaddingException,
-                                                    IOException,
-                                                    InterruptedException
+  private Connector setStreamType(Socket s) throws NoSuchAlgorithmException,
+      NoSuchPaddingException, IOException, InterruptedException
   {
     // Handling websocket
     StringBuilder reading = new StringBuilder();
@@ -712,7 +731,7 @@ public class Server
 
     HttpParse paresr = new HttpParse();
 
-    while(true)
+    while (true)
     {
       try
       {
@@ -724,12 +743,12 @@ public class Server
           length = Integer.valueOf(number);
         }
         tryCount = 0;
-      }
-      catch(SocketTimeoutException e)
+      } catch (SocketTimeoutException e)
       {
-        if(LOG.isLoggable(Level.INFO))
+        if (LOG.isLoggable(Level.INFO))
         {
-          LOG.info(String.format("%.1f second(s) until connection closes.\n",  TIMEOUT - tryCount));
+          LOG.info(String.format("%.1f second(s) until connection closes.\n",
+              TIMEOUT - tryCount));
         }
         tryCount++;
         if ((TIMEOUT - tryCount) <= 0)
@@ -738,14 +757,13 @@ public class Server
           return null;
         }
         continue;
-      }
-      catch(Exception e)
+      } catch (Exception e)
       {
         e.printStackTrace();
         return null;
       }
 
-      if(line.equals("\r\n"))
+      if (line.equals("\r\n"))
       {
         break;
       }
@@ -763,34 +781,31 @@ public class Server
     String connectionType = paresr.getHeaderParam("Connection");
     String acceptType = paresr.getHeaderParam("Accept");
 
-
     if (connectionType.equals("Upgrade"))
     {
       LOG.info("Server: Connected to socket.");
       if (acceptType == null || acceptType.equals(DataType.JSON.toString()))
       {
-        if (paresr.getHeaderParam("Upgrade") != null && paresr.getHeaderParam("Upgrade").equals("websocket"))
+        if (paresr.getHeaderParam("Upgrade") != null
+            && paresr.getHeaderParam("Upgrade").equals("websocket"))
         {
           LOG.info("\tServer: Web client.");
           discoveredReader = new WebSocketReadStrategy(s, null);
           discoveredWriter = new WebSocketWriteStrategy(s, null);
-        }
-        else
+        } else
         {
           LOG.info("\tServer: JSON client.");
           discoveredReader = new SocketReadStrategy(s, null);
           discoveredWriter = new SocketWriteStrategy(s, null);
         }
         discoveredWriter.setFormatter(DataType.JSON);
-      }
-      else if (acceptType.equals(DataType.POJO.toString()))
+      } else if (acceptType.equals(DataType.POJO.toString()))
       {
         LOG.info("\tServer: Java client.");
         discoveredReader = new JavaObjectReadStrategy(s, null);
         discoveredWriter = new JavaObjectWriteStrategy(s, null);
         discoveredWriter.setFormatter(DataType.POJO);
-      }
-      else if (acceptType.equals(DataType.TEXT.toString()))
+      } else if (acceptType.equals(DataType.TEXT.toString()))
       {
         return null;
       }
@@ -798,24 +813,24 @@ public class Server
       if (paresr.getHeaderParam("RSA-Socket-Key") != null)
       {
         LOG.info("\tServer: Encrypted Socket.");
-        KeyGenerator keygenerator = KeyGenerator.getInstance(Constant.DATA_ALGORITHM);
+        KeyGenerator keygenerator = KeyGenerator
+            .getInstance(Constant.DATA_ALGORITHM);
         keygenerator.init(128);
 
         secretKey = keygenerator.generateKey();
         encryptedKey = Server.asymmetricHandshake(
-                Base64.getEncoder().encodeToString(secretKey.getEncoded()),
-                paresr.getHeaderParam("RSA-Socket-Key"));
+            Base64.getEncoder().encodeToString(secretKey.getEncoded()),
+            paresr.getHeaderParam("RSA-Socket-Key"));
 
         encrypted = true;
-      }
-      else if (paresr.getHeaderParam("Sec-WebSocket-Key") != null)
+      } else if (paresr.getHeaderParam("Sec-WebSocket-Key") != null)
       {
         LOG.info("\tServer: Encrypted WS.");
-        socketKey = Server.handshake(paresr.getHeaderParam("Sec-WebSocket-Key"));
+        socketKey = Server
+            .handshake(paresr.getHeaderParam("Sec-WebSocket-Key"));
         encrypted = true;
       }
-    }
-    else if (connectionType.equals("keep-alive"))
+    } else if (connectionType.equals("keep-alive"))
     {
       LOG.info("Server: HTTP request.");
       discoveredWriter = new HTTPWriteStrategy(s, null);
@@ -824,8 +839,7 @@ public class Server
       {
         LOG.info("\tServer: JSON client.");
         discoveredWriter.setFormatter(DataType.JSON);
-      }
-      else
+      } else
       {
         LOG.info("\tServer: HTML client.");
         discoveredWriter.setFormatter(DataType.HTML);
@@ -845,12 +859,11 @@ public class Server
     {
       if (paresr.getHeaderParam("User-Agent") != null)
       {
-        worker.getWriter().getStream().writeUTF("HTTP/1.1 101 Web Socket Protocol Handshake\n" +
-                                                        "Upgrade: WebSocket\n" +
-                                                        "Connection: Upgrade\n" +
-                                                        "Sec-WebSocket-Accept: " + socketKey + "\r\n\r\n");
-      }
-      else
+        worker.getWriter().getStream()
+            .writeUTF("HTTP/1.1 101 Web Socket Protocol Handshake\n"
+                + "Upgrade: WebSocket\n" + "Connection: Upgrade\n"
+                + "Sec-WebSocket-Accept: " + socketKey + "\r\n\r\n");
+      } else
       {
         worker.getWriter().getStream().write(encryptedKey);
       }
@@ -859,10 +872,10 @@ public class Server
       worker.setWriter(discoveredWriter);
       worker.getWriter().setEncrypted(true, secretKey);
       worker.getReader().setEncrypted(true, secretKey);
-    }
-    else
+    } else
     {
-      broadcast(new ResponseFactory().build(uptime(), currentState, Type.CHAT, "Someone joined with unencrypted!"));
+      broadcast(new ResponseFactory().build(uptime(), currentState, Type.CHAT,
+          "Someone joined with unencrypted!"));
       worker.setReader(discoveredReader);
       worker.setWriter(discoveredWriter);
     }
@@ -873,7 +886,7 @@ public class Server
   /**
    * Cleans the connections list that have gone stale
    */
-  private void cleanConnectionList ()
+  private void cleanConnectionList()
   {
     int con = 0;
 
@@ -888,7 +901,8 @@ public class Server
           u.setLoggedIn(false);
           if (u.isAnonymous())
           {
-            LOG.fine(entry.getClass().getSimpleName() + " logged out and removed " + u.toString());
+            LOG.fine(entry.getClass().getSimpleName()
+                + " logged out and removed " + u.toString());
             userList.remove(u);
           }
           con++;
@@ -903,17 +917,18 @@ public class Server
     }
   }
 
-  private void broadcastStateChange ()
+  private void broadcastStateChange()
   {
     getPlayers().stream().forEach(user -> user.isDone = false);
-    broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE));
+    broadcast(
+        new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE));
   }
 
-  public static void main (String args[])
+  public static void main(String args[])
   {
-    //Valid port numbers are Port numbers are 1024 through 65535.
-    //  ports under 1024 are reserved for system services http, ftp, etc.
-    int port = 5555; //default
+    // Valid port numbers are Port numbers are 1024 through 65535.
+    // ports under 1024 are reserved for system services http, ftp, etc.
+    int port = 5555; // default
     if (args.length > 0)
     {
       try
@@ -923,8 +938,7 @@ public class Server
         {
           throw new Exception();
         }
-      }
-      catch(Exception e)
+      } catch (Exception e)
       {
         System.out.println("Usage: Server portNumber");
         System.exit(0);
@@ -934,8 +948,7 @@ public class Server
     new Server(port);
   }
 
-
-  public void draftCard (GameCard card, User u)
+  public void draftCard(GameCard card, User u)
   {
     synchronized (_drafted)
     {
@@ -943,14 +956,16 @@ public class Server
     }
   }
 
-  public boolean addVote (GameCard card, EnumRegion user)
+  public boolean addVote(GameCard card, EnumRegion user)
   {
-    synchronized(_drafted)
+    synchronized (_drafted)
     {
       for (int i = 0; i < _drafted[card.getOwner().ordinal()].length; i++)
       {
-        if (_drafted[card.getOwner().ordinal()][i] == null) continue;
-        if (_drafted[card.getOwner().ordinal()][i].getCardType().equals(card.getCardType()))
+        if (_drafted[card.getOwner().ordinal()][i] == null)
+          continue;
+        if (_drafted[card.getOwner().ordinal()][i].getCardType()
+            .equals(card.getCardType()))
         {
           _drafted[card.getOwner().ordinal()][i].addEnactingRegion(user);
           return true;
@@ -960,8 +975,7 @@ public class Server
     return false;
   }
 
-
-  public void drawByUser (User user)
+  public void drawByUser(User user)
   {
     EnumPolicy[] _hand = simulator.drawCards(user.getRegion());
     if (_hand == null)
@@ -972,23 +986,19 @@ public class Server
 
   }
 
-
   public boolean startAI()
   {
 
-    if (TOTAL_PLAYERS  == getPlayerCount() || processes.size() == TOTAL_AI_PLAYERS)
+    if (TOTAL_PLAYERS == getPlayerCount()
+        || processes.size() == TOTAL_AI_PLAYERS)
     {
       return false;
     }
 
-    Process p = ServerUtil.StartAIProcess(new String[]{"java",
-                                                       "-XX:+OptimizeStringConcat",
-                                                       "-XX:+UseCodeCacheFlushing",
-                                                       "-client",
-                                                       "-classpath",
-                                                       "./dist:./dist/libs/*",
-                                                       "starvationevasion/ai/AI",
-                                                       "foodgame.cs.unm.edu", "5555"});
+    Process p = ServerUtil.StartAIProcess(new String[]
+    { "java", "-XX:+OptimizeStringConcat", "-XX:+UseCodeCacheFlushing",
+        "-client", "-classpath", "./dist:./dist/libs/*",
+        "starvationevasion/ai/AI", "foodgame.cs.unm.edu", "5555" });
     if (p != null)
     {
       processes.add(p);
@@ -1005,8 +1015,7 @@ public class Server
       try
       {
         p.waitFor();
-      }
-      catch(InterruptedException e)
+      } catch (InterruptedException e)
       {
         System.out.println("Interrupted and could not wait for exit code");
       }
@@ -1024,10 +1033,9 @@ public class Server
     }
   }
 
-
-  public void discard (User u, EnumPolicy card)
+  public void discard(User u, EnumPolicy card)
   {
-    synchronized(simulator)
+    synchronized (simulator)
     {
       simulator.discard(u.getRegion(), card);
       u.getHand().remove(card);
@@ -1038,7 +1046,7 @@ public class Server
   {
     startNanoSec = System.currentTimeMillis();
     endNanoSec = startNanoSec + currentState.getDuration();
-    while(true)
+    while (true)
     {
       if (!isPlaying)
       {
@@ -1050,8 +1058,7 @@ public class Server
         try
         {
           phase.call();
-        }
-        catch(Exception e)
+        } catch (Exception e)
         {
           LOG.log(Level.SEVERE, "Could not advance. Stopping game.", e);
           stopGame();

@@ -13,10 +13,10 @@ import starvationevasion.util.Picture;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.PathIterator;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -87,6 +87,7 @@ import java.util.logging.Logger;
 public class Model
 {
   public static double EVENT_CHANCE = 0.02;
+  private static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
   EnumRegion debugRegion = EnumRegion.USA_CALIFORNIA;
   private final static Logger LOGGER = Logger.getGlobal(); // getLogger(Model.class.getName())
@@ -140,7 +141,19 @@ public class Model
 
     cropData = new CropData();
 
-    LandTile.load(this);
+
+    Date dateStart = new Date();
+    System.out.println("Model() Loading Climate Data: " +dateFormat.format(dateStart));
+
+    ArrayList<LandTile> tileList = new ArrayList<>();
+    LandTile.loadLocations(this, tileList);
+    LandTile.loadClimate(tileList);
+
+
+    Date dateDone = new Date();
+    double deltaSec = (dateDone.getTime() - dateStart.getTime())/1000.0;
+    System.out.println("LandTile.load() Done: elapsed sec=" +deltaSec);
+
     assert (assertLandTiles());
 
     for (int i = 0; i < YEARS_OF_DATA; i++)
@@ -226,7 +239,6 @@ public class Model
       System.out.println("LandTiles: " + region.getName() + ": area=" +
         area + ", tile count=" + totalTiles + ", land per tile = " + area / totalTiles);
     }
-
     return true;
   }
 

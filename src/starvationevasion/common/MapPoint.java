@@ -105,11 +105,11 @@ public class MapPoint implements Sendable
     System.out.println("MatPoint.main(): Testing Map points:" );
     System.out.println("   Albuquerque(35,-106): " + sim.getRegion(35,-106));
     System.out.println("   Beijing(40,116): " + sim.getRegion(40,116));
-    System.out.println("   Belfast, Northern Ireland(54.5970, -5.93): " + sim.getRegion(54.5970, -5.93));
-    System.out.println("   Irish Sea(53.347309, -5.681383): " + sim.getRegion(53.347309, -5.681383));
-    System.out.println("   English Channel(50.39, -1.7): " + sim.getRegion(50.39, -1.7));
-    System.out.println("   Greenland(75.833995, -43.088791): " + sim.getRegion(75.833995, -43.088791));
-    System.out.println("   Reykjavik, Iceland(64.107676, -21.812973): " + sim.getRegion(64.107676, -21.812973));
+    System.out.println("   Belfast, Northern Ireland(54.5970, -5.93): " + sim.getRegion(54.5970f, -5.93f));
+    System.out.println("   Irish Sea(53.347309, -5.681383): " + sim.getRegion(53.347309f, -5.681383f));
+    System.out.println("   English Channel(50.39, -1.7): " + sim.getRegion(50.39f, -1.7f));
+    System.out.println("   Greenland(75.833995, -43.088791): " + sim.getRegion(75.833995f, -43.088791f));
+    System.out.println("   Reykjavik, Iceland(64.107676, -21.812973): " + sim.getRegion(64.107676f, -21.812973f));
     System.out.println("   Antarctica(-84, 51): " + sim.getRegion(-84, 51));
   }
 

@@ -337,7 +337,7 @@ public class Simulator
    * @return The region containing the given latitude and longitude or null if the given location
    * is not within a game region.
    */
-  public EnumRegion getRegion(double latitude, double longitude)
+  public EnumRegion getRegion(float latitude, float longitude)
   {
     MapPoint mapPoint = new MapPoint(latitude, longitude);
     for (EnumRegion regionEnum : EnumRegion.values())

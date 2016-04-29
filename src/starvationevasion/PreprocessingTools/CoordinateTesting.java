@@ -18,10 +18,10 @@ public class CoordinateTesting
 {
 //  private final int MAX_LAT = 720;//maximum number of latitude
 //  private final int MAX_LON = 1440;//maximum number of longitudes
-  private final double degrees = 0.25;//resolution
-  private final double DEFAULT_LAT = -89.875;//starting latitude from the climate data
-  private final double DEFAULT_LON = 0.125;//starting longitude from the climate data
-  private final double SEC_MONTH = 24 * 60 * 60;
+  private final float degrees = 0.25f;//resolution
+  private final float DEFAULT_LAT = -89.875f;//starting latitude from the climate data
+  private final float DEFAULT_LON = 0.125f;//starting longitude from the climate data
+  private final float SEC_MONTH = 24 * 60 * 60;
   //file name : Climate_[Year]_[Month number]
   //File name's directory
   private final String PREFIX = "./data/sim/climate/";//File's directory
@@ -77,7 +77,7 @@ public class CoordinateTesting
    * @param longitude
    * @return Null if over the ocean, else returns the region
    */
-  private boolean latlonCheck(double latitude, double longitude)
+  private boolean latlonCheck(float latitude, float longitude)
   {
     EnumRegion enumRegion= sim.getRegion(latitude, longitude);
     if (enumRegion == null)
@@ -90,7 +90,7 @@ public class CoordinateTesting
     }
   }
 
-  private double convertToOneEighty(double longitude)
+  private float convertToOneEighty(float longitude)
   {
     return (longitude > 180) ? longitude - 360 : longitude;
   }
@@ -137,15 +137,15 @@ public class CoordinateTesting
           int count = 1; //skips [0][0] in the parsed
           //if(parsedMin[count].contains(lat)) parse the rest of the lines
           //else
-          for (double longitude = DEFAULT_LON; longitude < 360; longitude += degrees)
+          for (float longitude = DEFAULT_LON; longitude < 360; longitude += degrees)
           {
-            double convert = convertToOneEighty(longitude);
+            float convert = convertToOneEighty(longitude);
             Point.Double temp = viableCoor.peekFirst().getPoint();//checks to see if this is a viable coordinate point
             if (temp.getX() == latitude && temp.getY() == convert)//gets each parsed data if it is
             {
-              double min = Double.parseDouble(parsedMin[count]);
-              double max = Double.parseDouble(parsedMax[count]);
-              double pr = Double.valueOf(parsedPR[count]);
+              float min = Float.parseFloat(parsedMin[count]);
+              float max = Float.parseFloat(parsedMax[count]);
+              float pr = Float.valueOf(parsedPR[count]);
               WriteValues hold = viableCoor.pollFirst();//pops from dequeue
               hold.adjustValues(min, max, pr);//adjusts these values
               viableCoor.addLast(hold);//pushes to dequeue
@@ -250,11 +250,11 @@ public class CoordinateTesting
       {//if the file does not already exist, make it
         BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
         bufferedWriter.write("Latitude, Longitude\nlatitude, longitude");
-        for (double lat = DEFAULT_LAT; lat <= 90; lat += degrees)
+        for (float lat = DEFAULT_LAT; lat <= 90; lat += degrees)
         {
-          for (double lon = DEFAULT_LON; lon <= 360; lon += degrees)
+          for (float lon = DEFAULT_LON; lon <= 360; lon += degrees)
           {
-            double temp = convertToOneEighty(lon);
+            float temp = convertToOneEighty(lon);
             if (latlonCheck(lat, temp))
             {
               Point.Double point = new Point.Double(lat, temp);

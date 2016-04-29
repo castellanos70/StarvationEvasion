@@ -26,7 +26,7 @@ public class MapPoint implements Sendable
    * (+North to-South) at the poles.
    * Lines of constant latitude, or parallels, run east-west as circles parallel to the equator.
    */
-  public double latitude;
+  public float latitude;
 
   /**
    * Specifies the east-west position of a point on the Earth's surface.
@@ -37,9 +37,9 @@ public class MapPoint implements Sendable
    * from 0 degrees at the Prime Meridian to +180 degrees eastward and ?180 degrees westward.
    * Points with the same longitude lie in lines running from the North Pole to the South Pole.
    */
-  public double longitude;
+  public float longitude;
 
-  public MapPoint(double latitude, double longitude)
+  public MapPoint(float latitude, float longitude)
   {
     if (Math.abs(latitude) > 90.0 || Math.abs(longitude) > 180.00)
     {
@@ -73,8 +73,8 @@ public class MapPoint implements Sendable
   public void fromJSON (Object doc)
   {
     JSONDocument json = JSON.Parser.toJSON(doc);
-    latitude = (double) json.getNumber("latitude");
-    longitude = (double) json.getNumber("longitude");
+    latitude = (float) json.getNumber("latitude");
+    longitude = (float) json.getNumber("longitude");
   }
 
   @Override
@@ -105,11 +105,11 @@ public class MapPoint implements Sendable
     System.out.println("MatPoint.main(): Testing Map points:" );
     System.out.println("   Albuquerque(35,-106): " + sim.getRegion(35,-106));
     System.out.println("   Beijing(40,116): " + sim.getRegion(40,116));
-    System.out.println("   Belfast, Northern Ireland(54.5970, -5.93): " + sim.getRegion(54.5970, -5.93));
-    System.out.println("   Irish Sea(53.347309, -5.681383): " + sim.getRegion(53.347309, -5.681383));
-    System.out.println("   English Channel(50.39, -1.7): " + sim.getRegion(50.39, -1.7));
-    System.out.println("   Greenland(75.833995, -43.088791): " + sim.getRegion(75.833995, -43.088791));
-    System.out.println("   Reykjavik, Iceland(64.107676, -21.812973): " + sim.getRegion(64.107676, -21.812973));
+    System.out.println("   Belfast, Northern Ireland(54.5970, -5.93): " + sim.getRegion(54.5970f, -5.93f));
+    System.out.println("   Irish Sea(53.347309, -5.681383): " + sim.getRegion(53.347309f, -5.681383f));
+    System.out.println("   English Channel(50.39, -1.7): " + sim.getRegion(50.39f, -1.7f));
+    System.out.println("   Greenland(75.833995, -43.088791): " + sim.getRegion(75.833995f, -43.088791f));
+    System.out.println("   Reykjavik, Iceland(64.107676, -21.812973): " + sim.getRegion(64.107676f, -21.812973f));
     System.out.println("   Antarctica(-84, 51): " + sim.getRegion(-84, 51));
   }
 

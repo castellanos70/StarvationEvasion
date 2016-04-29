@@ -95,12 +95,12 @@ public class GeographyXMLparser extends DefaultHandler
         break;
 
       case "vertex":
-        double lat = 0;
-        double lon = 0;
+        float lat = 0;
+        float lon = 0;
         try
         {
-          lat = Double.parseDouble(attributes.getValue("lat"));
-          lon = Double.parseDouble(attributes.getValue("lon"));
+          lat = Float.parseFloat(attributes.getValue("lat"));
+          lon = Float.parseFloat(attributes.getValue("lon"));
         }
         catch (Exception e)
         {

@@ -160,6 +160,20 @@ public abstract class GameCard implements Sendable
       case Policy_MyPlatePromotionCampaign:
         myCard = new Policy_MyPlatePromotionCampaign();
         break;
+      case Policy_DiverttheFunds:
+        myCard = new Policy_DiverttheFunds();
+        break;
+      case Policy_Filibuster:
+        myCard = new Policy_Filibuster();
+        break;
+      case Policy_Fundraiser:
+        myCard = new Policy_Fundraiser();
+        break;
+      case Policy_SharetheKnowledge:
+        myCard = new Policy_SharetheKnowledge();
+        break;
+    default:
+      break;
     }
 
     if (myCard != null)

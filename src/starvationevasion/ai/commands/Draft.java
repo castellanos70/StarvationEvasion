@@ -113,6 +113,39 @@ public class Draft extends AbstractCommand
     }
     return false;
   }
+  
+  /** 
+   * James Perry
+   * Returns a method to be sent to other players requesting support for a 
+   * policy card. This method is called by draftCards() after the card has been set up.
+   * @param card Policy Card needing support
+   * @param food the Card's target food, if any
+   * @param region the Card's target region, if any
+   * @return a request String to be sent in a chat message
+   */
+  private String requestSupportMessage(PolicyCard card, EnumFood food, EnumRegion region)
+  {
+    if(food == null && region != null)
+    {
+      return "I'm going to draft a card of type: "
+             + card.getType()
+             + " for " 
+             + card.getTargetRegion()
+             + " . Can anyone support it?";
+    }
+    else if(food != null && region != null)
+    {
+      return "I'm going to draft a card of type "
+             + card.getType()
+             + " with "+ card.getTargetFood()
+             + " for " +card.getTargetRegion()
+             + " . Can anyone support it?";
+    }
+    else return "I'm going to draft a card of type "
+                + card.getType()
+                + " . Can anyone support it?";
+  }
+  
 
   private void randomlyDiscard()
   {
@@ -399,9 +432,9 @@ public class Draft extends AbstractCommand
     setupCard(card, currentFood, currentRegion);
     getClient().send(new RequestFactory().build(getClient().getStartNanoSec(),
         card, Endpoint.DRAFT_CARD));
-    if(card.votesRequired() != 0)
+    if(card.votesRequired() > 0)
     {
-      String message = "I am drafing "+card.getTitle()+". Will you support it?";
+      String message = requestSupportMessage(card,currentFood,currentRegion);
       getClient().send(new RequestFactory().chat(getClient().getStartNanoSec(),"ALL", 
       message, card));
     }

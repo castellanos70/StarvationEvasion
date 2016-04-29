@@ -739,16 +739,17 @@ public class Model
   private void updateCropRatings()
   {
     System.out.println("LandTile.updateCropRatings() Starting");
-    int index = 0;
+    // int index = 0;
     ArrayList<LandTile> landTiles;
     EnumCropZone[] ratings = new EnumCropZone[EnumFood.SIZE];
-    
+
+    // for each region
     for (int i = 0; i < regionList.length; i++)
-    {
+    { // for each territory
       for (int j = 0; j < regionList[i].getTerritoryList().size(); j++)
       {
         landTiles = regionList[i].getTerritoryList().get(j).getLandTiles();
-        
+        // for each landtile
         for (LandTile tile : landTiles)
         { // For each crop, find the EnumCropZone
           // value
@@ -757,13 +758,14 @@ public class Model
             ratings[k] = rateTileForCrop(EnumFood.CROP_FOODS[k], tile);
             tile.updateRating(ratings);
           }
-//          packData(tile, index);
-          index++;
+          // packData(tile, index);
+          // index++;
         }
       }
     }
     System.out.println("LandTile.updateCropRatings() Done");
   }
+  
   
   /**
    * Rates a given tile's suitability for a particular crop.
@@ -775,7 +777,9 @@ public class Model
    * 
    * @param crop
    *          crop for which we want rating (citrus, fruit, nut, grain, oil,
-   *          veggies, special, or feed)
+   *          veggies, special, feed, fish, meat, poultry, or dairy)
+   * @param tile
+   *          the tile we wish to check the rating for.
    * @return EnumCropZone (IDEAL, ACCEPTABLE, or POOR)
    * @throws NullPointerException
    *           if called with argument EnumFood.OTHER_CROPS, will throw an
@@ -802,7 +806,7 @@ public class Model
     int consecutiveIdealGrowDays = 0;
 
     // This value corresponds to the consecutive number of acceptable or ideal
-    // grow days starting from January up to the first non acceptable or ideal 
+    // grow days starting from January up to the first non acceptable or ideal
     // month.
     //
     // The acceptable or ideal buffer is set to false once the first month
@@ -821,14 +825,12 @@ public class Model
     // these values per month
     float tileMonthlyLowT;
     float tileMonthlyHighT;
-    float tileMeanDailyLowT;
-    float tileMeanDailyHighT;
     // float tileRain;
-    
+
     // Necessary crop data from given crop.
     int idealHigh = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_HIGH, crop);
     int idealLow = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_LOW, crop);
-    int tempMax = cropData.getData(CropData.Field.TEMPERATURE_MAX, crop);
+    // int tempMax = cropData.getData(CropData.Field.TEMPERATURE_MAX, crop);
     int tempMin = cropData.getData(CropData.Field.TEMPERATURE_MIN, crop);
     int growdays = cropData.getData(CropData.Field.GROW_DAYS, crop);
     // int waterRequired = cropData.getData(CropData.Field.WATER, crop);
@@ -842,16 +844,11 @@ public class Model
           currentMonth);
       tileMonthlyHighT = tile.getField(Field.TEMP_MONTHLY_HIGH, Constant.FIRST_GAME_YEAR - 1,
           currentMonth);
-      tileMeanDailyLowT = tile.getField(Field.TEMP_MEAN_DAILY_LOW, Constant.FIRST_GAME_YEAR - 1,
-          currentMonth);
-      tileMeanDailyHighT = tile.getField(Field.TEMP_MEAN_DAILY_HIGH, Constant.FIRST_GAME_YEAR - 1,
-          currentMonth);
           // tileRain = getField(Field.RAIN, Constant.FIRST_GAME_YEAR-1,
           // currentMonth);
 
       // If the temperatures are Acceptable
-      if (isBetween(tileMonthlyLowT, tempMin, tempMax) && isBetween(tileMonthlyHighT, tempMin,
-          tempMax))
+      if (tileMonthlyLowT > tempMin)
       {
         // Add the total amount of days in the current month to the
         // current running grow days
@@ -905,10 +902,10 @@ public class Model
           //
           // This also means this is the first non-ideal month for the crop as
           // well, as a crop can not be ideal but not acceptable
-          
+
           consecutiveAcceptableBuffer = false;
           consecutiveAcceptableBufferValue = consecutiveAcceptableGrowDays;
-          
+
           consecutiveIdealBuffer = false;
           consecutiveIdealBufferValue = consecutiveIdealGrowDays;
         }

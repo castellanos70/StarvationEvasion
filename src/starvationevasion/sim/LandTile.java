@@ -378,29 +378,4 @@ public class LandTile
     double deltaSec = (dateDone.getTime() - dateStart.getTime())/1000.0;
     System.out.println("LandTile.load() Done: elapsed sec=" +deltaSec);
   }
-  
-//  /**
-//   * Given a CropData object, update all the cropRatings in each landTile.
-//   * 
-//   * @param data
-//   */
-//  public static void updateCropRatings(CropData data)
-//  {
-//    System.out.println("LandTile.updateCropRatings() Starting");
-//    CROP_DATA = data;
-//    PACKED_CROP_RATINGS = new short[TILE_LIST.size()];
-//    PACKED_TILE_COORDINATES = new int[TILE_LIST.size()];
-//    int index = 0;
-//    for (LandTile tile : TILE_LIST)
-//    { // For each crop, find the EnumCropZone
-//      // value
-//      for (int i = 0; i < EnumFood.CROP_FOODS.length; i++)
-//      {
-//        tile.cropRatings[i] = tile.rateTileForCrop(EnumFood.CROP_FOODS[i]);
-//      }
-//      packData(tile, index);
-//      index++;
-//    }
-//    System.out.println("LandTile.updateCropRatings() Done");
-//  }
 }

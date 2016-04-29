@@ -1,12 +1,15 @@
 package starvationevasion.ai.commands;
 
 import starvationevasion.ai.AI;
-import starvationevasion.common.*;
-import starvationevasion.common.policies.CovertIntelligencePolicy;
-import starvationevasion.common.policies.EfficientIrrigationIncentivePolicy;
-import starvationevasion.common.policies.EthanolTaxCreditChangePolicy;
-import starvationevasion.common.policies.FertilizerSubsidyPolicy;
-import starvationevasion.server.model.*;
+import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.Util;
+import starvationevasion.common.gamecards.EnumPolicy;
+import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.server.model.Endpoint;
+import starvationevasion.server.model.Payload;
+import starvationevasion.server.model.RequestFactory;
+import starvationevasion.server.model.State;
 
 import java.util.ArrayList;
 
@@ -16,7 +19,7 @@ public class Draft extends AbstractCommand
   private boolean draftedCard = false;
   private boolean discarded = false;
   private boolean drawn = false;
-  private PolicyCard cardDrafted;
+  private GameCard cardDrafted;
   private int tries = 2;
 
   public Draft (AI client)
@@ -80,7 +83,7 @@ public class Draft extends AbstractCommand
 
     for (EnumPolicy policy : getClient().getUser().getHand())
     {
-      PolicyCard _card = PolicyCard.create(getClient().getUser().getRegion(), policy);
+      GameCard _card = GameCard.create(getClient().getUser().getRegion(), policy);
       // dont remove the card we just drafted!!!
       if (cardDrafted != null && policy != cardDrafted.getCardType() && Util.rand.nextBoolean())
       {
@@ -102,13 +105,13 @@ public class Draft extends AbstractCommand
 
   private void randomlySetDraftedCard ()
   {
-    PolicyCard card = null;
+    GameCard card = null;
 
     int i = 0;
     boolean draftSent = false;
     for (EnumPolicy policy : getClient().getUser().getHand())
     {
-      card = PolicyCard.create(getClient().getUser().getRegion(), policy);
+      card = GameCard.create(getClient().getUser().getRegion(), policy);
 
         if (card.votesRequired() == 0 || !draftSent)
         {
@@ -143,80 +146,31 @@ public class Draft extends AbstractCommand
     tries = 2;
   }
 
-  private void setupCard(PolicyCard card)
+  private void setupCard(GameCard card)
   {
     if (card == null)
     {
       return;
     }
-    EnumFood[] foods = card.getValidTargetFoods();
-    EnumRegion[] regions = card.getValidTargetRegions();
 
-    if (foods != null)
+    ArrayList<Integer> legalValueList = card.getOptionsOfVariable();
+    EnumFood[] food=card.getValidTargetFoods();
+    EnumRegion[] regions=card.getValidTargetRegions();
+
+    if (legalValueList == null) card.setX(0);
+    else
     {
-      card.setTargetFood(foods[0]);
+      card.setX(legalValueList.get(Util.rand.nextInt(legalValueList.size())));
     }
-    if (regions != null)
+
+
+    if(food!=null)
     {
-      card.setTargetRegion(regions[0]);
+      card.setTargetFood(food[Util.rand.nextInt(food.length)]);
     }
-
-    for (PolicyCard.EnumVariable variable : PolicyCard.EnumVariable.values())
+    if(regions!=null)
     {
-      if (card.getRequiredVariables(variable) != null)
-      {
-        int amt = 0;
-        // Contextually setting variable
-        if (card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.MILLION_DOLLAR))
-        {
-          amt = Util.randInt(1, 20);
-        }
-        else if (card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.PERCENT))
-        {
-          if (card instanceof EfficientIrrigationIncentivePolicy)
-          {
-            amt = Util.randInt(50, 80);
-          }
-          else if (card instanceof EthanolTaxCreditChangePolicy || card instanceof FertilizerSubsidyPolicy)
-          {
-            amt = Util.randInt(20, 40);
-          }
-          else
-          {
-            amt = Util.randInt(1, 100);
-          }
-        }
-        else if (card.getRequiredVariables(variable).equals(PolicyCard.EnumVariableUnit.UNIT))
-        {
-          amt = Util.randInt(1, 10);
-        }
-
-        if (variable.name().equals("X"))
-        {
-          card.setX(amt);
-          if (card instanceof CovertIntelligencePolicy)
-          {
-            if (Util.rand.nextBoolean())
-            {
-              card.setX(2);
-            }
-            else
-            {
-              card.setX(7);
-            }
-            break;
-          }
-        }
-        else if (variable.name().equals("Y"))
-        {
-          card.setY(amt);
-        }
-        else if (variable.name().equals("Z"))
-        {
-          card.setZ(amt);
-        }
-      }
-
+      card.setTargetRegion(regions[Util.rand.nextInt(regions.length)]);
     }
   }
 }

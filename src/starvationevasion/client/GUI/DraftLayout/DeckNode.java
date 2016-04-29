@@ -1,14 +1,13 @@
 package starvationevasion.client.GUI.DraftLayout;
 
-import starvationevasion.client.GUI.GUI;
-import starvationevasion.client.GUI.DraftLayout.hand.ClientPolicyCard;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
-import starvationevasion.common.EnumPolicy;
-import starvationevasion.common.EnumRegion;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import starvationevasion.client.GUI.GUI;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.gamecards.EnumPolicy;
 
 
 /**
@@ -30,10 +29,10 @@ public class  DeckNode extends VBox
    */
   public DeckNode(GUI gui)
   {
-    deck=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA, EnumPolicy.Clean_River_Incentive, gui);
+    deck=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA, EnumPolicy.Policy_CleanRiverIncentive, gui);
     deck.backOfCard();
     discardPile=new StackPane();
-    ClientPolicyCard firstCard=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA,EnumPolicy.Educate_the_Women_Campaign,gui);
+    ClientPolicyCard firstCard=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA,EnumPolicy.Policy_EducateTheWomenCampaign,gui);
     firstCard.discardPile();
     discardPile.getChildren().add(firstCard);
 

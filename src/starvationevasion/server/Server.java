@@ -6,7 +6,12 @@ package starvationevasion.server;
  */
 
 import starvationevasion.common.*;
-import starvationevasion.server.io.*;
+import starvationevasion.common.gamecards.EnumPolicy;
+import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.server.io.HttpParse;
+import starvationevasion.server.io.NetworkException;
+import starvationevasion.server.io.ReadStrategy;
+import starvationevasion.server.io.WriteStrategy;
 import starvationevasion.server.io.formatters.Format;
 import starvationevasion.server.io.strategies.*;
 import starvationevasion.server.model.*;
@@ -21,7 +26,9 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import java.io.IOException;
-import java.net.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -31,6 +38,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 
@@ -60,7 +69,7 @@ public class Server
   // list of available regions
   private final List<EnumRegion> availableRegions = new ArrayList<>(EnumRegion.US_REGIONS.length);
 
-  private final PolicyCard[][] _drafted = new PolicyCard[EnumRegion.US_REGIONS.length][2];
+  private final GameCard[][] _drafted = new GameCard[EnumRegion.US_REGIONS.length][2];
 
   // bool that listen for connections is looping over
   private boolean isWaiting = true;
@@ -68,6 +77,7 @@ public class Server
   public static int TOTAL_HUMAN_PLAYERS = 0;
   public static int TOTAL_AI_PLAYERS = 2;
   public static int TOTAL_PLAYERS = TOTAL_HUMAN_PLAYERS + TOTAL_AI_PLAYERS;
+  public static final long TIMEOUT = 3; // seconds
 
   // Create a backend, currently sqlite
   private final Backend db = new Sqlite(Constant.DB_LOCATION);
@@ -80,8 +90,12 @@ public class Server
   private Future<Connector> connectorFuture;
 
 
+  private final static Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
+
   public Server (int portNumber)
   {
+    LOG.setLevel(Constant.LOG_LEVEL);
+
     connections.put(Temporary.class, new LinkedList<>());
     connections.put(Persistent.class, new LinkedList<>());
 
@@ -106,8 +120,7 @@ public class Server
     }
     catch(IOException e)
     {
-      System.err.println("Server error: Opening socket failed.");
-      e.printStackTrace();
+      LOG.severe("Server error: Opening socket failed.");
       System.exit(-1);
     }
 
@@ -152,13 +165,18 @@ public class Server
 
     Socket potentialClient = null;
     Connector connector = null;
+    LOG.info("Listening host:port " +
+                     serverSocket.getInetAddress().getHostName() +
+                     ":" +
+                     serverSocket.getLocalPort());
 
     while(isWaiting)
     {
       try
       {
         potentialClient = serverSocket.accept();
-        System.out.println(dateFormat.format(date) + " Server: new Connection request received.");
+
+        LOG.info("Server: new Connection request received.");
 
         final Socket finalPotentialClient = potentialClient;
         connectorFuture = executorService.submit(new Callable<Connector>()
@@ -170,7 +188,7 @@ public class Server
           }
         });
 
-        connector = connectorFuture.get(3L, TimeUnit.SECONDS);
+        connector = connectorFuture.get(1L, TimeUnit.SECONDS);
         if (connector == null)
         {
           potentialClient.close();
@@ -178,7 +196,7 @@ public class Server
         }
 
         connector.start();
-        System.out.println(dateFormat.format(date) + " Server: Connected to " + potentialClient.getRemoteSocketAddress());
+        LOG.info("Server: Connected to " + potentialClient.getRemoteSocketAddress());
 
         connections.get(connector.getConnectionType()).add(connector);
         if (connector.getConnectionType() == Persistent.class)
@@ -192,6 +210,7 @@ public class Server
         connectorFuture.cancel(true);
         if (connector != null)
         {
+          LOG.info("Shutting down Connection due to timeout");
           connector.shutdown();
         }
       }
@@ -204,13 +223,12 @@ public class Server
         if (connector != null)
         {
           connector.shutdown();
-          System.out.println(dateFormat.format(date) + " Server: Failed to complete handshake. Closing connection");
-          System.out.println("\t" + e.getMessage());
+          LOG.log(Level.SEVERE, "Shutting down Connection due connector IO", e);
         }
       }
       catch(Exception e)
       {
-         e.printStackTrace();
+        LOG.log(Level.SEVERE, "Unknown error", e);
       }
       finally
       {
@@ -309,15 +327,13 @@ public class Server
     }
     catch(Exception e)
     {
-      System.out.println("Error sending message " + e.getMessage());
-      System.out.println(allConnections.get(i) +
-                                 " User: " + allConnections.get(i).getUser().getUsername());
+      LOG.log(Level.INFO, "Unknown error while trying to broadcast", e);
     }
   }
 
   public void killServer ()
   {
-    System.out.println(dateFormat.format(date) + " Killing server.");
+    LOG.severe("Killing server");
     isWaiting = false;
 
     broadcast(new ResponseFactory().build(uptime(),
@@ -363,7 +379,7 @@ public class Server
 
     for (int i = 0; i < _drafted.length; i++)
     {
-      _drafted[i] = new PolicyCard[2];
+      _drafted[i] = new GameCard[2];
     }
     isPlaying = true;
     currentState = State.LOGIN;
@@ -391,6 +407,7 @@ public class Server
   {
     if (getPlayerCount() == TOTAL_PLAYERS || currentState.ordinal() > State.LOGIN.ordinal())
     {
+      LOG.info("Too many players. not adding " + u.toString());
       return false;
     }
     EnumRegion _region = u.getRegion();
@@ -412,6 +429,7 @@ public class Server
       u.setPlaying(true);
     }
 
+    LOG.fine("Player has region " + u.getRegion());
     playerCache = new ArrayList<>();
     for (User user : userList)
     {
@@ -479,12 +497,12 @@ public class Server
   {
     currentState = State.VOTING;
 
-    ArrayList<PolicyCard> _list = new ArrayList<>();
+    ArrayList<GameCard> _list = new ArrayList<>();
     synchronized(_drafted)
     {
-      for (PolicyCard[] policyCards : _drafted)
+      for (GameCard[] policyCards : _drafted)
       {
-        for (PolicyCard policyCard : policyCards)
+        for (GameCard policyCard : policyCards)
         {
           if (policyCard != null)
           {
@@ -508,13 +526,15 @@ public class Server
    */
   private Void draw ()
   {
-    ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>();
-    ArrayList<PolicyCard> _list = new ArrayList<>();
+    LOG.fine("Server.draw");
+
+    ArrayList<GameCard> enactedPolicyCards = new ArrayList<>();
+    ArrayList<GameCard> _list = new ArrayList<>();
 
 
-    for (PolicyCard[] policyCards : _drafted)
+    for (GameCard[] policyCards : _drafted)
     {
-      for (PolicyCard p : policyCards)
+      for (GameCard p : policyCards)
       {
         if (p == null) continue;
         if (p.votesRequired() == 0 || p.getEnactingRegionCount() > p.votesRequired())
@@ -545,8 +565,9 @@ public class Server
     // make sure there is no other thread calling the sim before advancing
     synchronized(simulator)
     {
+      if(LOG.isLoggable(Level.FINEST))
+        LOG.finest("There is " + enactedPolicyCards.size() + " cards being enacted.");
       ArrayList<WorldData> worldData = simulator.nextTurn(enactedPolicyCards);
-      System.out.println("There is " + enactedPolicyCards.size() + " cards being enacted.");
       broadcast(new ResponseFactory().build(uptime(), new Payload(worldData), Type.WORLD_DATA_LIST));
     }
     // clear the votes
@@ -559,11 +580,15 @@ public class Server
         if (_drafted[i][j] == null) continue;
         _drafted[i][j].clearVotes();
       }
-      _drafted[i] = new PolicyCard[2];
+      _drafted[i] = new GameCard[2];
     }
 
     if (simulator.getCurrentYear() >= Constant.LAST_YEAR)
     {
+      if(LOG.isLoggable(Level.INFO))
+      {
+        LOG.info("Ending game");
+      }
       currentState = State.END;
       broadcastStateChange();
       isPlaying = false;
@@ -601,7 +626,10 @@ public class Server
    */
   private static String handshake (String x)
   {
-
+    if(LOG.isLoggable(Level.FINEST))
+    {
+      LOG.finest("Handshake with " + x);
+    }
     MessageDigest digest;
     byte[] one = x.getBytes();
     byte[] two = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11".getBytes();
@@ -650,7 +678,7 @@ public class Server
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "Exception ");
     }
 
     return cipherText;
@@ -663,14 +691,13 @@ public class Server
    *
    * @return boolean true if web-socket
    */
-  private Connector setStreamType (Socket s) throws
-                                                       NoSuchAlgorithmException,
-                                                       NoSuchPaddingException,
-                                                       IOException,
-                                                       InterruptedException
+  private Connector setStreamType (Socket s) throws NoSuchAlgorithmException,
+                                                    NoSuchPaddingException,
+                                                    IOException,
+                                                    InterruptedException
   {
     // Handling websocket
-     StringBuilder reading = new StringBuilder();
+    StringBuilder reading = new StringBuilder();
     String line = "";
     String socketKey = "";
     byte[] encryptedKey = new byte[128];
@@ -678,10 +705,10 @@ public class Server
     SecretKey secretKey = null;
     boolean encrypted = false;
     int length = 0;
-    s.setSoTimeout(3000);
+    s.setSoTimeout(1000);
+    float tryCount = 0;
     ReadStrategy discoveredReader = null;// = worker.getReader();
     WriteStrategy discoveredWriter = null;// = worker.getWriter();
-    Format<?,?> formatter = null;
 
     HttpParse paresr = new HttpParse();
 
@@ -696,6 +723,21 @@ public class Server
           String number = line.replaceAll("[^0-9]", "").trim();
           length = Integer.valueOf(number);
         }
+        tryCount = 0;
+      }
+      catch(SocketTimeoutException e)
+      {
+        if(LOG.isLoggable(Level.INFO))
+        {
+          LOG.info(String.format("%.1f second(s) until connection closes.\n",  TIMEOUT - tryCount));
+        }
+        tryCount++;
+        if ((TIMEOUT - tryCount) <= 0)
+        {
+          s.close();
+          return null;
+        }
+        continue;
       }
       catch(Exception e)
       {
@@ -724,18 +766,18 @@ public class Server
 
     if (connectionType.equals("Upgrade"))
     {
-      System.out.println(dateFormat.format(date) + " Server: Connected to socket.");
+      LOG.info("Server: Connected to socket.");
       if (acceptType == null || acceptType.equals(DataType.JSON.toString()))
       {
         if (paresr.getHeaderParam("Upgrade") != null && paresr.getHeaderParam("Upgrade").equals("websocket"))
         {
-          System.out.println("\tServer: Web client.");
+          LOG.info("\tServer: Web client.");
           discoveredReader = new WebSocketReadStrategy(s, null);
           discoveredWriter = new WebSocketWriteStrategy(s, null);
         }
         else
         {
-          System.out.println("\tServer: JSON client.");
+          LOG.info("\tServer: JSON client.");
           discoveredReader = new SocketReadStrategy(s, null);
           discoveredWriter = new SocketWriteStrategy(s, null);
         }
@@ -743,7 +785,7 @@ public class Server
       }
       else if (acceptType.equals(DataType.POJO.toString()))
       {
-        System.out.println("\tServer: Java client.");
+        LOG.info("\tServer: Java client.");
         discoveredReader = new JavaObjectReadStrategy(s, null);
         discoveredWriter = new JavaObjectWriteStrategy(s, null);
         discoveredWriter.setFormatter(DataType.POJO);
@@ -755,7 +797,7 @@ public class Server
 
       if (paresr.getHeaderParam("RSA-Socket-Key") != null)
       {
-        System.out.println("\tServer: Encrypted Socket.");
+        LOG.info("\tServer: Encrypted Socket.");
         KeyGenerator keygenerator = KeyGenerator.getInstance(Constant.DATA_ALGORITHM);
         keygenerator.init(128);
 
@@ -768,24 +810,24 @@ public class Server
       }
       else if (paresr.getHeaderParam("Sec-WebSocket-Key") != null)
       {
-        System.out.println("\tServer: Encrypted WS.");
+        LOG.info("\tServer: Encrypted WS.");
         socketKey = Server.handshake(paresr.getHeaderParam("Sec-WebSocket-Key"));
         encrypted = true;
       }
     }
     else if (connectionType.equals("keep-alive"))
     {
-      System.out.println(dateFormat.format(date) + " Server: HTTP request.");
+      LOG.info("Server: HTTP request.");
       discoveredWriter = new HTTPWriteStrategy(s, null);
 
       if (acceptType.contains(DataType.JSON.toString()))
       {
-        System.out.println("\tServer: JSON client.");
+        LOG.info("\tServer: JSON client.");
         discoveredWriter.setFormatter(DataType.JSON);
       }
       else
       {
-        System.out.println("\tServer: HTML client.");
+        LOG.info("\tServer: HTML client.");
         discoveredWriter.setFormatter(DataType.HTML);
       }
       s.setSoTimeout(0);
@@ -846,6 +888,7 @@ public class Server
           u.setLoggedIn(false);
           if (u.isAnonymous())
           {
+            LOG.fine(entry.getClass().getSimpleName() + " logged out and removed " + u.toString());
             userList.remove(u);
           }
           con++;
@@ -856,7 +899,7 @@ public class Server
     // check if any removed. Show removed count
     if (con > 0)
     {
-      System.out.println(dateFormat.format(date) + " Removed " + con + " connection workers.");
+      LOG.info("Removed " + con + " connection workers.");
     }
   }
 
@@ -892,7 +935,7 @@ public class Server
   }
 
 
-  public void draftCard (PolicyCard card, User u)
+  public void draftCard (GameCard card, User u)
   {
     synchronized (_drafted)
     {
@@ -900,7 +943,7 @@ public class Server
     }
   }
 
-  public boolean addVote (PolicyCard card, EnumRegion user)
+  public boolean addVote (GameCard card, EnumRegion user)
   {
     synchronized(_drafted)
     {
@@ -1010,8 +1053,7 @@ public class Server
         }
         catch(Exception e)
         {
-          System.out.println("Could not advance. Stopping game.");
-          System.out.println("Error: " + e.getMessage());
+          LOG.log(Level.SEVERE, "Could not advance. Stopping game.", e);
           stopGame();
           return;
         }

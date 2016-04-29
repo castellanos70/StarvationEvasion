@@ -15,6 +15,7 @@ import starvationevasion.server.model.Sendable;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 public abstract class AbstractWriteStrategy extends SecureStream implements WriteStrategy
 {
@@ -22,6 +23,7 @@ public abstract class AbstractWriteStrategy extends SecureStream implements Writ
   private final Socket socket;
   private DataOutputStream writer;
   private Format<Sendable, ?> formatter = new JSONFormat(this);
+  private final static Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
 
 
   public AbstractWriteStrategy(Socket socket)
@@ -53,6 +55,7 @@ public abstract class AbstractWriteStrategy extends SecureStream implements Writ
   @Override
   public void setFormatter (DataType formatter)
   {
+    LOG.info("Will be transforming data as " + formatter.name());
     if (formatter.equals(DataType.JSON))
     {
       this.formatter = new JSONFormat(this);

@@ -2,6 +2,8 @@ package starvationevasion.sim;
 
 
 import starvationevasion.common.*;
+import starvationevasion.common.gamecards.EnumPolicy;
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.sim.events.AbstractEvent;
 
 import java.io.*;
@@ -193,7 +195,7 @@ public class Simulator
    * @return data structure populated with all game state data needed by the client
    * except high resolution data that might be needed by the visualizer.
    */
-  public ArrayList<WorldData> nextTurn(ArrayList<PolicyCard> cards)
+  public ArrayList<WorldData> nextTurn(ArrayList<GameCard> cards)
   {
     LOGGER.info("Advancing Turn ...");
     ArrayList<WorldData> worldData = getWorldData();
@@ -424,7 +426,7 @@ public class Simulator
     }
     LOGGER.info(startingHandMsg);
 
-    ArrayList<PolicyCard> policiesEnactedThisTurnByAllPlayers = new ArrayList<>();
+    ArrayList<GameCard> policiesEnactedThisTurnByAllPlayers = new ArrayList<>();
     sim.nextTurn(policiesEnactedThisTurnByAllPlayers);
 
 

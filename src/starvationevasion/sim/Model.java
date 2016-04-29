@@ -1,6 +1,7 @@
 package starvationevasion.sim;
 
 import starvationevasion.common.*;
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
 import starvationevasion.sim.events.Hurricane;
@@ -411,7 +412,7 @@ public class Model
   /**
    * @return the simulation currentYear that has just finished.
    */
-  protected int nextYear(ArrayList<PolicyCard> cards)
+  protected int nextYear(ArrayList<GameCard> cards)
   {
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
@@ -1064,8 +1065,17 @@ public class Model
 
     Picture pic = model.testShowMapProjection();
 
-    //Territory territory = model.getTerritory("Italy");
+    //Territory territory = model.getTerritory("Morocco");
     //model.drawBoundaryUsingMapPoints(pic, territory);
+
+    //territory = model.getTerritory("Mauritania");
+    //model.drawBoundary(pic, territory, Color.WHITE);
+
+    //territory = model.getTerritory("Algeria");
+    //model.drawBoundary(pic, territory, Color.GREEN);
+
+    //territory = model.getTerritory("Mexico");
+    //model.drawBoundary(pic, territory, Color.RED);
 
     for (int n = 0; n < 10; n++)
     {

@@ -1,10 +1,6 @@
 package starvationevasion.server.handlers;
 
-/**
- * @author Javier Chavez (javierc@cs.unm.edu)
- */
-
-import starvationevasion.common.PolicyCard;
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
 import starvationevasion.server.model.*;
@@ -25,7 +21,7 @@ public class VoteHandler extends AbstractHandler
     }
     boolean isPresent = false;
     int i;
-    PolicyCard card = (PolicyCard) request.getPayload().getData();
+    GameCard card = (GameCard) request.getPayload().getData();
 //    PolicyCard[] cards = server.getDraftedPolicyCards()[card.getOwner().ordinal()];
 //    for (i = 0; i < cards.length; i++)
 //    {

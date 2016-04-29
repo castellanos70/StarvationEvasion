@@ -1,9 +1,11 @@
 .git
 .idea
 out
+_windows
 bin
 .settings
 *.iml
+*.xml
 .classpath
 .project
 *~

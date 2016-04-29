@@ -1,5 +1,6 @@
 package starvationevasion.client.GUI.DraftLayout;
 
+
 import javafx.scene.Node;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;

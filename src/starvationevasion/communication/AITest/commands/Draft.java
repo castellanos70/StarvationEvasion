@@ -22,7 +22,8 @@ public class Draft extends AbstractCommand
   private boolean draftedCard = false;
   private boolean discarded = false;
   private boolean drawn = false;
-  private GameCard cardDrafted;
+  private GameCard cardDrafted1;
+  private GameCard cardDrafted2;
   private GameCard[] draftedCards = new GameCard[2];
   private int tries = 2;
   private int numTurns = 0;
@@ -146,7 +147,8 @@ public class Draft extends AbstractCommand
       GameCard card = GameCard.create(getClient().getUser().getRegion(),
           policy);
       // dont remove the card we just drafted!!!
-      if (cardDrafted != null && policy != cardDrafted.getCardType()
+      if (cardDrafted1 != null && policy != cardDrafted1.getCardType()
+          && cardDrafted2 != null && policy != cardDrafted2.getCardType()
           && Util.rand.nextBoolean())
       {
         discard = policy;
@@ -158,6 +160,7 @@ public class Draft extends AbstractCommand
     {
 
       getClient().getCommModule().send(Endpoint.DELETE_CARD, discard, null);
+      System.out.println("Card discarded");
 
     }
     discarded = true;
@@ -211,7 +214,14 @@ public class Draft extends AbstractCommand
           getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
           draftedCard = true;
           draftSent = true;
-          cardDrafted = card;
+          if (i == firstRandNum)
+          {
+            cardDrafted1 = card;
+          }
+          if (i == secondRandNum)
+          {
+            cardDrafted2 = card;
+          }
           getClient().draftedCards.get(numTurns).add(card);
         }
       }
@@ -408,7 +418,14 @@ public class Draft extends AbstractCommand
         // RequestFactory().chat(getClient().getStartNanoSec(),
         // "ALL", message, card));
       }
-      cardDrafted = card;
+      if (h == 0)
+      {
+        cardDrafted1 = card;
+      }
+      if (h == 1)
+      {
+        cardDrafted2 = card;
+      }
       getClient().draftedCards.get(numTurns).add(card);
     }
   }

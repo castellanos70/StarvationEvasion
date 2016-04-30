@@ -2,7 +2,6 @@ package starvationevasion.communication.AITest;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -48,9 +47,9 @@ public class AI
 
   public int numTurns = 0;
   public int worldDataSize = 0;
-  public LinkedList<String> policySampleSpace = new LinkedList<String>();
-  public LinkedList<String> foodSampleSpace = new LinkedList<String>();
-  public LinkedList<String> regionSampleSpace = new LinkedList<String>();
+  public ArrayList<String> policySampleSpace = new ArrayList<String>();
+  public ArrayList<String> foodSampleSpace = new ArrayList<String>();
+  public ArrayList<String> regionSampleSpace = new ArrayList<String>();
 
   /*
    * Factors used as map keys to keep track of and store events that are

@@ -174,10 +174,9 @@ public class Draft extends AbstractCommand
   private void randomlySetDraftedCard()
   {
     GameCard card = null;
-
-    int i = 0;
     boolean draftSent = false;
     Random rand = new Random();
+    System.out.println("Hand size:" + getClient().getUser().getHand().size());
     if (numTurns == 0)
     {
       int firstRandNum = rand.nextInt(7);
@@ -186,14 +185,16 @@ public class Draft extends AbstractCommand
       {
         secondRandNum = rand.nextInt(7);
       } while (secondRandNum == firstRandNum);
-      for (EnumPolicy policy : getClient().getUser().getHand())
+
+      for (int i = 0; i < getClient().getUser().getHand().size(); i++)
       {
         if (i == firstRandNum || i == secondRandNum)
         {
           // TODO will have to change this in the future. Cards will be changed
           // to not have BOTH a
           // target region and target food to set, it will be one of each.
-          card = GameCard.create(getClient().getUser().getRegion(), policy);
+          card = GameCard.create(getClient().getUser().getRegion(),
+              getClient().getUser().getHand().get(i));
           EnumFood[] foods = card.getValidTargetFoods();
           EnumRegion[] regions = card.getValidTargetRegions();
           EnumFood food = null;
@@ -208,19 +209,17 @@ public class Draft extends AbstractCommand
           }
           setupCard(card, food, region);
           getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
+          System.out.println("Drafted card:" + card.getPolicyName());
           draftedCard = true;
           draftSent = true;
           cardDrafted = card;
           getClient().draftedCards.get(numTurns).add(card);
         }
-        i++;
       }
       tries = 2;
     } else
     {
       pickThisRegion = false;
-      System.out.println("Last hand size:"
-          + getClient().draftedCards.get(numTurns - 1).size());
       GameCard lastCard1 = getClient().draftedCards.get(numTurns - 1).get(0);
       GameCard lastCard2 = getClient().draftedCards.get(numTurns - 1).get(1);
       int playAgain = 0;
@@ -252,46 +251,10 @@ public class Draft extends AbstractCommand
       }
       distributeProbabilities(playAgain, lastCard2, "policy");
       draftCards(rand);
-      draftCards(rand);
       draftedCard = true;
       draftSent = true;
       tries = 2;
     }
-    // for (EnumPolicy policy : getClient().getUser().getHand())
-    // {
-    // card = PolicyCard.create(getClient().getUser().getRegion(), policy);
-    //
-    // if (card.votesRequired() == 0 || !draftSent)
-    // {
-    // setupCard(card);
-    // getClient().send(new RequestFactory()
-    // .build(getClient().getStartNanoSec(), card, Endpoint.DRAFT_CARD));
-    // draftedCard = true;
-    // draftSent = true;
-    // if (i == 0)
-    // {
-    // continue;
-    // }
-    // if (i == getClient().getUser().getHand().size() - 1)
-    // {
-    // return;
-    // }
-    //
-    // }
-    // i++;
-    // }
-    // setupCard(card);
-    //
-    // if (card == null)
-    // {
-    // return;
-    // }
-    //
-    // new RequestFactory().build(getClient().getStartNanoSec(), card,
-    // Endpoint.DRAFT_CARD);
-    // cardDrafted = card;
-    // draftedCard = true;
-    // tries = 2;
   }
 
   public void checkOtherFactors()
@@ -299,156 +262,170 @@ public class Draft extends AbstractCommand
 
   }
 
+  /**
+   * Jeffrey McCall This method drafts 2 cards. The policy, region, and food
+   * sample space ArrayLists from AI.java are accessed to pick which policy,
+   * region and foods should be used when drafting the 2 cards. If the decrease
+   * of factor's in the AI's region are greater than 20% after the last turn,
+   * then pickThisRegion is true and the AI is much more likely to draft a card
+   * that affects it's own region.
+   * 
+   * @param rand
+   *          A Random object.
+   */
   public void draftCards(Random rand)
   {
-    GameCard card = null;
-    EnumRegion currentRegion = null;
-    String regionString = "";
-    boolean regionFound = false;
-    ArrayList<String> currentHand = new ArrayList<String>();
-    Map<String, EnumPolicy> policyMap = new HashMap<>();
-    for (EnumPolicy policy : getClient().getUser().getHand())
+    ArrayList<EnumPolicy> policiesInHand = new ArrayList<>();
+    for (int i = 0; i < getClient().getUser().getHand().size(); i++)
     {
-      currentHand.add(policy.name());
-      policyMap.put(policy.name(), policy);
+      policiesInHand.add(getClient().getUser().getHand().get(i));
     }
-    String policyString = "";
-    EnumPolicy currentPolicy = null;
-    if (!pickThisRegion)
+    for (int h = 0; h < 2; h++)
     {
-      do
+      GameCard card = null;
+      EnumRegion currentRegion = null;
+      String regionString = "";
+      boolean regionFound = false;
+      String policyString = "";
+      EnumPolicy currentPolicy = null;
+      if (!pickThisRegion)
       {
-        int policyIndex = rand.nextInt(getClient().policySampleSpace.size());
-        policyString = getClient().policySampleSpace.get(policyIndex);
-      } while (!currentHand.contains(policyString));
-      currentPolicy = policyMap.get(policyString);
-    } else
-    {
-      double chance = rand.nextDouble();
-      if (chance <= pickThisRegionChance)
-      {
-        for (EnumPolicy policy : getClient().getUser().getHand())
+        do
         {
-          card = GameCard.create(getClient().getUser().getRegion(), policy);
-          ArrayList<String> regions = new ArrayList<String>();
-          EnumRegion[] regionArray = card.getValidTargetRegions();
-          if (regionArray != null)
+          int policyIndex = rand.nextInt(getClient().policySampleSpace.size());
+          policyString = getClient().policySampleSpace.get(policyIndex);
+          currentPolicy = EnumPolicy.valueOf(policyString);
+        } while (!policiesInHand.contains(EnumPolicy.valueOf(policyString)));
+        policiesInHand.remove(currentPolicy);
+      } else
+      {
+        double chance = rand.nextDouble();
+        if (chance <= pickThisRegionChance)
+        {
+          for (int i = 0; i < policiesInHand.size(); i++)
           {
-            Stream.of(regionArray)
-                .forEach(region -> regions.add(region.name()));
+            card = GameCard.create(getClient().getUser().getRegion(),
+                policiesInHand.get(i));
+            ArrayList<String> regions = new ArrayList<String>();
+            EnumRegion[] regionArray = card.getValidTargetRegions();
+            if (regionArray != null)
+            {
+              Stream.of(regionArray)
+                  .forEach(region -> regions.add(region.name()));
+            }
+            if (regions.contains(getClient().getUser().getRegion().name()))
+            {
+              currentPolicy = policiesInHand.get(i);
+              regionFound = true;
+              regionString = getClient().getUser().getRegion().name();
+              policiesInHand.remove(currentPolicy);
+              break;
+            }
+            regions.clear();
           }
-          if (regions.contains(getClient().getUser().getRegion().name()))
+          if (currentPolicy == null)
           {
-            currentPolicy = policy;
-            regionFound = true;
-            regionString = getClient().getUser().getRegion().name();
-            break;
+            do
+            {
+              int policyIndex = rand
+                  .nextInt(getClient().policySampleSpace.size());
+              policyString = getClient().policySampleSpace.get(policyIndex);
+              currentPolicy = EnumPolicy.valueOf(policyString);
+            } while (!policiesInHand
+                .contains(EnumPolicy.valueOf(policyString)));
+            policiesInHand.remove(currentPolicy);
           }
-        }
-        if (currentPolicy == null)
+        } else if (chance > pickThisRegionChance)
         {
           do
           {
             int policyIndex = rand
                 .nextInt(getClient().policySampleSpace.size());
             policyString = getClient().policySampleSpace.get(policyIndex);
-          } while (!currentHand.contains(policyString));
-          currentPolicy = policyMap.get(policyString);
+            currentPolicy = EnumPolicy.valueOf(policyString);
+          } while (!policiesInHand.contains(EnumPolicy.valueOf(policyString)));
+          policiesInHand.remove(currentPolicy);
+          // TODO add a way to discard and redraw cards so that the AI can try
+          // to
+          // get different cards.
         }
-      } else if (chance > pickThisRegionChance)
+      }
+      card = GameCard.create(getClient().getUser().getRegion(), currentPolicy);
+      EnumFood[] foods = card.getValidTargetFoods();
+      ArrayList<String> validFoods = new ArrayList<>();
+      Map<String, EnumFood> foodMap = new HashMap<>();
+      EnumFood currentFood = null;
+      z = 0;
+      if (foods != null)
+      {
+        Stream.of(foods).forEach(food ->
+        {
+          validFoods.add(food.name());
+          foodMap.put(food.name(), foods[z]);
+          z++;
+        });
+        z = 0;
+        String food = "";
+        do
+        {
+          int foodIndex = rand.nextInt(getClient().foodSampleSpace.size());
+          food = getClient().foodSampleSpace.get(foodIndex);
+        } while (!validFoods.contains(food));
+        currentFood = foodMap.get(food);
+      }
+      EnumRegion[] regions = card.getValidTargetRegions();
+      ArrayList<String> validRegions = new ArrayList<String>();
+      Map<String, EnumRegion> regionMap = new HashMap<>();
+      if (regions != null)
+      {
+        Stream.of(regions).forEach(region ->
+        {
+          validRegions.add(region.name());
+          regionMap.put(region.name(), regions[z]);
+          z++;
+        });
+        z = 0;
+      }
+      if (regions != null && !regionFound)
       {
         do
         {
-          int policyIndex = rand.nextInt(getClient().policySampleSpace.size());
-          policyString = getClient().policySampleSpace.get(policyIndex);
-        } while (!currentHand.contains(policyString));
-        currentPolicy = policyMap.get(policyString);
-        // TODO add a way to discard and redraw cards so that the AI can try to
-        // get different cards.
+          int regionIndex = rand.nextInt(getClient().regionSampleSpace.size());
+          regionString = getClient().regionSampleSpace.get(regionIndex);
+        } while (!validRegions.contains(regionString));
+        currentRegion = regionMap.get(regionString);
       }
-    }
-    card = GameCard.create(getClient().getUser().getRegion(), currentPolicy);
-    EnumFood[] foods = card.getValidTargetFoods();
-    ArrayList<String> validFoods = new ArrayList<>();
-    Map<String, EnumFood> foodMap = new HashMap<>();
-    EnumFood currentFood = null;
-    z = 0;
-    z = 0;
-    if (foods != null)
-    {
-      Stream.of(foods).forEach(food ->
+      if (regionFound)
       {
-        validFoods.add(food.name());
-        foodMap.put(food.name(), foods[z]);
-        z++;
-      });
-      z = 0;
-      String food = "";
-      do
+        currentRegion = regionMap.get(regionString);
+      }
+      setupCard(card, currentFood, currentRegion);
+      getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
+      if (card.votesRequired() != 0)
       {
-        int foodIndex = rand.nextInt(getClient().foodSampleSpace.size());
-        food = getClient().foodSampleSpace.get(foodIndex);
-      } while (!validFoods.contains(food));
-      currentFood = foodMap.get(food);
+        String message = "I am drafing " + card.getTitle()
+            + ". Will you support it?";
+        // getClient().send(new
+        // RequestFactory().chat(getClient().getStartNanoSec(),
+        // "ALL", message, card));
+      }
+      cardDrafted = card;
+      getClient().draftedCards.get(numTurns).add(card);
     }
-    EnumRegion[] regions = card.getValidTargetRegions();
-    ArrayList<String> validRegions = new ArrayList<String>();
-    Map<String, EnumRegion> regionMap = new HashMap<>();
-    if (regions != null)
-    {
-      Stream.of(regions).forEach(region ->
-      {
-        validRegions.add(region.name());
-        regionMap.put(region.name(), regions[z]);
-        z++;
-      });
-      z = 0;
-    }
-    if (regions != null && !regionFound)
-    {
-      do
-      {
-        int regionIndex = rand.nextInt(getClient().regionSampleSpace.size());
-        regionString = getClient().regionSampleSpace.get(regionIndex);
-      } while (!validRegions.contains(regionString));
-      currentRegion = regionMap.get(regionString);
-    }
-    if (regionFound)
-    {
-      currentRegion = regionMap.get(regionString);
-    }
-    setupCard(card, currentFood, currentRegion);
-    getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
-    if (card.votesRequired() != 0)
-    {
-      String message = "I am drafing " + card.getTitle()
-          + ". Will you support it?";
-      // getClient().send(new
-      // RequestFactory().chat(getClient().getStartNanoSec(),
-      // "ALL", message, card));
-    }
-    cardDrafted = card;
-    draftedCards[draftIndex] = card;
-    getClient().draftedCards.get(numTurns).add(card);
-    draftIndex++;
   }
 
   /**
    * Jeffrey McCall This method will change the probability values in an array
-   * of probability values. The probability is decreased if playAgain==-1. It is
-   * increased if playAgain==1.
+   * list of probability values. The probability is decreased if playAgain==-1.
+   * It is increased if playAgain==1. This is done for foods, regions and
+   * policies.
    * 
    * @param playAgain
    *          An int value which determines how the probability is altered.
-   * @param sampleSpace
-   *          The linkedlist of Strings that represents what values will be
-   *          chosen for the next card that is played.
    * @param card
-   *          The policy card that was played last turn that we are checking.
+   *          The policy card that was drafted last turn that we are checking.
    * @param type
    *          The type of item that the probabilities relate to.
-   * @return The index of the value that was altered in the array as well as the
-   *         new value that it was changed to.
    */
   public void distributeProbabilities(int playAgain, GameCard card, String type)
   {
@@ -593,12 +570,11 @@ public class Draft extends AbstractCommand
    * Jeffrey McCall Go through the relevant regional factors to determine how
    * things have worsened or improved since the last turn. If the amount of
    * decrease of factors is greater than the increase, then this method will
-   * return -1 and the card in question will be less likely to get played this
+   * return -1 and the policy in question will be less likely to get played this
    * turn. If the amount of decrease is equal to the increase, than 0 is
    * returned and the likelihood of the card getting played this turn is
    * unaffected. If there was an overall improvement of factors greater than the
-   * decrease, then it is more likely that the policy card will get drafted
-   * again.
+   * decrease, then it is more likely that the policy will get drafted again.
    * 
    * @return -1, 0 or 1
    */
@@ -745,6 +721,15 @@ public class Draft extends AbstractCommand
     return 0;
   }
 
+  /**
+   * Returns the percent change between 2 ints.
+   * 
+   * @param originalVal
+   *          First int.
+   * @param newVal
+   *          Second int.
+   * @return The percent change between 2 ints.
+   */
   private int percentChangeInt(int originalVal, int newVal)
   {
     if (originalVal != 0)
@@ -756,6 +741,15 @@ public class Draft extends AbstractCommand
     }
   }
 
+  /**
+   * Get the percent change between 2 doubles.
+   * 
+   * @param originalVal
+   *          The first double.
+   * @param newVal
+   *          The second double.
+   * @return The percentage change.
+   */
   private double percentChangeDouble(double originalVal, double newVal)
   {
     if (originalVal != 0)
@@ -767,6 +761,13 @@ public class Draft extends AbstractCommand
     }
   }
 
+  /**
+   * The percent change between longs.
+   * 
+   * @param originalVal
+   * @param newVal
+   * @return The percentage change.
+   */
   private long percentChangeLong(long originalVal, long newVal)
   {
     if (originalVal != 0)

@@ -153,10 +153,10 @@ public abstract class GameCard implements Sendable
         myCard = new Policy_FarmInfrastructureSubSaharan();
         break;
       case Policy_FertilizerAidCentralAsia:
-        myCard = new Policy_FertilizerAidMiddleAmerica();
+        myCard = new Policy_FertilizerAidCentralAsia();
         break;
       case Policy_FertilizerAidMiddleAmerica:
-        myCard = new Policy_FertilizerAidCentralAsia();
+        myCard = new Policy_FertilizerAidMiddleAmerica();
         break;
       case Policy_FertilizerAidOceania:
         myCard = new Policy_FertilizerAidOceania();

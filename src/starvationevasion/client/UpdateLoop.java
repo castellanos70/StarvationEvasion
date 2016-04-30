@@ -41,6 +41,7 @@ public class UpdateLoop extends Application
     GUI gui = new GUI(client, null);
     gui.start(new Stage());
     client.setGUI(gui);
+    client.ready(); // Send a ready response to the server
     stage.close();
   }
 
@@ -54,7 +55,7 @@ public class UpdateLoop extends Application
         System.err.println("ERROR: Not connected to server");
         return;
       }
-      client.loginToServer(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.ARCTIC_AMERICA);
+      client.loginToServer(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.USA_CALIFORNIA);
     });
     createUser.setOnAction((event) ->
     {
@@ -63,9 +64,10 @@ public class UpdateLoop extends Application
         System.err.println("ERROR: Not connected to server");
         return;
       }
-      client.createUser(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.ARCTIC_AMERICA);
+      client.createUser(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.USA_CALIFORNIA);
     });
 
+    //client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
     client = new ClientTest(this, "localhost", 5555);
     this.stage = stage;
     stage.setTitle("Login");

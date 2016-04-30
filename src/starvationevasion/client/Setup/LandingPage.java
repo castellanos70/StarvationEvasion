@@ -45,11 +45,11 @@ public class LandingPage extends Application
   private final String WRONG_COMBO = "Wrong username/password combo";
   private final String NO_HOST = "Could not connect to host, try again";
 
-private Client client;
+  private Client client;
   Pane root = new Pane();
   Button singlePlayer = new Button();
   Button multiPlayer = new Button();
-  Button confirm = new Button();
+  Button confirm = new Button("confirm");
   Button multiConfirm = new Button();
   Label unameLabel = new Label("Username");
   TextField uname = new TextField();
@@ -63,14 +63,15 @@ private Client client;
   ComboBox comboBox = new ComboBox(regionList);
   private Button startGame = new Button("startGame");
   Stage stage;
-
+  Image background = new Image("file:assets/visResources/DIFFUSE_MAP.jpg");
   Screen screen;
   static Rectangle2D bounds;
   private Menu menu;
 
   @Override
   public void start(Stage primaryStage) throws Exception
-  {
+  { unameLabel.setTextFill(Color.WHITE);
+    passwdLabel.setTextFill(Color.WHITE);
     screen = Screen.getPrimary();
     bounds = screen.getVisualBounds();
 
@@ -82,7 +83,7 @@ private Client client;
     Pane menuRoot = new Pane();
     menuRoot.setPrefSize(bounds.getWidth(), bounds.getHeight());
     Image logo = new Image("file:assets/visResources/TempLogo.png");
-    Image background = new Image("file:assets/visResources/DIFFUSE_MAP.jpg");
+
 
     ImageView ivLogo = new ImageView(logo);
     ivLogo.setFitHeight(bounds.getHeight() / 7);
@@ -96,6 +97,107 @@ private Client client;
     ivLogo.setTranslateY(bounds.getHeight() / 5 * 3);
     menu = new Menu();
 
+    createUserWithRegion.setOnAction(event ->
+    {
+      openRegionChooser();
+    });
+    startGame.setOnAction(event ->
+    {
+      client.ready();
+      client.openGUI();
+      stage.close();
+    });
+    confirm.setText("Login");
+    multiConfirm.setText("Login");
+    confirm.setOnAction(e ->
+    {
+      if (uname.getText().equals("") || passwd.getText().equals(""))
+      {
+        errorMessage(WRONG_COMBO);
+      } else if (!client.loginToServer(uname.getText(), passwd.getText()))
+      {
+        errorMessage(WRONG_COMBO);
+      } else
+      {
+        setSelectRegion();
+//        GUI gui=new GUI(client,null);
+//        Stage guiStage=new Stage();
+//        gui.start(guiStage);
+//        stage.close();
+        //openRegionChooser();
+      }
+    });
+    createUser.setOnAction(event ->
+    {
+      if (!(uname.getText().equals("")) || !passwd.getText().equals(""))
+      {
+        //if(comboBox.getValue()==null)
+        {
+          //errorMessage("NEED REGION");
+        }
+        //else
+        {
+          client.createUser(uname.getText(), passwd.getText(), (EnumRegion) comboBox.getValue());
+        }
+      } else errorMessage(WRONG_COMBO);
+    });
+    singlePlayer.setOnAction(actionEvent -> {
+      try
+      {
+        client = new Client("localhost", 5555);
+        setBasicLogin();
+      } catch (Exception e)
+      {
+        errorMessage(NO_HOST);
+      }
+    });
+
+    multiPlayer.setOnAction(e ->
+    {
+      client = new Client("foodgame.cs.unm.edu", 5555);
+      setBasicLogin();
+    });
+
+    confirm.setOnAction(e ->
+    {
+      if (uname.getText().equals("") || passwd.getText().equals(""))
+      {
+        errorMessage(WRONG_COMBO);
+      } else if (!client.loginToServer(uname.getText(), passwd.getText()))
+      {
+        errorMessage(WRONG_COMBO);
+      } else
+      {
+        setSelectRegion();
+//        GUI gui=new GUI(client,null);
+//        Stage guiStage=new Stage();
+//        gui.start(guiStage);
+//        stage.close();
+        //openRegionChooser();
+      }
+    });
+
+    loginAsAdmin.setOnAction(event1 ->
+    {
+      setAdminLogin();
+      // client.getUsers();
+    });
+
+    createUser.setOnAction(event ->
+    {
+      if (!(uname.getText().equals("")) || !passwd.getText().equals(""))
+      {
+        //if(comboBox.getValue()==null)
+        {
+          //errorMessage("NEED REGION");
+        }
+        //else
+        {
+          client.createUser(uname.getText(), passwd.getText(), (EnumRegion) comboBox.getValue());
+        }
+      } else errorMessage(WRONG_COMBO);
+    });
+
     root.getChildren().addAll(imgView, menu, ivLogo);
 
     Scene menuScene = new Scene(root);
@@ -106,89 +208,8 @@ private Client client;
   }
 
 
-//  /**
-//   * This is called when you create a new Application
-//   *
-//   * @param stage
-//   * @throws Exception
-//   */
-//  @Override
-//  public void start(final Stage stage) throws Exception
-//  {
-//    this.stage = stage;
-//    stage.setTitle("Starvation Evasion");
-//    confirm.setText("Login");
-//    multiConfirm.setText("Login");
-//    singlePlayer.setText("Single Player");
-//    multiPlayer.setText("MultiPlayer");
-//    //Event handlers for buttons
-//    singlePlayer.setOnAction(actionEvent -> {
-//      try
-//      {
-//        client = new Client("localhost", 5555);
-//        setBasicLogin();
-//      } catch (Exception e)
-//      {
-//        errorMessage(NO_HOST);
-//      }
-//    });
-//
-//    multiPlayer.setOnAction(e ->
-//    {
-//      client = new Client("foodgame.cs.unm.edu", 5555);
-//      setBasicLogin();
-//    });
-//
-//    confirm.setOnAction(e ->
-//    {
-//      if (uname.getText().equals("") || passwd.getText().equals(""))
-//      {
-//        errorMessage(WRONG_COMBO);
-//      } else if (!client.loginToServer(uname.getText(), passwd.getText()))
-//      {
-//        errorMessage(WRONG_COMBO);
-//      } else
-//      {
-//        setSelectRegion();
-////        GUI gui=new GUI(client,null);
-////        Stage guiStage=new Stage();
-////        gui.start(guiStage);
-////        stage.close();
-//        //openRegionChooser();
-//      }
-//    });
-//
-//    loginAsAdmin.setOnAction(event1 ->
-//    {
-//      setAdminLogin();
-//      // client.getUsers();
-//    });
-//
-//    createUser.setOnAction(event ->
-//    {
-//      if (!(uname.getText().equals("")) || !passwd.getText().equals(""))
-//      {
-//        //if(comboBox.getValue()==null)
-//        {
-//          //errorMessage("NEED REGION");
-//        }
-//        //else
-//        {
-//          client.createUser(uname.getText(), passwd.getText(), (EnumRegion) comboBox.getValue());
-//        }
-//      } else errorMessage(WRONG_COMBO);
-//    });
-//
-//    createUserWithRegion.setOnAction(event ->
-//    {
-//      openRegionChooser();
-//    });
-//    startGame.setOnAction(event ->
-//    {
-//      client.ready();
-//      client.openGUI();
-//      stage.close();
-//    });
+
+
 //    //Sets up the initial stage
 //    root.setAlignment(Pos.CENTER);
 //    root.setHgap(10);
@@ -207,7 +228,7 @@ private Client client;
       VBox menu0 = new VBox(1);
 
       menu0.setTranslateX(50);
-      menu0.setTranslateY(bounds.getHeight() / 4*3);
+      menu0.setTranslateY(bounds.getHeight() / 4 * 3);
 
       MenuButton btnSinglePlayer = new MenuButton("  SINGLE PLAYER");
       btnSinglePlayer.setOnMouseClicked(event ->
@@ -230,7 +251,7 @@ private Client client;
       MenuButton btnJoinNetwork = new MenuButton("  MULTIPLAYER");
       btnJoinNetwork.setOnMouseClicked(event ->
       {
-        client=new Client("foodgame.cs.unm.edu",5555);
+        client = new Client("foodgame.cs.unm.edu", 5555);
         setBasicLogin();
       });
 
@@ -265,56 +286,55 @@ private Client client;
 
       });
 
-//      confirm.setOnAction(e ->
-//    {
-//      if (uname.getText().equals("") || passwd.getText().equals(""))
-//      {
-//        errorMessage(WRONG_COMBO);
-//      } else if (!client.loginToServer(uname.getText(), passwd.getText()))
-//      {
-//        errorMessage(WRONG_COMBO);
-//      } else
-//      {
-////        setSelectRegion();
-////        GUI gui=new GUI(client,null);
-////        Stage guiStage=new Stage();
-////        gui.start(guiStage);
-////        stage.close();
-////        //openRegionChooser();
-//      }
-//    });
-
-    loginAsAdmin.setOnAction(event1 ->
-    {
-      setAdminLogin();
-       client.getUsers();
-    });
-
-    createUser.setOnAction(event ->
-    {
-      if (!(uname.getText().equals("")) || !passwd.getText().equals(""))
+      confirm.setOnAction(e ->
       {
-        if(comboBox.getValue()==null)
+        if (uname.getText().equals("") || passwd.getText().equals(""))
         {
-          errorMessage("NEED REGION");
-        }
-        else
+          errorMessage(WRONG_COMBO);
+        } else if (!client.loginToServer(uname.getText(), passwd.getText()))
         {
-          client.createUser(uname.getText(), passwd.getText(), (EnumRegion) comboBox.getValue());
+          errorMessage(WRONG_COMBO);
+        } else
+        {
+//        setSelectRegion();
+//        GUI gui=new GUI(client,null);
+//        Stage guiStage=new Stage();
+//        gui.start(guiStage);
+//        stage.close();
+//        //openRegionChooser();
         }
-      } else errorMessage(WRONG_COMBO);
-    });
+      });
 
-    createUserWithRegion.setOnAction(event ->
-    {
-      openRegionChooser();
-    });
-    startGame.setOnAction(event ->
-    {
-      client.ready();
-      client.openGUI();
-      stage.close();
-    });
+      loginAsAdmin.setOnAction(event1 ->
+      {
+        setAdminLogin();
+        client.getUsers();
+      });
+
+      createUser.setOnAction(event ->
+      {
+        if (!(uname.getText().equals("")) || !passwd.getText().equals(""))
+        {
+          if (comboBox.getValue() == null)
+          {
+            errorMessage("NEED REGION");
+          } else
+          {
+            client.createUser(uname.getText(), passwd.getText(), (EnumRegion) comboBox.getValue());
+          }
+        } else errorMessage(WRONG_COMBO);
+      });
+
+      createUserWithRegion.setOnAction(event ->
+      {
+        openRegionChooser();
+      });
+      startGame.setOnAction(event ->
+      {
+        client.ready();
+        client.openGUI();
+        stage.close();
+      });
 
       menu0.getChildren().addAll(btnSinglePlayer, btnJoinNetwork, btnHostNetwork, btnOptions, btnTutorial, btnExit);
       Rectangle bg = new Rectangle(bounds.getWidth(), bounds.getHeight());
@@ -391,9 +411,9 @@ private Client client;
 
   private void setLogin()
   {
+
+    root.getChildren().remove(menu);
     GridPane temp = new GridPane();
-    
-    temp.getChildren().clear();
     temp.add(unameLabel, 0, 1);
     temp.add(uname, 0, 2);
     temp.add(passwdLabel, 0, 3);
@@ -403,12 +423,16 @@ private Client client;
     temp.add(loginAsAdmin, 1, 3);
     temp.add(createUserWithRegion, 1, 4);
     temp.add(comboBox, 1, 5);
-    root.getChildren().clear();
+    temp.setTranslateY((int) bounds.getHeight() / 8 * 3);
+    temp.setTranslateX((int) bounds.getWidth() / 8 * 3);
+    //root.getChildren().clear();
     root.getChildren().add(temp);
   }
 
   private void setBasicLogin()
-  { GridPane temp = new GridPane();
+  {
+    root.getChildren().remove(menu);
+    GridPane temp = new GridPane();
     temp.getChildren().clear();
     temp.add(unameLabel, 0, 1);
     temp.add(uname, 0, 2);
@@ -416,11 +440,14 @@ private Client client;
     temp.add(passwd, 0, 4);
     temp.add(confirm, 1, 1);
     temp.add(createUser, 1, 2);
-    root.getChildren().clear();
+    temp.setTranslateY((int) bounds.getHeight() / 8 * 3);
+    temp.setTranslateX((int) bounds.getWidth() / 8 * 3);
+    temp.add(loginAsAdmin, 1, 3);
+    temp.add(createUserWithRegion, 1, 4);
+    temp.add(comboBox, 1, 5);
+    //root.getChildren().clear();
     root.getChildren().add(temp);
-//    root.add(loginAsAdmin,1,3);
-//    root.add(createUserWithRegion,1,4);
-//    root.add(comboBox,1,5);
+
   }
 
   private Slider numberOfPlayers;
@@ -432,12 +459,12 @@ private Client client;
 
   private void setSelectRegion()
   {
-//    regions=client.getAvailableRegion();
-//    regionList= FXCollections.observableArrayList(regions);
-//    comboBox=new ComboBox(regionList);
+    regions = client.getAvailableRegion();
+    regionList = FXCollections.observableArrayList(regions);
+    comboBox = new ComboBox(regionList);
     GridPane temp = new GridPane();
-    root.getChildren().clear();
-    // root.add(comboBox,0,0);
+    //root.getChildren().clear();
+    temp.add(comboBox,0,0);
     temp.add(startGame, 0, 1);
     root.getChildren().add(temp);
   }

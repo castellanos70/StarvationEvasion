@@ -1,7 +1,8 @@
 package starvationevasion.client.GUI.VotingLayout;
 
 import starvationevasion.client.GUI.GUI;
-import starvationevasion.client.GUI.Timer;
+import starvationevasion.client.GUI.ResizeStrategy;
+import starvationevasion.client.GUI.Clock;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 
@@ -12,7 +13,7 @@ public class VotingTimer extends StackPane
 {
   GUI gui;
   Label temp;
-  public static Timer voteTimer = new Timer("vote");
+  public Clock voteTimer = new Clock(this, new ResizeStrategy(0, 0, 1, 1));
 
   public VotingTimer(GUI gui)
   {

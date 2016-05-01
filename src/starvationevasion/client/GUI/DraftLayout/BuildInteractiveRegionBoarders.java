@@ -10,6 +10,9 @@ import javafx.scene.shape.SVGPath;
 
 /**
  * 
+ * 
+ * @Author Christian Seely 
+ * 
  * This class constructs all of the SVGPath objects that compose
  * of each region and place them on the correct location on the
  * world map. Note the Region colors, Region glow colors, region fill

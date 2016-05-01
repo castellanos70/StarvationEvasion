@@ -1,29 +1,36 @@
 package starvationevasion.ai.commands;
 
-
 import starvationevasion.ai.AI;
 import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Request;
-import starvationevasion.server.model.RequestFactory;
 
 public class Uptime extends AbstractCommand
 {
 
-  public Uptime (AI client)
+  public Uptime(AI client)
   {
     super(client);
   }
 
   @Override
-  public boolean run ()
+  public boolean run()
   {
 
     if (getClient().getStartNanoSec() == 0)
     {
-      getClient().send(new RequestFactory().build(getClient().getStartNanoSec(), Endpoint.SERVER_UPTIME));
+      getClient().getCommModule().send(Endpoint.SERVER_UPTIME, null, null);
+      // getClient().send(new
+      // RequestFactory().build(getClient().getStartNanoSec(),
+      // Endpoint.SERVER_UPTIME));
       return true;
     }
     return false;
 
+  }
+
+  @Override
+  public String commandString()
+  {
+    // TODO Auto-generated method stub
+    return "Uptime";
   }
 }

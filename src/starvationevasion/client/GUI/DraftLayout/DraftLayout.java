@@ -41,7 +41,6 @@ public class DraftLayout extends GridPane
   ProductBarDataDisplay pbDataDisplay;
   GraphDisplay graphDisplay;
   DiscardDisplay discardDisplay;
-  DataVisToggles dataVisToggle;
 
   Hand hand;
   DraftTimer draftTimer;
@@ -94,18 +93,7 @@ public class DraftLayout extends GridPane
     
     worldMap=new WorldMap(gui);
     this.add(worldMap, 1, 1, 10, 6);
-
-
-    //node which lets user toggle on data visualizations such as 
-    //regional boarders, climate models, and most important crop
-    //production visual markers. NOTE the toggle of regional
-    //boards is the only thing implemented as of now. 
-    dataVisToggle = new DataVisToggles(gui);
-    
-    dataVisToggle.setWorldPaneControl(worldMap.getWorldPane());
-    
-    this.add(dataVisToggle, 1, 1, 10,1);
-    
+  
     
     //node which holds the user's deck/discard pile information
     deckNode = new DeckNode(gui);

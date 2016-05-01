@@ -35,7 +35,7 @@ public class WorldMap extends ScrollPane
    // setVbarPolicy(ScrollBarPolicy.NEVER);
 
     this.gui=gui;
-    imageMap=gui.getImageGetter().getRegionWorldMap();
+    imageMap=gui.getImageGetter().getWorldMap();
     ImageView worldMap=new ImageView(imageMap);
 
     VBox holder=new VBox();

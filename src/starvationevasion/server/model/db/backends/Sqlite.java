@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import starvationevasion.common.EnumRegion;
+
 
 public class Sqlite implements Backend
 {

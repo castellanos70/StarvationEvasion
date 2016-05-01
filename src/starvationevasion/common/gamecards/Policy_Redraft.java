@@ -1,5 +1,7 @@
 package starvationevasion.common.gamecards;
 
+import starvationevasion.sim.carddeck;
+
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
@@ -30,5 +32,11 @@ public class Policy_Redraft extends GameCard
   @Override
   public String getGameText() {return TEXT;}
   
-  //TODO find somewhere to store a player's discard and deck, and have an accessor method here.
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  //TODO Might need to be changed how this accesses the discard.
+  public EnumPolicy[] getValidTargetCards() {return CardDeck.getDiscardPile();}
+  
 }

@@ -69,6 +69,14 @@ public abstract class GameCard implements Sendable
    * This field is ignored if this policy does not require a target region.
    */
   private EnumRegion targetRegion;
+  
+
+  //=========================================================================================
+  /**
+   * Some cards require a target card.
+   * This field is ignored if this policy does not require a target card.
+   */
+  private EnumPolicy targetCard;
 
 
 
@@ -241,6 +249,13 @@ public abstract class GameCard implements Sendable
    */
   public int actionPointCost() {return 1;}
 
+//=========================================================================================
+  /**
+   * In the abstract GameCard class, this method returns the default
+   * flavor text of a card.  Initially, this String is null, but any card that will have 
+   * flavor text will override this method to return the selected String of text.
+   */
+  public String getFlavorText() {return null}
 
 
   //=========================================================================================
@@ -360,7 +375,22 @@ public abstract class GameCard implements Sendable
    * @return targetFood.
    */
   public EnumFood getTargetFood() {return targetFood;}
+  
+  
+//=========================================================================================
+  /**
+   * Some policy cards require a target card from deck, discard, or hand.
+   * @param targetCard sets the targetCard.  Ignored if this policy does not use a target card.
+   */
+  public EnumFood setTargetCard(EnumPolicy targetCard) {this.targetCard = targetCard;}
+  
 
+  //=========================================================================================
+  /**
+   * Some policy cards require a target card from deck, discard, or hand.
+   * @return targetCard.
+   */
+  public EnumPolicy getTargetCard() {return targetCard;}
 
 
   //=========================================================================================
@@ -453,6 +483,15 @@ public abstract class GameCard implements Sendable
    * Returns null if this card does not require a region.
    */
   public EnumFood[] getValidTargetFoods() {return null;}
+  
+  
+//=========================================================================================
+  /**
+   * The default is null (no target card required).
+   * @return An array of cards that are valid as the target card of this policyCard.
+   * Returns null if this card does not require a target card.
+   */
+  public EnumPolicy[] getValidTargetCards() {return null;}
 
 
 

@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import starvationevasion.common.EnumRegion;
+
 
 public class Sqlite implements Backend
 {
@@ -126,6 +128,10 @@ public class Sqlite implements Backend
         else if (value instanceof Number)
         {
           stringBuilder.append(value);
+        }
+        else if (value instanceof EnumRegion)
+        {
+          stringBuilder.append("'").append(value.toString()).append("'");
         }
 
 

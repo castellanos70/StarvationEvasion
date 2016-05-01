@@ -346,6 +346,7 @@ public class Draft extends AbstractCommand
 
   public void checkOtherFactors()
   {
+    z=0;
     RegionData thisRegion=null;
     //First check other regions for impending starvation events.
     for(RegionData data:getClient().getWorldData().get(1).regionData)
@@ -382,6 +383,23 @@ public class Draft extends AbstractCommand
       amtToAdjust*=.75;
       adjustProbability(amtToAdjust,getClient().getUser().getRegion().name());
     }
+    //Check relevant factors in AI's own region.
+    int revenueDiff=percentChangeInt(thisRegion.revenueBalance, 
+        getClient().getWorldData().get(0).regionData[thisRegion.region.ordinal()].revenueBalance);
+    //If revenue severely down, increase likelihood of playing a card that will get the region more 
+    //money.
+    if(revenueDiff<-50)
+    {
+      adjustProbability(probabilityMap.get("Policy_Loan")*2,"Policy_Loan");
+      adjustProbability(probabilityMap.get("Policy_DiverttheFunds")*2,"Policy_DiverttheFunds");
+      adjustProbability(probabilityMap.get("Policy_Fundraiser")*2,"Policy_Fundraiser");
+    }
+    //If the region doesn't need the money, make it very unlikely to select getting a loan.
+    else if(revenueDiff>0)
+    {
+      adjustProbability(1,"Policy_Loan");
+    }
+    EnumFood foodNeedingAttention=null;
   }
   /**
    * Jeffrey McCall
@@ -650,7 +668,8 @@ public class Draft extends AbstractCommand
               lastFoodExported += (Long) val;
             });
       }
-      if (h == 1)
+      if (h == getClient().worldDataSize - 2
+          || h == getClient().worldDataSize - 1)
       {
         revenueBalance += (Integer) getClient().factorMap
             .get(WorldFactors.REVENUEBALANCE).get(h)[0];

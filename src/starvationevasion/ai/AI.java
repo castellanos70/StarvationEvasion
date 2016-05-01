@@ -13,11 +13,9 @@ import starvationevasion.ai.commands.Login;
 import starvationevasion.ai.commands.Uptime;
 import starvationevasion.ai.commands.Vote;
 import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.SpecialEventData;
 import starvationevasion.common.WorldData;
-import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.communication.CommModule;
 import starvationevasion.communication.Communication;
@@ -47,9 +45,6 @@ public class AI
 
   public int numTurns = 0;
   public int worldDataSize = 0;
-  public ArrayList<String> policySampleSpace = new ArrayList<String>();
-  public ArrayList<String> foodSampleSpace = new ArrayList<String>();
-  public ArrayList<String> regionSampleSpace = new ArrayList<String>();
 
   /*
    * Factors used as map keys to keep track of and store events that are
@@ -78,7 +73,7 @@ public class AI
 
   public AI(String host, int port)
   {
-    createMapAndLists();
+    createMap();
     COMM = new CommModule(host, port);
     isRunning = COMM.isConnected();
 
@@ -134,32 +129,11 @@ public class AI
    * Jeffrey McCall Create the EnumMap that will be passed to Draft.java which
    * will aid the AI in making decisions about which card to draft.
    */
-  private void createMapAndLists()
+  private void createMap()
   {
     for (int i = 0; i < WorldFactors.values().length; i++)
     {
       factorMap.put(WorldFactors.values()[i], new ArrayList<Object[]>());
-    }
-    for (int i = 0; i < EnumPolicy.values().length; i++)
-    {
-      for (int h = 0; h < 3; h++)
-      {
-        policySampleSpace.add(EnumPolicy.values()[i].name());
-      }
-    }
-    for (int i = 0; i < EnumFood.values().length; i++)
-    {
-      for (int h = 0; h < 3; h++)
-      {
-        foodSampleSpace.add(EnumFood.values()[i].name());
-      }
-    }
-    for (int i = 0; i < EnumRegion.values().length; i++)
-    {
-      for (int h = 0; h < 3; h++)
-      {
-        regionSampleSpace.add(EnumRegion.values()[i].name());
-      }
     }
   }
 

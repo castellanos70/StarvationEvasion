@@ -10,6 +10,7 @@ import starvationevasion.ai.AI;
 import starvationevasion.ai.AI.WorldFactors;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.RegionData;
 import starvationevasion.common.Util;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
@@ -37,17 +38,26 @@ public class Draft extends AbstractCommand
   Integer lastFoodIncome = new Integer(0);
   Long lastFoodImported = new Long(0);
   Long lastFoodExported = new Long(0);
+  Random rand=new Random();
   boolean moreThanOne = false;
   boolean pickThisRegion = false;
   double pickThisRegionChance = .75;
   int z = 0;
   int probModifier = 0;
   int draftIndex = 0;
-
+  public ArrayList<String> policySampleSpace = new ArrayList<String>();
+  public ArrayList<String> foodSampleSpace = new ArrayList<String>();
+  public ArrayList<String> regionSampleSpace = new ArrayList<String>();
+  private Map<String,Integer> probabilityMap=new HashMap<>();
+  int totalIncrease=0;
+  int totalDecrease=0;
+  int amtToAdjust=0;
+  
   public Draft(AI client)
   {
     super(client);
     this.numTurns = client.numTurns;
+    fillProbabilityMap();
   }
 
   @Override
@@ -55,7 +65,50 @@ public class Draft extends AbstractCommand
   {
     return "Draft";
   }
-
+  /**
+   * Fill the map of probability values with new ProbabilityLevel objects and
+   * corresponding types of regions, foods and policies.
+   */
+  public void fillProbabilityMap()
+  {
+    for(EnumFood food:EnumFood.values())
+    {
+      probabilityMap.put(food.name(),rand.nextInt(20)+1);
+    }
+    for(EnumPolicy policy:EnumPolicy.values())
+    {
+      probabilityMap.put(policy.name(),rand.nextInt(20)+1);
+    }
+    for(EnumRegion region:EnumRegion.values())
+    {
+      probabilityMap.put(region.name(),rand.nextInt(20)+1);
+    }
+  }
+  
+  public void createLists()
+  {
+    for(EnumFood food:EnumFood.values())
+    {
+      for(int i=0;i<probabilityMap.get(food.name());i++)
+      {
+        foodSampleSpace.add(food.name());
+      }
+    }
+    for(EnumRegion region:EnumRegion.values())
+    {
+      for(int i=0;i<probabilityMap.get(region.name());i++)
+      {
+        regionSampleSpace.add(region.name());
+      }
+    }
+    for(EnumPolicy policy:EnumPolicy.values())
+    {
+      for(int i=0;i<probabilityMap.get(policy.name());i++)
+      {
+        policySampleSpace.add(policy.name());
+      }
+    }
+  }
   @Override
   public boolean run()
   {
@@ -184,12 +237,11 @@ public class Draft extends AbstractCommand
   {
     GameCard card = null;
     boolean draftSent = false;
-    Random rand = new Random();
     System.out.println("Hand size:" + getClient().getUser().getHand().size());
     ArrayList<EnumPolicy> currentHand = new ArrayList<>();
     for (int i = 0; i < getClient().getUser().getHand().size(); i++)
     {
-      currentHand.add(getClient().getUser().getHand().get(i));
+      System.out.println("Hand:"+getClient().getUser().getHand().get(i).name());
     }
     if (getClient().getUser().getHand().size() == 0)
     {
@@ -282,7 +334,9 @@ public class Draft extends AbstractCommand
         distributeProbabilities(playAgain, lastCard2, "region");
       }
       distributeProbabilities(playAgain, lastCard2, "policy");
-      draftCards(rand);
+      checkOtherFactors();
+      createLists();
+      draftCards();
       draftedCard = true;
       draftSent = true;
       tries = 2;
@@ -292,9 +346,61 @@ public class Draft extends AbstractCommand
 
   public void checkOtherFactors()
   {
-
+    RegionData thisRegion=null;
+    //First check other regions for impending starvation events.
+    for(RegionData data:getClient().getWorldData().get(1).regionData)
+    {
+      if(data.undernourished>40 && 
+          data.undernourished>=getClient().getWorldData().get(0).regionData[data.region.ordinal()].undernourished)
+      {
+        amtToAdjust=probabilityMap.get(data.region.name());
+        amtToAdjust*=data.undernourished/10;
+        adjustProbability(amtToAdjust,data.region.name());
+        amtToAdjust=0;
+      }
+      if(data.region.name().equals(getClient().getUser().getRegion().name()))
+      {
+        thisRegion=data;
+      }
+    }
+    //If there has been an overall decrease of factors greater than 20%, then it is
+    //75% more likely that this region will be picked.
+    if(pickThisRegion)
+    {
+      amtToAdjust=0;
+      probabilityMap.forEach((key,val)->
+      {
+        try
+        {
+          if(EnumRegion.valueOf(key)!=null)
+          {
+            amtToAdjust+=probabilityMap.get(key);
+          }
+        }
+        catch(IllegalArgumentException e){}
+      });
+      amtToAdjust*=.75;
+      adjustProbability(amtToAdjust,getClient().getUser().getRegion().name());
+    }
   }
-
+  /**
+   * Jeffrey McCall
+   * Adjust the probability that an item will be selected. Either increase or
+   * decrease the probability by a certain amount.
+   * @param increase
+   *        Increase probability.
+   * @param decrease
+   *        Decrease probability.
+   * @param size
+   *        The size to increase or decrease.
+   * @param type
+   *        The type of the item, like food, region etc.
+   */
+  private void adjustProbability(int size,String type)
+  {
+    probabilityMap.remove(type);
+    probabilityMap.put(type, size);
+  }
   /**
    * Jeffrey McCall This method drafts 2 cards. The policy, region, and food
    * sample space ArrayLists from AI.java are accessed to pick which policy,
@@ -306,7 +412,7 @@ public class Draft extends AbstractCommand
    * @param rand
    *          A Random object.
    */
-  public void draftCards(Random rand)
+  public void draftCards()
   {
     ArrayList<EnumPolicy> policiesInHand = new ArrayList<>();
     for (int i = 0; i < getClient().getUser().getHand().size(); i++)
@@ -321,70 +427,13 @@ public class Draft extends AbstractCommand
       boolean regionFound = false;
       String policyString = "";
       EnumPolicy currentPolicy = null;
-      if (!pickThisRegion)
+      do
       {
-        do
-        {
-          int policyIndex = rand.nextInt(getClient().policySampleSpace.size());
-          policyString = getClient().policySampleSpace.get(policyIndex);
-          currentPolicy = EnumPolicy.valueOf(policyString);
-        } while (!policiesInHand.contains(EnumPolicy.valueOf(policyString)));
-        policiesInHand.remove(currentPolicy);
-      } 
-      else
-      {
-        double chance = rand.nextDouble();
-        if (chance <= pickThisRegionChance)
-        {
-          for (int i = 0; i < policiesInHand.size(); i++)
-          {
-            card = GameCard.create(getClient().getUser().getRegion(),
-                policiesInHand.get(i));
-            ArrayList<String> regions = new ArrayList<String>();
-            EnumRegion[] regionArray = card.getValidTargetRegions();
-            if (regionArray != null)
-            {
-              Stream.of(regionArray)
-                  .forEach(region -> regions.add(region.name()));
-            }
-            if (regions.contains(getClient().getUser().getRegion().name()))
-            {
-              currentPolicy = policiesInHand.get(i);
-              regionFound = true;
-              regionString = getClient().getUser().getRegion().name();
-              policiesInHand.remove(currentPolicy);
-              break;
-            }
-            regions.clear();
-          }
-          if (currentPolicy == null)
-          {
-            do
-            {
-              int policyIndex = rand
-                  .nextInt(getClient().policySampleSpace.size());
-              policyString = getClient().policySampleSpace.get(policyIndex);
-              currentPolicy = EnumPolicy.valueOf(policyString);
-            } while (!policiesInHand
-                .contains(EnumPolicy.valueOf(policyString)));
-            policiesInHand.remove(currentPolicy);
-          }
-        } 
-        else if (chance > pickThisRegionChance)
-        {
-          do
-          {
-            int policyIndex = rand
-                .nextInt(getClient().policySampleSpace.size());
-            policyString = getClient().policySampleSpace.get(policyIndex);
-            currentPolicy = EnumPolicy.valueOf(policyString);
-          } while (!policiesInHand.contains(EnumPolicy.valueOf(policyString)));
-          policiesInHand.remove(currentPolicy);
-          // TODO add a way to discard and redraw cards so that the AI can try
-          // to
-          // get different cards.
-        }
-      }
+        int policyIndex = rand.nextInt(policySampleSpace.size());
+        policyString = policySampleSpace.get(policyIndex);
+        currentPolicy = EnumPolicy.valueOf(policyString);
+      } while (!policiesInHand.contains(currentPolicy));
+      policiesInHand.remove(currentPolicy);
       card = GameCard.create(getClient().getUser().getRegion(), currentPolicy);
       EnumFood[] foods = card.getValidTargetFoods();
       ArrayList<String> validFoods = new ArrayList<>();
@@ -403,8 +452,8 @@ public class Draft extends AbstractCommand
         String food = "";
         do
         {
-          int foodIndex = rand.nextInt(getClient().foodSampleSpace.size());
-          food = getClient().foodSampleSpace.get(foodIndex);
+          int foodIndex = rand.nextInt(foodSampleSpace.size());
+          food = foodSampleSpace.get(foodIndex);
         } while (!validFoods.contains(food));
         currentFood = foodMap.get(food);
       }
@@ -425,8 +474,8 @@ public class Draft extends AbstractCommand
       {
         do
         {
-          int regionIndex = rand.nextInt(getClient().regionSampleSpace.size());
-          regionString = getClient().regionSampleSpace.get(regionIndex);
+          int regionIndex = rand.nextInt(regionSampleSpace.size());
+          regionString = regionSampleSpace.get(regionIndex);
         } while (!validRegions.contains(regionString));
         currentRegion = regionMap.get(regionString);
       }
@@ -436,6 +485,7 @@ public class Draft extends AbstractCommand
       }
       setupCard(card, currentFood, currentRegion);
       getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
+      System.out.println("Card drafted:"+card.getPolicyName());
       if (card.votesRequired() != 0)
       {
         String message = "I am drafing " + card.getTitle()
@@ -475,86 +525,35 @@ public class Draft extends AbstractCommand
     {
       if (type.equals("food"))
       {
-        for (int i = 0; i < getClient().foodSampleSpace.size(); i++)
+        if(totalDecrease<10)
         {
-          if (card.getTargetFood().name()
-              .equals(getClient().foodSampleSpace.get(i)))
-          {
-            z = 0;
-            moreThanOne = false;
-            getClient().foodSampleSpace.forEach(food ->
-            {
-              if (card.getTargetFood().name().equals(food))
-              {
-                z++;
-              }
-              if (z > 1)
-              {
-                moreThanOne = true;
-              }
-            });
-            if (moreThanOne)
-            {
-              getClient().foodSampleSpace.remove(i);
-            }
-            return;
-          }
+          adjustProbability(9,card.getTargetFood().name());
         }
-        if (type.equals("region"))
+        else
         {
-          for (int i = 0; i < getClient().regionSampleSpace.size(); i++)
-          {
-            if (card.getTargetRegion().name()
-                .equals(getClient().regionSampleSpace.get(i)))
-            {
-              z = 0;
-              moreThanOne = false;
-              getClient().regionSampleSpace.forEach(food ->
-              {
-                if (card.getTargetFood().name().equals(food))
-                {
-                  z++;
-                }
-                if (z > 1)
-                {
-                  moreThanOne = true;
-                }
-              });
-              if (moreThanOne)
-              {
-                getClient().regionSampleSpace.remove(i);
-              }
-              return;
-            }
-          }
+          adjustProbability(10-(totalDecrease/10),card.getTargetFood().name());
         }
-        if (type.equals("policy"))
+      }
+      if (type.equals("region"))
+      {
+        if(totalDecrease<10)
         {
-          for (int i = 0; i < getClient().policySampleSpace.size(); i++)
-          {
-            if (card.getPolicyName()
-                .equals(getClient().policySampleSpace.get(i)))
-            {
-              z = 0;
-              moreThanOne = false;
-              getClient().policySampleSpace.forEach(food ->
-              {
-                if (card.getTargetFood().name().equals(food))
-                {
-                  z++;
-                }
-                if (z > 1)
-                {
-                  moreThanOne = true;
-                }
-              });
-              if (moreThanOne)
-              {
-                getClient().policySampleSpace.remove(i);
-              }
-              return;
-            }
-          }
+          adjustProbability(9,card.getTargetRegion().name());
+        }
+        else
+        {
+          adjustProbability(10-(totalDecrease/10),card.getTargetRegion().name());
+        }
+      }
+      if (type.equals("policy"))
+      {
+        if(totalDecrease<10)
+        {
+          adjustProbability(9,card.getPolicyName());
+        }
+        else
+        {
+          adjustProbability(10-(totalDecrease/10),card.getPolicyName());
         }
       }
     } 
@@ -562,48 +561,35 @@ public class Draft extends AbstractCommand
     {
       if (type.equals("food"))
       {
-        for (int i = 0; i < getClient().foodSampleSpace.size(); i++)
+        if(totalIncrease<10)
         {
-          if (card.getTargetFood().name()
-              .equals(getClient().foodSampleSpace.get(i)))
-          {
-            for (int h = 0; h < 12; h++)
-            {
-              getClient().foodSampleSpace.add(i, card.getTargetFood().name());
-            }
-            return;
-          }
+          adjustProbability(21,card.getTargetFood().name());
         }
-        if (type.equals("region"))
+        else
         {
-          for (int i = 0; i < getClient().regionSampleSpace.size(); i++)
-          {
-            if (card.getTargetRegion().name()
-                .equals(getClient().regionSampleSpace.get(i)))
-            {
-              for (int h = 0; h < 12; h++)
-              {
-                getClient().regionSampleSpace.add(i,
-                    card.getTargetRegion().name());
-              }
-              return;
-            }
-          }
+          adjustProbability(20+((int)Math.pow(((totalIncrease/10)+1),2)),card.getTargetFood().name());
         }
-        if (type.equals("policy"))
+      }
+      if (type.equals("region"))
+      {
+        if(totalIncrease<10)
         {
-          for (int i = 0; i < getClient().policySampleSpace.size(); i++)
-          {
-            if (card.getPolicyName()
-                .equals(getClient().policySampleSpace.get(i)))
-            {
-              for (int h = 0; h < 12; h++)
-              {
-                getClient().policySampleSpace.add(i, card.getPolicyName());
-              }
-              return;
-            }
-          }
+          adjustProbability(21,card.getTargetRegion().name());
+        }
+        else
+        {
+          adjustProbability(20+((int)Math.pow(((totalIncrease/10)+1),2)),card.getTargetRegion().name());
+        }
+      }
+      if (type.equals("policy"))
+      {
+        if(totalIncrease<10)
+        {
+          adjustProbability(21,card.getPolicyName());
+        }
+        else
+        {
+          adjustProbability(20+((int)Math.pow(((totalIncrease/10)+1),2)),card.getPolicyName());
         }
       }
     }
@@ -753,6 +739,7 @@ public class Draft extends AbstractCommand
         }
         if (overallPercentIncrease > overallPercentDecrease)
         {
+          totalIncrease=overallPercentIncrease;
           return 1;
         } 
         else if (overallPercentDecrease > overallPercentIncrease)
@@ -761,6 +748,7 @@ public class Draft extends AbstractCommand
           {
             pickThisRegion = true;
           }
+          totalDecrease=overallPercentDecrease;
           return -1;
         }
       }

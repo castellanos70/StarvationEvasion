@@ -493,9 +493,6 @@ public class Server
 
     for (User user : getPlayers())
     {
-      ArrayList<EnumPolicy> newHand = new ArrayList<>(
-          Arrays.asList(simulator.getCardsInHand(user.getRegion())));
-      user.setHand(newHand);
       drawByUser(user);
       user.reset();
       user.getWorker().send(new ResponseFactory().build(uptime(),
@@ -587,6 +584,9 @@ public class Server
 
     for (User user : getPlayers())
     {
+      ArrayList<EnumPolicy> newHand = new ArrayList<>(
+          Arrays.asList(simulator.getCardsInHand(user.getRegion())));
+      user.setHand(newHand);
       drawByUser(user);
       user.reset();
 

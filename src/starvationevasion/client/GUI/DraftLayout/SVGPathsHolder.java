@@ -1,6 +1,8 @@
 package starvationevasion.client.GUI.DraftLayout;
 /**
  * 
+ * @Author Christian Seely 
+ * 
  * This holds the arrays containing one to multiple SVG paths that
  * make up a region. Multiple SVG paths are needed for regions with
  * disjoint bodies. Note the SVG strings are custom made and can be

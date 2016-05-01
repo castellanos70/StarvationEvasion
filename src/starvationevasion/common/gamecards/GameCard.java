@@ -172,6 +172,12 @@ public abstract class GameCard implements Sendable
       case Policy_SharetheKnowledge:
         myCard = new Policy_SharetheKnowledge();
         break;
+      case Policy_Redraft:
+    	myCard = new Policy_Redraft();
+      case Policy_SearchforAnswers:
+    	myCard = new Policy_SearchforAnswers();
+      case Policy_SpecialInterests:
+    	myCard = new Policy_SpecialInterests();
     default:
       break;
     }

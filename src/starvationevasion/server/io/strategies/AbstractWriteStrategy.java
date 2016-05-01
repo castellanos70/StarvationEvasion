@@ -5,16 +5,26 @@ package starvationevasion.server.io.strategies;
  */
 
 import starvationevasion.server.io.WriteStrategy;
+import starvationevasion.server.io.formatters.Format;
+import starvationevasion.server.io.formatters.HTMLFormat;
+import starvationevasion.server.io.formatters.JSONFormat;
+import starvationevasion.server.io.formatters.POJOFormat;
+import starvationevasion.server.model.DataType;
+import starvationevasion.server.model.Sendable;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 public abstract class AbstractWriteStrategy extends SecureStream implements WriteStrategy
 {
 
   private final Socket socket;
   private DataOutputStream writer;
+  private Format<Sendable, ?> formatter = new JSONFormat(this);
+  private final static Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
+
 
   public AbstractWriteStrategy(Socket socket)
   {
@@ -34,6 +44,30 @@ public abstract class AbstractWriteStrategy extends SecureStream implements Writ
   {
     this.socket = socket;
     this.writer = stream;
+  }
+
+
+  public Format<Sendable, ?> getFormatter ()
+  {
+    return formatter;
+  }
+
+  @Override
+  public void setFormatter (DataType formatter)
+  {
+    LOG.info("Will be transforming data as " + formatter.name());
+    if (formatter.equals(DataType.JSON))
+    {
+      this.formatter = new JSONFormat(this);
+    }
+    else if (formatter.equals(DataType.POJO))
+    {
+      this.formatter = new POJOFormat(this);
+    }
+    else if (formatter.equals(DataType.HTML))
+    {
+      this.formatter = new HTMLFormat(this);
+    }
   }
 
   @Override

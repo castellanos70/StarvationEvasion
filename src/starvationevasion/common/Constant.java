@@ -2,6 +2,7 @@ package starvationevasion.common;
 
 
 import java.awt.*;
+import java.util.logging.Level;
 
 /**
  * This class contains all constant values used throughout the Starvation Evasion game.
@@ -38,6 +39,8 @@ public class Constant
   public static final String ASYM_ALGORITHM = "RSA";
 
   public static final String TERMINATION = "\n";
+
+  public static final Level LOG_LEVEL = Level.INFO;
 
   public enum Stream {
     CLIENT, OBJECT, SECURE_CLIENT;
@@ -123,6 +126,13 @@ public class Constant
   public static final long DRAWING_TIME = 5*1000;
 
   public static final long VOTING_TIME = 3*60*1000;
+  
+  /**
+   * This value represents the starting amount of ActionPoints for US_REGIONS.
+   * At the beginning of each turn, the region's number of ActionPoints should
+   * be reset to this default value.
+   */
+  public static final int ACTION_POINTS = 3;
 
 
 

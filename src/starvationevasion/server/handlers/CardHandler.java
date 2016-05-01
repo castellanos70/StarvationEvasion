@@ -4,19 +4,19 @@ package starvationevasion.server.handlers;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.gamecards.EnumPolicy;
+import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.server.Connector;
+import starvationevasion.server.Server;
+import starvationevasion.server.model.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
-import starvationevasion.common.EnumPolicy;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.PolicyCard;
-import starvationevasion.server.Server;
-import starvationevasion.server.Worker;
-import starvationevasion.server.model.*;
-
 public class CardHandler extends AbstractHandler
 {
-  public CardHandler (Server server, Worker client)
+  public CardHandler (Server server, Connector client)
   {
     super(server, client);
   }
@@ -100,7 +100,7 @@ public class CardHandler extends AbstractHandler
     }
     else if (request.getDestination().equals(Endpoint.DRAFT_CARD))
     {
-      PolicyCard policyCard = (PolicyCard) request.getPayload().getData();
+      GameCard policyCard = (GameCard) request.getPayload().getData();
 
       if (getClient().getUser().actionsRemaining >= 1 && getClient().getUser().drafts < 2)
       {

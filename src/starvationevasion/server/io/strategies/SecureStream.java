@@ -2,7 +2,10 @@ package starvationevasion.server.io.strategies;
 
 
 import starvationevasion.common.Constant;
+import starvationevasion.server.io.formatters.Format;
+import starvationevasion.server.io.formatters.JSONFormat;
 import starvationevasion.server.model.Encryptable;
+import starvationevasion.server.model.Sendable;
 
 import javax.crypto.*;
 import javax.xml.bind.DatatypeConverter;
@@ -12,7 +15,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 
-abstract class SecureStream implements Encryptable
+public abstract class SecureStream implements Encryptable
 {
   private boolean isEncrypted = false;
   private SecretKey key;
@@ -80,7 +83,7 @@ abstract class SecureStream implements Encryptable
     return ss;
   }
 
-  protected Serializable encrypt(Serializable data) throws BadPaddingException,
+  public Serializable encrypt(Serializable data) throws BadPaddingException,
                                                            InvalidKeyException,
                                                            IllegalBlockSizeException,
                                                            IOException

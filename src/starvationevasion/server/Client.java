@@ -2,6 +2,10 @@ package starvationevasion.server;
 
 /**
  * @author Javier Chavez
+ *
+ *
+ * THIS VERSION OF CLIENT IS NOT CURRENTLY BEING USED.
+ * - George Boujaoude (gboujaoude@unm.edu)
  */
 
 

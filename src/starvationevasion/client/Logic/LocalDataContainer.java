@@ -5,10 +5,10 @@ import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.Graphs.GraphManager;
 import starvationevasion.client.GUI.SummaryBar;
 import starvationevasion.client.Networking.Client;
-import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.WorldData;
+import starvationevasion.common.gamecards.EnumPolicy;
 
 import java.util.HashMap;
 

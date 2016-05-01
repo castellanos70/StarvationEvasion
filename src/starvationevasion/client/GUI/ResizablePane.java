@@ -60,4 +60,9 @@ public abstract class ResizablePane extends Pane
    * Logic needed to be executed during resize should be place in this method
    */
   public abstract void onResize();
+  public void setSize(double width, double height)
+  {
+	  this.setWidth(width);
+	  this.setHeight(height);
+  }
 }

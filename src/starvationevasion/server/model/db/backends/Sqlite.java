@@ -127,6 +127,10 @@ public class Sqlite implements Backend
         {
           stringBuilder.append(value);
         }
+        else if (value instanceof EnumRegion)
+        {
+          stringBuilder.append("'").append(value.toString()).append("'");
+        }
 
 
         if (size-1 == i)

@@ -491,7 +491,7 @@ public abstract class GameCard implements Sendable
    * @return An array of cards that are valid as the target card of this policyCard.
    * Returns null if this card does not require a target card.
    */
-  public EnumPolicy[] getValidTargetCards() {return null;}
+  public ArrayList<EnumPolicy> getValidTargetCards() {return null;}
 
 
 

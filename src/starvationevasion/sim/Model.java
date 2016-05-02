@@ -763,9 +763,15 @@ public class Model
         for (LandTile tile : landTiles)
         {
           // For each crop, find the EnumCropZone value
-          for (int k = 0; k < EnumFood.SIZE; k++)
+          for (int k = 0; k < EnumFood.CROP_FOODS.length; k++)
           {
-            ratings[k] = rateTileForCrop(EnumFood.values()[k], tile);
+            ratings[k] = rateTileForCrop(EnumFood.CROP_FOODS[k], tile);
+          }
+          
+          //for now, all 4 non crop foods get an ideal rating
+          for (int m = 0; m < 4; m++)
+          {
+            ratings[m + EnumFood.CROP_FOODS.length] = EnumCropZone.IDEAL;
           }
           tile.updateRating(ratings);
           packedTileData.packData(tile , index);
@@ -934,7 +940,6 @@ public class Model
           }
         }
       }
-      
       // check if we can determine anything with new consecutiveGrowDay values
       if (consecutiveIdealGrowDays >= cropGrowdays)
       { //if Ideal just return immediately.

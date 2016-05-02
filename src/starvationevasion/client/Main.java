@@ -11,17 +11,15 @@ public class Main extends Application
 {
   public static void main(String args[]) throws Exception
   {
-    Client client = new ClientTest(null, "localhost", 5555);
-    GUI gui = new GUI(client, null);
-    gui.start(new Stage());
-    client.setGUI(gui);
+    launch(args);
   }
 
   @Override
   public void start(Stage arg0) throws Exception
   {
-
-    // TODO Auto-generated method stub
-    
+    Client client = new ClientTest(null, "localhost", 9002);
+    GUI gui = new GUI(client, null);
+    gui.start(new Stage());
+    client.setGUI(gui);
   }
 }

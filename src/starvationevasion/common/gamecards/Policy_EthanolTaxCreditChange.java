@@ -10,8 +10,7 @@ import java.util.EnumSet;
  * Votes Required: Automatic<br><br>
  *
  * Draft Affects: When drafting this policy, the model must inform
- * the player of thier current tax credit of ethanol production
- *  and require the player selects X.<br><br>
+ * the player of Y and require the player selects X.<br><br>
  *
  * Model Effects: <br><br>
  */
@@ -22,9 +21,9 @@ public class Policy_EthanolTaxCreditChange extends GameCard
       "Ethanol Production Tax Credit Change";
 
   public static final String TEXT =
-      "This policy changes an ethanol producer, located in my region, " +
-      "to have an X% tax credit to cost of ethanol production, including " +
-      "cellulosic ethanol.";
+      "Currently, an ethanol producer located in my region is entitled " +
+      "to a Y% tax credit to cost of ethanol production, including " +
+      "cellulosic ethanol. This policy changes that to X%.";
 
   public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
       EnumSet.of(EnumGameState.PLANNING_STATE);

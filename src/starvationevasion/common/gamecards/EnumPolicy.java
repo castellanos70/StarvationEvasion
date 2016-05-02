@@ -1,13 +1,32 @@
 package starvationevasion.common.gamecards;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
-
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 
 public enum EnumPolicy implements Sendable
 {
-  Policy_CleanRiverIncentive, Policy_CovertIntelligence, Policy_DiverttheFunds, Policy_EducateTheWomenCampaign, Policy_EfficientIrrigationIncentive, Policy_EthanolTaxCreditChange, Policy_FarmInfrastructureSubSaharan, Policy_FertilizerAidCentralAsia, Policy_FertilizerAidMiddleAmerica, Policy_FertilizerAidOceania, Policy_FertilizerAidSouthAsia, Policy_FertilizerAidSubSaharan, Policy_FertilizerSubsidy, Policy_Filibuster, Policy_Fundraiser, Policy_InternationalFoodRelief, Policy_Loan, Policy_MyPlatePromotionCampaign, Policy_Redraft, Policy_ResearchInsectResistanceGrain, Policy_SearchforAnswers, Policy_SharetheKnowledge, Policy_SpecialInterests;
+  Policy_CleanRiverIncentive,
+  Policy_CovertIntelligence,
+  Policy_EducateTheWomenCampaign,
+  Policy_EfficientIrrigationIncentive,
+  Policy_EthanolTaxCreditChange,
+  Policy_FarmInfrastructureSubSaharan,
+  Policy_FertilizerAidCentralAsia,
+  Policy_FertilizerAidMiddleAmerica,
+  Policy_FertilizerAidOceania,
+  Policy_FertilizerAidSouthAsia,
+  Policy_FertilizerAidSubSaharan,
+  Policy_FertilizerSubsidy,
+  Policy_InternationalFoodRelief,
+  Policy_Loan,
+  Policy_MyPlatePromotionCampaign,
+  Policy_ResearchInsectResistanceGrain,
+  Policy_Filibuster,
+  Policy_Fundraiser,
+  Policy_DiverttheFunds,
+  Policy_SharetheKnowledge;
+  
 
   public String getImagePath()
   {
@@ -15,7 +34,7 @@ public enum EnumPolicy implements Sendable
   }
 
   @Override
-  public JSONDocument toJSON()
+  public JSONDocument toJSON ()
   {
     JSONDocument _json = JSONDocument.createObject();
     _json.setString("name", name());
@@ -23,13 +42,13 @@ public enum EnumPolicy implements Sendable
   }
 
   @Override
-  public void fromJSON(Object doc)
+  public void fromJSON (Object doc)
   {
 
   }
 
   @Override
-  public Type getType()
+  public Type getType ()
   {
     return Type.POLICY;
   }

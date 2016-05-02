@@ -2,16 +2,6 @@ package starvationevasion.common.gamecards;
 
 import starvationevasion.common.EnumRegion;
 
-/**
- * Title: {@value #TITLE}<br><br>
- * Game Text: {@value #TEXT}<br><br>
- *
- * Votes Required: Automatic<br><br>
- *
- * Model Effects: The fact that such cards as this exist, implies that every player's
- * hands must, in theory, be able to be viewed during any part of the game.
-*/
-
 public class Policy_SharetheKnowledge extends GameCard
 {
 

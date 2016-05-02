@@ -8,7 +8,7 @@ import java.util.EnumSet;
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
  *
- * Draft Affects: When drafting this policy, player selects a percentage X [10%, 25%, or 50%].<br><br>
+ * Draft Affects: When drafting this policy, player selects a percentage X [1% through 100%].<br><br>
  *
  * Votes Required: Automatic<br><br>
  *

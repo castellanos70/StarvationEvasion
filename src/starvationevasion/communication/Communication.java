@@ -2,8 +2,11 @@ package starvationevasion.communication;
 
 import starvationevasion.common.EnumRegion;
 import starvationevasion.server.model.Endpoint;
+import starvationevasion.server.model.Response;
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
+
+import java.util.ArrayList;
 
 /**
  * The Communication class is meant to be implemented by a generic module
@@ -125,6 +128,10 @@ public interface Communication
    * of the older events.
    */
   void pushResponseEvents();
+
+  ArrayList<Response> peekMessages();
+
+  ArrayList<Response> pullMessages();
 
   /**
    * Disposes of this module. All existing threads should be shut down and data cleared out.

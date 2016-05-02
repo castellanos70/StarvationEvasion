@@ -14,6 +14,7 @@ import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -340,6 +341,18 @@ public class CommModule implements Communication
     {
       LOCK.unlock();
     }
+  }
+
+  @Override
+  public ArrayList<Response> peekMessages()
+  {
+    return null;
+  }
+
+  @Override
+  public ArrayList<Response> pullMessages()
+  {
+    return null;
   }
 
   /**

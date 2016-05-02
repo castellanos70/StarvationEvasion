@@ -160,7 +160,7 @@ public class CardDeck
   /**
    * @return the EnumPolicy array that represents the discard pile.
    */
-  public EnumPolicy[] getDiscardPile()
+  public ArrayList<EnumPolicy> getDiscardPile()
   {
 	return discardPile;
   }
@@ -168,7 +168,7 @@ public class CardDeck
   /**
    * @return the EnumPolicy array that represents the deck.
    */
-  public EnumPolicy[] getDeck()
+  public ArrayList<EnumPolicy> getDeck()
   {
 	return drawPile;
   }

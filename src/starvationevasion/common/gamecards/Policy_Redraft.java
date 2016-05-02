@@ -37,6 +37,6 @@ public class Policy_Redraft extends GameCard
    */
   @Override
   //TODO Might need to be changed how this accesses the discard.
-  public EnumPolicy[] getValidTargetCards() {return CardDeck.getDiscardPile();}
+  public ArrayList<EnumPolicy> getValidTargetCards() {return CardDeck.getDiscardPile();}
   
 }

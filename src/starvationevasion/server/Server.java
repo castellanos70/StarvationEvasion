@@ -13,7 +13,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
@@ -584,9 +583,6 @@ public class Server
 
     for (User user : getPlayers())
     {
-      ArrayList<EnumPolicy> newHand = new ArrayList<>(
-          Arrays.asList(simulator.getCardsInHand(user.getRegion())));
-      user.setHand(newHand);
       drawByUser(user);
       user.reset();
 

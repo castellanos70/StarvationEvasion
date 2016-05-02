@@ -39,25 +39,36 @@ public class Draft extends AbstractCommand
   Long lastFoodImported = new Long(0);
   Long lastFoodExported = new Long(0);
   Random rand=new Random();
+  int numCardsDrafted=0;
   boolean moreThanOne = false;
   boolean pickThisRegion = false;
   double pickThisRegionChance = .75;
   int z = 0;
+  GameCard card = null;
   int probModifier = 0;
   int draftIndex = 0;
   public ArrayList<String> policySampleSpace = new ArrayList<String>();
   public ArrayList<String> foodSampleSpace = new ArrayList<String>();
   public ArrayList<String> regionSampleSpace = new ArrayList<String>();
   private Map<String,Integer> probabilityMap=new HashMap<>();
+  ArrayList<EnumPolicy> votesRequired=new ArrayList<>();
+  ArrayList<EnumPolicy> noVotesRequired=new ArrayList<>();
   int totalIncrease=0;
   int totalDecrease=0;
   int amtToAdjust=0;
+  boolean draftAgain=false;
+  int cardsNeedingSupport=0;
+  ArrayList<EnumPolicy> policiesInHand = new ArrayList<>();
   
   public Draft(AI client)
   {
     super(client);
     this.numTurns = client.numTurns;
     fillProbabilityMap();
+    for (int i = 0; i < getClient().getUser().getHand().size(); i++)
+    {
+      policiesInHand.add(getClient().getUser().getHand().get(i));
+    }
   }
 
   @Override
@@ -75,7 +86,7 @@ public class Draft extends AbstractCommand
     {
       probabilityMap.put(food.name(),rand.nextInt(20)+1);
     }
-    for(EnumPolicy policy:EnumPolicy.values())
+    for(EnumPolicy policy:getClient().getUser().getHand())
     {
       probabilityMap.put(policy.name(),rand.nextInt(20)+1);
     }
@@ -101,11 +112,11 @@ public class Draft extends AbstractCommand
         regionSampleSpace.add(region.name());
       }
     }
-    for(EnumPolicy policy:EnumPolicy.values())
+    for(EnumPolicy policy:getClient().getUser().getHand())
     {
       for(int i=0;i<probabilityMap.get(policy.name());i++)
       {
-        policySampleSpace.add(policy.name());
+        policySampleSpace.add(policy.name());  
       }
     }
   }
@@ -134,7 +145,8 @@ public class Draft extends AbstractCommand
         {
           getClient().getCommModule().send(Endpoint.DONE, new Payload(), null);
           return false;
-        } else
+        } 
+        else
         {
           return true;
         }
@@ -206,13 +218,14 @@ public class Draft extends AbstractCommand
       GameCard card = GameCard.create(getClient().getUser().getRegion(),
           policy);
       // dont remove the card we just drafted!!!
-      if (cardDrafted1 != null && policy != cardDrafted1.getCardType()
-          && cardDrafted2 != null && policy != cardDrafted2.getCardType()
+      if (cardDrafted1 != null && policy != cardDrafted1.getCardType()&&
+          cardDrafted2 != null && policy != cardDrafted2.getCardType()
           && Util.rand.nextBoolean())
       {
         discard = policy;
         break;
       }
+        
     }
     int idx = getClient().getUser().getHand().indexOf(discard);
     if (idx >= 0)
@@ -220,7 +233,6 @@ public class Draft extends AbstractCommand
 
       getClient().getCommModule().send(Endpoint.DELETE_CARD, discard, null);
       System.out.println("Card discarded");
-
     }
     discarded = true;
   }
@@ -236,76 +248,88 @@ public class Draft extends AbstractCommand
   private boolean setDraftedCards()
   {
     GameCard card = null;
-    boolean draftSent = false;
     System.out.println("Hand size:" + getClient().getUser().getHand().size());
-    ArrayList<EnumPolicy> currentHand = new ArrayList<>();
     for (int i = 0; i < getClient().getUser().getHand().size(); i++)
     {
-      System.out.println("Hand:"+getClient().getUser().getHand().get(i).name());
+      card = GameCard.create(getClient().getUser().getRegion(),
+          getClient().getUser().getHand().get(i));
+      if(card.votesRequired()==0)
+      {
+        noVotesRequired.add(getClient().getUser().getHand().get(i));
+      }
+      else
+      {
+        votesRequired.add(getClient().getUser().getHand().get(i)); 
+      }
+      //System.out.println("Hand:"+getClient().getUser().getHand().get(i).name());
     }
     if (getClient().getUser().getHand().size() == 0)
     {
-      getClient().getUser().reset();
       return false;
     }
     if (numTurns == 0)
     {
-      int firstRandNum = rand.nextInt(7);
-      int secondRandNum = 0;
-      do
+      if(votesRequired.size()>0 && noVotesRequired.size()>0)
       {
-        secondRandNum = rand.nextInt(7);
-      } while (secondRandNum == firstRandNum);
-      EnumPolicy policy1 = null;
-      EnumPolicy policy2 = null;
-      for (int i = 0; i < getClient().getUser().getHand().size(); i++)
-      {
-        if (i == firstRandNum || i == secondRandNum)
-        {
-          // TODO will have to change this in the future. Cards will be
-          // changed
-          // to not have BOTH a
-          // target region and target food to set, it will be one of each.
-          card = GameCard.create(getClient().getUser().getRegion(),
-              getClient().getUser().getHand().get(i));
-          EnumFood[] foods = card.getValidTargetFoods();
-          EnumRegion[] regions = card.getValidTargetRegions();
-          EnumFood food = null;
-          if (foods != null)
-          {
-            food = foods[rand.nextInt(foods.length)];
-          }
-          EnumRegion region = null;
-          if (regions != null)
-          {
-            region = regions[rand.nextInt(regions.length)];
-          }
-          setupCard(card, food, region);
-          getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
-          draftedCard = true;
-          draftSent = true;
-          if (i == firstRandNum)
-          {
-            policy1 = getClient().getUser().getHand().get(i);
-            cardDrafted1 = card;
-          }
-          if (i == secondRandNum)
-          {
-            policy2 = getClient().getUser().getHand().get(i);
-            cardDrafted2 = card;
-          }
-          getClient().draftedCards.get(numTurns).add(card);
-        }
-
+        card = GameCard.create(getClient().getUser().getRegion(),
+            votesRequired.get(rand.nextInt(votesRequired.size())));
+        cardDrafted1=card;
+        //System.out.println("Card drafted:"+card.getPolicyName());
+        getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
+        getClient().draftedCards.get(numTurns).add(card);
+        card = GameCard.create(getClient().getUser().getRegion(),
+            noVotesRequired.get(rand.nextInt(noVotesRequired.size())));
+        cardDrafted2=card;
+        //System.out.println("Card drafted:"+card.getPolicyName());
+        getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
+        getClient().draftedCards.get(numTurns).add(card);
       }
-      tries = 2;
+      else if(votesRequired.size()==0)
+      {
+        int randNum1=rand.nextInt(noVotesRequired.size());
+        int randNum2=0;
+        do
+        {
+          randNum2=rand.nextInt(noVotesRequired.size());
+        }while(randNum1==randNum2);
+        card = GameCard.create(getClient().getUser().getRegion(),
+            noVotesRequired.get(randNum1));
+        cardDrafted1=card;
+        //System.out.println("Card drafted:"+card.getPolicyName());
+        getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
+        getClient().draftedCards.get(numTurns).add(card);
+        card = GameCard.create(getClient().getUser().getRegion(),
+            noVotesRequired.get(randNum2));
+        cardDrafted2=card;
+        //System.out.println("Card drafted:"+card.getPolicyName());
+        getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
+        getClient().draftedCards.get(numTurns).add(card);
+      }
+      else if(noVotesRequired.size()==0)
+      {
+        card = GameCard.create(getClient().getUser().getRegion(),
+            votesRequired.get(rand.nextInt(votesRequired.size())));
+        cardDrafted1=card;
+        getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
+        //System.out.println("Card drafted:"+card.getPolicyName());
+        getClient().draftedCards.get(numTurns).add(card);
+      }
+      if(!discarded)
+      {
+        randomlyDiscard();
+      }
+      draftedCard=true;
       return true;
     } 
     else
     {
       pickThisRegion = false;
-      GameCard lastCard1 = getClient().draftedCards.get(numTurns - 1).get(0);
-      GameCard lastCard2 = getClient().draftedCards.get(numTurns - 1).get(1);
+      GameCard lastCard1=getClient().draftedCards.get(numTurns - 1).get(0);
+      GameCard lastCard2=null;
+      if(getClient().draftedCards.get(numTurns).size()>1)
+      {
+        lastCard2 = getClient().draftedCards.get(numTurns - 1).get(1);
+      }
       int playAgain = 0;
       playAgain = checkLastPlay();
       foodProduced = (long) 0;
@@ -325,25 +349,75 @@ public class Draft extends AbstractCommand
         distributeProbabilities(playAgain, lastCard1, "region");
       }
       distributeProbabilities(playAgain, lastCard1, "policy");
-      if (lastCard2.getTargetFood() != null)
+      if(lastCard2!=null)
       {
-        distributeProbabilities(playAgain, lastCard2, "food");
+        if (lastCard2.getTargetFood() != null)
+        {
+          distributeProbabilities(playAgain, lastCard2, "food");
+        }
+        if (lastCard2.getTargetRegion() != null)
+        {
+          distributeProbabilities(playAgain, lastCard2, "region");
+        }
+        distributeProbabilities(playAgain, lastCard2, "policy");
       }
-      if (lastCard2.getTargetRegion() != null)
-      {
-        distributeProbabilities(playAgain, lastCard2, "region");
-      }
-      distributeProbabilities(playAgain, lastCard2, "policy");
       checkOtherFactors();
       createLists();
-      draftCards();
-      draftedCard = true;
-      draftSent = true;
-      tries = 2;
+      boolean drafted=false;
+      do
+      {
+        drafted=draftCards();
+      }while(!drafted);
+      //System.out.println("Drafted a card");
+      draftAgain=true;
+      ArrayList<String> tempPolicyList=new ArrayList<>();
+      if(cardsNeedingSupport>0)
+      {
+        //System.out.println("Drafted a card that needed support");
+        for(int i=0;i<policySampleSpace.size();i++)
+        {
+          if(!votesRequired.contains(EnumPolicy.valueOf(policySampleSpace.get(i))))
+          {
+            tempPolicyList.add(policySampleSpace.get(i));
+          }
+        }
+        policySampleSpace.clear();
+        policySampleSpace=tempPolicyList;
+        if(policySampleSpace.size()>0)
+        {
+          do
+          {
+            drafted=draftCards();
+          }while(!drafted);
+          //System.out.println("Drafted another card after clearing list");
+        }
+        else
+        {
+          //System.out.println("Can't draft another card");
+        }
+      }
+      else if(cardsNeedingSupport==0)
+      {
+        do
+        {
+          drafted=draftCards();
+        }while(!drafted);
+        //System.out.println("Drafting another card after first card didn't need support");
+      }
+      draftedCard=true;
+      if(!discarded)
+      {
+        randomlyDiscard();
+      }
       return true;
     }
   }
-
+  /**
+   * Check factors such as the level of people undernourished in other regions, the revenue for
+   * this AI's region and foods in this region. Prioritize different regions, foods and policies
+   * based on this information. Also, make it more likely for this region to be picked if 
+   * pickThisRegion is set to true.
+   */
   public void checkOtherFactors()
   {
     z=0;
@@ -390,14 +464,26 @@ public class Draft extends AbstractCommand
     //money.
     if(revenueDiff<-50)
     {
-      adjustProbability(probabilityMap.get("Policy_Loan")*2,"Policy_Loan");
-      adjustProbability(probabilityMap.get("Policy_DiverttheFunds")*2,"Policy_DiverttheFunds");
-      adjustProbability(probabilityMap.get("Policy_Fundraiser")*2,"Policy_Fundraiser");
+      if(getClient().getUser().getHand().contains(EnumPolicy.valueOf("Policy_Loan")))
+      {
+        adjustProbability(probabilityMap.get("Policy_Loan")*2,"Policy_Loan");
+      }
+      if(getClient().getUser().getHand().contains(EnumPolicy.valueOf("Policy_DiverttheFunds")))
+      {
+        adjustProbability(probabilityMap.get("Policy_DiverttheFunds")*2,"Policy_DiverttheFunds");
+      }
+      if(getClient().getUser().getHand().contains(EnumPolicy.valueOf("Policy_Fundraiser")))
+      {
+        adjustProbability(probabilityMap.get("Policy_Fundraiser")*2,"Policy_Fundraiser");
+      }
     }
     //If the region doesn't need the money, make it very unlikely to select getting a loan.
     else if(revenueDiff>0)
     {
-      adjustProbability(1,"Policy_Loan");
+      if(getClient().getUser().getHand().contains(EnumPolicy.valueOf("Policy_Loan")))
+      {
+        adjustProbability(1,"Policy_Loan");
+      }
     }
     EnumFood foodNeedingAttention=null;
   }
@@ -430,98 +516,105 @@ public class Draft extends AbstractCommand
    * @param rand
    *          A Random object.
    */
-  public void draftCards()
+  public boolean draftCards()
   {
-    ArrayList<EnumPolicy> policiesInHand = new ArrayList<>();
-    for (int i = 0; i < getClient().getUser().getHand().size(); i++)
+    GameCard card=null;
+    EnumRegion currentRegion = null;
+    String regionString = "";
+    boolean regionFound = false;
+    String policyString = "";
+    EnumPolicy currentPolicy = null;
+    do
     {
-      policiesInHand.add(getClient().getUser().getHand().get(i));
+      int policyIndex = rand.nextInt(policySampleSpace.size());
+      policyString = policySampleSpace.get(policyIndex);
+      currentPolicy = EnumPolicy.valueOf(policyString);
+    } while (!policiesInHand.contains(currentPolicy));
+    policiesInHand.remove(currentPolicy);
+    card = GameCard.create(getClient().getUser().getRegion(), currentPolicy);
+    if(!policySampleSpace.contains(card.getPolicyName()))
+    {
+      return false;
     }
-    for (int h = 0; h < 2; h++)
+    if(card.votesRequired()>0)
     {
-      GameCard card = null;
-      EnumRegion currentRegion = null;
-      String regionString = "";
-      boolean regionFound = false;
-      String policyString = "";
-      EnumPolicy currentPolicy = null;
+      cardsNeedingSupport++;
+    }
+    EnumFood[] foods = card.getValidTargetFoods();
+    ArrayList<String> validFoods = new ArrayList<>();
+    Map<String, EnumFood> foodMap = new HashMap<>();
+    EnumFood currentFood = null;
+    z = 0;
+    if (foods != null)
+    {
+      Stream.of(foods).forEach(food ->
+      {
+        validFoods.add(food.name());
+        foodMap.put(food.name(), foods[z]);
+        z++;
+      });
+      z = 0;
+      String food = "";
       do
       {
-        int policyIndex = rand.nextInt(policySampleSpace.size());
-        policyString = policySampleSpace.get(policyIndex);
-        currentPolicy = EnumPolicy.valueOf(policyString);
-      } while (!policiesInHand.contains(currentPolicy));
-      policiesInHand.remove(currentPolicy);
-      card = GameCard.create(getClient().getUser().getRegion(), currentPolicy);
-      EnumFood[] foods = card.getValidTargetFoods();
-      ArrayList<String> validFoods = new ArrayList<>();
-      Map<String, EnumFood> foodMap = new HashMap<>();
-      EnumFood currentFood = null;
-      z = 0;
-      if (foods != null)
-      {
-        Stream.of(foods).forEach(food ->
-        {
-          validFoods.add(food.name());
-          foodMap.put(food.name(), foods[z]);
-          z++;
-        });
-        z = 0;
-        String food = "";
-        do
-        {
-          int foodIndex = rand.nextInt(foodSampleSpace.size());
-          food = foodSampleSpace.get(foodIndex);
-        } while (!validFoods.contains(food));
-        currentFood = foodMap.get(food);
-      }
-      EnumRegion[] regions = card.getValidTargetRegions();
-      ArrayList<String> validRegions = new ArrayList<String>();
-      Map<String, EnumRegion> regionMap = new HashMap<>();
-      if (regions != null)
-      {
-        Stream.of(regions).forEach(region ->
-        {
-          validRegions.add(region.name());
-          regionMap.put(region.name(), regions[z]);
-          z++;
-        });
-        z = 0;
-      }
-      if (regions != null && !regionFound)
-      {
-        do
-        {
-          int regionIndex = rand.nextInt(regionSampleSpace.size());
-          regionString = regionSampleSpace.get(regionIndex);
-        } while (!validRegions.contains(regionString));
-        currentRegion = regionMap.get(regionString);
-      }
-      if (regionFound)
-      {
-        currentRegion = regionMap.get(regionString);
-      }
-      setupCard(card, currentFood, currentRegion);
-      getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
-      System.out.println("Card drafted:"+card.getPolicyName());
-      if (card.votesRequired() != 0)
-      {
-        String message = "I am drafing " + card.getTitle()
-            + ". Will you support it?";
-        // getClient().send(new
-        // RequestFactory().chat(getClient().getStartNanoSec(),
-        // "ALL", message, card));
-      }
-      if (h == 0)
-      {
-        cardDrafted1 = card;
-      }
-      if (h == 1)
-      {
-        cardDrafted2 = card;
-      }
-      getClient().draftedCards.get(numTurns).add(card);
+        int foodIndex = rand.nextInt(foodSampleSpace.size());
+        food = foodSampleSpace.get(foodIndex);
+      } while (!validFoods.contains(food));
+      currentFood = foodMap.get(food);
     }
+    EnumRegion[] regions = card.getValidTargetRegions();
+    ArrayList<String> validRegions = new ArrayList<String>();
+    Map<String, EnumRegion> regionMap = new HashMap<>();
+    if (regions != null)
+    {
+      Stream.of(regions).forEach(region ->
+      {
+        validRegions.add(region.name());
+        regionMap.put(region.name(), regions[z]);
+        z++;
+      });
+      z = 0;
+    }
+    if (regions != null && !regionFound)
+    {
+      do
+      {
+        int regionIndex = rand.nextInt(regionSampleSpace.size());
+        regionString = regionSampleSpace.get(regionIndex);
+      } while (!validRegions.contains(regionString));
+      currentRegion = regionMap.get(regionString);
+    }
+    if (regionFound)
+    {
+      currentRegion = regionMap.get(regionString);
+    }
+    setupCard(card, currentFood, currentRegion);
+    getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
+    //System.out.println("Card drafted:"+card.getPolicyName());
+    //System.out.println("Votes required:"+card.votesRequired());
+    if (card.votesRequired() != 0)
+    {
+      String message = "I am drafing " + card.getTitle()
+          + ". Will you support it?";
+      // getClient().send(new
+      // RequestFactory().chat(getClient().getStartNanoSec(),
+      // "ALL", message, card));
+    }
+    if (!draftAgain)
+    {
+      cardDrafted1 = card;
+    }
+    if (draftAgain)
+    {
+      cardDrafted2 = card;
+    }
+    getClient().draftedCards.get(numTurns).add(card);
+    draftedCard=true;
+    if(!discarded && rand.nextBoolean())
+    {
+      randomlyDiscard();
+    }
+    return true;
   }
 
   /**
@@ -567,7 +660,10 @@ public class Draft extends AbstractCommand
       {
         if(totalDecrease<10)
         {
-          adjustProbability(9,card.getPolicyName());
+          if(getClient().getUser().getHand().contains(card.getCardType()))
+          {
+            adjustProbability(9,card.getPolicyName());
+          }
         }
         else
         {
@@ -603,11 +699,17 @@ public class Draft extends AbstractCommand
       {
         if(totalIncrease<10)
         {
-          adjustProbability(21,card.getPolicyName());
+          if(getClient().getUser().getHand().contains(card.getCardType()))
+          {
+            adjustProbability(21,card.getPolicyName());
+          }
         }
         else
         {
-          adjustProbability(20+((int)Math.pow(((totalIncrease/10)+1),2)),card.getPolicyName());
+          if(getClient().getUser().getHand().contains(card.getCardType()))
+          {
+            adjustProbability(20+((int)Math.pow(((totalIncrease/10)+1),2)),card.getPolicyName());
+          }
         }
       }
     }

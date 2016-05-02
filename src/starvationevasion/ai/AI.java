@@ -238,8 +238,6 @@ public class AI
         Command c = commands.peek();
 
         boolean runAgain = c.run();
-        // System.out.println(c.commandString());
-        // System.out.println(runAgain);
         // if it does not need to run again pop
         if (!runAgain)
           commands.pop();

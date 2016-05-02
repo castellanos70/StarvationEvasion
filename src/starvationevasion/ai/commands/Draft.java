@@ -138,17 +138,19 @@ public class Draft extends AbstractCommand
 
     if (getClient().getState().equals(State.DRAFTING))
     {
-
-      if (!draftedCard)
+      synchronized(getClient())
       {
-        if (setDraftedCards())
+        if (!draftedCard)
         {
-          getClient().getCommModule().send(Endpoint.DONE, new Payload(), null);
-          return false;
-        } 
-        else
-        {
-          return true;
+          if (setDraftedCards())
+          {
+            getClient().getCommModule().send(Endpoint.DONE, new Payload(), null);
+            return false;
+          } 
+          else
+          {
+            return true;
+          }
         }
       }
 

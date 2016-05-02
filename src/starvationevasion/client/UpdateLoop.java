@@ -1,21 +1,37 @@
 package starvationevasion.client;
 
 import javafx.animation.AnimationTimer;
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.effect.Glow;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Networking.Client;
 import starvationevasion.client.Networking.ClientTest;
+import starvationevasion.client.Setup.LandingPage;
 import starvationevasion.common.EnumRegion;
 
 /**
  * Since the AI has already been converted to use the new CommModule, this is a proof
  * of concept to show that the client can use the same module.
- *
+ * <p>
  * This is also a first attempt at moving the client over to a single-threaded game
  * loop (built on the JavaFX thread).
  */
@@ -27,13 +43,22 @@ public class UpdateLoop extends Application
   private long millisecondTimeStamp = System.currentTimeMillis();
   private double deltaSeconds;
   private Client client;
-  private GridPane root = new GridPane();
-  private Button login = new Button("Login");
+  private Pane root = new Pane();
+  private GridPane gridRoot = new GridPane();
+  private MenuButton login = new MenuButton("  LOGIN");
   private Label usernameLabel = new Label("Username");
   private TextField username = new TextField();
   private Label passwordLabel = new Label("Password");
   private PasswordField password = new PasswordField();
-  private Button createUser=new Button("Create User");
+  private MenuButton createUser = new MenuButton("  CREATE USER");
+  private MenuButton options = new MenuButton("  OPTIONS");
+  private MenuButton exit = new MenuButton("  EXIT");
+  private boolean single;
+
+  private Screen screen;
+  static Rectangle2D bounds;
+  private Menu menu;
+  private Image background = new Image("file:assets/visResources/DIFFUSE_MAP.jpg");
 
   public void notifyOfSuccessfulLogin()
   {
@@ -46,9 +71,44 @@ public class UpdateLoop extends Application
   }
 
   @Override
-  public void start(Stage stage)
+  public void start(Stage primaryStage)
   {
-    login.setOnAction((event) ->
+
+
+    username.setPromptText("USER NAME");
+    password.setPromptText("PASSWORD");
+    screen = Screen.getPrimary();
+    bounds = screen.getVisualBounds();
+
+    primaryStage.setX(bounds.getMinX());
+    primaryStage.setY(bounds.getMinY());
+    primaryStage.setWidth(bounds.getWidth());
+    primaryStage.setHeight(bounds.getHeight());
+
+    stage = primaryStage;
+
+    Pane root = new Pane();
+    root.setPrefSize(bounds.getWidth(), bounds.getHeight());
+    Image logo = new Image("file:assets/visResources/TempLogo.png");
+
+
+    ImageView ivLogo = new ImageView(logo);
+    ivLogo.setFitHeight(bounds.getHeight() / 7);
+    ivLogo.setFitWidth(bounds.getWidth() / 7);
+
+    ImageView imgView = new ImageView(background);
+    imgView.setFitWidth(bounds.getWidth());
+    imgView.setFitHeight(bounds.getHeight());
+
+    ivLogo.setTranslateX(bounds.getWidth() / 5 * 3.25);
+    ivLogo.setTranslateY(bounds.getHeight() / 5 * 3);
+    root.getChildren().addAll(imgView,ivLogo);
+    menu = new Menu();
+
+
+
+
+    login.setOnMouseClicked((event) ->
     {
       if (!client.isRunning())
       {
@@ -57,7 +117,7 @@ public class UpdateLoop extends Application
       }
       client.loginToServer(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.USA_CALIFORNIA);
     });
-    createUser.setOnAction((event) ->
+    createUser.setOnMouseClicked((event) ->
     {
       if (!client.isRunning())
       {
@@ -66,25 +126,88 @@ public class UpdateLoop extends Application
       }
       client.createUser(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.USA_CALIFORNIA);
     });
+    options.setOnMouseClicked(event -> {
+
+    });
+    exit.setOnMouseClicked(event -> {
+      client.shutdown();;
+    });
+
+
+
 
     //client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
     client = new ClientTest(this, "localhost", 5555);
     this.stage = stage;
+    stage.setMaximized(true);
     stage.setTitle("Login");
     stage.setOnCloseRequest((event) -> client.shutdown());
     //Sets up the initial stage
-    root.setAlignment(Pos.CENTER);
-    root.setHgap(10);
-    root.setVgap(10);
+    gridRoot.setVgap(5);
     stage.setScene(new Scene(root, width, height));
-    root.add(usernameLabel, 0, 0);
-    root.add(username, 0, 1);
-    root.add(passwordLabel, 0, 2);
-    root.add(password, 0, 3);
-    root.add(login,0,4);
-    root.add(createUser,1,4);
+    stage.setMaximized(true);
+    username.setFocusTraversable(false);
+    password.setFocusTraversable(false);
+    gridRoot.add(username, 0, 1);
+    gridRoot.add(password, 0, 2);
+    gridRoot.add(login, 0, 3);
+    gridRoot.add(createUser, 0, 4);
+    gridRoot.add(options,0,5);
+    gridRoot.add(exit,0,6);
+    root.getChildren().add(gridRoot);
+    gridRoot.setTranslateY(bounds.getHeight()/5*3);
+    gridRoot.setTranslateX(50);
     stage.show();
     startGameLoop();
+  }
+
+
+  private static class MenuButton extends StackPane
+  {
+
+    private Text text;
+
+    private MenuButton(String name)
+    {
+      Rectangle bg = new Rectangle(250, 30);
+
+      text = new Text(name);
+      text.setFont(text.getFont().font(20));
+
+      text.setFill(Color.WHITE);
+      text.setTranslateY(-2);
+      bg.setOpacity(0.6);
+      bg.setFill(Color.BLACK);
+      bg.setEffect(new GaussianBlur(3.5));
+
+      setAlignment(Pos.CENTER_LEFT);
+      getChildren().addAll(bg, text);
+      //text.setTranslateX(-10);
+      //bg.setTranslateX(-10);
+
+      this.setOnMouseEntered(event ->
+      {
+        //bg.setTranslateX(10);
+        //text.setTranslateX(10);
+        bg.setFill(Color.WHITE);
+        text.setFill(Color.BLACK);
+      });
+
+      this.setOnMouseExited(event ->
+      {
+        //bg.setTranslateX(-10);
+        //text.setTranslateX(-10);
+        bg.setFill(Color.BLACK);
+        text.setFill(Color.WHITE);
+      });
+
+      DropShadow drop = new DropShadow(50, Color.WHITE);
+
+      drop.setInput(new Glow());
+
+      this.setOnMousePressed(event -> setEffect(drop));
+      this.setOnMouseReleased(event -> setEffect(null));
+    }
   }
 
   private void startGameLoop()

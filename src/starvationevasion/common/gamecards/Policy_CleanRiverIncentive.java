@@ -10,7 +10,7 @@ import java.util.EnumSet;
  * Game Text: {@value #TEXT}<br><br>
  *
  * Draft Affects: When drafting this policy, player selects a percentage X
- * [1% through 100%] and Y% [1% through 100%].<br><br>
+ * [5%, 10%, or 25%].<br><br>
  *
  * Votes Required: Automatic<br><br>
  *
@@ -22,7 +22,7 @@ import java.util.EnumSet;
  * and fertilizer use verses yield for each of the 12 farm products and
  * pesticide and fertilizer use verses cost of alternative methods including
  * more expensive seeds,  natural pest controls, and landscape for reduced run-off.<br><br>
- * The Y% tax break is applied to the regions tax revenue on the next turn.
+ * The X% tax break is applied to the regions tax revenue on the next turn.
 */
 public class Policy_CleanRiverIncentive extends GameCard
 {

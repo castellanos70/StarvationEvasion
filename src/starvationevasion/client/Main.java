@@ -17,7 +17,7 @@ public class Main extends Application
   @Override
   public void start(Stage arg0) throws Exception
   {
-    Client client = new ClientTest(null, "localhost", 9002);
+    Client client = new ClientTest(null, "localhost", 5555);
     GUI gui = new GUI(client, null);
     gui.start(new Stage());
     client.setGUI(gui);

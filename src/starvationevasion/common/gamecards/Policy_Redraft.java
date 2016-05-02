@@ -1,6 +1,10 @@
 package starvationevasion.common.gamecards;
 
-import starvationevasion.sim.carddeck;
+import java.util.ArrayList;
+
+import starvationevasion.common.EnumRegion;
+import starvationevasion.sim.CardDeck;
+import starvationevasion.sim.Simulator;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -35,8 +39,13 @@ public class Policy_Redraft extends GameCard
   /**
    * {@inheritDoc}
    */
-  @Override
+  //@Override
   //TODO Might need to be changed how this accesses the discard.
-  public ArrayList<EnumPolicy> getValidTargetCards() {return CardDeck.getDiscardPile();}
+  //public ArrayList<EnumPolicy> getValidTargetCards() 
+  //{
+  //  EnumRegion region = this.getOwner();
+  //  int playerNumer = region.ordinal();
+  //  return Simulator.getCardsInDiscard(region);
+  //}
   
 }

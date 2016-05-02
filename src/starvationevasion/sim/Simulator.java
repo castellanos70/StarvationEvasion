@@ -232,6 +232,11 @@ public class Simulator
   {
     return playerDeck[playerRegion.ordinal()].getCardsInHand();
   }
+  
+  public ArrayList<EnumPolicy> getCardsInDiscard(EnumRegion playerRegion)
+  {
+    return playerDeck[playerRegion.ordinal()].getDiscardPile();
+  }
 
 
   /**

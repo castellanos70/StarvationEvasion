@@ -255,7 +255,7 @@ public abstract class GameCard implements Sendable
    * flavor text of a card.  Initially, this String is null, but any card that will have 
    * flavor text will override this method to return the selected String of text.
    */
-  public String getFlavorText() {return null}
+  public String getFlavorText() {return null;}
 
 
   //=========================================================================================
@@ -382,7 +382,7 @@ public abstract class GameCard implements Sendable
    * Some policy cards require a target card from deck, discard, or hand.
    * @param targetCard sets the targetCard.  Ignored if this policy does not use a target card.
    */
-  public EnumFood setTargetCard(EnumPolicy targetCard) {this.targetCard = targetCard;}
+  public void setTargetCard(EnumPolicy targetCard) {this.targetCard = targetCard;}
   
 
   //=========================================================================================

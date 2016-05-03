@@ -270,15 +270,15 @@ public class Model
   public Territory getTerritory(double latitude, double longitude)
   {
     //This is the code that should actually be used.
-    //for (Territory territory : territoryList)
-    //{
-    //  if (territory.contains(latitude, longitude)) return territory;
-    //}
-    //return null;
+    for (Territory territory : territoryList)
+    {
+      if (territory.contains(latitude, longitude)) return territory;
+    }
+    return null;
 
 
     //This code is used for debug only.
-
+    /*
     Territory found = null;
     for (Territory territory : territoryList)
     {
@@ -293,7 +293,7 @@ public class Model
       }
     }
     return found;
-
+  */
   }
 
 
@@ -1336,8 +1336,8 @@ public class Model
     //model.drawBoundary(pic, territory, Color.RED);
     */
 
-    //for (int n = 0; n < 10; n++)
-    //{
+    for (int n = 0; n < 10; n++)
+    {
 
       for (EnumRegion regionID : EnumRegion.values())
       {
@@ -1348,11 +1348,11 @@ public class Model
       for (EnumRegion regionID : EnumRegion.values())
       {
         Region region = model.getRegion(regionID);
-        model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5), 3);
+        model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5), 1);
       }
       pic.repaint();
 
-    /*
+
       try
       {
         Thread.sleep(3000);
@@ -1363,6 +1363,6 @@ public class Model
         model.drawRain(pic, 2000+n, month);
       }
     }
-*/
+
   }
 }

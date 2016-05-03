@@ -1,7 +1,5 @@
 package starvationevasion.common.gamecards;
 
-import starvationevasion.common.EnumRegion;
-
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>

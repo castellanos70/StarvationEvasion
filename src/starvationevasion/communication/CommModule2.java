@@ -9,37 +9,9 @@ import starvationevasion.server.model.Type;
 import java.util.ArrayList;
 
 /**
- * The Communication class is meant to be implemented by a generic module
- * that will be responsible for both sending to and receiving data from
- * a server instance.
- *
- * For StarvationEvasion, an AI or UI client will instantiate an object
- * that implements Communication so that they are capable of maintaining contact
- * with the server. They themselves should not need to know anything about how
- * this is done or what happens when data is sent/received. They only need to know
- * how to pull data from the Communication module and send data through the module, which
- * should be a simple process for both.
- *
- * For any class implementing Communication, the following should be upheld ::
- *
- *      1) It should be entirely thread-safe. The hope will be that the server
- *         communicates with a Communication module as it needs to, and an AI or
- *         UI client will *also* be able to make requests of the Communication module
- *         whenever they want (Ex: as part of their main update loop). As a result,
- *         there should be no issues with any number of threads interfacing with the
- *         same Communication instance. This also takes much of the burden off of
- *         classes that use a Communication module to be thread-safe themselves.
- *
- *      2) For all incoming data from the server, the module is responsible for pre-processing
- *         that data and organizing it in such a way that the AI and UI clients that are
- *         depending upon the module can retrieve the data in a convenient manner. For example,
- *         if the server is sending an update about changes in world data, the module must
- *         keep a list of changes since the last time the AI/UI client requested the latest
- *         data.
- *
- * @author Javier Chavez (javierc@cs.unm.edu), Justin Hall, George Boujaoude
+ * TODO refactor original comm
  */
-public interface Communication
+public class CommModule2 implements Communication
 {
   /**
    * This gets the starting nano time that was received from the server. Note that server responses
@@ -48,7 +20,11 @@ public interface Communication
    *
    * @return starting nano time from the server
    */
-  double getStartNanoTime();
+  @Override
+  public double getStartNanoTime()
+  {
+    return 0;
+  }
 
   /**
    * Returns the current connection state of the module. If at any point the module loses connection
@@ -56,87 +32,122 @@ public interface Communication
    *
    * @return true if connected to the server and false if not
    */
-  boolean isConnected();
+  @Override
+  public boolean isConnected()
+  {
+    return false;
+  }
 
   /**
    * Attempts to send a new login request to the server with the given information.
+   *
    * @param username username as a string
    * @param password password as a string
-   * @param region region associated with the logging-in user
+   * @param region   region associated with the logging-in user
    * @return true if the request succeeded in sending and false if not (NOTE :: This *does not* reflect
-   *         the status of the login - only whether the request was sent or not)
+   * the status of the login - only whether the request was sent or not)
    */
-  boolean login(String username, String password, EnumRegion region);
+  @Override
+  public boolean login(String username, String password, EnumRegion region)
+  {
+    return false;
+  }
 
   /**
    * Note :: Check the Endpoint that you are using before you set data to null - some are safe
-   *         to use without extra data associate with them while some are not (If they say "No Payload"
-   *         with their comment block, it should be fine to not include extra data). See
-   *         starvationevasion.server.model.Endpoint for more information.
-   *
+   * to use without extra data associate with them while some are not (If they say "No Payload"
+   * with their comment block, it should be fine to not include extra data). See
+   * starvationevasion.server.model.Endpoint for more information.
+   * <p>
    * Attempts to send a new request to the server tagged with the given endpoint. The "data" field
    * is potentially optional, while the "message" field is entirely optional. Put null for both of
    * these if you do not wish to use them.
    *
    * @param endpoint endpoint to tag the request with
-   * @param data Sendable object to attach to the request - the most common type for this is Payload
-   *             (see starvationevasion.server.model.Payload for more information)
-   * @param message optional message to attach - this *must* be null if data is also null
+   * @param data     Sendable object to attach to the request - the most common type for this is Payload
+   *                 (see starvationevasion.server.model.Payload for more information)
+   * @param message  optional message to attach - this *must* be null if data is also null
    * @return true if the request was sent successfully and false if anything went wrong
    */
-  boolean send(Endpoint endpoint, Sendable data, String message);
+  @Override
+  public boolean send(Endpoint endpoint, Sendable data, String message)
+  {
+    return false;
+  }
 
   /**
    * This function attempts to send a new chat request to the server. Note that for destination,
    * the only two types that can be placed here (at the moment) are String and EnumRegion.
-   *
+   * <p>
    * The "data" field is for attaching extra data to the chat request. At the moment the only
    * supported type is PolicyCard.
    *
    * @param destination where to send the chat
-   * @param text chat text
-   * @param data extra data (optional - can be null)
-   * @param <T> type of destination (String, EnumRegion)
-   * @param <E> type of data (PolicyCard only at the moment)
+   * @param text        chat text
+   * @param data        extra data (optional - can be null)
    * @return true if the request succeeded and false if anything went wrong
    */
-  <T, E> boolean sendChat(T destination, String text, E data);
+  @Override
+  public <T, E> boolean sendChat(T destination, String text, E data)
+  {
+    return false;
+  }
 
   /**
    * Note :: No responses should be pushed to their respective listeners until an external source
-   *         (Ex: AI/UI client) requests that the Communication module do so. This avoids the issue
-   *         of requiring these listeners to be thread-safe. See pushResponseEvents().
-   *
+   * (Ex: AI/UI client) requests that the Communication module do so. This avoids the issue
+   * of requiring these listeners to be thread-safe. See pushResponseEvents().
+   * <p>
    * This binds a response listener to a type. The type represents one of the possible responses that
    * can be generated by the server and pushed to a Communication module. These responses often
    * contain data from the server, so the listener itself will receive this data so that it can
    * push it to whoever needs it. For example, if the type was USER, it means that the server has just
    * sent an entire serialized User over the network (it can be cast directly to a User object).
    *
-   * @param type type to listen for
+   * @param type     type to listen for
    * @param listener listener to bind to - see starvationevasion.communication.ResponseListener
    */
-  void setResponseListener(Type type, ResponseListener listener);
+  @Override
+  public void setResponseListener(Type type, ResponseListener listener)
+  {
+
+  }
 
   /**
    * When this is called, the entire list of response events that were sent from the server since the last
    * time this was called will be pushed to their listeners (if no listener was bound, these events
    * should be shelved until a listener is bound).
-   *
+   * <p>
    * A good data structure to consider about for this is a FIFO list so that older events are processed
    * first, and newer commands are processed last in case they need to override/alter the outcome
    * of the older events.
    */
-  void pushResponseEvents();
+  @Override
+  public void pushResponseEvents()
+  {
 
-  ArrayList<Response> peekMessages();
+  }
 
-  ArrayList<Response> pullMessages();
+  @Override
+  public ArrayList<Response> peekMessages()
+  {
+    return null;
+  }
+
+  @Override
+  public ArrayList<Response> pullMessages()
+  {
+    return null;
+  }
 
   /**
    * Disposes of this module. All existing threads should be shut down and data cleared out.
-   *
+   * <p>
    * The object is not meant to be used in any way after this is called.
    */
-  void dispose();
+  @Override
+  public void dispose()
+  {
+
+  }
 }

@@ -45,8 +45,8 @@ public class GUI extends Application
   private double boxHeight;
   private double boxWidth;
 
-  private int maxHeight=800;
-  private int maxWidth=1400;
+  private int maxHeight=700;
+  private int maxWidth=1300;
 
   //the layout for the drafting phase
   DraftLayout draftLayout;
@@ -148,6 +148,7 @@ public class GUI extends Application
     });
     initGame();
   }
+  
   @Override
   public void stop()
   {

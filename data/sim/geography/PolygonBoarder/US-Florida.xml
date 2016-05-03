@@ -382,4 +382,14 @@
     <vertex lat="25.296499351" lon="-80.3616012712"/>
     <vertex lat="25.3549373511" lon="-80.2494532711"/>
   </area>
+
+
+<hole> <!-- Lake Okeechobee  -->
+<vertex lat="26.788959" lon="-80.706438"/>
+<vertex lat="27.034629" lon="-80.693700"/>
+<vertex lat="27.068917" lon="-80.919706"/>
+<vertex lat="26.823273" lon="-80.932445"/>
+<vertex lat="26.788959" lon="-80.706438"/>
+<vertex lat="26.788959" lon="-80.706438"/>
+</hole>  
 </state>

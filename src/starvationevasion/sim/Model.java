@@ -143,6 +143,7 @@ public class Model
 
     cropData = new CropData();
 
+
     Date dateStart = new Date();
     System.out.println("Model() Loading Climate Data: " +dateFormat.format(dateStart));
 
@@ -157,6 +158,7 @@ public class Model
     
     assert (assertLandTiles());
 
+
     totalTiles = tileList.size();
     
     packedTileData = new PackedTileData(totalTiles);
@@ -169,6 +171,7 @@ public class Model
       if (i < Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR)
       { populateWorldData(Constant.FIRST_DATA_YEAR + i); }
     }
+
   }
 
   public void init()
@@ -267,15 +270,15 @@ public class Model
   public Territory getTerritory(double latitude, double longitude)
   {
     //This is the code that should actually be used.
-    for (Territory territory : territoryList)
-    {
-      if (territory.contains(latitude, longitude)) return territory;
-    }
-    return null;
+    //for (Territory territory : territoryList)
+    //{
+    //  if (territory.contains(latitude, longitude)) return territory;
+    //}
+    //return null;
 
 
     //This code is used for debug only.
-    /*
+
     Territory found = null;
     for (Territory territory : territoryList)
     {
@@ -290,7 +293,7 @@ public class Model
       }
     }
     return found;
-    */
+
   }
 
 
@@ -1142,13 +1145,15 @@ public class Model
    * it draws the boundary of that territory on the map using different colors for
    * disconnected segments (islands) of the territory.
    */
-  public void drawBoundary(Picture pic, Territory territory, Color color)
+  public void drawBoundary(Picture pic, Territory territory, Color color, int thickness)
   {
     MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
-
+    //map.setCentralMeridian(-83);
     Point pixel = new Point();
 
     Graphics2D gfx = pic.getOffScreenGraphics();
+    gfx.setStroke(new BasicStroke(thickness));
+
 
     GeographicArea geographicArea = territory.getGeographicArea();
     Area boundary = geographicArea.getPerimeter();
@@ -1160,6 +1165,7 @@ public class Model
     int startY = Integer.MAX_VALUE;
 
     double[] coords = new double[6];
+
 
     PathIterator path = boundary.getPathIterator(null);
     while(!path.isDone())
@@ -1196,52 +1202,7 @@ public class Model
 
 
 
-  /**
-   * This method is used only for testing the geographic boundaries.<br>
-   * Given a Picture frame containing a Mollweide would map projection and a territory,
-   * it draws the boundary of that territory on the map using different colors for
-   * disconnected segments (islands) of the territory.
-   */
-  public void drawBoundaryUsingMapPoints(Picture pic, Territory territory)
-  {
-    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
 
-    Point pixel = new Point();
-
-    Graphics2D gfx = pic.getOffScreenGraphics();
-    Color[] colorList = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN,
-      Color.BLUE, Color.MAGENTA};
-
-    int colorIdx = 0;
-    GeographicArea geographicArea = territory.getGeographicArea();
-    ArrayList<ArrayList> islandList = geographicArea.getIslandList();
-
-    for (ArrayList<MapPoint> boundary :islandList)
-    {
-      gfx.setColor(colorList[colorIdx]);
-
-      int lastX = Integer.MAX_VALUE;
-      int lastY = Integer.MAX_VALUE;
-
-      for (MapPoint mapPoint : boundary)
-      {
-        map.setPoint(pixel, mapPoint.latitude, mapPoint.longitude);
-
-
-        //System.out.println(mapPoint + " ["+pixel.x+", "+pixel.y+"]");
-
-        if (lastX != Integer.MAX_VALUE)
-        {
-          gfx.drawLine(lastX, lastY, pixel.x, pixel.y);
-        }
-        lastX = pixel.x;
-        lastY = pixel.y;
-      }
-      colorIdx++;
-      if (colorIdx >= colorList.length) colorIdx = colorList.length - 1;
-    }
-    pic.repaint();
-  }
 
   public void drawAllTiles(Picture pic, Region region, Color color)
   {
@@ -1318,9 +1279,52 @@ public class Model
     Model model = new Model();
 
     Picture pic = model.testShowMapProjection();
+    //Graphics2D gfx = pic.getOffScreenGraphics();
+    //gfx.setColor(Color.BLACK);
+    //gfx.fillRect(0,0,pic.getImageWidth(), pic.getImageHeight());
+    Territory territory;
 
-    //Territory territory = model.getTerritory("Morocco");
-    //model.drawBoundaryUsingMapPoints(pic, territory);
+   //territory = model.getTerritory("US-Utah");
+   //model.drawBoundary(pic, territory, Color.GREEN, 1);
+
+   //territory = model.getTerritory("US-Nevada");
+   //model.drawBoundary(pic, territory, Color.BLUE, 1);
+
+    /*
+   territory = model.getTerritory("Congo (Brazzaville)");
+   model.drawBoundary(pic, territory, Color.MAGENTA, 1);
+
+   Region region = model.getRegion(EnumRegion.SUB_SAHARAN);
+   model.drawBoundary(pic, region, Util.brighten(EnumRegion.SUB_SAHARAN.getColor(), 0.5), 3);
+*/
+    //Region region = model.getRegion(EnumRegion.OCEANIA);
+    //model.drawBoundary(pic, region, Color.WHITE);
+
+    //Territory territory = model.getTerritory("Tunisia");
+    //model.drawBoundary(pic, territory, Color.RED);
+/*
+    Territory territory = model.getTerritory("Ethiopia");
+    model.drawBoundaryUsingMapPoints(pic, territory);
+
+    territory = model.getTerritory("Kenya");
+    model.drawBoundaryUsingMapPoints(pic, territory);
+
+
+    territory = model.getTerritory("Tanzania");
+    model.drawBoundaryUsingMapPoints(pic, territory);
+
+    territory = model.getTerritory("Somalia");
+    model.drawBoundaryUsingMapPoints(pic, territory);
+
+    territory = model.getTerritory("Sudan");
+    model.drawBoundaryUsingMapPoints(pic, territory);
+
+    Region region = model.getRegion(EnumRegion.SUB_SAHARAN);
+    model.drawBoundary(pic, region, Util.brighten(Color.MAGENTA, 0.5));
+
+    region = model.getRegion(EnumRegion.MIDDLE_EAST);
+    model.drawBoundary(pic, region, Util.brighten(EnumRegion.MIDDLE_EAST.getColor(), 0.5));
+
 
     //territory = model.getTerritory("Mauritania");
     //model.drawBoundary(pic, territory, Color.WHITE);
@@ -1330,9 +1334,11 @@ public class Model
 
     //territory = model.getTerritory("Mexico");
     //model.drawBoundary(pic, territory, Color.RED);
+    */
 
-    for (int n = 0; n < 10; n++)
-    {
+    //for (int n = 0; n < 10; n++)
+    //{
+
       for (EnumRegion regionID : EnumRegion.values())
       {
         Region region = model.getRegion(regionID);
@@ -1342,9 +1348,11 @@ public class Model
       for (EnumRegion regionID : EnumRegion.values())
       {
         Region region = model.getRegion(regionID);
-        model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5));
+        model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5), 3);
       }
       pic.repaint();
+
+    /*
       try
       {
         Thread.sleep(3000);
@@ -1355,6 +1363,6 @@ public class Model
         model.drawRain(pic, 2000+n, month);
       }
     }
-
+*/
   }
 }

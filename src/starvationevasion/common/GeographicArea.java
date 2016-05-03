@@ -4,7 +4,10 @@ package starvationevasion.common;
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
+import starvationevasion.sim.Territory;
+import starvationevasion.util.Picture;
 
+import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
@@ -13,23 +16,30 @@ import java.util.ArrayList;
 public class GeographicArea implements Sendable
 {
   private final String name;
-  public enum BoundaryType {ISLAND, HOLE};
+
+  public enum BoundaryType
+  {
+    ISLAND, HOLE
+  }
+
+  ;
 
   /**
    * boundaryList is an ArrayList of an ArrayList of MapPoints.<br>.
    * Each ArrayList of MapPoints is the perimeter of <b><i>one continuous segment</i></b> of
    * the GeographicArea. <br><br>
-   *
+   * <p>
    * For example, a GeographicArea consisting of six islands would be represented as a
    * boundaryList of six array lists where each array list is the perimeter of one of
    * one of the islands.
    */
-  private ArrayList<ArrayList> islandList = new ArrayList<>();
+  //private ArrayList<ArrayList> islandList = new ArrayList<>();
 
   private Area perimeter = new Area();
 
   public GeographicArea(String name)
-  { this.name = name;
+  {
+    this.name = name;
     //System.out.println("++++++++++++++++++++++++GeographicArea("+name+")");
   }
 
@@ -37,25 +47,27 @@ public class GeographicArea implements Sendable
   /**
    * This method converts an ordered set of MapPoints to a closed java.awt.geom.Path2D.
    * The path is then added to adds that path to a java.awt.geom.Area. <br><br>
-   *
+   * <p>
    * java.awt.geom.Path2D expects points to be 2D cartesian coordinates; however
    * this method adds untransformed latitude and longitude points. While this creates a distorted space
    * that cannot correctly measure distances, the methods we need contains() and perimeter
    * calculation, will work with the untransformed latitude and longitude coordinates.
+   *
    * @param island
    */
   public void addToPerimeter(ArrayList<MapPoint> island, BoundaryType type)
   {
-    islandList.add(island);
 
-    Path2D.Double shape = new Path2D.Double();
+    //islandList.add(island);
+
+    Path2D.Float shape = new Path2D.Float();
 
     MapPoint firstPoint = island.get(0);
     double firstX = firstPoint.longitude;
     double firstY = firstPoint.latitude;
     shape.moveTo(firstX, firstY);
 
-    for (int i=1; i<island.size(); i++)
+    for (int i = 1; i < island.size(); i++)
     {
       MapPoint mapPoint = island.get(i);
       shape.lineTo(mapPoint.longitude, mapPoint.latitude);
@@ -65,16 +77,18 @@ public class GeographicArea implements Sendable
     Area area = new Area(shape);
     //assert(area.isSingular());
 
-    if (!area.isSingular())
-    {
-      System.out.println("ERROR: GeographicArea.addToPerimeter() Shape not a simple polygon: "+ name);
-    }
+    //if (!area.isSingular())
+    //{
+    //  System.out.println("ERROR: GeographicArea.addToPerimeter() Not a simple polygon: "+ name +
+    //    " ["+islandList.size()+"]");
+    //
+    //}
 
-    if (type == BoundaryType.ISLAND) perimeter.add(area);
-    else perimeter.subtract(area);
+    if (type == BoundaryType.ISLAND) { perimeter.add(area); }
+    else { perimeter.subtract(area); }
   }
 
-  public ArrayList<ArrayList>getIslandList() {return islandList;}
+  //public ArrayList<ArrayList>getIslandList() {return islandList;}
 
 
   public boolean contains(MapPoint mapPoint)
@@ -84,7 +98,7 @@ public class GeographicArea implements Sendable
 
   public boolean contains(double latitude, double longitude)
   {
-    return perimeter.contains(longitude,latitude);
+    return perimeter.contains(longitude, latitude);
   }
 
 
@@ -111,8 +125,9 @@ public class GeographicArea implements Sendable
       '}';
   }
 
+
   @Override
-  public JSONDocument toJSON ()
+  public JSONDocument toJSON()
   {
     JSONDocument json = JSONDocument.createObject();
     json.setString("name", name);
@@ -129,7 +144,7 @@ public class GeographicArea implements Sendable
   }
 
   @Override
-  public void fromJSON (Object doc)
+  public void fromJSON(Object doc)
   {
 
   }

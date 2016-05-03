@@ -635,4 +635,21 @@
 <vertex lat="68.391020" lon="22.782413"/>
 <vertex lat="68.367352" lon="22.854140"/>
 </area>
+
+<hole> <!-- Lake Vanern  -->
+<vertex lat="59.336482" lon="13.591450"/>
+<vertex lat="59.129001" lon="13.195298"/>
+<vertex lat="58.993531" lon="13.027040"/>
+<vertex lat="58.953844" lon="12.697086"/>
+<vertex lat="58.880282" lon="12.522161"/>
+<vertex lat="58.775948" lon="12.537767"/>
+<vertex lat="58.506197" lon="12.460149"/>
+<vertex lat="58.509039" lon="12.830101"/>
+<vertex lat="58.608671" lon="13.282683"/>
+<vertex lat="58.902503" lon="13.918923"/>
+<vertex lat="59.086213" lon="13.984449"/>
+<vertex lat="59.204914" lon="13.979281"/>
+<vertex lat="59.204914" lon="13.979281"/>
+<vertex lat="59.336482" lon="13.591450"/>
+</hole>
 </country>

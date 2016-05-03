@@ -124,7 +124,7 @@ public class CSVReader
    * Reads a record from class field reader<br>
    * Automatically closes the file if end-of-file or a record is read with
    * a number of fields not equal to the input fieldCount.
-   * @param fieldCount expected number of fields.
+   * @param fieldCount expected number of fields. If fieldCount == 0, then reads any number of fields.
    * @return String[] of fields of that record or null if end-of-file or error.
    */
   public String[] readRecord(int fieldCount)
@@ -146,7 +146,7 @@ public class CSVReader
     }
 
     String[] fields = str.split(",");
-    if (fields.length > fieldCount)
+    if (fieldCount > 0 && fields.length > fieldCount)
     {
       LOGGER.severe("****ERROR reading " + path + ": Expected " + fieldCount +
         " fields but read "+ fields.length + "\ndata=["+str+"]");
@@ -156,6 +156,17 @@ public class CSVReader
     return fields;
   }
 
+
+
+  /**
+   * Reads a record from class field reader<br>
+   * Automatically closes the file if end-of-file.
+   * @return String[] of fields of that record or null if end-of-file or error.
+   */
+  public String[] readRecord()
+  {
+    return readRecord(0);
+  }
 
 
   public void trashRecord()
@@ -237,5 +248,60 @@ public class CSVReader
     {
       return tokens;
     }
+  }
+
+  public static void writeRecord(BufferedWriter writer, String[] record) throws IOException
+  {
+    String str = "";
+    for (int i=0; i<record.length; i++)
+    {
+      if (i<record.length-1) str +=record[i]+',';
+      else str +=record[i]+'\n';
+    }
+    writer.write (str);
+  }
+
+
+  public static void removeConsecutiveRepeatedRecords(String inFile, String outFile)
+  {
+    try
+    {
+      CSVReader fileReader = new CSVReader(inFile, 0);
+
+      BufferedWriter writer = new BufferedWriter(new FileWriter(new File(outFile)));
+
+      String[] fieldList1 = fileReader.readRecord();
+      String[] fieldList2 = fileReader.readRecord();
+
+      while (fieldList2 != null)
+      {
+        if (fieldList1.length != fieldList2.length) writeRecord(writer, fieldList1);
+        else
+        {
+          for (int i=0; i<fieldList2.length; i++)
+          {
+            if(!fieldList1[i].equals(fieldList2[i]))
+            {
+              writeRecord(writer, fieldList1);
+              break;
+            }
+          }
+        }
+        fieldList1 = fieldList2;
+        fieldList2 = fileReader.readRecord();
+      }
+      writer.close();
+
+    }
+    catch(Exception e)
+    {
+      e.printStackTrace();
+      System.exit(0);
+    }
+  }
+
+  public static void main(String[] args)
+  {
+    removeConsecutiveRepeatedRecords("/tmp.csv", "tmp2.csv");
   }
 }

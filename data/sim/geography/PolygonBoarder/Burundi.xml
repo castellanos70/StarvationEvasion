@@ -80,4 +80,30 @@
 <vertex lat="-2.395564" lon="30.528866"/>
 <vertex lat="-2.400112" lon="30.553619"/>
 </area>
+
+
+<hole><!-- Lake Tanganyika -->
+<vertex lat="-8.578339" lon="30.806006"/>
+<vertex lat="-8.786543" lon="31.022117"/>
+<vertex lat="-8.729906" lon="31.189032"/>
+<vertex lat="-7.541917" lon="30.604158"/>
+<vertex lat="-6.922730" lon="30.528039"/>
+<vertex lat="-6.244115" lon="29.722041"/>
+<vertex lat="-5.860986" lon="29.951226"/>
+<vertex lat="-5.466901" lon="29.758422"/>
+<vertex lat="-5.040881" lon="29.791960"/>
+<vertex lat="-4.896393" lon="29.600085"/>
+<vertex lat="-4.420143" lon="29.652588"/>
+<vertex lat="-3.455499" lon="29.281035"/>
+<vertex lat="-5.054006" lon="29.101718"/>
+<vertex lat="-5.616453" lon="29.371985"/>
+<vertex lat="-6.038029" lon="29.193185"/>
+<vertex lat="-6.754161" lon="29.536523"/>
+<vertex lat="-7.299244" lon="30.147028"/>
+<vertex lat="-7.848358" lon="30.277356"/>
+<vertex lat="-8.115008" lon="30.566848"/>
+<vertex lat="-8.498189" lon="30.464425"/>
+<vertex lat="-8.578339" lon="30.806006"/>
+<vertex lat="-8.578339" lon="30.806006"/>
+</hole>
 </country>

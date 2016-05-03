@@ -77,6 +77,12 @@ public class LandTile
    * curCrop == null indicates there that no crop is currently planted in this LandTile.
    */
   private EnumFood curCrop = null;
+  
+  /**
+   * cropRatings[EnumFood.CITRUS.ordinal()] returns this LandTiles rating for
+   * citrus.
+   */
+  private EnumCropZone[] cropRatings = new EnumCropZone[EnumFood.SIZE];
 
   private float[][][] data = new float[RawDataYears.SIZE][Constant.Month.SIZE][Field.SIZE];
 
@@ -137,58 +143,15 @@ public class LandTile
     curCrop = crop;
   }
   public EnumFood getCrop() { return curCrop; }
-
-
-
-
-
-  /**
-   * Rates tile's suitability for a particular crop.
-   * @param crop  crop for which we want rating (wheat, corn, rice, or soy)
-   * @return EnumCropZone (IDEAL, ACCEPTABLE, or POOR)
-   * @throws NullPointerException if called with argument EnumFood.OTHER_CROPS, will throw an
-   * exception because OTHER_CROPS required climate varies by country;
-   * rating cannot be calculated using crop alone.
-   */
-  public EnumCropZone rateTileForCrop(EnumFood crop) throws NullPointerException
+  
+  public EnumCropZone[] getCropRatings() { return cropRatings; }
+  
+  public void updateRating(EnumCropZone[] ratings)
   {
-    /*
-    CropZoneData data = CropZoneData.mapFood(crop);
-    if (data == null)
+    for(int i = 0; i < cropRatings.length; i++)
     {
-      //Logger.getGlobal().log(Level.SEVERE, "Couldn't find crop climate data for " + crop + ". Defaulting to POOR.");
-      return EnumCropZone.POOR;
+      cropRatings[i] = ratings[i];
     }
-
-    int cropDayT = data.dayTemp;
-    int cropNightT = data.nightTemp;
-    int cropMaxT = data.maxTemp;
-    int cropMinT = data.minTemp;
-    int cropMaxR = data.maxRain;
-    int cropMinR = data.minRain;
-
-    double tRange = cropDayT - cropNightT;                               // tempRange is crop's optimum day-night temp range
-    double rRange = cropMaxR - cropMinR;                                 // rainRange is crop's optimum Rainfall range
-    if (isBetween(avgDayTemp, cropNightT, cropDayT) &&
-      isBetween(avgNightTemp, cropNightT, cropDayT) &&
-      isBetween(rainfall, cropMinR, cropMaxR) &&
-      maxAnnualTemp <= cropMaxT && minAnnualTemp >= cropMinT)
-    {
-      return EnumCropZone.IDEAL;
-    }
-    else if (isBetween(avgDayTemp, cropNightT - 0.3 * tRange, cropDayT + 0.3 * tRange) &&
-      isBetween(avgNightTemp, cropNightT - 0.3 * tRange, cropDayT + 0.3 * tRange) &&
-      isBetween(rainfall, cropMinR - 0.3 * rRange, cropMaxR + 0.3 * rRange) &&
-      maxAnnualTemp <= cropMaxT && minAnnualTemp >= cropMinT)
-    {
-      return EnumCropZone.ACCEPTABLE;
-    }
-    else
-    {
-      return EnumCropZone.POOR;                                               // otherwise tile is POOR for crop
-    }
-    */
-    return null;
   }
 
   /**
@@ -257,19 +220,6 @@ public class LandTile
     return zonePercent * usePercent;
   }
 
-  private boolean isBetween(Number numToTest, Number lowVal, Number highVal)
-  {
-    if (numToTest.doubleValue() >= lowVal.doubleValue() && numToTest.doubleValue() <= highVal.doubleValue())
-    {
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-
   @Override
   public String toString()
   {
@@ -279,7 +229,6 @@ public class LandTile
 
 
   }
-
 
   /**
    * This loadLocations method without arguments is intended to be called once by the client to load the latitude longitude coordinates
@@ -329,7 +278,7 @@ public class LandTile
       String[] fieldList;
       Territory territory = null;
 
-      if (model == null) mapList = new ArrayList<>();
+      if (model == null) mapList = new ArrayList<>(245021);
 
       while ((fieldList = fileReader.readRecord(PATH_COORDINATES_FIELD_COUNT)) != null)
       {
@@ -342,11 +291,11 @@ public class LandTile
         else
         { LandTile tile = new LandTile(latitude, longitude);
           tileList.add(tile);
-          if ((territory == null) || (!territory.contains(latitude, longitude)))
-          {
-            territory = model.getTerritory(latitude, longitude);
-          }
-
+          //if ((territory == null) || (!territory.contains(latitude, longitude)))
+          //{
+          //  territory = model.getTerritory(latitude, longitude);
+          //}
+          territory = model.getTerritory(latitude, longitude);
           if (territory != null) territory.addLandTile(tile);
         }
       }

@@ -1,28 +1,6 @@
 <country>
 <name>Malawi</name>
-<area>
-<vertex lat="-12.110682" lon="34.719359"/>
-<vertex lat="-12.118692" lon="34.684219"/>
-<vertex lat="-12.100760" lon="34.662102"/>
-<vertex lat="-12.047585" lon="34.667476"/>
-<vertex lat="-12.008879" lon="34.679930"/>
-<vertex lat="-12.002781" lon="34.714915"/>
-<vertex lat="-12.013065" lon="34.738996"/>
-<vertex lat="-12.030790" lon="34.755946"/>
-<vertex lat="-12.059057" lon="34.756256"/>
-<vertex lat="-12.088357" lon="34.746024"/>
-<vertex lat="-12.110682" lon="34.719359"/>
-</area>
-<area>
-<vertex lat="-12.013685" lon="34.641638"/>
-<vertex lat="-12.066602" lon="34.621794"/>
-<vertex lat="-12.065775" lon="34.580453"/>
-<vertex lat="-12.018646" lon="34.541592"/>
-<vertex lat="-11.982266" lon="34.553995"/>
-<vertex lat="-11.971052" lon="34.591408"/>
-<vertex lat="-11.984746" lon="34.624275"/>
-<vertex lat="-12.013685" lon="34.641638"/>
-</area>
+
 <area>
 <vertex lat="-9.519160" lon="33.330917"/>
 <vertex lat="-9.608044" lon="33.420937"/>
@@ -251,4 +229,55 @@
 <vertex lat="-9.500453" lon="33.225290"/>
 <vertex lat="-9.519160" lon="33.330917"/>
 </area>
+
+<hole><!-- Lake Malawi -->
+<vertex lat="-13.742933" lon="35.055979"/>
+<vertex lat="-13.701127" lon="34.867567"/>
+<vertex lat="-12.422394" lon="34.693883"/>
+<vertex lat="-11.463434" lon="34.937020"/>
+<vertex lat="-11.080512" lon="34.607893"/>
+<vertex lat="-10.030137" lon="34.524229"/>
+<vertex lat="-9.495441" lon="33.995579"/>
+<vertex lat="-9.801727" lon="33.906592"/>
+<vertex lat="-10.447579" lon="34.259904"/>
+<vertex lat="-11.652983" lon="34.322691"/>
+<vertex lat="-12.208557" lon="34.032528"/>
+<vertex lat="-12.944584" lon="34.329977"/>
+<vertex lat="-13.379390" lon="34.320934"/>
+<vertex lat="-13.672085" lon="34.551101"/>
+<vertex lat="-14.047669" lon="34.546760"/>
+<vertex lat="-14.262023" lon="34.706543"/>
+<vertex lat="-14.012013" lon="34.881210"/>
+<vertex lat="-14.401291" lon="35.236227"/>
+<vertex lat="-14.277474" lon="35.260205"/>
+<vertex lat="-13.742933" lon="35.055979"/>
+</hole>
+
+
+<!-- island in Lake Malawi --> 
+<!-- <area> 
+<vertex lat="-12.110682" lon="34.719359"/>
+<vertex lat="-12.118692" lon="34.684219"/>
+<vertex lat="-12.100760" lon="34.662102"/>
+<vertex lat="-12.047585" lon="34.667476"/>
+<vertex lat="-12.008879" lon="34.679930"/>
+<vertex lat="-12.002781" lon="34.714915"/>
+<vertex lat="-12.013065" lon="34.738996"/>
+<vertex lat="-12.030790" lon="34.755946"/>
+<vertex lat="-12.059057" lon="34.756256"/>
+<vertex lat="-12.088357" lon="34.746024"/>
+<vertex lat="-12.110682" lon="34.719359"/>
+</area> -->
+
+<!-- island in Lake Malawi --> 
+<!-- <area> 
+<vertex lat="-12.013685" lon="34.641638"/>
+<vertex lat="-12.066602" lon="34.621794"/>
+<vertex lat="-12.065775" lon="34.580453"/>
+<vertex lat="-12.018646" lon="34.541592"/>
+<vertex lat="-11.982266" lon="34.553995"/>
+<vertex lat="-11.971052" lon="34.591408"/>
+<vertex lat="-11.984746" lon="34.624275"/>
+<vertex lat="-12.013685" lon="34.641638"/>
+</area> -->
 </country>

@@ -36,8 +36,8 @@ PolygonBoarder/Chile.xml
 PolygonBoarder/China.xml
 PolygonBoarder/Colombia.xml
 PolygonBoarder/Comoros.xml
-PolygonBoarder/Congo (Brazzaville).xml
-PolygonBoarder/Congo_RepublicOf.xml
+PolygonBoarder/Congo_Brazzaville.xml
+PolygonBoarder/Congo_Kinshasa.xml
 PolygonBoarder/Costa Rica.xml
 PolygonBoarder/Croatia.xml
 PolygonBoarder/Cuba.xml
@@ -136,6 +136,7 @@ PolygonBoarder/Peru.xml
 PolygonBoarder/Philippines.xml
 PolygonBoarder/Poland.xml
 PolygonBoarder/Portugal.xml
+PolygonBoarder/PuertoRico.xml
 PolygonBoarder/Qatar.xml
 PolygonBoarder/Romania.xml
 PolygonBoarder/RussianFederation.xml
@@ -168,6 +169,7 @@ PolygonBoarder/Sweden.xml
 PolygonBoarder/Switzerland.xml
 PolygonBoarder/SyrianArabRepublic.xml
 PolygonBoarder/Tajikistan.xml
+PolygonBoarder/Tanzania.xml
 PolygonBoarder/Thailand.xml
 PolygonBoarder/Timor-Leste.xml
 PolygonBoarder/Togo.xml
@@ -181,7 +183,6 @@ PolygonBoarder/Uganda.xml
 PolygonBoarder/Ukraine.xml
 PolygonBoarder/United Arab Emirates.xml
 PolygonBoarder/UnitedKingdom.xml
-PolygonBoarder/UnitedRepublicOf Tanzania.xml
 PolygonBoarder/Uruguay.xml
 PolygonBoarder/Uzbekistan.xml
 PolygonBoarder/Vanuatu.xml

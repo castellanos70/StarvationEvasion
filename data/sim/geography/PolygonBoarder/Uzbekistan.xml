@@ -612,4 +612,32 @@
 <vertex lat="41.014887" lon="70.549989"/>
 <vertex lat="40.981814" lon="70.568747"/>
 </area>
+
+<hole>  <!-- Aral Sea  -->
+<vertex lat="44.784037" lon="60.239972"/>
+<vertex lat="45.572774" lon="60.123597"/>
+<vertex lat="45.520478" lon="59.840720"/>
+<vertex lat="45.808212" lon="59.946760"/>
+<vertex lat="45.886734" lon="60.123597"/>
+<vertex lat="46.096024" lon="60.123597"/>
+<vertex lat="46.252991" lon="59.770026"/>
+<vertex lat="46.305339" lon="59.557843"/>
+<vertex lat="45.705014" lon="59.535002"/>
+<vertex lat="45.939057" lon="59.204273"/>
+<vertex lat="45.886734" lon="58.780009"/>
+<vertex lat="45.500014" lon="58.689989"/>
+<vertex lat="44.892557" lon="58.285001"/>
+<vertex lat="44.473952" lon="58.285001"/>
+<vertex lat="44.212340" lon="58.497133"/>
+<vertex lat="44.735564" lon="58.921448"/>
+<vertex lat="45.101847" lon="58.921448"/>
+<vertex lat="45.375008" lon="58.961394"/>
+<vertex lat="45.190007" lon="59.359302"/>
+<vertex lat="44.997202" lon="59.345711"/>
+<vertex lat="44.369282" lon="59.062886"/>
+<vertex lat="44.159992" lon="59.770026"/>
+<vertex lat="44.264637" lon="60.052852"/>
+<vertex lat="44.784037" lon="60.239972"/>
+</hole>
+
 </country>

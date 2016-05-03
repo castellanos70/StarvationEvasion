@@ -7577,4 +7577,92 @@
 <vertex lat="81.758989" lon="59.356408"/>
 <vertex lat="81.715193" lon="58.295388"/>
 </area>
+
+<hole> <!-- Lake Baikal -->
+<vertex lat="52.619993" lon="106.260005"/>
+<vertex lat="52.519999" lon="105.980022"/>
+<vertex lat="52.280013" lon="105.480001"/>
+<vertex lat="52.000005" lon="105.059975"/>
+<vertex lat="51.859987" lon="104.399964"/>
+<vertex lat="51.859987" lon="103.859997"/>
+<vertex lat="51.739995" lon="103.620011"/>
+<vertex lat="51.600003" lon="103.760003"/>
+<vertex lat="51.500009" lon="104.300022"/>
+<vertex lat="51.460012" lon="104.819990"/>
+<vertex lat="51.520008" lon="105.240016"/>
+<vertex lat="51.759993" lon="105.740037"/>
+<vertex lat="52.039976" lon="106.100015"/>
+<vertex lat="52.320011" lon="106.640034"/>
+<vertex lat="52.420005" lon="107.319992"/>
+<vertex lat="52.579995" lon="107.799963"/>
+<vertex lat="52.799982" lon="108.179991"/>
+<vertex lat="53.140013" lon="108.459974"/>
+<vertex lat="53.200009" lon="108.760008"/>
+<vertex lat="53.379998" lon="108.800005"/>
+<vertex lat="53.439994" lon="108.600018"/>
+<vertex lat="53.780025" lon="108.999993"/>
+<vertex lat="53.619983" lon="109.220031"/>
+<vertex lat="53.819997" lon="109.319974"/>
+<vertex lat="54.339991" lon="109.479964"/>
+<vertex lat="54.719994" lon="109.660005"/>
+<vertex lat="54.980004" lon="109.700002"/>
+<vertex lat="55.712956" lon="109.929807"/>
+<vertex lat="55.730914" lon="109.506991"/>
+<vertex lat="55.535603" lon="109.193470"/>
+<vertex lat="55.027598" lon="109.052703"/>
+<vertex lat="54.259996" lon="108.379979"/>
+<vertex lat="53.859969" lon="108.039948"/>
+<vertex lat="53.519989" lon="107.599975"/>
+<vertex lat="53.379998" lon="107.299994"/>
+<vertex lat="53.180010" lon="107.080007"/>
+<vertex lat="52.939999" lon="106.539988"/>
+<vertex lat="52.799982" lon="106.579986"/>
+<vertex lat="52.619993" lon="106.260005"/>
+</hole>
+
+
+<hole><!-- Lake Ladoga  -->
+<vertex lat="60.843212" lon="30.502046"/>
+<vertex lat="60.630098" lon="30.533878"/>
+<vertex lat="60.146458" lon="31.108934"/>
+<vertex lat="59.927686" lon="31.106246"/>
+<vertex lat="59.920348" lon="31.509736"/>
+<vertex lat="60.235652" lon="31.699440"/>
+<vertex lat="60.208935" lon="32.583882"/>
+<vertex lat="60.533515" lon="32.599902"/>
+<vertex lat="60.481890" lon="32.815754"/>
+<vertex lat="60.642604" lon="32.944325"/>
+<vertex lat="61.117510" lon="32.526883"/>
+<vertex lat="61.775041" lon="30.851998"/>
+<vertex lat="61.226082" lon="29.836711"/>
+<vertex lat="61.226082" lon="29.836711"/>
+<vertex lat="60.843212" lon="30.502046"/>
+</hole>
+
+<hole> <!-- Lake Ladoga  -->
+<vertex lat="62.675348" lon="35.233953"/>
+<vertex lat="62.748470" lon="34.995415"/>
+<vertex lat="62.762448" lon="34.614353"/>
+<vertex lat="62.487762" lon="35.139695"/>
+<vertex lat="62.256019" lon="35.463706"/>
+<vertex lat="62.193284" lon="35.216590"/>
+<vertex lat="62.141194" lon="35.080267"/>
+<vertex lat="62.296766" lon="34.835631"/>
+<vertex lat="62.452235" lon="34.626135"/>
+<vertex lat="62.229794" lon="34.665616"/>
+<vertex lat="62.297748" lon="34.289825"/>
+<vertex lat="62.219148" lon="34.265020"/>
+<vertex lat="61.866973" lon="34.486919"/>
+<vertex lat="61.551799" lon="34.857335"/>
+<vertex lat="61.394289" lon="35.160004"/>
+<vertex lat="61.086349" lon="35.578325"/>
+<vertex lat="61.114435" lon="35.207288"/>
+<vertex lat="61.116373" lon="34.866844"/>
+<vertex lat="60.948580" lon="35.350742"/>
+<vertex lat="61.015087" lon="36.109455"/>
+<vertex lat="61.276053" lon="36.391402"/>
+<vertex lat="61.716311" lon="36.054161"/>
+<vertex lat="62.280230" lon="35.714647"/>
+<vertex lat="62.675348" lon="35.233953"/>
+</hole>
 </country>

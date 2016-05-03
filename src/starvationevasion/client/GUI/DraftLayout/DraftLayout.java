@@ -1,8 +1,11 @@
 package starvationevasion.client.GUI.DraftLayout;
 
+
 import javafx.scene.Node;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import starvationevasion.client.GUI.DraftLayout.ProductBar;
+import starvationevasion.client.GUI.DraftLayout.Hand;
 import starvationevasion.client.GUI.DraftLayout.map.Map;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.Popups.DiscardDisplay;
@@ -86,11 +89,12 @@ public class DraftLayout extends GridPane
 
     //node which lets the user select and view the map of the US
     map = new Map();
-    Node mapNode = map.getGameMapNode();
-
+    Node mapNode = map.getGameMapNode();    
+    
     worldMap=new WorldMap(gui);
     this.add(worldMap, 1, 1, 10, 6);
-
+  
+    
     //node which holds the user's deck/discard pile information
     deckNode = new DeckNode(gui);
     this.add(deckNode, 0,6,1,3);

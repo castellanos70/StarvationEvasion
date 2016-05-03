@@ -51,6 +51,28 @@ public interface Communication
   double getStartNanoTime();
 
   /**
+   * The CommModule will stall whatever thread this is called on while it attempts to connect to
+   * the server. A single Communication module should be bound to a host/port combination that does not
+   * change after instantiation.
+   *
+   * When called, this should first check to see if it is already connected. If not, the full
+   * connection routine should be performed.
+   *
+   * The primary reason for this function's existence is to
+   *        1) allow for an initial connect attempt, and
+   *        2) to allow future connect attempts should a disconnect event happen unexpectedly
+   */
+  void connect();
+
+  /**
+   * Disposes of this module. All existing threads should be shut down and data cleared out. No
+   * existing connection should remain.
+   *
+   * Calling connect() undoes this.
+   */
+  void dispose();
+
+  /**
    * Returns the current connection state of the module. If at any point the module loses connection
    * with the server, this will return false.
    *
@@ -129,14 +151,16 @@ public interface Communication
    */
   void pushResponseEvents();
 
-  ArrayList<Response> peekMessages();
-
-  ArrayList<Response> pullMessages();
-
   /**
-   * Disposes of this module. All existing threads should be shut down and data cleared out.
+   * All messages sent from the server since the last time this function was called will be packaged
+   * up into an array list and returned, and all existing messages within the Communication module's
+   * internal storage queue will be cleared out.
    *
-   * The object is not meant to be used in any way after this is called.
+   * The returned ArrayList will contain an ordered list of responses, where the first (index 0) reflects
+   * the *oldest* in the list and the last (index size-1) represents the most recent response from
+   * the server.
+   *
+   * @return ordered list of server messages since the last time this was called
    */
-  void dispose();
+  ArrayList<Response> pollMessages();
 }

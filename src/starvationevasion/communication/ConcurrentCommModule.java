@@ -22,7 +22,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * TODO refactor original comm
+ * This class serves as the new method of communication between the server and the client.
+ * It is thread-safe and provides the ability to connect, check connection status, disconnect
+ * and send/receive information from a server.
+ *
+ * @author Javier Chavez (javierc@cs.unm.edu), Justin Hall, George Boujaoude
  */
 public class ConcurrentCommModule implements Communication
 {
@@ -197,20 +201,17 @@ public class ConcurrentCommModule implements Communication
     try
     {
       LOCK.lock();
-      while (RESPONSE_EVENTS.size() > 0) pollMessages(); // Clear out the messages
+      RESPONSE_EVENTS.clear();
 
-      try
-      {
-        writer.close();
-        reader.close();
-        clientSocket.close();
-      }
-      catch (IOException e)
-      {
-        commError("Could not dispose properly");
-        e.printStackTrace();
-        System.exit(-1);
-      }
+      writer.close();
+      reader.close();
+      clientSocket.close();
+    }
+    catch (IOException e)
+    {
+      commError("Could not dispose properly");
+      e.printStackTrace();
+      System.exit(-1);
     }
     finally
     {
@@ -409,7 +410,7 @@ public class ConcurrentCommModule implements Communication
     return true;
   }
 
-  public void commPrint(String message)
+  private void commPrint(String message)
   {
     System.out.println("Client: " + message);
   }

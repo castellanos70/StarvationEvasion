@@ -8,15 +8,11 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.communication.AITest.commands.Draft;
-import starvationevasion.communication.AITest.commands.Vote;
-import starvationevasion.communication.CommModule;
 import starvationevasion.communication.Communication;
 import starvationevasion.communication.ConcurrentCommModule;
 import starvationevasion.server.model.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Proof of concept.

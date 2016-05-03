@@ -241,22 +241,29 @@ public abstract class GameCard implements Sendable
    */
   public int votesRequired() {return 0;}
   
-//=========================================================================================
+  //=========================================================================================
   /**
    * In the abstract GameCard class, this method returns the default
    * Action Point cost of a Policy Card, 1.  If a class that extends GameCard costs
    * more than one Action Point to use, it will override this method.
    */
   public int actionPointCost() {return 1;}
-
-//=========================================================================================
+  
+  //=========================================================================================
   /**
    * In the abstract GameCard class, this method returns the default
    * flavor text of a card.  Initially, this String is null, but any card that will have 
    * flavor text will override this method to return the selected String of text.
    */
   public String getFlavorText() {return null;}
-
+  
+//=========================================================================================
+  /**
+   * In the abstract GameCard class, this method returns the default
+   * source of where the flavor text is. Often, the flavor text is a quote, so the source 
+   * will look something like "-Ronald Reagan".
+   */
+  public String getFlavorTextSource() {return null;}
 
   //=========================================================================================
   /**

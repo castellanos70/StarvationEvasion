@@ -9,6 +9,7 @@ import starvationevasion.sim.Simulator;
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
+ * Flavor Text: <i>{@value #FLAVOR_TEXT}</i><br><br>
  *
  * Votes Required: Automatic<br><br>
  *
@@ -18,11 +19,14 @@ import starvationevasion.sim.Simulator;
 */
 public class Policy_Redraft extends GameCard
 {
-  public static String TITLE = "Redraft";
+  public static final String TITLE = "Redraft";
   
-  public static String TEXT = 
+  public static final String TEXT = 
       "When played, the owner of this policy may return a card from " +
       "their discard pile to their hand.";
+  
+  public static final String FLAVOR_TEXT = 
+      "Yeah, that was a good idea, let's do it again!";
   
   /**
    * {@inheritDoc}
@@ -35,6 +39,12 @@ public class Policy_Redraft extends GameCard
    */
   @Override
   public String getGameText() {return TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getFlavorText() {return FLAVOR_TEXT;}
   
   /**
    * {@inheritDoc}

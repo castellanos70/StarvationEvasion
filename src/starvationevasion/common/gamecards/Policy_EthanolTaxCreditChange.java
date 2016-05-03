@@ -10,7 +10,7 @@ import java.util.EnumSet;
  * Votes Required: Automatic<br><br>
  *
  * Draft Affects: When drafting this policy, the model must inform
- * the player of thier current tax credit of ethanol production
+ * the player of their current tax credit of ethanol production
  *  and require the player selects X.<br><br>
  *
  * Model Effects: <br><br>

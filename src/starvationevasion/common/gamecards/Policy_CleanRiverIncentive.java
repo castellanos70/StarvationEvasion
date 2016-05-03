@@ -8,6 +8,7 @@ import java.util.EnumSet;
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
+ * Flavor Text: <i>{@value #FLAVOR_TEXT}</i><br><br>
  *
  * Draft Affects: When drafting this policy, player selects a percentage X
  * [5%, 10%, or 25%].<br><br>
@@ -33,6 +34,10 @@ public class Policy_CleanRiverIncentive extends GameCard
       "X% tax break for farmers in my region who reduce by 20% the outflow of "+
       "pesticides and fertilizers from their farms into the rivers.";
   
+  public static final String FLAVOR_TEXT =
+      "We should do something about the water before the city council realizes that we weren't " +
+      "serving Kool Aid.";
+  
   public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
       EnumSet.of(EnumGameState.PLANNING_STATE);
   
@@ -52,6 +57,12 @@ public class Policy_CleanRiverIncentive extends GameCard
   */
   @Override
   public String getGameText(){ return TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getFlavorText(){ return FLAVOR_TEXT;}
 
 
   /**

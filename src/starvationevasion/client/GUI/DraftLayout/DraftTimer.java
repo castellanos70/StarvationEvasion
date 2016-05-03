@@ -1,6 +1,7 @@
 package starvationevasion.client.GUI.DraftLayout;
 
-import starvationevasion.client.GUI.Timer;
+import starvationevasion.client.GUI.Clock;
+import starvationevasion.client.GUI.ResizeStrategy;
 import javafx.scene.layout.StackPane;
 
 /**
@@ -8,7 +9,7 @@ import javafx.scene.layout.StackPane;
  */
 public class DraftTimer extends StackPane
 {
-  public static Timer draftTimer = new Timer("draft");
+  public Clock draftTimer = new Clock(this, new ResizeStrategy(0, 0, 1, 1));
 
   /**
    * Default constructor for the DraftTimer

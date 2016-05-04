@@ -5,7 +5,6 @@ _windows
 bin
 .settings
 *.iml
-*.xml
 .classpath
 .project
 *~

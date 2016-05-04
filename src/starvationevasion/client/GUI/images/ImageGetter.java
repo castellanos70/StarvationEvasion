@@ -70,6 +70,7 @@ public class ImageGetter implements ImageConstants
     voteIcon = new ImageView("cardImages/vote.png");
 
 
+
     background = new Image("background.png");
   }
 

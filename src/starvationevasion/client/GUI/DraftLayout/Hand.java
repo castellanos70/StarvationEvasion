@@ -34,6 +34,7 @@ public class Hand extends GridPane
   boolean selectingCard=false;
   int numberOfActionsUsed=0;
   ArrayList<ClientPolicyCard> selectedCards=new ArrayList<>();
+  
   public Hand(GUI gui, Stage stage)
   {
     this.gui = gui;

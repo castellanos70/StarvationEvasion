@@ -1,0 +1,30 @@
+<country>
+<name>Puerto Rico</name>
+<area>
+<vertex lat="17.928049" lon="-66.933060"/>
+<vertex lat="17.961109" lon="-67.091949"/>
+<vertex lat="17.932501" lon="-67.187233"/>
+<vertex lat="17.985830" lon="-67.201973"/>
+<vertex lat="18.199711" lon="-67.146118"/>
+<vertex lat="18.375549" lon="-67.259171"/>
+<vertex lat="18.400270" lon="-67.176682"/>
+<vertex lat="18.475830" lon="-67.178070"/>
+<vertex lat="18.511391" lon="-67.142227"/>
+<vertex lat="18.483891" lon="-66.557243"/>
+<vertex lat="18.478609" lon="-66.136948"/>
+<vertex lat="18.418880" lon="-66.107788"/>
+<vertex lat="18.429720" lon="-66.056396"/>
+<vertex lat="18.464439" lon="-66.115837"/>
+<vertex lat="18.439440" lon="-65.853058"/>
+<vertex lat="18.385830" lon="-65.625839"/>
+<vertex lat="18.205271" lon="-65.645844"/>
+<vertex lat="18.161940" lon="-65.751106"/>
+<vertex lat="17.970280" lon="-65.927513"/>
+<vertex lat="17.928049" lon="-66.237793"/>
+<vertex lat="17.976379" lon="-66.335564"/>
+<vertex lat="17.939720" lon="-66.390556"/>
+<vertex lat="17.986660" lon="-66.465302"/>
+<vertex lat="17.978609" lon="-66.763062"/>
+<vertex lat="17.928049" lon="-66.933060"/>
+</area>
+</country>

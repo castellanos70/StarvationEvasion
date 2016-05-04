@@ -1,6 +1,7 @@
 package starvationevasion.ai.commands;
 
 import starvationevasion.ai.AI;
+import starvationevasion.ai.commands.AbstractCommand;
 import starvationevasion.server.model.Endpoint;
 
 public class Hand extends AbstractCommand

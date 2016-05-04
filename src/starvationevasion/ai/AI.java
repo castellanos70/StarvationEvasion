@@ -43,6 +43,7 @@ public class AI
   private ArrayList<User> enemies = new ArrayList<>();
   public AtomicBoolean doneDrafting=new AtomicBoolean(false);
 
+
   // time of server start
   private double startNanoSec = 0;
 
@@ -66,6 +67,7 @@ public class AI
     FOODEXPORTED, 
     ETHANOLTAXCREDIT, 
     FOODPRICE
+
   }
 
   // This map is used to store information about the world and region that will
@@ -230,7 +232,6 @@ public class AI
     }
   }
 
-
   private void listenToUserRequests()
   {
     while (isRunning)
@@ -247,6 +248,7 @@ public class AI
         // if commands is empty check again
         if (commands.size() == 0)
           continue;
+
         // take off the top of the stack
         Command c = commands.peek();
 
@@ -266,6 +268,7 @@ public class AI
   {
     return COMM;
   }
+
 
   public ArrayList<WorldData> getWorldData()
   {

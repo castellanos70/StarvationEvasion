@@ -701,7 +701,7 @@ public class Draft extends AbstractCommand
       currentRegion = regionMap.get(regionString);
     }
     setupCard(card, currentFood, currentRegion);
-    getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
+    getClient().getCommModule().send(Endpoint.DRAFT_CARD, new Payload(card), null);
     System.out.println("Card drafted:"+card.getPolicyName());
     //System.out.println("Votes required:"+card.votesRequired());
     if (card.votesRequired() != 0)

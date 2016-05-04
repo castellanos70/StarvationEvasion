@@ -278,7 +278,7 @@ public class LandTile
       String[] fieldList;
       Territory territory = null;
 
-      if (model == null) mapList = new ArrayList<>();
+      if (model == null) mapList = new ArrayList<>(245021);
 
       while ((fieldList = fileReader.readRecord(PATH_COORDINATES_FIELD_COUNT)) != null)
       {
@@ -291,11 +291,11 @@ public class LandTile
         else
         { LandTile tile = new LandTile(latitude, longitude);
           tileList.add(tile);
-          if ((territory == null) || (!territory.contains(latitude, longitude)))
-          {
-            territory = model.getTerritory(latitude, longitude);
-          }
-
+          //if ((territory == null) || (!territory.contains(latitude, longitude)))
+          //{
+          //  territory = model.getTerritory(latitude, longitude);
+          //}
+          territory = model.getTerritory(latitude, longitude);
           if (territory != null) territory.addLandTile(tile);
         }
       }

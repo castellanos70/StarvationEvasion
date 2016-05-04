@@ -538,7 +538,7 @@ public class Territory
   public static ArrayList<Territory> territoryLoader()
   {
     CSVReader fileReader = new CSVReader(TERRITORY_DATA_PATH, 0);
-    ArrayList<Territory> territoryList = new ArrayList<>();
+    ArrayList<Territory> territoryList = new ArrayList<>(243);
 
     //Check header
     String[] fieldList = fileReader.readRecord(EnumHeader.SIZE);

@@ -143,6 +143,7 @@ public class Model
 
     cropData = new CropData();
 
+
     Date dateStart = new Date();
     System.out.println("Model() Loading Climate Data: " +dateFormat.format(dateStart));
 
@@ -157,12 +158,13 @@ public class Model
     
     assert (assertLandTiles());
 
+
     totalTiles = tileList.size();
     
     packedTileData = new PackedTileData(totalTiles);
 
     updateCropRatings();
-    
+
     placeCrops();
 
     for (int i = 0; i < YEARS_OF_DATA; i++)
@@ -171,6 +173,7 @@ public class Model
       if (i < Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR)
       { populateWorldData(Constant.FIRST_DATA_YEAR + i); }
     }
+
   }
 
   public void init()
@@ -292,7 +295,7 @@ public class Model
       }
     }
     return found;
-    */
+  */
   }
 
 
@@ -741,7 +744,7 @@ public class Model
     // undernourished factor.
     //
   }
-  
+
   /**
    * iterates through each region and places down crops, semi-randomly,
    *  based on recorded production amounts.
@@ -823,39 +826,18 @@ public class Model
           int randomTileIndex = Util.rand.nextInt(regionTileList.size());
           LandTile tile = regionTileList.get(randomTileIndex);
           EnumCropZone cropRating = tile.getCropRatings()[j];
-          if(cropRating.ordinal() == 3) //crop is IDEAL for this location. Place it.
+          if(cropRating.ordinal() == 3) //non-crop is IDEAL for this location. Place it.
           {
             tile.setCrop(EnumFood.NON_CROP_FOODS[j]);
             regionTileList.remove(randomTileIndex);
           }
-//          else if(cropRating.ordinal() == 2) //crop is GOOD for this location. 80% chance to place it.
-//          {
-//            if(Util.rand.nextDouble() < 0.8)
-//            {
-//              tile.setCrop(EnumFood.NON_CROP_FOODS[j]);
-//              regionTileList.remove(randomTileIndex);
-//            }
-//          }
-//          else if(cropRating.ordinal() == 1)
-//          {
-//            if(Util.rand.nextDouble() < .4) //crop is ACCEPTABLE for this location. 40% chance to place it.
-//            {
-//              tile.setCrop(EnumFood.NON_CROP_FOODS[j]);
-//              regionTileList.remove(randomTileIndex);
-//            }
-//          }
-//          else
-//          {
-//            if(Util.rand.nextDouble() < 0.2) //crop is POOR for this location. 20% chance to place it.
-//            {
-//              tile.setCrop(EnumFood.NON_CROP_FOODS[j]);
-//              regionTileList.remove(randomTileIndex);
-//            }
-//          }
+
         }
       }
       regionTileList.clear();
     }
+
+    //uncomment the following code for testing
     // List<LandTile> landTiles = new ArrayList<>();
     // int num = 1;
     // for (int i = 0; i < regionList.length; i++)
@@ -902,7 +884,7 @@ public class Model
           {
             ratings[k] = rateTileForCrop(EnumFood.CROP_FOODS[k], tile);
           }
-          
+
           //for now, all 4 non crop foods get an ideal rating
           for (int m = 0; m < 4; m++)
           {
@@ -922,6 +904,9 @@ public class Model
    * 
    * Currently doesn't take into account the necessary amount of rain.
    * 
+   * Also doesn't currently take into account the new EnumCropZone.GOOD value.
+   * Only assigns tiles a rating of IDEAL, ACCEPTABLE, or POOR.
+   * 
    * @param crop
    *          crop for which we want rating (citrus, fruit, nut, grain, oil,
    *          veggies, special, or feed)
@@ -940,8 +925,6 @@ public class Model
     // acceptable for a crop as we may find that a tile is also ideal at a
     // later time.
     boolean isAcceptable = false;
-    boolean isGood = false;
-    boolean willFreeze;
 
     // The current running acceptable or ideal grow days. The loop starts on
     // January, and if the month is deemed ideal and/or acceptable, add the
@@ -950,7 +933,6 @@ public class Model
     // ever reach the crops required grow days, we know that the tile is not
     // poor.
     int consecutiveAcceptableGrowDays = 0;
-    int consecutiveGoodGrowDays = 0;
     int consecutiveIdealGrowDays = 0;
 
     // This value corresponds to the consecutive number of acceptable or ideal
@@ -966,10 +948,8 @@ public class Model
     // of a years consecutive grow days reach an acceptable or ideal value.
 
     boolean consecutiveAcceptableBuffer = true;
-    boolean consecutiveGoodBuffer = true;
     boolean consecutiveIdealBuffer = true;
     int consecutiveAcceptableBufferValue = 0;
-    int consecutiveGoodBufferValue = 0;
     int consecutiveIdealBufferValue = 0;
 
     // these values per month
@@ -980,16 +960,17 @@ public class Model
     // float tileRain;
     
     // Necessary crop data from given crop.
-    int cropIdealHigh = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_HIGH, crop);
-    int cropIdealLow = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_LOW, crop);
-    int cropTempMin = cropData.getData(CropData.Field.TEMPERATURE_MIN, crop);
-    int cropGrowdays = cropData.getData(CropData.Field.GROW_DAYS, crop);
+    int idealHigh = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_HIGH, crop);
+    int idealLow = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_LOW, crop);
+    int tempMax = cropData.getData(CropData.Field.TEMPERATURE_MAX, crop);
+    int tempMin = cropData.getData(CropData.Field.TEMPERATURE_MIN, crop);
+    int growdays = cropData.getData(CropData.Field.GROW_DAYS, crop);
     // int waterRequired = cropData.getData(CropData.Field.WATER, crop);
 
-
+    // Iterate through each month checking if suitable conditions exist for
+    // the necessary growdays
     for (int i = 0; i < Constant.Month.SIZE; i++)
-    { // Iterate through each month checking if suitable conditions exist for
-      // the necessary growdays
+    {
       currentMonth = Constant.Month.values()[i];
       tileMonthlyLowT = tile.getField(Field.TEMP_MONTHLY_LOW, Constant.FIRST_GAME_YEAR - 1,
           currentMonth);
@@ -1002,118 +983,95 @@ public class Model
           // tileRain = getField(Field.RAIN, Constant.FIRST_GAME_YEAR-1,
           // currentMonth);
 
-      if (tileMonthlyLowT < cropTempMin)
-      { // if the crops will freeze this month, tile is poor for this month
-        
-        if (consecutiveAcceptableBuffer)
+      // If the temperatures are Acceptable
+      if (isBetween(tileMonthlyLowT, tempMin, tempMax) && isBetween(tileMonthlyHighT, tempMin,
+          tempMax))
+      {
+        // Add the total amount of days in the current month to the
+        // current running grow days
+        consecutiveAcceptableGrowDays += currentMonth.days();
+
+        // Now check if the temperatures are ideal
+        if (isBetween(tileMonthlyLowT, idealLow, idealHigh) && isBetween(tileMonthlyHighT, idealLow,
+            idealHigh))
         {
-          consecutiveAcceptableBuffer = false;
-          consecutiveAcceptableBufferValue = consecutiveAcceptableGrowDays;
+          // Add total days in current month to the current running ideal
+          // grow days
+          consecutiveIdealGrowDays += currentMonth.days();
 
-          if (consecutiveGoodBuffer)
+          // If we find that this tile is Ideal for the given crop,
+          // just return immediately
+          if (consecutiveIdealGrowDays >= growdays)
           {
-            consecutiveGoodBuffer = false;
-            consecutiveGoodBufferValue = consecutiveGoodGrowDays;
-
-            if (consecutiveIdealBuffer)
-            {
-              consecutiveIdealBuffer = false;
-              consecutiveIdealBufferValue = consecutiveIdealGrowDays;
-            }
+            return EnumCropZone.IDEAL;
           }
         }
-        consecutiveIdealGrowDays = 0;
-        consecutiveGoodGrowDays = 0;
-        consecutiveAcceptableGrowDays = 0;
-      }
-      else
-      { // the crop will at least be acceptable/not freeze.
-        
-        if (isBetween(tileMonthlyLowT, cropIdealLow, cropIdealHigh) && isBetween(tileMonthlyHighT,
-            cropIdealLow, cropIdealHigh))
-        { // Check if the temperatures are ideal. If the tile is Ideal, we know
-          // it's also Acceptable and Good. Update all the consecutiveGrowDay
-          // totals.
-          consecutiveIdealGrowDays += currentMonth.days();
-          consecutiveGoodGrowDays += currentMonth.days();
-          consecutiveAcceptableGrowDays += currentMonth.days();
-        }
-        else 
-        { // It's not ideal.
+        else // Reset the current running ideal grow days
+        {
           if (consecutiveIdealBuffer)
           {
+            // If this is the first non-ideal month for this crop,
+            // add the current running value to the ideal buffer to
+            // later check with the end of the year
             consecutiveIdealBuffer = false;
             consecutiveIdealBufferValue = consecutiveIdealGrowDays;
           }
 
           consecutiveIdealGrowDays = 0;
+        }
 
-          if (isBetween(tileMeanDailyLowT, cropIdealLow, cropIdealHigh) && isBetween(
-              tileMeanDailyHighT, cropIdealLow, cropIdealHigh) && !isGood)
-          { // Since we know that this tile is not ideal, we check the meanDaily
-            // temperatures to see if the crop never freezes and that the
-            // temperatures on this tile are -generally- ideal. We will define
-            // this as a Good rating. If we already know this tile is at least
-            // good. We don't bother continuing execution, it won't change
-            // anything.
-            consecutiveGoodGrowDays += currentMonth.days();
-            consecutiveAcceptableGrowDays += currentMonth.days();
-          }
-          else if (!isAcceptable && !isGood)
-          { // It's not good, it's just acceptable. don't bother continuing
-            // execution if we already know the tile is at least good or
-            // acceptable.
-            if (consecutiveGoodBuffer)
-            {
-              consecutiveGoodBuffer = false;
-              consecutiveGoodBufferValue = consecutiveGoodGrowDays;
-            }
-
-            consecutiveGoodBufferValue = 0;
-            
-            consecutiveAcceptableGrowDays += currentMonth.days();
-          }
+        if (consecutiveAcceptableGrowDays >= growdays)
+        {
+          // If we find that this tile is at least acceptable, set to
+          // true
+          isAcceptable = true;
         }
       }
-      // check if we can determine anything with new consecutiveGrowDay values
-      if (consecutiveIdealGrowDays >= cropGrowdays)
-      { //if Ideal just return immediately.
-        return EnumCropZone.IDEAL;
-      }
-      else if (!isGood && consecutiveGoodGrowDays >= cropGrowdays)
-      { //if isGood is true this elseif never executes
-        isGood = true;
-      }
-      else if (!isGood && !isAcceptable && consecutiveAcceptableGrowDays >= cropGrowdays)
-      {//if isGood is true we don't care if it's acceptable.
-        isAcceptable = true;
+      else
+      {
+        // This month is neither ideal or acceptable. Reset the current
+        // running grow values
+        if (consecutiveAcceptableBuffer)
+        {
+          // If this is the first non-acceptable month for this crop,
+          // add the current running value to the acceptablebuffer to
+          // later check with the end of the year.
+          //
+          // This also means this is the first non-ideal month for the crop as
+          // well, as a crop can not be ideal but not acceptable
+          
+          consecutiveAcceptableBuffer = false;
+          consecutiveAcceptableBufferValue = consecutiveAcceptableGrowDays;
+          
+          consecutiveIdealBuffer = false;
+          consecutiveIdealBufferValue = consecutiveIdealGrowDays;
+        }
+        consecutiveAcceptableGrowDays = 0;
+        consecutiveIdealGrowDays = 0;
       }
     }
-    
-    // At this point, the consecutiveGrowDay values are what the values are
-    // through December. If it wasn't acceptable/good/ideal in December, this
-    // value is 0. We will add this value to its respective buffer. If January
-    // wasn't acceptable/good/ideal, the respective buffer is also 0.
+    // At this point, consecutiveIdealGrowDays and
+    // consecutiveAcceptableGrowDays are what the values are through
+    // December. If it wasn't acceptable or ideal in December, this value is
+    // 0. We will add this value to its respective buffer. If January wasn't
+    // acceptable or ideal, the respective buffer is also 0.
 
     // Check if the beginning + the end of a year result in an ideal tile
     // for the given crop
-    if (consecutiveIdealGrowDays + consecutiveIdealBufferValue >= cropGrowdays)
+    if (consecutiveIdealGrowDays + consecutiveIdealBufferValue >= growdays)
     {
       return EnumCropZone.IDEAL;
     }
-    // Else check if we ever had a period that was deemed Good or if the
-    // beginning + end of a year results in a Good tile for the crop
-    else if (isGood || consecutiveGoodGrowDays + consecutiveGoodBufferValue >= cropGrowdays)
-    {
-      return EnumCropZone.GOOD;
-    }
+    // Else check if we ever found a period that is deemed acceptable or if
+    // the beginning + end of a year results in an acceptable tile for the crop
     else if (isAcceptable || consecutiveAcceptableGrowDays
-        + consecutiveAcceptableBufferValue >= cropGrowdays)
+        + consecutiveAcceptableBufferValue >= growdays)
     {
       return EnumCropZone.ACCEPTABLE;
     }
+    // else the tile was neither ideal or acceptable
     else
-    { // If it's not Ideal/Good/Acceptable, it's poor.
+    {
       return EnumCropZone.POOR;
     }
   }
@@ -1301,13 +1259,15 @@ public class Model
    * it draws the boundary of that territory on the map using different colors for
    * disconnected segments (islands) of the territory.
    */
-  public void drawBoundary(Picture pic, Territory territory, Color color)
+  public void drawBoundary(Picture pic, Territory territory, Color color, int thickness)
   {
     MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
-
+    //map.setCentralMeridian(-83);
     Point pixel = new Point();
 
     Graphics2D gfx = pic.getOffScreenGraphics();
+    gfx.setStroke(new BasicStroke(thickness));
+
 
     GeographicArea geographicArea = territory.getGeographicArea();
     Area boundary = geographicArea.getPerimeter();
@@ -1319,6 +1279,7 @@ public class Model
     int startY = Integer.MAX_VALUE;
 
     double[] coords = new double[6];
+
 
     PathIterator path = boundary.getPathIterator(null);
     while(!path.isDone())
@@ -1355,52 +1316,7 @@ public class Model
 
 
 
-  /**
-   * This method is used only for testing the geographic boundaries.<br>
-   * Given a Picture frame containing a Mollweide would map projection and a territory,
-   * it draws the boundary of that territory on the map using different colors for
-   * disconnected segments (islands) of the territory.
-   */
-  public void drawBoundaryUsingMapPoints(Picture pic, Territory territory)
-  {
-    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
 
-    Point pixel = new Point();
-
-    Graphics2D gfx = pic.getOffScreenGraphics();
-    Color[] colorList = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN,
-      Color.BLUE, Color.MAGENTA};
-
-    int colorIdx = 0;
-    GeographicArea geographicArea = territory.getGeographicArea();
-    ArrayList<ArrayList> islandList = geographicArea.getIslandList();
-
-    for (ArrayList<MapPoint> boundary :islandList)
-    {
-      gfx.setColor(colorList[colorIdx]);
-
-      int lastX = Integer.MAX_VALUE;
-      int lastY = Integer.MAX_VALUE;
-
-      for (MapPoint mapPoint : boundary)
-      {
-        map.setPoint(pixel, mapPoint.latitude, mapPoint.longitude);
-
-
-        //System.out.println(mapPoint + " ["+pixel.x+", "+pixel.y+"]");
-
-        if (lastX != Integer.MAX_VALUE)
-        {
-          gfx.drawLine(lastX, lastY, pixel.x, pixel.y);
-        }
-        lastX = pixel.x;
-        lastY = pixel.y;
-      }
-      colorIdx++;
-      if (colorIdx >= colorList.length) colorIdx = colorList.length - 1;
-    }
-    pic.repaint();
-  }
 
   public void drawAllTiles(Picture pic, Region region, Color color)
   {
@@ -1477,9 +1393,52 @@ public class Model
     Model model = new Model();
 
     Picture pic = model.testShowMapProjection();
+    //Graphics2D gfx = pic.getOffScreenGraphics();
+    //gfx.setColor(Color.BLACK);
+    //gfx.fillRect(0,0,pic.getImageWidth(), pic.getImageHeight());
+    Territory territory;
 
-    //Territory territory = model.getTerritory("Morocco");
-    //model.drawBoundaryUsingMapPoints(pic, territory);
+   //territory = model.getTerritory("US-Utah");
+   //model.drawBoundary(pic, territory, Color.GREEN, 1);
+
+   //territory = model.getTerritory("US-Nevada");
+   //model.drawBoundary(pic, territory, Color.BLUE, 1);
+
+    /*
+   territory = model.getTerritory("Congo (Brazzaville)");
+   model.drawBoundary(pic, territory, Color.MAGENTA, 1);
+
+   Region region = model.getRegion(EnumRegion.SUB_SAHARAN);
+   model.drawBoundary(pic, region, Util.brighten(EnumRegion.SUB_SAHARAN.getColor(), 0.5), 3);
+*/
+    //Region region = model.getRegion(EnumRegion.OCEANIA);
+    //model.drawBoundary(pic, region, Color.WHITE);
+
+    //Territory territory = model.getTerritory("Tunisia");
+    //model.drawBoundary(pic, territory, Color.RED);
+/*
+    Territory territory = model.getTerritory("Ethiopia");
+    model.drawBoundaryUsingMapPoints(pic, territory);
+
+    territory = model.getTerritory("Kenya");
+    model.drawBoundaryUsingMapPoints(pic, territory);
+
+
+    territory = model.getTerritory("Tanzania");
+    model.drawBoundaryUsingMapPoints(pic, territory);
+
+    territory = model.getTerritory("Somalia");
+    model.drawBoundaryUsingMapPoints(pic, territory);
+
+    territory = model.getTerritory("Sudan");
+    model.drawBoundaryUsingMapPoints(pic, territory);
+
+    Region region = model.getRegion(EnumRegion.SUB_SAHARAN);
+    model.drawBoundary(pic, region, Util.brighten(Color.MAGENTA, 0.5));
+
+    region = model.getRegion(EnumRegion.MIDDLE_EAST);
+    model.drawBoundary(pic, region, Util.brighten(EnumRegion.MIDDLE_EAST.getColor(), 0.5));
+
 
     //territory = model.getTerritory("Mauritania");
     //model.drawBoundary(pic, territory, Color.WHITE);
@@ -1489,9 +1448,11 @@ public class Model
 
     //territory = model.getTerritory("Mexico");
     //model.drawBoundary(pic, territory, Color.RED);
+    */
 
     for (int n = 0; n < 10; n++)
     {
+
       for (EnumRegion regionID : EnumRegion.values())
       {
         Region region = model.getRegion(regionID);
@@ -1501,9 +1462,11 @@ public class Model
       for (EnumRegion regionID : EnumRegion.values())
       {
         Region region = model.getRegion(regionID);
-        model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5));
+        model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5), 1);
       }
       pic.repaint();
+
+
       try
       {
         Thread.sleep(3000);
@@ -1517,3 +1480,4 @@ public class Model
 
   }
 }
+>>>>>>> upstream/master

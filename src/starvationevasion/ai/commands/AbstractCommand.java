@@ -1,7 +1,6 @@
 package starvationevasion.ai.commands;
-
-
 import starvationevasion.ai.AI;
+
 
 public abstract class AbstractCommand implements Command
 {

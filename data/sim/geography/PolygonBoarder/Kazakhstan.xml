@@ -1148,4 +1148,62 @@
 <vertex lat="55.199060" lon="69.981703"/>
 <vertex lat="55.176762" lon="70.087381"/>
 </area>
+
+<hole> <!-- Lake Balkhash.kml -->
+<vertex lat="46.657669" lon="78.397107"/>
+<vertex lat="46.468533" lon="78.297009"/>
+<vertex lat="46.647851" lon="77.859930"/>
+<vertex lat="46.643406" lon="77.181315"/>
+<vertex lat="46.780013" lon="76.203132"/>
+<vertex lat="46.816781" lon="74.939385"/>
+<vertex lat="46.427812" lon="74.094320"/>
+<vertex lat="46.204906" lon="74.020681"/>
+<vertex lat="46.183073" lon="73.679255"/>
+<vertex lat="46.012747" lon="73.737133"/>
+<vertex lat="45.805861" lon="73.439993"/>
+<vertex lat="45.609464" lon="73.436738"/>
+<vertex lat="44.988934" lon="74.099953"/>
+<vertex lat="46.004066" lon="74.278030"/>
+<vertex lat="46.107832" lon="74.771385"/>
+<vertex lat="46.404661" lon="74.911221"/>
+<vertex lat="46.470807" lon="75.405661"/>
+<vertex lat="46.670614" lon="75.463332"/>
+<vertex lat="46.507187" lon="75.611282"/>
+<vertex lat="46.395566" lon="77.206068"/>
+<vertex lat="46.297174" lon="78.445062"/>
+<vertex lat="46.369935" lon="78.889893"/>
+<vertex lat="46.645163" lon="79.245168"/>
+<vertex lat="46.748620" lon="78.990765"/>
+<vertex lat="46.748620" lon="78.990765"/>
+<vertex lat="46.657669" lon="78.397107"/>
+</hole>
+
+
+
+<hole>  <!-- Aral Sea  -->
+<vertex lat="44.784037" lon="60.239972"/>
+<vertex lat="45.572774" lon="60.123597"/>
+<vertex lat="45.520478" lon="59.840720"/>
+<vertex lat="45.808212" lon="59.946760"/>
+<vertex lat="45.886734" lon="60.123597"/>
+<vertex lat="46.096024" lon="60.123597"/>
+<vertex lat="46.252991" lon="59.770026"/>
+<vertex lat="46.305339" lon="59.557843"/>
+<vertex lat="45.705014" lon="59.535002"/>
+<vertex lat="45.939057" lon="59.204273"/>
+<vertex lat="45.886734" lon="58.780009"/>
+<vertex lat="45.500014" lon="58.689989"/>
+<vertex lat="44.892557" lon="58.285001"/>
+<vertex lat="44.473952" lon="58.285001"/>
+<vertex lat="44.212340" lon="58.497133"/>
+<vertex lat="44.735564" lon="58.921448"/>
+<vertex lat="45.101847" lon="58.921448"/>
+<vertex lat="45.375008" lon="58.961394"/>
+<vertex lat="45.190007" lon="59.359302"/>
+<vertex lat="44.997202" lon="59.345711"/>
+<vertex lat="44.369282" lon="59.062886"/>
+<vertex lat="44.159992" lon="59.770026"/>
+<vertex lat="44.264637" lon="60.052852"/>
+<vertex lat="44.784037" lon="60.239972"/>
+</hole>
 </country>

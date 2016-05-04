@@ -47,6 +47,11 @@ public class ImageGetter implements ImageConstants
   private ImageView voteIcon;
 
   private Image background;
+  
+  private static final String ERROR_CARD_ART_NOT_AVAILABLE_IMAGE_NAME = "Error_CardArtNotAvailable.png";
+  
+  private static final int INIT_CARD_HEIGHT_SCALE_FACTOR = 8;
+  private static final int INIT_CARD_WIDTH_SCALE_FACTOR = 8;
 
   /**
    * Default constructor for the imagegetter
@@ -63,6 +68,7 @@ public class ImageGetter implements ImageConstants
 
     undoButton = new Image("ActionButtons/undoResized.png");
     voteIcon = new ImageView("cardImages/vote.png");
+
 
 
     background = new Image("background.png");
@@ -209,8 +215,22 @@ public class ImageGetter implements ImageConstants
    */
   public ImageView getImageForCard(EnumPolicy policy)
   {
-    return new ImageView(new Image(policy.getImagePath(), ImageConstants.INIT_CARD_WIDTH * 8,
-      ImageConstants.INIT_CARD_HEIGHT * 8, false, false));
+    String desiredPath = policy.getImagePath(); 
+    desiredPath = desiredPath.replace("\\", System.getProperty("file.separator")); // Double-escaped to be "\\" in regex
+    desiredPath = desiredPath.replace("/", System.getProperty("file.separator")); // Handle alternate case, escaped to be "/" in regex
+    try
+    {
+      return new ImageView(new Image(desiredPath, ImageConstants.INIT_CARD_WIDTH * INIT_CARD_WIDTH_SCALE_FACTOR,
+          ImageConstants.INIT_CARD_HEIGHT * INIT_CARD_HEIGHT_SCALE_FACTOR, false, false));
+    } catch (Exception e)
+    {
+      // Don't hard-code the policy card image folder, instead replace the card name with the error card name
+      String pathToErrorCard = desiredPath.substring(0, desiredPath.lastIndexOf(System.getProperty("file.separator")));
+      pathToErrorCard += System.getProperty("file.separator") + ERROR_CARD_ART_NOT_AVAILABLE_IMAGE_NAME;
+      
+      return new ImageView(new Image(pathToErrorCard, ImageConstants.INIT_CARD_WIDTH * INIT_CARD_WIDTH_SCALE_FACTOR,
+        ImageConstants.INIT_CARD_HEIGHT * INIT_CARD_HEIGHT_SCALE_FACTOR, false, false));
+    }
 
   }
 

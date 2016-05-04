@@ -1,18 +1,20 @@
 package starvationevasion.server.model;
 
+import java.beans.Transient;
+import java.util.ArrayList;
+
+import javax.crypto.SecretKey;
+
 /**
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.server.Connector;
 import starvationevasion.server.io.NotImplementedException;
-
-import javax.crypto.SecretKey;
-import java.beans.Transient;
-import java.util.ArrayList;
 
 public class User implements Encryptable, Sendable
 {
@@ -31,14 +33,15 @@ public class User implements Encryptable, Sendable
   private transient String password;
   private EnumRegion region;
   private volatile ArrayList<EnumPolicy> hand;
-   private boolean anonymous = false;
+  private boolean anonymous = false;
 
-  public User ()
+  public User()
   {
     this("");
   }
 
-  public User (String username, String password, EnumRegion region, ArrayList<EnumPolicy> hand)
+  public User(String username, String password, EnumRegion region,
+      ArrayList<EnumPolicy> hand)
   {
     this.username = username;
     this.hand = hand;
@@ -46,7 +49,7 @@ public class User implements Encryptable, Sendable
     this.password = Encryptable.bytesToHex(encrypt(password.getBytes()));
   }
 
-  public User (String username)
+  public User(String username)
   {
     this(username, "", null, new ArrayList<>());
   }
@@ -56,7 +59,7 @@ public class User implements Encryptable, Sendable
    *
    * @return username username string of user
    */
-  public String getUsername ()
+  public String getUsername()
   {
     return username;
   }
@@ -64,20 +67,22 @@ public class User implements Encryptable, Sendable
   /**
    * Set the username NOTE: must be unique
    *
-   * @param username unique username
+   * @param username
+   *          unique username
    */
-  public void setUsername (String username)
+  public void setUsername(String username)
   {
     this.username = username;
   }
 
   /**
    * Get the users region
+   * 
    * @return Region this user belongs to
    */
-  public EnumRegion getRegion ()
+  public EnumRegion getRegion()
   {
-     return region;
+    return region;
   }
 
   /**
@@ -85,11 +90,12 @@ public class User implements Encryptable, Sendable
    *
    * US only if planning on playing game
    *
-   * @param region region of user
+   * @param region
+   *          region of user
    */
-  public void setRegion (EnumRegion region)
+  public void setRegion(EnumRegion region)
   {
-     this.region = region;
+    this.region = region;
   }
 
   /**
@@ -97,7 +103,7 @@ public class User implements Encryptable, Sendable
    *
    * @return cards that currently belong to user
    */
-  public ArrayList<EnumPolicy> getHand ()
+  public ArrayList<EnumPolicy> getHand()
   {
     return hand;
   }
@@ -105,9 +111,10 @@ public class User implements Encryptable, Sendable
   /**
    * Set the current list of cards that the user has
    *
-   * @param hand list of cards to replace current hand
+   * @param hand
+   *          list of cards to replace current hand
    */
-  public void setHand (ArrayList<EnumPolicy> hand)
+  public void setHand(ArrayList<EnumPolicy> hand)
   {
     this.hand = hand;
   }
@@ -118,7 +125,7 @@ public class User implements Encryptable, Sendable
    * @return true if logged in
    */
   @Transient
-  public boolean isLoggedIn ()
+  public boolean isLoggedIn()
   {
     return isLoggedIn;
   }
@@ -126,10 +133,11 @@ public class User implements Encryptable, Sendable
   /**
    * Set the user logged in status. Set to true when user logs in.
    *
-   * @param loggedIn user's logged in status. false if not logged in
+   * @param loggedIn
+   *          user's logged in status. false if not logged in
    */
   @Transient
-  public void setLoggedIn (boolean loggedIn)
+  public void setLoggedIn(boolean loggedIn)
   {
     isLoggedIn = loggedIn;
   }
@@ -140,7 +148,7 @@ public class User implements Encryptable, Sendable
    * @return true if playing
    */
   @Transient
-  public boolean isPlaying ()
+  public boolean isPlaying()
   {
     return isPlaying;
   }
@@ -148,20 +156,22 @@ public class User implements Encryptable, Sendable
   /**
    * Set the users playing status. Set to true when user sends ready
    *
-   * @param playing true if playing
+   * @param playing
+   *          true if playing
    */
   @Transient
-  public void setPlaying (boolean playing)
+  public void setPlaying(boolean playing)
   {
     isPlaying = playing;
   }
 
   /**
    * Get the password
+   * 
    * @return encrypted password
    */
   @Transient
-  public String getPassword ()
+  public String getPassword()
   {
     return password;
   }
@@ -169,10 +179,11 @@ public class User implements Encryptable, Sendable
   /**
    * Sets the password and encrypts it
    *
-   * @param password password for auth
+   * @param password
+   *          password for auth
    */
   @Transient
-  public void setPassword (String password)
+  public void setPassword(String password)
   {
     encrypt(password.getBytes());
   }
@@ -180,50 +191,49 @@ public class User implements Encryptable, Sendable
   /**
    * Set the encrypted password
    *
-   * @param password encrypted password
-   * @param salt key that is used to check for authentication.
+   * @param password
+   *          encrypted password
+   * @param salt
+   *          key that is used to check for authentication.
    *
-   * The salt must be able to reproduce the encrypted password
+   *          The salt must be able to reproduce the encrypted password
    */
   @Transient
-  public void setEncryptedPassword (String password, String salt)
+  public void setEncryptedPassword(String password, String salt)
   {
     this.password = password;
     this.salt = salt;
   }
 
   @Transient
-  public String getSalt ()
+  public String getSalt()
   {
     return salt;
   }
 
   @Transient
-  public synchronized Connector getWorker ()
+  public synchronized Connector getWorker()
   {
     return worker;
   }
 
   @Transient
-  public User setWorker (Connector worker)
+  public User setWorker(Connector worker)
   {
     this.worker = worker;
     return this;
   }
 
   @Override
-  public String toString ()
+  public String toString()
   {
     StringBuilder _sb = new StringBuilder();
-    _sb.append(String.valueOf(username))
-       .append(" ")
-       .append("in ")
-       .append(String.valueOf(region));
+    _sb.append(String.valueOf(username)).append(" ").append("in ")
+        .append(String.valueOf(region));
     if (isLoggedIn)
     {
       _sb.append(" is online");
-    }
-    else
+    } else
     {
       _sb.append(" is offline");
     }
@@ -232,7 +242,7 @@ public class User implements Encryptable, Sendable
   }
 
   @Override
-  public byte[] encrypt (byte[] password)
+  public byte[] encrypt(byte[] password)
   {
     if (salt == null)
     {
@@ -243,31 +253,31 @@ public class User implements Encryptable, Sendable
   }
 
   @Override
-  public byte[] decrypt (byte[] msg)
+  public byte[] decrypt(byte[] msg)
   {
     throw new NotImplementedException();
   }
 
   @Override
-  public boolean isEncrypted ()
+  public boolean isEncrypted()
   {
     return false;
   }
 
   @Override
-  public Encryptable setEncrypted (boolean encrypted, SecretKey key)
+  public Encryptable setEncrypted(boolean encrypted, SecretKey key)
   {
     throw new NotImplementedException();
   }
 
   @Override
-  public Type getType ()
+  public Type getType()
   {
     return Type.USER;
   }
 
   @Override
-  public JSONDocument toJSON ()
+  public JSONDocument toJSON()
   {
     JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
 
@@ -291,13 +301,13 @@ public class User implements Encryptable, Sendable
   }
 
   @Override
-  public void fromJSON (Object doc)
+  public void fromJSON(Object doc)
   {
     throw new NotImplementedException();
   }
 
   @Transient
-  public void reset ()
+  public void reset()
   {
     actionsRemaining = 2;
     policyCardsDiscarded = 0;
@@ -306,18 +316,18 @@ public class User implements Encryptable, Sendable
     isDone = false;
   }
 
-  public void setAnonymous (boolean anonymous)
+  public void setAnonymous(boolean anonymous)
   {
     this.anonymous = anonymous;
   }
 
-  public boolean isAnonymous ()
+  public boolean isAnonymous()
   {
     return anonymous;
   }
 
   @Override
-  public boolean equals (Object obj)
+  public boolean equals(Object obj)
   {
     if (obj instanceof User)
     {

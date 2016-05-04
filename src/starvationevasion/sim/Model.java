@@ -87,6 +87,7 @@ import java.util.logging.Logger;
 
 public class Model
 {
+  public static final int TOTAL_LAND_TILES = 245021;//244560;
   public static double EVENT_CHANCE = 0.02;
   private static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
@@ -104,7 +105,6 @@ public class Model
   private CropData cropData;
 
   private int currentYear;
-  private final int totalTiles;
 
   /**
    * List of all territories. A copy of each pointer stored in this list is
@@ -147,9 +147,12 @@ public class Model
     Date dateStart = new Date();
     System.out.println("Model() Loading Climate Data: " +dateFormat.format(dateStart));
 
-    ArrayList<LandTile> tileList = new ArrayList<>();
+    ArrayList<LandTile> tileList = new ArrayList<>(TOTAL_LAND_TILES);
     LandTile.loadLocations(this, tileList);
+    assert (tileList.size() == TOTAL_LAND_TILES);
     LandTile.loadClimate(tileList);
+    //System.out.println("tileList.size()="+tileList.size());
+
 
 
     Date dateDone = new Date();
@@ -157,11 +160,8 @@ public class Model
     System.out.println("LandTile.load() Done: elapsed sec=" +deltaSec);
     
     assert (assertLandTiles());
-
-
-    totalTiles = tileList.size();
     
-    packedTileData = new PackedTileData(totalTiles);
+    packedTileData = new PackedTileData(TOTAL_LAND_TILES);
 
     updateCropRatings();
 
@@ -840,7 +840,7 @@ public class Model
 
     // these values per month
     float tileMonthlyLowT;
-    float tileMonthlyHighT;
+    //float tileMonthlyHighT;
     float tileMeanDailyLowT;
     float tileMeanDailyHighT;
     // float tileRain;
@@ -848,7 +848,6 @@ public class Model
     // Necessary crop data from given crop.
     int idealHigh = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_HIGH, crop);
     int idealLow = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_LOW, crop);
-    int tempMax = cropData.getData(CropData.Field.TEMPERATURE_MAX, crop);
     int tempMin = cropData.getData(CropData.Field.TEMPERATURE_MIN, crop);
     int growdays = cropData.getData(CropData.Field.GROW_DAYS, crop);
     // int waterRequired = cropData.getData(CropData.Field.WATER, crop);
@@ -860,8 +859,8 @@ public class Model
       currentMonth = Constant.Month.values()[i];
       tileMonthlyLowT = tile.getField(Field.TEMP_MONTHLY_LOW, Constant.FIRST_GAME_YEAR - 1,
           currentMonth);
-      tileMonthlyHighT = tile.getField(Field.TEMP_MONTHLY_HIGH, Constant.FIRST_GAME_YEAR - 1,
-          currentMonth);
+      //tileMonthlyHighT = tile.getField(Field.TEMP_MONTHLY_HIGH, Constant.FIRST_GAME_YEAR - 1,
+      //    currentMonth);
       tileMeanDailyLowT = tile.getField(Field.TEMP_MEAN_DAILY_LOW, Constant.FIRST_GAME_YEAR - 1,
           currentMonth);
       tileMeanDailyHighT = tile.getField(Field.TEMP_MEAN_DAILY_HIGH, Constant.FIRST_GAME_YEAR - 1,
@@ -870,16 +869,14 @@ public class Model
           // currentMonth);
 
       // If the temperatures are Acceptable
-      if (isBetween(tileMonthlyLowT, tempMin, tempMax) && isBetween(tileMonthlyHighT, tempMin,
-          tempMax))
+      if (tileMonthlyLowT > tempMin)
       {
         // Add the total amount of days in the current month to the
         // current running grow days
         consecutiveAcceptableGrowDays += currentMonth.days();
 
         // Now check if the temperatures are ideal
-        if (isBetween(tileMonthlyLowT, idealLow, idealHigh) && isBetween(tileMonthlyHighT, idealLow,
-            idealHigh))
+        if (tileMonthlyLowT >= idealLow && tileMeanDailyHighT <= idealHigh)
         {
           // Add total days in current month to the current running ideal
           // grow days
@@ -1363,6 +1360,5 @@ public class Model
         model.drawRain(pic, 2000+n, month);
       }
     }
-
   }
 }

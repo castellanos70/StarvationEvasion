@@ -253,7 +253,8 @@ public abstract class GameCard implements Sendable
   /**
    * In the abstract GameCard class, this method returns the default
    * flavor text of a card.  Initially, this String is null, but any card that will have 
-   * flavor text will override this method to return the selected String of text.
+   * flavor text will override this method to return the selected String of text. <p>
+   * Note: Not every card is guaranteed to have flavor text, so this may return null.
    */
   public String getFlavorText() {return null;}
   
@@ -261,7 +262,8 @@ public abstract class GameCard implements Sendable
   /**
    * In the abstract GameCard class, this method returns the default
    * source of where the flavor text is. Often, the flavor text is a quote, so the source 
-   * will look something like "-Ronald Reagan".
+   * will look something like "-Ronald Reagan". <p>
+   * Note: Not every card's flavor text will have a source, so this may return null.
    */
   public String getFlavorTextSource() {return null;}
 

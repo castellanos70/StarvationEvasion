@@ -35,8 +35,8 @@ public class Policy_CleanRiverIncentive extends GameCard
       "pesticides and fertilizers from their farms into the rivers.";
   
   public static final String FLAVOR_TEXT =
-      "We should do something about the water before the city council realizes that we weren't " +
-      "serving Kool Aid.";
+      "We should do something before the city council realizes that the 'Kool-Aid' actually " +
+      "came straight out of the tap.";
   
   public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
       EnumSet.of(EnumGameState.PLANNING_STATE);

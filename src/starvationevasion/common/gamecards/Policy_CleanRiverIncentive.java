@@ -63,6 +63,12 @@ public class Policy_CleanRiverIncentive extends GameCard
    */
   @Override
   public String getFlavorText(){ return FLAVOR_TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int actionPointCost(){return 2;}
 
 
   /**

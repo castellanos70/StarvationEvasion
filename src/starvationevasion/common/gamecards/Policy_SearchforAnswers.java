@@ -32,6 +32,12 @@ public class Policy_SearchforAnswers extends GameCard
   @Override
   public String getGameText() {return TEXT;}
   
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int actionPointCost() {return 3;}
+  
   //TODO Have some Collection to hold each region's deck, that can be iterated over, 
   //and have an accessor method here
   

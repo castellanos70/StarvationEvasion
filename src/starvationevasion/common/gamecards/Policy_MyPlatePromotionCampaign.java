@@ -56,6 +56,12 @@ public class Policy_MyPlatePromotionCampaign extends GameCard
    */
   @Override
   public String getFlavorText(){ return FLAVOR_TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int actionPointCost() {return 2;}
 
   /**
    * Millions of dollars spent.

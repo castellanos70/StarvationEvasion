@@ -904,13 +904,10 @@ public class Model
    * 
    * Currently doesn't take into account the necessary amount of rain.
    * 
-   * Also doesn't currently take into account the new EnumCropZone.GOOD value.
-   * Only assigns tiles a rating of IDEAL, ACCEPTABLE, or POOR.
-   * 
    * @param crop
    *          crop for which we want rating (citrus, fruit, nut, grain, oil,
    *          veggies, special, or feed)
-   * @return EnumCropZone (IDEAL, ACCEPTABLE, or POOR)
+   * @return EnumCropZone (IDEAL, GOOD, ACCEPTABLE, or POOR)
    * @throws NullPointerException
    *           if called with argument EnumFood.OTHER_CROPS, will throw an
    *           exception because OTHER_CROPS required climate varies by country;
@@ -925,6 +922,8 @@ public class Model
     // acceptable for a crop as we may find that a tile is also ideal at a
     // later time.
     boolean isAcceptable = false;
+    boolean isGood = false;
+    boolean willFreeze;
 
     // The current running acceptable or ideal grow days. The loop starts on
     // January, and if the month is deemed ideal and/or acceptable, add the
@@ -933,6 +932,7 @@ public class Model
     // ever reach the crops required grow days, we know that the tile is not
     // poor.
     int consecutiveAcceptableGrowDays = 0;
+    int consecutiveGoodGrowDays = 0;
     int consecutiveIdealGrowDays = 0;
 
     // This value corresponds to the consecutive number of acceptable or ideal
@@ -948,8 +948,10 @@ public class Model
     // of a years consecutive grow days reach an acceptable or ideal value.
 
     boolean consecutiveAcceptableBuffer = true;
+    boolean consecutiveGoodBuffer = true;
     boolean consecutiveIdealBuffer = true;
     int consecutiveAcceptableBufferValue = 0;
+    int consecutiveGoodBufferValue = 0;
     int consecutiveIdealBufferValue = 0;
 
     // these values per month
@@ -960,17 +962,16 @@ public class Model
     // float tileRain;
     
     // Necessary crop data from given crop.
-    int idealHigh = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_HIGH, crop);
-    int idealLow = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_LOW, crop);
-    int tempMax = cropData.getData(CropData.Field.TEMPERATURE_MAX, crop);
-    int tempMin = cropData.getData(CropData.Field.TEMPERATURE_MIN, crop);
-    int growdays = cropData.getData(CropData.Field.GROW_DAYS, crop);
+    int cropIdealHigh = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_HIGH, crop);
+    int cropIdealLow = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_LOW, crop);
+    int cropTempMin = cropData.getData(CropData.Field.TEMPERATURE_MIN, crop);
+    int cropGrowdays = cropData.getData(CropData.Field.GROW_DAYS, crop);
     // int waterRequired = cropData.getData(CropData.Field.WATER, crop);
 
-    // Iterate through each month checking if suitable conditions exist for
-    // the necessary growdays
+
     for (int i = 0; i < Constant.Month.SIZE; i++)
-    {
+    { // Iterate through each month checking if suitable conditions exist for
+      // the necessary growdays
       currentMonth = Constant.Month.values()[i];
       tileMonthlyLowT = tile.getField(Field.TEMP_MONTHLY_LOW, Constant.FIRST_GAME_YEAR - 1,
           currentMonth);
@@ -983,95 +984,118 @@ public class Model
           // tileRain = getField(Field.RAIN, Constant.FIRST_GAME_YEAR-1,
           // currentMonth);
 
-      // If the temperatures are Acceptable
-      if (isBetween(tileMonthlyLowT, tempMin, tempMax) && isBetween(tileMonthlyHighT, tempMin,
-          tempMax))
-      {
-        // Add the total amount of days in the current month to the
-        // current running grow days
-        consecutiveAcceptableGrowDays += currentMonth.days();
-
-        // Now check if the temperatures are ideal
-        if (isBetween(tileMonthlyLowT, idealLow, idealHigh) && isBetween(tileMonthlyHighT, idealLow,
-            idealHigh))
+      if (tileMonthlyLowT < cropTempMin)
+      { // if the crops will freeze this month, tile is poor for this month
+        
+        if (consecutiveAcceptableBuffer)
         {
-          // Add total days in current month to the current running ideal
-          // grow days
-          consecutiveIdealGrowDays += currentMonth.days();
+          consecutiveAcceptableBuffer = false;
+          consecutiveAcceptableBufferValue = consecutiveAcceptableGrowDays;
 
-          // If we find that this tile is Ideal for the given crop,
-          // just return immediately
-          if (consecutiveIdealGrowDays >= growdays)
+          if (consecutiveGoodBuffer)
           {
-            return EnumCropZone.IDEAL;
+            consecutiveGoodBuffer = false;
+            consecutiveGoodBufferValue = consecutiveGoodGrowDays;
+
+            if (consecutiveIdealBuffer)
+            {
+              consecutiveIdealBuffer = false;
+              consecutiveIdealBufferValue = consecutiveIdealGrowDays;
+            }
           }
         }
-        else // Reset the current running ideal grow days
-        {
+        consecutiveIdealGrowDays = 0;
+        consecutiveGoodGrowDays = 0;
+        consecutiveAcceptableGrowDays = 0;
+      }
+      else
+      { // the crop will at least be acceptable/not freeze.
+        
+        if (isBetween(tileMonthlyLowT, cropIdealLow, cropIdealHigh) && isBetween(tileMonthlyHighT,
+            cropIdealLow, cropIdealHigh))
+        { // Check if the temperatures are ideal. If the tile is Ideal, we know
+          // it's also Acceptable and Good. Update all the consecutiveGrowDay
+          // totals.
+          consecutiveIdealGrowDays += currentMonth.days();
+          consecutiveGoodGrowDays += currentMonth.days();
+          consecutiveAcceptableGrowDays += currentMonth.days();
+        }
+        else 
+        { // It's not ideal.
           if (consecutiveIdealBuffer)
           {
-            // If this is the first non-ideal month for this crop,
-            // add the current running value to the ideal buffer to
-            // later check with the end of the year
             consecutiveIdealBuffer = false;
             consecutiveIdealBufferValue = consecutiveIdealGrowDays;
           }
 
           consecutiveIdealGrowDays = 0;
-        }
 
-        if (consecutiveAcceptableGrowDays >= growdays)
-        {
-          // If we find that this tile is at least acceptable, set to
-          // true
-          isAcceptable = true;
+          if (isBetween(tileMeanDailyLowT, cropIdealLow, cropIdealHigh) && isBetween(
+              tileMeanDailyHighT, cropIdealLow, cropIdealHigh) && !isGood)
+          { // Since we know that this tile is not ideal, we check the meanDaily
+            // temperatures to see if the crop never freezes and that the
+            // temperatures on this tile are -generally- ideal. We will define
+            // this as a Good rating. If we already know this tile is at least
+            // good. We don't bother continuing execution, it won't change
+            // anything.
+            consecutiveGoodGrowDays += currentMonth.days();
+            consecutiveAcceptableGrowDays += currentMonth.days();
+          }
+          else if (!isAcceptable && !isGood)
+          { // It's not good, it's just acceptable. don't bother continuing
+            // execution if we already know the tile is at least good or
+            // acceptable.
+            if (consecutiveGoodBuffer)
+            {
+              consecutiveGoodBuffer = false;
+              consecutiveGoodBufferValue = consecutiveGoodGrowDays;
+            }
+
+            consecutiveGoodBufferValue = 0;
+            
+            consecutiveAcceptableGrowDays += currentMonth.days();
+          }
         }
       }
-      else
-      {
-        // This month is neither ideal or acceptable. Reset the current
-        // running grow values
-        if (consecutiveAcceptableBuffer)
-        {
-          // If this is the first non-acceptable month for this crop,
-          // add the current running value to the acceptablebuffer to
-          // later check with the end of the year.
-          //
-          // This also means this is the first non-ideal month for the crop as
-          // well, as a crop can not be ideal but not acceptable
-          
-          consecutiveAcceptableBuffer = false;
-          consecutiveAcceptableBufferValue = consecutiveAcceptableGrowDays;
-          
-          consecutiveIdealBuffer = false;
-          consecutiveIdealBufferValue = consecutiveIdealGrowDays;
-        }
-        consecutiveAcceptableGrowDays = 0;
-        consecutiveIdealGrowDays = 0;
+      // check if we can determine anything with new consecutiveGrowDay values
+      if (consecutiveIdealGrowDays >= cropGrowdays)
+      { //if Ideal just return immediately.
+        return EnumCropZone.IDEAL;
+      }
+      else if (!isGood && consecutiveGoodGrowDays >= cropGrowdays)
+      { //if isGood is true this elseif never executes
+        isGood = true;
+      }
+      else if (!isGood && !isAcceptable && consecutiveAcceptableGrowDays >= cropGrowdays)
+      {//if isGood is true we don't care if it's acceptable.
+        isAcceptable = true;
       }
     }
-    // At this point, consecutiveIdealGrowDays and
-    // consecutiveAcceptableGrowDays are what the values are through
-    // December. If it wasn't acceptable or ideal in December, this value is
-    // 0. We will add this value to its respective buffer. If January wasn't
-    // acceptable or ideal, the respective buffer is also 0.
+    
+    // At this point, the consecutiveGrowDay values are what the values are
+    // through December. If it wasn't acceptable/good/ideal in December, this
+    // value is 0. We will add this value to its respective buffer. If January
+    // wasn't acceptable/good/ideal, the respective buffer is also 0.
 
     // Check if the beginning + the end of a year result in an ideal tile
     // for the given crop
-    if (consecutiveIdealGrowDays + consecutiveIdealBufferValue >= growdays)
+    if (consecutiveIdealGrowDays + consecutiveIdealBufferValue >= cropGrowdays)
     {
       return EnumCropZone.IDEAL;
     }
-    // Else check if we ever found a period that is deemed acceptable or if
-    // the beginning + end of a year results in an acceptable tile for the crop
+    // Else check if we ever had a period that was deemed Good or if the
+    // beginning + end of a year results in a Good tile for the crop
+    else if (isGood || consecutiveGoodGrowDays + consecutiveGoodBufferValue >= cropGrowdays)
+    {
+      return EnumCropZone.GOOD;
+    }
     else if (isAcceptable || consecutiveAcceptableGrowDays
-        + consecutiveAcceptableBufferValue >= growdays)
+        + consecutiveAcceptableBufferValue >= cropGrowdays)
     {
       return EnumCropZone.ACCEPTABLE;
     }
-    // else the tile was neither ideal or acceptable
     else
-    {
+    { // If it's not Ideal/Good/Acceptable, it's poor.
       return EnumCropZone.POOR;
     }
   }

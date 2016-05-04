@@ -163,7 +163,7 @@ public class Model
     
     packedTileData = new PackedTileData(totalTiles);
 
-    updateCropRatings();
+    updateCropRatings(Constant.FIRST_GAME_YEAR-1);
 
 //    placeCrops();
 
@@ -857,19 +857,15 @@ public class Model
     System.out.println("Model.placeCrops() Done: Time: " + ((end - start) / 1000000000.0));
   }
   
-  int yo = 0;
-  int p = 0;
-  int a = 0;
-  int g = 0;
-  int id = 0;
   /**
    * Updates all the cropRatings in all landTile.
    * 
    * Will generally only be called during initialization for now. The only reason
    * to call this method multiple times would be if cropData has changed or if 
    * there was a change in climate data for all/a lot of the landtiles.
+   * @param dataYear 
    */
-  private void updateCropRatings()
+  private void updateCropRatings(int dataYear)
   {
     System.out.println("LandTile.updateCropRatings() Starting");
     long start = System.nanoTime();
@@ -888,7 +884,7 @@ public class Model
           // For each crop, find the EnumCropZone value
           for (int k = 0; k < EnumFood.CROP_FOODS.length; k++)
           {
-            ratings[k] = rateTileForCrop(EnumFood.CROP_FOODS[k], tile, regionList[i]);
+            ratings[k] = rateTileForCrop(EnumFood.CROP_FOODS[k], tile, regionList[i], dataYear);
           }
 
           //for now, all 4 non crop foods get an ideal rating
@@ -902,8 +898,6 @@ public class Model
         }
       }
     }
-    System.out.println("YO   " + yo);
-    System.out.println(p + "::" + a + "::" + g + "::" + id);
     System.out.println("LandTile.updateCropRatings() Done: Time: " + ((System.nanoTime() - start)
         / 1000000000.0));
   }
@@ -922,7 +916,7 @@ public class Model
    *           exception because OTHER_CROPS required climate varies by country;
    *           rating cannot be calculated using crop alone.
    */
-  private EnumCropZone rateTileForCrop(EnumFood crop, LandTile tile, Region region)
+  private EnumCropZone rateTileForCrop(EnumFood crop, LandTile tile, Region region, int dataYear)
       throws NullPointerException
   {
     Constant.Month currentMonth;
@@ -989,15 +983,14 @@ public class Model
     // to get the required water necessary for a crop in units kg/ton.
     float cropWaterRequired = cropData.getData(CropData.Field.WATER, crop) * 1000; //in m3/ton
     
-    if (region.getCropArea(Constant.FIRST_GAME_YEAR-1, crop) == 0)
+    if (region.getCropArea(dataYear, crop) == 0)
     {
-      yo++;
       return EnumCropZone.POOR;
     }
     
     // Crop density in the given region. Mass of crop per square kilometers
-    long cropMassPerArea = region.getCropProduction(Constant.FIRST_GAME_YEAR-1, crop) / region
-        .getCropArea(Constant.FIRST_GAME_YEAR-1, crop);
+    long cropMassPerArea = region.getCropProduction(dataYear, crop) / region.getCropArea(dataYear,
+        crop);
     
     // Multiply these two values to get the amount of water required in units
     // kg/km2. Divide by 1 000 000 to convert from kg/km2 to kg/m2. Now we will
@@ -1010,15 +1003,11 @@ public class Model
     { // Iterate through each month checking if suitable conditions exist for
       // the necessary growdays
       currentMonth = Constant.Month.values()[i];
-      tileMonthlyLowT = tile.getField(Field.TEMP_MONTHLY_LOW, Constant.FIRST_GAME_YEAR - 1,
-          currentMonth);
-      tileMonthlyHighT = tile.getField(Field.TEMP_MONTHLY_HIGH, Constant.FIRST_GAME_YEAR - 1,
-          currentMonth);
-      tileMeanDailyLowT = tile.getField(Field.TEMP_MEAN_DAILY_LOW, Constant.FIRST_GAME_YEAR - 1,
-          currentMonth);
-      tileMeanDailyHighT = tile.getField(Field.TEMP_MEAN_DAILY_HIGH, Constant.FIRST_GAME_YEAR - 1,
-          currentMonth);
-      tileRain = tile.getField(Field.RAIN, Constant.FIRST_GAME_YEAR - 1, currentMonth); //kg/m2
+      tileMonthlyLowT = tile.getField(Field.TEMP_MONTHLY_LOW, dataYear, currentMonth);
+      tileMonthlyHighT = tile.getField(Field.TEMP_MONTHLY_HIGH, dataYear, currentMonth);
+      tileMeanDailyLowT = tile.getField(Field.TEMP_MEAN_DAILY_LOW, dataYear, currentMonth);
+      tileMeanDailyHighT = tile.getField(Field.TEMP_MEAN_DAILY_HIGH, dataYear, currentMonth);
+      tileRain = tile.getField(Field.RAIN, dataYear, currentMonth); //kg/m2
 
       if (tileMonthlyLowT < cropTempMin)
       { // if the crops will freeze this month, tile is poor for this month
@@ -1111,7 +1100,6 @@ public class Model
       // check if we can determine anything with new consecutiveGrowDay values
       if (consecutiveIdealGrowDays >= cropGrowdays && consecutiveIdealWater >= cropWaterRequired)
       { //if Ideal just return immediately.
-        id++;
         return EnumCropZone.IDEAL;
       }
       else if (!isGood && consecutiveGoodGrowDays >= cropGrowdays
@@ -1136,7 +1124,6 @@ public class Model
     if (consecutiveIdealGrowDays + consecutiveIdealBufferValue >= cropGrowdays
         && consecutiveIdealWater + consecutiveIdealWaterBuff >= cropWaterRequired)
     {
-      id++;
       return EnumCropZone.IDEAL;
     }
     // Else check if we ever had a period that was deemed Good or if the
@@ -1144,19 +1131,16 @@ public class Model
     else if (isGood || (consecutiveGoodGrowDays + consecutiveGoodBufferValue >= cropGrowdays
         && consecutiveGoodWater + consecutiveGoodWaterBuff >= cropWaterRequired))
     {
-      g++;
       return EnumCropZone.GOOD;
     }
     else if (isAcceptable || (consecutiveAcceptableGrowDays
         + consecutiveAcceptableBufferValue >= cropGrowdays && consecutiveAcceptableWater
             + consecutiveAcceptableWaterBuff >= cropWaterRequired))
     {
-      a++;
       return EnumCropZone.ACCEPTABLE;
     }
     else
     { // If it's not Ideal/Good/Acceptable, it's poor.
-      p++;
       return EnumCropZone.POOR;
     }
   }

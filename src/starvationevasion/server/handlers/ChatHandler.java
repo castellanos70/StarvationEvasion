@@ -7,21 +7,18 @@ package starvationevasion.server.handlers;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
-import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.Request;
-import starvationevasion.server.model.ResponseFactory;
-import starvationevasion.server.model.Type;
-import starvationevasion.server.model.User;
+import starvationevasion.server.model.*;
+
 
 public class ChatHandler extends AbstractHandler
 {
-  public ChatHandler(Server server, Connector client)
+  public ChatHandler (Server server, Connector client)
   {
     super(server, client);
   }
 
   @Override
-  protected boolean handleRequestImpl(Request request)
+  protected boolean handleRequestImpl (Request request)
   {
     if (request.getDestination().equals(Endpoint.CHAT))
     {
@@ -32,8 +29,8 @@ public class ChatHandler extends AbstractHandler
         to = ((String) request.getPayload().get("to-region")).toUpperCase();
         request.getPayload().remove("to-region");
         isRegion = true;
-      } else
-      {
+      }
+      else {
         to = (String) request.getPayload().get("to-username");
         request.getPayload().remove("to-username");
       }
@@ -43,16 +40,20 @@ public class ChatHandler extends AbstractHandler
       if (to.equals("ALL"))
       {
         server.broadcast(new ResponseFactory().build(server.uptime(),
-            request.getPayload(), Type.CHAT));
-      } else if (!isRegion)
+                                               request.getPayload(),
+                                               Type.CHAT));
+      }
+      else if (!isRegion)
       {
         User u = server.getUserByUsername(to);
         if (u != null)
         {
           u.getWorker().send(new ResponseFactory().build(server.uptime(),
-              request.getPayload(), Type.CHAT));
+                                                   request.getPayload(),
+                                                   Type.CHAT));
         }
-      } else
+      }
+      else
       {
         EnumRegion destination = EnumRegion.valueOf(to);
         for (User _user : server.getLoggedInUsers())
@@ -60,7 +61,8 @@ public class ChatHandler extends AbstractHandler
           if (_user.getRegion().equals(destination))
           {
             _user.getWorker().send(new ResponseFactory().build(server.uptime(),
-                request.getPayload(), Type.CHAT));
+                                                         request.getPayload(),
+                                                         Type.CHAT));
           }
         }
       }

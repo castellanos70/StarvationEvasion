@@ -17,6 +17,7 @@ public class Hand extends AbstractCommand
   @Override
   public boolean run()
   {
+    System.out.println("Initial hand size:"+getClient().getUser().getHand().size());
     if (tries == 0)
     {
       return false;

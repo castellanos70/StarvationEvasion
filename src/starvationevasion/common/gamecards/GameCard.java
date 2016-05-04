@@ -269,7 +269,7 @@ public abstract class GameCard implements Sendable
     return 1;
   }
   
-  //=========================================================================================
+  // =========================================================================================
   /**
    * In the abstract GameCard class, this method returns the default
    * flavor text of a card.  Initially, this String is null, but any card that will have 
@@ -281,7 +281,7 @@ public abstract class GameCard implements Sendable
     return null;
   }
   
-//=========================================================================================
+  // =========================================================================================
   /**
    * In the abstract GameCard class, this method returns the default
    * source of where the flavor text is. Often, the flavor text is a quote, so the source 
@@ -442,7 +442,7 @@ public abstract class GameCard implements Sendable
   }
   
   
-  //=========================================================================================
+  // =========================================================================================
   /**
    * Some policy cards require a target card from deck, discard, or hand.
    * @param targetCard sets the targetCard.  Ignored if this policy does not use a target card.
@@ -450,7 +450,7 @@ public abstract class GameCard implements Sendable
   public void setTargetCard(EnumPolicy targetCard) {this.targetCard = targetCard;}
   
 
-  //=========================================================================================
+  // =========================================================================================
   /**
    * Some policy cards require a target card from deck, discard, or hand.
    * @return targetCard.
@@ -555,7 +555,7 @@ public abstract class GameCard implements Sendable
   }
 
   
-//=========================================================================================
+  // =========================================================================================
   /**
    * The default is null (no target card required).
    * @return An array of cards that are valid as the target card of this policyCard.

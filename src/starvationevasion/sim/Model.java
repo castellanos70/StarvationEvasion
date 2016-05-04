@@ -165,7 +165,7 @@ public class Model
 
     updateCropRatings();
 
-    placeCrops();
+//    placeCrops();
 
     for (int i = 0; i < YEARS_OF_DATA; i++)
     {
@@ -923,7 +923,6 @@ public class Model
     // later time.
     boolean isAcceptable = false;
     boolean isGood = false;
-    boolean willFreeze;
 
     // The current running acceptable or ideal grow days. The loop starts on
     // January, and if the month is deemed ideal and/or acceptable, add the

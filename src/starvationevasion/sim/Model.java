@@ -165,7 +165,7 @@ public class Model
 
     updateCropRatings(Constant.FIRST_GAME_YEAR-1);
 
-//    placeCrops();
+    placeCrops();
 
     for (int i = 0; i < YEARS_OF_DATA; i++)
     {

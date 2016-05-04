@@ -857,6 +857,11 @@ public class Model
     System.out.println("Model.placeCrops() Done: Time: " + ((end - start) / 1000000000.0));
   }
   
+  int yo = 0;
+  int p = 0;
+  int a = 0;
+  int g = 0;
+  int id = 0;
   /**
    * Updates all the cropRatings in all landTile.
    * 
@@ -867,6 +872,7 @@ public class Model
   private void updateCropRatings()
   {
     System.out.println("LandTile.updateCropRatings() Starting");
+    long start = System.nanoTime();
     int index = 0;
     ArrayList<LandTile> landTiles;
     EnumCropZone[] ratings = new EnumCropZone[EnumFood.SIZE];
@@ -882,7 +888,7 @@ public class Model
           // For each crop, find the EnumCropZone value
           for (int k = 0; k < EnumFood.CROP_FOODS.length; k++)
           {
-            ratings[k] = rateTileForCrop(EnumFood.CROP_FOODS[k], tile);
+            ratings[k] = rateTileForCrop(EnumFood.CROP_FOODS[k], tile, regionList[i]);
           }
 
           //for now, all 4 non crop foods get an ideal rating
@@ -896,7 +902,10 @@ public class Model
         }
       }
     }
-    System.out.println("LandTile.updateCropRatings() Done");
+    System.out.println("YO   " + yo);
+    System.out.println(p + "::" + a + "::" + g + "::" + id);
+    System.out.println("LandTile.updateCropRatings() Done: Time: " + ((System.nanoTime() - start)
+        / 1000000000.0));
   }
   
   /**
@@ -913,7 +922,8 @@ public class Model
    *           exception because OTHER_CROPS required climate varies by country;
    *           rating cannot be calculated using crop alone.
    */
-  private EnumCropZone rateTileForCrop(EnumFood crop, LandTile tile) throws NullPointerException
+  private EnumCropZone rateTileForCrop(EnumFood crop, LandTile tile, Region region)
+      throws NullPointerException
   {
     Constant.Month currentMonth;
 
@@ -924,7 +934,7 @@ public class Model
     boolean isAcceptable = false;
     boolean isGood = false;
 
-    // The current running acceptable or ideal grow days. The loop starts on
+    // The current running Acceptable or better grow days. The loop starts on
     // January, and if the month is deemed ideal and/or acceptable, add the
     // current months total days to its respective value. If February is
     // neither ideal or acceptable, set them both back to 0. If these values
@@ -933,6 +943,10 @@ public class Model
     int consecutiveAcceptableGrowDays = 0;
     int consecutiveGoodGrowDays = 0;
     int consecutiveIdealGrowDays = 0;
+    
+    int consecutiveAcceptableWater = 0;
+    int consecutiveGoodWater = 0;
+    int consecutiveIdealWater = 0;
 
     // This value corresponds to the consecutive number of acceptable or ideal
     // grow days starting from January up to the first non acceptable or ideal 
@@ -952,22 +966,46 @@ public class Model
     int consecutiveAcceptableBufferValue = 0;
     int consecutiveGoodBufferValue = 0;
     int consecutiveIdealBufferValue = 0;
+    
+    int consecutiveAcceptableWaterBuff = 0;
+    int consecutiveGoodWaterBuff = 0;
+    int consecutiveIdealWaterBuff = 0;
 
     // these values per month
     float tileMonthlyLowT;
     float tileMonthlyHighT;
     float tileMeanDailyLowT;
     float tileMeanDailyHighT;
-    // float tileRain;
+    float tileRain;
     
-    // Necessary crop data from given crop.
+    // The crop values are the information needed from the crop to rate a tile
     int cropIdealHigh = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_HIGH, crop);
     int cropIdealLow = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_LOW, crop);
     int cropTempMin = cropData.getData(CropData.Field.TEMPERATURE_MIN, crop);
     int cropGrowdays = cropData.getData(CropData.Field.GROW_DAYS, crop);
-    // int waterRequired = cropData.getData(CropData.Field.WATER, crop);
-
-
+    
+    // 1000 kg/m3 is the mass density of water. Multiply the required water
+    // necessary for a crop given in units m3/ton by the mass density of water
+    // to get the required water necessary for a crop in units kg/ton.
+    float cropWaterRequired = cropData.getData(CropData.Field.WATER, crop) * 1000; //in m3/ton
+    
+    if (region.getCropArea(Constant.FIRST_GAME_YEAR-1, crop) == 0)
+    {
+      yo++;
+      return EnumCropZone.POOR;
+    }
+    
+    // Crop density in the given region. Mass of crop per square kilometers
+    long cropMassPerArea = region.getCropProduction(Constant.FIRST_GAME_YEAR-1, crop) / region
+        .getCropArea(Constant.FIRST_GAME_YEAR-1, crop);
+    
+    // Multiply these two values to get the amount of water required in units
+    // kg/km2. Divide by 1 000 000 to convert from kg/km2 to kg/m2. Now we will
+    // directly compare this value, the necessary total amount of water
+    // necessary for a crop, to the amount of water produced in a landtile's
+    // climate
+    cropWaterRequired = (cropWaterRequired * cropMassPerArea) / 1000000; // kg/m2
+    
     for (int i = 0; i < Constant.Month.SIZE; i++)
     { // Iterate through each month checking if suitable conditions exist for
       // the necessary growdays
@@ -980,26 +1018,29 @@ public class Model
           currentMonth);
       tileMeanDailyHighT = tile.getField(Field.TEMP_MEAN_DAILY_HIGH, Constant.FIRST_GAME_YEAR - 1,
           currentMonth);
-          // tileRain = getField(Field.RAIN, Constant.FIRST_GAME_YEAR-1,
-          // currentMonth);
+      tileRain = tile.getField(Field.RAIN, Constant.FIRST_GAME_YEAR - 1, currentMonth); //kg/m2
 
       if (tileMonthlyLowT < cropTempMin)
       { // if the crops will freeze this month, tile is poor for this month
         
+        //update buffers if necessary
         if (consecutiveAcceptableBuffer)
         {
           consecutiveAcceptableBuffer = false;
           consecutiveAcceptableBufferValue = consecutiveAcceptableGrowDays;
+          consecutiveAcceptableWaterBuff = consecutiveAcceptableWater;
 
           if (consecutiveGoodBuffer)
           {
             consecutiveGoodBuffer = false;
             consecutiveGoodBufferValue = consecutiveGoodGrowDays;
+            consecutiveGoodWaterBuff = consecutiveGoodWater;
 
             if (consecutiveIdealBuffer)
             {
               consecutiveIdealBuffer = false;
               consecutiveIdealBufferValue = consecutiveIdealGrowDays;
+              consecutiveIdealWaterBuff = consecutiveIdealWater;              
             }
           }
         }
@@ -1018,6 +1059,10 @@ public class Model
           consecutiveIdealGrowDays += currentMonth.days();
           consecutiveGoodGrowDays += currentMonth.days();
           consecutiveAcceptableGrowDays += currentMonth.days();
+          
+          consecutiveIdealWater += tileRain;
+          consecutiveGoodWater += tileRain;
+          consecutiveAcceptableWater += tileRain;
         }
         else 
         { // It's not ideal.
@@ -1025,20 +1070,24 @@ public class Model
           {
             consecutiveIdealBuffer = false;
             consecutiveIdealBufferValue = consecutiveIdealGrowDays;
+            consecutiveIdealWaterBuff = consecutiveIdealWater;         
           }
 
           consecutiveIdealGrowDays = 0;
+          consecutiveIdealWater = 0;
 
           if (isBetween(tileMeanDailyLowT, cropIdealLow, cropIdealHigh) && isBetween(
               tileMeanDailyHighT, cropIdealLow, cropIdealHigh) && !isGood)
           { // Since we know that this tile is not ideal, we check the meanDaily
-            // temperatures to see if the crop never freezes and that the
-            // temperatures on this tile are -generally- ideal. We will define
-            // this as a Good rating. If we already know this tile is at least
-            // good. We don't bother continuing execution, it won't change
-            // anything.
+            // temperatures to see if the temperatures on this tile are
+            // generally ideal. We will define this as a Good rating. If we
+            // already know this tile is at least good. We don't bother
+            // continuing execution, it won't change anything.
             consecutiveGoodGrowDays += currentMonth.days();
             consecutiveAcceptableGrowDays += currentMonth.days();
+            
+            consecutiveGoodWater += tileRain;
+            consecutiveAcceptableWater += tileRain;
           }
           else if (!isAcceptable && !isGood)
           { // It's not good, it's just acceptable. don't bother continuing
@@ -1048,24 +1097,30 @@ public class Model
             {
               consecutiveGoodBuffer = false;
               consecutiveGoodBufferValue = consecutiveGoodGrowDays;
+              consecutiveGoodWaterBuff = consecutiveGoodWater;
             }
 
-            consecutiveGoodBufferValue = 0;
+            consecutiveGoodGrowDays = 0;
+            consecutiveGoodWater = 0;
             
+            consecutiveAcceptableWater += tileRain;
             consecutiveAcceptableGrowDays += currentMonth.days();
           }
         }
       }
       // check if we can determine anything with new consecutiveGrowDay values
-      if (consecutiveIdealGrowDays >= cropGrowdays)
+      if (consecutiveIdealGrowDays >= cropGrowdays && consecutiveIdealWater >= cropWaterRequired)
       { //if Ideal just return immediately.
+        id++;
         return EnumCropZone.IDEAL;
       }
-      else if (!isGood && consecutiveGoodGrowDays >= cropGrowdays)
+      else if (!isGood && consecutiveGoodGrowDays >= cropGrowdays
+          && consecutiveGoodWater >= cropWaterRequired)
       { //if isGood is true this elseif never executes
         isGood = true;
       }
-      else if (!isGood && !isAcceptable && consecutiveAcceptableGrowDays >= cropGrowdays)
+      else if (!isGood && !isAcceptable && consecutiveAcceptableGrowDays >= cropGrowdays
+          && consecutiveAcceptableWater >= cropWaterRequired)
       {//if isGood is true we don't care if it's acceptable.
         isAcceptable = true;
       }
@@ -1078,23 +1133,30 @@ public class Model
 
     // Check if the beginning + the end of a year result in an ideal tile
     // for the given crop
-    if (consecutiveIdealGrowDays + consecutiveIdealBufferValue >= cropGrowdays)
+    if (consecutiveIdealGrowDays + consecutiveIdealBufferValue >= cropGrowdays
+        && consecutiveIdealWater + consecutiveIdealWaterBuff >= cropWaterRequired)
     {
+      id++;
       return EnumCropZone.IDEAL;
     }
     // Else check if we ever had a period that was deemed Good or if the
     // beginning + end of a year results in a Good tile for the crop
-    else if (isGood || consecutiveGoodGrowDays + consecutiveGoodBufferValue >= cropGrowdays)
+    else if (isGood || (consecutiveGoodGrowDays + consecutiveGoodBufferValue >= cropGrowdays
+        && consecutiveGoodWater + consecutiveGoodWaterBuff >= cropWaterRequired))
     {
+      g++;
       return EnumCropZone.GOOD;
     }
-    else if (isAcceptable || consecutiveAcceptableGrowDays
-        + consecutiveAcceptableBufferValue >= cropGrowdays)
+    else if (isAcceptable || (consecutiveAcceptableGrowDays
+        + consecutiveAcceptableBufferValue >= cropGrowdays && consecutiveAcceptableWater
+            + consecutiveAcceptableWaterBuff >= cropWaterRequired))
     {
+      a++;
       return EnumCropZone.ACCEPTABLE;
     }
     else
     { // If it's not Ideal/Good/Acceptable, it's poor.
+      p++;
       return EnumCropZone.POOR;
     }
   }

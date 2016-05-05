@@ -26,7 +26,6 @@ public class VotingHand extends ResizablePane
   {
     super();
     System.out.println("VotingHand");
-
     votingButtons = new VotnigButtonNode();
     votingButtons.setManaged(false);
     votingButtons.setVisible(false);

@@ -81,6 +81,11 @@ public class DraftLayout extends GridPane
     worldMap=new WorldMap(gui);
     this.add(worldMap, 0, 0, COLS, ROWS);
     
+    VBox tickerReel = new VBox();
+    TickerReel reel = new TickerReel(tickerReel);
+    tickerReel.getChildren().add(reel);
+    this.add(tickerReel, 0, 0, COLS, 1);
+    
     //node to let the user see graphs and region statistics
     graphNode = new GraphNode(gui);
     this.add(graphNode, 0, 1, 5, 2);
@@ -98,8 +103,8 @@ public class DraftLayout extends GridPane
     Node mapNode = map.getGameMapNode();
     
     //node which holds the user's deck/discard pile information
-    deckNode = new DeckNode(gui);
-    this.add(deckNode, 0,12,6,3);
+//    deckNode = new DeckNode(gui);
+//    this.add(deckNode, 0,12,6,3);
 
     //node which holds the ProductBar
 //    productBar = new ProductBar(gui);
@@ -111,10 +116,10 @@ public class DraftLayout extends GridPane
 
     //node which allows the user to undo/discard cards with the click of a button
     actionButtons = new ActionButtons(gui);
-    this.add(actionButtons, 0, 16, 6, 3);
+    this.add(actionButtons, 0, 15, 6, 3);
     
     draftedCards = new DraftedCards();
-    this.add(draftedCards, 0, 7, 6, 4);
+    this.add(draftedCards, 0, 8, 6, 6);
 
     //node which allows the user to view the current cards in their hand
     hand = new Hand(gui, primaryStage);

@@ -51,7 +51,7 @@ public class TickerReel extends ResizablePane
    * @param parent
    * @param height
    */
-  public TickerReel(Pane parent, double height)
+  public TickerReel(Pane parent)
   {
     super();
     this.parent = parent;
@@ -61,7 +61,7 @@ public class TickerReel extends ResizablePane
     
     background = new Rectangle();
     background.setFill(BACKGROUND_COLOR);
-    background.setHeight(height);
+    background.setHeight(this.getHeight());
     background.setWidth(this.getWidth());
     
     sizingText = new Text("test");
@@ -73,8 +73,6 @@ public class TickerReel extends ResizablePane
     
     Bounds b = sizingText.getBoundsInLocal();
     double textHeight = b.getHeight();
-    scale = height/textHeight;
-    textBuffer = height*2;
     
     timer = new AnimationTimer(){
       @Override
@@ -173,12 +171,20 @@ public class TickerReel extends ResizablePane
   {
     double width = parent.getWidth();
     this.setWidth(width);
+    double height = parent.getHeight();
+    this.setHeight(height);
     
+    
+    Bounds b = sizingText.getBoundsInLocal();
+    double textHeight = b.getHeight();
+    scale = height/textHeight;
+    textBuffer = height*2;
     
     background.setWidth(width);
+    background.setHeight(height);
     
     for (Text t : displayedMessages){
-      Bounds b = t.getBoundsInLocal();
+      b = t.getBoundsInLocal();
       
       double displayHeight = b.getHeight();
       

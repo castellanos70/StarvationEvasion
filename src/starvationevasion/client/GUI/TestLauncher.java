@@ -40,7 +40,7 @@ public class TestLauncher extends Application
 //    Clock clock = new Clock(pane, new ResizeStrategy(1, 1, 1, 1));
 //    pane.getChildren().add(clock);
     
-    TickerReel reel = new TickerReel(pane, 40);
+    TickerReel reel = new TickerReel(pane);
     pane.getChildren().add(reel);
     
     scene = new Scene(pane, 1377, 80);

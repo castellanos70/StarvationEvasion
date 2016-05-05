@@ -169,7 +169,7 @@ public abstract class GameCard implements Sendable
         myCard = new Policy_MyPlatePromotionCampaign();
         break;
       case Policy_DiverttheFunds:
-        myCard = new Policy_DiverttheFunds();
+        myCard = new Policy_DivertFunds();
         break;
       case Policy_Filibuster:
         myCard = new Policy_Filibuster();
@@ -178,7 +178,7 @@ public abstract class GameCard implements Sendable
         myCard = new Policy_Fundraiser();
         break;
       case Policy_SharetheKnowledge:
-        myCard = new Policy_SharetheKnowledge();
+        myCard = new Policy_ShareKnowledge();
         break;
       case Policy_Redraft:
       	myCard = new Policy_Redraft();

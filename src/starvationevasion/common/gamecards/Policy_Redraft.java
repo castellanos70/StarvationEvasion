@@ -1,11 +1,5 @@
 package starvationevasion.common.gamecards;
 
-import java.util.ArrayList;
-
-import starvationevasion.common.EnumRegion;
-import starvationevasion.sim.CardDeck;
-import starvationevasion.sim.Simulator;
-
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
@@ -22,8 +16,7 @@ public class Policy_Redraft extends GameCard
   public static final String TITLE = "Redraft";
   
   public static final String TEXT = 
-      "When played, the owner of this policy may return a card from " +
-      "their discard pile to their hand.";
+      "Return target policy card from your discard pile to your hand.";
   
   public static final String FLAVOR_TEXT = 
       "Yeah, that was a good idea, let's do it again!";

@@ -9,14 +9,13 @@ package starvationevasion.common.gamecards;
  *
 */
 
-public class Policy_DiverttheFunds extends GameCard
+public class Policy_DivertFunds extends GameCard
 {
   
-  public static final String TITLE = "Divert the Funds";
+  public static final String TITLE = "Divert Funds";
   
   public static final String TEXT = 
-      "Discard your current hand and gain " + 
-      "14 million dollars";
+      "Discard your current hand. Gain $14 million.";
  
   public static final String FLAVOR_TEXT =
       "No one can come up with a good idea. Good thing we're paid anyways.";

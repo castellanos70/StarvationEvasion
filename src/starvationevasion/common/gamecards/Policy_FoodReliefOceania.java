@@ -19,7 +19,7 @@ import starvationevasion.common.EnumFood;
  * direct reduction of supply without effect on demand (since those to whom the
  * relief is delivered are presumed to lack the resources to have been part of the demand).
 */
-public class Policy_FoodReliefSouthAsia
+public class Policy_FoodReliefOceania extends GameCard
 { 
   public static final String TITLE = 
 	"Food Relief in Oceania";
@@ -63,5 +63,5 @@ public class Policy_FoodReliefSouthAsia
    * {@inheritDoc}
    */
   @Override
-  public getValidTargetFoods() {return EnumFood.ALL_FOODS}
+  public EnumFood[] getValidTargetFoods() {return EnumFood.ALL_FOODS;}
 }

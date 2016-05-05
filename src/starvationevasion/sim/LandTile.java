@@ -257,6 +257,7 @@ public class LandTile
   public static ArrayList<MapPoint> loadLocations(Model model, ArrayList<LandTile> tileList)
   {
     String zipPath = PATH_COORDINATES + COORDINATE_FILENAME + ".zip";
+    //String zipPath = PATH_COORDINATES + "geodesic.zip";
     ArrayList<MapPoint> mapList = null;
     try
     {
@@ -264,6 +265,7 @@ public class LandTile
 
       ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(zipPath).toURI().getPath());
       ZipEntry entry = zipFile.getEntry(COORDINATE_FILENAME+".csv");
+      //ZipEntry entry = zipFile.getEntry("geodesic.csv");
 
       CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
 

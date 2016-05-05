@@ -87,7 +87,7 @@ import java.util.logging.Logger;
 
 public class Model
 {
-  public static final int TOTAL_LAND_TILES = 245021;//173143;
+  public static final int TOTAL_LAND_TILES = 245021;//167235;
   public static double EVENT_CHANCE = 0.02;
   private static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 

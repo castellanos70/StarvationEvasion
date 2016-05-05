@@ -87,6 +87,11 @@ public enum EnumFood implements Sendable
   public static final EnumFood[] NON_CROP_FOODS =
   { FISH, MEAT, POULTRY, DAIRY,
   };
+  
+  public static final EnumFood[] ALL_FOODS =
+  { CITRUS, FRUIT, NUT, GRAIN, OIL, VEGGIES, SPECIAL, FEED,
+	FISH, MEAT, POULTRY, DAIRY,
+  };
 
 
 

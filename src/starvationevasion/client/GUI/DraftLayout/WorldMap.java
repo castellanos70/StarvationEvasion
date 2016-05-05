@@ -1,29 +1,23 @@
 package starvationevasion.client.GUI.DraftLayout;
 
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Random;
+
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Scale;
 import starvationevasion.client.GUI.GUI;
-import starvationevasion.common.GeographicArea;
 import starvationevasion.common.MapProjectionMollweide;
 import starvationevasion.sim.LandTile;
-import starvationevasion.sim.Simulator;
 import starvationevasion.sim.Territory;
-import starvationevasion.sim.io.CSVReader;
-
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Random;
 
 //import java.awt.*;
 
@@ -62,6 +56,8 @@ public class WorldMap extends ScrollPane
     //  worldMap.fitWidthProperty().bind(gui.getPrimaryStage().widthProperty());
     
     //zoomGroup.add
+    setHbarPolicy(ScrollBarPolicy.NEVER);
+    setVbarPolicy(ScrollBarPolicy.NEVER);
     setPannable(true);
     zoomGroup = new StackPane();
     zoomGroup.getChildren().add(worldMap);

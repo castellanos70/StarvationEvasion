@@ -10,7 +10,7 @@ public class VotingButton extends ResizablePane
 	ImageView iv;
 
 	public VotingButton(String str) {
-		super(null, null);
+		super();
 		iv = new ImageView(new Image(
 				getClass().getResource("/starvationevasion/GuiTestCode/resources/" + str + ".png").toString()));
 		iv.setManaged(false);

@@ -1031,6 +1031,9 @@ public class Model
             }
           }
         }
+        
+        //reset all values
+        
         consecutiveIdealGrowDays = 0;
         consecutiveGoodGrowDays = 0;
         consecutiveAcceptableGrowDays = 0;

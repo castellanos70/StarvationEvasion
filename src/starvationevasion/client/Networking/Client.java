@@ -5,7 +5,7 @@ import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.communication.CommModule;
+import starvationevasion.communication.Communication;
 import starvationevasion.server.model.State;
 
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public interface Client
    *
    * @return communication module
    */
-  CommModule getCommunicationModule();
+  Communication getCommunicationModule();
 
   /**
    * This should return a valid state for this client (as received from server).

@@ -13,7 +13,6 @@ import starvationevasion.common.SpecialEventData;
 import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.communication.CommModule;
 import starvationevasion.communication.Communication;
 import starvationevasion.communication.AITest.commands.Command;
 import starvationevasion.communication.AITest.commands.Draft;
@@ -21,6 +20,8 @@ import starvationevasion.communication.AITest.commands.GameState;
 import starvationevasion.communication.AITest.commands.Login;
 import starvationevasion.communication.AITest.commands.Uptime;
 import starvationevasion.communication.AITest.commands.Vote;
+import starvationevasion.communication.ConcurrentCommModule;
+import starvationevasion.server.model.Response;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.Type;
 import starvationevasion.server.model.User;
@@ -31,7 +32,7 @@ import starvationevasion.server.model.User;
  */
 public class AI
 {
-  private final CommModule COMM;
+  private final Communication COMM;
   private User u;
   private ArrayList<User> users = new ArrayList<>();
   private State state = null;
@@ -78,8 +79,11 @@ public class AI
 
   public AI(String host, int port)
   {
+    COMM = new ConcurrentCommModule(host, port);
+    // Try to connect and then see how it went
+    COMM.connect();
     createMapAndLists();
-    COMM = new CommModule(host, port);
+
     isRunning = COMM.isConnected();
 
     // Add the starting commands
@@ -87,48 +91,11 @@ public class AI
     commands.add(new Uptime(this));
     commands.add(new Login(this));
 
-    // Set up the response listeners
-    COMM.setResponseListener(Type.AUTH_SUCCESS, (type, data) ->
-    {
-      u = (User) data;
-      COMM.sendChat("ALL", "Hi, I am " + u.getUsername()
-          + ". I'll be playing using (crappy) AI.", null);
-    });
-    COMM.setResponseListener(Type.USER, (type, data) ->
-    {
-      u = (User) data;
-      COMM.sendChat("ALL", "User updated: " + u.getUsername(), null);
-    });
-    COMM.setResponseListener(Type.WORLD_DATA_LIST,
-        (type, data) -> worldData = (ArrayList<WorldData>) data);
-    COMM.setResponseListener(Type.USERS_LOGGED_IN_LIST,
-        (type, data) -> users = (ArrayList<User>) data);
-    COMM.setResponseListener(Type.WORLD_DATA,
-        (type, data) -> worldData.add((WorldData) data));
-    COMM.setResponseListener(Type.VOTE_BALLOT,
-        (type, data) -> ballot = (List<GameCard>) data);
-    COMM.setResponseListener(Type.GAME_STATE, (type, data) ->
-    {
-      state = (State) data;
-      if (state == starvationevasion.server.model.State.VOTING)
-      {
-        AI.this.commands.add(new Vote(AI.this));
-      } else if (state == starvationevasion.server.model.State.DRAFTING)
-      {
-        aggregateData();
-        draftedCards.add(new ArrayList<GameCard>());
-        Draft newDraft = new Draft(AI.this);
-        AI.this.commands.add(newDraft);
-        numTurns++;
-      } else if (state == starvationevasion.server.model.State.DRAWING)
-      {
-        // AI.this.commands.add(new Draft(AI.this));
-        commands.clear();
-      }
-    });
-    listenToUserRequests();
+    aiLoop();
     COMM.dispose();
   }
+
+
 
   /**
    * Jeffrey McCall Create the EnumMap that will be passed to Draft.java which
@@ -243,37 +210,81 @@ public class AI
     }
   }
 
-  private void listenToUserRequests()
+
+  private void aiLoop()
   {
-    while (isRunning)
+    while(isRunning)
     {
       try
       {
         isRunning = COMM.isConnected();
 
-        // Ask the communication module to push any server response events it
-        // has received
+        // Ask the communication module to give us any server response events it has received
         // since the last call
-        COMM.pushResponseEvents();
+        ArrayList<Response> responses = COMM.pollMessages();
+        processServerInput(responses);
 
         // if commands is empty check again
-        if (commands.size() == 0)
-          continue;
+        if (commands.size() == 0) continue;
 
         // take off the top of the stack
         Command c = commands.peek();
 
         boolean runAgain = c.run();
-        // System.out.println(c.commandString());
-        // System.out.println(runAgain);
+
         // if it does not need to run again pop
-        if (!runAgain)
-          commands.pop();
+        if (!runAgain) commands.pop();
         // wait a little
         Thread.sleep(1000);
-      } catch (InterruptedException e)
+      }
+      catch(InterruptedException e)
       {
         e.printStackTrace();
+      }
+    }
+  }
+
+  private void processServerInput(ArrayList<Response> responses)
+  {
+    for (Response response : responses)
+    {
+      Type type = response.getType();
+      Object data = response.getPayload().getData();
+
+      if (type == Type.AUTH_SUCCESS)
+      {
+        u = (User)data;
+        COMM.sendChat("ALL", "Hi, I am " + u.getUsername() + ". I'll be playing using (crappy) AI.", null);
+      }
+      else if (type == Type.USER)
+      {
+        u = (User)data;
+        COMM.sendChat("ALL", "User updated: " + u.getUsername(), null);
+      }
+      else if (type == Type.WORLD_DATA_LIST) worldData = (ArrayList<WorldData>)data;
+      else if (type == Type.WORLD_DATA) worldData.add((WorldData)data);
+      else if (type == Type.USERS_LOGGED_IN_LIST) users = (ArrayList<User>)data;
+      else if (type == Type.VOTE_BALLOT) ballot = (List<GameCard>)data;
+      else if (type == Type.GAME_STATE)
+      {
+        state = (State)data;
+        if (state == starvationevasion.server.model.State.VOTING)
+        {
+          AI.this.commands.add(new Vote(AI.this));
+        }
+        else if (state == starvationevasion.server.model.State.DRAFTING)
+        {
+          aggregateData();
+          draftedCards.add(new ArrayList<GameCard>());
+          Draft newDraft = new Draft(AI.this);
+          AI.this.commands.add(newDraft);
+          numTurns++;
+        }
+        else if (state == starvationevasion.server.model.State.DRAWING)
+        {
+          // AI.this.commands.add(new Draft(AI.this));
+          commands.clear();
+        }
       }
     }
   }
@@ -318,9 +329,9 @@ public class AI
     return users;
   }
 
-  public static void main(String[] args)
-  {
 
+  public static void main (String[] args)
+  {
     String host = null;
     int port = 0;
 

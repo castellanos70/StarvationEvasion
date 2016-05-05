@@ -130,7 +130,7 @@ public class UpdateLoop extends Application
 
     });
     exit.setOnMouseClicked(event -> {
-      client.shutdown();;
+      client.shutdown();
     });
 
 

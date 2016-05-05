@@ -9,7 +9,7 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.communication.CommModule;
+import starvationevasion.communication.Communication;
 import starvationevasion.server.model.*;
 
 import java.io.*;
@@ -92,7 +92,7 @@ public class DeprecatedClient implements Client
    * @return communication module
    */
   @Override
-  public CommModule getCommunicationModule()
+  public Communication getCommunicationModule()
   {
     return null;
   }

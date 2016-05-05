@@ -87,6 +87,7 @@ import java.util.logging.Logger;
 
 public class Model
 {
+  public static final int TOTAL_LAND_TILES = 245021;//244560;
   public static double EVENT_CHANCE = 0.02;
   private static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
@@ -104,7 +105,6 @@ public class Model
   private CropData cropData;
 
   private int currentYear;
-  private final int totalTiles;
 
   /**
    * List of all territories. A copy of each pointer stored in this list is
@@ -147,9 +147,12 @@ public class Model
     Date dateStart = new Date();
     System.out.println("Model() Loading Climate Data: " +dateFormat.format(dateStart));
 
-    ArrayList<LandTile> tileList = new ArrayList<>();
+    ArrayList<LandTile> tileList = new ArrayList<>(TOTAL_LAND_TILES);
     LandTile.loadLocations(this, tileList);
+    assert (tileList.size() == TOTAL_LAND_TILES);
     LandTile.loadClimate(tileList);
+    //System.out.println("tileList.size()="+tileList.size());
+
 
 
     Date dateDone = new Date();
@@ -157,11 +160,8 @@ public class Model
     System.out.println("LandTile.load() Done: elapsed sec=" +deltaSec);
     
     assert (assertLandTiles());
-
-
-    totalTiles = tileList.size();
     
-    packedTileData = new PackedTileData(totalTiles);
+    packedTileData = new PackedTileData(TOTAL_LAND_TILES);
 
     updateCropRatings(Constant.FIRST_GAME_YEAR-1);
 
@@ -751,7 +751,7 @@ public class Model
    */
   private void placeCrops()
   {
-    
+
     System.out.println("Model.placeCrops() Starting");
     long start = System.nanoTime();
     List<LandTile> regionTileList = new ArrayList<>();
@@ -759,26 +759,26 @@ public class Model
     //iterate through each region and fill a list of territories for each region
     for(int i = 0; i < regionList.length; i++)
     {
-      
+
       territoryList = regionList[i].getTerritoryList();
       //populate regionTileList with all tiles of all territories in the region
       for(Territory territory : territoryList)
       {
-        regionTileList.addAll(territory.getLandTiles());        
+        regionTileList.addAll(territory.getLandTiles());
       }
       System.out.println(regionList[i].getName() + " " + regionTileList.size() + " " + regionList[i].getLandTotal() / regionTileList.size());
-      //go through the list of crops, one by one, and assign them to tiles, with 
+      //go through the list of crops, one by one, and assign them to tiles, with
       //weighted probabilities, based on the crop ratings for each tile
       for(int j = 0; j < EnumFood.CROP_FOODS.length; j++)
       {
-        //the amount of tiles per region for each crop is the total land area for each crop divided by the area 
+        //the amount of tiles per region for each crop is the total land area for each crop divided by the area
         //of a land tile.
-        int numTilesForCrop = (int) regionList[i].getCropArea(Constant.FIRST_DATA_YEAR, EnumFood.CROP_FOODS[j]) 
+        int numTilesForCrop = (int) regionList[i].getCropArea(Constant.FIRST_DATA_YEAR, EnumFood.CROP_FOODS[j])
                 / (regionList[i].getLandTotal() / regionList[i].getNumTiles());
         //given the amount of tiles used for each crop, randomly place the appropriate number of the given crop.
         for(int k = 0; k < numTilesForCrop && regionTileList.size() > 0; k++)
         {
-          
+
           int randomTileIndex = Util.rand.nextInt(regionTileList.size());
           LandTile tile = regionTileList.get(randomTileIndex);
           EnumCropZone cropRating = tile.getCropRatings()[j];
@@ -816,13 +816,13 @@ public class Model
       //do the same for non-crops
       for(int j = 0; j < EnumFood.NON_CROP_FOODS.length; j++)
       {
-        
-        int numTilesForCrop = (int) regionList[i].getCropArea(Constant.FIRST_DATA_YEAR, EnumFood.NON_CROP_FOODS[j]) 
+
+        int numTilesForCrop = (int) regionList[i].getCropArea(Constant.FIRST_DATA_YEAR, EnumFood.NON_CROP_FOODS[j])
                 / (regionList[i].getLandTotal() / regionList[i].getNumTiles());
-        
+
         for(int k = 0; k < numTilesForCrop && regionTileList.size() > 0; k++)
         {
-          
+
           int randomTileIndex = Util.rand.nextInt(regionTileList.size());
           LandTile tile = regionTileList.get(randomTileIndex);
           EnumCropZone cropRating = tile.getCropRatings()[j];
@@ -845,7 +845,7 @@ public class Model
     //   for (int j = 0; j < regionList[i].getTerritoryList().size(); j++)
     //   { //For each Territory
     //     landTiles = regionList[i].getTerritoryList().get(j).getLandTiles();
-        
+
     //     for (LandTile tile : landTiles)
     //     {
     //       if(tile.getCrop() != null) System.out.println(num + " " + tile.getCrop().name());
@@ -967,7 +967,7 @@ public class Model
 
     // these values per month
     float tileMonthlyLowT;
-    float tileMonthlyHighT;
+    float tileMeanDailyHighT;
     float tileMeanDailyLowT;
     float tileRain;
     
@@ -1003,7 +1003,7 @@ public class Model
       // the necessary growdays
       currentMonth = Constant.Month.values()[i];
       tileMonthlyLowT = tile.getField(Field.TEMP_MONTHLY_LOW, dataYear, currentMonth);
-      tileMonthlyHighT = tile.getField(Field.TEMP_MONTHLY_HIGH, dataYear, currentMonth);
+      tileMeanDailyHighT = tile.getField(Field.TEMP_MEAN_DAILY_HIGH, dataYear, currentMonth);
       tileMeanDailyLowT = tile.getField(Field.TEMP_MEAN_DAILY_LOW, dataYear, currentMonth);
       tileRain = tile.getField(Field.RAIN, dataYear, currentMonth); //kg/m2
 
@@ -1034,66 +1034,57 @@ public class Model
         consecutiveIdealGrowDays = 0;
         consecutiveGoodGrowDays = 0;
         consecutiveAcceptableGrowDays = 0;
-      }
-      else
-      { // the crop will at least be acceptable/not freeze.
         
-        if (isBetween(tileMonthlyLowT, cropIdealLow, cropIdealHigh) && isBetween(tileMonthlyHighT,
-            cropIdealLow, cropIdealHigh))
-        { // Check if the temperatures are ideal. If the tile is Ideal, we know
-          // it's also Acceptable and Good. Update all the consecutiveGrowDay
-          // totals.
-          consecutiveIdealGrowDays += currentMonth.days();
+        consecutiveIdealWater = 0;
+        consecutiveGoodWater = 0;
+        consecutiveAcceptableWater = 0;
+      }
+      else //the crop will at least be acceptable/not freeze.
+      {
+        if (isBetween(tileMeanDailyLowT, cropIdealLow, cropIdealHigh) && isBetween(
+            tileMeanDailyHighT, cropIdealLow, cropIdealHigh) && !isGood)
+        { // if the tile is at least good for this crop this month
           consecutiveGoodGrowDays += currentMonth.days();
           consecutiveAcceptableGrowDays += currentMonth.days();
           
-          consecutiveIdealWater += tileRain;
           consecutiveGoodWater += tileRain;
           consecutiveAcceptableWater += tileRain;
-        }
-        else 
-        { // It's not ideal.
-          if (consecutiveIdealBuffer)
-          {
-            consecutiveIdealBuffer = false;
-            consecutiveIdealBufferValue = consecutiveIdealGrowDays;
-            consecutiveIdealWaterBuff = consecutiveIdealWater;         
-          }
 
-          consecutiveIdealGrowDays = 0;
-          consecutiveIdealWater = 0;
-
-          if (isBetween(tileMeanDailyLowT, cropIdealLow, cropIdealHigh) && !isGood)
-          { // Since we know that this tile is not ideal, we check the meanDaily
-            // temperatures to see if the temperatures on this tile are
-            // generally ideal. We will define this as a Good rating. If we
-            // already know this tile is at least good. We don't bother
-            // continuing execution, it won't change anything.
-            consecutiveGoodGrowDays += currentMonth.days();
-            consecutiveAcceptableGrowDays += currentMonth.days();
-            
-            consecutiveGoodWater += tileRain;
-            consecutiveAcceptableWater += tileRain;
+          if (isBetween(tileMonthlyLowT, cropIdealLow, cropIdealHigh))
+          { // if the tile is ideal for this crop this month
+            consecutiveIdealGrowDays += currentMonth.days();
+            consecutiveIdealWater += tileRain;
           }
-          else if (!isAcceptable && !isGood)
-          { // It's not good, it's just acceptable. don't bother continuing
-            // execution if we already know the tile is at least good or
-            // acceptable.
-            if (consecutiveGoodBuffer)
+          else
+          { // not ideal
+            if (consecutiveIdealBuffer)
             {
-              consecutiveGoodBuffer = false;
-              consecutiveGoodBufferValue = consecutiveGoodGrowDays;
-              consecutiveGoodWaterBuff = consecutiveGoodWater;
+              consecutiveIdealBuffer = false;
+              consecutiveIdealBufferValue = consecutiveIdealGrowDays;
+              consecutiveIdealWaterBuff = consecutiveIdealWater;
             }
 
-            consecutiveGoodGrowDays = 0;
-            consecutiveGoodWater = 0;
-            
-            consecutiveAcceptableWater += tileRain;
-            consecutiveAcceptableGrowDays += currentMonth.days();
+            consecutiveIdealGrowDays = 0;
+            consecutiveIdealWater = 0;
           }
         }
+        else if (!isAcceptable && !isGood) //not good, only acceptable
+        {
+          if (consecutiveGoodBuffer)
+          {
+            consecutiveGoodBuffer = false;
+            consecutiveGoodBufferValue = consecutiveGoodGrowDays;
+            consecutiveGoodWaterBuff = consecutiveGoodWater;
+          }
+
+          consecutiveGoodGrowDays = 0;
+          consecutiveGoodWater = 0;
+          
+          consecutiveAcceptableGrowDays += currentMonth.days();
+          consecutiveAcceptableWater += tileRain;
+        }
       }
+      
       // check if we can determine anything with new consecutiveGrowDay values
       if (consecutiveIdealGrowDays >= cropGrowdays && consecutiveIdealWater >= cropWaterRequired)
       { //if Ideal just return immediately.
@@ -1141,7 +1132,7 @@ public class Model
       return EnumCropZone.POOR;
     }
   }
-  
+
   private boolean isBetween(Number numToTest, Number lowVal, Number highVal)
   {
     if (numToTest.doubleValue() >= lowVal.doubleValue() && numToTest.doubleValue() <= highVal.doubleValue())
@@ -1543,6 +1534,5 @@ public class Model
         model.drawRain(pic, 2000+n, month);
       }
     }
-
   }
 }

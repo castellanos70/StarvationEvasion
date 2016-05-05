@@ -969,7 +969,6 @@ public class Model
     float tileMonthlyLowT;
     float tileMonthlyHighT;
     float tileMeanDailyLowT;
-    float tileMeanDailyHighT;
     float tileRain;
     
     // The crop values are the information needed from the crop to rate a tile
@@ -1006,7 +1005,6 @@ public class Model
       tileMonthlyLowT = tile.getField(Field.TEMP_MONTHLY_LOW, dataYear, currentMonth);
       tileMonthlyHighT = tile.getField(Field.TEMP_MONTHLY_HIGH, dataYear, currentMonth);
       tileMeanDailyLowT = tile.getField(Field.TEMP_MEAN_DAILY_LOW, dataYear, currentMonth);
-      tileMeanDailyHighT = tile.getField(Field.TEMP_MEAN_DAILY_HIGH, dataYear, currentMonth);
       tileRain = tile.getField(Field.RAIN, dataYear, currentMonth); //kg/m2
 
       if (tileMonthlyLowT < cropTempMin)
@@ -1065,8 +1063,7 @@ public class Model
           consecutiveIdealGrowDays = 0;
           consecutiveIdealWater = 0;
 
-          if (isBetween(tileMeanDailyLowT, cropIdealLow, cropIdealHigh) && isBetween(
-              tileMeanDailyHighT, cropIdealLow, cropIdealHigh) && !isGood)
+          if (isBetween(tileMeanDailyLowT, cropIdealLow, cropIdealHigh) && !isGood)
           { // Since we know that this tile is not ideal, we check the meanDaily
             // temperatures to see if the temperatures on this tile are
             // generally ideal. We will define this as a Good rating. If we

@@ -298,7 +298,7 @@ public class LandTile
 
       /*
       BufferedWriter writer = new BufferedWriter(new FileWriter(new File("GeodesicArableFilteredCoordinates.csv")));
-
+      CSVReader.writeRecord(writer, "Latitude,Longitude\n");
       for (EnumRegion regionID : EnumRegion.values())
       {
         Region region = model.getRegion(regionID);

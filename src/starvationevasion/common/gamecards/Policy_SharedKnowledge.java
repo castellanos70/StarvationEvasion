@@ -12,7 +12,7 @@ import starvationevasion.common.EnumRegion;
  * hands must, in theory, be able to be viewed during any part of the game.
  */
 
-public class Policy_ShareKnowledge extends GameCard
+public class Policy_SharedKnowledge extends GameCard
 {
 
   public static final String TITLE = "Shared Knowledge";

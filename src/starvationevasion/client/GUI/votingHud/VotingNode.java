@@ -1,5 +1,7 @@
 package starvationevasion.client.GUI.votingHud;
 
+import java.io.File;
+
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
@@ -20,7 +22,6 @@ public class VotingNode extends ResizablePane
   private Rectangle2D viewPort;
   private VotingHand hand;
 
-
   private double lastX;
   private double lastY;
 
@@ -29,12 +30,11 @@ public class VotingNode extends ResizablePane
 
   public VotingNode(double width, double height)
   {
-	  super();
+    super();
+    System.out.println("VotingNode");
     this.setSize(width, height);
     this.width = width;
     this.height = height;
-    
-    
 
     hand = new VotingHand(width * (2 / 3d), height / 2);
     hand.setLayoutX(20);
@@ -42,8 +42,10 @@ public class VotingNode extends ResizablePane
     hand.setManaged(false);
     hand.setVisible(true);
 
-    map = new Image(getClass().getResource("/starvationevasion/GuiTestCode/resources/map.png").toString());
-    borderMap = new Image(getClass().getResource("/starvationevasion/GuiTestCode/resources/map2.png").toString());
+    System.out.println("Before File");
+    File file = new File("src/starvationevasion/client/GUI/votingHud/testImages/WorldMap_MollweideProjection.png");
+    System.out.println("After File");
+    map = new Image(file.toURI().toString());
 
     imageView = new ImageView(map);
     imageView.setManaged(false);
@@ -155,6 +157,10 @@ public class VotingNode extends ResizablePane
     hand.setLayoutY(height / 2 - 20);
   }
 
+  private void zoomIn(double amount)
+  {
+
+  }
 
   private void checkViewBounds()
   {

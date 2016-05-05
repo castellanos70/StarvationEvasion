@@ -169,6 +169,14 @@ public class Draft extends AbstractCommand
   @Override
   public boolean run()
   {
+    if (!getClient().getState().equals(State.DRAFTING) && tries > 0)
+    {
+      tries--;
+      if (tries <= 0)
+      {
+        return false;
+      }
+    }
     if (getClient().getState().equals(State.DRAFTING))
     {
       synchronized(getClient())
@@ -178,7 +186,7 @@ public class Draft extends AbstractCommand
           if (setDraftedCards())
           {
             getClient().getCommModule().send(Endpoint.DONE, new Payload(), null);
-            return false;
+            return true;
           } 
           else
           {
@@ -499,6 +507,7 @@ public class Draft extends AbstractCommand
       {
         randomlyDiscard();
       }
+      tries=2;
       return true;
     }
   }

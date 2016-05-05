@@ -6,6 +6,7 @@ import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Networking.Client;
 import starvationevasion.client.Networking.ClientTest;
 import starvationevasion.client.Setup.StartAnimation;
+import starvationevasion.common.EnumRegion;
 
 public class Main extends Application
 {

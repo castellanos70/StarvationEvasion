@@ -53,7 +53,7 @@ public class SummaryBar extends GridPane
   public SummaryBar(GUI gui)
   {
     this.gui = gui;
-    this.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, .6), null, null)));
+    this.setBackground(new Background(new BackgroundFill(new Color(1, 1, 1, .45), null, null)));
     initializeGridSizes();
     this.getColumnConstraints().addAll(colConstraintsList);
     this.getRowConstraints().addAll(rowConstraintsList);

@@ -45,7 +45,16 @@ public class Hand extends GridPane
     this.gui = gui;
     this.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, .6), null, null)));
     primaryStage = gui.getPrimaryStage();
+    EnumPolicy[] defaultPolicies = new EnumPolicy[Constant.MAX_HAND_SIZE];
     
+    gui.setAssignedRegion(EnumRegion.USA_CALIFORNIA);
+    
+    for (int i = 0; i < defaultPolicies.length; i++){
+      int index = (int) (Math.random()*EnumPolicy.values().length);
+      defaultPolicies[i] = EnumPolicy.values()[index];
+    }
+    
+    setHand(defaultPolicies);
   }
 
   /** 
@@ -82,7 +91,6 @@ public class Hand extends GridPane
     for (int i = 0; i <hand.length ; i++)
     {
       //Needs working connection
-      // ClientPolicyCard clientPolicyCard=new ClientPolicyCard(GUI.client.getAssignedRegion(),hand[i],GUI);
       ClientPolicyCard clientPolicyCard=new ClientPolicyCard(gui.getAssignedRegion(),hand[i],gui);
       clientPolicyCard.setHandIndex(i);
       elements.add(clientPolicyCard);

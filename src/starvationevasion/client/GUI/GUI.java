@@ -157,6 +157,7 @@ public class GUI extends Application
       @Override
       public void handle(WindowEvent arg0)
       {
+        client.shutdown();
         Platform.exit();
       }
     });

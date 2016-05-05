@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import starvationevasion.ai.commands.Command;
 import starvationevasion.ai.commands.Draft;
@@ -38,8 +39,11 @@ public class AI
   private List<GameCard> ballot;
   private Stack<Command> commands = new Stack<>();
   private volatile boolean isRunning = true;
+  private volatile boolean aggregate=false;
   private ArrayList<User> allies = new ArrayList<>();
   private ArrayList<User> enemies = new ArrayList<>();
+  public AtomicBoolean doneDrafting=new AtomicBoolean(false);
+
 
   // time of server start
   private double startNanoSec = 0;
@@ -53,7 +57,18 @@ public class AI
    */
   public enum WorldFactors
   {
-    SEALEVEL, REVENUEBALANCE, POPULATION, UNDERNOURISHED, HDI, FOODPRODUCED, FOODINCOME, FOODIMPORTED, FOODEXPORTED, ETHANOLTAXCREDIT, FOODPRICE
+    SEALEVEL, 
+    REVENUEBALANCE, 
+    POPULATION, 
+    UNDERNOURISHED, 
+    HDI, 
+    FOODPRODUCED, 
+    FOODINCOME, 
+    FOODIMPORTED, 
+    FOODEXPORTED, 
+    ETHANOLTAXCREDIT, 
+    FOODPRICE
+
   }
 
   // This map is used to store information about the world and region that will
@@ -262,6 +277,7 @@ public class AI
   {
     return COMM;
   }
+
 
   public ArrayList<WorldData> getWorldData()
   {

@@ -78,6 +78,13 @@ public class Region extends Territory
     int cropIdx = food.ordinal();
     return cropExport[yearIdx][cropIdx];
   }
+  
+  public long getCropArea(int year, EnumFood food)
+  {
+    int yearIdx = year - Constant.FIRST_DATA_YEAR;
+    int cropIdx = food.ordinal();
+    return cropArea[yearIdx][cropIdx];
+  }
 
 
   /**
@@ -120,12 +127,25 @@ public class Region extends Territory
     territoryList.add(territory);
     Area perimeter = getGeographicArea().getPerimeter();
     perimeter.add(territory.getGeographicArea().getPerimeter());
-
+    
     setLandTotal(getLandTotal() + territory.getLandTotal());
 
     //System.out.println("Region="+getName()+", territory="+ territory.getName() +", cumLand="+getLandTotal());
   }
-
+  
+  /**
+   * 
+   * @return The number of tiles in this region.
+   */
+  public int getNumTiles()
+  {
+    int numTiles = 0;
+    for(Territory territory : territoryList)
+    {
+      numTiles += territory.getLandTiles().size();
+    }
+    return numTiles;
+  }
 
 
   /**

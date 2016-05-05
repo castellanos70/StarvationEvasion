@@ -47,23 +47,12 @@ public class LandTile
   private static final String PREFIX_RCP45 = "RCP45";
   private static final String PREFIX_RCP85 = "RCP85";
 
-  private static int PATH_COORDINATES_FIELD_COUNT = 2; //Latitude,Longitude
+  private static final int PATH_COORDINATES_FIELD_COUNT = 2; //Latitude,Longitude
 
-
-  private enum DataHeaders
-  {
-    TempMonthLow,     //Temperature Monthly Low (deg C).
-    TempMonthHigh,    //Temperature Monthly High (deg C).
-    TempMeanDailyLow, //Temperature Mean Daily Low  (deg C).
-    TempMeanDailyHigh,//Temperature Mean Daily High (deg C).
-    Rain;             //Precipitation Mean Daily (kg/m2, which is the same as millimeters height).
-    static int SIZE = values().length;
-  }
 
   public enum Field
   {
     TEMP_MONTHLY_LOW,     //Temperature Monthly Low (deg C).
-    TEMP_MONTHLY_HIGH,    //Temperature Monthly High (deg C).
     TEMP_MEAN_DAILY_LOW, //Temperature Mean Daily Low  (deg C).
     TEMP_MEAN_DAILY_HIGH,//Temperature Mean Daily High (deg C).
     RAIN;             //Precipitation Mean Daily (kg/m2, which is the same as millimeters height).
@@ -278,7 +267,7 @@ public class LandTile
       String[] fieldList;
       Territory territory = null;
 
-      if (model == null) mapList = new ArrayList<>(245021);
+      if (model == null) mapList = new ArrayList<>(Model.TOTAL_LAND_TILES);
 
       while ((fieldList = fileReader.readRecord(PATH_COORDINATES_FIELD_COUNT)) != null)
       {
@@ -307,6 +296,7 @@ public class LandTile
       e.printStackTrace();
       System.exit(0);
     }
+
     return mapList; //null if called by the simulator (model != null).
   }
 
@@ -339,6 +329,7 @@ public class LandTile
 
       String path = PATH_CLIMATE + prefix + "_"+yearStr + ".zip";
 
+      int recordIdx=0;
       try
       {
         System.out.printf("     Archive: %s\n", path);
@@ -347,23 +338,23 @@ public class LandTile
 
         //Open sub-file for each month of year.
         int month = 0;
+
         while (entries.hasMoreElements())
         { ZipEntry entry = entries.nextElement();
-          //System.out.printf("     File: %s\n", entry.getName());
-          //extractEntry(entry, file.getInputStream(entry));
+          System.out.printf("       File: %s\n", entry.getName());
 
-          CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 2);
+          CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
 
           String[] fieldList;
-          int recordIdx = 0;
+          recordIdx = 0;
           //Read each record of file.
-          while ((fieldList = fileReader.readRecord(DataHeaders.SIZE)) != null)
+          while ((fieldList = fileReader.readRecord(Field.SIZE+1)) != null)
           {
             LandTile tile = tileList.get(recordIdx);
 
             //System.out.println("rain="+fieldList[DataHeaders.Rain.ordinal()]+" at " + tile.latitude + ", " + tile.latitude);
             //Read each field of record.
-            for (int i=0; i<DataHeaders.SIZE; i++)
+            for (int i=0; i<Field.SIZE; i++)
             {
               float value= Float.parseFloat(fieldList[i]);
 
@@ -382,7 +373,7 @@ public class LandTile
       }
       catch (Exception e)
       {
-        System.out.println(e.getMessage());
+        System.out.println("Record# "+recordIdx+" "+ e.getMessage());
         e.printStackTrace();
         System.exit(0);
       }

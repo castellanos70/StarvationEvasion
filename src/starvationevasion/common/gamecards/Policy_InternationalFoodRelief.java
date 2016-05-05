@@ -14,7 +14,7 @@ import java.util.EnumSet;
  * Eligible Regions: All U.S.<br><br>
  *
  * Model Effects: Commodity food is distributed to relief world hunger
- * in the most efficient manor discovered by the sim where
+ * in the most efficient manner discovered by the sim where
  * efficiency calculation is based on the type of commodity
  * available in each participating region, each
  * country's nutritional need and each country's import penalty function.
@@ -75,6 +75,12 @@ public class Policy_InternationalFoodRelief extends GameCard
   */
   @Override
   public String getGameText(){ return TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int actionPointCost() {return 2;}
 
   /**
    * Millions of dollars spent by each participating region.

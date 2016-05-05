@@ -156,6 +156,23 @@ public class CardDeck
   {
     return cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]);
   }
+  
+  /**
+   * @return the EnumPolicy array that represents the discard pile.
+   */
+  public ArrayList<EnumPolicy> getDiscardPile()
+  {
+	return discardPile;
+  }
+  
+  /**
+   * @return the EnumPolicy array that represents the deck.
+   */
+  public ArrayList<EnumPolicy> getDeck()
+  {
+	return drawPile;
+  }
+  
 
   /**
    * This entry point is for testing only. <br><br>

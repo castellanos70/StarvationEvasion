@@ -7,6 +7,8 @@ import starvationevasion.common.EnumRegion;
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
+ * Flavor Text: <i>{@value #FLAVOR_TEXT}</i><br>
+ *                 {@value #FLAVOR_TEXT_SOURCE}<br><br>
  *
  * Votes Required: Automatic<br><br>
  *
@@ -24,6 +26,13 @@ public class Policy_CovertIntelligence extends GameCard
       "of that player's deck. You may target yourself. " +
       "During the voting phase, other players will see that you have " +
       "played this card, but not know its target.";
+  
+  public static final String FLAVOR_TEXT =
+      "'Spy' is such a short ugly word. I prefer 'espionage.' Those extra three " +
+      "syllables really say something.";
+  
+  public static final String FLAVOR_TEXT_SOURCE =
+      "-Howard Tayler, Emperor Pius Dei";
 
   public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
       EnumSet.of(EnumGameState.PLANNING_STATE);
@@ -45,6 +54,17 @@ public class Policy_CovertIntelligence extends GameCard
   @Override
   public String getGameText(){ return TEXT;}
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getFlavorText(){ return FLAVOR_TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getFlavorTextSource(){ return FLAVOR_TEXT_SOURCE;}
 
   /**
    * {@inheritDoc}

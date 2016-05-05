@@ -13,9 +13,9 @@ package starvationevasion.common.gamecards;
 
 public class Policy_SearchforAnswers extends GameCard
 {
-  public static String TITLE = "Search for Answers";
+  public static final String TITLE = "Search for Answers";
   
-  public static String TEXT = 
+  public static final String TEXT = 
       "The owner of this card pays 50 million dollars " +
       "and may search their deck for a card and " +
       "add that card to their hand.";
@@ -31,6 +31,12 @@ public class Policy_SearchforAnswers extends GameCard
   */
   @Override
   public String getGameText() {return TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int actionPointCost() {return 3;}
   
   //TODO Have some Collection to hold each region's deck, that can be iterated over, 
   //and have an accessor method here

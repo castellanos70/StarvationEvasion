@@ -3,6 +3,8 @@ package starvationevasion.common.gamecards;
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
+ * Flavor Text: <i>{@value #FLAVOR_TEXT}</i><br>
+ *                 {@value #FLAVOR_TEXT_SOURCE}<br><br>
  *
  * Votes Required: Automatic<br><br>
 */
@@ -10,10 +12,16 @@ package starvationevasion.common.gamecards;
 public class Policy_Fundraiser extends GameCard
 {
 
-  public static String TITLE = "Fundraiser";
+  public static final String TITLE = "Fundraiser";
   
-  public static String TEXT = 
+  public static final String TEXT = 
       "You raise 1 million dollars";
+  
+  public static final String FLAVOR_TEXT =
+      "...A small loan of a million dollars.";
+  
+  public static final String FLAVOR_TEXT_SOURCE =
+      "-Donald Trump";
   
   /**
    * {@inheritDoc}
@@ -26,4 +34,16 @@ public class Policy_Fundraiser extends GameCard
    */
   @Override
   public String getGameText() {return TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getFlavorText(){ return FLAVOR_TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getFlavorTextSource(){ return FLAVOR_TEXT_SOURCE;}
 }

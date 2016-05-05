@@ -1,0 +1,23 @@
+IF THERE ARE CHANGES IN GAME RULES, UPDATE THIS FILE.
+
+Rules for the "card game" aspect of the StarvationEvasion project:
+
+1) Each player will have 7 cards in their hands at the beginning of each round
+
+2) Types of cards: 
+    -Instant (has an effect instantly after playing, ie: "Get 5 million dollars")
+    -Automatic (card will not take effect instantly, but is a policy that doesn't require
+      other regions to vote on. ie: "Provide a corn subsidy for farmers in your region")
+    -Votable (Other regions will vote on this card during the voting phase, ie: "Every 
+      region sends 10 million dollars to help South Asia")
+
+3) Cards are used during the "DRAFTING" state (see file server.model.state.java). Possible 
+   exception being special cards like the "Filibuster" (which could be played during the 
+   VOTING state). 
+   
+4) Each card has an "Action Point" value between 1-3, and each player has a set amount of 
+   Action Points to use every turn (currently 3). Each card played will take away it's value
+   from the player's Action Points that turn. Example: Beginning of the turn, start with 3 AP.
+   Play a card with a value of 2 AP, and now with only 1 AP left over, the player can only 
+   play cards with a value of 1 AP, should they have any in their hand.
+     -note: see common.Constant.java is where each player's starting AP each turn is defined

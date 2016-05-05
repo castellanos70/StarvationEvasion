@@ -87,6 +87,7 @@ import java.util.logging.Logger;
 
 public class Model
 {
+  public static final int TOTAL_LAND_TILES = 245021;//244560;
   public static double EVENT_CHANCE = 0.02;
   private static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
@@ -104,7 +105,6 @@ public class Model
   private CropData cropData;
 
   private int currentYear;
-  private final int totalTiles;
 
   /**
    * List of all territories. A copy of each pointer stored in this list is
@@ -147,9 +147,12 @@ public class Model
     Date dateStart = new Date();
     System.out.println("Model() Loading Climate Data: " +dateFormat.format(dateStart));
 
-    ArrayList<LandTile> tileList = new ArrayList<>();
+    ArrayList<LandTile> tileList = new ArrayList<>(TOTAL_LAND_TILES);
     LandTile.loadLocations(this, tileList);
+    assert (tileList.size() == TOTAL_LAND_TILES);
     LandTile.loadClimate(tileList);
+    //System.out.println("tileList.size()="+tileList.size());
+
 
 
     Date dateDone = new Date();
@@ -157,13 +160,12 @@ public class Model
     System.out.println("LandTile.load() Done: elapsed sec=" +deltaSec);
     
     assert (assertLandTiles());
-
-
-    totalTiles = tileList.size();
     
-    packedTileData = new PackedTileData(totalTiles);
+    packedTileData = new PackedTileData(TOTAL_LAND_TILES);
 
     updateCropRatings();
+
+    placeCrops();
 
     for (int i = 0; i < YEARS_OF_DATA; i++)
     {
@@ -742,7 +744,119 @@ public class Model
     // undernourished factor.
     //
   }
-  
+
+  /**
+   * iterates through each region and places down crops, semi-randomly,
+   *  based on recorded production amounts.
+   */
+  private void placeCrops()
+  {
+
+    System.out.println("Model.placeCrops() Starting");
+    long start = System.nanoTime();
+    List<LandTile> regionTileList = new ArrayList<>();
+    List<Territory> territoryList;
+    //iterate through each region and fill a list of territories for each region
+    for(int i = 0; i < regionList.length; i++)
+    {
+
+      territoryList = regionList[i].getTerritoryList();
+      //populate regionTileList with all tiles of all territories in the region
+      for(Territory territory : territoryList)
+      {
+        regionTileList.addAll(territory.getLandTiles());
+      }
+      System.out.println(regionList[i].getName() + " " + regionTileList.size() + " " + regionList[i].getLandTotal() / regionTileList.size());
+      //go through the list of crops, one by one, and assign them to tiles, with
+      //weighted probabilities, based on the crop ratings for each tile
+      for(int j = 0; j < EnumFood.CROP_FOODS.length; j++)
+      {
+        //the amount of tiles per region for each crop is the total land area for each crop divided by the area
+        //of a land tile.
+        int numTilesForCrop = (int) regionList[i].getCropArea(Constant.FIRST_DATA_YEAR, EnumFood.CROP_FOODS[j])
+                / (regionList[i].getLandTotal() / regionList[i].getNumTiles());
+        //given the amount of tiles used for each crop, randomly place the appropriate number of the given crop.
+        for(int k = 0; k < numTilesForCrop && regionTileList.size() > 0; k++)
+        {
+
+          int randomTileIndex = Util.rand.nextInt(regionTileList.size());
+          LandTile tile = regionTileList.get(randomTileIndex);
+          EnumCropZone cropRating = tile.getCropRatings()[j];
+          if(cropRating.ordinal() == 3) //crop is IDEAL for this location. Place it.
+          {
+            tile.setCrop(EnumFood.CROP_FOODS[j]);
+            regionTileList.remove(randomTileIndex);
+          }
+          else if(cropRating.ordinal() == 2) //crop is GOOD for this location. 80% chance to place it.
+          {
+            if(Util.rand.nextDouble() < 0.8)
+            {
+              tile.setCrop(EnumFood.CROP_FOODS[j]);
+              regionTileList.remove(randomTileIndex);
+            }
+          }
+          else if(cropRating.ordinal() == 1)
+          {
+            if(Util.rand.nextDouble() < .4) //crop is ACCEPTABLE for this location. 40% chance to place it.
+            {
+              tile.setCrop(EnumFood.CROP_FOODS[j]);
+              regionTileList.remove(randomTileIndex);
+            }
+          }
+          else
+          {
+            if(Util.rand.nextDouble() < 0.2) //crop is POOR for this location. 20% chance to place it.
+            {
+              tile.setCrop(EnumFood.CROP_FOODS[j]);
+              regionTileList.remove(randomTileIndex);
+            }
+          }
+        }
+      }
+      //do the same for non-crops
+      for(int j = 0; j < EnumFood.NON_CROP_FOODS.length; j++)
+      {
+
+        int numTilesForCrop = (int) regionList[i].getCropArea(Constant.FIRST_DATA_YEAR, EnumFood.NON_CROP_FOODS[j])
+                / (regionList[i].getLandTotal() / regionList[i].getNumTiles());
+
+        for(int k = 0; k < numTilesForCrop && regionTileList.size() > 0; k++)
+        {
+
+          int randomTileIndex = Util.rand.nextInt(regionTileList.size());
+          LandTile tile = regionTileList.get(randomTileIndex);
+          EnumCropZone cropRating = tile.getCropRatings()[j];
+          if(cropRating.ordinal() == 3) //non-crop is IDEAL for this location. Place it.
+          {
+            tile.setCrop(EnumFood.NON_CROP_FOODS[j]);
+            regionTileList.remove(randomTileIndex);
+          }
+
+        }
+      }
+      regionTileList.clear();
+    }
+
+    //uncomment the following code for testing
+    // List<LandTile> landTiles = new ArrayList<>();
+    // int num = 1;
+    // for (int i = 0; i < regionList.length; i++)
+    // { //For each Region
+    //   for (int j = 0; j < regionList[i].getTerritoryList().size(); j++)
+    //   { //For each Territory
+    //     landTiles = regionList[i].getTerritoryList().get(j).getLandTiles();
+
+    //     for (LandTile tile : landTiles)
+    //     {
+    //       if(tile.getCrop() != null) System.out.println(num + " " + tile.getCrop().name());
+    //       num++;
+    //     }
+    //   }
+    // }
+    long end = System.nanoTime();
+    System.out.println("Model.placeCrops() Done: Time: " + ((end - start) / 1000000000.0));
+  }
+
   /**
    * Updates all the cropRatings in all landTile.
    * 
@@ -840,7 +954,7 @@ public class Model
 
     // these values per month
     float tileMonthlyLowT;
-    float tileMonthlyHighT;
+    //float tileMonthlyHighT;
     float tileMeanDailyLowT;
     float tileMeanDailyHighT;
     // float tileRain;
@@ -848,7 +962,6 @@ public class Model
     // Necessary crop data from given crop.
     int idealHigh = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_HIGH, crop);
     int idealLow = cropData.getData(CropData.Field.TEMPERATURE_IDEAL_LOW, crop);
-    int tempMax = cropData.getData(CropData.Field.TEMPERATURE_MAX, crop);
     int tempMin = cropData.getData(CropData.Field.TEMPERATURE_MIN, crop);
     int growdays = cropData.getData(CropData.Field.GROW_DAYS, crop);
     // int waterRequired = cropData.getData(CropData.Field.WATER, crop);
@@ -860,8 +973,8 @@ public class Model
       currentMonth = Constant.Month.values()[i];
       tileMonthlyLowT = tile.getField(Field.TEMP_MONTHLY_LOW, Constant.FIRST_GAME_YEAR - 1,
           currentMonth);
-      tileMonthlyHighT = tile.getField(Field.TEMP_MONTHLY_HIGH, Constant.FIRST_GAME_YEAR - 1,
-          currentMonth);
+      //tileMonthlyHighT = tile.getField(Field.TEMP_MONTHLY_HIGH, Constant.FIRST_GAME_YEAR - 1,
+      //    currentMonth);
       tileMeanDailyLowT = tile.getField(Field.TEMP_MEAN_DAILY_LOW, Constant.FIRST_GAME_YEAR - 1,
           currentMonth);
       tileMeanDailyHighT = tile.getField(Field.TEMP_MEAN_DAILY_HIGH, Constant.FIRST_GAME_YEAR - 1,
@@ -870,16 +983,14 @@ public class Model
           // currentMonth);
 
       // If the temperatures are Acceptable
-      if (isBetween(tileMonthlyLowT, tempMin, tempMax) && isBetween(tileMonthlyHighT, tempMin,
-          tempMax))
+      if (tileMonthlyLowT > tempMin)
       {
         // Add the total amount of days in the current month to the
         // current running grow days
         consecutiveAcceptableGrowDays += currentMonth.days();
 
         // Now check if the temperatures are ideal
-        if (isBetween(tileMonthlyLowT, idealLow, idealHigh) && isBetween(tileMonthlyHighT, idealLow,
-            idealHigh))
+        if (tileMonthlyLowT >= idealLow && tileMeanDailyHighT <= idealHigh)
         {
           // Add total days in current month to the current running ideal
           // grow days
@@ -1363,6 +1474,5 @@ public class Model
         model.drawRain(pic, 2000+n, month);
       }
     }
-
   }
 }

@@ -1,5 +1,6 @@
 package starvationevasion.client.GUI.votingHud;
 
+import java.io.File;
 import java.util.Random;
 
 import javafx.event.EventHandler;
@@ -9,9 +10,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import starvationevasion.client.GUI.ResizablePane;
 
-public class VotingCard extends ResizablePane
+public class VotingCard extends NodeTemplate
 {
   private static final double LINE_PERC = .02;
 
@@ -28,9 +28,10 @@ public class VotingCard extends ResizablePane
 
   public VotingCard(int i)
   {
-	  super(null, null);
-    cardImage = new Image(
-        getClass().getResource("/starvationevasion/GuiTestCode/resources/card" + i + ".png").toString());
+    super();
+    System.out.println("VotingCard");
+    File file = new File("src/starvationevasion/client/GUI/votingHud/testImages/" + i + ".png");
+    cardImage = new Image(file.toURI().toString());
     display = new ImageView(cardImage);
     for (int j = 0; j < 4; j++)
     {

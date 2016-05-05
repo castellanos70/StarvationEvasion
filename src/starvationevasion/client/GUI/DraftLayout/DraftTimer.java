@@ -1,15 +1,14 @@
 package starvationevasion.client.GUI.DraftLayout;
 
-import starvationevasion.client.GUI.Clock;
-import starvationevasion.client.GUI.ResizeStrategy;
 import javafx.scene.layout.StackPane;
+import starvationevasion.client.GUI.Clock;
 
 /**
  * Class responsible for for displaying the Timer during the Drafting Phase
  */
 public class DraftTimer extends StackPane
 {
-  public Clock draftTimer = new Clock(this, new ResizeStrategy(0, 0, 1, 1));
+  public Clock draftTimer = new Clock();
 
   /**
    * Default constructor for the DraftTimer

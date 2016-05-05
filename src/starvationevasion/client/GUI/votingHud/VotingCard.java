@@ -28,7 +28,7 @@ public class VotingCard extends ResizablePane
 
   public VotingCard(int i)
   {
-	  super(null, null);
+	  super();
     cardImage = new Image(
         getClass().getResource("/starvationevasion/GuiTestCode/resources/card" + i + ".png").toString());
     display = new ImageView(cardImage);

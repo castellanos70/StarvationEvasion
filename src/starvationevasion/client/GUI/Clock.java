@@ -1,9 +1,10 @@
 package starvationevasion.client.GUI;
+import javafx.animation.AnimationTimer;
 import javafx.geometry.Bounds;
 import javafx.geometry.VPos;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 /**
@@ -15,23 +16,48 @@ public class Clock extends ResizablePane
 {
   private static final double SATURATION = 1;
   private static final double BALANCE = .85;
-  private static final int FONT_SIZE = 80;
-//  private static final double 
-  private Pane parent;
+  private static final double FONT_SIZE = 80;
+  private static final Font FONT = Font.font("Arial", FontWeight.BOLD, FONT_SIZE);
+  private static final double FPS = 60;
+  private static final double DEFAULT_TIME = 300000;
+  
   private Text clock;
+  private static long last = 0;
+  private static long start = 0;
 //  private State gameState;
   
-  public Clock(Pane parent, ResizeStrategy strategy){
-    super(parent, strategy);
+  public Clock(){
+    super();
     clock = new Text("0:00");
     clock.setTextOrigin(VPos.TOP);
     clock.setStroke(Color.BLACK);
-    clock.setFont(Font.font("Arial", FONT_SIZE));
+    clock.setStrokeWidth((FONT_SIZE/50));
+    clock.setFont(FONT);
     clock.setManaged(false);
     
     this.getChildren().add(clock);
-    updateClock(300000, 0);
     onResize();
+    
+    updateClock(DEFAULT_TIME, 0);
+    
+    last = System.currentTimeMillis();
+    start = System.currentTimeMillis();
+    
+    AnimationTimer timer = new AnimationTimer(){
+
+      @Override
+      public void handle(long now)
+      {
+        now = System.currentTimeMillis();
+        if ((now - last)/1000 > 1/FPS){
+          updateClock(DEFAULT_TIME, now - start);
+          last = System.currentTimeMillis();
+        }
+      }
+      
+    };
+    
+    timer.start();
   }
   
   /**
@@ -42,11 +68,12 @@ public class Clock extends ResizablePane
    * @param elapsedTime - the total time in nanosecods
    */
   private void updateClock(double totalTime, double elapsedTime){
+    if (elapsedTime >= totalTime) return;
+    
     double time = totalTime - elapsedTime;
     
     {//color update
       double difference = (totalTime - elapsedTime)/totalTime;
-      System.out.println(difference);
       clock.setFill(Color.hsb(120*difference, SATURATION, BALANCE));
     }
     

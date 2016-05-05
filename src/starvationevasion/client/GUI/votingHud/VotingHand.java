@@ -24,7 +24,7 @@ public class VotingHand extends ResizablePane
 
     public VotingHand(double width, double height)
     {
-        super(null, null);
+        super();
 
         votingButtons = new VotnigButtonNode();
         votingButtons.setManaged(false);

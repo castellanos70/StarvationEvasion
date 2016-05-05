@@ -3,6 +3,8 @@ package starvationevasion.client;
 import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
@@ -21,6 +23,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Networking.Client;
@@ -158,7 +161,7 @@ public class UpdateLoop extends Application
     gridRoot.setTranslateY(bounds.getHeight()/5*3);
     gridRoot.setTranslateX(50);
     stage.show();
-    startGameLoop();
+//    startGameLoop();
   }
 
 
@@ -228,7 +231,7 @@ public class UpdateLoop extends Application
         super.stop();
         stage.close();
       }
-
+      
     }.start();
   }
 

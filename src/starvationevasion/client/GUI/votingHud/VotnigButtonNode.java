@@ -9,7 +9,7 @@ public class VotnigButtonNode extends ResizablePane {
 	VotingButton[] buttons = new VotingButton[3];
 
 	public VotnigButtonNode() {
-		super(null, null);
+		super();
 		buttons[0] = new VotingButton("up");
 		buttons[1] = new VotingButton("abs");
 		buttons[2] = new VotingButton("down");

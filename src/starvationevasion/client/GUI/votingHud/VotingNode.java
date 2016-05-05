@@ -29,7 +29,7 @@ public class VotingNode extends ResizablePane
 
   public VotingNode(double width, double height)
   {
-	  super(null, null);
+	  super();
     this.setSize(width, height);
     this.width = width;
     this.height = height;

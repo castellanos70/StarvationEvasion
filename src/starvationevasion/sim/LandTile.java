@@ -341,7 +341,7 @@ public class LandTile
 
         while (entries.hasMoreElements())
         { ZipEntry entry = entries.nextElement();
-          System.out.printf("       File: %s\n", entry.getName());
+          //System.out.printf("       File: %s\n", entry.getName());
 
           CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
 
@@ -356,7 +356,9 @@ public class LandTile
             //Read each field of record.
             for (int i=0; i<Field.SIZE; i++)
             {
-              float value= Float.parseFloat(fieldList[i]);
+              int k = i;
+              if (i >= 1) k = i + 1; //This is temperary to skip the now unused column of max monthly temp
+              float value= Float.parseFloat(fieldList[k]);
 
               //System.out.printf("     tile[%d].data[%d][%d][%d]=%f\n", recordIdx.yearEnum.ordinal(),month,i,value);
               tile.data[yearEnum.ordinal()][month][i] = value;

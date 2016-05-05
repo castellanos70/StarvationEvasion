@@ -6,6 +6,7 @@ import java.util.EnumSet;
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
+ * Flavor Text: <i>{@value #FLAVOR_TEXT}</i><br><br>
  *
  * Draft Affects: When drafting this policy, player selects X million dollars.<br><br>
  *
@@ -25,6 +26,10 @@ public class Policy_MyPlatePromotionCampaign extends GameCard
   public static final String TEXT =
      "You spend X million dollars on an advertising campaign within your region promoting " +
      "public awareness of the United States Department of Agriculture's MyPlate nutrition guide.";
+  
+  public static final String FLAVOR_TEXT = 
+      "An apple a day keeps the doctor--uh, wait, what's the recommended daily intake " +
+      "of fruit again?";
 
   public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
       EnumSet.of(EnumGameState.PLANNING_STATE);
@@ -45,6 +50,18 @@ public class Policy_MyPlatePromotionCampaign extends GameCard
   */
   @Override
   public String getGameText(){ return TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getFlavorText(){ return FLAVOR_TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int actionPointCost() {return 2;}
 
   /**
    * Millions of dollars spent.

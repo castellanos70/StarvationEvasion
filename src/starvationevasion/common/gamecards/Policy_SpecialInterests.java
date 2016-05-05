@@ -7,15 +7,15 @@ package starvationevasion.common.gamecards;
  * Votes Required: Automatic<br><br>
  *
  * Model Effects: The fact that such cards as this exist, implies that there
- * should be some way to have seperate pools of money that seperate available
+ * should be some way to have separate pools of money that separate available
  * funds into what those funds may be used for.
 */
 
 public class Policy_SpecialInterests extends GameCard
 {
-  public static String TITLE = "Special Interests";
+  public static final String TITLE = "Special Interests";
   
-  public static String TEXT = 
+  public static final String TEXT = 
       "For this voting phase, the owner of this card " +
       "gains $100 million that they may spend " +
       "only to support policies drafted this turn.";

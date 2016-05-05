@@ -6,8 +6,10 @@ import starvationevasion.common.EnumRegion;
 
 
 /**
-  * Title: {@value #TITLE}<br><br>
+ * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
+ * Flavor Text: <i>{@value #FLAVOR_TEXT}</i><br>
+ *                 {@value #FLAVOR_TEXT_SOURCE}<br><br>
  *
  * Draft Affects: When drafting this policy, player selects target player
  * from whom to attempt to borrow and the amount X.<br><br>
@@ -23,39 +25,57 @@ import starvationevasion.common.EnumRegion;
  */
 public class Policy_Loan extends GameCard
 {
-    public static final String TITLE = "Loan";
+  public static final String TITLE = "Loan";
 
-    public static final String TEXT =
-      "Target player region lends you $25 million at 10% interest for 10 years. "+
-        "Annual loan payments are automatically paid on December 31st of each year.";
-    
-    public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
-        EnumSet.of(EnumGameState.PLANNING_STATE);
-    
-    public Policy_Loan()
-    {
-      this.setUsableStates(PLAY_STATES);
-    }
+  public static final String TEXT =
+      "Target player region lends you $25 million at 10% interest for 10 years. " +
+      "Annual loan payments are automatically paid on December 31st of each year.";
 
-    /**
-     * The number of votes required for this policy.  A value of 0 means that
-     * the policy is automatic.
-    */
-    public final static int VOTES_REQUIRED = 2;
+  public static final String FLAVOR_TEXT = 
+      "I am not worried about the deficit. It is big enough to take care of itself.";
+
+  public static final String FLAVOR_TEXT_SOURCE =
+      "-Ronald Reagan";
+
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+
+  public Policy_Loan()
+  {
+    this.setUsableStates(PLAY_STATES);
+  }
+
+  /**
+   * The number of votes required for this policy.  A value of 0 means that
+   * the policy is automatic.
+   */
+  public final static int VOTES_REQUIRED = 2;
 
 
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getTitle(){ return TITLE;}
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getTitle(){ return TITLE;}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getGameText(){ return TEXT;}
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getGameText(){ return TEXT;}
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getFlavorText(){ return FLAVOR_TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String getFlavorTextSource(){ return FLAVOR_TEXT_SOURCE;}
 
   /**
    * {@inheritDoc}

@@ -32,6 +32,12 @@ public class Policy_FertilizerAidSubSaharan extends GameCard
    */
   @Override
   public String getGameText(){ return TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int actionPointCost() {return 2;}
 
 
   /**

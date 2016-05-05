@@ -475,4 +475,29 @@
 <vertex lat="-12.066602" lon="34.621794"/>
 <vertex lat="-12.013685" lon="34.641638"/>
 </area>
+
+
+
+<hole><!-- Lake Malawi -->
+<vertex lat="-13.742933" lon="35.055979"/>
+<vertex lat="-13.701127" lon="34.867567"/>
+<vertex lat="-12.422394" lon="34.693883"/>
+<vertex lat="-11.463434" lon="34.937020"/>
+<vertex lat="-11.080512" lon="34.607893"/>
+<vertex lat="-10.030137" lon="34.524229"/>
+<vertex lat="-9.495441" lon="33.995579"/>
+<vertex lat="-9.801727" lon="33.906592"/>
+<vertex lat="-10.447579" lon="34.259904"/>
+<vertex lat="-11.652983" lon="34.322691"/>
+<vertex lat="-12.208557" lon="34.032528"/>
+<vertex lat="-12.944584" lon="34.329977"/>
+<vertex lat="-13.379390" lon="34.320934"/>
+<vertex lat="-13.672085" lon="34.551101"/>
+<vertex lat="-14.047669" lon="34.546760"/>
+<vertex lat="-14.262023" lon="34.706543"/>
+<vertex lat="-14.012013" lon="34.881210"/>
+<vertex lat="-14.401291" lon="35.236227"/>
+<vertex lat="-14.277474" lon="35.260205"/>
+<vertex lat="-13.742933" lon="35.055979"/>
+</hole>
 </country>

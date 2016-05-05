@@ -2,9 +2,13 @@ package starvationevasion.client.GUI;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
 import starvationevasion.client.GUI.DraftLayout.DraftLayout;
 import starvationevasion.client.GUI.DraftLayout.Hand;
@@ -124,7 +128,15 @@ public class GUI extends Application
 //    primaryStage.setMaxHeight(maxHeight);
 //    primaryStage.setMinHeight(maxHeight);
     primaryStage.setResizable(true);
+    
+    Screen screen = Screen.getPrimary();
+    Rectangle2D bounds = screen.getVisualBounds();
 
+    primaryStage.setX(bounds.getMinX());
+    primaryStage.setY(bounds.getMinY());
+    primaryStage.setWidth(bounds.getWidth());
+    primaryStage.setHeight(bounds.getHeight());
+    
     //instantiate helper classes
     imageGetter = new ImageGetter();
     popupManager = new PopupManager(this);
@@ -140,12 +152,16 @@ public class GUI extends Application
     primaryStage.setScene(gameScene);
 
       primaryStage.show();
-
-    primaryStage.setOnCloseRequest(event2 ->
-    {
-//      primaryStage.close();
-//      mainGameLoop.stop();
+    
+    primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>(){
+      @Override
+      public void handle(WindowEvent arg0)
+      {
+        client.shutdown();
+        Platform.exit();
+      }
     });
+    
     initGame();
   }
   

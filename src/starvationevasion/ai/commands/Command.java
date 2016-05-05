@@ -1,7 +1,8 @@
 package starvationevasion.ai.commands;
 
-
 public interface Command
 {
-  boolean run ();
+  boolean run();
+
+  String commandString();
 }

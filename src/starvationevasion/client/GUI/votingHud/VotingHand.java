@@ -39,6 +39,7 @@ public class VotingHand extends NodeTemplate
     this.setOnMouseClicked(new EventHandler<Event>()
     {
 
+
       @Override
       public void handle(Event event)
       {

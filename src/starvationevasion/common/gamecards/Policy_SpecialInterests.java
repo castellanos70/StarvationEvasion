@@ -17,7 +17,7 @@ public class Policy_SpecialInterests extends GameCard
   
   public static String TEXT = 
       "For this voting phase, the owner of this card " +
-      "gains 100 million dollars that they may spend " +
+      "gains $100 million that they may spend " +
       "only to support policies drafted this turn.";
   
   /**

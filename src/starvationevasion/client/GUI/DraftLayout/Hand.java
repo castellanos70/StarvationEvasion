@@ -1,8 +1,13 @@
 package starvationevasion.client.GUI.DraftLayout;
 
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import starvationevasion.client.GUI.GUI;
+import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.sim.CardDeck;
@@ -38,11 +43,21 @@ public class Hand extends GridPane
   public Hand(GUI gui, Stage stage)
   {
     this.gui = gui;
+    this.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, .6), null, null)));
     primaryStage = gui.getPrimaryStage();
-
+    EnumPolicy[] defaultPolicies = new EnumPolicy[Constant.MAX_HAND_SIZE];
+    
+    gui.setAssignedRegion(EnumRegion.USA_CALIFORNIA);
+    
+    for (int i = 0; i < defaultPolicies.length; i++){
+      int index = (int) (Math.random()*EnumPolicy.values().length);
+      defaultPolicies[i] = EnumPolicy.values()[index];
+    }
+    
+    setHand(defaultPolicies);
   }
 
-  /**
+  /** 
    * Sets the hand with an Array of EnumPolicies
    * This will update the actual hand in the GUI
    * @param hand
@@ -52,10 +67,12 @@ public class Hand extends GridPane
     this.hand = hand;
     updateHand();
   }
+  
   public EnumPolicy[] getHand()
   {
     return hand;
   }
+  
   public void setSelectingCard(boolean bool){selectingCard=bool;}
   public int getNumberOfActionsUsed(){return numberOfActionsUsed;}
   public ArrayList<ClientPolicyCard> getDraftedCards()
@@ -74,7 +91,6 @@ public class Hand extends GridPane
     for (int i = 0; i <hand.length ; i++)
     {
       //Needs working connection
-      // ClientPolicyCard clientPolicyCard=new ClientPolicyCard(GUI.client.getAssignedRegion(),hand[i],GUI);
       ClientPolicyCard clientPolicyCard=new ClientPolicyCard(gui.getAssignedRegion(),hand[i],gui);
       clientPolicyCard.setHandIndex(i);
       elements.add(clientPolicyCard);

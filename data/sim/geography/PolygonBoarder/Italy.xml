@@ -1,6 +1,6 @@
 <country>
 <name>Italy</name>
-<area>  <!-- Small island west of sicily -->
+<area>
 <vertex lat="36.757033" lon="12.051285"/>
 <vertex lat="36.745974" lon="12.003330"/>
 <vertex lat="36.780391" lon="11.940595"/>
@@ -9,6 +9,15 @@
 <vertex lat="36.820931" lon="12.024207"/>
 <vertex lat="36.776360" lon="12.048082"/>
 <vertex lat="36.757033" lon="12.051285"/>
+</area>
+<area>
+<vertex lat="43.934554" lon="12.396897"/>
+<vertex lat="43.894091" lon="12.426353"/>
+<vertex lat="43.901429" lon="12.485264"/>
+<vertex lat="43.952976" lon="12.514668"/>
+<vertex lat="43.989770" lon="12.503661"/>
+<vertex lat="43.982406" lon="12.441081"/>
+<vertex lat="43.934554" lon="12.396897"/>
 </area>
 <area>
 <vertex lat="38.220303" lon="15.576548"/>
@@ -102,7 +111,7 @@
 <vertex lat="38.267587" lon="15.634633"/>
 <vertex lat="38.220303" lon="15.576548"/>
 </area>
-<hole> <!--San Marino -->
+<area>
 <vertex lat="43.934554" lon="12.396897"/>
 <vertex lat="43.894091" lon="12.426353"/>
 <vertex lat="43.901429" lon="12.485264"/>
@@ -110,7 +119,7 @@
 <vertex lat="43.989770" lon="12.503661"/>
 <vertex lat="43.982406" lon="12.441081"/>
 <vertex lat="43.934554" lon="12.396897"/>
-</hole>
+</area>
 <area>
 <vertex lat="39.067512" lon="8.478894"/>
 <vertex lat="38.968629" lon="8.421429"/>
@@ -120,8 +129,16 @@
 <vertex lat="39.090612" lon="8.440653"/>
 <vertex lat="39.067512" lon="8.478894"/>
 </area>
-
-<area>  <!-- Island west of Naples -->
+<area>
+<vertex lat="43.934554" lon="12.396897"/>
+<vertex lat="43.894091" lon="12.426353"/>
+<vertex lat="43.901429" lon="12.485264"/>
+<vertex lat="43.952976" lon="12.514668"/>
+<vertex lat="43.989770" lon="12.503661"/>
+<vertex lat="43.982406" lon="12.441081"/>
+<vertex lat="43.934554" lon="12.396897"/>
+</area>
+<area>
 <vertex lat="40.705629" lon="13.938302"/>
 <vertex lat="40.696974" lon="13.893654"/>
 <vertex lat="40.708756" lon="13.867712"/>
@@ -131,10 +148,16 @@
 <vertex lat="40.718187" lon="13.960833"/>
 <vertex lat="40.705629" lon="13.938302"/>
 </area>
-
-
-
-<area>  <!-- Island on North West of Sardegna -->
+<area>
+<vertex lat="43.934554" lon="12.396897"/>
+<vertex lat="43.894091" lon="12.426353"/>
+<vertex lat="43.901429" lon="12.485264"/>
+<vertex lat="43.952976" lon="12.514668"/>
+<vertex lat="43.989770" lon="12.503661"/>
+<vertex lat="43.982406" lon="12.441081"/>
+<vertex lat="43.934554" lon="12.396897"/>
+</area>
+<area>
 <vertex lat="41.039847" lon="8.286037"/>
 <vertex lat="40.994139" lon="8.252758"/>
 <vertex lat="40.997446" lon="8.205629"/>
@@ -145,7 +168,15 @@
 <vertex lat="41.062765" lon="8.318903"/>
 <vertex lat="41.039847" lon="8.286037"/>
 </area>
-
+<area>
+<vertex lat="43.934554" lon="12.396897"/>
+<vertex lat="43.894091" lon="12.426353"/>
+<vertex lat="43.901429" lon="12.485264"/>
+<vertex lat="43.952976" lon="12.514668"/>
+<vertex lat="43.989770" lon="12.503661"/>
+<vertex lat="43.982406" lon="12.441081"/>
+<vertex lat="43.934554" lon="12.396897"/>
+</area>
 <area>
 <vertex lat="40.882053" lon="9.632002"/>
 <vertex lat="40.818103" lon="9.682024"/>
@@ -230,8 +261,16 @@
 <vertex lat="40.914764" lon="9.574021"/>
 <vertex lat="40.882053" lon="9.632002"/>
 </area>
-
-<area> <!-- Island in North West of  main peninsula.-->
+<area>
+<vertex lat="43.934554" lon="12.396897"/>
+<vertex lat="43.894091" lon="12.426353"/>
+<vertex lat="43.901429" lon="12.485264"/>
+<vertex lat="43.952976" lon="12.514668"/>
+<vertex lat="43.989770" lon="12.503661"/>
+<vertex lat="43.982406" lon="12.441081"/>
+<vertex lat="43.934554" lon="12.396897"/>
+</area>
+<area>
 <vertex lat="42.858134" lon="10.395159"/>
 <vertex lat="42.819195" lon="10.428335"/>
 <vertex lat="42.796587" lon="10.432263"/>
@@ -247,7 +286,15 @@
 <vertex lat="42.822296" lon="10.358986"/>
 <vertex lat="42.858134" lon="10.395159"/>
 </area>
-
+<area>
+<vertex lat="43.934554" lon="12.396897"/>
+<vertex lat="43.894091" lon="12.426353"/>
+<vertex lat="43.901429" lon="12.485264"/>
+<vertex lat="43.952976" lon="12.514668"/>
+<vertex lat="43.989770" lon="12.503661"/>
+<vertex lat="43.982406" lon="12.441081"/>
+<vertex lat="43.934554" lon="12.396897"/>
+</area>
 <area>
 <vertex lat="46.984781" lon="12.130764"/>
 <vertex lat="46.935275" lon="12.154122"/>
@@ -632,5 +679,14 @@
 <vertex lat="47.060900" lon="12.201250"/>
 <vertex lat="47.028189" lon="12.165490"/>
 <vertex lat="46.984781" lon="12.130764"/>
+</area>
+<area>
+<vertex lat="43.934554" lon="12.396897"/>
+<vertex lat="43.894091" lon="12.426353"/>
+<vertex lat="43.901429" lon="12.485264"/>
+<vertex lat="43.952976" lon="12.514668"/>
+<vertex lat="43.989770" lon="12.503661"/>
+<vertex lat="43.982406" lon="12.441081"/>
+<vertex lat="43.934554" lon="12.396897"/>
 </area>
 </country>

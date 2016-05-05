@@ -178,4 +178,14 @@
 <vertex lat="15.008051" lon="-83.415032"/>
 <vertex lat="14.993064" lon="-83.157528"/>
 </area>
+<hole> <!-- Lago de Nicaragua  -->
+<vertex lat="11.147899" lon="-84.855487"/>
+<vertex lat="11.521648" lon="-85.036845"/>
+<vertex lat="11.940331" lon="-85.565340"/>
+<vertex lat="11.900101" lon="-85.885166"/>
+<vertex lat="11.509737" lon="-85.791321"/>
+<vertex lat="11.176166" lon="-85.290137"/>
+<vertex lat="11.147899" lon="-84.855487"/>
+<vertex lat="11.147899" lon="-84.855487"/>
+</hole>
 </country>

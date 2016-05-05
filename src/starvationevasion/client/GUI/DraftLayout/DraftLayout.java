@@ -23,6 +23,8 @@ import java.util.ArrayList;
  */
 public class DraftLayout extends GridPane
 {
+  private static final int COLS = 33;
+  private static final int ROWS = 18;
   private ArrayList<ColumnConstraints> colConstraintsList;
   private ArrayList<RowConstraints> rowConstraintsList;
 
@@ -70,56 +72,61 @@ public class DraftLayout extends GridPane
     this.getColumnConstraints().addAll(colConstraintsList);
     this.getRowConstraints().addAll(rowConstraintsList);
 
-   testLayout();
+    testLayout();
   }
+  
   private void testLayout()
   {
     setGridLinesVisible(true);
+    worldMap=new WorldMap(gui);
+    this.add(worldMap, 0, 0, COLS, ROWS);
+    
+    VBox tickerReel = new VBox();
+    TickerReel reel = new TickerReel(tickerReel);
+    tickerReel.getChildren().add(reel);
+    this.add(tickerReel, 0, 0, COLS, 1);
+    
     //node to let the user see graphs and region statistics
     graphNode = new GraphNode(gui);
-    this.add(graphNode, 0, 4, 1, 2);
+    this.add(graphNode, 0, 1, 5, 2);
 
     //node at the top of the screen to let the user know basic stats
     summaryBar = new SummaryBar(gui);
-    this.add(summaryBar, 1, 0, 12, 1);
+    this.add(summaryBar, 8, 1, 17, 3);
 
     //node which lets the user see if other players have played cards/finished draft phase
-    draftStatus = new DraftStatus();
-    this.add(draftStatus, 11, 1, 2, 4);
+//    draftStatus = new DraftStatus();
+//    this.add(draftStatus, 11, 1, 2, 4);
 
     //node which lets the user select and view the map of the US
     map = new Map();
-    Node mapNode = map.getGameMapNode();    
-    
-    worldMap=new WorldMap(gui);
-    this.add(worldMap, 1, 1, 10, 6);
-  
+    Node mapNode = map.getGameMapNode();
     
     //node which holds the user's deck/discard pile information
-    deckNode = new DeckNode(gui);
-    this.add(deckNode, 0,6,1,3);
+//    deckNode = new DeckNode(gui);
+//    this.add(deckNode, 0,12,6,3);
 
     //node which holds the ProductBar
-    productBar = new ProductBar(gui);
-    int productBarSize = productBar.getElements().size();
-    for (int i = 0; i < productBarSize; ++i)
-    {
-      this.add(productBar.getElements().get(i), i+1, 9,1 ,1);
-    }
+//    productBar = new ProductBar(gui);
+//    int productBarSize = productBar.getElements().size();
+//    for (int i = 0; i < productBarSize; ++i)
+//    {
+//      this.add(productBar.getElements().get(i), i+1, 9,1 ,1);
+//    }
 
     //node which allows the user to undo/discard cards with the click of a button
     actionButtons = new ActionButtons(gui);
-    this.add(actionButtons, 11, 8, 2, 1);
-
+    this.add(actionButtons, 0, 15, 6, 3);
+    
     draftedCards = new DraftedCards();
-    this.add(draftedCards, 11, 5, 2, 3);
+    this.add(draftedCards, 0, 8, 6, 6);
 
     //node which allows the user to view the current cards in their hand
     hand = new Hand(gui, primaryStage);
-    this.add(hand, 1, 7, 10, 2);
+    this.add(hand, 7, 14, 19, 5);
 
     draftTimer = new DraftTimer();
-    this.add(draftTimer, 11, 0, 2, 1);
+    this.add(draftTimer, 27, 1, 5, 2);
 
     pbDataDisplay = new ProductBarDataDisplay(gui);
     this.add(pbDataDisplay, 0, 5, 13, 4);
@@ -131,7 +138,7 @@ public class DraftLayout extends GridPane
     this.add(discardDisplay,1, 5, 3, 4);
 
     chatNode=new ChatNode(gui);
-    this.add(chatNode,0,0,1,4);
+    this.add(chatNode, 27, 7, 6, 11);
 
 
     //Places a background, not in use for testing
@@ -162,6 +169,8 @@ public class DraftLayout extends GridPane
     //node to let the user see graphs and region statistics
     graphNode = new GraphNode(gui);
     this.add(graphNode, 0, 4, 1, 2);
+    
+    
     chatNode=new ChatNode(gui);
     this.add(chatNode,0,0,1,3);
 
@@ -227,23 +236,28 @@ public class DraftLayout extends GridPane
     gui.getPopupManager().setPbDataDisplay(pbDataDisplay);
     gui.getPopupManager().setDiscardDisplay(discardDisplay);
   }
+  
+  
+  /**
+   * Sets the Row and Col constraints for the gridpane
+   * to equal partitions of the total length divided by
+   * the number of rows and columns
+   */
   private void initializeGridSizes()
   {
     colConstraintsList = new ArrayList<>();
-    colConstraintsList.add(new ColumnConstraints());
-    colConstraintsList.get(0).setPercentWidth(16);
-
-    for (int i = 1; i < 13; ++i)
+    rowConstraintsList = new ArrayList<>();
+    
+    for (int i = 0; i < COLS; ++i)
     {
       colConstraintsList.add(new ColumnConstraints());
-      colConstraintsList.get(i).setPercentWidth(7);
+      colConstraintsList.get(i).setPercentWidth(100d/COLS);
     }
-
-    rowConstraintsList = new ArrayList<>();
-    for (int i = 0; i < 10; ++i)
+    
+    for (int i = 0; i < ROWS; ++i)
     {
       rowConstraintsList.add(new RowConstraints());
-      rowConstraintsList.get(i).setPercentHeight(10);
+      rowConstraintsList.get(i).setPercentHeight(100d/ROWS);
     }
   }
 

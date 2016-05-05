@@ -2,9 +2,10 @@ package starvationevasion.communication;
 
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.common.Util;
+import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.server.model.*;
+
 import javax.crypto.Cipher;
 import javax.crypto.SealedObject;
 import javax.crypto.SecretKey;
@@ -14,25 +15,26 @@ import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Implements Communication interface.
+ * This class serves as the new method of communication between the server and the client.
+ * It is thread-safe and provides the ability to connect, check connection status, disconnect
+ * and send/receive information from a server.
  *
  * @author Javier Chavez (javierc@cs.unm.edu), Justin Hall, George Boujaoude
  */
-public class CommModule implements Communication
+public class ConcurrentCommModule implements Communication
 {
-  // Final variables
   private final ReentrantLock LOCK = new ReentrantLock(); // Used for synchronization
-  private final AtomicBoolean IS_RUNNING = new AtomicBoolean(false);
-  private final HashMap<Type, ResponseListener> RESPONSE_MAP = new HashMap<>(10);
-  // Responses that don't have a listener go here until a listener is made available
-  private final HashMap<Type, ConcurrentLinkedQueue<Response>> SHELVED_RESPONSES = new HashMap<>(10);
-  private final ConcurrentLinkedQueue<Response> RESPONSE_EVENTS = new ConcurrentLinkedQueue<>();
+  private final AtomicBoolean IS_CONNECTED = new AtomicBoolean(false);
+  private final ArrayList<Response> RESPONSE_EVENTS = new ArrayList<>(1_000);
+  private final String HOST;
+  private final int PORT;
 
   // Non-final variables
   private Socket clientSocket;
@@ -41,7 +43,7 @@ public class CommModule implements Communication
   private double startNanoSec = 0;
   private double elapsedTime = 0;
 
-  private SecretKey serverKey;
+  private SecretKey serverKey; // Obtained at the end of the handshake
   private Cipher aesCipher;
   private KeyPair rsaKey;
 
@@ -51,7 +53,7 @@ public class CommModule implements Communication
     @Override
     public void run()
     {
-      while (IS_RUNNING.get() && !encounteredError) read();
+      while (IS_CONNECTED.get() && !encounteredError) read();
     }
 
     private void read()
@@ -65,18 +67,18 @@ public class CommModule implements Communication
           encounteredError = true;
           return;
         }
-        RESPONSE_EVENTS.add(response);
+        add(response);
 
         if (response.getType().equals(Type.AUTH_SUCCESS)) commPrint("Login successful");
         else if (response.getType().equals(Type.AUTH_ERROR)) commError("Failed to login");
         else if (response.getType().equals(Type.CREATE_SUCCESS)) commPrint("Created user successfully");
         else if (response.getType().equals(Type.CREATE_ERROR)) commError("Failed to create user");
+        else if (response.getType().equals(Type.TIME)) setStartTime((Double)response.getPayload().getData());
       }
       catch (Exception e)
       {
-        commError("Error reading response from server - shutting down");
+        commError("Error reading response from server");
         e.printStackTrace();
-        dispose();
       }
     }
 
@@ -111,49 +113,10 @@ public class CommModule implements Communication
     }
   }
 
-  /**
-   * Constructs a new CommModule with the given host/port combo. It will attempt
-   * to make a connection and if it does not succeed within 10 seconds, the CommModule
-   * will timeout and close the program with an commError code.
-   *
-   * @param host host to connect to
-   * @param port port to connect through
-   */
-  public CommModule(String host, int port)
+  public ConcurrentCommModule(String host, int port)
   {
-    final long millisecondTimeStamp = System.currentTimeMillis();
-    final double MAX_SECONDS = 10.0;
-    double deltaSeconds = 0.0;
-
-    // Set up the key
-    rsaKey = generateRSAKey();
-
-    // Try to establish a connection and timeout after MAX_SECONDS if not
-    commPrint("Attempting to connect to host " + host + ", port " + port);
-    while (deltaSeconds < MAX_SECONDS)
-    {
-      IS_RUNNING.set(openConnection(host, port));
-      if (IS_RUNNING.get()) break;
-      deltaSeconds = (System.currentTimeMillis() - millisecondTimeStamp) / 1000.0;
-    }
-
-    // Generate the aes cipher
-    aesCipher = generateAESCipher();
-
-    // See if the connect attempt went badly
-    if (!IS_RUNNING.get())
-    {
-      commError("Failed to establish connection at host " + host + ", port " + port + " within " + MAX_SECONDS + " " +
-                "seconds.");
-      return;
-    }
-    commPrint("Connection successful");
-
-    // This handles setting the startNanoTime variable
-    setResponseListener(Type.TIME, (type, data) -> setStartTime((Double)data));
-
-    // Start the listener
-    new StreamListener().start();
+    HOST = host;
+    PORT = port;
   }
 
   /**
@@ -170,6 +133,93 @@ public class CommModule implements Communication
   }
 
   /**
+   * The CommModule will stall whatever thread this is called on while it attempts to connect to
+   * the server. A single Communication module should be bound to a host/port combination that does not
+   * change after instantiation.
+   * <p>
+   * When called, this should first check to see if it is already connected. If not, the full
+   * connection routine should be performed.
+   * <p>
+   * The primary reason for this function's existence is to
+   * 1) allow for an initial connect attempt, and
+   * 2) to allow future connect attempts should a disconnect event happen unexpectedly
+   */
+  @Override
+  public void connect()
+  {
+    if (IS_CONNECTED.get()) return; // Already connected
+    try
+    {
+      LOCK.lock();
+      final long millisecondTimeStamp = System.currentTimeMillis();
+      final double MAX_SECONDS = 10.0;
+      double deltaSeconds = 0.0;
+
+      // Set up the key
+      rsaKey = generateRSAKey();
+
+      // Try to establish a connection and timeout after MAX_SECONDS if not
+      commPrint("Attempting to connect to host " + HOST + ", port " + PORT);
+      while (deltaSeconds < MAX_SECONDS)
+      {
+        IS_CONNECTED.set(openConnection(HOST, PORT));
+        if (IS_CONNECTED.get()) break;
+        deltaSeconds = (System.currentTimeMillis() - millisecondTimeStamp) / 1000.0;
+      }
+
+      // Generate the aes cipher
+      aesCipher = generateAESCipher();
+
+      // See if the connect attempt went badly
+      if (!IS_CONNECTED.get())
+      {
+        commError("Failed to establish connection at host " + HOST + ", port " + PORT + " within " + MAX_SECONDS + " " +
+                  "seconds.");
+        return;
+      }
+      commPrint("Connection successful");
+
+      // Start the listener
+      new StreamListener().start();
+    }
+    finally
+    {
+      LOCK.unlock();
+    }
+  }
+
+  /**
+   * Disposes of this module. All existing threads should be shut down and data cleared out.
+   * <p>
+   * The object is not meant to be used in any way after this is called.
+   */
+  @Override
+  public void dispose()
+  {
+    if (!IS_CONNECTED.get()) return; // Already disposed/the connection never succeeded
+    IS_CONNECTED.set(false);
+    try
+    {
+      LOCK.lock();
+      RESPONSE_EVENTS.clear();
+
+      writer.close();
+      reader.close();
+      clientSocket.close();
+    }
+    catch (IOException e)
+    {
+      commError("Could not dispose properly");
+      e.printStackTrace();
+      System.exit(-1);
+    }
+    finally
+    {
+      LOCK.unlock();
+    }
+  }
+
+  /**
    * Returns the current connection state of the module. If at any point the module loses connection
    * with the server, this will return false.
    *
@@ -178,7 +228,7 @@ public class CommModule implements Communication
   @Override
   public boolean isConnected()
   {
-    return IS_RUNNING.get();
+    return IS_CONNECTED.get();
   }
 
   /**
@@ -268,27 +318,25 @@ public class CommModule implements Communication
   }
 
   /**
-   * Note :: No responses should be pushed to their respective listeners until an external source
-   * (Ex: AI/UI client) requests that the Communication module do so. This avoids the issue
-   * of requiring these listeners to be thread-safe. See pushResponseEvents().
+   * All messages sent from the server since the last time this function was called will be packaged
+   * up into an array list and returned, and all existing messages within the Communication module's
+   * internal storage queue will be cleared out.
    * <p>
-   * This binds a response listener to a type. The type represents one of the possible responses that
-   * can be generated by the server and pushed to a Communication module. These responses often
-   * contain data from the server, so the listener itself will receive this data so that it can
-   * push it to whoever needs it. For example, if the type was USER, it means that the server has just
-   * sent an entire serialized User over the network (it can be cast directly to a User object).
+   * The returned ArrayList will contain an ordered list of responses, where the first (index 0) reflects
+   * the *oldest* in the list and the last (index size-1) represents the most recent response from
+   * the server.
    *
-   * @param type     type to listen for
-   * @param listener listener to bind to - see starvationevasion.communication.ResponseListener
+   * @return ordered list of server messages since the last time this was called
    */
   @Override
-  public void setResponseListener(Type type, ResponseListener listener)
+  public ArrayList<Response> pollMessages()
   {
-    if (!IS_RUNNING.get()) return;
     try
     {
       LOCK.lock();
-      RESPONSE_MAP.put(type, listener);
+      ArrayList<Response> messages = new ArrayList<>(RESPONSE_EVENTS);
+      RESPONSE_EVENTS.clear();
+      return messages;
     }
     finally
     {
@@ -296,76 +344,16 @@ public class CommModule implements Communication
     }
   }
 
-  /**
-   * When this is called, the entire list of response events that were sent from the server since the last
-   * time this was called will be pushed to their listeners (if no listener was bound, these events
-   * should be shelved until a listener is bound).
-   * <p>
-   * A good data structure to consider about for this is a FIFO list so that older events are processed
-   * first, and newer commands are processed last in case they need to override/alter the outcome
-   * of the older events.
-   */
-  @Override
-  public void pushResponseEvents()
+  private void add(Response response)
   {
     try
     {
       LOCK.lock();
-      int size = RESPONSE_EVENTS.size(); // Get a snapshot of the size (prevents sync issues)
-      for (int i = 0; i < size; i++)
-      {
-        Response response = RESPONSE_EVENTS.poll();
-        Type type = response.getType();
-        ResponseListener listener = RESPONSE_MAP.get(type);
-        // If no listener is present, shelve the response for when (if) one is made available later
-        if (listener == null)
-        {
-          shelveResponse(response);
-          continue;
-        }
-        // Check to see if there are existing shelved responses that need attention
-        if (SHELVED_RESPONSES.containsKey(type))
-        {
-          ConcurrentLinkedQueue<Response> shelvedResponses = SHELVED_RESPONSES.get(type);
-          for (Response shelvedResponse : shelvedResponses) listener.processResponse(type,
-                                                                                     shelvedResponse.getPayload().getData());
-          shelvedResponses.clear();
-          SHELVED_RESPONSES.remove(type);
-        }
-        // Now process the current response
-        listener.processResponse(type, response.getPayload().getData());
-      }
+      RESPONSE_EVENTS.add(response);
     }
     finally
     {
       LOCK.unlock();
-    }
-  }
-
-  /**
-   * Disposes of this module. All existing threads should be shut down and data cleared out.
-   * <p>
-   * The object is not meant to be used in any way after this is called.
-   */
-  @Override
-  public void dispose()
-  {
-    if (!IS_RUNNING.get()) return; // Already disposed/the connection never succeeded
-    IS_RUNNING.set(false);
-    while(RESPONSE_EVENTS.size() > 0) pushResponseEvents(); // Clear out the events
-    RESPONSE_MAP.clear();
-
-    try
-    {
-      writer.close();
-      reader.close();
-      clientSocket.close();
-    }
-    catch (IOException e)
-    {
-      commError("Could not dispose properly");
-      e.printStackTrace();
-      System.exit(-1);
     }
   }
 
@@ -387,37 +375,7 @@ public class CommModule implements Communication
     return true;
   }
 
-  private void setStartTime(double time)
-  {
-    if (!IS_RUNNING.get()) return;
-    try
-    {
-      LOCK.lock();
-      startNanoSec = time;
-    }
-    finally
-    {
-      LOCK.unlock();
-    }
-  }
-
-  private void shelveResponse(Response response)
-  {
-    if (!IS_RUNNING.get()) return;
-    try
-    {
-      LOCK.lock();
-      if (!SHELVED_RESPONSES.containsKey(response.getType())) SHELVED_RESPONSES.put(response.getType(),
-                                                                                    new ConcurrentLinkedQueue<>());
-      SHELVED_RESPONSES.get(response.getType()).add(response);
-    }
-    finally
-    {
-      LOCK.unlock();
-    }
-  }
-
-  public void commPrint(String message)
+  private void commPrint(String message)
   {
     System.out.println("Client: " + message);
   }
@@ -452,6 +410,20 @@ public class CommModule implements Communication
       e.printStackTrace();
     }
     return null;
+  }
+
+  private void setStartTime(double time)
+  {
+    if (!IS_CONNECTED.get()) return;
+    try
+    {
+      LOCK.lock();
+      startNanoSec = time;
+    }
+    finally
+    {
+      LOCK.unlock();
+    }
   }
 
   private void updateCurrentTime()

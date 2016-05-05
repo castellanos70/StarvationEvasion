@@ -30,7 +30,6 @@ public class VotingNode extends NodeTemplate
   public VotingNode(double width, double height)
   {
     super();
-    System.out.println("VotingNode");
     this.setSize(width, height);
     this.width = width;
     this.height = height;
@@ -41,9 +40,7 @@ public class VotingNode extends NodeTemplate
     hand.setManaged(false);
     hand.setVisible(true);
 
-    System.out.println("Before File");
     File file = new File("src/starvationevasion/client/GUI/votingHud/testImages/WorldMap_MollweideProjection.png");
-    System.out.println("After File");
     map = new Image(file.toURI().toString());
 
     imageView = new ImageView(map);

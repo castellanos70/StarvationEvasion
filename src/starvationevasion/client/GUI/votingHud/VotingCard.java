@@ -29,11 +29,8 @@ public class VotingCard extends NodeTemplate
   public VotingCard(int i)
   {
     super();
-    System.out.println("VotingCard");
     File file = new File("src/starvationevasion/client/GUI/votingHud/testImages/" + i + ".png");
     cardImage = new Image(file.toURI().toString());
-    cardImage = new Image(
-        getClass().getResource("/starvationevasion/GuiTestCode/resources/card" + i + ".png").toString());
     display = new ImageView(cardImage);
     for (int j = 0; j < 4; j++)
     {

@@ -1,29 +1,6 @@
 package starvationevasion.server;
 
 
-/**
- * @author Javier Chavez (javierc@cs.unm.edu)
- */
-
-import starvationevasion.common.*;
-import starvationevasion.common.gamecards.EnumPolicy;
-import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.server.io.HttpParse;
-import starvationevasion.server.io.NetworkException;
-import starvationevasion.server.io.ReadStrategy;
-import starvationevasion.server.io.WriteStrategy;
-import starvationevasion.server.io.strategies.*;
-import starvationevasion.server.model.*;
-import starvationevasion.server.model.db.Transaction;
-import starvationevasion.server.model.db.Users;
-import starvationevasion.server.model.db.backends.Backend;
-import starvationevasion.server.model.db.backends.Sqlite;
-import starvationevasion.sim.Simulator;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -35,11 +12,64 @@ import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
+import starvationevasion.common.Constant;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.Util;
+import starvationevasion.common.VoteData;
+import starvationevasion.common.WorldData;
+import starvationevasion.common.gamecards.EnumPolicy;
+import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.server.io.HttpParse;
+import starvationevasion.server.io.NetworkException;
+import starvationevasion.server.io.ReadStrategy;
+import starvationevasion.server.io.WriteStrategy;
+import starvationevasion.server.io.strategies.HTTPWriteStrategy;
+import starvationevasion.server.io.strategies.JavaObjectReadStrategy;
+import starvationevasion.server.io.strategies.JavaObjectWriteStrategy;
+import starvationevasion.server.io.strategies.SocketReadStrategy;
+import starvationevasion.server.io.strategies.SocketWriteStrategy;
+import starvationevasion.server.io.strategies.WebSocketReadStrategy;
+import starvationevasion.server.io.strategies.WebSocketWriteStrategy;
+import starvationevasion.server.model.DataType;
+import starvationevasion.server.model.Payload;
+import starvationevasion.server.model.Response;
+import starvationevasion.server.model.ResponseFactory;
+import starvationevasion.server.model.State;
+import starvationevasion.server.model.Type;
+import starvationevasion.server.model.User;
+import starvationevasion.server.model.db.Transaction;
+import starvationevasion.server.model.db.Users;
+import starvationevasion.server.model.db.backends.Backend;
+import starvationevasion.server.model.db.backends.Sqlite;
+import starvationevasion.sim.Simulator;
 
 
 /**
@@ -987,7 +1017,7 @@ public class Server
                                                        "-classpath",
                                                        "./dist:./dist/libs/*",
                                                        "starvationevasion/ai/AI",
-                                                       "localhost", "5555"});
+                                                       "foodgame.cs.unm.edu", "5555"});
     if (p != null)
     {
       processes.add(p);

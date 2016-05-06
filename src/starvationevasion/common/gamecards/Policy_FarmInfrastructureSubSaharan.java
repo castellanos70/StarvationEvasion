@@ -12,7 +12,7 @@ public class Policy_FarmInfrastructureSubSaharan extends GameCard
 
   public static final String TEXT =
           "Each region of the United States sends X million dollars in foreign aid for capital development " +
-          "of farming infrastructure for Sub-Saharan Africa.";
+          "of farming infrastructure to Sub-Saharan Africa.";
   
   public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
       EnumSet.of(EnumGameState.PLANNING_STATE);

@@ -12,15 +12,15 @@ import starvationevasion.common.EnumRegion;
  * hands must, in theory, be able to be viewed during any part of the game.
  */
 
-public class Policy_SharetheKnowledge extends GameCard
+public class Policy_SharedKnowledge extends GameCard
 {
 
-  public static final String TITLE = "Share the Knowledge";
+  public static final String TITLE = "Shared Knowledge";
 
   public static final String TEXT = 
-      "You may look at target US Region's hand and " +
-      "you may play one card from their hand.  Pay that region " +
-      "5 million dollars";
+      "Look at target player\'s hand. " +
+      "You may play one card from the revealed hand as though it is in your hand. " +
+      "Pay that player $10 million.";
 
   /**
    * {@inheritDoc}

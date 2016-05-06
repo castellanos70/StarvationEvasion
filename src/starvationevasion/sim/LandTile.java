@@ -12,7 +12,8 @@ import java.util.zip.ZipFile;
 /**
  * LandTiles are used to hold climate data for the model.<br>
  * This model uses past and future values of climate data from third party measurements and models
- * sampled on a geodesic grid of regular hexagons with 0.25 degree resolution.<br><br>
+ * sampled on a geodesic grid of uniformly sized, regular hexagons where each hexagon is approximately
+ * 778 km2 (about 27x27 km)<br><br>
  *
  * Areas of the globe not over one of the modeled territories have been pre filtered from the data file.<br><br>
  *
@@ -256,11 +257,15 @@ public class LandTile
   public static ArrayList<MapPoint> loadLocations(Model model, ArrayList<LandTile> tileList)
   {
     String zipPath = PATH_COORDINATES + COORDINATE_FILENAME + ".zip";
+    //String zipPath = PATH_COORDINATES + "geodesic.zip";
     ArrayList<MapPoint> mapList = null;
     try
     {
+
+
       ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(zipPath).toURI().getPath());
       ZipEntry entry = zipFile.getEntry(COORDINATE_FILENAME+".csv");
+      //ZipEntry entry = zipFile.getEntry("geodesic.csv");
 
       CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
 
@@ -278,17 +283,39 @@ public class LandTile
           mapList.add(new MapPoint(latitude, longitude));
         }
         else
-        { LandTile tile = new LandTile(latitude, longitude);
+        {
+          if ((territory == null) || (!territory.contains(latitude, longitude)))
+          {
+            territory = model.getTerritory(latitude, longitude);
+          }
+          LandTile tile = new LandTile(latitude, longitude);
           tileList.add(tile);
-          //if ((territory == null) || (!territory.contains(latitude, longitude)))
-          //{
-          //  territory = model.getTerritory(latitude, longitude);
-          //}
-          territory = model.getTerritory(latitude, longitude);
+
           if (territory != null) territory.addLandTile(tile);
         }
       }
       fileReader.close();
+
+      /*
+      BufferedWriter writer = new BufferedWriter(new FileWriter(new File("GeodesicArableFilteredCoordinates.csv")));
+      CSVReader.writeRecord(writer, "Latitude,Longitude\n");
+      for (EnumRegion regionID : EnumRegion.values())
+      {
+        Region region = model.getRegion(regionID);
+        ArrayList<Territory> myTerritoryList = region.getTerritoryList();
+        for (Territory t : myTerritoryList)
+        {
+          ArrayList<LandTile> tileList2 = t.getLandTiles();
+
+          for (LandTile tile : tileList2)
+          {
+            String str = String.format("%1.3f,%1.3f", tile.getLatitude(), tile.getLongitude());
+            CSVReader.writeRecord(writer, str);
+          }
+        }
+      }
+      writer.close();
+      */
     }
     catch (Exception e)
     {
@@ -341,7 +368,7 @@ public class LandTile
 
         while (entries.hasMoreElements())
         { ZipEntry entry = entries.nextElement();
-          System.out.printf("       File: %s\n", entry.getName());
+          //System.out.printf("       File: %s\n", entry.getName());
 
           CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
 
@@ -356,7 +383,9 @@ public class LandTile
             //Read each field of record.
             for (int i=0; i<Field.SIZE; i++)
             {
-              float value= Float.parseFloat(fieldList[i]);
+              int k = i;
+              if (i >= 1) k = i + 1; //This is temperary to skip the now unused column of max monthly temp
+              float value= Float.parseFloat(fieldList[k]);
 
               //System.out.printf("     tile[%d].data[%d][%d][%d]=%f\n", recordIdx.yearEnum.ordinal(),month,i,value);
               tile.data[yearEnum.ordinal()][month][i] = value;

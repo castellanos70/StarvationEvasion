@@ -12,7 +12,6 @@ import starvationevasion.server.io.HttpParse;
 import starvationevasion.server.io.NetworkException;
 import starvationevasion.server.io.ReadStrategy;
 import starvationevasion.server.io.WriteStrategy;
-import starvationevasion.server.io.formatters.Format;
 import starvationevasion.server.io.strategies.*;
 import starvationevasion.server.model.*;
 import starvationevasion.server.model.db.Transaction;

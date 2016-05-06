@@ -250,6 +250,11 @@ public class CSVReader
     }
   }
 
+  public static void writeRecord(BufferedWriter writer, String record) throws IOException
+  {
+    writer.write(record+'\n');
+  }
+
   public static void writeRecord(BufferedWriter writer, String[] record) throws IOException
   {
     String str = "";

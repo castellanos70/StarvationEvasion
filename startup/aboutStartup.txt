@@ -1,0 +1,7 @@
+#The startup package
+
+Description:
+The startup package is home any bash, bat, etc. files that are used to start independent java processes
+
+Authors:
+George Boujaoude, Justin Hall

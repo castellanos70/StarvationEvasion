@@ -1,64 +1,59 @@
 package starvationevasion.sim;
 
-import java.util.ArrayList;
-import java.util.Collections;
-
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Util;
 import starvationevasion.common.gamecards.EnumPolicy;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
- * Each player region as a unique collection of 80 policy cards that make up
- * that player's deck.<br>
- * <br>
- * Each player's deck is shuffled at the start of the simulation. The deck is an
- * <b>ordered</b> collection. <br>
- * <br>
+ * Each player region as a unique collection of 80 policy cards that make up that player's
+ * deck.<br><br>
+ * Each player's deck is shuffled at the start of the simulation. The deck is an <b>ordered</b>
+ * collection. <br><br>
  *
  * There is no add() method because a card can never be added to a deck.
  *
- */
+*/
 public class CardDeck
 {
   /**
-   * Each player starts with a unique deck of cards. A deck will, in general,
-   * contain duplicate cards. If the player needs to draw a card and his, her or
-   * its deck is empty then the player's discard is shuffled back into the deck.
+   * Each player starts with a unique deck of cards. A deck will, in general, contain
+   * duplicate cards. If the player needs to draw a card and his, her or its deck is empty
+   * then the player's discard is shuffled back into the deck.
    */
   public static final int CARDS_IN_PLAYER_DECK = 80;
   /**
-   * Must be an ordered set of cards.
-   */
-  private ArrayList<EnumPolicy> drawPile = new ArrayList<>(
-      CARDS_IN_PLAYER_DECK);
+   *  Must be an ordered set of cards.
+  */
+  private ArrayList<EnumPolicy> drawPile = new ArrayList<>(CARDS_IN_PLAYER_DECK);
 
   /**
-   * Must be an ordered set of cards.
-   */
-  private ArrayList<EnumPolicy> discardPile = new ArrayList<>(
-      CARDS_IN_PLAYER_DECK);
+   *  Must be an ordered set of cards.
+  */
+  private ArrayList<EnumPolicy> discardPile = new ArrayList<>(CARDS_IN_PLAYER_DECK);
 
   /**
-   * Cards that are currently in play (drafted or enacted) this turn or on a
-   * past turn but still active.
+   *  Cards that are currently in play (drafted or enacted) this turn or on a past turn but
+   *  still active.
    */
   private ArrayList<EnumPolicy> cardsInPlay = new ArrayList<>();
 
-  /**
-   * Cards that are currently in play (drafted or enacted) this turn or on a
-   * past turn but still active.
-   */
-  private ArrayList<EnumPolicy> cardsInHand = new ArrayList<>(
-      Constant.MAX_HAND_SIZE);
+
 
   /**
-   * Each player region has a unique deck to be read from .cvs file:
-   * playerRegion(String), card(String), count(int).<br>
-   * <br>
-   * In future versions, players will be able to produce and save custom decks.
-   * <br>
-   * <br>
+   *  Cards that are currently in play (drafted or enacted) this turn or on a past turn but
+   *  still active.
+   */
+  private ArrayList<EnumPolicy> cardsInHand = new ArrayList<>(Constant.MAX_HAND_SIZE);
+
+  /**
+   * Each player region has a unique deck to be read from
+   * .cvs file: playerRegion(String), card(String), count(int).<br><br>
+   *   In future versions, players will be able to produce and save
+   *   custom decks.<br><br>
    *
    * In this pre-test version, cards are just randomly picked with no difference
    * for different player regions.
@@ -68,8 +63,8 @@ public class CardDeck
   {
     if (!playerRegion.isUS())
     {
-      throw new IllegalArgumentException(
-          "CardDeck(=" + playerRegion + ") must be " + "a player region.");
+      throw new IllegalArgumentException("CardDeck(="+playerRegion+") must be " +
+        "a player region.");
     }
 
     while (drawPile.size() < CARDS_IN_PLAYER_DECK)
@@ -77,39 +72,38 @@ public class CardDeck
       for (EnumPolicy cardType : EnumPolicy.values())
       {
         drawPile.add(cardType);
-        if (drawPile.size() >= CARDS_IN_PLAYER_DECK)
-          break;
+        if (drawPile.size() >= CARDS_IN_PLAYER_DECK) break;
       }
     }
 
     shuffle();
   }
 
+
   /**
    * Shuffles the deck of cards.
-   */
+  */
   private void shuffle()
   {
     Collections.shuffle(drawPile, Util.rand);
   }
 
   /**
-   * Returns an array of cards drawn from the top of the deck so that the player
-   * who own's this deck has a total of 7 cards in hand.<br>
-   * <br>
+   * Returns an array of cards drawn from the top of the deck so that
+   * the player who own's this deck has a total of 7 cards in hand.<br><br>
    *
-   * If there are insufficient cards remaining, then the player's discard pile
-   * is shuffled back into the deck.
+   * If there are insufficient cards remaining, then the player's discard
+   * pile is shuffled back into the deck.
    *
    * @return EnumPolicy[] array of cards drawn cards
    */
   public EnumPolicy[] drawCards()
   {
     int count = Constant.MAX_HAND_SIZE - cardsInHand.size();
-    if (count <= 0)
-      return null;
+    if (count <= 0) return null;
+
     EnumPolicy[] cards = new EnumPolicy[count];
-    for (int i = 0; i < count; i++)
+    for (int i = 0 ; i < count ; i++)
     {
       if (drawPile.size() == 0)
       {
@@ -119,7 +113,7 @@ public class CardDeck
         shuffle();
       }
 
-      cards[i] = drawPile.get(drawPile.size() - 1);
+      cards[i] = drawPile.get(drawPile.size()-1);
       cardsInHand.add(cards[i]);
       drawPile.remove(drawPile.size() - 1);
     }
@@ -129,12 +123,15 @@ public class CardDeck
     return cards;
   }
 
+
+
   public void discard(EnumPolicy card)
   {
-    // It is faster to remove from the end of an array list
-    for (int i = cardsInHand.size() - 1; i >= 0; i--)
+    //It is faster to remove from the end of an array list
+    for (int i = cardsInHand.size()-1; i >= 0; i--)
     {
       EnumPolicy handCard = cardsInHand.get(i);
+
       if (card.equals(handCard))
       {
         cardsInHand.remove(i);
@@ -143,9 +140,9 @@ public class CardDeck
       }
     }
 
-    throw new IllegalArgumentException(
-        "discard(card=" + card + ") is not in this player's hand.");
+    throw new IllegalArgumentException("discard(card="+card+") is not in this player's hand.");
   }
+
 
   /**
    * @return The number of cards remaining in the draw pile.
@@ -155,7 +152,7 @@ public class CardDeck
     return drawPile.size();
   }
 
-  public EnumPolicy[] getCardsInHand()
+  public EnumPolicy[] getCardsInHand ()
   {
     return cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]);
   }
@@ -178,13 +175,10 @@ public class CardDeck
   
 
   /**
-   * This entry point is for testing only. <br>
-   * <br>
+   * This entry point is for testing only. <br><br>
    *
    * This test shows how to create playerDeck and draw the first hand.
-   * 
-   * @param args
-   *          ignored.
+   * @param args ignored.
    */
   public static void main(String[] args)
   {
@@ -202,14 +196,11 @@ public class CardDeck
       EnumPolicy[] hand = playerDeck[i].drawCards();
       for (int j = 0; j < hand.length; j++)
       {
-        System.out.println("Drew " + hand.length + " cards"
-            + playerDeck[j].cardsRemainingInDrawPile()
-            + " remaining in draw pile.");
+        System.out.println("Drew " + hand.length + " cards" + playerDeck[j].cardsRemainingInDrawPile() + " remaining in draw pile.");
         String name = hand[j].name();
 
-        // PolicyCard policy = PolicyCard.create(EnumRegion.USA_CALIFORNIA,
-        // card);
-        // System.out.println("Policy: " + policy);
+        //PolicyCard policy = PolicyCard.create(EnumRegion.USA_CALIFORNIA, card);
+        //System.out.println("Policy: " + policy);
         if (hand[j].ordinal() % 2 == 0)
         {
           playerDeck[i].discard(hand[j]);
@@ -220,3 +211,4 @@ public class CardDeck
     }
   }
 }
+

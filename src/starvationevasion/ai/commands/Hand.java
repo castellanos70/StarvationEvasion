@@ -1,7 +1,6 @@
 package starvationevasion.ai.commands;
 
 import starvationevasion.ai.AI;
-import starvationevasion.ai.commands.AbstractCommand;
 import starvationevasion.server.model.Endpoint;
 
 public class Hand extends AbstractCommand
@@ -17,6 +16,7 @@ public class Hand extends AbstractCommand
   @Override
   public boolean run()
   {
+    System.out.println("Initial hand size:"+getClient().getUser().getHand().size());
     if (tries == 0)
     {
       return false;

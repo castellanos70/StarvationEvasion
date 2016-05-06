@@ -8,7 +8,8 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.communication.CommModule;
+import starvationevasion.communication.Communication;
+import starvationevasion.communication.ConcurrentCommModule;
 import starvationevasion.server.model.*;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 public class ClientTest implements Client
 {
   private final UpdateLoop GAME_LOOP;
-  private final CommModule COMM;
+  private final Communication COMM;
   private final LocalDataContainer CONTAINER;
   private final ChatManager CHAT;
   private boolean isRunning = false;
@@ -32,56 +33,14 @@ public class ClientTest implements Client
   public ClientTest(UpdateLoop gameLoop, String host, int port)
   {
     GAME_LOOP = gameLoop;
-    COMM = new CommModule(host, port);
+    COMM = new ConcurrentCommModule(host, port);
     CONTAINER = new LocalDataContainer(this);
     CHAT = new ChatManager(this);
+    // Try to connect and then see how it went
+    COMM.connect();
     isRunning = COMM.isConnected();
 
     CONTAINER.init();
-    COMM.setResponseListener(Type.AUTH_SUCCESS, (type, data) -> gameLoop.notifyOfSuccessfulLogin());
-    COMM.setResponseListener(Type.VOTE_BALLOT, (type, data) ->
-    {
-      votingCards = (ArrayList<GameCard>)data;
-      gui.getVotingLayout().updateCardSpaces(votingCards);
-    });
-    COMM.setResponseListener(Type.USER_HAND, (type, data) ->
-    {
-      System.out.println("Got user hand");
-      hand = (ArrayList<EnumPolicy>)data;
-    });
-    COMM.setResponseListener(Type.WORLD_DATA_LIST, (type, data) ->
-    {
-      System.out.println("Got world data list");
-      ArrayList<WorldData> world = (ArrayList<WorldData>)data;
-      for (WorldData worldData : world) CONTAINER.updateGameState(worldData);
-    });
-    COMM.setResponseListener(Type.WORLD_DATA, (type, data) ->
-    {
-      System.out.println("Got single piece of world data");
-      CONTAINER.updateGameState((WorldData)data);
-    });
-    COMM.setResponseListener(Type.GAME_STATE, (type, data) ->
-    {
-      state = (State)data;
-      System.out.println("Got game state update " + state);
-      if(state.equals(State.DRAWING)) readHand();
-      respondToStateChange();
-    });
-    COMM.setResponseListener(Type.USER_HAND, (type, data) ->
-    {
-      System.out.println("Got user hand");
-      hand = (ArrayList<EnumPolicy>)data;
-    });
-    COMM.setResponseListener(Type.USER, (type, data) ->
-    {
-      System.out.println("Got user information " + data);
-      region = ((User)data).getRegion();
-      hand = ((User)data).getHand();
-      gui.setAssignedRegion(region);
-      gui.setCardsInHand(getHand());
-      gui.getDraftLayout().getHand().setHand(getHand().toArray(new EnumPolicy[hand.size()]));
-    });
-    //COMM.setResponseListener(Type.VOTE_BALLOT, (type, data) -> )
   }
 
   /**
@@ -124,7 +83,7 @@ public class ClientTest implements Client
    * @return communication module
    */
   @Override
-  public CommModule getCommunicationModule()
+  public Communication getCommunicationModule()
   {
     return COMM;
   }
@@ -318,7 +277,8 @@ public class ClientTest implements Client
     if (!isRunning) return;
 
     // Check to see if any new server responses have come in since the last iteration of this loop
-    COMM.pushResponseEvents();
+    ArrayList<Response> responses = COMM.pollMessages();
+    processServerInput(responses);
   }
 
   private void respondToStateChange()
@@ -338,5 +298,55 @@ public class ClientTest implements Client
   private void readHand()
   {
     COMM.send(Endpoint.HAND_READ, null, null);
+  }
+
+  private void processServerInput(ArrayList<Response> responses)
+  {
+    for (Response response : responses)
+    {
+      Type type = response.getType();
+      Object data = response.getPayload().getData();
+
+      if (type == Type.AUTH_SUCCESS) GAME_LOOP.notifyOfSuccessfulLogin();
+      else if (type == Type.USER)
+      {
+        System.out.println("Received user information " + data);
+        region = ((User)data).getRegion();
+        hand = ((User)data).getHand();
+        gui.setAssignedRegion(region);
+        gui.setCardsInHand(getHand());
+        gui.getDraftLayout().getHand().setHand(getHand().toArray(new EnumPolicy[hand.size()]));
+      }
+      else if (type == Type.WORLD_DATA_LIST)
+      {
+        System.out.println("Received world data list");
+        ArrayList<WorldData> world = (ArrayList<WorldData>)data;
+        for (WorldData worldData : world) CONTAINER.updateGameState(worldData);
+      }
+      else if (type == Type.WORLD_DATA)
+      {
+        System.out.println("Received single piece of world data");
+        CONTAINER.updateGameState((WorldData)data);
+      }
+      else if (type == Type.USER_HAND)
+      {
+        System.out.println("Received user hand");
+        hand = (ArrayList<EnumPolicy>)data;
+      }
+      //else if (type == Type.USERS_LOGGED_IN_LIST) users = (ArrayList<User>)data;
+      else if (type == Type.VOTE_BALLOT)
+      {
+        System.out.println("Received voting cards");
+        votingCards = (ArrayList<GameCard>)data;
+        gui.getVotingLayout().updateCardSpaces(votingCards);
+      }
+      else if (type == Type.GAME_STATE)
+      {
+        state = (State)data;
+        System.out.println("Received game state update " + state);
+        if(state.equals(State.DRAWING)) readHand();
+        respondToStateChange();
+      }
+    }
   }
 }

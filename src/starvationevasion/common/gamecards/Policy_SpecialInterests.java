@@ -19,7 +19,7 @@ public class Policy_SpecialInterests extends GameCard
   
   public static final String TEXT = 
       "For this voting phase, the owner of this card " +
-      "gains 100 million dollars that they may spend " +
+      "gains $100 million that they may spend " +
       "only to support policies drafted this turn.";
   
   public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used

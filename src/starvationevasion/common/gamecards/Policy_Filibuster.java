@@ -19,8 +19,8 @@ public class Policy_Filibuster extends GameCard
   public static final String TITLE = "Filibuster";
   
   public static final String TEXT = 
-      "Play this card before the voting phase to return a target " +
-      "region's policy card to their hand.";
+      "Play this card before the voting phase to return target " +
+      "region\'s policy card owner\'s hand.";
   
   public static final String FLAVOR_TEXT =
       "I do not like them, Sam-I-Am, I do not like green eggs and ham.";

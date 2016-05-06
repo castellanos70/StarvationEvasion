@@ -18,8 +18,7 @@ public class Policy_Redraft extends GameCard
   public static final String TITLE = "Redraft";
   
   public static final String TEXT = 
-      "When played, the owner of this policy may return a card from " +
-      "their discard pile to their hand.";
+      "Return target policy card from your discard pile to your hand.";
   
   public static final String FLAVOR_TEXT = 
       "Yeah, that was a good idea, let's do it again!";

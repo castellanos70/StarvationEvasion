@@ -12,7 +12,8 @@ import java.util.zip.ZipFile;
 /**
  * LandTiles are used to hold climate data for the model.<br>
  * This model uses past and future values of climate data from third party measurements and models
- * sampled on a geodesic grid of regular hexagons with 0.25 degree resolution.<br><br>
+ * sampled on a geodesic grid of uniformly sized, regular hexagons where each hexagon is approximately
+ * 778 km2 (about 27x27 km)<br><br>
  *
  * Areas of the globe not over one of the modeled territories have been pre filtered from the data file.<br><br>
  *
@@ -47,23 +48,12 @@ public class LandTile
   private static final String PREFIX_RCP45 = "RCP45";
   private static final String PREFIX_RCP85 = "RCP85";
 
-  private static int PATH_COORDINATES_FIELD_COUNT = 2; //Latitude,Longitude
+  private static final int PATH_COORDINATES_FIELD_COUNT = 2; //Latitude,Longitude
 
-
-  private enum DataHeaders
-  {
-    TempMonthLow,     //Temperature Monthly Low (deg C).
-    TempMonthHigh,    //Temperature Monthly High (deg C).
-    TempMeanDailyLow, //Temperature Mean Daily Low  (deg C).
-    TempMeanDailyHigh,//Temperature Mean Daily High (deg C).
-    Rain;             //Precipitation Mean Daily (kg/m2, which is the same as millimeters height).
-    static int SIZE = values().length;
-  }
 
   public enum Field
   {
     TEMP_MONTHLY_LOW,     //Temperature Monthly Low (deg C).
-    TEMP_MONTHLY_HIGH,    //Temperature Monthly High (deg C).
     TEMP_MEAN_DAILY_LOW, //Temperature Mean Daily Low  (deg C).
     TEMP_MEAN_DAILY_HIGH,//Temperature Mean Daily High (deg C).
     RAIN;             //Precipitation Mean Daily (kg/m2, which is the same as millimeters height).
@@ -267,18 +257,22 @@ public class LandTile
   public static ArrayList<MapPoint> loadLocations(Model model, ArrayList<LandTile> tileList)
   {
     String zipPath = PATH_COORDINATES + COORDINATE_FILENAME + ".zip";
+    //String zipPath = PATH_COORDINATES + "geodesic.zip";
     ArrayList<MapPoint> mapList = null;
     try
     {
+
+
       ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(zipPath).toURI().getPath());
       ZipEntry entry = zipFile.getEntry(COORDINATE_FILENAME+".csv");
+      //ZipEntry entry = zipFile.getEntry("geodesic.csv");
 
       CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
 
       String[] fieldList;
       Territory territory = null;
 
-      if (model == null) mapList = new ArrayList<>(245021);
+      if (model == null) mapList = new ArrayList<>(Model.TOTAL_LAND_TILES);
 
       while ((fieldList = fileReader.readRecord(PATH_COORDINATES_FIELD_COUNT)) != null)
       {
@@ -289,17 +283,39 @@ public class LandTile
           mapList.add(new MapPoint(latitude, longitude));
         }
         else
-        { LandTile tile = new LandTile(latitude, longitude);
+        {
+          if ((territory == null) || (!territory.contains(latitude, longitude)))
+          {
+            territory = model.getTerritory(latitude, longitude);
+          }
+          LandTile tile = new LandTile(latitude, longitude);
           tileList.add(tile);
-          //if ((territory == null) || (!territory.contains(latitude, longitude)))
-          //{
-          //  territory = model.getTerritory(latitude, longitude);
-          //}
-          territory = model.getTerritory(latitude, longitude);
+
           if (territory != null) territory.addLandTile(tile);
         }
       }
       fileReader.close();
+
+      /*
+      BufferedWriter writer = new BufferedWriter(new FileWriter(new File("GeodesicArableFilteredCoordinates.csv")));
+      CSVReader.writeRecord(writer, "Latitude,Longitude\n");
+      for (EnumRegion regionID : EnumRegion.values())
+      {
+        Region region = model.getRegion(regionID);
+        ArrayList<Territory> myTerritoryList = region.getTerritoryList();
+        for (Territory t : myTerritoryList)
+        {
+          ArrayList<LandTile> tileList2 = t.getLandTiles();
+
+          for (LandTile tile : tileList2)
+          {
+            String str = String.format("%1.3f,%1.3f", tile.getLatitude(), tile.getLongitude());
+            CSVReader.writeRecord(writer, str);
+          }
+        }
+      }
+      writer.close();
+      */
     }
     catch (Exception e)
     {
@@ -307,6 +323,7 @@ public class LandTile
       e.printStackTrace();
       System.exit(0);
     }
+
     return mapList; //null if called by the simulator (model != null).
   }
 
@@ -339,6 +356,7 @@ public class LandTile
 
       String path = PATH_CLIMATE + prefix + "_"+yearStr + ".zip";
 
+      int recordIdx=0;
       try
       {
         System.out.printf("     Archive: %s\n", path);
@@ -347,25 +365,27 @@ public class LandTile
 
         //Open sub-file for each month of year.
         int month = 0;
+
         while (entries.hasMoreElements())
         { ZipEntry entry = entries.nextElement();
-          //System.out.printf("     File: %s\n", entry.getName());
-          //extractEntry(entry, file.getInputStream(entry));
+          //System.out.printf("       File: %s\n", entry.getName());
 
-          CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 2);
+          CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
 
           String[] fieldList;
-          int recordIdx = 0;
+          recordIdx = 0;
           //Read each record of file.
-          while ((fieldList = fileReader.readRecord(DataHeaders.SIZE)) != null)
+          while ((fieldList = fileReader.readRecord(Field.SIZE+1)) != null)
           {
             LandTile tile = tileList.get(recordIdx);
 
             //System.out.println("rain="+fieldList[DataHeaders.Rain.ordinal()]+" at " + tile.latitude + ", " + tile.latitude);
             //Read each field of record.
-            for (int i=0; i<DataHeaders.SIZE; i++)
+            for (int i=0; i<Field.SIZE; i++)
             {
-              float value= Float.parseFloat(fieldList[i]);
+              int k = i;
+              if (i >= 1) k = i + 1; //This is temperary to skip the now unused column of max monthly temp
+              float value= Float.parseFloat(fieldList[k]);
 
               //System.out.printf("     tile[%d].data[%d][%d][%d]=%f\n", recordIdx.yearEnum.ordinal(),month,i,value);
               tile.data[yearEnum.ordinal()][month][i] = value;
@@ -382,7 +402,7 @@ public class LandTile
       }
       catch (Exception e)
       {
-        System.out.println(e.getMessage());
+        System.out.println("Record# "+recordIdx+" "+ e.getMessage());
         e.printStackTrace();
         System.exit(0);
       }

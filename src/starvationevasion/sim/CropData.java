@@ -2,11 +2,9 @@ package starvationevasion.sim;
 
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Util;
 import starvationevasion.sim.io.CSVReader;
 
-import java.io.FileNotFoundException;
 import java.util.logging.Logger;
 
 public class CropData
@@ -27,8 +25,7 @@ public class CropData
     growDays,       //Growing Period (days/year)
     temperatureMin,        //Temperature Min (Deg C). Crops die if temperature drops below this within its growing period.
     temperatureIdealLow,  // Temperature Ideal Low (Deg C). Crops have max productivity if all days are within this range.
-    temperatureIdealHigh, // Temperature Ideal High (Deg C). Crops have max productivity if all days are within this range.
-    temperatureMax;       // Temperature Max (Deg C). Crops die if temperature rise above this within its growing period.
+    temperatureIdealHigh; // Temperature Ideal High (Deg C). Crops have max productivity if all days are within this range.
     private static final int SIZE = values().length;
   }
 
@@ -43,8 +40,7 @@ public class CropData
     GROW_DAYS,       //Growing Period (days/year)
     TEMPERATURE_MIN,        //Temperature Min (Deg C). Crops die if temperature drops below this within its growing period.
     TEMPERATURE_IDEAL_LOW,  // Temperature Ideal Low (Deg C). Crops have max productivity if all days are within this range.
-    TEMPERATURE_IDEAL_HIGH, // Temperature Ideal High (Deg C). Crops have max productivity if all days are within this range.
-    TEMPERATURE_MAX;       // Temperature Max (Deg C). Crops die if temperature rise above this within its growing period.
+    TEMPERATURE_IDEAL_HIGH; // Temperature Ideal High (Deg C). Crops have max productivity if all days are within this range.
     public static final int SIZE = values().length;
   }
 
@@ -110,8 +106,6 @@ public class CropData
             data[Field.TEMPERATURE_IDEAL_LOW.ordinal()][foodIdx] = value; break;
           case temperatureIdealHigh:
             data[Field.TEMPERATURE_IDEAL_HIGH.ordinal()][foodIdx] = value; break;
-          case temperatureMax:
-            data[Field.TEMPERATURE_MAX.ordinal()][foodIdx] = value; break;
         }
       }
 

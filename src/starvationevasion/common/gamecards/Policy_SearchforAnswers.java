@@ -18,9 +18,8 @@ public class Policy_SearchforAnswers extends GameCard
   public static final String TITLE = "Search for Answers";
   
   public static final String TEXT = 
-      "The owner of this card pays 50 million dollars " +
-      "and may search their deck for a card and " +
-      "add that card to their hand.";
+      "Pay $50 million. Search your deck for a card and " +
+      "add that card to your hand. Your deck is then shuffled.";
   
   public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
       EnumSet.of(EnumGameState.PLANNING_STATE);

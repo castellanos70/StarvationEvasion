@@ -118,6 +118,11 @@ public class Region extends Territory
   {
     return revenue;
   }
+  
+  public void addToRevenue(int money)
+  {
+    revenue += money;
+  }
 
   /**
    * @param territory Territory to add to region

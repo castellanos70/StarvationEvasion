@@ -365,6 +365,13 @@ public class Simulator
     return getWorldData(model.getCurrentYear()-2, model.getCurrentYear()-1);
   }
   
+  /**
+   * Iterates through all the cards intended to be applied to the simulator and
+   * then applies only the ones that effect a player's hand.
+   * 
+   * @param cards
+   *          The list of all cards intended to be applied to the simulation.
+   */
   private void applyCardEffectsToHand(ArrayList<GameCard> cards)
   {
     for (GameCard c : cards)

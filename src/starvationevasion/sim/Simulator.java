@@ -200,7 +200,7 @@ public class Simulator
     LOGGER.info("Advancing Turn ...");
     ArrayList<WorldData> worldData = getWorldData();
     
-    applyCardEffectsToHand(cards);
+    //applyCardEffectsToHand(cards);
     
     model.nextYear(cards);
     model.nextYear(cards);

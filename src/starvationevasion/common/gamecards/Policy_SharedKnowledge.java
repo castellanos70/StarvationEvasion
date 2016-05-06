@@ -4,6 +4,7 @@ import java.util.EnumSet;
 
 import starvationevasion.common.EnumRegion;
 
+//Not functional, and not in EnumPolicy. Uncomment it there to re-enable this card.
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>

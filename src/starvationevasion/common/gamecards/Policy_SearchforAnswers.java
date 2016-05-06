@@ -2,6 +2,7 @@ package starvationevasion.common.gamecards;
 
 import java.util.EnumSet;
 
+//Not functional, and not in EnumPolicy. Uncomment it there to re-enable this card.
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>

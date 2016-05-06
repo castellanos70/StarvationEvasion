@@ -77,7 +77,7 @@ public class Policy_InternationalFoodRelief extends GameCard
    * {@inheritDoc}
    */
   @Override
-  public int actionPointCost() {return 2;}
+  public int actionPointCost() {return 3;}
   
   /**
    * {@inheritDoc}

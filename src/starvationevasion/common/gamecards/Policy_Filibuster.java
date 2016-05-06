@@ -1,6 +1,9 @@
 package starvationevasion.common.gamecards;
 
+import java.util.EnumSet;
+
 import starvationevasion.common.EnumRegion;
+import starvationevasion.server.model.State;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -27,6 +30,10 @@ public class Policy_Filibuster extends GameCard
       "-Senator Ted Cruz, reading Green Eggs and Ham";
       //https://www.youtube.com/watch?v=0-4FQAov2xI
   
+  //TODO: let this be played during the "policy-reveal" phase, when that's implemented
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
+      EnumSet.of(null);
+  
   /**
    * {@inheritDoc}
    */
@@ -51,6 +58,14 @@ public class Policy_Filibuster extends GameCard
   @Override
   public String getFlavorTextSource(){ return FLAVOR_TEXT_SOURCE;}
   
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<State> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
   
   /**
    * {@inheritDoc}

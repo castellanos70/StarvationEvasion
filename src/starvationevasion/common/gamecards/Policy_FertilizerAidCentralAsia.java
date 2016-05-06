@@ -3,6 +3,8 @@ package starvationevasion.common.gamecards;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import starvationevasion.server.model.State;
+
 public class Policy_FertilizerAidCentralAsia extends GameCard
 {
 
@@ -12,13 +14,8 @@ public class Policy_FertilizerAidCentralAsia extends GameCard
   public static final String TEXT =
     "Each region of the United States sends X million dollars in fertilizer to Central Asia.";
 
-  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
-      EnumSet.of(EnumGameState.PLANNING_STATE);
-  
-  public Policy_FertilizerAidCentralAsia()
-  {
-    this.setUsableStates(PLAY_STATES);
-  }
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
+      EnumSet.of(State.DRAFTING);
 
   /**
    * {@inheritDoc}
@@ -37,7 +34,15 @@ public class Policy_FertilizerAidCentralAsia extends GameCard
    */
   @Override
   public int actionPointCost() {return 2;}
-
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<State> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
 
   /**
    * Millions of dollars spent by each participating region.

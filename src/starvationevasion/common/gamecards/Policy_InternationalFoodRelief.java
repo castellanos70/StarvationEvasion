@@ -3,6 +3,8 @@ package starvationevasion.common.gamecards;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import starvationevasion.server.model.State;
+
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
@@ -39,13 +41,8 @@ public class Policy_InternationalFoodRelief extends GameCard
     "from its local farmers surplus commodity food for redistribution to where it is" +
       "most needed.";
   
-  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
-      EnumSet.of(EnumGameState.PLANNING_STATE);
-  
-  public Policy_InternationalFoodRelief()
-  {
-    this.setUsableStates(PLAY_STATES);
-  }
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
+      EnumSet.of(State.DRAFTING);
 
   /* The number of votes required for this policy.  A value of 1 means that
    * only one player must vote to enact this policy.
@@ -80,7 +77,16 @@ public class Policy_InternationalFoodRelief extends GameCard
    * {@inheritDoc}
    */
   @Override
-  public int actionPointCost() {return 2;}
+  public int actionPointCost() {return 3;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<State> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
 
   /**
    * Millions of dollars spent by each participating region.

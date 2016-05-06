@@ -4,6 +4,8 @@ package starvationevasion.common.gamecards;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import starvationevasion.server.model.State;
+
 //TODO: Figure out a way to include when the card can be played on the Javadoc
 /**
  * Title: {@value #TITLE}<br><br>
@@ -38,14 +40,9 @@ public class Policy_CleanRiverIncentive extends GameCard
       "We should do something before the city council realizes that the 'Kool-Aid' actually " +
       "came straight out of the tap.";
   
-  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
-      EnumSet.of(EnumGameState.PLANNING_STATE);
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
+      EnumSet.of(State.DRAFTING);
   
-  public Policy_CleanRiverIncentive()
-  {
-    this.setUsableStates(PLAY_STATES);
-  }
-
   /**
    * {@inheritDoc}
   */
@@ -69,6 +66,15 @@ public class Policy_CleanRiverIncentive extends GameCard
    */
   @Override
   public int actionPointCost(){return 2;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<State> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
 
 
   /**

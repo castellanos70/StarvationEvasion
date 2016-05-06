@@ -168,6 +168,8 @@ public class Model
 
     placeCrops();
 
+    setRegionalProduction();
+
     for (int i = 0; i < YEARS_OF_DATA; i++)
     {
       worldData[i] = new WorldData();
@@ -1319,6 +1321,13 @@ public class Model
     }
   }
 
+  private void setRegionalProduction()
+  {
+    for(Region region: regionList)
+    {
+      region.setTotalProduction(cropData);
+    }
+  }
 
   /**
    * This method is used only for testing the geographic boundaries.<br>

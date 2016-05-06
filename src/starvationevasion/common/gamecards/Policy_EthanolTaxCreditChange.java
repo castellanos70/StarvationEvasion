@@ -3,6 +3,8 @@ package starvationevasion.common.gamecards;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import starvationevasion.server.model.State;
+
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
@@ -30,8 +32,8 @@ public class Policy_EthanolTaxCreditChange extends GameCard
   public static final String FLAVOR_TEXT =
       "Any ideas on how to fit 'Honk if you're carbon-neutral' on a license plate?";
 
-  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
-      EnumSet.of(EnumGameState.PLANNING_STATE);
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
+      EnumSet.of(State.DRAFTING);
   
   /**
    * {@inheritDoc}
@@ -61,7 +63,7 @@ public class Policy_EthanolTaxCreditChange extends GameCard
    * {@inheritDoc}
    */
   @Override
-  public EnumSet<EnumGameState> getUsableStates()
+  public EnumSet<State> getUsableStates()
   {
     return PLAY_STATES;
   }

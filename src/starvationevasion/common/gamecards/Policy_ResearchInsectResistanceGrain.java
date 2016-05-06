@@ -2,6 +2,7 @@
 package starvationevasion.common.gamecards;
 
 import starvationevasion.common.EnumFood;
+import starvationevasion.server.model.State;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -38,8 +39,8 @@ public class Policy_ResearchInsectResistanceGrain extends GameCard
   public static final String FLAVOR_TEXT =
       "Extraordinary technology at an extraordinary price.";
   
-  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
-      EnumSet.of(EnumGameState.PLANNING_STATE);
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
+      EnumSet.of(State.DRAFTING);
 
   /**
    * The number of votes required for this policy.  A value of 1 means that
@@ -89,7 +90,7 @@ public class Policy_ResearchInsectResistanceGrain extends GameCard
    * {@inheritDoc}
    */
   @Override
-  public EnumSet<EnumGameState> getUsableStates()
+  public EnumSet<State> getUsableStates()
   {
     return PLAY_STATES;
   }

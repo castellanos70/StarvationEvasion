@@ -2,6 +2,8 @@ package starvationevasion.common.gamecards;
 
 import java.util.EnumSet;
 
+import starvationevasion.server.model.State;
+
 //Not functional, and not in EnumPolicy. Uncomment it there to re-enable this card.
 /**
  * Title: {@value #TITLE}<br><br>
@@ -22,8 +24,8 @@ public class Policy_SearchforAnswers extends GameCard
       "Pay $50 million. Search your deck for a card and " +
       "add that card to your hand. Your deck is then shuffled.";
   
-  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
-      EnumSet.of(EnumGameState.PLANNING_STATE);
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
+      EnumSet.of(State.DRAFTING);
   
   /**
    * {@inheritDoc}
@@ -47,7 +49,7 @@ public class Policy_SearchforAnswers extends GameCard
    * {@inheritDoc}
    */
   @Override
-  public EnumSet<EnumGameState> getUsableStates()
+  public EnumSet<State> getUsableStates()
   {
     return PLAY_STATES;
   }

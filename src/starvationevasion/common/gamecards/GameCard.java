@@ -4,6 +4,7 @@ import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.server.model.Sendable;
+import starvationevasion.server.model.State;
 import starvationevasion.server.model.Type;
 
 import java.util.ArrayList;
@@ -353,8 +354,9 @@ public abstract class GameCard implements Sendable
   //=========================================================================================
   /**
    * @return the game states in which it is valid to use this card.
+   * @see starvationevasion.server.model.State
    */
-  public EnumSet<EnumGameState> getUsableStates() {return usableStates;}
+  public EnumSet<State> getUsableStates() {return null;}
 
   
   

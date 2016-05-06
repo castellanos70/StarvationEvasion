@@ -3,6 +3,7 @@ package starvationevasion.common.gamecards;
 import java.util.EnumSet;
 
 import starvationevasion.common.EnumRegion;
+import starvationevasion.server.model.State;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -30,7 +31,7 @@ public class Policy_Filibuster extends GameCard
       //https://www.youtube.com/watch?v=0-4FQAov2xI
   
   //TODO: let this be played during the "policy-reveal" phase, when that's implemented
-  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
       EnumSet.of(null);
   
   /**
@@ -61,7 +62,7 @@ public class Policy_Filibuster extends GameCard
    * {@inheritDoc}
    */
   @Override
-  public EnumSet<EnumGameState> getUsableStates()
+  public EnumSet<State> getUsableStates()
   {
     return PLAY_STATES;
   }

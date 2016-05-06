@@ -2,6 +2,7 @@ package starvationevasion.sim;
 
 import starvationevasion.common.*;
 import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.gamecards.Policy_DivertFunds;
 import starvationevasion.sim.LandTile.Field;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
@@ -550,13 +551,30 @@ public class Model
     }
   }
 
-  // TODO : Not implemented.
-  //
-  private void applyPolicies()
+
+  /**
+   * 
+   * @param cards
+   *          the list of all cards to be applied to the model
+   */
+  private void applyPolicies(ArrayList<GameCard> cards)
   {
     if (debugLevel.intValue() < Level.INFO.intValue())
     {
       Simulator.dbg.println("******************************************* Applying policies");
+    }
+    
+    for (GameCard c : cards)
+    {
+      switch(c.getCardType())
+      {
+        case Policy_DiverttheFunds:
+          //remove all cards from owners hand -- done in Simulator.java
+          //give 14 million dollars to owner
+          break;
+        default:
+          break;
+      }
     }
   }
 

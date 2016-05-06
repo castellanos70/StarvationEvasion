@@ -1,5 +1,7 @@
 package starvationevasion.common.gamecards;
 
+import java.util.EnumSet;
+
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
@@ -20,6 +22,9 @@ public class Policy_SearchforAnswers extends GameCard
       "and may search their deck for a card and " +
       "add that card to their hand.";
   
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
   /**
    * {@inheritDoc}
   */
@@ -37,6 +42,15 @@ public class Policy_SearchforAnswers extends GameCard
    */
   @Override
   public int actionPointCost() {return 3;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<EnumGameState> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
   
   //TODO Have some Collection to hold each region's deck, that can be iterated over, 
   //and have an accessor method here

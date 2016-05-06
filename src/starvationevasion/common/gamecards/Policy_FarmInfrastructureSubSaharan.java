@@ -16,11 +16,6 @@ public class Policy_FarmInfrastructureSubSaharan extends GameCard
   
   public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
       EnumSet.of(EnumGameState.PLANNING_STATE);
-  
-  public Policy_FarmInfrastructureSubSaharan()
-  {
-    this.setUsableStates(PLAY_STATES);
-  }
 
   /**
    * The number of votes required for this policy to be enacted.
@@ -45,7 +40,15 @@ public class Policy_FarmInfrastructureSubSaharan extends GameCard
    */
   @Override
   public int actionPointCost() {return 2;}
-
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<EnumGameState> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
 
   /**
    * Millions of dollars that can be spent on this card by each player region

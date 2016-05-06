@@ -1,5 +1,7 @@
 package starvationevasion.common.gamecards;
 
+import java.util.EnumSet;
+
 import starvationevasion.common.EnumRegion;
 
 /**
@@ -21,6 +23,9 @@ public class Policy_SharetheKnowledge extends GameCard
       "You may look at target US Region's hand and " +
       "you may play one card from their hand.  Pay that region " +
       "5 million dollars";
+  
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
 
   /**
    * {@inheritDoc}
@@ -39,6 +44,15 @@ public class Policy_SharetheKnowledge extends GameCard
    */
   @Override
   public int actionPointCost() {return 3;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<EnumGameState> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
 
   /**
    * {@inheritDoc}

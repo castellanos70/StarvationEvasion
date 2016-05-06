@@ -37,11 +37,6 @@ public class Policy_CovertIntelligence extends GameCard
   public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
       EnumSet.of(EnumGameState.PLANNING_STATE);
   
-  public Policy_CovertIntelligence()
-  {
-    this.setUsableStates(PLAY_STATES);
-  }
-  
   /**
    * {@inheritDoc}
   */
@@ -66,6 +61,15 @@ public class Policy_CovertIntelligence extends GameCard
   @Override
   public String getFlavorTextSource(){ return FLAVOR_TEXT_SOURCE;}
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<EnumGameState> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
+  
   /**
    * {@inheritDoc}
    */

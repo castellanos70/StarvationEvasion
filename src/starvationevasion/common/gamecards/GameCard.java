@@ -373,8 +373,8 @@ public abstract class GameCard implements Sendable
 
   // =========================================================================================
   /**
-   * @param the
-   *          game states in which it is valid to use this card.
+   * @return the game states in which it is valid to use this card.
+   * 
    */
   public EnumSet<EnumGameState> getUsableStates()
   {
@@ -383,6 +383,7 @@ public abstract class GameCard implements Sendable
 
   // =========================================================================================
   /**
+   * @deprecated JUST OVERRIDE getUsableStates() INSTEAD 
    * @param states
    *          ArrayList of states of when this card can be played.
    */

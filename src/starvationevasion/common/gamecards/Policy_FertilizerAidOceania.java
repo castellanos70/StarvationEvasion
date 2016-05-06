@@ -28,11 +28,6 @@ public class Policy_FertilizerAidOceania extends GameCard
 
   public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
       EnumSet.of(EnumGameState.PLANNING_STATE);
-  
-  public Policy_FertilizerAidOceania()
-  {
-    this.setUsableStates(PLAY_STATES);
-  }
 
   /**
    * {@inheritDoc}
@@ -51,7 +46,15 @@ public class Policy_FertilizerAidOceania extends GameCard
    */
   @Override
   public int actionPointCost() {return 2;}
-
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<EnumGameState> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
 
   /**
    * Millions of dollars spent by each participating region.

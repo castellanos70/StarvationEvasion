@@ -40,11 +40,6 @@ public class Policy_ResearchInsectResistanceGrain extends GameCard
   
   public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
       EnumSet.of(EnumGameState.PLANNING_STATE);
-  
-  public Policy_ResearchInsectResistanceGrain()
-  {
-    this.setUsableStates(PLAY_STATES);
-  }
 
   /**
    * The number of votes required for this policy.  A value of 1 means that
@@ -89,7 +84,15 @@ public class Policy_ResearchInsectResistanceGrain extends GameCard
    */
   @Override
   public int actionPointCost() {return 2;}
-
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<EnumGameState> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
 
   /**
    * {@inheritDoc}

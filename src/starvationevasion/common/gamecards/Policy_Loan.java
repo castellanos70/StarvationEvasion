@@ -40,17 +40,11 @@ public class Policy_Loan extends GameCard
   public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
       EnumSet.of(EnumGameState.PLANNING_STATE);
 
-  public Policy_Loan()
-  {
-    this.setUsableStates(PLAY_STATES);
-  }
-
   /**
    * The number of votes required for this policy.  A value of 0 means that
    * the policy is automatic.
    */
   public final static int VOTES_REQUIRED = 2;
-
 
 
   /**
@@ -76,6 +70,15 @@ public class Policy_Loan extends GameCard
    */
   @Override
   public String getFlavorTextSource(){ return FLAVOR_TEXT_SOURCE;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<EnumGameState> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
 
   /**
    * {@inheritDoc}

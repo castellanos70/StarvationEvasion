@@ -41,11 +41,6 @@ public class Policy_InternationalFoodRelief extends GameCard
   
   public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
       EnumSet.of(EnumGameState.PLANNING_STATE);
-  
-  public Policy_InternationalFoodRelief()
-  {
-    this.setUsableStates(PLAY_STATES);
-  }
 
   /* The number of votes required for this policy.  A value of 1 means that
    * only one player must vote to enact this policy.
@@ -81,6 +76,15 @@ public class Policy_InternationalFoodRelief extends GameCard
    */
   @Override
   public int actionPointCost() {return 2;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<EnumGameState> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
 
   /**
    * Millions of dollars spent by each participating region.

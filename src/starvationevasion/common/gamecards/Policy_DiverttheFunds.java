@@ -1,5 +1,7 @@
 package starvationevasion.common.gamecards;
 
+import java.util.EnumSet;
+
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
@@ -20,6 +22,9 @@ public class Policy_DiverttheFunds extends GameCard
  
   public static final String FLAVOR_TEXT =
       "No one can come up with a good idea. Good thing we're paid anyways.";
+  
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
   
   /**
    * {@inheritDoc}
@@ -44,5 +49,14 @@ public class Policy_DiverttheFunds extends GameCard
    */
   @Override
   public int actionPointCost() {return 3;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<EnumGameState> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
   
 }

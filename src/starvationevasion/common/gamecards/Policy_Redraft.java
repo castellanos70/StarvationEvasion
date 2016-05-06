@@ -1,10 +1,6 @@
 package starvationevasion.common.gamecards;
 
-import java.util.ArrayList;
-
-import starvationevasion.common.EnumRegion;
-import starvationevasion.sim.CardDeck;
-import starvationevasion.sim.Simulator;
+import java.util.EnumSet;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -28,6 +24,9 @@ public class Policy_Redraft extends GameCard
   public static final String FLAVOR_TEXT = 
       "Yeah, that was a good idea, let's do it again!";
   
+  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(EnumGameState.PLANNING_STATE);
+  
   /**
    * {@inheritDoc}
    */
@@ -45,6 +44,15 @@ public class Policy_Redraft extends GameCard
    */
   @Override
   public String getFlavorText() {return FLAVOR_TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<EnumGameState> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
   
   /**
    * {@inheritDoc}

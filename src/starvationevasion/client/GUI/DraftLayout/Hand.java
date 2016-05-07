@@ -1,14 +1,17 @@
 package starvationevasion.client.GUI.DraftLayout;
 
+import java.util.ArrayList;
+import java.util.Stack;
+
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.sim.CardDeck;
-
-import java.util.ArrayList;
-import java.util.Stack;
 
 /**
  * Hand is the GUI element responsible for allowing the user to interact with the current cards in their hand
@@ -38,6 +41,7 @@ public class Hand extends GridPane
   public Hand(GUI gui, Stage stage)
   {
     this.gui = gui;
+    this.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, .6), null, null)));
     primaryStage = gui.getPrimaryStage();
 
   }

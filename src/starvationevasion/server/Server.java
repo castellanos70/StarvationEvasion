@@ -119,6 +119,7 @@ public class Server
     }
     catch(IOException e)
     {
+      e.printStackTrace();
       LOG.severe("Server error: Opening socket failed.");
       System.exit(-1);
     }

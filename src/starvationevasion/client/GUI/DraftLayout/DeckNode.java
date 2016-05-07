@@ -19,7 +19,7 @@ import starvationevasion.common.gamecards.EnumPolicy;
 public class  DeckNode extends VBox
 {
   GridPane gridPane=new GridPane();
-  ClientPolicyCard deck;
+//  ClientPolicyCard deck;
   StackPane discardPile;
 
   /**
@@ -29,8 +29,8 @@ public class  DeckNode extends VBox
    */
   public DeckNode(GUI gui)
   {
-    deck=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA, EnumPolicy.Policy_CleanRiverIncentive, gui);
-    deck.backOfCard();
+//    deck=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA, EnumPolicy.Policy_CleanRiverIncentive, gui);
+//    deck.backOfCard();
     discardPile=new StackPane();
     ClientPolicyCard firstCard=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA,EnumPolicy.Policy_EducateTheWomenCampaign,gui);
     firstCard.discardPile();
@@ -45,8 +45,8 @@ public class  DeckNode extends VBox
       }
     });
 
-    gridPane.add(deck,0,1);
-    gridPane.add(discardPile,1,1);
+//    gridPane.add(deck,0,1);
+    gridPane.add(discardPile,0,0);
     this.getStylesheets().add("/starvationevasion/client/GUI/DraftLayout/style.css");
     this.getStyleClass().add("decknode");
 

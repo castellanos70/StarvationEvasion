@@ -59,6 +59,9 @@ public class ConcurrentCommModule implements Communication
   private boolean connectInfinitely = false; // Used in a special localhost case
   private ServerSocket processSocket = null;
 
+  /**
+   * This class enables the client to listen
+   */
   private class StreamListener extends Thread
   {
     private boolean encounteredError = false;
@@ -122,6 +125,46 @@ public class ConcurrentCommModule implements Communication
         // Ignore
       }
       return response;
+    }
+  }
+
+  private enum StreamType
+  {
+    STDOUT,
+    STDERR
+  }
+
+  private class StreamRedirect extends Thread
+  {
+    private final StreamType TYPE;
+    private final BufferedReader READ;
+
+    public StreamRedirect(StreamType type, InputStream stream)
+    {
+      TYPE = type;
+      READ = new BufferedReader(new InputStreamReader(stream));
+    }
+
+    @Override
+    public void run()
+    {
+      try
+      {
+        String line;
+        while (true)
+        {
+          if (!READ.ready()) continue;
+          else if ((line = READ.readLine()) == null) break;
+          if (TYPE == StreamType.STDOUT) commPrint(line);
+          else if (TYPE == StreamType.STDERR) commError(line);
+        }
+        READ.close();
+        System.out.println("CLOSING");
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -194,7 +237,7 @@ public class ConcurrentCommModule implements Communication
           dispose();
           System.exit(-1);
         }
-        else if (secureProcessPort() != null && HOST.toLowerCase().startsWith("local"))
+        else if (HOST.toLowerCase().startsWith("local") && secureProcessPort() != null)
         {
           commError("Another client tried and failed to start a local server");
           dispose();
@@ -202,6 +245,8 @@ public class ConcurrentCommModule implements Communication
         }
         deltaSeconds = (System.currentTimeMillis() - millisecondTimeStamp) / 1000.0;
       }
+
+      closeProcessSocket();
 
       // Generate the aes cipher
       aesCipher = generateAESCipher();
@@ -402,11 +447,12 @@ public class ConcurrentCommModule implements Communication
     try
     {
       ProcessBuilder builder = new ProcessBuilder();
-      builder.inheritIO();
+      //builder.inheritIO();
       builder.directory(new File(System.getProperty("user.dir")));
       builder.command("java", "-Xms4g", "-jar", "Server.jar", Integer.toString(port));
-      builder.redirectError();
       process = builder.start();
+      new StreamRedirect(StreamType.STDOUT, process.getInputStream()).start();
+      new StreamRedirect(StreamType.STDERR, process.getErrorStream()).start();
       //process.wait(1); // If the process failed, this should cause an exception to be thrown which is what we want
     }
     catch (Exception e)

@@ -553,8 +553,16 @@ public class Model
     }
   }
 
-
   /**
+   * Looks at each policy enacted for this turn and applies the appropriate
+   * ones.
+   * 
+   * Cards not directly affecting the simulation model presumably should not be
+   * handled here. Cards like CovertIntelligence, which lets you look at another
+   * player's hand, do not directly affect the model. Right now they are
+   * handled in Simulator.NextTurn(). Since policy cards are the first thing
+   * applied in Model.nextYear(), it doesn't alter any calculations as the model
+   * completes a year's simulation.
    * 
    * @param cards
    *          the list of all cards to be applied to the model
@@ -570,10 +578,55 @@ public class Model
     {
       switch(c.getCardType())
       {
+        case Policy_CleanRiverIncentive:
+          break;
         case Policy_DiverttheFunds:
           //remove all cards from owners hand -- done in Simulator.java
           //give 14 million dollars to owner
           getRegion(c.getOwner()).addToRevenue(14000000);
+          break;
+        case Policy_EducateTheWomenCampaign:
+          break;
+        case Policy_EfficientIrrigationIncentive:
+          break;
+        case Policy_EthanolTaxCreditChange:
+          getRegion(c.getOwner()).setEthanolProducerTaxCredit(25); //25% for now.
+          break;
+        case Policy_FarmInfrastructureSubSaharan:
+          break;
+        case Policy_FertilizerAidCentralAsia:
+          break;
+        case Policy_FertilizerAidMiddleAmerica:
+          break;
+        case Policy_FertilizerAidOceania:
+          break;
+        case Policy_FertilizerAidSouthAsia:
+          break;
+        case Policy_FertilizerAidSubSaharan:
+          break;
+        case Policy_FertilizerSubsidy:
+          break;
+        case Policy_FoodReliefCentralAsia:
+          break;
+        case Policy_FoodReliefMiddleAmerica:
+          break;
+        case Policy_FoodReliefOceania:
+          break;
+        case Policy_FoodReliefSouthAsia:
+          break;
+        case Policy_FoodReliefSubSaharan:
+          break;
+        case Policy_Fundraiser:
+          break;
+        case Policy_InternationalFoodRelief:
+          break;
+        case Policy_Loan:
+          break;
+        case Policy_MyPlatePromotionCampaign:
+          break;
+        case Policy_ResearchInsectResistanceGrain:
+          break;
+        case Policy_SpecialInterests:
           break;
         default:
           break;

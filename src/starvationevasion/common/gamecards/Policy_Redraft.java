@@ -1,5 +1,10 @@
 package starvationevasion.common.gamecards;
 
+import java.util.EnumSet;
+
+import starvationevasion.server.model.State;
+
+//Not functional, and not in EnumPolicy. Uncomment it there to re-enable this card.
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
@@ -21,6 +26,9 @@ public class Policy_Redraft extends GameCard
   public static final String FLAVOR_TEXT = 
       "Yeah, that was a good idea, let's do it again!";
   
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
+      EnumSet.of(State.DRAFTING);
+  
   /**
    * {@inheritDoc}
    */
@@ -38,6 +46,15 @@ public class Policy_Redraft extends GameCard
    */
   @Override
   public String getFlavorText() {return FLAVOR_TEXT;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<State> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
   
   /**
    * {@inheritDoc}

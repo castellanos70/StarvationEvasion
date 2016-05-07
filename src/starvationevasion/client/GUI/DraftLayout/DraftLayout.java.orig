@@ -95,15 +95,19 @@ public class DraftLayout extends GridPane
     this.add(summaryBar, 8, 1, 17, 3);
 
     //node which lets the user see if other players have played cards/finished draft phase
+<<<<<<< HEAD
+   //    draftStatus = new DraftStatus();
+   //    this.add(draftStatus, 11, 1, 2, 4);
+=======
     draftStatus = new DraftStatus();
 //    this.add(draftStatus, 11, 1, 2, 4);
+>>>>>>> 53e95641eb45d14f544f4a1efbd015f71bdea9fc
 
     //node which lets the user select and view the map of the US
-    map = new Map();
-    Node mapNode = map.getGameMapNode();
+   
     
     //node which holds the user's deck/discard pile information
-
+<<<<<<< HEAD
     //    deckNode = new DeckNode(gui);
     //    this.add(deckNode, 0,12,6,3);
 
@@ -115,9 +119,9 @@ public class DraftLayout extends GridPane
       this.add(productBar.getElements().get(i), i+1, 6,1 ,1);
     }
     
-//    map = new Map();
-//    Node mapNode = map.getGameMapNode();
-
+    map = new Map();
+    Node mapNode = map.getGameMapNode();
+=======
     deckNode = new DeckNode(gui);
 //    this.add(deckNode, 0,12,6,3);
 
@@ -129,7 +133,7 @@ public class DraftLayout extends GridPane
 //      this.add(productBar.getElements().get(i), i+1, 9,1 ,1);
 //    }
 
-
+>>>>>>> 53e95641eb45d14f544f4a1efbd015f71bdea9fc
     //node which allows the user to undo/discard cards with the click of a button
     actionButtons = new ActionButtons(gui);
     this.add(actionButtons, 0, 15, 6, 3);
@@ -170,9 +174,6 @@ public class DraftLayout extends GridPane
     gui.getPopupManager().setPbDataDisplay(pbDataDisplay);
     gui.getPopupManager().setDiscardDisplay(discardDisplay);
   }
-
-
-
 
 
   private void initDraftLayout()
@@ -237,8 +238,8 @@ public class DraftLayout extends GridPane
     graphDisplay = new GraphDisplay(gui);
     this.add(graphDisplay, 1, 1, 10, 6);
 
-    discardDisplay = new DiscardDisplay(gui);
-    this.add(discardDisplay,1, 5, 3, 4);
+//    discardDisplay = new DiscardDisplay(gui);
+//    this.add(discardDisplay,1, 5, 3, 4);
 
 
 

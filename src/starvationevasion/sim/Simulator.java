@@ -378,7 +378,7 @@ public class Simulator
     {
       switch(c.getCardType())
       {
-        case Policy_DiverttheFunds:
+        case Policy_DivertFunds:
           //remove all cards from owners hand
           discardPlayerHand(c.getOwner());
           //give 14 million dollars to owner - applied in Model.java

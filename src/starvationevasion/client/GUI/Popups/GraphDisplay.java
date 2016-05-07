@@ -6,11 +6,15 @@ import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.Graphs.Graph;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.image.*;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import starvationevasion.common.EnumRegion;
 
 import java.util.ArrayList;
@@ -28,12 +32,14 @@ public class GraphDisplay extends BorderPane
   ComboBox<EnumRegion> regionSelect;
 
   EnumRegion currentRegion;
-  int graphIndex = 0;
+  int graphIndex = 1;
 
-  StackPane left;
-  StackPane right;
+  Button left;
+  Button right;
   Graph graphDisplay;
 
+  Label regionName = new Label("SDFSDF");
+  
   /**
    * Constructor for GraphDisplay
    * Takes a reference to the GUI which ones it
@@ -41,6 +47,17 @@ public class GraphDisplay extends BorderPane
    */
   public GraphDisplay(GUI gui)
   {
+	  
+	  
+		Button exitButton = new Button("X");
+		exitButton.setFont(Font.font("Verdana", 15));
+		exitButton.setStyle("-fx-background-color: rgb(230,16,16)");
+		exitButton.setOnAction(evt ->
+	    {
+	    	gui.getPopupManager().toggleGraphDisplay();
+	    	gui.updateState();
+	    }); 
+		
     this.gui = gui;
     this.getStylesheets().add("/starvationevasion/client/GUI/DraftLayout/style.css");
     this.getStyleClass().add("graphdisplay");
@@ -52,15 +69,22 @@ public class GraphDisplay extends BorderPane
     initializeComboBox();
     initializeLeft();
     initializeRight();
-
-    setAlignment(regionSelect, Pos.CENTER);
-    setTop(regionSelect);
+    setAlignment(regionName,Pos.CENTER);
+    setTop(regionName);
+    
+    setAlignment(exitButton, Pos.CENTER_RIGHT);
+	setTop(exitButton);
+	exitButton.setTranslateX(-25);
+	exitButton.setTranslateY(10);
+//    setAlignment(regionSelect, Pos.CENTER);
+//    setTop(regionSelect);
     setAlignment(left, Pos.CENTER);
     setLeft(left);
     setAlignment(right, Pos.CENTER);
     setRight(right);
-    setAlignment(graphDisplay.getLineChart(),Pos.CENTER);
-    setCenter(graphDisplay.getLineChart());
+    this.setCenter(gui.getGraphManager().getPieChart(graphIndex));
+   // setAlignment(graphDisplay.getPieChart(),Pos.CENTER);
+   // setCenter(graphDisplay.getPieChart());
   }
 
   /**
@@ -100,10 +124,10 @@ public class GraphDisplay extends BorderPane
 
   private void initializeLeft()
   {
-    left = new StackPane();
+    left = new Button();
     leftArrow = new ImageView(gui.getImageGetter().getGraphLeftArrowBig());
-    left.getChildren().add(leftArrow);
-
+    left.setGraphic(leftArrow);
+    left.setStyle( "-fx-background-color: transparent;");
     left.setOnMouseClicked(new EventHandler<MouseEvent>()
     {
       @Override
@@ -116,10 +140,10 @@ public class GraphDisplay extends BorderPane
 
   private void initializeRight()
   {
-    right = new StackPane();
+    right = new Button();
     rightArrow = new ImageView(gui.getImageGetter().getGraphRightArrowBig());
-    right.getChildren().add(rightArrow);
-
+    right.setGraphic(rightArrow);
+    right.setStyle( "-fx-background-color: transparent;");
     right.setOnMouseClicked(new EventHandler<MouseEvent>()
     {
       @Override
@@ -171,22 +195,43 @@ public class GraphDisplay extends BorderPane
   private void moveRight()
   {
     graphIndex += 1;
-    if (graphIndex >= 3)
+    if (graphIndex >= 4)
     {
-      graphIndex = 0;
+      graphIndex = 1;
     }
-    graphDisplay = gui.getGraphManager().getGraphNodeGraph(currentRegion, graphIndex);
-    this.setCenter(graphDisplay.getLineChart());
+    boolean isPieChart = gui.getGraphManager().isPieChart(graphIndex);
+    gui.getGraphManager().buildDisplay(graphIndex);
+    if(isPieChart)
+    {
+    	this.setCenter(gui.getGraphManager().getPieChart(graphIndex));
+    }
+    else
+    {
+    	this.setCenter(gui.getGraphManager().getBarGraph());
+    }
+   // graphDisplay = gui.getGraphManager().getGraphNodeGraph(currentRegion, graphIndex);
+   // this.setCenter(graphDisplay.getLineChart());
   }
 
   private void moveLeft()
   {
     graphIndex -= 1;
-    if (graphIndex < 0)
+    if (graphIndex < 1)
     {
-      graphIndex = 2;
+      graphIndex = 3;
     }
-    graphDisplay = gui.getGraphManager().getGraphNodeGraph(currentRegion, graphIndex);
-    this.setCenter(graphDisplay.getLineChart());
+    
+    boolean isPieChart = gui.getGraphManager().isPieChart(graphIndex);
+  //  gui.getGraphManager().buildDisplay(graphIndex);
+    if(isPieChart)
+    {
+    	this.setCenter(gui.getGraphManager().getPieChart(graphIndex));
+    }
+    else
+    {
+    	this.setCenter(gui.getGraphManager().getBarGraph());
+    }
+//    graphDisplay = gui.getGraphManager().getGraphNodeGraph(currentRegion, graphIndex);
+//    this.setCenter(graphDisplay.getLineChart());
   }
 }

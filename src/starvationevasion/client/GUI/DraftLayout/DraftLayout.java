@@ -157,7 +157,10 @@ public class DraftLayout extends GridPane
     gui.getPopupManager().setDiscardDisplay(discardDisplay);
   }
 
-
+  public void update()
+  {
+     worldMap.getBoardersManager().update();;
+  }
 
 
 

@@ -7,43 +7,39 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
+import starvationevasion.client.GUI.GUI;
 
 /**
  * 
- * 
- * @Author Christian Seely
- * 
- *         This class constructs all of the SVGPath objects that compose of each
- *         region and place them on the correct location on the world map. Note
- *         the Region colors, Region glow colors, region fill colors, and region
- *         size are all customizable. Also each reason as listeners associated
- *         with it which can tell when a mouse enters and leaves a region (some
- *         small islands that are part of a region do not have listeners but if
- *         wanted they can be added). Also if you click on the region it lights
- *         up and prints out that it should trigger a pane showing the
- *         statistics (similar as to demo'ed in class )of the region to display
- *         (TODO).
+ * This class constructs all of the SVGPath objects that compose
+ * of each region and place them on the correct location on the
+ * world map. Note the Region colors, Region glow colors, region fill
+ * colors, and region size are all customizable. Also each reason
+ * as listeners associated with it which can tell when a mouse enters
+ * and leaves a region (some small islands that are part of a region
+ * do not have listeners but if wanted they can be added). Also
+ * if you click on the region it lights up and prints out that
+ * it should trigger a pane showing the statistics (similar as to demo'ed in 
+ * class )of the region to display (TODO).
  *
- *         For question/access to the SVG vector paths/editing software to
- *         manipulate them you can contact me at (cseely@unm.edu).
- *
- *         In case anyone is wondering why components of the tiles or lat/long
- *         number were not used in the creation of the region boarders here is
- *         why: 1. Using the Lat/Long values would required calculating which
- *         lat/long value belongs to each region all on the clients side (this
- *         way does not require that). 2. The Lat/Long points would be many more
- *         data points and slower to render (this has much less data points) 3.
- *         It's not just displaying the regions on the map that's important it's
- *         having the ability to add listeners to them. So in some way those
- *         lat/long points would have to be used to create some component that
- *         can have listeners (The current way has a wide variety of listeners
- *         available to use) 4. The Lat/Long point were being drawn using AWT
- *         which does not have the 'Styling' capabilities of JavaFX. (The
- *         current way can use the 'Styling' capabilities of JavaFX)
+ * In case anyone is wondering why components of the tiles or lat/long number
+ * were not used in the creation of the region boarders here is why:
+ * 1. Using the Lat/Long values would required calculating which lat/long
+ * value belongs to each region all on the clients side (this way does not
+ * require that).
+ * 2. The Lat/Long points would be many more data points and slower to render 
+ * (this has much less data points)
+ * 3. It's not just displaying the regions on the map that's important it's
+ * having the ability to add listeners to them. So in some way those lat/long
+ * points would have to be used to create some component that can have listeners
+ * (The current way has a wide variety of listeners available to use)
+ * 4. The Lat/Long point were being drawn using AWT which does not have the 
+ * 'Styling' capabilities of JavaFX. (The current way can use the 'Styling'
+ * capabilities of JavaFX)
  * 
- *         But Note: The lat/long numbers will be needed for when crop heat maps
- *         are implemented but to create those the regional boarders don't
- *         matter so again no extra calculations are needed on the clients side.
+ * But Note: The lat/long numbers will be needed for when crop heat maps are 
+ * implemented but to create those the regional boarders don't matter so again
+ * no extra calculations are needed on the clients side. 
  *
  */
 public class BuildInteractiveRegionBoarders
@@ -69,21 +65,34 @@ public class BuildInteractiveRegionBoarders
   private ArrayList<SVGPath> eastAsiaPaths = new ArrayList<>();;
   private ArrayList<SVGPath> oceaniaPaths = new ArrayList<>();;
 
+  private int clickedRegion;
+  
   private SVGPathsHolder SVG = new SVGPathsHolder();
   StackPane sp;
-
-  BuildInteractiveRegionBoarders(StackPane sp)
+  GUI gui;
+  public boolean clicked;
+  BuildInteractiveRegionBoarders(StackPane sp, GUI gui)
   {
-    this.sp = sp;
+    this.sp = sp; 
+    this.clicked = false;
+    this.clickedRegion = 0;
+    this.gui = gui;
   }
+  
+  public void update()
+  {
 
-  /**
-   * 
-   * @param RegionColor
-   * @param GlowColor
-   * @param fillColor
-   *          Build Africa's Region Path
-   */
+	  clicked = false;
+	  styleRegionPaths(clickedRegion, TRANSPARENT, 1); // Change Fill Color
+      styleRegionPaths(clickedRegion, TRANSPARENT, 2); // Change Fill Color
+  }
+ /**
+  * 
+  * @param RegionColor
+  * @param GlowColor
+  * @param fillColor
+  * Build Africa's Region Path
+  */
   public void buildAfricaPath(Color RegionColor, Color GlowColor,
       Color fillColor)
   {
@@ -164,14 +173,13 @@ public class BuildInteractiveRegionBoarders
     });
     sp.getChildren().addAll(africaMainPath, africaSubPath);
   }
-
-  /**
-   * 
-   * @param RegionColor
-   * @param GlowColor
-   * @param fillColor
-   *          Build South America's Region Path.
-   */
+/**
+ * 
+ * @param RegionColor
+ * @param GlowColor
+ * @param fillColor
+ * Build South America's Region Path.
+ */
   public void buildSouthAmericaPath(Color RegionColor, Color GlowColor,
       Color fillColor)
   {
@@ -221,14 +229,13 @@ public class BuildInteractiveRegionBoarders
     sp.getChildren().add(southAmericaPath);
 
   }
-
-  /**
-   * 
-   * @param RegionColor
-   * @param GlowColor
-   * @param fillColor
-   *          Build Middle America's Region Path
-   */
+/**
+ * 
+ * @param RegionColor
+ * @param GlowColor
+ * @param fillColor
+ * Build Middle America's Region Path
+ */
   public void buildMiddleAmericaPath(Color RegionColor, Color GlowColor,
       Color fillColor)
   {
@@ -393,15 +400,14 @@ public class BuildInteractiveRegionBoarders
         middleAmericaSmallSubPath4);
 
   }
-
-  /**
-   * 
-   * @param RegionColor
-   * @param GlowColor
-   * @param fillColor
-   * 
-   *          Build California's Region Path
-   */
+/**
+ * 
+ * @param RegionColor
+ * @param GlowColor
+ * @param fillColor
+ * 
+ * Build California's Region Path
+ */
   public void buildCaliforniaPath(Color RegionColor, Color GlowColor,
       Color fillColor)
   {
@@ -449,13 +455,12 @@ public class BuildInteractiveRegionBoarders
 
     sp.getChildren().add(californiaPath);
   }
-
   /**
    * 
    * @param RegionColor
    * @param GlowColor
    * @param fillColor
-   *          Build PNW and MNT Region Path.
+   * Build PNW and MNT Region Path.
    */
   public void buildPNWAndMNTPath(Color RegionColor, Color GlowColor,
       Color fillColor)
@@ -504,14 +509,13 @@ public class BuildInteractiveRegionBoarders
 
     sp.getChildren().add(PNWAndMNTPath);
   }
-
-  /**
-   * 
-   * @param RegionColor
-   * @param GlowColor
-   * @param fillColor
-   *          Build Northern Planes Region Path.
-   */
+/**
+ * 
+ * @param RegionColor
+ * @param GlowColor
+ * @param fillColor
+ * Build Northern Planes Region Path.
+ */
   public void buildNorthernPlanesPath(Color RegionColor, Color GlowColor,
       Color fillColor)
   {
@@ -558,15 +562,14 @@ public class BuildInteractiveRegionBoarders
 
     sp.getChildren().add(northernPlanesPath);
   }
-
-  /**
-   * 
-   * @param RegionColor
-   * @param GlowColor
-   * @param fillColor
-   * 
-   *          Build HeartLands Region Path.
-   */
+/**
+ * 
+ * @param RegionColor
+ * @param GlowColor
+ * @param fillColor
+ * 
+ * Build HeartLands Region Path.
+ */
   public void buildHeartLandsPath(Color RegionColor, Color GlowColor,
       Color fillColor)
   {
@@ -614,14 +617,13 @@ public class BuildInteractiveRegionBoarders
 
     sp.getChildren().add(heartLandsPath);
   }
-
-  /**
-   * 
-   * @param RegionColor
-   * @param GlowColor
-   * @param fillColor
-   *          Build Southern Planes and Delta States Region Path.
-   */
+/**
+ * 
+ * @param RegionColor
+ * @param GlowColor
+ * @param fillColor
+ * Build Southern Planes and Delta States Region Path. 
+ */
   public void buildSouthernPlanesDeltaStatesPath(Color RegionColor,
       Color GlowColor, Color fillColor)
   {
@@ -673,14 +675,13 @@ public class BuildInteractiveRegionBoarders
 
     sp.getChildren().add(southernPlanesDeltaStatesPath);
   }
-
-  /**
-   * 
-   * @param RegionColor
-   * @param GlowColor
-   * @param fillColor
-   *          Build Southeast Region Path.
-   */
+/**
+ * 
+ * @param RegionColor
+ * @param GlowColor
+ * @param fillColor
+ * Build Southeast Region Path. 
+ */
   public void buildSoutheastPath(Color RegionColor, Color GlowColor,
       Color fillColor)
   {
@@ -726,14 +727,13 @@ public class BuildInteractiveRegionBoarders
 
     sp.getChildren().add(southeastPath);
   }
-
-  /**
-   * 
-   * @param RegionColor
-   * @param GlowColor
-   * @param fillColor
-   *          Build Northern Crescent Region Path.
-   */
+/**
+ * 
+ * @param RegionColor
+ * @param GlowColor
+ * @param fillColor
+ * Build Northern Crescent Region Path. 
+ */
   public void buildNorthernCrescentPath(Color RegionColor, Color GlowColor,
       Color fillColor)
   {
@@ -781,14 +781,13 @@ public class BuildInteractiveRegionBoarders
 
     sp.getChildren().add(northernCrescentPath);
   }
-
-  /**
-   * 
-   * @param RegionColor
-   * @param GlowColor
-   * @param fillColor
-   *          Build Middle East Region Path.
-   */
+/**
+ * 
+ * @param RegionColor
+ * @param GlowColor
+ * @param fillColor
+ * Build Middle East Region Path. 
+ */
   public void buildMiddleEastPath(Color RegionColor, Color GlowColor,
       Color fillColor)
   {
@@ -849,14 +848,13 @@ public class BuildInteractiveRegionBoarders
 
     sp.getChildren().addAll(middleEastMainPath, middleEastSubPath);
   }
-
-  /**
-   * 
-   * @param RegionColor
-   * @param GlowColor
-   * @param fillColor
-   *          Build Central Asia Region Path.
-   */
+/**
+ * 
+ * @param RegionColor
+ * @param GlowColor
+ * @param fillColor
+ * Build Central Asia Region Path.
+ */
   public void buildCentralAsiaPath(Color RegionColor, Color GlowColor,
       Color fillColor)
   {
@@ -910,7 +908,7 @@ public class BuildInteractiveRegionBoarders
    * @param RegionColor
    * @param GlowColor
    * @param fillColor
-   *          Build South Asia Region Path.
+   * Build South Asia Region Path. 
    */
   public void buildSouthAsiaPath(Color RegionColor, Color GlowColor,
       Color fillColor)
@@ -923,7 +921,11 @@ public class BuildInteractiveRegionBoarders
     southAsiaBoarderGlow.setWidth(DEPTH);
     southAsiaBoarderGlow.setHeight(DEPTH);
 
+    
+    
+    
     SVGPath southAsiaMainPath = new SVGPath();
+    
     southAsiaMainPath.setFill(TRANSPARENT);
     southAsiaMainPath.setStroke(TRANSPARENT);
     southAsiaMainPath.setStrokeWidth(5.0);
@@ -972,13 +974,12 @@ public class BuildInteractiveRegionBoarders
     });
     sp.getChildren().addAll(southAsiaMainPath, southAsiaSubPath);
   }
-
   /**
    * 
    * @param RegionColor
    * @param GlowColor
    * @param fillColor
-   *          Build Arctic America Region Path.
+   * Build Arctic America Region Path. 
    */
   public void buildArcticAmericaPath(Color RegionColor, Color GlowColor,
       Color fillColor)
@@ -1065,13 +1066,18 @@ public class BuildInteractiveRegionBoarders
     arcticAmericaPaths.add(arcticAmericaSubPath3);
     arcticAmericaPaths.add(arcticAmericaSubPath4);
 
+    
+    
     arcticAmericaMainPath1.setOnMouseMoved(evt ->
     {
       styleRegionPaths(14, RegionColor, 1); // Change Stroke Color
     });
     arcticAmericaMainPath1.setOnMouseExited(evt ->
     {
+    if(!clicked)
+    {
       styleRegionPaths(14, TRANSPARENT, 1); // Change Stroke Color
+    }
     });
     arcticAmericaMainPath2.setOnMouseMoved(evt ->
     {
@@ -1086,8 +1092,15 @@ public class BuildInteractiveRegionBoarders
 
     arcticAmericaMainPath1.setOnMousePressed((event) ->
     {
+    	clicked = true;
+    	gui.getPopupManager().toggleGraphDisplay();
+    	//gui.getGraphManager().updateCurrentRegionName("Artic America");
+    	gui.getGraphManager().setRegionNum(8);
       System.out.println("Trigger South Asia's Regional Stats");
+      clickedRegion = 14;
+      styleRegionPaths(14,RegionColor,1);
       styleRegionPaths(14, fillColor, 2); // Change Fill Color
+      //clicked = false;
       // TODO: Have South Asia's Regional Statics be displayed.
     });
     arcticAmericaMainPath2.setOnMousePressed((event) ->
@@ -1099,7 +1112,10 @@ public class BuildInteractiveRegionBoarders
 
     arcticAmericaMainPath1.setOnMouseReleased((event) ->
     {
+      if(!clicked)
+      {
       styleRegionPaths(14, TRANSPARENT, 2); // Change Fill Color
+      }
     });
     arcticAmericaMainPath2.setOnMouseReleased((event) ->
     {
@@ -1109,14 +1125,16 @@ public class BuildInteractiveRegionBoarders
         arcticAmericaSubPath1, arcticAmericaSubPath2, arcticAmericaSubPath3,
         arcticAmericaSubPath4);
   }
-
-  /**
-   * 
-   * @param RegionColor
-   * @param GlowColor
-   * @param fillColor
-   *          Build Russia Caucaus Region Path.
-   */
+  
+  
+  
+/**
+ * 
+ * @param RegionColor
+ * @param GlowColor
+ * @param fillColor
+ * Build Russia Caucaus Region Path. 
+ */
   public void buildRussiaCaucausPath(Color RegionColor, Color GlowColor,
       Color fillColor)
   {
@@ -1217,14 +1235,13 @@ public class BuildInteractiveRegionBoarders
         russiaCaucausSubPath2, russiaCaucausSubPath3, russiaCaucausSubPath4);
 
   }
-
-  /**
-   * 
-   * @param RegionColor
-   * @param GlowColor
-   * @param fillColor
-   *          Build Europe Region Path.
-   */
+/**
+ * 
+ * @param RegionColor
+ * @param GlowColor
+ * @param fillColor
+ * Build Europe Region Path. 
+ */
   public void buildEuropePath(Color RegionColor, Color GlowColor,
       Color fillColor)
   {
@@ -1410,13 +1427,12 @@ public class BuildInteractiveRegionBoarders
     sp.getChildren().addAll(europeMainPath, europeSubPath1, europeSubPath2,
         europeSubPath3, europeSubPath4, europeSubPath5, europeSubPath6);
   }
-
   /**
    * 
    * @param RegionColor
    * @param GlowColor
    * @param fillColor
-   *          Build East Asia Region Path.
+   * Build East Asia Region Path. 
    */
   public void buildEastAsiaPath(Color RegionColor, Color GlowColor,
       Color fillColor)
@@ -1546,13 +1562,12 @@ public class BuildInteractiveRegionBoarders
     sp.getChildren().addAll(eastAsiaMainPath, eastAsiaSubPath1,
         eastAsiaSubPath2, eastAsiaSubPath3);
   }
-
   /**
    * 
    * @param RegionColor
    * @param GlowColor
    * @param fillColor
-   *          Build Oceania Region path.
+   * Build Oceania Region path. 
    */
   public void buildOceaniaPath(Color RegionColor, Color GlowColor,
       Color fillColor)
@@ -1879,8 +1894,8 @@ public class BuildInteractiveRegionBoarders
    * @param Region
    * @param color
    * @param mode
-   *          Method to change styles of a region e.g the boarder color or fill
-   *          color, this method allows to get rid of (some..) repetitive code.
+   *  Method to change styles of a region e.g the boarder color or fill color,
+   *  this method allows to get rid of (some..) repetitive code. 
    *          Let Mode = 1 represent setting region paths stroke Let Mode = 2
    *          represent setting region paths fill
    * 

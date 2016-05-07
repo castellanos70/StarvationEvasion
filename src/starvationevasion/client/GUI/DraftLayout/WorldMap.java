@@ -35,6 +35,7 @@ public class WorldMap extends ScrollPane
   private GUI gui;
   private double zoomLevel=1;
   private static StackPane zoomGroup = new StackPane();
+  private BuildInteractiveRegionBoarders buildBoarders;
   private Canvas canvas;
   Image imageMap;
   public WorldMap(GUI gui)
@@ -71,7 +72,7 @@ public class WorldMap extends ScrollPane
     zoomGroup.getChildren().add(canvas);
     
     //Create an object to build the regions interactive boarders. 
-    BuildInteractiveRegionBoarders buildBoarders = new BuildInteractiveRegionBoarders(zoomGroup);   
+    buildBoarders = new BuildInteractiveRegionBoarders(zoomGroup,gui);   
     //Build each regions boarders. 
     //NOTE Parameters are as follow, (Region Color, Glow Color, Fill Color)
     buildBoarders.buildAfricaPath(Color.CYAN, Color.CYAN, Color.rgb(0, 255, 255,0.5));
@@ -166,6 +167,13 @@ public class WorldMap extends ScrollPane
       //zoomGroup.getTransforms().add(scaleTransform);
     });
   }
+  
+  
+  public BuildInteractiveRegionBoarders getBoardersManager()
+  {
+    return buildBoarders;
+  }
+  
   
   /**
    * 

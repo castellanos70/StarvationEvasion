@@ -224,6 +224,13 @@ public class GUI extends Application
     draftLayout.getActionButtons().resetActionButtons();
   }
 
+  public void updateState()
+  {
+    draftLayout.update();
+  }
+  
+  
+  
   /**
    * resets what cards are being voted on
    */

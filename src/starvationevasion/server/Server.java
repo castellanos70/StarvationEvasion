@@ -514,12 +514,168 @@ public class Server
 
   /**
    * List of available regions
+   *
+   * @return List of available regions
    */
   public List<EnumRegion> getAvailableRegions ()
   {
     return availableRegions;
   }
 
+  /**
+   * Draft a card into voting ballot.
+   *
+   * @param card Card to add into ballot
+   * @param u User that is drafting
+   */
+  public void draftCard (GameCard card, User u)
+  {
+    synchronized (_drafted)
+    {
+      _drafted[card.getOwner().ordinal()][u.drafts] = card;
+    }
+  }
+
+  /**
+   * Add a vote to a card
+   * @param card Card to add vote
+   * @param user User that voted YES on a card
+   *
+   * @return true if vote was accounted for
+   */
+  public boolean addVote (GameCard card, EnumRegion user)
+  {
+    synchronized(_drafted)
+    {
+      for (int i = 0; i < _drafted[card.getOwner().ordinal()].length; i++)
+      {
+        if (_drafted[card.getOwner().ordinal()][i] == null) continue;
+        if (_drafted[card.getOwner().ordinal()][i].getCardType().equals(card.getCardType()))
+        {
+          _drafted[card.getOwner().ordinal()][i].addEnactingRegion(user);
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Draw cards by User
+   *
+   * @param user User that needs hand to be filled
+   */
+  public void drawByUser (User user)
+  {
+    EnumPolicy[] _hand = simulator.drawCards(user.getRegion());
+    if (_hand == null)
+    {
+      return;
+    }
+    Collections.addAll(user.getHand(), _hand);
+
+  }
+
+  /**
+   * Start AI as seperate process.
+   *
+   * @return true if starting AI was successful false otherwise
+   */
+  public boolean startAI()
+  {
+
+    if (TOTAL_PLAYERS  == getPlayerCount() || processes.size() == TOTAL_AI_PLAYERS)
+    {
+      return false;
+    }
+
+    Process p = ServerUtil.StartAIProcess(new String[]{"java",
+                                                       "-XX:+OptimizeStringConcat",
+                                                       "-XX:+UseCodeCacheFlushing",
+                                                       "-client",
+                                                       "-classpath",
+                                                       "./dist:./dist/libs/*",
+                                                       "starvationevasion/ai/AI",
+                                                       "foodgame.cs.unm.edu", "5555"});
+    if (p != null)
+    {
+      processes.add(p);
+    }
+    return true;
+  }
+
+  /**
+   * Kill AI process.
+   * AI are set up as FIFO(LinkedList), this will poll() and kill.
+   */
+  public void killAI()
+  {
+    if (processes.size() > 0)
+    {
+      Process p = processes.poll();
+      p.destroyForcibly();
+      try
+      {
+        p.waitFor();
+      }
+      catch(InterruptedException e)
+      {
+        System.out.println("Interrupted and could not wait for exit code");
+      }
+      int val = p.exitValue();
+      Payload data = new Payload();
+      data.put("to-region", "ALL");
+      data.put("card", "");
+      data.put("text", "AI was removed.");
+      data.put("from", "admin");
+
+      System.out.println("AI removed with exit value: " + String.valueOf(val));
+
+      broadcast(new ResponseFactory().build(uptime(), data, Type.CHAT));
+
+    }
+  }
+
+  /**
+   * Discard a Policy based on user
+   */
+  public void discard (User u, EnumPolicy card)
+  {
+    synchronized(simulator)
+    {
+      simulator.discard(u.getRegion(), card);
+      u.getHand().remove(card);
+    }
+  }
+
+  
+  void waitAndAdvance(Callable phase)
+  {
+    startNanoSec = System.currentTimeMillis();
+    endNanoSec = startNanoSec + currentState.getDuration();
+    while(true)
+    {
+      if (!isPlaying)
+      {
+        return;
+      }
+      boolean allDone = getPlayers().stream().allMatch(user -> user.isDone);
+      if (allDone || endNanoSec < System.currentTimeMillis())
+      {
+        try
+        {
+          phase.call();
+        }
+        catch(Exception e)
+        {
+          LOG.log(Level.SEVERE, "Could not advance. Stopping game.", e);
+          stopGame();
+          return;
+        }
+      }
+    }
+  }
+  
   /**
    * Beginning of the game!!!
    *
@@ -1007,132 +1163,5 @@ public class Server
     }
 
     new Server(port);
-  }
-
-
-  public void draftCard (GameCard card, User u)
-  {
-    synchronized (_drafted)
-    {
-      _drafted[card.getOwner().ordinal()][u.drafts] = card;
-    }
-  }
-
-  public boolean addVote (GameCard card, EnumRegion user)
-  {
-    synchronized(_drafted)
-    {
-      for (int i = 0; i < _drafted[card.getOwner().ordinal()].length; i++)
-      {
-        if (_drafted[card.getOwner().ordinal()][i] == null) continue;
-        if (_drafted[card.getOwner().ordinal()][i].getCardType().equals(card.getCardType()))
-        {
-          _drafted[card.getOwner().ordinal()][i].addEnactingRegion(user);
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-
-  public void drawByUser (User user)
-  {
-    EnumPolicy[] _hand = simulator.drawCards(user.getRegion());
-    if (_hand == null)
-    {
-      return;
-    }
-    Collections.addAll(user.getHand(), _hand);
-
-  }
-
-
-  public boolean startAI()
-  {
-
-    if (TOTAL_PLAYERS  == getPlayerCount() || processes.size() == TOTAL_AI_PLAYERS)
-    {
-      return false;
-    }
-
-    Process p = ServerUtil.StartAIProcess(new String[]{"java",
-                                                       "-XX:+OptimizeStringConcat",
-                                                       "-XX:+UseCodeCacheFlushing",
-                                                       "-client",
-                                                       "-classpath",
-                                                       "./dist:./dist/libs/*",
-                                                       "starvationevasion/ai/AI",
-                                                       "foodgame.cs.unm.edu", "5555"});
-    if (p != null)
-    {
-      processes.add(p);
-    }
-    return true;
-  }
-
-  public void killAI()
-  {
-    if (processes.size() > 0)
-    {
-      Process p = processes.poll();
-      p.destroyForcibly();
-      try
-      {
-        p.waitFor();
-      }
-      catch(InterruptedException e)
-      {
-        System.out.println("Interrupted and could not wait for exit code");
-      }
-      int val = p.exitValue();
-      Payload data = new Payload();
-      data.put("to-region", "ALL");
-      data.put("card", "");
-      data.put("text", "AI was removed.");
-      data.put("from", "admin");
-
-      System.out.println("AI removed with exit value: " + String.valueOf(val));
-
-      broadcast(new ResponseFactory().build(uptime(), data, Type.CHAT));
-
-    }
-  }
-
-
-  public void discard (User u, EnumPolicy card)
-  {
-    synchronized(simulator)
-    {
-      simulator.discard(u.getRegion(), card);
-      u.getHand().remove(card);
-    }
-  }
-
-  void waitAndAdvance(Callable phase)
-  {
-    startNanoSec = System.currentTimeMillis();
-    endNanoSec = startNanoSec + currentState.getDuration();
-    while(true)
-    {
-      if (!isPlaying)
-      {
-        return;
-      }
-      boolean allDone = getPlayers().stream().allMatch(user -> user.isDone);
-      if (allDone || endNanoSec < System.currentTimeMillis())
-      {
-        try
-        {
-          phase.call();
-        }
-        catch(Exception e)
-        {
-          LOG.log(Level.SEVERE, "Could not advance. Stopping game.", e);
-          stopGame();
-          return;
-        }
-      }
-    }
   }
 }

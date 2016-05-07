@@ -139,6 +139,11 @@ public class Region extends Territory
   {
     revenue += money;
   }
+  
+  public void subtractFromRevenue(int money)
+  {
+    revenue -= money;
+  }
 
   /**
    * @param territory Territory to add to region

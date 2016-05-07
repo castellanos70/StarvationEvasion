@@ -362,30 +362,6 @@ public class Model
   {
     return packedTileData;
   }
-  
-  /**
-   * Searches the regionList for the US regions and adds them to
-   * unitedStatesRegionList[].
-   */
-  private void populateUSRegionList()
-  {
-    int it = 0;    
-    ArrayList<EnumRegion> usRegions = new ArrayList<>();
-    
-    for(int i = 0; i < EnumRegion.US_REGIONS.length; i++)
-    {
-      usRegions.add(EnumRegion.US_REGIONS[i]);
-    }
-    
-    for(int i = 0; i < regionList.length; i++)
-    {
-      if(usRegions.contains(regionList[i].getRegionEnum()))
-      {
-        unitedStatesRegionList[it] = regionList[i];
-        it++;
-      }
-    }
-  }
 
   /**
    * A Region is the base political unit exposed to the player.
@@ -568,6 +544,30 @@ public class Model
     int yearIdx = year - Constant.FIRST_DATA_YEAR;
     return worldData[yearIdx];
   }
+  
+  /**
+   * Searches the regionList for the US regions and adds them to
+   * unitedStatesRegionList[].
+   */
+  private void populateUSRegionList()
+  {
+    int it = 0;    
+    ArrayList<EnumRegion> usRegions = new ArrayList<>();
+    
+    for(int i = 0; i < EnumRegion.US_REGIONS.length; i++)
+    {
+      usRegions.add(EnumRegion.US_REGIONS[i]);
+    }
+    
+    for(int i = 0; i < regionList.length; i++)
+    {
+      if(usRegions.contains(regionList[i].getRegionEnum()))
+      {
+        unitedStatesRegionList[it] = regionList[i];
+        it++;
+      }
+    }
+  }
 
   /**
    * Linear interpolate population.
@@ -626,14 +626,19 @@ public class Model
         case Policy_FarmInfrastructureSubSaharan:
           break;
         case Policy_FertilizerAidCentralAsia:
+          sendFertilizerAid(EnumRegion.CENTRAL_ASIA, 1000); //$1000 from each US region for now
           break;
         case Policy_FertilizerAidMiddleAmerica:
+          sendFertilizerAid(EnumRegion.MIDDLE_AMERICA, 1000); //$1000 from each US region for now
           break;
         case Policy_FertilizerAidOceania:
+          sendFertilizerAid(EnumRegion.OCEANIA, 1000); //$1000 from each US region for now
           break;
         case Policy_FertilizerAidSouthAsia:
+          sendFertilizerAid(EnumRegion.SOUTH_ASIA, 1000); //$1000 from each US region for now
           break;
         case Policy_FertilizerAidSubSaharan:
+          sendFertilizerAid(EnumRegion.SUB_SAHARAN, 1000); //$1000 from each US region for now
           break;
         case Policy_FertilizerSubsidy:
           break;
@@ -661,6 +666,29 @@ public class Model
           break;
         default:
           break;
+      }
+    }
+  }
+  
+  /**
+   * These cards are of the same type: Each US region sends fertilizer aid to a
+   * specific region.
+   * 
+   * Subtract amount from each US Region, and send 7 times that amount to the
+   * specific region
+   */
+  private void sendFertilizerAid(EnumRegion region, int amount)
+  {
+    for(int i = 0; i < unitedStatesRegionList.length; i++)
+    {
+      unitedStatesRegionList[i].subtractFromRevenue(amount);
+    }
+    
+    for(int i = 0; i < regionList.length; i++)
+    {
+      if(regionList[i].getRegionEnum().equals(region))
+      {
+        regionList[i].addFertilizerAid(amount*7);
       }
     }
   }

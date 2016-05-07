@@ -169,7 +169,7 @@ public abstract class GameCard implements Sendable
       case Policy_MyPlatePromotionCampaign:
         myCard = new Policy_MyPlatePromotionCampaign();
         break;
-      case Policy_DiverttheFunds:
+      case Policy_DivertFunds:
         myCard = new Policy_DivertFunds();
         break;
       //case Policy_Filibuster:
@@ -178,7 +178,7 @@ public abstract class GameCard implements Sendable
       case Policy_Fundraiser:
         myCard = new Policy_Fundraiser();
         break;
-      //case Policy_SharetheKnowledge:
+      //case Policy_SharedKnowledge:
       //  myCard = new Policy_SharedKnowledge();
       //  break;
       //case Policy_Redraft:
@@ -266,6 +266,7 @@ public abstract class GameCard implements Sendable
 
   public int actionPointCost(EnumPolicy policy) 
   {
+    int ap = -1; //default action point cost
 	  switch (policy) {
       case Policy_CleanRiverIncentive:
         return 2;
@@ -299,7 +300,7 @@ public abstract class GameCard implements Sendable
         return 1;
       case Policy_MyPlatePromotionCampaign:
         return 2;
-      case Policy_DiverttheFunds:
+      case Policy_DivertFunds:
         return 3;
       //case Policy_Filibuster:
       //  return 1;
@@ -323,6 +324,17 @@ public abstract class GameCard implements Sendable
         return 2;
       case Policy_FoodReliefSubSaharan:
         return 2;
+	  }
+	  //if we didn't set AP in the above switch, then there's a problem
+	  if(ap == -1) 
+	  {
+	    String s = "ERROR: could not get the action point value for this policy: ";
+	    s += policy.toString() + "; " + policy.name();
+	    System.err.println(s);
+	    System.err.println("Check to see if the policy is in GameCard.java's actionPointCost()");
+	    ap = 3;
+	  }
+	  return ap;
   }
   
   // =========================================================================================

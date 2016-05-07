@@ -63,6 +63,10 @@ public class LandTile
   private float latitude;
   private float longitude;
 
+
+
+  private int currentProduction;
+
   /**
    * curCrop == null indicates there that no crop is currently planted in this LandTile.
    */
@@ -127,6 +131,20 @@ public class LandTile
    * @return Longitude ranges from -180 to 180. East longitude is positive.
    */
   public float getLongitude() {return longitude;}
+
+  /**
+   * @return total production of tile for current year in USD
+   */
+  public int getCurrentProduction()
+  {
+    return currentProduction;
+  }
+
+  public void setCurrentProduction(int currentProduction)
+  {
+    this.currentProduction = currentProduction;
+  }
+
 
   public void setCrop(EnumFood crop)
   {

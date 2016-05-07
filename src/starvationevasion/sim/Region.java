@@ -472,25 +472,34 @@ public class Region extends Territory
   /**
    * Sets total production for as a sum of productions for all crops
    * Sets total taxes as 30% of total production
-   * @param data     crop Data used to calculate production
    */
-  public void setTotalProduction(CropData data)
+  public void setTotalProduction()
   {
-    int tileSize = getLandTotal() / getNumTiles() ;
+
     for(Territory territory: territoryList)
     {
       for(LandTile tile: territory.getLandTiles())
       {
           int index = tile.getCrop().ordinal();
-          int revenue =
-              (int)(tile.getCropRatings()[index].productionRate() *
-              data.getPrice(2009, EnumFood.values()[index]) * tileSize);
-
-          cropRevenues[index] += revenue;
-          cropTaxes[index] += (int)(.3 * revenue);
+          cropRevenues[index] += tile.getCurrentProduction();
+          cropTaxes[index] += (int)(.3 * tile.getCurrentProduction());
       }
     }
     sumTotals();
+  }
+
+  /**
+   * resets production back to 0
+   */
+  public void resetProduction()
+  {
+    totalTax = 0;
+    totalProduction = 0;
+    for(int i = 0; i < cropRevenues.length; i ++ )
+    {
+      cropRevenues[i] = 0;
+      cropTaxes[i] = 0;
+    }
   }
 
   private void sumTotals()

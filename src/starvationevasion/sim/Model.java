@@ -1470,10 +1470,61 @@ public class Model
   {
     for(Region region: regionList)
     {
-      region.setTotalProduction(cropData);
+      for(Territory territory: region.getTerritoryList())
+      {
+        for(LandTile tile: territory.getLandTiles())
+        {
+          int production = calculateTileProduction(region, tile);
+          tile.setCurrentProduction(production);
+        }
+      }
+      region.setTotalProduction();
     }
   }
 
+  private int calculateTileProduction(Region region, LandTile tile)
+  {
+    return calculateTileProduction(region, tile, tile.getCrop());
+  }
+
+  private int calculateTileProduction(Region region, LandTile tile, EnumFood crop)
+  {
+    int tileSize = region.getLandTotal() / region.getNumTiles() ;
+    int index = crop.ordinal();
+    int revenue = (int)(tile.getCropRatings()[index].productionRate() * cropData.getPrice(2009, EnumFood.values()[index]) * tileSize);
+    return revenue;
+  }
+
+  /**
+   * This method is to be called at the end of a year.
+   * For each landTile, farmer decides whether or not to replant same crop
+   *
+   */
+  private void replantCrops()
+  {
+    for(Region region: regionList)
+    {
+      region.resetProduction();
+      for (Territory territory : territoryList)
+      {
+        for (LandTile tile : territory.getLandTiles())
+        {
+          for(EnumFood crop: EnumFood.ALL_FOODS)
+          {
+            //proposed production is cut to 80% to account for cost of replanting
+            int production = (int)(.8 * calculateTileProduction(region, tile,crop));
+            if(production > tile.getCurrentProduction())
+            {
+              tile.setCrop(crop);
+              tile.setCurrentProduction(production);
+              break;
+            }
+          }
+        }
+      }
+      region.setTotalProduction();
+    }
+  }
 
   /**
    * This method is used only for testing the geographic boundaries.<br>

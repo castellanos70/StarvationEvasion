@@ -52,16 +52,20 @@ public class ChatNode extends BorderPane
     cardSelection=new ComboBox();
     client=gui.getClient();
     chatManager=client.getChatManager();
-
     usersChat.getChildren().add(confirm);
     usersChat.getChildren().add(regionSelection);
     usersChat.getChildren().add(cardSelection);
     bottomContainer.getChildren().add(inputMessage);
     bottomContainer.getChildren().add(usersChat);
     chatFrame.setContent(chatMessages);
+   // chatFrame.setStyle("-fx-background-color:rgb(243,243,243)");
+    //chatFrame.applyCss();
     this.setCenter(chatFrame);
     this.setBottom(bottomContainer);
-
+    chatFrame.getStylesheets().add("/starvationevasion/client/GUI/DraftLayout/style.css");
+    chatFrame.setStyle("-fx-background-color:rgb(255, 255, 255, 0.15)");
+    this.setStyle("-fx-background-color:rgb(255, 255, 255, 0.15)");
+    chatMessages.setStyle("-fx-background-color: blue;");
     inputMessage.setOnKeyPressed(event1 ->
     {
       if(event1.getCode().equals(KeyCode.ENTER))

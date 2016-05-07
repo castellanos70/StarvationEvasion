@@ -360,6 +360,8 @@ public class GUI extends Application
     return boxWidth;
   }
 
+  
+  
   /**
    * Gets the DraftLayout to manipulate GUI elements of the draft phase
    * @return The DraftLayout

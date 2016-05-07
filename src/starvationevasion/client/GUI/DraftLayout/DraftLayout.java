@@ -95,25 +95,26 @@ public class DraftLayout extends GridPane
     this.add(summaryBar, 8, 1, 17, 3);
 
     //node which lets the user see if other players have played cards/finished draft phase
-//    draftStatus = new DraftStatus();
-//    this.add(draftStatus, 11, 1, 2, 4);
+   //    draftStatus = new DraftStatus();
+   //    this.add(draftStatus, 11, 1, 2, 4);
 
     //node which lets the user select and view the map of the US
-    map = new Map();
-    Node mapNode = map.getGameMapNode();
+   
     
     //node which holds the user's deck/discard pile information
-//    deckNode = new DeckNode(gui);
-//    this.add(deckNode, 0,12,6,3);
+    //    deckNode = new DeckNode(gui);
+    //    this.add(deckNode, 0,12,6,3);
 
     //node which holds the ProductBar
-//    productBar = new ProductBar(gui);
-//    int productBarSize = productBar.getElements().size();
-//    for (int i = 0; i < productBarSize; ++i)
-//    {
-//      this.add(productBar.getElements().get(i), i+1, 9,1 ,1);
-//    }
-
+    productBar = new ProductBar(gui);
+    int productBarSize = productBar.getElements().size();
+    for (int i = 0; i < productBarSize; ++i)
+    {
+      this.add(productBar.getElements().get(i), i+1, 6,1 ,1);
+    }
+    
+    map = new Map();
+    Node mapNode = map.getGameMapNode();
     //node which allows the user to undo/discard cards with the click of a button
     actionButtons = new ActionButtons(gui);
     this.add(actionButtons, 0, 15, 6, 3);
@@ -129,7 +130,7 @@ public class DraftLayout extends GridPane
     this.add(draftTimer, 27, 1, 5, 2);
 
     pbDataDisplay = new ProductBarDataDisplay(gui);
-    this.add(pbDataDisplay, 0, 5, 13, 4);
+    this.add(pbDataDisplay, 15, 5, 13, 4);
 
     graphDisplay = new GraphDisplay(gui);
     this.add(graphDisplay, 1, 1, 10, 6);
@@ -138,6 +139,7 @@ public class DraftLayout extends GridPane
     this.add(discardDisplay,1, 5, 3, 4);
 
     chatNode=new ChatNode(gui);
+    chatNode.setStyle("-fx-background-color:rgb(84, 84, 84, 0.5)");
     this.add(chatNode, 27, 7, 6, 11);
 
 
@@ -153,9 +155,6 @@ public class DraftLayout extends GridPane
     gui.getPopupManager().setPbDataDisplay(pbDataDisplay);
     gui.getPopupManager().setDiscardDisplay(discardDisplay);
   }
-
-
-
 
 
   private void initDraftLayout()
@@ -220,8 +219,8 @@ public class DraftLayout extends GridPane
     graphDisplay = new GraphDisplay(gui);
     this.add(graphDisplay, 1, 1, 10, 6);
 
-    discardDisplay = new DiscardDisplay(gui);
-    this.add(discardDisplay,1, 5, 3, 4);
+//    discardDisplay = new DiscardDisplay(gui);
+//    this.add(discardDisplay,1, 5, 3, 4);
 
 
 
@@ -260,7 +259,16 @@ public class DraftLayout extends GridPane
       rowConstraintsList.get(i).setPercentHeight(100d/ROWS);
     }
   }
-
+  /**
+   * 
+   * @return Reference to the world map. 
+   */
+  public WorldMap getWorldMap()
+  {
+    return worldMap;
+  }
+  
+  
   /**
    * Simple getter function called by the main GUI to let the GUI get the product bar
    * Used the user's selected product is updated by clicking on the product bar

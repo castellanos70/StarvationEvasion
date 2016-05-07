@@ -6,6 +6,7 @@ import java.util.Random;
 
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -65,6 +66,8 @@ public class WorldMap extends ScrollPane
     canvas=new Canvas(imageMap.getWidth(),imageMap.getHeight());
     MapProjectionMollweide map = new MapProjectionMollweide((int)imageMap.getWidth(), (int)imageMap.getHeight());
     
+//    zoomGroup.setWidth(imageMap.getWidth()*4);
+//    zoomGroup.setHeight(imageMap.getHeight()*4);
     zoomGroup.getChildren().add(canvas);
     
     //Create an object to build the regions interactive boarders. 
@@ -141,8 +144,8 @@ public class WorldMap extends ScrollPane
 
 
       setContent(contentGroup);
-      if(event.getDeltaY()>0&&zoomLevel<1.1)zoomLevel += .1;
-      else if(event.getDeltaY()<0 &&zoomLevel>.5) zoomLevel -= .1;
+      if(event.getDeltaY()>0&&zoomLevel<1.5)zoomLevel += .1;
+      else if(event.getDeltaY()<0 &&zoomLevel>1) zoomLevel -= .1;
       Scale scaleTransform = new Scale(zoomLevel, zoomLevel, 0,0);
       zoomGroup.setScaleX(zoomLevel);
       zoomGroup.setScaleY(zoomLevel);
@@ -163,6 +166,17 @@ public class WorldMap extends ScrollPane
       //zoomGroup.getTransforms().add(scaleTransform);
     });
   }
+  
+  /**
+   * 
+   * @return Reference to Graphics context. 
+   */
+  public GraphicsContext getGraphicsContext()
+  {
+    return canvas.getGraphicsContext2D();
+  }
+  
+  
   /*
    * 
    * Get instance of the bane containing

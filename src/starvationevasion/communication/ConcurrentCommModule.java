@@ -395,12 +395,13 @@ public class ConcurrentCommModule implements Communication
       builder.directory(new File(System.getProperty("user.dir")));
       builder.command("java", "-Xms4g", "-jar", "Server.jar", Integer.toString(port));
       process = builder.start();
-      process.wait(1); // If the process failed, this should cause an exception to be thrown which is what we want
+      //process.wait(1); // If the process failed, this should cause an exception to be thrown which is what we want
     }
     catch (Exception e)
     {
       commError("Failed to start the server");
       closeProcessSocket();
+      e.printStackTrace();
       System.exit(-1);
     }
     return process;

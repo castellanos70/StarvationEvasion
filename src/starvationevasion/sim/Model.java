@@ -590,10 +590,15 @@ public class Model
    * 
    * Cards not directly affecting the simulation model presumably should not be
    * handled here. Cards like CovertIntelligence, which lets you look at another
-   * player's hand, do not directly affect the model. Right now they are
-   * handled in Simulator.NextTurn(). Since policy cards are the first thing
-   * applied in Model.nextYear(), it doesn't alter any calculations as the model
-   * completes a year's simulation.
+   * player's hand, do not directly affect the model. Right now they are handled
+   * in Simulator.NextTurn(). Since policy cards are the first thing applied in
+   * Model.nextYear(), it doesn't alter any calculations as the model completes
+   * a year's simulation.
+   * 
+   * Pretty much all values are hardcoded right now as the policy card classes
+   * themselves are not structured in a way to access these values. A meeting
+   * with the policy card team confirmed they are working on updating this so we
+   * can remove the hardcoded values.
    * 
    * @param cards
    *          the list of all cards to be applied to the model
@@ -699,10 +704,19 @@ public class Model
     }
   }
   
-  // TODO: determine where the food is coming from (from the sender). 5 thousand
-  // tons of food needs to come from somewhere
+  /**
+   * Policy card handler. Moves x amount of y food from sender to target.
+   * 
+   * @param target The region receiving the food
+   * @param sender The region sending the food
+   * @param food The type of EnumFood.
+   * @param amount The amount of tons of food being sent.
+   */
   private void sendFoodRelief(EnumRegion target, EnumRegion sender, EnumFood food, int amount)
   {
+    // TODO: determine where the food is coming from (from the sender). 5 thousand
+    // tons of food needs to come from somewhere, we don't just make it magically.
+    
     for(int i = 0; i < regionList.length; i++)
     {
       if(regionList[i].getRegionEnum().equals(target))

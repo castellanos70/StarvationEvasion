@@ -24,7 +24,6 @@ public class Region extends Territory
 
   private int ethanolProducerTaxCredit = 0;
   private int fertilizerAid = 0;
-  private int tileSize;
   private int[] cropTaxes = new int[EnumFood.SIZE];
   private int[] cropRevenues = new int[EnumFood.SIZE];
   private long[][] cropImport = new long[Model.YEARS_OF_DATA][EnumFood.SIZE];  //in metric tons.

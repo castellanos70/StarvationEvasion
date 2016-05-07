@@ -3,10 +3,13 @@ package starvationevasion.sim;
 import starvationevasion.common.*;
 import starvationevasion.sim.io.CSVReader;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 
 /**
@@ -41,9 +44,9 @@ public class LandTile
    * Each record of PATH_COORDINATES must be in a one-to-one,
    * ordered matching with each record in each month of each annual file of PATH_CLIMATE_PREFIX.
    */
-  private static final String PATH_COORDINATES = "/sim/climate/";
+  private static final String PATH_COORDINATES = "/data/sim/climate/";
   private static final String COORDINATE_FILENAME = "ArableCoordinates";
-  private static final String PATH_CLIMATE = "/sim/climate/Climate_";
+  private static final String PATH_CLIMATE = "/data/sim/climate/Climate_";
   private static final String PREFIX_HISTORICAL = "Historical";
   private static final String PREFIX_RCP45 = "RCP45";
   private static final String PREFIX_RCP85 = "RCP85";
@@ -256,18 +259,25 @@ public class LandTile
    */
   public static ArrayList<MapPoint> loadLocations(Model model, ArrayList<LandTile> tileList)
   {
-    String zipPath = PATH_COORDINATES + COORDINATE_FILENAME + ".zip";
+    //String zipPath = PATH_COORDINATES + COORDINATE_FILENAME + ".zip";
+    String osPath = System.getProperty("user.dir").replace('\\', '/');
+    String zipPath = osPath + PATH_COORDINATES + COORDINATE_FILENAME + ".zip";
     //String zipPath = PATH_COORDINATES + "geodesic.zip";
     ArrayList<MapPoint> mapList = null;
     try
     {
 
 
-      ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(zipPath).toURI().getPath());
+      //ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(zipPath).toURI().getPath());
+      ZipFile zipFile = new ZipFile(new File(zipPath));
+      //ZipInputStream zStream = new ZipInputStream(Util.rand.getClass().getResourceAsStream(zipPath));
       ZipEntry entry = zipFile.getEntry(COORDINATE_FILENAME+".csv");
+      //while ((entry = zStream.getNextEntry()) != null && !entry.getName().equals(COORDINATE_FILENAME + ".csv"))
+      //  ;
       //ZipEntry entry = zipFile.getEntry("geodesic.csv");
 
       CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
+      //CSVReader fileReader = new CSVReader(zStream, 1);
 
       String[] fieldList;
       Territory territory = null;
@@ -354,23 +364,29 @@ public class LandTile
       String prefix = PREFIX_HISTORICAL;
       if (year > 2005) prefix = representativeConcentrationPathway;
 
-      String path = PATH_CLIMATE + prefix + "_"+yearStr + ".zip";
+      String osPath = System.getProperty("user.dir");
+      String path = osPath + PATH_CLIMATE + prefix + "_"+yearStr + ".zip";
 
       int recordIdx=0;
       try
       {
         System.out.printf("     Archive: %s\n", path);
-        ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(path).toURI().getPath());
+        //ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(path).toURI().getPath());
+        ZipFile zipFile = new ZipFile(new File(path));
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        //ZipInputStream zStream = new ZipInputStream(Util.rand.getClass().getResourceAsStream(path));
 
         //Open sub-file for each month of year.
         int month = 0;
 
         while (entries.hasMoreElements())
-        { ZipEntry entry = entries.nextElement();
+        //while (zStream.getNextEntry() != null)
+        {
+          ZipEntry entry = entries.nextElement();
           //System.out.printf("       File: %s\n", entry.getName());
 
           CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
+          //CSVReader fileReader = new CSVReader(zStream, 1);
 
           String[] fieldList;
           recordIdx = 0;
@@ -395,10 +411,11 @@ public class LandTile
             }
             recordIdx++;
           }
-          fileReader.close();
+          //fileReader.close();
           month++;
         }
-        zipFile.close();
+        //zStream.close();
+        //zipFile.close();
       }
       catch (Exception e)
       {

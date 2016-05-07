@@ -95,7 +95,7 @@ public class DraftLayout extends GridPane
     this.add(summaryBar, 8, 1, 17, 3);
 
     //node which lets the user see if other players have played cards/finished draft phase
-//    draftStatus = new DraftStatus();
+    draftStatus = new DraftStatus();
 //    this.add(draftStatus, 11, 1, 2, 4);
 
     //node which lets the user select and view the map of the US
@@ -103,11 +103,11 @@ public class DraftLayout extends GridPane
     Node mapNode = map.getGameMapNode();
     
     //node which holds the user's deck/discard pile information
-//    deckNode = new DeckNode(gui);
+    deckNode = new DeckNode(gui);
 //    this.add(deckNode, 0,12,6,3);
 
     //node which holds the ProductBar
-//    productBar = new ProductBar(gui);
+    productBar = new ProductBar(gui);
 //    int productBarSize = productBar.getElements().size();
 //    for (int i = 0; i < productBarSize; ++i)
 //    {

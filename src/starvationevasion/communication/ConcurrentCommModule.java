@@ -230,7 +230,12 @@ public class ConcurrentCommModule implements Communication
       while (deltaSeconds < MAX_SECONDS)
       {
         IS_CONNECTED.set(openConnection(HOST, PORT));
-        if (IS_CONNECTED.get()) break;
+        if (IS_CONNECTED.get())
+        {
+          // This solves an issue I don't understand and probably never will
+          openConnection(HOST, PORT);
+          break;
+        }
         else if (localServer != null && !localServer.isAlive())
         {
           commError("Failed to start the local server");
@@ -509,9 +514,18 @@ public class ConcurrentCommModule implements Communication
   {
     try
     {
+      Socket tempSocket = clientSocket;
+      DataInputStream input = reader;
+      DataOutputStream output = writer;
       clientSocket = new Socket(host, port);
       writer = new DataOutputStream(clientSocket.getOutputStream());
       reader = new DataInputStream(clientSocket.getInputStream());
+      if (tempSocket != null && !tempSocket.isClosed())
+      {
+        tempSocket.close();
+        input.close();
+        output.close();
+      }
     }
     catch (IOException e)
     {

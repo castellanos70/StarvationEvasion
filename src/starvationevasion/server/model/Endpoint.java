@@ -2,10 +2,12 @@ package starvationevasion.server.model;
 
 /**
  * @author Javier Chavez (javierc@cs.unm.edu)
- * All the endpoints to the api
  */
 
-
+/**
+ * Class used to determine which handler to use. This is analogous to
+ * endpoints to RESTful API endpoints.
+ */
 public enum Endpoint implements Renderable<Void>
 {
   /**

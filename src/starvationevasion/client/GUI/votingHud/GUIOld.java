@@ -5,7 +5,7 @@
 //import javafx.scene.layout.StackPane;
 //import javafx.stage.Stage;
 //import starvationevasion.client.GUI.DraftLayout.ChatNode;
-//public class GUI extends Application
+//public class GUIOld extends Application
 //{
 //
 //  private Stage primaryStage;

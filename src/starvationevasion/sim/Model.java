@@ -122,6 +122,11 @@ public class Model
   // purposes.
   //
   private Region[] regionList = new Region[EnumRegion.SIZE];
+  
+  /**
+   * Right now, the players control the 7 US Regions.
+   */
+  private Region[] unitedStatesRegionList = new Region[EnumRegion.US_REGIONS.length];
 
   private SeaLevel seaLevel;
 
@@ -169,6 +174,8 @@ public class Model
     placeCrops();
 
     setRegionalProduction();
+    
+    populateUSRegionList();
 
     for (int i = 0; i < YEARS_OF_DATA; i++)
     {
@@ -354,6 +361,23 @@ public class Model
   public PackedTileData getPackedTileData()
   {
     return packedTileData;
+  }
+  
+  /**
+   * Searches the regionList for the US regions and adds them to
+   * unitedStatesRegionList[].
+   */
+  private void populateUSRegionList()
+  {
+    int it = 0;
+    for(int i = 0; i < regionList.length; i++)
+    {
+      if(Arrays.asList(EnumRegion.US_REGIONS).contains(regionList[i]))
+      {
+        unitedStatesRegionList[it] = regionList[i];
+        it++;
+      }
+    }
   }
 
   /**

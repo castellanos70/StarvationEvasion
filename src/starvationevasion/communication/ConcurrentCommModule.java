@@ -223,6 +223,7 @@ public class ConcurrentCommModule implements Communication
     {
       LOCK.lock();
       RESPONSE_EVENTS.clear();
+      closeProcessSocket();
       if (LOCAL_SERVER != null) LOCAL_SERVER.destroy();
 
       writer.close();
@@ -417,6 +418,7 @@ public class ConcurrentCommModule implements Communication
     try
     {
       processSocket.close();
+      processSocket = null;
     }
     catch (Exception e)
     {

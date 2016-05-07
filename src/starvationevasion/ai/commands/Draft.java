@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Stream;
+
 import starvationevasion.ai.AI;
 import starvationevasion.ai.AI.WorldFactors;
 import starvationevasion.common.EnumFood;
@@ -19,9 +20,6 @@ import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.State;
-
-import java.util.*;
-import java.util.stream.Stream;
 
 public class Draft extends AbstractCommand
 {
@@ -80,6 +78,7 @@ public class Draft extends AbstractCommand
   int indexOfLastCard=0;
   int actionsRemaining=2;
   RegionData thisRegion=null;
+  boolean cardOfGeneralBenefit=false;
   
   public Draft(AI client)
   {
@@ -558,6 +557,11 @@ public class Draft extends AbstractCommand
             cardsForThisRegion=true;
           }
         }
+        else if(card.getValidTargetRegions()==null && getClient().policyAndRegionMap.containsKey(policy)
+            && getClient().policyAndRegionMap.get(policy).equals(getClient().getUser().getRegion()))
+        {
+          cardsForThisRegion=true;
+        }
       });
       if(!cardsForThisRegion && !cardsDiscarded)
       {
@@ -732,7 +736,7 @@ public class Draft extends AbstractCommand
       finalIndexChosen=i;
       int regionIndex=0;
       int foodIndex=0;
-      if(card.getValidTargetRegions()!=null)
+      if(card.getValidTargetRegions()!=null || getClient().policyAndRegionMap.containsKey(card.getCardType()))
       {
         do
         {
@@ -745,7 +749,9 @@ public class Draft extends AbstractCommand
               break;
             }
           }
-        }while(!Arrays.asList(card.getValidTargetRegions()).contains(currentRegion));
+        }while(!Arrays.asList(card.getValidTargetRegions()).contains(currentRegion)
+            || (getClient().policyAndRegionMap.containsKey(card.getCardType())&&
+                !getClient().policyAndRegionMap.get(card.getCardType()).equals(currentRegion)));
       }
       if(card.getValidTargetFoods()!=null)
       {
@@ -762,9 +768,15 @@ public class Draft extends AbstractCommand
           }
         }while(!Arrays.asList(card.getValidTargetFoods()).contains(currentFood));
       }
+      //This will be true if this card benefits a number of regions as opposed to only 1 region.
+      if(currentRegion==null && currentFood!=null)
+      {
+        cardOfGeneralBenefit=true;
+      }
     } while (!checkCardVals(currentPolicy,currentRegion,currentFood));
     indexOfLastCard=finalIndexChosen;
     secondCardToDraft=true;
+    cardOfGeneralBenefit=false;
     if(card.votesRequired()>0)
     {
       cardsNeedingSupport++;
@@ -811,9 +823,8 @@ public class Draft extends AbstractCommand
     {
       return policyCardInfo[policy.ordinal()][region.ordinal()][0];
     }
-    else if(region==null && food!=null)
+    else if(cardOfGeneralBenefit)
     {
-      card=GameCard.create(getClient().getUser().getRegion(), policy);
       return true;
     }
     return false;
@@ -882,6 +893,8 @@ public class Draft extends AbstractCommand
   {
     int overallPercentDecrease = 0;
     int overallPercentIncrease = 0;
+    long firstYearProduced=0;
+    long secondYearProduced=0;
     Integer revenueBalance = new Integer(0);
     Double undernourished = new Double(0);
     Double hdi = new Double(0);
@@ -949,6 +962,22 @@ public class Draft extends AbstractCommand
             {
               foodExported += (Long) val;
             });
+        if(h == getClient().worldDataSize - 2)
+        {
+          firstYearProduced=foodProduced;
+        }
+        if(h==getClient().worldDataSize-1)
+        {
+          secondYearProduced=foodProduced-firstYearProduced;
+        }
+        //Check if the amount of food being produced in AI's region is decreasing.
+        if(h == getClient().worldDataSize - 1)
+        {
+          if(percentChangeLong(firstYearProduced,secondYearProduced)<-20)
+          {
+            pickThisRegion=true;
+          }
+        }
         Object[][] numArray =
         {
             { lastRevenueBalance, revenueBalance },

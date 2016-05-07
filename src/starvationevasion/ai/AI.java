@@ -14,9 +14,11 @@ import starvationevasion.ai.commands.Login;
 import starvationevasion.ai.commands.Uptime;
 import starvationevasion.ai.commands.Vote;
 import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.SpecialEventData;
 import starvationevasion.common.WorldData;
+import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.communication.Communication;
 import starvationevasion.communication.ConcurrentCommModule;
@@ -24,9 +26,6 @@ import starvationevasion.server.model.Response;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.Type;
 import starvationevasion.server.model.User;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This is just a test/proof-of-concept for the CommModule implementation of the
@@ -78,6 +77,10 @@ public class AI
   // cards to play on each turn.
   public Map<WorldFactors, ArrayList<Object[]>> factorMap = new EnumMap<WorldFactors, ArrayList<Object[]>>(
       WorldFactors.class);
+  
+  //This map is used to store the various game card policies and their associated region, if they only affect one
+  //region.
+  public Map<EnumPolicy, EnumRegion> policyAndRegionMap = new EnumMap<EnumPolicy, EnumRegion>(EnumPolicy.class);
 
   // The AI has a copy of the list of special events, if any occurred during the
   // last turn.
@@ -103,6 +106,7 @@ public class AI
 
     aiLoop();
     COMM.dispose();
+    createRegionMap();
   }
 
   /**
@@ -115,6 +119,26 @@ public class AI
     {
       factorMap.put(WorldFactors.values()[i], new ArrayList<Object[]>());
     }
+  }
+  //In this map I'm adding cards that only affect one region. This is for use in the drafting phase
+  //so that I can evaluate the region that a card is affecting.
+  private void createRegionMap()
+  {
+    policyAndRegionMap.put(EnumPolicy.Policy_CleanRiverIncentive, getUser().getRegion());
+    policyAndRegionMap.put(EnumPolicy.Policy_EfficientIrrigationIncentive, getUser().getRegion());
+    policyAndRegionMap.put(EnumPolicy.Policy_EthanolTaxCreditChange, getUser().getRegion());
+    policyAndRegionMap.put(EnumPolicy.Policy_FarmInfrastructureSubSaharan, EnumRegion.SUB_SAHARAN);
+    policyAndRegionMap.put(EnumPolicy.Policy_FertilizerAidCentralAsia, EnumRegion.CENTRAL_ASIA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FertilizerAidMiddleAmerica, EnumRegion.MIDDLE_AMERICA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FertilizerAidOceania, EnumRegion.OCEANIA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FertilizerAidSouthAsia, EnumRegion.SOUTH_ASIA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FertilizerAidSubSaharan, EnumRegion.SUB_SAHARAN);
+    policyAndRegionMap.put(EnumPolicy.Policy_FertilizerSubsidy, getUser().getRegion());
+    policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefCentralAsia, EnumRegion.CENTRAL_ASIA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefMiddleAmerica,EnumRegion.MIDDLE_AMERICA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefOceania, EnumRegion.OCEANIA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefSouthAsia, EnumRegion.SOUTH_ASIA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefSubSaharan, EnumRegion.SUB_SAHARAN);
   }
 
   /**

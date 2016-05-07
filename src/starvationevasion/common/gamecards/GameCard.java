@@ -173,9 +173,9 @@ public abstract class GameCard implements Sendable
       case Policy_DiverttheFunds:
         myCard = new Policy_DivertFunds();
         break;
-//      case Policy_Filibuster:
-//        myCard = new Policy_Filibuster();
-//        break;
+      case Policy_Filibuster:
+        myCard = new Policy_Filibuster();
+        break;
       case Policy_Fundraiser:
         myCard = new Policy_Fundraiser();
         break;

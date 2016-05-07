@@ -151,15 +151,13 @@ public class ConcurrentCommModule implements Communication
       try
       {
         String line;
-        while (true)
+        while (localServer != null)
         {
           if (!READ.ready()) continue;
           else if ((line = READ.readLine()) == null) break;
           if (TYPE == StreamType.STDOUT) commPrint(line);
           else if (TYPE == StreamType.STDERR) commError(line);
         }
-        READ.close();
-        System.out.println("CLOSING");
       }
       catch (Exception e)
       {
@@ -290,6 +288,7 @@ public class ConcurrentCommModule implements Communication
       RESPONSE_EVENTS.clear();
       closeProcessSocket();
       if (localServer != null) localServer.destroy();
+      localServer = null;
 
       writer.close();
       reader.close();

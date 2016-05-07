@@ -1,5 +1,9 @@
 package starvationevasion.common.gamecards;
 
+import java.util.EnumSet;
+
+import starvationevasion.server.model.State;
+
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
@@ -20,6 +24,9 @@ public class Policy_SpecialInterests extends GameCard
       "gains $100 million that they may spend " +
       "only to support policies drafted this turn.";
   
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
+      EnumSet.of(State.DRAFTING);
+  
   /**
    * {@inheritDoc}
    */
@@ -32,4 +39,12 @@ public class Policy_SpecialInterests extends GameCard
   @Override
   public String getGameText() {return TEXT;}
   
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<State> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
 }

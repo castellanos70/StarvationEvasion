@@ -1,6 +1,9 @@
 package starvationevasion.common.gamecards;
 
+import java.util.EnumSet;
+
 import starvationevasion.common.EnumRegion;
+import starvationevasion.server.model.State;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -17,8 +20,8 @@ public class Policy_Filibuster extends GameCard
   public static final String TITLE = "Filibuster";
   
   public static final String TEXT = 
-      "Play this card before the voting phase to return target " +
-      "region\'s policy card owner\'s hand.";
+      "Play this card at the start of the voting phase to return target " +
+      "policy card its owner\'s hand.";
   
   public static final String FLAVOR_TEXT =
       "I do not like them, Sam-I-Am, I do not like green eggs and ham.";
@@ -26,6 +29,10 @@ public class Policy_Filibuster extends GameCard
   public static final String FLAVOR_TEXT_SOURCE =
       "-Senator Ted Cruz, reading Green Eggs and Ham";
       //https://www.youtube.com/watch?v=0-4FQAov2xI
+  
+  //TODO: let this be played during the "policy-reveal" phase, when that's implemented
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
+      EnumSet.of(null);
   
   /**
    * {@inheritDoc}
@@ -51,6 +58,14 @@ public class Policy_Filibuster extends GameCard
   @Override
   public String getFlavorTextSource(){ return FLAVOR_TEXT_SOURCE;}
   
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<State> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
   
   /**
    * {@inheritDoc}

@@ -3,6 +3,7 @@ package starvationevasion.common.gamecards;
 import java.util.EnumSet;
 
 import starvationevasion.common.EnumRegion;
+import starvationevasion.server.model.State;
 
 
 /**
@@ -37,20 +38,14 @@ public class Policy_Loan extends GameCard
   public static final String FLAVOR_TEXT_SOURCE =
       "-Ronald Reagan";
 
-  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
-      EnumSet.of(EnumGameState.PLANNING_STATE);
-
-  public Policy_Loan()
-  {
-    this.setUsableStates(PLAY_STATES);
-  }
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
+      EnumSet.of(State.DRAFTING);
 
   /**
    * The number of votes required for this policy.  A value of 0 means that
    * the policy is automatic.
    */
   public final static int VOTES_REQUIRED = 2;
-
 
 
   /**
@@ -76,6 +71,15 @@ public class Policy_Loan extends GameCard
    */
   @Override
   public String getFlavorTextSource(){ return FLAVOR_TEXT_SOURCE;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<State> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
 
   /**
    * {@inheritDoc}

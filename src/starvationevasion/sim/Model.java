@@ -168,12 +168,12 @@ public class Model
     assert (assertLandTiles());
     
     packedTileData = new PackedTileData(TOTAL_LAND_TILES);
-//
-//    updateCropRatings(Constant.FIRST_GAME_YEAR-1);
-//
-//    placeCrops();
-//
-//    setRegionalProduction();
+
+    updateCropRatings(Constant.FIRST_GAME_YEAR-1);
+
+    placeCrops();
+
+    setRegionalProduction();
     
     populateUSRegionList();
 

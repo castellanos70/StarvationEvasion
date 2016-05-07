@@ -7,6 +7,9 @@ package starvationevasion.server.model;
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.Constant;
 
+/**
+ * Class that is used by the server set state of game.
+ */
 public enum State implements Sendable
 {
   LOGIN,
@@ -53,6 +56,10 @@ public enum State implements Sendable
     return _json;
   }
 
+  /**
+   * Get the duration of the current State
+   * @return long number in milliseconds
+   */
   public long getDuration()
   {
     return 0;

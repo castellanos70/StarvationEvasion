@@ -18,15 +18,20 @@ public class Region extends Territory
   private EnumRegion region;
   private final ArrayList<Territory> territoryList = new ArrayList<>();
 
+  private int totalProduction = 0;
+  private int totalTax = 0;
   private int revenue;
 
   public int ethanolProducerTaxCredit = 0;
-
+  private int[] cropTaxes = new int[EnumFood.SIZE];
+  private int[] cropRevenues = new int[EnumFood.SIZE];
   private long[][] cropImport = new long[Model.YEARS_OF_DATA][EnumFood.SIZE];  //in metric tons.
   private long[][] cropExport = new long[Model.YEARS_OF_DATA][EnumFood.SIZE];  //in metric tons.
   private long[][] cropConsumption = new long[Model.YEARS_OF_DATA][EnumFood.SIZE]; // in metric tons.
   private long[][] cropProduction = new long[Model.YEARS_OF_DATA][EnumFood.SIZE]; //in metric tons.
   private long[][] cropArea = new long[Model.YEARS_OF_DATA][EnumFood.SIZE]; //square kilometer planted.
+
+
 
   /**
    * Territory constructor
@@ -117,6 +122,11 @@ public class Region extends Territory
   public int getRevenue()
   {
     return revenue;
+  }
+  
+  public void addToRevenue(int money)
+  {
+    revenue += money;
   }
 
   /**
@@ -423,6 +433,32 @@ public class Region extends Territory
 
     cropNeedPerCapita[crop.ordinal()] = tonPerPerson;
     */
+  }
+
+  /**
+   * Sets total production for as a sum of productions for all crops
+   * Sets total taxes as 30% of total production
+   * @param data     crop Data used to calculate production
+   */
+  public void setTotalProduction(CropData data)
+  {
+    int production = 0;
+    for(Territory territory: territoryList)
+    {
+      for(LandTile tile: territory.getLandTiles())
+      {
+        for(int i = 0; i < tile.getCropRatings().length;i ++)
+        {
+          int tileSize = getLandTotal() / getNumTiles() ;
+          cropRevenues[i] = (int)(tile.getCropRatings()[i].productionRate() * data.getPrice(2009, EnumFood.values()[i]) * tileSize);
+          cropTaxes[i] = (int)(.3 * cropRevenues[i]);
+          totalProduction +=  cropRevenues[i];
+          totalTax += cropTaxes[i];
+        }
+      }
+    }
+    totalProduction = production;
+    totalTax = (int)(production * .3);
   }
 
   public MapPoint getCenter()

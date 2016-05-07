@@ -31,7 +31,7 @@ public class User implements Encryptable, Sendable
   private transient String password;
   private EnumRegion region;
   private volatile ArrayList<EnumPolicy> hand;
-   private boolean anonymous = false;
+  private boolean anonymous = false;
 
   public User ()
   {

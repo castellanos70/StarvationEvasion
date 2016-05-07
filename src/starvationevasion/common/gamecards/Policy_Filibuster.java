@@ -20,8 +20,8 @@ public class Policy_Filibuster extends GameCard
   public static final String TITLE = "Filibuster";
   
   public static final String TEXT = 
-      "Play this card before the voting phase to return target " +
-      "region\'s policy card owner\'s hand.";
+      "Play this card at the start of the voting phase to return target " +
+      "policy card its owner\'s hand.";
   
   public static final String FLAVOR_TEXT =
       "I do not like them, Sam-I-Am, I do not like green eggs and ham.";
@@ -32,7 +32,7 @@ public class Policy_Filibuster extends GameCard
   
   //TODO: let this be played during the "policy-reveal" phase, when that's implemented
   public static final EnumSet<State> PLAY_STATES = //when the card can be used
-      EnumSet.of(null);
+      EnumSet.of(State.DRAFTING); /* Maxwell Sanchez says: This occasionally throws errors (whenever this card is used), so I put a placeholder in. */
   
   /**
    * {@inheritDoc}

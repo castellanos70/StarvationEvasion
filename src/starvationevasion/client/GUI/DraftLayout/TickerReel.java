@@ -11,7 +11,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import starvationevasion.client.GUI.ResizablePane;
-import starvationevasion.client.GUI.ResizeStrategy;
 
 /**
  * @author Ben
@@ -23,12 +22,13 @@ import starvationevasion.client.GUI.ResizeStrategy;
  */
 public class TickerReel extends ResizablePane
 {
-  private static final Color TEXT_COLOR = Color.WHITE;
-  private static final Color BACKGROUND_COLOR = Color.BLACK;
+  private static final Color TEXT_COLOR = Color.RED;
+  private static final Color BACKGROUND_COLOR = new Color(0, 0, 0, .6);
   private static final double SCROLL_RATE = 30; //in scrolls per second
-  private static final double SCROLL_AMOUNT = 3; //in pixels
+  private static final double SCROLL_AMOUNT = 4.3; //in pixels
   private static final Font FONT = Font.font("Arial", 20);
   
+  private Pane parent;
   
   private Rectangle background;
   private AnimationTimer timer;
@@ -36,6 +36,7 @@ public class TickerReel extends ResizablePane
   private long last = System.currentTimeMillis();
   
   private double scale;
+  private double textBuffer = 30;
   
   private LinkedList<String> messageQueue;
   private LinkedList<Text> displayedMessages;
@@ -43,31 +44,49 @@ public class TickerReel extends ResizablePane
   
   private Text sizingText;
   
-  public TickerReel(Pane parent, ResizeStrategy strategy)
+  /**
+   * creates a TickerReel that resizes its width the be the entire width of the parent frame
+   * and has a user defined height
+   * 
+   * @param parent
+   * @param height
+   */
+  public TickerReel(Pane parent)
   {
-    super(parent, strategy);
+    super();
+    this.parent = parent;
     messageQueue = new LinkedList<>();
     displayedMessages = new LinkedList<>();
     positionModifiers = new LinkedList<>();
     
     background = new Rectangle();
     background.setFill(BACKGROUND_COLOR);
-    
-    scale = 0;
+    background.setHeight(this.getHeight());
+    background.setWidth(this.getWidth());
     
     sizingText = new Text("test");
     sizingText.setFont(FONT);
     sizingText.setVisible(false);
+    sizingText.setManaged(false);
+    
+    getChildren().add(sizingText);
+    
+    Bounds b = sizingText.getBoundsInLocal();
+    double textHeight = b.getHeight();
     
     timer = new AnimationTimer(){
       @Override
       public void handle(long now)
       {
-        if ((now - last)/1000d > SCROLL_RATE/1){
+        if ((now - last)/1000d > 1/SCROLL_RATE){
           scroll();
         }
       }
     };
+    
+    timer.start();
+    
+    this.getChildren().add(background);
   }
   
   /**
@@ -76,7 +95,7 @@ public class TickerReel extends ResizablePane
    * @param message - the string to be added
    */
   public void addMessage(String message){
-    messageQueue.push(message);
+    messageQueue.addLast(message);
   }
   
   /**
@@ -84,38 +103,95 @@ public class TickerReel extends ResizablePane
    * displayedMessages
    */
   private void scroll(){
-    for (int i = 0; i < positionModifiers.size(); i++){
-      double pos = positionModifiers.get(i);
-      pos -= SCROLL_AMOUNT;
-      
-      Text t = displayedMessages.get(i);
-      t.setTranslateX(pos);
-      
-      positionModifiers.set(i, pos);
+    if (displayedMessages.isEmpty()) {
+      if (!messageQueue.isEmpty()){
+        displayNextMessage();
+      }
+      return;
+    }
+    
+    for (int i = 0; i < displayedMessages.size(); i++){
+      double p = positionModifiers.get(i);
+      p -= SCROLL_AMOUNT;
+      displayedMessages.get(i).setTranslateX(p);
+      positionModifiers.set(i, p);
+    }
+    
+    Text last = displayedMessages.getLast();
+    Bounds b = last.getBoundsInParent();
+    
+    if (Math.abs(last.getTranslateX()) >=  b.getWidth()*scale + textBuffer
+        && !messageQueue.isEmpty()){
+      displayNextMessage();
+    }
+    
+    Text first = displayedMessages.getFirst();
+    b = first.getBoundsInParent();
+    
+    if (Math.abs(first.getTranslateX()) >= b.getWidth()*scale + this.getWidth()){
+      displayedMessages.remove(first);
+      positionModifiers.removeFirst();
+      this.getChildren().remove(first);
     }
   }
   
+  /**
+   * Pops a String off of the messageQueue and adds it to the
+   * displayedMessages
+   */
   private void displayNextMessage(){
+    if (messageQueue.isEmpty()) return;
+    
     String message = messageQueue.pop();
     Text displayText = new Text(message);
     
     displayText.setFill(TEXT_COLOR);
+    displayText.setScaleY(scale);
     displayText.setScaleX(scale);
-    displayText.setFont(Font.font("Arial", 20));
+    displayText.setFont(FONT);
     displayText.setTextOrigin(VPos.TOP);
+    displayText.setManaged(false);
     
+    Bounds b = displayText.getBoundsInLocal();
+    
+    double displayHeight = b.getHeight();
+    double displayWidth = b.getWidth();
+    
+    displayText.setLayoutX(this.getWidth());
+    displayText.setLayoutY((displayHeight*scale - displayHeight)/2);
+    
+    displayedMessages.add(displayText);
+    Double d = new Double(0);
+    positionModifiers.add(d);
+    this.getChildren().add(displayText);
   }
 
   @Override
   public void onResize()
   {
+    double width = parent.getWidth();
+    this.setWidth(width);
+    double height = parent.getHeight();
+    this.setHeight(height);
+    
+    
     Bounds b = sizingText.getBoundsInLocal();
-    
-    double height = this.getHeight();
     double textHeight = b.getHeight();
-    
     scale = height/textHeight;
+    textBuffer = height*2;
     
+    background.setWidth(width);
+    background.setHeight(height);
+    
+    for (Text t : displayedMessages){
+      b = t.getBoundsInLocal();
+      
+      double displayHeight = b.getHeight();
+      
+      t.setX(width);
+      t.setY((displayHeight*scale - displayHeight)/2);
+      
+    }
   }
 
 }

@@ -1,6 +1,7 @@
 package starvationevasion.client.GUI;
 
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -52,6 +53,7 @@ public class SummaryBar extends GridPane
   public SummaryBar(GUI gui)
   {
     this.gui = gui;
+    this.setBackground(new Background(new BackgroundFill(new Color(1, 1, 1, .45), null, null)));
     initializeGridSizes();
     this.getColumnConstraints().addAll(colConstraintsList);
     this.getRowConstraints().addAll(rowConstraintsList);

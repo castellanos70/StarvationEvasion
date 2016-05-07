@@ -1,8 +1,7 @@
 package starvationevasion.server;
 
 /**
- * @author Javier Chavez
- *
+ * @author Javier Chavez (javierc@cs.unm.edu)
  *
  * THIS VERSION OF CLIENT IS NOT CURRENTLY BEING USED.
  * - George Boujaoude (gboujaoude@unm.edu)

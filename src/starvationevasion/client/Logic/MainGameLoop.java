@@ -25,7 +25,7 @@ public class MainGameLoop
   private GUI gui;
   private Client client;
   private DraftLayout draftLayout;
-  private VotingLayout votingLayout;
+  private starvationevasion.client.GUI.votingHud.VotingLayout votingLayout;
   private ChatNode chatNodeDraft;
   private ChatNode chatNodeVote;
   private Timer timer;

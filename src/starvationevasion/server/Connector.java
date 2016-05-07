@@ -1,5 +1,9 @@
 package starvationevasion.server;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ * TODO Rename to Worker
+ */
 
 import starvationevasion.common.Util;
 import starvationevasion.server.handlers.Handler;
@@ -22,6 +26,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Worker that defines the most basic socket connection.
+ */
 public abstract class Connector extends Thread
 {
   private Socket client;

@@ -17,23 +17,19 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * This class serves as the new method of communication between the server and the client.
- * It is thread-safe and provides the ability to connect, check connection status, disconnect
- * and send/receive information from a server.
+ * A ConcurrentCommModule allows for a client to send and receive information from a server.
  *
- * This class guarantees that it can both listen for server requests, process send requests,
- * and handle calls to pollMessages() all at the same time even though it is expected that
- * multiple threads will be making these calls.
+ * This class can be used with multiple threads, and aside from some blocking, there should
+ * be no issues. This version of the module is capable of receiving messages from the server
+ * and polling previously-sent messages at the same time to increase performance by a small
+ * amount over the previous version.
  *
- * Note that any number of threads can call the login, send, and sendChat messages and none
- * of them will block. A call to pollMessages() will block because of the nature of its operation
- * (it must sample from the current top n messages, remove them and return them as a list).
- *
- * @author Javier Chavez (javierc@cs.unm.edu), Justin Hall, George Boujaoude
+ * @author Justin Hall, George Boujaoude, Javier Chavez (javierc@cs.unm.edu)
  */
 public class ConcurrentCommModule implements Communication
 {
@@ -46,9 +42,11 @@ public class ConcurrentCommModule implements Communication
   //         spawn its own server process, which would be a mess.
   private static final int PROCESS_LOCK_PORT = 5050;
 
+  // Final variables
   private final ReentrantLock LOCK = new ReentrantLock(); // Used for synchronization
   private final AtomicBoolean IS_CONNECTED = new AtomicBoolean(false);
-  private final ArrayList<Response> RESPONSE_EVENTS = new ArrayList<>(1_000);
+  private final ConcurrentLinkedQueue<Response> RESPONSE_EVENTS = new ConcurrentLinkedQueue<>();
+  private final ArrayList<StreamRedirect> STREAM_REDIRECT_THREADS = new ArrayList<>(2);
   private final String HOST;
   private final int PORT;
 
@@ -64,11 +62,16 @@ public class ConcurrentCommModule implements Communication
   private Cipher aesCipher;
   private KeyPair rsaKey;
 
+  // These are only used when spawning a local server
   private boolean connectInfinitely = false; // Used in a special localhost case
   private ServerSocket processSocket = null;
 
   /**
-   * This class enables the client to listen
+   * This class enables the comm module to listen for responses from the server. When
+   * a new response is received, it is pushed to the end of the response queue to be
+   * dealt with at a later time when pollMessages() is called.
+   *
+   * @author Justin Hall, George Boujaoude
    */
   private class StreamListener extends Thread
   {
@@ -90,7 +93,7 @@ public class ConcurrentCommModule implements Communication
           encounteredError = true;
           return;
         }
-        add(response);
+        pushResponse(response);
 
         if (response.getType().equals(Type.AUTH_SUCCESS)) commPrint("Login successful");
         else if (response.getType().equals(Type.AUTH_ERROR)) commError("Failed to login");
@@ -136,16 +139,31 @@ public class ConcurrentCommModule implements Communication
     }
   }
 
+  /**
+   * STDOUT just means that System.out will be used, while STDERR means that
+   * System.err will be used.
+   *
+   * @author Justin Hall, George Boujaoude
+   */
   private enum StreamType
   {
     STDOUT,
     STDERR
   }
 
+  /**
+   * StreamRedirect allows this class to intercept the output of a separate spawned process
+   * (in this case, a local server process). These can either be ignored or pushed to a separate
+   * stream. Right now this class only uses System.out and System.err, but it could be configured
+   * to do something like write all output to a file or something.
+   *
+   * @author Justin Hall, George Boujaoude
+   */
   private class StreamRedirect extends Thread
   {
     private final StreamType TYPE;
     private final BufferedReader READ;
+    private final AtomicBoolean RUN = new AtomicBoolean(true);
 
     public StreamRedirect(StreamType type, InputStream stream)
     {
@@ -159,7 +177,7 @@ public class ConcurrentCommModule implements Communication
       try
       {
         String line;
-        while (localServer != null)
+        while (RUN.get())
         {
           if (!READ.ready()) continue;
           else if ((line = READ.readLine()) == null) break;
@@ -172,8 +190,29 @@ public class ConcurrentCommModule implements Communication
         e.printStackTrace();
       }
     }
+
+    public void close()
+    {
+      RUN.set(false);
+    }
   }
 
+  /**
+   * Constructs a new ConcurrentCommModule. If the given host starts with "local", it will
+   * assume that single player mode is enabled. When connect() is called it will attempt
+   * to connect exactly once (if local) and if it fails, it will move into the stage of
+   * spawning its own local server to connect to.
+   *
+   * In the event that a local server is spawned, the ConcurrentCommModule sets itself up
+   * as a server by opening a ServerSocket bound to port PROCESS_LOCK_PORT. Whichever instance
+   * succeeds in securing this port first gains exclusive rights to spawning the process, while
+   * other clients will yield and wait for the server to start up. This prevents the issue
+   * of multiple clients spawning a local server on the same machine, which would quickly
+   * eat up gigabytes of memory.
+   *
+   * @param host host to connect to
+   * @param port port the host is listening to
+   */
   public ConcurrentCommModule(String host, int port)
   {
     HOST = host;
@@ -211,11 +250,11 @@ public class ConcurrentCommModule implements Communication
   @Override
   public void connect()
   {
-    if (IS_CONNECTED.get()) return; // Already connected
     try
     {
       LOCK.lock();
-
+      if (isConnected()) return; // connect() was already called
+      IS_CONNECTED.set(true);
       // Set up the key
       rsaKey = generateRSAKey();
 
@@ -241,14 +280,12 @@ public class ConcurrentCommModule implements Communication
           // This solves an issue I don't understand and probably never will
           openConnection(HOST, PORT);
           break;
-        }
-        else if (localServer != null && !localServer.isAlive())
+        } else if (localServer != null && !localServer.isAlive())
         {
           commError("Failed to start the local server");
           dispose();
           System.exit(-1);
-        }
-        else if (HOST.toLowerCase().startsWith("local") && secureProcessPort() != null)
+        } else if (HOST.toLowerCase().startsWith("local") && secureProcessPort() != null)
         {
           commError("Another client tried and failed to start a local server");
           dispose();
@@ -257,19 +294,27 @@ public class ConcurrentCommModule implements Communication
         deltaSeconds = (System.currentTimeMillis() - millisecondTimeStamp) / 1000.0;
       }
 
-      closeProcessSocket();
-
-      // Generate the aes cipher
-      aesCipher = generateAESCipher();
+      //closeProcessSocket();
 
       // See if the connect attempt went badly
       if (!IS_CONNECTED.get())
       {
         commError("Failed to establish connection at host " + HOST + ", port " + PORT + " within " + MAX_SECONDS + " " +
-                  "seconds.");
+                "seconds.");
         return;
       }
+
       commPrint("Connection successful");
+
+      // Generate and initialize the aes cipher
+      try
+      {
+        aesCipher = generateAESCipher();
+        aesCipher.init(Cipher.ENCRYPT_MODE, serverKey);
+      } catch (Exception e)
+      {
+        e.printStackTrace();
+      }
 
       // Start the listener
       new StreamListener().start();
@@ -281,22 +326,24 @@ public class ConcurrentCommModule implements Communication
   }
 
   /**
-   * Disposes of this module. All existing threads should be shut down and data cleared out.
+   * Disposes of this module. All existing threads should be shut down and data cleared out. No
+   * existing connection should remain.
    * <p>
-   * The object is not meant to be used in any way after this is called.
+   * Calling connect() undoes this.
    */
   @Override
   public void dispose()
   {
-    if (!IS_CONNECTED.get()) return; // Already disposed/the connection never succeeded
-    IS_CONNECTED.set(false);
     try
     {
       LOCK.lock();
-      RESPONSE_EVENTS.clear();
+      if (!isConnected()) return; // Already disposed/the connection never succeeded
+      IS_CONNECTED.set(false);
+      clearResponses();
       closeProcessSocket();
       if (localServer != null) localServer.destroy();
       localServer = null;
+      for (StreamRedirect redirect : STREAM_REDIRECT_THREADS) redirect.close();
 
       writer.close();
       reader.close();
@@ -429,9 +476,10 @@ public class ConcurrentCommModule implements Communication
     try
     {
       LOCK.lock();
-      ArrayList<Response> messages = new ArrayList<>(RESPONSE_EVENTS);
-      RESPONSE_EVENTS.clear();
-      return messages;
+      int size = RESPONSE_EVENTS.size(); // Take a snapshot of the size so we know how many events to process
+      ArrayList<Response> list = new ArrayList<>(size);
+      for (int i = 0; i < size; i++) list.add(RESPONSE_EVENTS.poll());
+      return list;
     }
     finally
     {
@@ -459,12 +507,17 @@ public class ConcurrentCommModule implements Communication
     try
     {
       ProcessBuilder builder = new ProcessBuilder();
-      //builder.inheritIO();
       builder.directory(new File(System.getProperty("user.dir")));
-      builder.command("java", "-Xms4g", "-jar", "Server.jar", Integer.toString(port));
+      builder.command("java",
+                      "-Xms4g",               // Try to allocate up to 4gb of heap space
+                      "-jar",
+                      "Server.jar",
+                      Integer.toString(port));
       process = builder.start();
-      new StreamRedirect(StreamType.STDOUT, process.getInputStream()).start();
-      new StreamRedirect(StreamType.STDERR, process.getErrorStream()).start();
+      STREAM_REDIRECT_THREADS.clear();
+      STREAM_REDIRECT_THREADS.add(new StreamRedirect(StreamType.STDOUT, process.getInputStream()));
+      STREAM_REDIRECT_THREADS.add(new StreamRedirect(StreamType.STDERR, process.getErrorStream()));
+      for (StreamRedirect redirect : STREAM_REDIRECT_THREADS) redirect.start();
       //process.wait(1); // If the process failed, this should cause an exception to be thrown which is what we want
     }
     catch (Exception e)
@@ -477,6 +530,56 @@ public class ConcurrentCommModule implements Communication
     return process;
   }
 
+  private boolean pushResponse(Response response)
+  {
+    return RESPONSE_EVENTS.add(response);
+  }
+
+  private void clearResponses()
+  {
+    RESPONSE_EVENTS.clear();
+  }
+
+  private void updateCurrentTime()
+  {
+    if (!LOCK.tryLock()) return; // Lock is busy - updating the time isn't super important, so don't block
+    try
+    {
+      elapsedTime = System.nanoTime() - startNanoSec;
+    }
+    finally
+    {
+      LOCK.unlock();
+    }
+  }
+
+  private void setStartTime(double time)
+  {
+    if (!isConnected()) return;
+    try
+    {
+      LOCK.lock();
+      startNanoSec = time;
+    }
+    finally
+    {
+      LOCK.unlock();
+    }
+  }
+
+  private void commPrint(String message)
+  {
+    System.out.println("Client: " + message);
+  }
+
+  private void commError(String message)
+  {
+    System.err.println("Client: " + message);
+  }
+
+  /**
+   * Tries to close the server socket obtained from secureProcessPort.
+   */
   private void closeProcessSocket()
   {
     try
@@ -486,34 +589,24 @@ public class ConcurrentCommModule implements Communication
     }
     catch (Exception e)
     {
-      // Ignore;
+      // Ignore
     }
   }
 
+  /**
+   * This is used to secure PROCESS_LOCK_PORT when a client is trying to spawn a local server.
+   *
+   * @return ServerSocket (or null if it failed)
+   */
   private ServerSocket secureProcessPort()
   {
-    ServerSocket socket = null;
     try
     {
-      socket = new ServerSocket(PROCESS_LOCK_PORT);
+      return new ServerSocket(PROCESS_LOCK_PORT);
     }
     catch (Exception e)
     {
-      // Ignore
-    }
-    return socket;
-  }
-
-  private void add(Response response)
-  {
-    try
-    {
-      LOCK.lock();
-      RESPONSE_EVENTS.add(response);
-    }
-    finally
-    {
-      LOCK.unlock();
+      return null;
     }
   }
 
@@ -544,16 +637,6 @@ public class ConcurrentCommModule implements Communication
     return true;
   }
 
-  private void commPrint(String message)
-  {
-    System.out.println("Client: " + message);
-  }
-
-  private void commError(String message)
-  {
-    System.err.println("Client: " + message);
-  }
-
   private KeyPair generateRSAKey()
   {
     try
@@ -581,44 +664,17 @@ public class ConcurrentCommModule implements Communication
     return null;
   }
 
-  private void setStartTime(double time)
-  {
-    if (!IS_CONNECTED.get()) return;
-    try
-    {
-      LOCK.lock();
-      startNanoSec = time;
-    }
-    finally
-    {
-      LOCK.unlock();
-    }
-  }
-
-  private void updateCurrentTime()
-  {
-    try
-    {
-      if (!LOCK.tryLock()) return; // Lock is busy - updating the time isn't super important, so don't block
-      elapsedTime = System.nanoTime() - startNanoSec;
-    }
-    finally
-    {
-      LOCK.unlock();
-    }
-  }
-
   private void send (Request request)
   {
     try
     {
-      aesCipher.init(Cipher.ENCRYPT_MODE, serverKey);
       SealedObject sealedObject = new SealedObject(request, aesCipher);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       ObjectOutputStream oos = new ObjectOutputStream(baos);
       oos.writeObject(sealedObject);
       oos.close();
 
+      LOCK.lock(); // Make sure this is done since the stream is not necessarily thread safe
       writer.flush();
       byte[] bytes = baos.toByteArray();
       writer.writeInt(bytes.length);
@@ -629,6 +685,10 @@ public class ConcurrentCommModule implements Communication
     catch (Exception e)
     {
       e.printStackTrace();
+    }
+    finally
+    {
+      LOCK.unlock();
     }
   }
 }

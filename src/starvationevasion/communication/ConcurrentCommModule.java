@@ -45,6 +45,7 @@ public class ConcurrentCommModule implements Communication
   private final ArrayList<Response> RESPONSE_EVENTS = new ArrayList<>(1_000);
   private final String HOST;
   private final int PORT;
+  private final Process LOCAL_SERVER;
 
   // Non-final variables
   private Socket clientSocket;
@@ -130,7 +131,11 @@ public class ConcurrentCommModule implements Communication
   {
     HOST = host;
     PORT = port;
-    if (HOST.toLowerCase().startsWith("local")) spawnLocalServer(port);
+    if (HOST.toLowerCase().startsWith("local")) LOCAL_SERVER = spawnLocalServer(port);
+    else LOCAL_SERVER = null;
+    // This will hopefully prevent most cases where a local server was spawned but not shutdown
+    // because the client's program had to close itself unexpectedly
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> dispose()));
   }
 
   /**
@@ -218,6 +223,7 @@ public class ConcurrentCommModule implements Communication
     {
       LOCK.lock();
       RESPONSE_EVENTS.clear();
+      if (LOCAL_SERVER != null) LOCAL_SERVER.destroy();
 
       writer.close();
       reader.close();
@@ -360,6 +366,19 @@ public class ConcurrentCommModule implements Communication
     }
   }
 
+  /**
+   * This function will attempt to spawn a local server for use in single player mode. It looks
+   * really complex, but what it actually does is pretty simple. To prevent multiple clients from
+   * trying to spawn the server at once, they will each try to create their own ServerSocket that
+   * all bind to port 5050. Only the first to secure it will actually get the opportunity to spawn
+   * the server, while the other clients will stall while they wait for the server to start up.
+   *
+   * Once the client that got the opportunity to spawn the server has finished, it will close the
+   * port. This lets all the other clients know it is safe to stop stalling and attempt to connect.
+   *
+   * @param port port to tell the server to bind to
+   * @return a Process instance or null if it failed
+   */
   private Process spawnLocalServer(int port)
   {
     commPrint("Single player detected - attempting to spawn a new local server (This will test your patience)");

@@ -25,6 +25,14 @@ import java.util.concurrent.locks.ReentrantLock;
  * It is thread-safe and provides the ability to connect, check connection status, disconnect
  * and send/receive information from a server.
  *
+ * This class guarantees that it can both listen for server requests, process send requests,
+ * and handle calls to pollMessages() all at the same time even though it is expected that
+ * multiple threads will be making these calls.
+ *
+ * Note that any number of threads can call the login, send, and sendChat messages and none
+ * of them will block. A call to pollMessages() will block because of the nature of its operation
+ * (it must sample from the current top n messages, remove them and return them as a list).
+ *
  * @author Javier Chavez (javierc@cs.unm.edu), Justin Hall, George Boujaoude
  */
 public class ConcurrentCommModule implements Communication

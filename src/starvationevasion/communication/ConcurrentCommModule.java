@@ -183,6 +183,12 @@ public class ConcurrentCommModule implements Communication
       {
         IS_CONNECTED.set(openConnection(HOST, PORT));
         if (IS_CONNECTED.get()) break;
+        else if (secureProcessPort() != null)
+        {
+          commError("Another client tried and failed to start a local server");
+          dispose();
+          System.exit(-1);
+        }
         deltaSeconds = (System.currentTimeMillis() - millisecondTimeStamp) / 1000.0;
       }
 
@@ -196,8 +202,6 @@ public class ConcurrentCommModule implements Communication
                   "seconds.");
         return;
       }
-      closeProcessSocket(); // Free up the socket - let's other single player clients know it's safe to try
-                            // to connect now
       commPrint("Connection successful");
 
       // Start the listener
@@ -368,14 +372,7 @@ public class ConcurrentCommModule implements Communication
   }
 
   /**
-   * This function will attempt to spawn a local server for use in single player mode. It looks
-   * really complex, but what it actually does is pretty simple. To prevent multiple clients from
-   * trying to spawn the server at once, they will each try to create their own ServerSocket that
-   * all bind to port 5050. Only the first to secure it will actually get the opportunity to spawn
-   * the server, while the other clients will stall while they wait for the server to start up.
-   *
-   * Once the client that got the opportunity to spawn the server has finished, it will close the
-   * port. This lets all the other clients know it is safe to stop stalling and attempt to connect.
+   * Tries to spawn a local server.
    *
    * @param port port to tell the server to bind to
    * @return a Process instance or null if it failed
@@ -383,17 +380,13 @@ public class ConcurrentCommModule implements Communication
   private Process spawnLocalServer(int port)
   {
     commPrint("Single player detected - attempting to spawn a new local server (This will test your patience)");
-    connectInfinitely = false; // Assume false at first
+    connectInfinitely = true;
     processSocket = secureProcessPort();
     if (processSocket == null)
     {
-      commPrint("Another client has already started the spawning process - waiting for it to spawn");
-      while ((processSocket = secureProcessPort()) == null)
-        ;
-      closeProcessSocket();
+      commPrint("Another client has already started the spawning process - continuing");
       return null;
     }
-    connectInfinitely = true; // We secured the socket - this is a special case for us
     Process process = null;
     try
     {

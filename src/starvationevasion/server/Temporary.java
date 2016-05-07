@@ -1,5 +1,8 @@
 package starvationevasion.server;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 import starvationevasion.server.io.HttpParse;
 import starvationevasion.server.model.*;
@@ -7,6 +10,9 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Worker used to handle HTTP requests.
+ */
 public class Temporary extends Connector
 {
   private final Queue<HttpParse> requests;

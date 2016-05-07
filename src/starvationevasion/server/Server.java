@@ -26,9 +26,7 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -44,6 +42,8 @@ import java.util.stream.Collectors;
 
 
 /**
+ * Class that holds all the logic for managing connections,
+ * game progression, and Simulator.
  */
 public class Server
 {
@@ -102,7 +102,7 @@ public class Server
     userTransaction = new Users(db);
     Collections.addAll(availableRegions, EnumRegion.US_REGIONS);
 
-    // get all the users from the database
+    // get all the users from the database and cache them
     for (User user : userTransaction.getAll())
     {
       userList.add(user);
@@ -115,6 +115,7 @@ public class Server
 
     try
     {
+      // serverSocket = new ServerSocket(portNumber, 50, InetAddress.getLocalHost());
       serverSocket = new ServerSocket(portNumber);
       serverSocket.setSoTimeout(10);
     }
@@ -237,24 +238,42 @@ public class Server
     }
   }
 
-
+  /**
+   * Get the uptime of the server
+   *
+   * @return String representation of uptime
+   */
   public String uptimeString ()
   {
     return String.format("%.3f", uptime());
   }
 
+  /**
+   * Get the uptime as a double
+   * 
+   * @return uptime as a double
+   */
   public double uptime ()
   {
     long nanoSecDiff = System.nanoTime() - startNanoSec;
     return nanoSecDiff / 1000000000.0;
   }
 
-
+  /**
+   * Get the simulator. 
+   *
+   * @return Simulator 
+   */
   public synchronized Simulator getSimulator ()
   {
     return simulator;
   }
 
+  /**
+   * Get a User by the username
+   * 
+   * @return User if found, null if not found
+   */
   public synchronized User getUserByUsername (String username)
   {
     for (User user : userList)
@@ -268,11 +287,24 @@ public class Server
     return null;
   }
 
+  /**
+   * Get list of all users. This is a accureate representation of 
+   * users that are in the DB.
+   * 
+   * @return List of Users.
+   */
   public List<User> getUserList ()
   {
     return userList;
   }
 
+  /**
+   * Create a user. This will check if username is empty, 
+   * null, and make sure its unique. If all is ok, its sent to
+   * db.
+   *
+   * @return true if user successfully saved into DB, false if failed.
+   */
   public boolean createUser (User u)
   {
     if (u.getUsername() == null || u.getUsername().trim().isEmpty())
@@ -313,7 +345,10 @@ public class Server
     return userList.size();
   }
 
-
+  /**
+   * Send a Response to everyone that is connected via
+   * a persistant connection.
+   */
   public void broadcast (Response response)
   {
     int i = 0;
@@ -331,14 +366,18 @@ public class Server
     }
   }
 
+  /**
+   * Kill the server. This also sends a boardcast to everyone
+   * that the server is shutting down.
+   */
   public void killServer ()
   {
     LOG.severe("Killing server");
     isWaiting = false;
 
     broadcast(new ResponseFactory().build(uptime(),
-                                            currentState,
-                                            Type.BROADCAST, "Server will shutdown in 3 sec"));
+                                          currentState,
+                                          Type.BROADCAST, "Server will shutdown in 3 sec"));
 
     try
     {
@@ -359,11 +398,20 @@ public class Server
     System.exit(1);
   }
 
+  /**
+   * Get the current state of the Game.
+   *
+   * @return current state of the Game
+   */
   public State getGameState ()
   {
       return currentState;
   }
 
+  /**
+   * Restart the Game. Sets all the sets all User.isPlaying to false.
+   * resets all the User's hands, also sets the current state to LOGIN.
+   */
   public void restartGame ()
   {
     stopGame();
@@ -386,23 +434,46 @@ public class Server
     broadcastStateChange();
   }
 
+  /**
+   * Stops the game by setting current state to END
+   * also sets isPlaying to false.
+   */
   public void stopGame ()
   {
     currentState = State.END;
     isPlaying = false;
     broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE, "Game has been stopped."));
   }
-
+  
+  /**
+   * Get list of all the Players. Players are defined as Users that
+   * are currently aligned to play in the upcomming game.
+   * User that is a player: isPlayer == true && Region is set.
+   *
+   * @return List of users
+   */
   public List<User> getPlayers ()
   {
     return playerCache;
   }
 
+  /**
+   * Number of current players
+   *
+   * @return number of players
+   */
   public int getPlayerCount ()
   {
     return playerCache.size();
   }
 
+  /**
+   * Add a user to list of players. If the User's Region is not set
+   * it will be set. If the region that is chosen is already taken
+   * then the User will not be added.
+   *
+   * @return true if the User is added as a player
+   */
   public synchronized boolean addPlayer (User u)
   {
     if (getPlayerCount() == TOTAL_PLAYERS || currentState.ordinal() > State.LOGIN.ordinal())
@@ -441,6 +512,9 @@ public class Server
     return true;
   }
 
+  /**
+   * List of available regions
+   */
   public List<EnumRegion> getAvailableRegions ()
   {
     return availableRegions;
@@ -526,7 +600,6 @@ public class Server
    */
   private Void draw ()
   {
-    LOG.fine("Server.draw");
 
     ArrayList<GameCard> enactedPolicyCards = new ArrayList<>();
     ArrayList<GameCard> _list = new ArrayList<>();
@@ -565,8 +638,10 @@ public class Server
     // make sure there is no other thread calling the sim before advancing
     synchronized(simulator)
     {
-      if(LOG.isLoggable(Level.FINEST))
-        LOG.finest("There is " + enactedPolicyCards.size() + " cards being enacted.");
+      if(LOG.isLoggable(Level.FINE))
+      {
+        LOG.fine("There is " + enactedPolicyCards.size() + " cards being enacted.");
+      }
       ArrayList<WorldData> worldData = simulator.nextTurn(enactedPolicyCards);
       broadcast(new ResponseFactory().build(uptime(), new Payload(worldData), Type.WORLD_DATA_LIST));
     }
@@ -587,7 +662,7 @@ public class Server
     {
       if(LOG.isLoggable(Level.INFO))
       {
-        LOG.info("Ending game");
+        LOG.info("Ending game due to last year");
       }
       currentState = State.END;
       broadcastStateChange();

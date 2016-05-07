@@ -3,10 +3,12 @@ package starvationevasion.sim;
 import starvationevasion.common.*;
 import starvationevasion.sim.io.CSVReader;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 
 /**
@@ -263,11 +265,16 @@ public class LandTile
     {
 
 
-      ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(zipPath).toURI().getPath());
-      ZipEntry entry = zipFile.getEntry(COORDINATE_FILENAME+".csv");
+      //ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(zipPath).toURI().getPath());
+      ZipInputStream zStream = new ZipInputStream(Util.rand.getClass().getResourceAsStream(zipPath));
+      //ZipEntry entry = zipFile.getEntry(COORDINATE_FILENAME+".csv");
+      ZipEntry entry;
+      while ((entry = zStream.getNextEntry()) != null && !entry.getName().equals(COORDINATE_FILENAME + ".csv"))
+        ;
       //ZipEntry entry = zipFile.getEntry("geodesic.csv");
 
-      CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
+      //CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
+      CSVReader fileReader = new CSVReader(zStream, 1);
 
       String[] fieldList;
       Territory territory = null;
@@ -360,17 +367,21 @@ public class LandTile
       try
       {
         System.out.printf("     Archive: %s\n", path);
-        ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(path).toURI().getPath());
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        //ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(path).toURI().getPath());
+        //Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        ZipInputStream zStream = new ZipInputStream(Util.rand.getClass().getResourceAsStream(path));
 
         //Open sub-file for each month of year.
         int month = 0;
 
-        while (entries.hasMoreElements())
-        { ZipEntry entry = entries.nextElement();
+        //while (entries.hasMoreElements())
+        while (zStream.getNextEntry() != null)
+        {
+          //ZipEntry entry = entries.nextElement();
           //System.out.printf("       File: %s\n", entry.getName());
 
-          CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
+          //CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
+          CSVReader fileReader = new CSVReader(zStream, 1);
 
           String[] fieldList;
           recordIdx = 0;
@@ -395,10 +406,11 @@ public class LandTile
             }
             recordIdx++;
           }
-          fileReader.close();
+          //fileReader.close();
           month++;
         }
-        zipFile.close();
+        zStream.close();
+        //zipFile.close();
       }
       catch (Exception e)
       {

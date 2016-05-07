@@ -223,7 +223,7 @@ public class ImageGetter implements ImageConstants
    *          policy card you want to get an image for
    * @return image of the policy card
    */
-  public ImageView getImageForCard(EnumPolicy policy)
+  public static ImageView getImageForCard(EnumPolicy policy)
   {
     String desiredPath = policy.getImagePath(); 
     desiredPath = desiredPath.replace("\\", System.getProperty("file.separator")); // Double-escaped to be "\\" in regex

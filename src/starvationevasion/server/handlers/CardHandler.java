@@ -40,7 +40,7 @@ public class CardHandler extends AbstractHandler
     else if (request.getDestination().equals(Endpoint.DELETE_CARD))
     {
       EnumPolicy card = (EnumPolicy) request.getPayload().get("data");
-      if (getClient().getUser().policyCardsDiscarded == 0 || getClient().getUser().actionsRemaining >= 1)
+      if (getClient().getUser().policyCardsDiscarded == 0 || getClient().getUser().actionPointsRemaining >= 1)
       {
         if (getClient().getUser().getHand().contains(card))
         {
@@ -49,7 +49,7 @@ public class CardHandler extends AbstractHandler
 
           if (getClient().getUser().policyCardsDiscarded == 1)
           {
-            getClient().getUser().actionsRemaining--;
+            //getClient().getUser().actionsRemaining--;
           }
           else
           {
@@ -62,7 +62,7 @@ public class CardHandler extends AbstractHandler
       }
       else
       {
-        getClient().send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "You're out of actions!"));
+        getClient().send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "You do not have enough action points!"));
       }
 
       return true;
@@ -70,7 +70,7 @@ public class CardHandler extends AbstractHandler
     else if (request.getDestination().equals(Endpoint.DELETE_AND_DRAW_CARDS))
     {
       ArrayList<EnumPolicy> cards = (ArrayList<EnumPolicy>) request.getPayload().get("data");
-      if (getClient().getUser().actionsRemaining >= 1)
+      if (getClient().getUser().actionPointsRemaining >= 1)
       {
         boolean isSubset = getClient().getUser().getHand().containsAll(cards);
 
@@ -93,7 +93,7 @@ public class CardHandler extends AbstractHandler
       }
       else
       {
-        getClient().send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "You're out of actions!"));
+        getClient().send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "You do not have enough action points!"));
       }
 
       return true;
@@ -102,7 +102,7 @@ public class CardHandler extends AbstractHandler
     {
       GameCard policyCard = (GameCard) request.getPayload().getData();
 
-      if (getClient().getUser().actionsRemaining >= 1 && getClient().getUser().drafts < 2)
+      if (getClient().getUser().actionPointsRemaining >= 1 && getClient().getUser().drafts < 2)
       {
 
         if (policyCard.getOwner().equals(getClient().getUser().getRegion()))
@@ -134,7 +134,7 @@ public class CardHandler extends AbstractHandler
               getClient().send(new ResponseFactory().build(server.uptime(), getClient().getUser(), Type.USER));
             }
             getClient().getUser().drafts++;
-            getClient().getUser().actionsRemaining--;
+            getClient().getUser().actionPointsRemaining -= policyCard.actionPointCost(policyCard.getType());
             return true;
           }
           else
@@ -146,7 +146,7 @@ public class CardHandler extends AbstractHandler
       }
       else
       {
-        getClient().send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "You're out of actions!"));
+        getClient().send(new ResponseFactory().build(server.uptime(), null, Type.ERROR, "You do not have enough action points!"));
       }
 
 

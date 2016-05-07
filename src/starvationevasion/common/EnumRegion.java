@@ -54,22 +54,6 @@ public enum EnumRegion implements Sendable
   RUSSIA, CENTRAL_ASIA, SOUTH_ASIA, EAST_ASIA, OCEANIA;
 
   public static final int SIZE = values().length;
-  
-  /**
-   * The array of holding the number of Action Points for each US Region, order based on the US_REGION ordinal.
-   */
-  public int[] actionPoints = new int[US_REGIONS.length];
-  
-  /**
-   * This method initializes the actionPoint array
-   */
-  public void setActionPointArray()
-  {
-	for(int i = 0; i < US_REGIONS.length; i++)
-	{
-	  actionPoints[i] = 3;//figure out if I need to import this from Constant
-	}
-  }
 
   /**
    * Array of all player regions used in game.

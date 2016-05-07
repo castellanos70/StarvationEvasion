@@ -135,7 +135,8 @@ public class CSVReader
       str = reader.readLine();
       //System.out.println(str);
       if (str == null)
-      { reader.close();
+      {
+        //reader.close();
         return null;
       }
     }

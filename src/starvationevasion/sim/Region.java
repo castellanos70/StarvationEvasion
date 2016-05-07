@@ -452,6 +452,19 @@ public class Region extends Territory
   }
 
   /**
+   * Scales tax for a given crop type.
+   * Can be used to model a policy card effect.
+   * Ex: giving tax breaks for corn production: scaleCropTax(0.8, EnumFood.GRAIN)
+   * This would decrease taxes on grain by 20%
+   * @param scaleFactor    factor by which to scale the tax
+   * @param crop           the crop to be affected
+   */
+  public void scaleCropTax(double scaleFactor, EnumFood crop )
+  {
+    cropTaxes[crop.ordinal()] *= scaleFactor;
+  }
+
+  /**
    * Sets total production for as a sum of productions for all crops
    * Sets total taxes as 30% of total production
    * @param data     crop Data used to calculate production

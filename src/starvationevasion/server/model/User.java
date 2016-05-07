@@ -299,7 +299,7 @@ public class User implements Encryptable, Sendable
   @Transient
   public void reset ()
   {
-    actionsPointsRemaining = 3;
+    actionPointsRemaining = 3;
     policyCardsDiscarded = 0;
     drafts = 0;
     draftVoteCard = 0;

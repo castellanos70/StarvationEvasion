@@ -49,7 +49,7 @@ public class CardHandler extends AbstractHandler
 
           if (getClient().getUser().policyCardsDiscarded == 1)
           {
-            //getClient().getUser().actionsRemaining--;
+            getClient().getUser().actionPointsRemaining--;
           }
           else
           {
@@ -86,7 +86,7 @@ public class CardHandler extends AbstractHandler
           }
 
 
-          getClient().getUser().actionsRemaining--;
+          getClient().getUser().actionPointsRemaining--;
           server.broadcast(new ResponseFactory().build(server.uptime(), getClient().getUser(), Type.DRAFTED, "Discard and Drew"));
           getClient().send(new ResponseFactory().build(server.uptime(), getClient().getUser(), Type.USER));
         }
@@ -134,7 +134,7 @@ public class CardHandler extends AbstractHandler
               getClient().send(new ResponseFactory().build(server.uptime(), getClient().getUser(), Type.USER));
             }
             getClient().getUser().drafts++;
-            getClient().getUser().actionPointsRemaining -= policyCard.actionPointCost(policyCard.getType());
+            getClient().getUser().actionPointsRemaining -= policyCard.actionPointCost(policyCard.getCardType());
             return true;
           }
           else

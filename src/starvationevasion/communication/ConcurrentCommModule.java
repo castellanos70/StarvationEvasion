@@ -58,6 +58,7 @@ public class ConcurrentCommModule implements Communication
   private KeyPair rsaKey;
 
   private boolean connectInfinitely = false; // Used in a special localhost case
+  private ServerSocket processSocket = null;
 
   private class StreamListener extends Thread
   {
@@ -190,6 +191,8 @@ public class ConcurrentCommModule implements Communication
                   "seconds.");
         return;
       }
+      closeProcessSocket(); // Free up the socket - let's other single player clients know it's safe to try
+                            // to connect now
       commPrint("Connection successful");
 
       // Start the listener
@@ -357,21 +360,63 @@ public class ConcurrentCommModule implements Communication
     }
   }
 
-  private void spawnLocalServer(int port)
+  private Process spawnLocalServer(int port)
   {
     commPrint("Single player detected - attempting to spawn a new local server (This will test your patience)");
+    connectInfinitely = false; // Assume false at first
+    processSocket = secureProcessPort();
+    if (processSocket == null)
+    {
+      commPrint("Another client has already started the spawning process - waiting for it to spawn");
+      while ((processSocket = secureProcessPort()) == null)
+        ;
+      closeProcessSocket();
+      return null;
+    }
+    connectInfinitely = true; // We secured the socket - this is a special case for us
+    Process process = null;
     try
     {
-      new ServerSocket(PROCESS_LOCK_PORT);
+      ProcessBuilder builder = new ProcessBuilder();
+      builder.inheritIO();
+      builder.directory(new File(System.getProperty("user.dir")));
+      builder.command("java", "-Xms4g", "-jar", "Server.jar", Integer.toString(port));
+      process = builder.start();
+      process.wait(1); // If the process failed, this should cause an exception to be thrown which is what we want
     }
     catch (Exception e)
     {
-      commPrint("Another client has already started the spawning process - aborting previous action");
-      connectInfinitely = true; // Another process already secured the port - try to connect for
-                                // a very long time in the hopes that this other process's server
-                                // will start up within a reasonable amount of time
-      return;
+      commError("Failed to start the server");
+      closeProcessSocket();
+      System.exit(-1);
     }
+    return process;
+  }
+
+  private void closeProcessSocket()
+  {
+    try
+    {
+      processSocket.close();
+    }
+    catch (Exception e)
+    {
+      // Ignore;
+    }
+  }
+
+  private ServerSocket secureProcessPort()
+  {
+    ServerSocket socket = null;
+    try
+    {
+      socket = new ServerSocket(PROCESS_LOCK_PORT);
+    }
+    catch (Exception e)
+    {
+      // Ignore
+    }
+    return socket;
   }
 
   private void add(Response response)

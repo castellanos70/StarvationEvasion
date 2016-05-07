@@ -454,7 +454,7 @@ public class Model
   {
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
-    //applyPolicies(); // Not started.
+    //applyPolicies(); // In progress
 
     //updateLandUse(); // Not started.
 
@@ -643,14 +643,20 @@ public class Model
         case Policy_FertilizerSubsidy:
           break;
         case Policy_FoodReliefCentralAsia:
+          //Sends 5 thousand tons of selected food
+          sendFoodRelief(EnumRegion.CENTRAL_ASIA, c.getOwner(), EnumFood.CITRUS, 5000); //citrus for now
           break;
         case Policy_FoodReliefMiddleAmerica:
+          sendFoodRelief(EnumRegion.MIDDLE_AMERICA, c.getOwner(), EnumFood.CITRUS, 5000); //citrus for now
           break;
         case Policy_FoodReliefOceania:
+          sendFoodRelief(EnumRegion.OCEANIA, c.getOwner(), EnumFood.CITRUS, 5000); //citrus for now
           break;
         case Policy_FoodReliefSouthAsia:
+          sendFoodRelief(EnumRegion.SOUTH_ASIA, c.getOwner(), EnumFood.CITRUS, 5000); //citrus for now
           break;
         case Policy_FoodReliefSubSaharan:
+          sendFoodRelief(EnumRegion.SUB_SAHARAN, c.getOwner(), EnumFood.CITRUS, 5000); //citrus for now
           break;
         case Policy_Fundraiser:
           break;
@@ -689,6 +695,19 @@ public class Model
       if(regionList[i].getRegionEnum().equals(region))
       {
         regionList[i].addFertilizerAid(amount*7);
+      }
+    }
+  }
+  
+  // TODO: determine where the food is coming from (from the sender). 5 thousand
+  // tons of food needs to come from somewhere
+  private void sendFoodRelief(EnumRegion target, EnumRegion sender, EnumFood food, int amount)
+  {
+    for(int i = 0; i < regionList.length; i++)
+    {
+      if(regionList[i].getRegionEnum().equals(target))
+      {
+        regionList[i].addFoodRelief(food,amount);
       }
     }
   }

@@ -102,6 +102,12 @@ public class Region extends Territory
   {
     fertilizerAid += aid;
   }
+  
+  public void addFoodRelief(EnumFood food, int amount)
+  {
+    // TODO: Store the food relief to be assessed by farmers when determining
+    // what to grow.
+  }
 
   /**
    * Each region is composed of 1 or more territories. This method sets this regions data

@@ -17,9 +17,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -45,9 +43,9 @@ public class ConcurrentCommModule implements Communication
   private final ArrayList<Response> RESPONSE_EVENTS = new ArrayList<>(1_000);
   private final String HOST;
   private final int PORT;
-  private final Process LOCAL_SERVER;
 
   // Non-final variables
+  private Process localServer;
   private Socket clientSocket;
   private DataInputStream reader;
   private DataOutputStream writer;
@@ -131,8 +129,6 @@ public class ConcurrentCommModule implements Communication
   {
     HOST = host;
     PORT = port;
-    if (HOST.toLowerCase().startsWith("local")) LOCAL_SERVER = spawnLocalServer(port);
-    else LOCAL_SERVER = null;
     // This will hopefully prevent most cases where a local server was spawned but not shutdown
     // because the client's program had to close itself unexpectedly
     Runtime.getRuntime().addShutdownHook(new Thread(() -> dispose()));
@@ -170,12 +166,21 @@ public class ConcurrentCommModule implements Communication
     try
     {
       LOCK.lock();
-      final long millisecondTimeStamp = System.currentTimeMillis();
-      final double MAX_SECONDS = connectInfinitely ? Double.MAX_VALUE : 10.0;
-      double deltaSeconds = 0.0;
 
       // Set up the key
       rsaKey = generateRSAKey();
+
+      // If the host starts with "local", try to connect and if it fails, assume
+      // that the game is starting in single player mode and spawn the local server
+      if (HOST.toLowerCase().startsWith("local"))
+      {
+        IS_CONNECTED.set(openConnection(HOST, PORT));
+        if (!IS_CONNECTED.get()) localServer = spawnLocalServer(PORT);
+      }
+
+      final long millisecondTimeStamp = System.currentTimeMillis();
+      final double MAX_SECONDS = connectInfinitely ? Double.MAX_VALUE : 10.0;
+      double deltaSeconds = 0.0;
 
       // Try to establish a connection and timeout after MAX_SECONDS if not
       commPrint("Attempting to connect to host " + HOST + ", port " + PORT);
@@ -183,7 +188,13 @@ public class ConcurrentCommModule implements Communication
       {
         IS_CONNECTED.set(openConnection(HOST, PORT));
         if (IS_CONNECTED.get()) break;
-        else if (secureProcessPort() != null)
+        else if (localServer != null && !localServer.isAlive())
+        {
+          commError("Failed to start the local server");
+          dispose();
+          System.exit(-1);
+        }
+        else if (secureProcessPort() != null && HOST.toLowerCase().startsWith("local"))
         {
           commError("Another client tried and failed to start a local server");
           dispose();
@@ -228,7 +239,7 @@ public class ConcurrentCommModule implements Communication
       LOCK.lock();
       RESPONSE_EVENTS.clear();
       closeProcessSocket();
-      if (LOCAL_SERVER != null) LOCAL_SERVER.destroy();
+      if (localServer != null) localServer.destroy();
 
       writer.close();
       reader.close();
@@ -394,6 +405,7 @@ public class ConcurrentCommModule implements Communication
       builder.inheritIO();
       builder.directory(new File(System.getProperty("user.dir")));
       builder.command("java", "-Xms4g", "-jar", "Server.jar", Integer.toString(port));
+      builder.redirectError();
       process = builder.start();
       //process.wait(1); // If the process failed, this should cause an exception to be thrown which is what we want
     }

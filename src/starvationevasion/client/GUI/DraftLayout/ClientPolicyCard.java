@@ -63,7 +63,7 @@ public class ClientPolicyCard extends VBox
     this.policy=GameCard.create(owner,policy);
     enumPolicy=policy;
     this.gui=gui;
-   setBasicCard();
+    setBasicCard();
     setBasicStyle();
   }
 

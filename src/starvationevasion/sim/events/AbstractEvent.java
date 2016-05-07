@@ -61,4 +61,29 @@ public abstract class AbstractEvent
   {
     return landArea;
   }
+
+  private void destroyFarmEquipment()
+  {
+    
+  }
+  
+  private void destroyInfrastrucure()
+  {
+    
+  }
+  
+  private void causeFlood()
+  {
+    
+  }
+  
+  private void wipeOutLandTiles(double percentToWipe)
+  {
+    
+  }
+  
+  private void reduceRainFall()
+  {
+    
+  }
 }

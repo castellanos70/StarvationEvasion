@@ -168,12 +168,12 @@ public class Model
     assert (assertLandTiles());
     
     packedTileData = new PackedTileData(TOTAL_LAND_TILES);
-
-    updateCropRatings(Constant.FIRST_GAME_YEAR-1);
-
-    placeCrops();
-
-    setRegionalProduction();
+//
+//    updateCropRatings(Constant.FIRST_GAME_YEAR-1);
+//
+//    placeCrops();
+//
+//    setRegionalProduction();
     
     populateUSRegionList();
 
@@ -369,10 +369,17 @@ public class Model
    */
   private void populateUSRegionList()
   {
-    int it = 0;
+    int it = 0;    
+    ArrayList<EnumRegion> usRegions = new ArrayList<>();
+    
+    for(int i = 0; i < EnumRegion.US_REGIONS.length; i++)
+    {
+      usRegions.add(EnumRegion.US_REGIONS[i]);
+    }
+    
     for(int i = 0; i < regionList.length; i++)
     {
-      if(Arrays.asList(EnumRegion.US_REGIONS).contains(regionList[i]))
+      if(usRegions.contains(regionList[i].getRegionEnum()))
       {
         unitedStatesRegionList[it] = regionList[i];
         it++;

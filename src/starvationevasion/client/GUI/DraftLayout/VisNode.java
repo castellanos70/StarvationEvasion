@@ -7,6 +7,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import starvationevasion.client.GUI.GUI;
+
 /**
  * VisNode is the GUI element responsible for allowing the user to view and interact with the visualizer
  * This is the node which talks to all the stuff the visualizer team has done

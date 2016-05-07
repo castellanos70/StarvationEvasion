@@ -23,8 +23,8 @@ import java.util.ArrayList;
  */
 public class DraftLayout extends GridPane
 {
-  private static final int COLS = 33;
-  private static final int ROWS = 18;
+  public static final int COLS = 33;
+  public static final int ROWS = 18;
   private ArrayList<ColumnConstraints> colConstraintsList;
   private ArrayList<RowConstraints> rowConstraintsList;
 
@@ -92,7 +92,7 @@ public class DraftLayout extends GridPane
 
     //node at the top of the screen to let the user know basic stats
     summaryBar = new SummaryBar(gui);
-    this.add(summaryBar, 8, 1, 17, 3);
+    this.add(summaryBar, 8, 2, 17, 3);
 
     //node which lets the user see if other players have played cards/finished draft phase
     draftStatus = new DraftStatus();
@@ -102,33 +102,19 @@ public class DraftLayout extends GridPane
     map = new Map();
     Node mapNode = map.getGameMapNode();
     
-    //node which holds the user's deck/discard pile information
 
-    //    deckNode = new DeckNode(gui);
-    //    this.add(deckNode, 0,12,6,3);
 
     //node which holds the ProductBar
     productBar = new ProductBar(gui);
     int productBarSize = productBar.getElements().size();
     for (int i = 0; i < productBarSize; ++i)
     {
-      this.add(productBar.getElements().get(i), i+1, 6,1 ,1);
+      this.add(productBar.getElements().get(i), i+COLS/2 - productBarSize/2, 1, 1 ,1);
     }
     
-//    map = new Map();
-//    Node mapNode = map.getGameMapNode();
-
+    //node which holds the user's deck/discard pile information
     deckNode = new DeckNode(gui);
 //    this.add(deckNode, 0,12,6,3);
-
-    //node which holds the ProductBar
-    productBar = new ProductBar(gui);
-//    int productBarSize = productBar.getElements().size();
-//    for (int i = 0; i < productBarSize; ++i)
-//    {
-//      this.add(productBar.getElements().get(i), i+1, 9,1 ,1);
-//    }
-
 
     //node which allows the user to undo/discard cards with the click of a button
     actionButtons = new ActionButtons(gui);
@@ -139,13 +125,13 @@ public class DraftLayout extends GridPane
 
     //node which allows the user to view the current cards in their hand
     hand = new Hand(gui, primaryStage);
-    this.add(hand, 7, 14, 19, 5);
+    this.add(hand, 7, 12, 19, 5);
 
     draftTimer = new DraftTimer();
     this.add(draftTimer, 27, 1, 5, 2);
 
     pbDataDisplay = new ProductBarDataDisplay(gui);
-    this.add(pbDataDisplay, 15, 5, 13, 4);
+    this.add(pbDataDisplay, 7, 4, 13, 4);
 
     graphDisplay = new GraphDisplay(gui);
     this.add(graphDisplay, 1, 1, 10, 6);
@@ -224,8 +210,8 @@ public class DraftLayout extends GridPane
     this.add(draftedCards, 11, 5, 2, 3);
 
     //node which allows the user to view the current cards in their hand
-//    hand = new Hand(gui, primaryStage);
-//    this.add(hand, 1, 7, 10, 2);
+    hand = new Hand(gui, primaryStage);
+    this.add(hand, 1, 7, 10, 2);
 
 
     draftTimer = new DraftTimer();

@@ -89,8 +89,8 @@ public class ProductBarElement extends StackPane
     this.ID = ID;
     this.type = food;
     this.foodImg = new ImageView(gui.getImageGetter().getImageForFoodType64(type));
-    this.setMaxSize(width, height);
-    this.setPrefSize(width, height);  
+//    this.setMaxSize(width, height);
+//    this.setPrefSize(width, height);  
     initializeLabel();
     
     this.red = new Color(1,0,0,.5);

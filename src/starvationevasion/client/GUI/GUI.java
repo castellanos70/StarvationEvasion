@@ -122,9 +122,6 @@ public class GUI extends Application
     //fills a list of all the product types
     initializeProductList();
 
-    boxHeight = maxHeight*.1;
-    boxWidth = maxWidth*.07;
-
 //    primaryStage.setMaxHeight(maxHeight);
 //    primaryStage.setMinHeight(maxHeight);
     primaryStage.setResizable(true);
@@ -136,6 +133,9 @@ public class GUI extends Application
     primaryStage.setY(bounds.getMinY());
     primaryStage.setWidth(bounds.getWidth());
     primaryStage.setHeight(bounds.getHeight());
+    
+    boxHeight = primaryStage.getWidth()/DraftLayout.ROWS;
+    boxWidth = primaryStage.getWidth()/DraftLayout.COLS;
     
     //instantiate helper classes
     imageGetter = new ImageGetter();

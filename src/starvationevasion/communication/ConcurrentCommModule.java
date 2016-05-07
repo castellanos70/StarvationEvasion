@@ -165,7 +165,7 @@ public class ConcurrentCommModule implements Communication
     {
       LOCK.lock();
       final long millisecondTimeStamp = System.currentTimeMillis();
-      final double MAX_SECONDS = 10.0;
+      final double MAX_SECONDS = connectInfinitely ? Double.MAX_VALUE : 10.0;
       double deltaSeconds = 0.0;
 
       // Set up the key
@@ -366,7 +366,10 @@ public class ConcurrentCommModule implements Communication
     }
     catch (Exception e)
     {
-      connectInfinitely = true;
+      commPrint("Another client has already started the spawning process - aborting previous action");
+      connectInfinitely = true; // Another process already secured the port - try to connect for
+                                // a very long time in the hopes that this other process's server
+                                // will start up within a reasonable amount of time
       return;
     }
   }

@@ -24,7 +24,7 @@ public class Region extends Territory
 
   private int ethanolProducerTaxCredit = 0;
   private int fertilizerAid = 0;
-  
+  private int tileSize;
   private int[] cropTaxes = new int[EnumFood.SIZE];
   private int[] cropRevenues = new int[EnumFood.SIZE];
   private long[][] cropImport = new long[Model.YEARS_OF_DATA][EnumFood.SIZE];  //in metric tons.
@@ -477,25 +477,31 @@ public class Region extends Territory
    */
   public void setTotalProduction(CropData data)
   {
-    int production = 0;
+    int tileSize = getLandTotal() / getNumTiles() ;
     for(Territory territory: territoryList)
     {
       for(LandTile tile: territory.getLandTiles())
       {
-        for(int i = 0; i < tile.getCropRatings().length;i ++)
-        {
-          int tileSize = getLandTotal() / getNumTiles() ;
-          cropRevenues[i] = (int)(tile.getCropRatings()[i].productionRate() * data.getPrice(2009, EnumFood.values()[i]) * tileSize);
-          cropTaxes[i] = (int)(.3 * cropRevenues[i]);
-          totalProduction +=  cropRevenues[i];
-          totalTax += cropTaxes[i];
-        }
+          int index = tile.getCrop().ordinal();
+          int revenue =
+              (int)(tile.getCropRatings()[index].productionRate() *
+              data.getPrice(2009, EnumFood.values()[index]) * tileSize);
+
+          cropRevenues[index] += revenue;
+          cropTaxes[index] += (int)(.3 * revenue);
       }
     }
-    totalProduction = production;
-    totalTax = (int)(production * .3);
+    sumTotals();
   }
 
+  private void sumTotals()
+  {
+    for(int i = 0; i < cropRevenues.length; i ++ )
+    {
+      totalProduction +=  cropRevenues[i];
+      totalTax += cropTaxes[i];
+    }
+  }
   public MapPoint getCenter()
   {
     return null;

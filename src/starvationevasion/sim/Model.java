@@ -1460,6 +1460,7 @@ public class Model
     }
   }
 
+
   /**
    * This method is used only for testing the geographic boundaries.<br>
    * It displays a javax.swing.JFrame containing a Mollweide projection of the

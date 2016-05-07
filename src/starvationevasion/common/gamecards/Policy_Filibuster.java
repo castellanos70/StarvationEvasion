@@ -32,7 +32,7 @@ public class Policy_Filibuster extends GameCard
   
   //TODO: let this be played during the "policy-reveal" phase, when that's implemented
   public static final EnumSet<State> PLAY_STATES = //when the card can be used
-      EnumSet.of(null);
+      EnumSet.of(State.DRAFTING); /* Maxwell Sanchez says: This occasionally throws errors (whenever this card is used), so I put a placeholder in. */
   
   /**
    * {@inheritDoc}

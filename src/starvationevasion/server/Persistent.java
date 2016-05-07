@@ -1,5 +1,8 @@
 package starvationevasion.server;
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
 
 import starvationevasion.server.model.*;
 
@@ -9,15 +12,16 @@ import java.io.IOException;
 import java.net.Socket;
 import java.security.InvalidKeyException;
 
+/**
+ * Worker used to persist a connection for socket connetion.
+ */
 public class Persistent extends Connector
 {
-
-
+  
   public Persistent (Socket client, Server server)
   {
     super(client, server);
   }
-
 
   public void run ()
   {

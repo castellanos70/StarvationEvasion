@@ -13,7 +13,7 @@ public class VotingButtons extends ResizablePane
 
   public VotingButtons()
   {
-	  super(null, null);
+	  super();
     up = new ImageView(
         new Image(getClass().getResource("/starvationevasion/GuiTestCode/resources/up.png").toString()));
     abs = new ImageView(

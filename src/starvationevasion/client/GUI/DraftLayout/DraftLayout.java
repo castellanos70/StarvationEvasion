@@ -288,6 +288,10 @@ public class DraftLayout extends GridPane
     return productBar;
   }
 
+  
+  
+  
+  
 
   /**
    * Function which unslects the selected product from the product bar
@@ -302,7 +306,9 @@ public class DraftLayout extends GridPane
     return summaryBar;
   }
 
-
+  
+  
+  
   /**
    * Used by hand to let drafted cards know when a card is drafted
    * @return draftedCards node

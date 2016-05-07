@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -30,15 +31,15 @@ public class ChatNode extends BorderPane
   private TextField inputMessage=new TextField();
   private Text chatMessages=new Text("welcome to chat");
   private Button confirm=new Button("confirm");
+  private Button toggle = new Button();
   private HBox usersChat=new HBox();
   private VBox bottomContainer=new VBox();
   private Client client;
   private ChatManager chatManager;
-
   private ComboBox<EnumRegion> regionSelection;
   private ComboBox cardSelection;
   private EnumPolicy[] currentHand=new EnumPolicy[6];
-
+  private int chatToggle = 0;
   /**
    * Basic constructor
    * @param gui the main gui
@@ -52,12 +53,34 @@ public class ChatNode extends BorderPane
     cardSelection=new ComboBox();
     client=gui.getClient();
     chatManager=client.getChatManager();
+    usersChat.getChildren().add(toggle);
     usersChat.getChildren().add(confirm);
     usersChat.getChildren().add(regionSelection);
     usersChat.getChildren().add(cardSelection);
     bottomContainer.getChildren().add(inputMessage);
     bottomContainer.getChildren().add(usersChat);
     chatFrame.setContent(chatMessages);
+    
+    toggle.setGraphic(new ImageView(gui.getImageGetter().getChatToggleImage()));
+    
+    toggle.setOnMouseClicked(event1 ->
+    {
+    	if(chatToggle%2==0)
+    	{
+    		this.getChildren().remove(chatFrame);
+    		
+    		gui.getDraftLayout().getChildren().remove(this);
+    		gui.getDraftLayout().add(this, 27, 17, 6, 1);
+    	}
+    	else
+    	{
+    		this.setCenter(chatFrame);
+    		gui.getDraftLayout().getChildren().remove(this);
+    		gui.getDraftLayout().add(this, 27, 7, 6, 11);
+    	}
+    	++chatToggle;
+    	
+    });
    // chatFrame.setStyle("-fx-background-color:rgb(243,243,243)");
     //chatFrame.applyCss();
     this.setCenter(chatFrame);

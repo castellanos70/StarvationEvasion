@@ -1,6 +1,8 @@
 package starvationevasion.common.gamecards;
 
 /**
+ * @deprecated USE server.model.State INSTEAD
+ * 
  * Represents the various "states" that the game can be in. For example, one state is the voting
  * phase where regions vote on submitted policies.
  * @author Michael Martin

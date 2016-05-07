@@ -3,6 +3,7 @@ package starvationevasion.common.gamecards;
 import java.util.EnumSet;
 
 import starvationevasion.common.EnumFood;
+import starvationevasion.server.model.State;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -27,13 +28,8 @@ public class Policy_FertilizerSubsidy extends GameCard
       "This policy offers a subsidy of 20% rebate to farmers in your region purchasing " +
       "commercial fertilizer or feed supplements for target crop or live stock.";
 
-  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
-      EnumSet.of(EnumGameState.PLANNING_STATE);
-  
-  public Policy_FertilizerSubsidy()
-  {
-    this.setUsableStates(PLAY_STATES);
-  }
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
+      EnumSet.of(State.DRAFTING);
 
   /**
    * {@inheritDoc}
@@ -52,7 +48,15 @@ public class Policy_FertilizerSubsidy extends GameCard
    */
   @Override
   public int actionPointCost() {return 2;}
-
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<State> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
 
   /**
    * {@inheritDoc}

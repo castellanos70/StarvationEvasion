@@ -987,7 +987,7 @@ public class Server
                                                        "-classpath",
                                                        "./dist:./dist/libs/*",
                                                        "starvationevasion/ai/AI",
-                                                       "foodgame.cs.unm.edu", "5555"});
+                                                       "localhost", "5555"});
     if (p != null)
     {
       processes.add(p);

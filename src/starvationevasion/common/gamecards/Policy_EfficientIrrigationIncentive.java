@@ -4,6 +4,8 @@ package starvationevasion.common.gamecards;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import starvationevasion.server.model.State;
+
 /**
  * Title: {@value #TITLE}<br><br>
  * Game Text: {@value #TEXT}<br><br>
@@ -40,14 +42,8 @@ public class Policy_EfficientIrrigationIncentive extends GameCard
   public static final String FLAVOR_TEXT =
       "Maybe this'll get them to stop using lawn sprinklers for watering 100 acres of soy.";
 
-  public static final EnumSet<EnumGameState> PLAY_STATES = //when the card can be used
-      EnumSet.of(EnumGameState.PLANNING_STATE);
-  
-  public Policy_EfficientIrrigationIncentive()
-  {
-    this.setUsableStates(PLAY_STATES);
-  }
-
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
+      EnumSet.of(State.DRAFTING);
 
   /**
    * {@inheritDoc}
@@ -72,7 +68,15 @@ public class Policy_EfficientIrrigationIncentive extends GameCard
    */
   @Override
   public int actionPointCost() {return 2;}
-
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<State> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
 
   /**
    * Percentage tax break.

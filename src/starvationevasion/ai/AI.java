@@ -1,6 +1,18 @@
 package starvationevasion.ai;
 
-import starvationevasion.ai.commands.*;
+
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+
+import starvationevasion.ai.commands.Command;
+import starvationevasion.ai.commands.Draft;
+import starvationevasion.ai.commands.GameState;
+import starvationevasion.ai.commands.Login;
+import starvationevasion.ai.commands.Uptime;
+import starvationevasion.ai.commands.Vote;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.SpecialEventData;
@@ -33,7 +45,6 @@ public class AI
   private volatile boolean aggregate=false;
   private ArrayList<User> allies = new ArrayList<>();
   private ArrayList<User> enemies = new ArrayList<>();
-  public AtomicBoolean doneDrafting=new AtomicBoolean(false);
 
 
   // time of server start

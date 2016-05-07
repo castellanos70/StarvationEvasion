@@ -1,6 +1,9 @@
 package starvationevasion.common.gamecards;
 
+import java.util.EnumSet;
+
 import starvationevasion.common.EnumFood;
+import starvationevasion.server.model.State;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -28,6 +31,9 @@ public class Policy_FoodReliefMiddleAmerica extends GameCard
 	"This region sends 5 thousand tons of target food to Middle America";
 
   public static final int VOTES_REQUIRED = 1;
+  
+  public static final EnumSet<State> PLAY_STATES = //when the card can be used
+      EnumSet.of(State.DRAFTING);
 
   /**
    *  {@inheritDoc}
@@ -58,6 +64,15 @@ public class Policy_FoodReliefMiddleAmerica extends GameCard
    */
   @Override
   public int actionPointCost() {return 2;}
+  
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public EnumSet<State> getUsableStates()
+  {
+    return PLAY_STATES;
+  }
 
   /**
    * {@inheritDoc}

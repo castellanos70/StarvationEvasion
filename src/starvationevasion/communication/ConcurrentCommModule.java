@@ -10,6 +10,7 @@ import javax.crypto.Cipher;
 import javax.crypto.SealedObject;
 import javax.crypto.SecretKey;
 import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
@@ -30,6 +31,15 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class ConcurrentCommModule implements Communication
 {
+  // Note :: When the different comm module instances start, they will check to see
+  //         if they are being asked to connect to the localhost. If this is the case, they
+  //         will attempt to secure this port by opening a ServerSocket - whichever instance
+  //         binds to this port first gains exclusive rights to spawning the server.
+  //
+  //         This avoids the situation where every ConcurrentCommModule instance tries to
+  //         spawn its own server process, which would be a mess.
+  private static final int PROCESS_LOCK_PORT = 5050;
+
   private final ReentrantLock LOCK = new ReentrantLock(); // Used for synchronization
   private final AtomicBoolean IS_CONNECTED = new AtomicBoolean(false);
   private final ArrayList<Response> RESPONSE_EVENTS = new ArrayList<>(1_000);
@@ -46,6 +56,8 @@ public class ConcurrentCommModule implements Communication
   private SecretKey serverKey; // Obtained at the end of the handshake
   private Cipher aesCipher;
   private KeyPair rsaKey;
+
+  private boolean connectInfinitely = false; // Used in a special localhost case
 
   private class StreamListener extends Thread
   {
@@ -117,6 +129,7 @@ public class ConcurrentCommModule implements Communication
   {
     HOST = host;
     PORT = port;
+    if (HOST.toLowerCase().startsWith("local")) spawnLocalServer(port);
   }
 
   /**
@@ -341,6 +354,20 @@ public class ConcurrentCommModule implements Communication
     finally
     {
       LOCK.unlock();
+    }
+  }
+
+  private void spawnLocalServer(int port)
+  {
+    commPrint("Single player detected - attempting to spawn a new local server (This will test your patience)");
+    try
+    {
+      new ServerSocket(PROCESS_LOCK_PORT);
+    }
+    catch (Exception e)
+    {
+      connectInfinitely = true;
+      return;
     }
   }
 

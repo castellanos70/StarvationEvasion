@@ -39,7 +39,20 @@ public class GraphDisplay extends BorderPane
   int regionalGraphIndex = 1;
   int foodCropGraphIndex = 1;
   int worldGraphIndex = 1;
-
+  
+  
+  EnumRegion[] REGIONS= {EnumRegion.USA_CALIFORNIA,EnumRegion.USA_HEARTLAND,
+		  EnumRegion.USA_NORTHERN_PLAINS,
+		  EnumRegion.USA_SOUTHEAST,
+		  EnumRegion.USA_NORTHERN_CRESCENT,
+		  EnumRegion.USA_SOUTHERN_PLAINS,
+		  EnumRegion.USA_MOUNTAIN,
+		  EnumRegion.ARCTIC_AMERICA, EnumRegion.MIDDLE_AMERICA, EnumRegion.SOUTH_AMERICA, 
+		  EnumRegion.EUROPE, EnumRegion.MIDDLE_EAST, EnumRegion.SUB_SAHARAN,
+		  EnumRegion.RUSSIA, EnumRegion.CENTRAL_ASIA, EnumRegion.SOUTH_ASIA, EnumRegion.EAST_ASIA, 
+		  EnumRegion.OCEANIA};
+  
+  
   Button left;
   Button right;
   Graph graphDisplay;

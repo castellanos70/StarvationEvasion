@@ -111,15 +111,15 @@ public class GUI extends Application
     return client;
   }
 
-  /**
-   * Main function which launches the GUI thread
-   * 
-   * @param args
-   */
-  public static void main(String[] args)
-  {
-    launch(args);
-  }
+//  /**
+//   * Main function which launches the GUI thread
+//   * 
+//   * @param args
+//   */
+//  public static void main(String[] args)
+//  {
+//    launch(args);
+//  }
 
   @Override
   public void start(Stage primaryStage)
@@ -167,6 +167,7 @@ public class GUI extends Application
     });
     draftLayout.getChildren().add(b);
     votingLayout = new VotingLayout(this);
+   
     
 
     // make a scene for displaying the game
@@ -324,6 +325,7 @@ public class GUI extends Application
     if (currentRoot == draftLayout)
     {
       primaryStage.getScene().setRoot(votingLayout);
+      votingLayout.setWorldMap(getDraftLayout().getWorldMap());
       currentRoot = votingLayout;
       draftingPhase = false;
     }

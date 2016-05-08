@@ -62,15 +62,7 @@ public class VotingLayout extends NodeTemplate
     imageView.setPreserveRatio(false);
     viewPort = new Rectangle2D(0, 0, width, height);
     imageView.setViewport(viewPort);
-//    this.getChildren().add(imageView);
-
-    worldMap = new WorldMap(gui);
-    worldMap.setMaxHeight(gui.getPrimaryStage().getHeight());
-    worldMap.setMaxWidth(gui.getPrimaryStage().getWidth());
-    
-    this.getChildren().add(worldMap);
-
-
+    this.getChildren().add(imageView);
     this.getChildren().add(hand);
     setHandlers();
   }
@@ -80,6 +72,17 @@ public class VotingLayout extends NodeTemplate
     worldMap.getBoardersManager().update();
   }
 
+  
+  public void setWorldMap(WorldMap map)
+  {
+    worldMap = map;
+    worldMap.setMaxHeight(gui.getPrimaryStage().getHeight());
+    worldMap.setMaxWidth(gui.getPrimaryStage().getWidth());
+    this.getChildren().add(worldMap);
+    worldMap.toBack();
+  }
+  
+  
   /**
    * 
    * @return Reference to the world map.
@@ -187,8 +190,11 @@ public class VotingLayout extends NodeTemplate
     hand.setLayoutX(20);
     hand.setLayoutY(height / 2 - 20);
     
+    if(worldMap!=null)
+    {
     worldMap.setMaxHeight(this.getHeight());
     worldMap.setMaxWidth(this.getWidth());
+    }
 
   }
 

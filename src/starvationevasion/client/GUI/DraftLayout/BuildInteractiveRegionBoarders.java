@@ -3,6 +3,8 @@ package starvationevasion.client.GUI.DraftLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.swing.plaf.synth.SynthSeparatorUI;
+
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -65,7 +67,7 @@ public class BuildInteractiveRegionBoarders
   private ArrayList<SVGPath> eastAsiaPaths = new ArrayList<>();;
   private ArrayList<SVGPath> oceaniaPaths = new ArrayList<>();;
 
-  private int clickedRegion;
+  public int clickedRegion;
   
   private SVGPathsHolder SVG = new SVGPathsHolder();
   StackPane sp;
@@ -73,6 +75,7 @@ public class BuildInteractiveRegionBoarders
   public boolean clicked;
   BuildInteractiveRegionBoarders(StackPane sp, GUI gui)
   {
+  // System.out.println("@@@@@@@@");
     this.sp = sp; 
     this.clicked = false;
     this.clickedRegion = 0;
@@ -81,10 +84,10 @@ public class BuildInteractiveRegionBoarders
   
   public void update()
   {
-
+    //System.out.println("clickedRegion2: " + clickedRegion);
 	  clicked = false;
 	  styleRegionPaths(clickedRegion, TRANSPARENT, 1); // Change Fill Color
-      styleRegionPaths(clickedRegion, TRANSPARENT, 2); // Change Fill Color
+    styleRegionPaths(clickedRegion, TRANSPARENT, 2); // Change Fill Color
   }
  /**
   * 
@@ -131,6 +134,7 @@ public class BuildInteractiveRegionBoarders
 
     africaMainPath.setOnMouseMoved(evt ->
     {
+      
       styleRegionPaths(1, RegionColor, 1); // Change Stroke Color
     });
 
@@ -157,6 +161,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(13);
       clickedRegion = 1;
+     // System.out.println("in africa: " +clickedRegion);
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       styleRegionPaths(1, fillColor, 2); // Change Fill Color
       }
@@ -171,7 +176,7 @@ public class BuildInteractiveRegionBoarders
     });
     africaMainPath.setOnMouseReleased((event) ->
     {
-      if(!clicked)
+     if(!clicked)
       {
       styleRegionPaths(1, TRANSPARENT, 2); // Change Fill Color
       }
@@ -397,13 +402,13 @@ public class BuildInteractiveRegionBoarders
     });
     middleAmericaLargeSubPath1.setOnMousePressed((event) ->
     {
-      System.out.println("Trigger Middle American Regional Stats");
+     // System.out.println("Trigger Middle American Regional Stats");
       styleRegionPaths(3, fillColor, 2); // Change Fill Color
       // TODO: Have Middle America's Regional Statics be displayed.
     });
     middleAmericaLargeSubPath2.setOnMousePressed((event) ->
     {
-      System.out.println("Trigger Middle American Regional Stats");
+    //  System.out.println("Trigger Middle American Regional Stats");
       styleRegionPaths(3, fillColor, 2); // Change Fill Color
       // TODO: Have Middle America's Regional Statics be displayed.
     });
@@ -1219,7 +1224,7 @@ public class BuildInteractiveRegionBoarders
     	gui.getPopupManager().toggleGraphDisplay();
     	//gui.getGraphManager().updateCurrentRegionName("Artic America");
     	gui.getGraphManager().setRegionNum(8);
-      System.out.println("Trigger South Asia's Regional Stats");
+     // System.out.println("Trigger South Asia's Regional Stats");
       clickedRegion = 14;
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       styleRegionPaths(14,RegionColor,1);
@@ -1228,7 +1233,7 @@ public class BuildInteractiveRegionBoarders
     });
     arcticAmericaMainPath2.setOnMousePressed((event) ->
     {
-      System.out.println("Trigger South Asia's Regional Stats");
+     // System.out.println("Trigger South Asia's Regional Stats");
       styleRegionPaths(14, fillColor, 2); // Change Fill Color
       // TODO: Have South Asia's Regional Statics be displayed.
     });
@@ -1514,12 +1519,15 @@ public class BuildInteractiveRegionBoarders
     {
       if(gui.getPopupManager().isOpen()==null)
       {
+      //  System.out.println("here1");
       clicked = true;
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(11);
       clickedRegion = 16;
+    //  System.out.println("clickedRegion1: " + clickedRegion);
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       styleRegionPaths(16, fillColor, 2); // Change Fill Color
+         
       }
     });
     europeMainPath.setOnMouseReleased((event) ->
@@ -1533,19 +1541,19 @@ public class BuildInteractiveRegionBoarders
 
     europeSubPath1.setOnMousePressed((event) ->
     {
-      System.out.println("Trigger Europes Regional Stats");
+     // System.out.println("Trigger Europes Regional Stats");
       styleRegionPaths(16, fillColor, 2); // Change Fill Color
       // TODO: Have Eurpoe's Regional Statics be displayed.
     });
     europeSubPath2.setOnMousePressed((event) ->
     {
-      System.out.println("Trigger Europes Regional Stats");
+     // System.out.println("Trigger Europes Regional Stats");
       styleRegionPaths(16, fillColor, 2); // Change Fill Color
       // TODO: Have Eurpoe's Regional Statics be displayed.
     });
     europeSubPath3.setOnMousePressed((event) ->
     {
-      System.out.println("Trigger Europes Regional Stats");
+     // System.out.println("Trigger Europes Regional Stats");
       styleRegionPaths(16, fillColor, 2); // Change Fill Color
       // TODO: Have Eurpoe's Regional Statics be displayed.
     });
@@ -1688,7 +1696,7 @@ public class BuildInteractiveRegionBoarders
     });
     eastAsiaSubPath1.setOnMousePressed((event) ->
     {
-      System.out.println("Trigger East Asia Regional Stats");
+    //  System.out.println("Trigger East Asia Regional Stats");
       // TODO: Have East Asia's Regional Statics be displayed.
       styleRegionPaths(17, fillColor, 2); // Change Fill Color
     });
@@ -1700,7 +1708,7 @@ public class BuildInteractiveRegionBoarders
 
     eastAsiaSubPath2.setOnMousePressed((event) ->
     {
-      System.out.println("Trigger East Asia Regional Stats");
+     // System.out.println("Trigger East Asia Regional Stats");
       // TODO: Have East Asia's Regional Statics be displayed.
       styleRegionPaths(17, fillColor, 2); // Change Fill Color
     });
@@ -1986,7 +1994,7 @@ public class BuildInteractiveRegionBoarders
 
     oceaniaSubPath1.setOnMousePressed((event) ->
     {
-      System.out.println("Trigger Oceania Regional Stats");
+    //  System.out.println("Trigger Oceania Regional Stats");
       // TODO: Have Oceania's Regional Statics be displayed.
       styleRegionPaths(18, fillColor, 2); // Change Fill Color
     });
@@ -1998,7 +2006,7 @@ public class BuildInteractiveRegionBoarders
 
     oceaniaSubPath2.setOnMousePressed((event) ->
     {
-      System.out.println("Trigger Oceania Regional Stats");
+     // System.out.println("Trigger Oceania Regional Stats");
       // TODO: Have Oceania's Regional Statics be displayed.
       styleRegionPaths(18, fillColor, 2); // Change Fill Color
     });
@@ -2010,7 +2018,7 @@ public class BuildInteractiveRegionBoarders
 
     oceaniaSubPath4.setOnMousePressed((event) ->
     {
-      System.out.println("Trigger Oceania Regional Stats");
+     // System.out.println("Trigger Oceania Regional Stats");
       // TODO: Have Oceania's Regional Statics be displayed.
       styleRegionPaths(18, fillColor, 2); // Change Fill Color
     });
@@ -2061,6 +2069,8 @@ public class BuildInteractiveRegionBoarders
    */
   private void styleRegionPaths(int Region, Color color, int mode)
   {
+  //  System.out.println("afterRegion2 " + gui.getDraftLayout().getWorldMap().get);
+  //  System.out.println("clickedRegion after it: " + clickedRegion);
     switch (Region)
     {
     case 1: // Africa
@@ -2074,6 +2084,7 @@ public class BuildInteractiveRegionBoarders
       if (mode == 2)
       {
         for (SVGPath path : africaPaths)
+          
         {
           path.setFill(color);
         }

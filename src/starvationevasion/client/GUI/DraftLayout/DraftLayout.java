@@ -164,7 +164,7 @@ public class DraftLayout extends GridPane
 
   public void update()
   {
-     worldMap.getBoardersManager().update();;
+     worldMap.getBoardersManager().update();
   }
 
 

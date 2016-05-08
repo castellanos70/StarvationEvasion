@@ -40,6 +40,7 @@ public class WorldMap extends ScrollPane
   Image imageMap;
   public WorldMap(GUI gui)
   {
+   //System.out.println("SDFSD");
    // setHbarPolicy(ScrollBarPolicy.NEVER);
    // setVbarPolicy(ScrollBarPolicy.NEVER);
     this.gui=gui;
@@ -133,6 +134,7 @@ public class WorldMap extends ScrollPane
 
     //drawOnMap();
     //drawOutline();
+    
     addEventFilter(ScrollEvent.SCROLL, event -> {
 
       //      DoubleProperty zoomProperty = new SimpleDoubleProperty(200);
@@ -143,7 +145,6 @@ public class WorldMap extends ScrollPane
 
       contentGroup.getChildren().add(zoomGroup);
 
-
       setContent(contentGroup);
       if(event.getDeltaY()>0&&zoomLevel<1.5)zoomLevel += .1;
       else if(event.getDeltaY()<0 &&zoomLevel>1) zoomLevel -= .1;
@@ -153,7 +154,7 @@ public class WorldMap extends ScrollPane
       // Scale scaleTransform = new Scale(2, 2, -100, -10000000);
       // scaleTransform.transform(event.getX(),event.getY());
        scaleTransform.setPivotX(-event.getX());
-      scaleTransform.setPivotY(-event.getY());
+       scaleTransform.setPivotY(-event.getY());
 
       double oldHvalue=getHvalue();
       double oldVvalue=getVvalue();
@@ -161,7 +162,7 @@ public class WorldMap extends ScrollPane
       setVvalue(event.getY()/ getHeight()+oldVvalue*zoomLevel);
 
       //setHvalue(.75);
-     // setVvalue(.75);
+      //setVvalue(.75);
 
       //zoomGroup.getTransforms().removeAll();
       //zoomGroup.getTransforms().add(scaleTransform);

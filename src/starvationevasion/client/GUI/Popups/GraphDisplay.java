@@ -58,6 +58,7 @@ public class GraphDisplay extends BorderPane
 		Button exitButton = new Button("X");
 		exitButton.setFont(Font.font("Verdana", 15));
 		exitButton.setStyle("-fx-background-color: rgb(230,16,16)");
+		
 		exitButton.setOnAction(evt ->
 	    {
 	    	gui.getPopupManager().toggleGraphDisplay();

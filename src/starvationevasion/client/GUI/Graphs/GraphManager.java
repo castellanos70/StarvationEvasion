@@ -130,7 +130,7 @@ public class GraphManager
   public void updateRegionalCropDistributionNumbers(int year, ArrayList<long[]> updatedStats)
   {
     NOSTATS=false;
-    System.out.println("size 2: " + updatedStats.size());
+   // System.out.println("size 2: " + updatedStats.size());
     annualRegionsCropDistributionStatistics = new ArrayList<>();
    // this.annualRegionsCropDistributionStatistics=updatedStats;
     for(long[] region: updatedStats)
@@ -138,10 +138,10 @@ public class GraphManager
     
       annualRegionsCropDistributionStatistics.add(region);
     }
-    System.out.println(Arrays.toString(updatedStats.get(8)));
-    System.out.println("SIZE 1: " + annualRegionsCropDistributionStatistics.size());
+   // System.out.println(Arrays.toString(updatedStats.get(8)));
+  // System.out.println("SIZE 1: " + annualRegionsCropDistributionStatistics.size());
   //  annualRegionsCropDistributionStatistics.clear();
-    System.out.println("size 3: " + annualRegionsCropDistributionStatistics.size());
+   // System.out.println("size 3: " + annualRegionsCropDistributionStatistics.size());
    // updateRegionalCropDistributionDisplay();
   }
   
@@ -153,7 +153,7 @@ public class GraphManager
     {
       annualRegionsCropExportStatistics.add(region);
     }
-    System.out.println("SIZE 2: " + annualRegionsCropExportStatistics.size());
+   // System.out.println("SIZE 2: " + annualRegionsCropExportStatistics.size());
    // annualRegionsCropExportStatistics.clear();
  //   updateRegionalCropExportsDisplay();
   }
@@ -166,7 +166,7 @@ public class GraphManager
     {
       annualRegionsCropImportStatistics.add(region);
     }
-    System.out.println("SIZE 3: " + annualRegionsCropImportStatistics.size());
+   // System.out.println("SIZE 3: " + annualRegionsCropImportStatistics.size());
     //annualRegionsCropImportStatistics.clear();
    // updateRegionalCropImportsDisplay();
   }

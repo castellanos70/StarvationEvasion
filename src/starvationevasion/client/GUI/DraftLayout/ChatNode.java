@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
@@ -31,7 +32,7 @@ public class ChatNode extends BorderPane
   private TextField inputMessage=new TextField();
   private Text chatMessages=new Text("welcome to chat");
   private Button confirm=new Button("confirm");
-  private Button toggle = new Button();
+  private ToggleButton toggle = new ToggleButton();
   private HBox usersChat=new HBox();
   private VBox bottomContainer=new VBox();
   private Client client;
@@ -65,7 +66,7 @@ public class ChatNode extends BorderPane
     
     toggle.setOnMouseClicked(event1 ->
     {
-    	if(chatToggle%2==0)
+    	if(toggle.isSelected())
     	{
     		this.getChildren().remove(chatFrame);
     		

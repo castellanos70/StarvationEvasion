@@ -39,11 +39,6 @@ public class Policy_SearchforAnswers extends GameCard
   @Override
   public String getGameText() {return TEXT;}
   
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public int actionPointCost() {return 3;}
   
   /**
    * {@inheritDoc}

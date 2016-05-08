@@ -1,6 +1,16 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.*;
+import starvationevasion.common.Constant;
+import starvationevasion.common.EnumCropZone;
+import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.GeographicArea;
+import starvationevasion.common.MapPoint;
+import starvationevasion.common.MapProjectionMollweide;
+import starvationevasion.common.RegionData;
+import starvationevasion.common.SpecialEventData;
+import starvationevasion.common.Util;
+import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.sim.LandTile.Field;
 import starvationevasion.sim.events.AbstractEvent;
@@ -16,8 +26,11 @@ import java.awt.geom.Area;
 import java.awt.geom.PathIterator;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

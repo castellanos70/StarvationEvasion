@@ -764,6 +764,8 @@ public class Draft extends AbstractCommand
     EnumPolicy currentPolicy = null;
     EnumFood currentFood = null;
     int finalIndexChosen=0;
+    int secondCardChosen=0;
+    boolean draftedSecondCard=false;
     do
     {
       int i=0;
@@ -784,7 +786,15 @@ public class Draft extends AbstractCommand
           return false;
         }
       }while((secondCardToDraft  &&  i==indexOfLastCard) || !checkCardsWithVotes(card));
-      finalIndexChosen=i;
+      if(!secondCardToDraft)
+      {
+        finalIndexChosen=i;
+      }
+      if(secondCardToDraft)
+      {
+        secondCardChosen=i;
+        draftedSecondCard=true;
+      }
       int regionIndex=0;
       int foodIndex=0;
       if(card.getValidTargetRegions()!=null || getClient().policyAndRegionMap.containsKey(card.getCardType()))
@@ -834,6 +844,22 @@ public class Draft extends AbstractCommand
     }
     setupCard(card, currentFood, currentRegion);
     getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
+    //If the policy DivertFunds is drafted, then the rest of hand must be discarded and
+    //that will end the drafting phase for this turn. 
+    if(card.getCardType().equals(EnumPolicy.Policy_DivertFunds))
+    {
+      System.out.println("Divert funds drafted.");
+      for(int i=0;i<getClient().getUser().getHand().size();i++)
+      {
+        if(i!=indexOfLastCard || !(draftedSecondCard && i==secondCardChosen))
+        {
+          getClient().getCommModule().send(Endpoint.DELETE_CARD, getClient().getUser().getHand().get(i), null);
+        }
+      }
+      actionsRemaining=0;
+      getClient().draftedCards.get(numTurns).add(card);
+      return true;
+    }
     actionsRemaining--;
     System.out.println("Card drafted:"+card.getPolicyName());
     //System.out.println("Votes required:"+card.votesRequired());
@@ -854,10 +880,6 @@ public class Draft extends AbstractCommand
       cardDrafted2 = card;
     }
     getClient().draftedCards.get(numTurns).add(card);
-    if(!discarded && rand.nextBoolean())
-    {
-      randomlyDiscard();
-    }
     return true;
   }
   private boolean checkCardVals(EnumPolicy policy,EnumRegion region,EnumFood food)

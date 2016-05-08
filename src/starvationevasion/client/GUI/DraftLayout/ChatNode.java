@@ -22,18 +22,19 @@ import starvationevasion.common.gamecards.EnumPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+
 /**
  * This is the node that displays and sends chat messages
  */
 public class ChatNode extends BorderPane
 {
-  private ScrollPane chatFrame = new ScrollPane();
-  private TextField inputMessage = new TextField();
-  private Text chatMessages = new Text("welcome to chat");
-  private Button confirm = new Button("confirm");
+  private ScrollPane chatFrame=new ScrollPane();
+  private TextField inputMessage=new TextField();
+  private Text chatMessages=new Text("welcome to chat");
+  private Button confirm=new Button("confirm");
   private ToggleButton toggle = new ToggleButton();
-  private HBox usersChat = new HBox();
-  private VBox bottomContainer = new VBox();
+  private HBox usersChat=new HBox();
+  private VBox bottomContainer=new VBox();
   private Client client;
   private ChatManager chatManager;
   private ComboBox<EnumRegion> regionSelection;
@@ -121,6 +122,7 @@ public class ChatNode extends BorderPane
       currentHand = newHand;
     }
   }
+
 
   /**
    * sets the entire chat log, used by chat manager

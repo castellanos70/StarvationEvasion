@@ -132,8 +132,8 @@ public class GraphManager
   
   public void updateRegionalCropDistributionNumbers(int year, ArrayList<long[]> updatedStats)
   {
-    NOSTATS = false;
-    System.out.println("size 2: " + updatedStats.size());
+    NOSTATS=false;
+   // System.out.println("size 2: " + updatedStats.size());
     annualRegionsCropDistributionStatistics = new ArrayList<>();
     // this.annualRegionsCropDistributionStatistics=updatedStats;
     for (long[] region : updatedStats)
@@ -141,44 +141,45 @@ public class GraphManager
 
       annualRegionsCropDistributionStatistics.add(region);
     }
-    System.out.println(Arrays.toString(updatedStats.get(8)));
-    System.out.println("SIZE 1: " + annualRegionsCropDistributionStatistics.size());
-    // annualRegionsCropDistributionStatistics.clear();
-    System.out.println("size 3: " + annualRegionsCropDistributionStatistics.size());
-    // updateRegionalCropDistributionDisplay();
+   // System.out.println(Arrays.toString(updatedStats.get(8)));
+  // System.out.println("SIZE 1: " + annualRegionsCropDistributionStatistics.size());
+  //  annualRegionsCropDistributionStatistics.clear();
+   // System.out.println("size 3: " + annualRegionsCropDistributionStatistics.size());
+   // updateRegionalCropDistributionDisplay();
   }
-
-  public void updateRegionalCropExportNumbers(int year, ArrayList<long[]> updatedStats)
+  
+  public void updateRegionalCropExportNumbers(int year,  ArrayList<long[]> updatedStats)
   {
-    annualRegionsCropExportStatistics = new ArrayList<>();
-    // this.annualRegionsCropExportStatistics=updatedStats;
-    for (long[] region : updatedStats)
+    annualRegionsCropExportStatistics= new ArrayList<>();
+    //this.annualRegionsCropExportStatistics=updatedStats;
+    for(long[] region: updatedStats)
     {
       annualRegionsCropExportStatistics.add(region);
     }
-    System.out.println("SIZE 2: " + annualRegionsCropExportStatistics.size());
-    // annualRegionsCropExportStatistics.clear();
-    // updateRegionalCropExportsDisplay();
+   // System.out.println("SIZE 2: " + annualRegionsCropExportStatistics.size());
+   // annualRegionsCropExportStatistics.clear();
+ //   updateRegionalCropExportsDisplay();
   }
-
-  public void updateRegionalCropImportNumbers(int year, ArrayList<long[]> updatedStats)
+  
+  public void updateRegionalCropImportNumbers(int year,  ArrayList<long[]> updatedStats)
   {
-    annualRegionsCropImportStatistics = new ArrayList<>();
-    // this.annualRegionsCropImportStatistics=updatedStats;
-    for (long[] region : updatedStats)
+    annualRegionsCropImportStatistics= new ArrayList<>();
+    //this.annualRegionsCropImportStatistics=updatedStats;
+    for(long[] region: updatedStats)
     {
       annualRegionsCropImportStatistics.add(region);
     }
-    System.out.println("SIZE 3: " + annualRegionsCropImportStatistics.size());
-    // annualRegionsCropImportStatistics.clear();
-    // updateRegionalCropImportsDisplay();
+   // System.out.println("SIZE 3: " + annualRegionsCropImportStatistics.size());
+    //annualRegionsCropImportStatistics.clear();
+   // updateRegionalCropImportsDisplay();
   }
-
+  
+  
   public void setRegionNum(int num)
   {
-    this.REGION_NUM = num;
+    this.REGION_NUM=num;
   }
-
+  
   /**
    * Method which adds a data point to the graphs in the food product bar
    * 
@@ -190,7 +191,7 @@ public class GraphManager
     int p;
     for (int i = 0; i < 12; ++i)
     {
-      p = foodPrice[i];
+      p =   foodPrice[i];
       productBarGraphs[i].addDataPoint(year, p);
     }
   }
@@ -198,40 +199,40 @@ public class GraphManager
   public void addData(EnumRegion region, int graphNumber, int year, int dataValue)
   {
     Graph g;
-    Graph[] regionGraphs = graphMap.get(region);
-    regionGraphs[graphNumber].addDataPoint(year, dataValue);
-    // switch (region)
-    // {
-    // case USA_CALIFORNIA:
-    // g = californiaGraphs[graphNumber];
-    // g.addDataPoint(year, dataValue);
-    // break;
-    // case USA_MOUNTAIN:
-    // g= mountainGraphs[graphNumber];
-    // g.addDataPoint(year, dataValue);
-    // break;
-    // case USA_HEARTLAND:
-    // g = heartlandGraphs[graphNumber];
-    // g.addDataPoint(year, dataValue);
-    // break;
-    // case USA_NORTHERN_PLAINS:
-    // g = northernPlainsGraphs[graphNumber];
-    // break;
-    // case USA_SOUTHERN_PLAINS:
-    // g = southernPlainsGraphs[graphNumber];
-    // g.addDataPoint(year, dataValue);
-    // break;
-    // case USA_NORTHERN_CRESCENT:
-    // g = northernCresentGraphs[graphNumber];
-    // g.addDataPoint(year, dataValue);
-    // break;
-    // case USA_SOUTHEAST:
-    // g = southeastGraphs[graphNumber];
-    // g.addDataPoint(year, dataValue);
-    // break;
-    // default:
-    // break;
-    // }
+    Graph[] regionGraphs=graphMap.get(region);
+    regionGraphs[graphNumber].addDataPoint(year,dataValue);
+//    switch (region)
+//    {
+//      case USA_CALIFORNIA:
+//        g = californiaGraphs[graphNumber];
+//        g.addDataPoint(year, dataValue);
+//        break;
+//      case USA_MOUNTAIN:
+//        g= mountainGraphs[graphNumber];
+//        g.addDataPoint(year, dataValue);
+//        break;
+//      case USA_HEARTLAND:
+//        g = heartlandGraphs[graphNumber];
+//        g.addDataPoint(year, dataValue);
+//        break;
+//      case USA_NORTHERN_PLAINS:
+//        g = northernPlainsGraphs[graphNumber];
+//        break;
+//      case USA_SOUTHERN_PLAINS:
+//        g = southernPlainsGraphs[graphNumber];
+//        g.addDataPoint(year, dataValue);
+//        break;
+//      case USA_NORTHERN_CRESCENT:
+//        g = northernCresentGraphs[graphNumber];
+//        g.addDataPoint(year, dataValue);
+//        break;
+//      case USA_SOUTHEAST:
+//        g = southeastGraphs[graphNumber];
+//        g.addDataPoint(year, dataValue);
+//        break;
+//      default:
+//        break;
+//    }
   }
   /*
    * public void addData(EnumRegion region, int year, int[] grossIncome, int[]
@@ -370,6 +371,7 @@ public class GraphManager
     // return g;
   }
 
+  
   /**
    * Set up the pie chart to display crop distribution for a region.
    */
@@ -771,22 +773,22 @@ public class GraphManager
 
   private void initializeGraphNodeGraphs()
   {
-    for (EnumRegion region : EnumRegion.values())
+    for(EnumRegion region:EnumRegion.values())
     {
-      Graph[] regionGraph = new Graph[3];
+      Graph[] regionGraph=new Graph[3];
 
       regionGraph[0] = new GraphPopulation(region);
       regionGraph[1] = new GraphHDI(region);
       regionGraph[2] = new GraphFarmingBalance(region);
       graphMap.put(region, regionGraph);
     }
-    // initCaliGraph();
-    // initHrtGraph();
-    // initMntGraph();
-    // initNPGraph();
-    // initSPGraph();
-    // initSEGraph();
-    // initNCGraph();
+//    initCaliGraph();
+//    initHrtGraph();
+//    initMntGraph();
+//    initNPGraph();
+//    initSPGraph();
+//    initSEGraph();
+//    initNCGraph();
   }
 
   private void initCaliGraph()
@@ -795,8 +797,7 @@ public class GraphManager
     californiaGraphs[0] = new GraphPopulation(EnumRegion.USA_CALIFORNIA);
     californiaGraphs[1] = new GraphHDI(EnumRegion.USA_CALIFORNIA);
     californiaGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_CALIFORNIA);
-    // californiaGraphs[3] = new
-    // GraphProductsDollars(EnumRegion.USA_CALIFORNIA);
+    //californiaGraphs[3] = new GraphProductsDollars(EnumRegion.USA_CALIFORNIA);
   }
 
   private void initMntGraph()
@@ -805,7 +806,7 @@ public class GraphManager
     mountainGraphs[0] = new GraphPopulation(EnumRegion.USA_MOUNTAIN);
     mountainGraphs[1] = new GraphHDI(EnumRegion.USA_MOUNTAIN);
     mountainGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_MOUNTAIN);
-    // mountainGraphs[3] = new GraphProductsDollars(EnumRegion.USA_MOUNTAIN);
+    //mountainGraphs[3] = new GraphProductsDollars(EnumRegion.USA_MOUNTAIN);
   }
 
   private void initHrtGraph()
@@ -814,7 +815,7 @@ public class GraphManager
     heartlandGraphs[0] = new GraphPopulation(EnumRegion.USA_HEARTLAND);
     heartlandGraphs[1] = new GraphHDI(EnumRegion.USA_HEARTLAND);
     heartlandGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_HEARTLAND);
-    // heartlandGraphs[3] = new GraphProductsDollars(EnumRegion.USA_HEARTLAND);
+    //heartlandGraphs[3] = new GraphProductsDollars(EnumRegion.USA_HEARTLAND);
   }
 
   private void initSEGraph()
@@ -823,7 +824,7 @@ public class GraphManager
     southeastGraphs[0] = new GraphPopulation(EnumRegion.USA_SOUTHEAST);
     southeastGraphs[1] = new GraphHDI(EnumRegion.USA_SOUTHEAST);
     southeastGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_SOUTHEAST);
-    // southeastGraphs[3] = new GraphProductsDollars(EnumRegion.USA_SOUTHEAST);
+    //southeastGraphs[3] = new GraphProductsDollars(EnumRegion.USA_SOUTHEAST);
   }
 
   private void initSPGraph()
@@ -832,8 +833,7 @@ public class GraphManager
     southernPlainsGraphs[0] = new GraphPopulation(EnumRegion.USA_SOUTHERN_PLAINS);
     southernPlainsGraphs[1] = new GraphHDI(EnumRegion.USA_SOUTHERN_PLAINS);
     southernPlainsGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_SOUTHERN_PLAINS);
-    // southernPlainsGraphs[3] = new
-    // GraphProductsDollars(EnumRegion.USA_SOUTHERN_PLAINS);
+    //southernPlainsGraphs[3] = new GraphProductsDollars(EnumRegion.USA_SOUTHERN_PLAINS);
   }
 
   private void initNCGraph()
@@ -842,8 +842,7 @@ public class GraphManager
     northernCresentGraphs[0] = new GraphPopulation(EnumRegion.USA_NORTHERN_CRESCENT);
     northernCresentGraphs[1] = new GraphHDI(EnumRegion.USA_NORTHERN_CRESCENT);
     northernCresentGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_NORTHERN_CRESCENT);
-    // northernCresentGraphs[3] = new
-    // GraphProductsDollars(EnumRegion.USA_NORTHERN_CRESCENT);
+    //northernCresentGraphs[3] = new GraphProductsDollars(EnumRegion.USA_NORTHERN_CRESCENT);
   }
   public BorderPane getGraph(int graphNum)
   {
@@ -855,7 +854,6 @@ public class GraphManager
     northernPlainsGraphs[0] = new GraphPopulation(EnumRegion.USA_NORTHERN_PLAINS);
     northernPlainsGraphs[1] = new GraphHDI(EnumRegion.USA_NORTHERN_PLAINS);
     northernPlainsGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_NORTHERN_PLAINS);
-    // northernPlainsGraphs[3] = new
-    // GraphProductsDollars(EnumRegion.USA_NORTHERN_PLAINS);
+    //northernPlainsGraphs[3] = new GraphProductsDollars(EnumRegion.USA_NORTHERN_PLAINS);
   }
 }

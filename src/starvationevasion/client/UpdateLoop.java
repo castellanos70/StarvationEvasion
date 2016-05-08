@@ -28,10 +28,12 @@ import starvationevasion.client.Networking.ClientTest;
 import starvationevasion.common.EnumRegion;
 
 /**
- * Since the AI has already been converted to use the new CommModule, this is a proof
- * of concept to show that the client can use the same module.
+ * Update loop starts up the home screen for the client. From here the user is able
+ * to launch a game and connect to a single or multiplayer. When the user clicks
+ * login, it initializes a client object and tries to connect to the
+ * selected server.
  * <p>
- * This is also a first attempt at moving the client over to a single-threaded game
+ * Moves the client over to a single-threaded game
  * loop (built on the JavaFX thread).
  */
 public class UpdateLoop extends Application

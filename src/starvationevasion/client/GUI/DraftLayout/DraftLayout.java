@@ -1,19 +1,23 @@
 package starvationevasion.client.GUI.DraftLayout;
 
 
+import java.util.ArrayList;
+
+import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.layout.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import starvationevasion.client.GUI.DraftLayout.ProductBar;
-import starvationevasion.client.GUI.DraftLayout.Hand;
-import starvationevasion.client.GUI.DraftLayout.map.Map;
 import starvationevasion.client.GUI.GUI;
+import starvationevasion.client.GUI.SummaryBar;
+import starvationevasion.client.GUI.DraftLayout.map.Map;
 import starvationevasion.client.GUI.Popups.DiscardDisplay;
 import starvationevasion.client.GUI.Popups.GraphDisplay;
 import starvationevasion.client.GUI.Popups.ProductBarDataDisplay;
-import starvationevasion.client.GUI.SummaryBar;
-
-import java.util.ArrayList;
 
 /**
  * The DraftLayout class is responsible for the layout the GUI displays during the draft phase of the game
@@ -44,7 +48,7 @@ public class DraftLayout extends GridPane
   GraphDisplay graphDisplay;
   DiscardDisplay discardDisplay;
 
-  Hand hand;
+  HandNode hand;
   DraftTimer draftTimer;
   Map map;
   WorldMap worldMap;
@@ -71,7 +75,18 @@ public class DraftLayout extends GridPane
     initializeGridSizes();
     this.getColumnConstraints().addAll(colConstraintsList);
     this.getRowConstraints().addAll(rowConstraintsList);
-
+    
+    this.setOnMouseMoved(new EventHandler<MouseEvent>(){
+      @Override
+      public void handle(MouseEvent event)
+      {
+        if (hand == null) return;
+        
+        Point2D p = new Point2D(event.getSceneX() - hand.getLayoutX(), event.getSceneY() - hand.getLayoutY());
+        hand.calculateMouseOver(p.getX(), p.getY());
+      }
+    });
+    
     testLayout();
   }
   
@@ -124,7 +139,7 @@ public class DraftLayout extends GridPane
     this.add(draftedCards, 0, 8, 6, 6);
 
     //node which allows the user to view the current cards in their hand
-    hand = new Hand(gui, primaryStage);
+    hand = new HandNode(gui);
     this.add(hand, 7, 12, 19, 5);
 
     draftTimer = new DraftTimer();
@@ -160,87 +175,6 @@ public class DraftLayout extends GridPane
   public void update()
   {
      worldMap.getBoardersManager().update();;
-  }
-
-
-
-  private void initDraftLayout()
-  {
-    //node to let the user access the visualizer
-
-    //visNode = new VisNode(primaryStage,GUI,this);
-    //this.add(visNode, 0,0,1,3);
-
-
-    //node to let the user see graphs and region statistics
-    graphNode = new GraphNode(gui);
-    this.add(graphNode, 0, 4, 1, 2);
-    
-    
-    chatNode=new ChatNode(gui);
-    this.add(chatNode,0,0,1,3);
-
-    //node at the top of the screen to let the user know basic stats
-    summaryBar = new SummaryBar(gui);
-    this.add(summaryBar, 1, 0, 12, 1);
-
-    //node which lets the user see if other players have played cards/finished draft phase
-    draftStatus = new DraftStatus();
-    this.add(draftStatus, 11, 1, 2, 4);
-
-    //node which lets the user select and view the map of the US
-    map = new Map();
-    Node mapNode = map.getGameMapNode();
-    this.add(mapNode, 1, 1, 10, 6);
-
-    //node which holds the user's deck/discard pile information
-    deckNode = new DeckNode(gui);
-    this.add(deckNode, 0,6,1,3);
-
-    //node which holds the ProductBar
-    productBar = new ProductBar(gui);
-    int productBarSize = productBar.getElements().size();
-    for (int i = 0; i < productBarSize; ++i)
-    {
-      this.add(productBar.getElements().get(i), i+1, 9,1 ,1);
-    }
-
-    //node which allows the user to undo/discard cards with the click of a button
-    actionButtons = new ActionButtons(gui);
-    this.add(actionButtons, 11, 8, 2, 1);
-
-    draftedCards = new DraftedCards();
-    this.add(draftedCards, 11, 5, 2, 3);
-
-    //node which allows the user to view the current cards in their hand
-    hand = new Hand(gui, primaryStage);
-    this.add(hand, 1, 7, 10, 2);
-
-
-    draftTimer = new DraftTimer();
-    this.add(draftTimer, 11, 0, 2, 1);
-
-    pbDataDisplay = new ProductBarDataDisplay(gui);
-    this.add(pbDataDisplay, 0, 5, 13, 4);
-
-    graphDisplay = new GraphDisplay(gui);
-    this.add(graphDisplay, 1, 1, 10, 6);
-
-    discardDisplay = new DiscardDisplay(gui);
-    this.add(discardDisplay,1, 5, 3, 4);
-
-
-
-    this.setBackground(new Background(new BackgroundImage(
-            gui.getImageGetter().getBackground(),
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundRepeat.NO_REPEAT,
-            BackgroundPosition.CENTER,
-            BackgroundSize.DEFAULT)));
-
-    gui.getPopupManager().setGraphDisplay(graphDisplay);
-    gui.getPopupManager().setPbDataDisplay(pbDataDisplay);
-    gui.getPopupManager().setDiscardDisplay(discardDisplay);
   }
   
   
@@ -330,7 +264,7 @@ public class DraftLayout extends GridPane
    * Used by actionButtons to undo cards played
    * @return hand node
    */
-  public Hand getHand(){return hand;}
+  public HandNode getHand(){return hand;}
 
 
   public ChatNode getChatNode(){return chatNode;}

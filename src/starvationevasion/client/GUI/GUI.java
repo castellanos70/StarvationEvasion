@@ -1,5 +1,9 @@
 package starvationevasion.client.GUI;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.TimerTask;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -13,7 +17,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
 import starvationevasion.client.GUI.DraftLayout.DraftLayout;
-import starvationevasion.client.GUI.DraftLayout.Hand;
+import starvationevasion.client.GUI.DraftLayout.HandNode;
 import starvationevasion.client.GUI.DraftLayout.map.GamePhaseMapController;
 import starvationevasion.client.GUI.DraftLayout.map.MapController;
 import starvationevasion.client.GUI.Graphs.GraphManager;
@@ -22,15 +26,10 @@ import starvationevasion.client.GUI.images.ImageGetter;
 import starvationevasion.client.GUI.votingHud.VotingLayout;
 import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.client.Logic.LocalDataContainer;
-import starvationevasion.client.Logic.MainGameLoop;
 import starvationevasion.client.Networking.Client;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.gamecards.EnumPolicy;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.TimerTask;
 
 /**
  * GUI.java is the class which holds the thread for running the main GUI of
@@ -96,7 +95,6 @@ public class GUI extends Application
    * Constructor for the GUI which the client calls
    */
   private Client client;
-  private MainGameLoop mainGameLoop;
 
   public GUI(Client client, LocalDataContainer localDataContainer)
   {
@@ -204,7 +202,7 @@ public class GUI extends Application
     assignedRegion = client.getRegion();
     if (cardsInHand != null)
     {
-      getDraftLayout().getHand().setHand(cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]));
+      getDraftLayout().getHand().setPolicies(cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]));
     }
 
     getDraftLayout().getSummaryBar().setRegion(assignedRegion);
@@ -254,7 +252,7 @@ public class GUI extends Application
     needHand = true;
     cardsInHand.clear();
     cardsInHand = null;
-    draftLayout.getHand().newTurn();
+//    draftLayout.getHand().newTurn();
     draftLayout.getActionButtons().resetActionButtons();
   }
 
@@ -486,7 +484,7 @@ public class GUI extends Application
     ChatNode chatNodeDraft = draftLayout.getChatNode();
     ChatNode chatNodeVote = votingLayout.getChatNode();
     ChatManager chatManager = client.getChatManager();
-    Hand hand = getDraftLayout().getHand();
+    HandNode hand = getDraftLayout().getHand();
     TimerTask timerTask = new TimerTask()
     {
       boolean flag = false;
@@ -504,13 +502,13 @@ public class GUI extends Application
 
             setCardsInHand(client.getHand());
             cardsInHand = client.getHand();
-            hand.setHand(client.getHand().toArray(new EnumPolicy[cardsInHand.size()]));
-            System.out.println("please work " + Arrays.toString(hand.getHand()) + Platform.isFxApplicationThread());
+            hand.setPolicies(client.getHand().toArray(new EnumPolicy[cardsInHand.size()]));
+            System.out.println("please work " + Arrays.toString(hand.getPolicies()) + Platform.isFxApplicationThread());
           }
-          if (getDraftLayout().getHand().getHand() != null)
+          if (getDraftLayout().getHand().getPolicies() != null)
           {
-            chatNodeDraft.setHand(getDraftLayout().getHand().getHand());
-            chatNodeVote.setHand(getDraftLayout().getHand().getHand());
+            chatNodeDraft.setHand(getDraftLayout().getHand().getPolicies());
+            chatNodeVote.setHand(getDraftLayout().getHand().getPolicies());
           }
           if (isDraftingPhase() && client.getState().equals(starvationevasion.server.model.State.VOTING))
           {

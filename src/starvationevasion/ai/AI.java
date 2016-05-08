@@ -71,6 +71,12 @@ public class AI
     FOODPRICE
 
   }
+  
+  public enum CardVariableTypes
+  {
+    PERCENTAGE,
+    MONEY
+  }
 
   // This map is used to store information about the world and region that will
   // be used in selecting
@@ -81,7 +87,14 @@ public class AI
   //This map is used to store the various game card policies and their associated region, if they only affect one
   //region.
   public Map<EnumPolicy, EnumRegion> policyAndRegionMap = new EnumMap<EnumPolicy, EnumRegion>(EnumPolicy.class);
-
+  
+  public Map<EnumPolicy,CardVariableTypes> cardVariables=new EnumMap<EnumPolicy,CardVariableTypes>(EnumPolicy.class);
+  
+  //Cards that benefit many regions, not just a specific one.
+  public ArrayList<EnumPolicy> cardsOfGeneralBenefit=new ArrayList<>();
+  
+  public ArrayList<EnumPolicy> moneyCards=new ArrayList<>();
+  
   // The AI has a copy of the list of special events, if any occurred during the
   // last turn.
   public ArrayList<SpecialEventData> eventList = new ArrayList<>();
@@ -106,7 +119,7 @@ public class AI
 
     aiLoop();
     COMM.dispose();
-    createRegionMap();
+    createMapsAndLists();
   }
 
   /**
@@ -122,7 +135,7 @@ public class AI
   }
   //In this map I'm adding cards that only affect one region. This is for use in the drafting phase
   //so that I can evaluate the region that a card is affecting.
-  private void createRegionMap()
+  private void createMapsAndLists()
   {
     policyAndRegionMap.put(EnumPolicy.Policy_CleanRiverIncentive, getUser().getRegion());
     policyAndRegionMap.put(EnumPolicy.Policy_EfficientIrrigationIncentive, getUser().getRegion());
@@ -139,6 +152,24 @@ public class AI
     policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefOceania, EnumRegion.OCEANIA);
     policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefSouthAsia, EnumRegion.SOUTH_ASIA);
     policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefSubSaharan, EnumRegion.SUB_SAHARAN);
+    cardsOfGeneralBenefit.add(EnumPolicy.Policy_InternationalFoodRelief);
+    cardsOfGeneralBenefit.add(EnumPolicy.Policy_MyPlatePromotionCampaign);
+    cardsOfGeneralBenefit.add(EnumPolicy.Policy_ResearchInsectResistanceGrain);
+    moneyCards.add(EnumPolicy.valueOf("Policy_Loan"));
+    moneyCards.add(EnumPolicy.valueOf("Policy_DiverttheFunds"));
+    moneyCards.add(EnumPolicy.valueOf("Policy_Fundraiser"));
+    cardVariables.put(EnumPolicy.Policy_CleanRiverIncentive, CardVariableTypes.PERCENTAGE);
+    cardVariables.put(EnumPolicy.Policy_EfficientIrrigationIncentive, CardVariableTypes.PERCENTAGE);
+    cardVariables.put(EnumPolicy.Policy_EthanolTaxCreditChange, CardVariableTypes.PERCENTAGE);
+    cardVariables.put(EnumPolicy.Policy_FarmInfrastructureSubSaharan, CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_FertilizerAidCentralAsia, CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_FertilizerAidMiddleAmerica, CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_FertilizerAidOceania, CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_FertilizerAidSouthAsia, CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_FertilizerAidSubSaharan,CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_InternationalFoodRelief,CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_MyPlatePromotionCampaign, CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_ResearchInsectResistanceGrain,CardVariableTypes.MONEY);
   }
 
   /**
@@ -151,10 +182,12 @@ public class AI
   {
     worldDataSize += 2;
     region = u.getRegion().name();
+    System.out.println("World data size:"+worldData.size());
     for (int i = worldData.size() - 2; i < worldData.size(); i++)
     {
       Double[] seaLevel =
       { worldData.get(i).seaLevel };
+      System.out.println("overall sea level:"+worldData.get(i).seaLevel);
       factorMap.get(WorldFactors.SEALEVEL).add(seaLevel);
       eventList.clear();
       if (worldData.get(i).eventList.size() > 0)
@@ -174,20 +207,25 @@ public class AI
       }
       Integer[] revenueBalance =
       { thisRegion.revenueBalance };
+      System.out.println("region revenue balance:"+thisRegion.revenueBalance);
       factorMap.get(WorldFactors.REVENUEBALANCE).add(revenueBalance);
       Integer[] population =
       { thisRegion.population };
+      System.out.println("population:"+thisRegion.population);
       factorMap.get(WorldFactors.POPULATION).add(population);
       Double[] undernourished =
       { thisRegion.undernourished };
+      System.out.println("undernourished:"+thisRegion.undernourished);
       factorMap.get(WorldFactors.UNDERNOURISHED).add(undernourished);
       Double[] hdi =
       { thisRegion.humanDevelopmentIndex };
+      System.out.println("HDI:"+thisRegion.humanDevelopmentIndex);
       factorMap.get(WorldFactors.HDI).add(hdi);
       Long[] foodProduced = new Long[EnumFood.SIZE];
       for (int h = 0; h < EnumFood.SIZE; h++)
       {
         foodProduced[h] = thisRegion.foodProduced[h];
+        System.out.println("food produced:"+thisRegion.foodProduced[h]);
       }
       // Food produced over the last year in metric tons.
       factorMap.get(WorldFactors.FOODPRODUCED).add(foodProduced);
@@ -195,6 +233,7 @@ public class AI
       for (int h = 0; h < EnumFood.SIZE; h++)
       {
         foodIncome[h] = thisRegion.foodIncome[h];
+        System.out.println("food income:"+thisRegion.foodIncome[h]);
       }
       factorMap.get(WorldFactors.FOODINCOME).add(foodIncome);
       Long[] foodImported = new Long[EnumFood.SIZE];
@@ -211,6 +250,7 @@ public class AI
       factorMap.get(WorldFactors.FOODEXPORTED).add(foodExported);
       Integer[] ethanolCredit =
       { thisRegion.ethanolProducerTaxCredit };
+      System.out.println("tax credit:"+thisRegion.ethanolProducerTaxCredit);
       factorMap.get(WorldFactors.ETHANOLTAXCREDIT).add(ethanolCredit);
       Integer[] foodPrice = new Integer[EnumFood.SIZE];
       for (int h = 0; h < EnumFood.SIZE; h++)
@@ -264,7 +304,7 @@ public class AI
       if (type == Type.AUTH_SUCCESS)
       {
         u = (User)data;
-        COMM.sendChat("ALL", "Hi, I am " + u.getUsername() + ". I'll be playing using (crappy) AI.", null);
+        COMM.sendChat("ALL", "Hi, I am " + u.getUsername() + ". I'll be playing using slightly okay AI.", null);
       }
       else if (type == Type.USER)
       {

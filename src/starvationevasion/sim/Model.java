@@ -2,7 +2,6 @@ package starvationevasion.sim;
 
 import starvationevasion.common.*;
 import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.common.gamecards.Policy_DivertFunds;
 import starvationevasion.sim.LandTile.Field;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
@@ -88,7 +87,7 @@ import java.util.logging.Logger;
 
 public class Model
 {
-  public static final int TOTAL_LAND_TILES = 245021;//167235;
+  public static final int TOTAL_LAND_TILES = 167235;
   public static double EVENT_CHANCE = 0.02;
   private static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 

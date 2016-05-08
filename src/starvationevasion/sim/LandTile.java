@@ -42,7 +42,7 @@ public class LandTile
    * ordered matching with each record in each month of each annual file of PATH_CLIMATE_PREFIX.
    */
   private static final String PATH_COORDINATES = "/sim/climate/";
-  private static final String COORDINATE_FILENAME = "ArableCoordinates";
+  private static final String COORDINATE_FILENAME = "GeodesicArableCoordinates_778km2";
   private static final String PATH_CLIMATE = "/sim/climate/Climate_";
   private static final String PREFIX_HISTORICAL = "Historical";
   private static final String PREFIX_RCP45 = "RCP45";
@@ -257,7 +257,6 @@ public class LandTile
   public static ArrayList<MapPoint> loadLocations(Model model, ArrayList<LandTile> tileList)
   {
     String zipPath = PATH_COORDINATES + COORDINATE_FILENAME + ".zip";
-    //String zipPath = PATH_COORDINATES + "geodesic.zip";
     ArrayList<MapPoint> mapList = null;
     try
     {
@@ -265,7 +264,6 @@ public class LandTile
 
       ZipFile zipFile = new ZipFile(Util.rand.getClass().getResource(zipPath).toURI().getPath());
       ZipEntry entry = zipFile.getEntry(COORDINATE_FILENAME+".csv");
-      //ZipEntry entry = zipFile.getEntry("geodesic.csv");
 
       CSVReader fileReader = new CSVReader(zipFile.getInputStream(entry), 1);
 
@@ -347,15 +345,14 @@ public class LandTile
     for (RawDataYears yearEnum : RawDataYears.values())
     {
       //For now, just read in climate data through 2015.
-      if (yearEnum.ordinal() > RawDataYears.y2015.ordinal()) break;
-
+      //if (yearEnum.ordinal() > RawDataYears.y2015.ordinal()) break;
+      if (yearEnum.ordinal() > RawDataYears.y2000.ordinal()) break;
       String yearStr =  yearEnum.name().substring(1);
       int year =  Integer.parseInt(yearStr);
       String prefix = PREFIX_HISTORICAL;
       if (year > 2005) prefix = representativeConcentrationPathway;
 
       String path = PATH_CLIMATE + prefix + "_"+yearStr + ".zip";
-
       int recordIdx=0;
       try
       {
@@ -375,7 +372,7 @@ public class LandTile
           String[] fieldList;
           recordIdx = 0;
           //Read each record of file.
-          while ((fieldList = fileReader.readRecord(Field.SIZE+1)) != null)
+          while ((fieldList = fileReader.readRecord(Field.SIZE)) != null)
           {
             LandTile tile = tileList.get(recordIdx);
 
@@ -383,11 +380,15 @@ public class LandTile
             //Read each field of record.
             for (int i=0; i<Field.SIZE; i++)
             {
-              int k = i;
-              if (i >= 1) k = i + 1; //This is temperary to skip the now unused column of max monthly temp
-              float value= Float.parseFloat(fieldList[k]);
+              float value= Float.parseFloat(fieldList[i]);
+
+              //There are locations for which rain data does not exist. For now, we set
+              // these values to 0.
+              if (i == Field.RAIN.ordinal() && value < 0f) value = 0f;
+
 
               //System.out.printf("     tile[%d].data[%d][%d][%d]=%f\n", recordIdx.yearEnum.ordinal(),month,i,value);
+
               tile.data[yearEnum.ordinal()][month][i] = value;
 
               //if (yearIdx == 0 && month == System.out.println("rain="+fieldList[DataHeaders.Rain.ordinal()]+" at " + tile.latitude + ", " + tile.latitude);
@@ -396,13 +397,15 @@ public class LandTile
             recordIdx++;
           }
           fileReader.close();
+          assert (recordIdx == Model.TOTAL_LAND_TILES);
           month++;
         }
         zipFile.close();
       }
+
       catch (Exception e)
       {
-        System.out.println("Record# "+recordIdx+" "+ e.getMessage());
+        System.out.println("          Record# "+recordIdx+" "+ e.getMessage());
         e.printStackTrace();
         System.exit(0);
       }

@@ -6,6 +6,7 @@ import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.sim.events.AbstractEvent;
 
+import java.awt.geom.Area;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -397,6 +398,12 @@ public class Simulator
     {
       deck.discard(deck.getCardsInHand()[i]);
     }
+  }
+
+  public Area getPerimeter(EnumRegion regionID)
+  {
+    Region region = model.getRegion(regionID);
+    return region.getGeographicArea().getPerimeter();
   }
 
   /**

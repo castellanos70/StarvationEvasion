@@ -108,7 +108,6 @@ public class Simulator
     //Constant check of enum value, hand should be full so nothing happens
     for(int i = 0; i < Constant.MAX_HAND_SIZE; i++){}
       //validate cards, doesn't do anything if they are enums
-
     Boolean ex = false;
     discard(player, hand[0]);
     try

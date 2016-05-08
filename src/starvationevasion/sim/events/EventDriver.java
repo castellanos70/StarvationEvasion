@@ -22,20 +22,27 @@ public class EventDriver
 	 
  }
  
- private void initRandomEvents()
+ private void initEvents()
+ {
+	 
+ }
+ 
+ 
+ 
+ private void addRandomEvents(float upperLimit)
  {
 	 float eventChoice;
 	 
 	 int regionChoice;
 	 int terriotyChoice;
-	 int event;
+	 int eventIndex;
 	 
 	 
 	 Region tmpRegion; 
 	 Territory tmpTerrioty;
 	 EnumRegion tmpEnumRegion;
 	 EnumRegion[] regionEnums = EnumRegion.values();
-	 while((eventChoice=Util.rand.nextFloat()) < 0.8)
+	 while((eventChoice=Util.rand.nextFloat()) < upperLimit)
 	 {
 		
 		 regionChoice = Util.rand.nextInt(EnumRegion.SIZE);
@@ -45,16 +52,29 @@ public class EventDriver
 		 terriotyChoice = Util.rand.nextInt(tmpRegion.getTerritoryList().size());
 		 tmpTerrioty = tmpRegion.getTerritoryList().get(terriotyChoice);
 		 
-		 event = (int) (eventChoice * 10);
-		 switch(event)
+		 eventIndex = (int) (eventChoice * 10);
+		 
+		 
+		// determine what events to add to EventsList
+		 switch(eventIndex)
 		 {
-		 	// determine what events to add to Eventslist
+		 case 1: break;
+		 case 2: break;
+		 case 3: break;
+		 case 4: break;
+		 case 5: break;
+		 case 6: break;
+		 case 7: break;
+		 
 		 }
+		 	
+		 
+		 	
+		 
+		 
 	 }
   
  }
- 
- 
  
  
  private void addEvent(AbstractEvent event)
@@ -75,6 +95,7 @@ public class EventDriver
 		   EventList.remove(event);
 	 }
  }
+ 
  
  
  

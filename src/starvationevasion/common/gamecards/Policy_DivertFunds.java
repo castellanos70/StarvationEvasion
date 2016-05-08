@@ -49,12 +49,6 @@ public class Policy_DivertFunds extends GameCard
    * {@inheritDoc}
    */
   @Override
-  public int actionPointCost() {return 3;}
-  
-  /**
-   * {@inheritDoc}
-   */
-  @Override
   public EnumSet<State> getUsableStates()
   {
     return PLAY_STATES;

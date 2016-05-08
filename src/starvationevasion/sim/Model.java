@@ -569,7 +569,7 @@ public class Model
     {
       switch(c.getCardType())
       {
-        case Policy_DiverttheFunds:
+        case Policy_DivertFunds:
           //remove all cards from owners hand -- done in Simulator.java
           //give 14 million dollars to owner
           getRegion(c.getOwner()).addToRevenue(14000000);
@@ -1494,7 +1494,6 @@ public class Model
     /*
    territory = model.getTerritory("Congo (Brazzaville)");
    model.drawBoundary(pic, territory, Color.MAGENTA, 1);
-
    Region region = model.getRegion(EnumRegion.SUB_SAHARAN);
    model.drawBoundary(pic, region, Util.brighten(EnumRegion.SUB_SAHARAN.getColor(), 0.5), 3);
 */
@@ -1506,33 +1505,22 @@ public class Model
 /*
     Territory territory = model.getTerritory("Ethiopia");
     model.drawBoundaryUsingMapPoints(pic, territory);
-
     territory = model.getTerritory("Kenya");
     model.drawBoundaryUsingMapPoints(pic, territory);
-
-
     territory = model.getTerritory("Tanzania");
     model.drawBoundaryUsingMapPoints(pic, territory);
-
     territory = model.getTerritory("Somalia");
     model.drawBoundaryUsingMapPoints(pic, territory);
-
     territory = model.getTerritory("Sudan");
     model.drawBoundaryUsingMapPoints(pic, territory);
-
     Region region = model.getRegion(EnumRegion.SUB_SAHARAN);
     model.drawBoundary(pic, region, Util.brighten(Color.MAGENTA, 0.5));
-
     region = model.getRegion(EnumRegion.MIDDLE_EAST);
     model.drawBoundary(pic, region, Util.brighten(EnumRegion.MIDDLE_EAST.getColor(), 0.5));
-
-
     //territory = model.getTerritory("Mauritania");
     //model.drawBoundary(pic, territory, Color.WHITE);
-
     //territory = model.getTerritory("Algeria");
     //model.drawBoundary(pic, territory, Color.GREEN);
-
     //territory = model.getTerritory("Mexico");
     //model.drawBoundary(pic, territory, Color.RED);
     */

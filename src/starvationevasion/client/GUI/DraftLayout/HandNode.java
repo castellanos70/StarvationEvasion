@@ -129,6 +129,7 @@ public class HandNode extends ResizablePane
    * Creates the CardNode elements that will be displayed in this pane
    */
   public void createCards(){
+    removeOldCards();
     for (int i = 0; i < policies.length; i++){
       cards[i] = new CardNode(gui.getAssignedRegion(), policies[i]);
       cards[i].setManaged(false);
@@ -136,6 +137,14 @@ public class HandNode extends ResizablePane
     }
     onResize();
   }
+  
+  public void removeOldCards()
+  {
+    for (int i = 0; i < cards.length; i++){
+      this.getChildren().remove(cards[i]);
+    }
+  }
+  
 
   @Override
   public void onResize()

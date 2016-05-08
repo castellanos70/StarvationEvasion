@@ -10,15 +10,14 @@ import javax.crypto.Cipher;
 import javax.crypto.SealedObject;
 import javax.crypto.SecretKey;
 import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -30,6 +29,15 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class ConcurrentCommModule implements Communication
 {
+  // Note :: When the different comm module instances start, they will check to see
+  //         if they are being asked to connect to the localhost. If this is the case, they
+  //         will attempt to secure this port by opening a ServerSocket - whichever instance
+  //         binds to this port first gains exclusive rights to spawning the server.
+  //
+  //         This avoids the situation where every ConcurrentCommModule instance tries to
+  //         spawn its own server process, which would be a mess.
+  private static final int PROCESS_LOCK_PORT = 5050;
+
   private final ReentrantLock LOCK = new ReentrantLock(); // Used for synchronization
   private final AtomicBoolean IS_CONNECTED = new AtomicBoolean(false);
   private final ArrayList<Response> RESPONSE_EVENTS = new ArrayList<>(1_000);
@@ -37,6 +45,7 @@ public class ConcurrentCommModule implements Communication
   private final int PORT;
 
   // Non-final variables
+  private Process localServer;
   private Socket clientSocket;
   private DataInputStream reader;
   private DataOutputStream writer;
@@ -47,6 +56,12 @@ public class ConcurrentCommModule implements Communication
   private Cipher aesCipher;
   private KeyPair rsaKey;
 
+  private boolean connectInfinitely = false; // Used in a special localhost case
+  private ServerSocket processSocket = null;
+
+  /**
+   * This class enables the client to listen
+   */
   private class StreamListener extends Thread
   {
     private boolean encounteredError = false;
@@ -113,10 +128,51 @@ public class ConcurrentCommModule implements Communication
     }
   }
 
+  private enum StreamType
+  {
+    STDOUT,
+    STDERR
+  }
+
+  private class StreamRedirect extends Thread
+  {
+    private final StreamType TYPE;
+    private final BufferedReader READ;
+
+    public StreamRedirect(StreamType type, InputStream stream)
+    {
+      TYPE = type;
+      READ = new BufferedReader(new InputStreamReader(stream));
+    }
+
+    @Override
+    public void run()
+    {
+      try
+      {
+        String line;
+        while (localServer != null)
+        {
+          if (!READ.ready()) continue;
+          else if ((line = READ.readLine()) == null) break;
+          if (TYPE == StreamType.STDOUT) commPrint(line);
+          else if (TYPE == StreamType.STDERR) commError(line);
+        }
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+      }
+    }
+  }
+
   public ConcurrentCommModule(String host, int port)
   {
     HOST = host;
     PORT = port;
+    // This will hopefully prevent most cases where a local server was spawned but not shutdown
+    // because the client's program had to close itself unexpectedly
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> dispose()));
   }
 
   /**
@@ -151,21 +207,49 @@ public class ConcurrentCommModule implements Communication
     try
     {
       LOCK.lock();
-      final long millisecondTimeStamp = System.currentTimeMillis();
-      final double MAX_SECONDS = 10.0;
-      double deltaSeconds = 0.0;
 
       // Set up the key
       rsaKey = generateRSAKey();
+
+      // If the host starts with "local", try to connect and if it fails, assume
+      // that the game is starting in single player mode and spawn the local server
+      if (HOST.toLowerCase().startsWith("local"))
+      {
+        IS_CONNECTED.set(openConnection(HOST, PORT));
+        if (!IS_CONNECTED.get()) localServer = spawnLocalServer(PORT);
+      }
+
+      final long millisecondTimeStamp = System.currentTimeMillis();
+      final double MAX_SECONDS = connectInfinitely ? Double.MAX_VALUE : 10.0;
+      double deltaSeconds = 0.0;
 
       // Try to establish a connection and timeout after MAX_SECONDS if not
       commPrint("Attempting to connect to host " + HOST + ", port " + PORT);
       while (deltaSeconds < MAX_SECONDS)
       {
         IS_CONNECTED.set(openConnection(HOST, PORT));
-        if (IS_CONNECTED.get()) break;
+        if (IS_CONNECTED.get())
+        {
+          // This solves an issue I don't understand and probably never will
+          openConnection(HOST, PORT);
+          break;
+        }
+        else if (localServer != null && !localServer.isAlive())
+        {
+          commError("Failed to start the local server");
+          dispose();
+          System.exit(-1);
+        }
+        else if (HOST.toLowerCase().startsWith("local") && secureProcessPort() != null)
+        {
+          commError("Another client tried and failed to start a local server");
+          dispose();
+          System.exit(-1);
+        }
         deltaSeconds = (System.currentTimeMillis() - millisecondTimeStamp) / 1000.0;
       }
+
+      closeProcessSocket();
 
       // Generate the aes cipher
       aesCipher = generateAESCipher();
@@ -202,6 +286,9 @@ public class ConcurrentCommModule implements Communication
     {
       LOCK.lock();
       RESPONSE_EVENTS.clear();
+      closeProcessSocket();
+      if (localServer != null) localServer.destroy();
+      localServer = null;
 
       writer.close();
       reader.close();
@@ -344,6 +431,71 @@ public class ConcurrentCommModule implements Communication
     }
   }
 
+  /**
+   * Tries to spawn a local server.
+   *
+   * @param port port to tell the server to bind to
+   * @return a Process instance or null if it failed
+   */
+  private Process spawnLocalServer(int port)
+  {
+    commPrint("Single player detected - attempting to spawn a new local server (This will test your patience)");
+    connectInfinitely = true;
+    processSocket = secureProcessPort();
+    if (processSocket == null)
+    {
+      commPrint("Another client has already started the spawning process - continuing");
+      return null;
+    }
+    Process process = null;
+    try
+    {
+      ProcessBuilder builder = new ProcessBuilder();
+      //builder.inheritIO();
+      builder.directory(new File(System.getProperty("user.dir")));
+      builder.command("java", "-Xms4g", "-jar", "Server.jar", Integer.toString(port));
+      process = builder.start();
+      new StreamRedirect(StreamType.STDOUT, process.getInputStream()).start();
+      new StreamRedirect(StreamType.STDERR, process.getErrorStream()).start();
+      //process.wait(1); // If the process failed, this should cause an exception to be thrown which is what we want
+    }
+    catch (Exception e)
+    {
+      commError("Failed to start the server");
+      closeProcessSocket();
+      e.printStackTrace();
+      System.exit(-1);
+    }
+    return process;
+  }
+
+  private void closeProcessSocket()
+  {
+    try
+    {
+      processSocket.close();
+      processSocket = null;
+    }
+    catch (Exception e)
+    {
+      // Ignore;
+    }
+  }
+
+  private ServerSocket secureProcessPort()
+  {
+    ServerSocket socket = null;
+    try
+    {
+      socket = new ServerSocket(PROCESS_LOCK_PORT);
+    }
+    catch (Exception e)
+    {
+      // Ignore
+    }
+    return socket;
+  }
+
   private void add(Response response)
   {
     try
@@ -361,9 +513,18 @@ public class ConcurrentCommModule implements Communication
   {
     try
     {
+      Socket tempSocket = clientSocket;
+      DataInputStream input = reader;
+      DataOutputStream output = writer;
       clientSocket = new Socket(host, port);
       writer = new DataOutputStream(clientSocket.getOutputStream());
       reader = new DataInputStream(clientSocket.getInputStream());
+      if (tempSocket != null && !tempSocket.isClosed())
+      {
+        tempSocket.close();
+        input.close();
+        output.close();
+      }
     }
     catch (IOException e)
     {

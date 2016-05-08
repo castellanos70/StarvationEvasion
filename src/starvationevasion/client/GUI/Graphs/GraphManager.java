@@ -37,7 +37,6 @@ public class GraphManager
   CategoryAxis xAxis = new CategoryAxis();
   NumberAxis yAxis = new NumberAxis();
 
-  private boolean NOSTATS;
   PieChart regionalCropDistributionPieChart = new PieChart();
   ArrayList<long[]> annualRegionsCropDistributionStatistics = new ArrayList<>();
   PieChart regionalCropExportPieChart = new PieChart();
@@ -57,12 +56,6 @@ public class GraphManager
   // will be obtained via the game flow once integrated.
   private String regionName = "Pacific Northwest and Mountain States";
   String bestCropName = "Citrus";
-  private int presentYear = 2010;
-  private int currentYearlyBestCropProduction = 7_035_514;
-  private int currentYearlyNetExports = 15_545_825;
-  private int currentYearlyNetImports = 10_945_483;
-  private int currentYearlyNetProduction = 8_517_987;
-  private int currentYearlyNetDomesticConsumption = 3_917_645;
   GUI gui;
   ArrayList<Graph[]> graphs = new ArrayList<>();
   HashMap<EnumRegion, Graph[]> graphMap = new HashMap<>();
@@ -117,7 +110,7 @@ public class GraphManager
   // so untill that happens 0's are inputted as the data.
   public void initializeData()
   {
-    NOSTATS = true;
+
     for (int i = 0; i < 18; i++)
     {
       annualRegionsCropDistributionStatistics.add(new long[]
@@ -132,7 +125,7 @@ public class GraphManager
   
   public void updateRegionalCropDistributionNumbers(int year, ArrayList<long[]> updatedStats)
   {
-    NOSTATS=false;
+
    // System.out.println("size 2: " + updatedStats.size());
     annualRegionsCropDistributionStatistics = new ArrayList<>();
     // this.annualRegionsCropDistributionStatistics=updatedStats;
@@ -289,6 +282,12 @@ public class GraphManager
   }
 
   
+  public void setRegionName(String regionName)
+  {
+    this.regionName = regionName;
+  }
+  
+  
   
   public void buildDisplay(int displayNum)
   {
@@ -431,7 +430,7 @@ public class GraphManager
     currentYear.setVisible(false);
     masterPieChart.setLegendVisible(false);
     masterPieChart.getData().clear();
-    masterPieChart.setTitle(regionName + " Crop Impoort Numbers");
+    masterPieChart.setTitle(regionName + " Crop Import Numbers");
     ObservableList<Data> list = FXCollections.observableArrayList(
         new PieChart.Data("Citrus Fruits", regionsCropImports[0]),
         new PieChart.Data("Non-Citrus Fruits", regionsCropImports[1]), new PieChart.Data("Nuts", regionsCropImports[2]),
@@ -660,96 +659,8 @@ public class GraphManager
   // stage.close();
   // }
 
-  /**
-   * Set values method not important ignore.
-   */
-  public void setTestValues1()
-  {
-    past10YearsBestCropProduction.add(1_436_483);
-    past10YearsBestCropProduction.add(2_426_786);
-    past10YearsBestCropProduction.add(2_245_518);
-    past10YearsBestCropProduction.add(3_551_454);
-    past10YearsBestCropProduction.add(6_155_152);
-    past10YearsBestCropProduction.add(4_255_458);
-    past10YearsBestCropProduction.add(5_258_152);
-    past10YearsBestCropProduction.add(7_155_241);
-    past10YearsBestCropProduction.add(8_155_151);
-    past10YearsBestCropProduction.add(9_123_152);
 
-  }
-
-  /**
-   * Set values method not important ignore.
-   */
-  public void setTestValues2()
-  {
-    past10YearsNetExports.add(1_436_483);
-    past10YearsNetExports.add(2_426_786);
-    past10YearsNetExports.add(3_245_568);
-    past10YearsNetExports.add(5_541_424);
-    past10YearsNetExports.add(8_155_172);
-    past10YearsNetExports.add(4_255_158);
-    past10YearsNetExports.add(5_258_152);
-    past10YearsNetExports.add(13_165_741);
-    past10YearsNetExports.add(15_125_151);
-    past10YearsNetExports.add(17_123_152);
-
-  }
-
-  /**
-   * Set values method not important ignore.
-   */
-  public void setTestValues3()
-  {
-    past10YearsNetImports.add(14_436_483);
-    past10YearsNetImports.add(13_426_786);
-    past10YearsNetImports.add(12_245_518);
-    past10YearsNetImports.add(6_551_454);
-    past10YearsNetImports.add(14_155_152);
-    past10YearsNetImports.add(5_255_458);
-    past10YearsNetImports.add(6_258_152);
-    past10YearsNetImports.add(3_155_241);
-    past10YearsNetImports.add(3_155_151);
-    past10YearsNetImports.add(2_123_152);
-
-  }
-
-  /**
-   * Set values method not important ignore.
-   */
-  public void setTestValues4()
-  {
-    past10YearsNetProduction.add(1_436_483);
-    past10YearsNetProduction.add(2_426_786);
-    past10YearsNetProduction.add(2_245_518);
-    past10YearsNetProduction.add(3_551_454);
-    past10YearsNetProduction.add(6_155_152);
-    past10YearsNetProduction.add(4_255_458);
-    past10YearsNetProduction.add(5_258_152);
-    past10YearsNetProduction.add(7_155_241);
-    past10YearsNetProduction.add(8_155_151);
-    past10YearsNetProduction.add(9_123_152);
-
-  }
-
-  /**
-   * Set values method not important ignore.
-   */
-  public void setTestValues5()
-  {
-
-    past10YearsNetDomesticConsumption.add(2_436_483);
-    past10YearsNetDomesticConsumption.add(3_426_786);
-    past10YearsNetDomesticConsumption.add(4_245_568);
-    past10YearsNetDomesticConsumption.add(6_541_424);
-    past10YearsNetDomesticConsumption.add(9_155_172);
-    past10YearsNetDomesticConsumption.add(5_255_158);
-    past10YearsNetDomesticConsumption.add(6_258_152);
-    past10YearsNetDomesticConsumption.add(14_165_741);
-    past10YearsNetDomesticConsumption.add(16_125_151);
-    past10YearsNetDomesticConsumption.add(18_123_152);
-
-  }
+   
 
   /**
    * Gets the request product bar graph

@@ -147,11 +147,11 @@ public class DraftLayout extends GridPane
     this.add(actionButtons, 0, 15, 6, 3);
 
     draftedCards = new DraftedCards();
-    this.add(draftedCards, 0, 8, 6, 6);
+   // this.add(draftedCards, 0, 8, 6, 6);
 
     //node which allows the user to view the current cards in their hand
     hand = new HandNode(gui);
-    this.add(hand, 7, 12, 19, 5);
+    this.add(hand, 7, 13, 19, 5);
 
     draftTimer = new DraftTimer();
     this.add(draftTimer, 27, 1, 5, 2);

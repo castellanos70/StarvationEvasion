@@ -31,7 +31,6 @@ public class GraphNode extends StackPane
 
     this.getStylesheets().add("/starvationevasion/client/GUI/DraftLayout/style.css");
     this.getStyleClass().add("graphnode");
-
     this.getChildren().add(tempText);
 
     this.setOnMouseClicked(new EventHandler<MouseEvent>()
@@ -39,7 +38,10 @@ public class GraphNode extends StackPane
       @Override
       public void handle(MouseEvent event)
       {
-        gui.getPopupManager().toggleGraphDisplay();
+        if(gui.getPopupManager().isOpen()==null)
+        {
+          //Toggle world on world stats. 
+        }
       }
     });
   }

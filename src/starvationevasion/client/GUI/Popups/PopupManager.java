@@ -63,6 +63,12 @@ public class PopupManager
     }
   }
 
+  public Node isOpen()
+  {
+    return currentlyOpen;
+  }
+  
+  
   /**
    * When graph display is clicked, do the appropriate thing (close, open, close and open something else)
    */

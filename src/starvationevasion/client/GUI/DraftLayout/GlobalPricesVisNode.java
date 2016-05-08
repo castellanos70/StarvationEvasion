@@ -41,8 +41,11 @@ public class GlobalPricesVisNode extends BorderPane{
 	      @Override
 	      public void handle(MouseEvent event)
 	      {
-	    	gui.getDraftLayout().getGraphDisplay().setDataVisMode(2);
+	        if(gui.getPopupManager().isOpen()==null)
+	        {
+	    	  gui.getDraftLayout().getGraphDisplay().setDataVisMode(2);
 	        gui.getPopupManager().toggleGraphDisplay();
+	        }
 	      }
 	    });
 	  

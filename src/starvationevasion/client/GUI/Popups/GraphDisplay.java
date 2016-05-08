@@ -61,7 +61,18 @@ public class GraphDisplay extends BorderPane
 		exitButton.setOnAction(evt ->
 	    {
 	    	gui.getPopupManager().toggleGraphDisplay();
-	    	gui.updateState();
+	    	if(dataVisMode==0)
+	    	{
+	    	  gui.updateState();
+	    	}
+	    	if(dataVisMode==1)
+	    	{
+	    	  
+	    	}
+	    	if(dataVisMode==2)
+	    	{
+	    	  
+	    	}
 	    }); 
 		
     this.gui = gui;
@@ -126,7 +137,10 @@ public class GraphDisplay extends BorderPane
 	  }
   }
   
-  
+  public int getMode()
+  {
+    return dataVisMode;
+  }
   
   
   private void initializeComboBox()

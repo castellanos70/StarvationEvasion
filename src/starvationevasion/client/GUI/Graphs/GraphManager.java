@@ -398,7 +398,7 @@ public class GraphManager
   public void updateRegionalCropDistributionDisplay()
   {
      long[] regionsCropDistribution = annualRegionsCropDistributionStatistics.get(REGION_NUM);
-     System.out.println(Arrays.toString(regionsCropDistribution));
+     //System.out.println(Arrays.toString(regionsCropDistribution));
      regionalCropDistributionPieChart.setVisible(true);
   	 barChart.setVisible(false);
   	 currentYear.setVisible(false);

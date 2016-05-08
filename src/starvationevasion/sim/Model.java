@@ -595,14 +595,8 @@ public class Model
    * Model.nextYear(), it doesn't alter any calculations as the model completes
    * a year's simulation.
    * 
-   * Methods that are commented out do work correctly but policy cards are not
-   * currently structured in a way to access necessary variables. Furthermore,
-   * the Client UI does not currently provide a means of allowing a user to make
-   * a selection.
-   * 
    * Hard-coded values are constants of the specific policy card. The card
-   * classes do not currently provide these values. In the future this will be
-   * updated.
+   * classes do not currently provide these values.
    * 
    * @param cards
    *          the list of all cards to be applied to the model
@@ -626,65 +620,69 @@ public class Model
           getRegion(c.getOwner()).addToRevenue(14000000);
           break;
         case Policy_EducateTheWomenCampaign:
+          //TODO:
           break;
         case Policy_EfficientIrrigationIncentive:
+          //TODO:
           break;
         case Policy_EthanolTaxCreditChange:
-          // if c.getUserSelection() == 25, user selected a 25% tax credit
-          // getter for user selection not implemented
-          // getRegion(c.getOwner()).setEthanolProducerTaxCredit(c.getUserSelection());
+          // if c.getX() == 25, user selected a 25% tax credit
+           getRegion(c.getOwner()).setEthanolProducerTaxCredit(c.getX());
           break;
         case Policy_FarmInfrastructureSubSaharan:
+          //TODO:
           break;
         case Policy_FertilizerAidCentralAsia:
-          sendFertilizerAid(EnumRegion.CENTRAL_ASIA, 1000); //$1000 from each US region for now
+          // if c.getX()==6 send 6 million dollars in fertilizer to Central Asia
+          sendFertilizerAid(EnumRegion.CENTRAL_ASIA, c.getX());
           break;
         case Policy_FertilizerAidMiddleAmerica:
-          sendFertilizerAid(EnumRegion.MIDDLE_AMERICA, 1000); //$1000 from each US region for now
+          sendFertilizerAid(EnumRegion.MIDDLE_AMERICA, c.getX());
           break;
         case Policy_FertilizerAidOceania:
-          sendFertilizerAid(EnumRegion.OCEANIA, 1000); //$1000 from each US region for now
+          sendFertilizerAid(EnumRegion.OCEANIA, c.getX());
           break;
         case Policy_FertilizerAidSouthAsia:
-          sendFertilizerAid(EnumRegion.SOUTH_ASIA, 1000); //$1000 from each US region for now
+          sendFertilizerAid(EnumRegion.SOUTH_ASIA, c.getX());
           break;
         case Policy_FertilizerAidSubSaharan:
-          sendFertilizerAid(EnumRegion.SUB_SAHARAN, 1000); //$1000 from each US region for now
+          sendFertilizerAid(EnumRegion.SUB_SAHARAN, c.getX());
           break;
         case Policy_FertilizerSubsidy:
+          //TODO:
           break;
         case Policy_FoodReliefCentralAsia:
           // Sends 5 thousand tons of selected food
-          // sendFoodRelief(EnumRegion.CENTRAL_ASIA, c.getOwner(),
-          // c.getUserSelection(), 5000);
+          sendFoodRelief(EnumRegion.CENTRAL_ASIA, c.getOwner(), c.getTargetFood(), 5000);
           break;
         case Policy_FoodReliefMiddleAmerica:
-          // sendFoodRelief(EnumRegion.MIDDLE_AMERICA, c.getOwner(),
-          // c.getUserSelection(), 5000);
+          sendFoodRelief(EnumRegion.MIDDLE_AMERICA, c.getOwner(), c.getTargetFood(), 5000);
           break;
         case Policy_FoodReliefOceania:
-          // sendFoodRelief(EnumRegion.OCEANIA, c.getOwner(),
-          // c.getUserSelection(), 5000);
+          sendFoodRelief(EnumRegion.OCEANIA, c.getOwner(), c.getTargetFood(), 5000);
           break;
         case Policy_FoodReliefSouthAsia:
-          // sendFoodRelief(EnumRegion.SOUTH_ASIA, c.getOwner(),
-          // c.getUserSelection(), 5000);
+          sendFoodRelief(EnumRegion.SOUTH_ASIA, c.getOwner(), c.getTargetFood(), 5000);
           break;
         case Policy_FoodReliefSubSaharan:
-          // sendFoodRelief(EnumRegion.SUB_SAHARAN, c.getOwner(),
-          // c.getUserSelection(), 5000);
+          sendFoodRelief(EnumRegion.SUB_SAHARAN, c.getOwner(), c.getTargetFood(), 5000);
           break;
         case Policy_Fundraiser:
+          getRegion(c.getOwner()).addToRevenue(1000000);
           break;
         case Policy_InternationalFoodRelief:
           break;
         case Policy_Loan:
           break;
         case Policy_MyPlatePromotionCampaign:
+          getRegion(c.getOwner()).subtractFromRevenue(c.getX());
+          //TODO: Apply effect of the advertising effects.
           break;
         case Policy_ResearchInsectResistanceGrain:
+          //TODO:
           break;
         case Policy_SpecialInterests:
+          //TODO:
           break;
         default:
           break;

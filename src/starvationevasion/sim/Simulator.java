@@ -383,7 +383,7 @@ public class Simulator
       {
         case Policy_CovertIntelligence:
           // TODO: talk to ClientUI to allow player to determine who's hand to
-          // look at. Get the hand from the playerDeck array.
+          // look at. Provide ClientUI the appropriate hand from playerDeck.
           break;
         case Policy_DiverttheFunds:
           // remove all cards from owners hand

@@ -254,7 +254,6 @@ public class ConcurrentCommModule implements Communication
     {
       LOCK.lock();
       if (isConnected()) return; // connect() was already called
-      IS_CONNECTED.set(true);
       // Set up the key
       rsaKey = generateRSAKey();
 

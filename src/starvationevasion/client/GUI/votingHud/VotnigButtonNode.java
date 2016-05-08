@@ -125,7 +125,7 @@ public class VotnigButtonNode extends NodeTemplate
       buttons[i].setTranslateY(10);
       buttons[i].setLayoutY(spacing * i);
 
-      images[i].fitWidthProperty().bind(buttons[i].widthProperty());
+      images[i].fitWidthProperty().bind(this.widthProperty());
       images[i].fitHeightProperty().bind(this.widthProperty());
 
       siv.fitWidthProperty().bind(this.widthProperty());

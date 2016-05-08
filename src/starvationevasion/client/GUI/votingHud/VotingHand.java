@@ -65,45 +65,7 @@ public class VotingHand extends NodeTemplate
       @Override
       public void handle(Event event)
       {
-        boolean noClick = true;
-
-        for (int i = 0; i < cards.length; i++)
-        {
-          cards[i].setClicked(false);
-          focusedCard.setClicked(false);
-          if (focusedCard.isFocused())
-          {
-            focusedCard.setClicked(true);
-            cardIsClicked = true;
-            votingButtons.setVisible(true);
-            noClick = false;
-          }
-          if (cards[i].isFocused())
-          {
-            votingButtons.setCard(cards[i]);
-            votingButtons.setVisible(true);
-            votingButtons.setVotes(0);
-
-            cards[i].setTranslateY(-10);
-            cards[i].setClicked(true);
-
-            cardIsClicked = true;
-            noClick = false;
-
-          }
-        }
-
-        if (noClick)
-        {
-          cardIsClicked = false;
-          votingButtons.setVisible(false);
-          focusedCard.setVisible(false);
-          for (int i = 0; i < cards.length; i++)
-          {
-            cards[i].setClicked(false);
-          }
-        }
-
+        mouseClickedEvent();
       }
 
     });
@@ -113,47 +75,9 @@ public class VotingHand extends NodeTemplate
       @Override
       public void handle(Event event)
       {
-        boolean noFocus = true;
-        for (int i = 0; i < cardCount; i++)
-        {
-
-          if (cards[i].isFocused())
-          {
-            cards[i].setTranslateY(-10);
-            focusedCard.setTargetCard(cards[i]);
-            focusedCard.setManaged(false);
-            noFocus = false;
-            cardHasFocus = true;
-          }
-          else if (cards[i].isClicked() == false)
-          {
-            cards[i].setTranslateY(0);
-          }
-          if (noFocus)
-          {
-            cards[i].setTranslateY(0);
-            cardHasFocus = false;
-            for (int j = 0; j < cards.length; j++)
-            {
-              if (cards[i].isClicked())
-              {
-                focusedCard.setCardImage(cards[i].getCardImage());
-              }
-            }
-          }
-
-        }
-
-        if (cardHasFocus || cardIsClicked)
-        {
-          focusedCard.setVisible(true);
-        }
-        else
-        {
-          focusedCard.setVisible(false);
-        }
-        onResize();
+        mouseMovedEvent();
       }
+
     });
     for (int i = 0; i < cards.length; i++)
     {
@@ -224,17 +148,102 @@ public class VotingHand extends NodeTemplate
 
   private void resetCards()
   {
-    for(int i= 0; i <cards.length; i++)
+    for (int i = 0; i < cards.length; i++)
     {
       cards[i].resetCard();
     }
     focusedCard.resetCard();
-    
+
     cardIsClicked = false;
     votingButtons.setVisible(false);
     focusedCard.setVisible(false);
-    
 
+  }
+
+  public void mouseClickedEvent()
+  {
+    boolean noClick = true;
+
+    for (int i = 0; i < cards.length; i++)
+    {
+      cards[i].setClicked(false);
+      focusedCard.setClicked(false);
+      if (focusedCard.isFocused())
+      {
+        focusedCard.setClicked(true);
+        cardIsClicked = true;
+        votingButtons.setVisible(true);
+        noClick = false;
+      }
+      if (cards[i].isFocused())
+      {
+        votingButtons.setCard(cards[i]);
+        votingButtons.setVisible(true);
+        votingButtons.setVotes(0);
+
+        cards[i].setTranslateY(-10);
+        cards[i].setClicked(true);
+
+        cardIsClicked = true;
+        noClick = false;
+
+      }
+    }
+
+    if (noClick)
+    {
+      cardIsClicked = false;
+      votingButtons.setVisible(false);
+      focusedCard.setVisible(false);
+      for (int i = 0; i < cards.length; i++)
+      {
+        cards[i].setClicked(false);
+      }
+    }
+  }
+
+  public void mouseMovedEvent()
+  {
+    boolean noFocus = true;
+    for (int i = 0; i < cardCount; i++)
+    {
+
+      if (cards[i].isFocused())
+      {
+        cards[i].setTranslateY(-10);
+        focusedCard.setTargetCard(cards[i]);
+        focusedCard.setManaged(false);
+        noFocus = false;
+        cardHasFocus = true;
+      }
+      else if (cards[i].isClicked() == false)
+      {
+        cards[i].setTranslateY(0);
+      }
+      if (noFocus)
+      {
+        cards[i].setTranslateY(0);
+        cardHasFocus = false;
+        for (int j = 0; j < cards.length; j++)
+        {
+          if (cards[i].isClicked())
+          {
+            focusedCard.setCardImage(cards[i].getCardImage());
+          }
+        }
+      }
+
+    }
+
+    if (cardHasFocus || cardIsClicked)
+    {
+      focusedCard.setVisible(true);
+    }
+    else
+    {
+      focusedCard.setVisible(false);
+    }
+    onResize();
   }
 
 }

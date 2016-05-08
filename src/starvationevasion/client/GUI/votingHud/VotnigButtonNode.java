@@ -2,8 +2,6 @@ package starvationevasion.client.GUI.votingHud;
 
 import java.io.File;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -11,7 +9,6 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 
 public class VotnigButtonNode extends NodeTemplate
 {
@@ -93,7 +90,6 @@ public class VotnigButtonNode extends NodeTemplate
     buttons[2] = down;
     buttons[3] = votes;
 
-    double width = 10;
     double height = 10;
 
     for (int i = 0; i < buttons.length; i++)

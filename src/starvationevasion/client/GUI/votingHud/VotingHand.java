@@ -8,7 +8,6 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 
 public class VotingHand extends NodeTemplate
 {
@@ -16,10 +15,7 @@ public class VotingHand extends NodeTemplate
 
   private int cardCount = 11;
 
-  private double cardSpace;
   private double[] xLayouts = new double[cardCount];
-  private double lastWidth = 0;
-  private double lastHeight = 0;
   private double minWidth = 100;
 
   private boolean cardHasFocus = false;
@@ -56,7 +52,6 @@ public class VotingHand extends NodeTemplate
 
     this.setWidth(width);
     this.setHeight(height);
-    cardSpace = width / cardCount;
     focusedCard.setVisible(false);
 
     this.setOnMouseClicked(new EventHandler<Event>()
@@ -97,7 +92,6 @@ public class VotingHand extends NodeTemplate
     double width = this.getWidth() / cardCount;
     double height = this.getHeight();
 
-    cardSpace = ((2 / 3) * width) / cardCount;
     for (int i = 0; i < cards.length; i++)
     {
       VotingCard card = cards[i];
@@ -125,8 +119,6 @@ public class VotingHand extends NodeTemplate
         card.setLayoutY(height - cardHeight);
       }
       xLayouts[i] = width * i;
-      lastWidth = cardWidth;
-      lastHeight = cardHeight;
 
       if (this.getWidth() / 3.8 < minWidth)
       {

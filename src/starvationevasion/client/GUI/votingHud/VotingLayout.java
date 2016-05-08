@@ -9,11 +9,9 @@ import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import starvationevasion.client.GUI.Clock;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
 import starvationevasion.client.GUI.DraftLayout.DraftTimer;
 import starvationevasion.client.GUI.DraftLayout.WorldMap;
-import starvationevasion.client.GUI.VotingLayout.CardSpace;
 import starvationevasion.client.GUI.VotingLayout.VotingNode;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.gamecards.GameCard;
@@ -42,7 +40,6 @@ public class VotingLayout extends NodeTemplate
   private VotingHand hand;
   private DraftTimer votingTimer;
   private ArrayList<VotingNode> votingNodes = new ArrayList<>();
-  private ArrayList<GameCard> cards = new ArrayList<>();
   private starvationevasion.client.GUI.GUI gui;
 
   public VotingLayout(starvationevasion.client.GUI.GUI gui2)

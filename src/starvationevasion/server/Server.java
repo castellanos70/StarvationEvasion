@@ -18,6 +18,7 @@ import starvationevasion.server.model.db.Transaction;
 import starvationevasion.server.model.db.Users;
 import starvationevasion.server.model.db.backends.Backend;
 import starvationevasion.server.model.db.backends.Sqlite;
+import starvationevasion.sim.PackedTileData;
 import starvationevasion.sim.Simulator;
 
 import javax.crypto.Cipher;
@@ -764,6 +765,7 @@ public class Server
     }
 
     broadcast(new ResponseFactory().build(uptime(), new Payload(worldDataList), Type.WORLD_DATA_LIST));
+    broadcast(new ResponseFactory().build(uptime(), new Payload(simulator.getPackedTileData()), Type.PACKED_TILE_DATA));
     draft();
     return null;
   }

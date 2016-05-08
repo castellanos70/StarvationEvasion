@@ -299,7 +299,7 @@ public class ConcurrentCommModule implements Communication
       if (!IS_CONNECTED.get())
       {
         commError("Failed to establish connection at host " + HOST + ", port " + PORT + " within " + MAX_SECONDS + " " +
-                "seconds.");
+                  "seconds.");
         return;
       }
 
@@ -338,6 +338,7 @@ public class ConcurrentCommModule implements Communication
       LOCK.lock();
       if (!isConnected()) return; // Already disposed/the connection never succeeded
       IS_CONNECTED.set(false);
+      commError("Shutting down communication module");
       clearResponses();
       closeProcessSocket();
       if (localServer != null) localServer.destroy();
@@ -529,6 +530,12 @@ public class ConcurrentCommModule implements Communication
     return process;
   }
 
+  /**
+   * Pushes a response to the end of the response queue.
+   *
+   * @param response response to push
+   * @return true if it was added (this should almost always be true with a ConcurrentLinkedQueue)
+   */
   private boolean pushResponse(Response response)
   {
     return RESPONSE_EVENTS.add(response);
@@ -539,6 +546,12 @@ public class ConcurrentCommModule implements Communication
     RESPONSE_EVENTS.clear();
   }
 
+  /**
+   * Non-blocking time update. The update is based on the nano time for the USER'S system, rather
+   * than the server's system, subtracted by the startNanoSec that was sent by the server.
+   *
+   * If the lock can not be secured immediately, this returns without completing the update.
+   */
   private void updateCurrentTime()
   {
     if (!LOCK.tryLock()) return; // Lock is busy - updating the time isn't super important, so don't block
@@ -552,6 +565,11 @@ public class ConcurrentCommModule implements Communication
     }
   }
 
+  /**
+   * Sets the starting time (in nano seconds) that was sent by the server over the network.
+   *
+   * @param time time to set startNanoSec to
+   */
   private void setStartTime(double time)
   {
     if (!isConnected()) return;
@@ -609,6 +627,15 @@ public class ConcurrentCommModule implements Communication
     }
   }
 
+  /**
+   * This makes a *single* attempt to connect given the host/port combination.
+   * If it succeeds, clientSocket, writer and reader should contain valid references and
+   * the server handshake will have been both started and completed.
+   *
+   * @param host host to connect to
+   * @param port port that the host is listening to
+   * @return true if the connection/handshake was successful, false if not
+   */
   private boolean openConnection(String host, int port)
   {
     try
@@ -663,6 +690,12 @@ public class ConcurrentCommModule implements Communication
     return null;
   }
 
+  /**
+   * This is the method that login, send, and sendChat use to actually send the
+   * data over a network to the server.
+   *
+   * @param request request packed with data to send to the server
+   */
   private void send (Request request)
   {
     try
@@ -683,7 +716,7 @@ public class ConcurrentCommModule implements Communication
     }
     catch (Exception e)
     {
-      e.printStackTrace();
+      dispose(); // Assume something went very wrong (Ex: server shut down)
     }
     finally
     {

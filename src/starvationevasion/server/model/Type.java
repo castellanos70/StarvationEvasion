@@ -71,6 +71,8 @@ public enum Type implements Sendable
 
   WORLD_DATA,
 
+  PACKED_TILE_DATA,
+
 
   AREA,
   TIME,

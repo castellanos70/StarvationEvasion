@@ -52,6 +52,8 @@ public class DraftLayout extends GridPane
   GraphDisplay graphDisplay;
   DiscardDisplay discardDisplay;
   GlobalPricesVisNode globalPriceNode;
+  PopVisNode popVisNode;
+  HDIVisNode HDINode;
   TickerReel reel;
 
   HandNode hand;
@@ -114,6 +116,12 @@ public class DraftLayout extends GridPane
 
     globalPriceNode = new GlobalPricesVisNode(gui);
     this.add(globalPriceNode, 0, 2,3,1);
+    
+    popVisNode = new PopVisNode(gui);
+    this.add(popVisNode,0,3,3,1);
+    
+    HDINode = new HDIVisNode(gui);
+    this.add(HDINode, 0, 4,3,1);
     
     // node at the top of the screen to let the user know basic stats
     summaryBar = new SummaryBar(gui);

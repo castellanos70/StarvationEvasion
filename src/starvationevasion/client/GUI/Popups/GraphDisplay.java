@@ -39,6 +39,8 @@ public class GraphDisplay extends BorderPane
   int regionalGraphIndex = 1;
   int foodCropGraphIndex = 1;
   int worldGraphIndex = 1;
+  int popGraphIndex = 1;
+  int HDIGraphIndex = 1;
   
   
   EnumRegion[] REGIONS= {EnumRegion.USA_CALIFORNIA,EnumRegion.USA_HEARTLAND,
@@ -146,6 +148,14 @@ public class GraphDisplay extends BorderPane
     if (dataVisMode == 2)
     {
       this.setCenter(gui.getGraphManager().getGraph(foodCropGraphIndex));
+    }
+    if (dataVisMode == 3)
+    {
+    	this.setCenter(gui.getGraphManager().getGraphNodeGraph(REGIONS[popGraphIndex-1],0).getLineChart());
+    }
+    if (dataVisMode == 4)
+    {
+    	this.setCenter(gui.getGraphManager().getGraphNodeGraph(REGIONS[HDIGraphIndex-1],1).getLineChart());
     }
   }
   /**
@@ -272,6 +282,22 @@ public class GraphDisplay extends BorderPane
         foodCropGraphIndex = 1;
       }
     }
+    if(dataVisMode ==3)
+    {
+    	popGraphIndex+=1;
+    	if(popGraphIndex >=8)
+    	{
+    		popGraphIndex = 1;
+    	}
+    }
+    if(dataVisMode ==4)
+    {
+    	HDIGraphIndex+=1;
+    	if(HDIGraphIndex >=8)
+    	{
+    		HDIGraphIndex = 1;
+    	}
+    }
     boolean isPieChart = gui.getGraphManager().isPieChart(regionalGraphIndex);
     if (isPieChart)
     {
@@ -291,6 +317,14 @@ public class GraphDisplay extends BorderPane
     if (dataVisMode == 2)
     {
       this.setCenter(gui.getGraphManager().getGraph(foodCropGraphIndex));
+    }
+    if (dataVisMode == 3)
+    {
+    	this.setCenter(gui.getGraphManager().getGraphNodeGraph(REGIONS[popGraphIndex-1],0).getLineChart());
+    }
+    if (dataVisMode == 4)
+    {
+    	this.setCenter(gui.getGraphManager().getGraphNodeGraph(REGIONS[HDIGraphIndex-1],1).getLineChart());
     }
 
     // graphDisplay = gui.getGraphManager().getGraphNodeGraph(currentRegion,
@@ -326,7 +360,22 @@ public class GraphDisplay extends BorderPane
         foodCropGraphIndex = 12;
       }
     }
-
+    if(dataVisMode ==3)
+    {
+    	popGraphIndex -=1;
+    	if(popGraphIndex <1)
+    	{
+    		popGraphIndex = 7;
+    	}
+    }
+    if(dataVisMode ==4)
+    {
+       HDIGraphIndex -=1;
+       if(HDIGraphIndex <1)
+       {
+    	  HDIGraphIndex = 7;
+       }
+    }
     boolean isPieChart = gui.getGraphManager().isPieChart(regionalGraphIndex);
     // gui.getGraphManager().buildDisplay(graphIndex);
     if (isPieChart)
@@ -349,6 +398,14 @@ public class GraphDisplay extends BorderPane
     if (dataVisMode == 2)
     {
       this.setCenter(gui.getGraphManager().getGraph(foodCropGraphIndex));
+    }
+    if (dataVisMode == 3)
+    {
+    	this.setCenter(gui.getGraphManager().getGraphNodeGraph(REGIONS[popGraphIndex-1],0).getLineChart());
+    }
+    if (dataVisMode == 4)
+    {
+    	this.setCenter(gui.getGraphManager().getGraphNodeGraph(REGIONS[HDIGraphIndex-1],1).getLineChart());
     }
     // graphDisplay = gui.getGraphManager().getGraphNodeGraph(currentRegion,
     // graphIndex);

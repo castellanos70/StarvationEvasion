@@ -334,18 +334,12 @@ public class GraphManager
    * @return
   
    */
-  public Graph getGraph(int region, int number)
-  {
-	    Graph g;
-	    Graph[] regionGraphs = graphMap.get(region);
-	    return regionGraphs[number];
-  }
-  
+
   
   public Graph getGraphNodeGraph(EnumRegion region, int number)
   {
     Graph g;
-    Graph[] regionGraphs = graphMap.get(region);
+    Graph[] regionGraphs = graphMap.get(region);   
     return regionGraphs[number];
     // switch (region)
     // {
@@ -550,6 +544,12 @@ public class GraphManager
 //    initNCGraph();
   }
 
+  public BorderPane getGraph(int graphNum)
+  {
+    return gui.getPopupManager().getPBDataDisplay().getProductData().get(graphNum-1).getGraph();
+  }
+  
+  
   private void initCaliGraph()
   {
     californiaGraphs = new Graph[3];
@@ -603,10 +603,7 @@ public class GraphManager
     northernCresentGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_NORTHERN_CRESCENT);
     //northernCresentGraphs[3] = new GraphProductsDollars(EnumRegion.USA_NORTHERN_CRESCENT);
   }
-  public BorderPane getGraph(int graphNum)
-  {
-    return gui.getPopupManager().getPBDataDisplay().getProductData().get(graphNum-1).getGraph();
-  }
+
   private void initNPGraph()
   {
     northernPlainsGraphs = new Graph[3];

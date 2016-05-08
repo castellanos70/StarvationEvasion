@@ -37,7 +37,7 @@ public class AI
   private User u;
   private ArrayList<User> users = new ArrayList<>();
   private State state = null;
-  private ArrayList<WorldData> worldData=new ArrayList<>();
+  private ArrayList<WorldData> worldData;
   private List<GameCard> ballot;
   private Stack<Command> commands = new Stack<>();
   private volatile boolean isRunning = true;
@@ -295,22 +295,15 @@ public class AI
       if (type == Type.AUTH_SUCCESS)
       {
         u = (User)data;
-        COMM.sendChat("ALL", "Hi, I am " + u.getUsername() + ". I'll be playing using slightly okay AI.", null);
+        COMM.sendChat("ALL", "Hi, I am " + u.getUsername() + ". I'll be playing using (crappy) AI.", null);
       }
       else if (type == Type.USER)
       {
         u = (User)data;
         COMM.sendChat("ALL", "User updated: " + u.getUsername(), null);
       }
-      else if (type == Type.WORLD_DATA_LIST) 
-      {
-        worldData.clear();
-        worldData.addAll((ArrayList<WorldData>)data);
-      }
-      else if (type == Type.WORLD_DATA) 
-      {
-        worldData.add((WorldData)data);
-      }
+      else if (type == Type.WORLD_DATA_LIST) worldData = (ArrayList<WorldData>)data;
+      else if (type == Type.WORLD_DATA) worldData.add((WorldData)data);
       else if (type == Type.USERS_LOGGED_IN_LIST) users = (ArrayList<User>)data;
       else if (type == Type.VOTE_BALLOT) ballot = (List<GameCard>)data;
       else if (type == Type.GAME_STATE)

@@ -122,11 +122,6 @@ public class Model
   // purposes.
   //
   private Region[] regionList = new Region[EnumRegion.SIZE];
-  
-  /**
-   * Right now, the players control the 7 US Regions.
-   */
-  private Region[] unitedStatesRegionList = new Region[EnumRegion.US_REGIONS.length];
 
   private SeaLevel seaLevel;
 
@@ -174,8 +169,6 @@ public class Model
     placeCrops();
 
     setRegionalProduction();
-    
-    populateUSRegionList();
 
     for (int i = 0; i < YEARS_OF_DATA; i++)
     {
@@ -544,30 +537,6 @@ public class Model
     int yearIdx = year - Constant.FIRST_DATA_YEAR;
     return worldData[yearIdx];
   }
-  
-  /**
-   * Searches the regionList for the US regions and adds them to
-   * unitedStatesRegionList[].
-   */
-  private void populateUSRegionList()
-  {
-    int it = 0;    
-    ArrayList<EnumRegion> usRegions = new ArrayList<>();
-    
-    for(int i = 0; i < EnumRegion.US_REGIONS.length; i++)
-    {
-      usRegions.add(EnumRegion.US_REGIONS[i]);
-    }
-    
-    for(int i = 0; i < regionList.length; i++)
-    {
-      if(usRegions.contains(regionList[i].getRegionEnum()))
-      {
-        unitedStatesRegionList[it] = regionList[i];
-        it++;
-      }
-    }
-  }
 
   /**
    * Linear interpolate population.
@@ -584,16 +553,8 @@ public class Model
     }
   }
 
+
   /**
-   * Looks at each policy enacted for this turn and applies the appropriate
-   * ones.
-   * 
-   * Cards not directly affecting the simulation model presumably should not be
-   * handled here. Cards like CovertIntelligence, which lets you look at another
-   * player's hand, do not directly affect the model. Right now they are
-   * handled in Simulator.NextTurn(). Since policy cards are the first thing
-   * applied in Model.nextYear(), it doesn't alter any calculations as the model
-   * completes a year's simulation.
    * 
    * @param cards
    *          the list of all cards to be applied to the model
@@ -609,86 +570,13 @@ public class Model
     {
       switch(c.getCardType())
       {
-        case Policy_CleanRiverIncentive:
-          break;
-        case Policy_DiverttheFunds:
+        case Policy_DivertFunds:
           //remove all cards from owners hand -- done in Simulator.java
           //give 14 million dollars to owner
           getRegion(c.getOwner()).addToRevenue(14000000);
           break;
-        case Policy_EducateTheWomenCampaign:
-          break;
-        case Policy_EfficientIrrigationIncentive:
-          break;
-        case Policy_EthanolTaxCreditChange:
-          getRegion(c.getOwner()).setEthanolProducerTaxCredit(25); //25% for now.
-          break;
-        case Policy_FarmInfrastructureSubSaharan:
-          break;
-        case Policy_FertilizerAidCentralAsia:
-          sendFertilizerAid(EnumRegion.CENTRAL_ASIA, 1000); //$1000 from each US region for now
-          break;
-        case Policy_FertilizerAidMiddleAmerica:
-          sendFertilizerAid(EnumRegion.MIDDLE_AMERICA, 1000); //$1000 from each US region for now
-          break;
-        case Policy_FertilizerAidOceania:
-          sendFertilizerAid(EnumRegion.OCEANIA, 1000); //$1000 from each US region for now
-          break;
-        case Policy_FertilizerAidSouthAsia:
-          sendFertilizerAid(EnumRegion.SOUTH_ASIA, 1000); //$1000 from each US region for now
-          break;
-        case Policy_FertilizerAidSubSaharan:
-          sendFertilizerAid(EnumRegion.SUB_SAHARAN, 1000); //$1000 from each US region for now
-          break;
-        case Policy_FertilizerSubsidy:
-          break;
-        case Policy_FoodReliefCentralAsia:
-          break;
-        case Policy_FoodReliefMiddleAmerica:
-          break;
-        case Policy_FoodReliefOceania:
-          break;
-        case Policy_FoodReliefSouthAsia:
-          break;
-        case Policy_FoodReliefSubSaharan:
-          break;
-        case Policy_Fundraiser:
-          break;
-        case Policy_InternationalFoodRelief:
-          break;
-        case Policy_Loan:
-          break;
-        case Policy_MyPlatePromotionCampaign:
-          break;
-        case Policy_ResearchInsectResistanceGrain:
-          break;
-        case Policy_SpecialInterests:
-          break;
         default:
           break;
-      }
-    }
-  }
-  
-  /**
-   * These cards are of the same type: Each US region sends fertilizer aid to a
-   * specific region.
-   * 
-   * Subtract amount from each US Region, and send 7 times that amount to the
-   * specific region
-   */
-  private void sendFertilizerAid(EnumRegion region, int amount)
-  {
-    for(int i = 0; i < unitedStatesRegionList.length; i++)
-    {
-      unitedStatesRegionList[i].subtractFromRevenue(amount);
-    }
-    
-    for(int i = 0; i < regionList.length; i++)
-    {
-      if(regionList[i].getRegionEnum().equals(region))
-      {
-        regionList[i].addFertilizerAid(amount*7);
       }
     }
   }
@@ -1607,7 +1495,6 @@ public class Model
     /*
    territory = model.getTerritory("Congo (Brazzaville)");
    model.drawBoundary(pic, territory, Color.MAGENTA, 1);
-
    Region region = model.getRegion(EnumRegion.SUB_SAHARAN);
    model.drawBoundary(pic, region, Util.brighten(EnumRegion.SUB_SAHARAN.getColor(), 0.5), 3);
 */
@@ -1619,33 +1506,22 @@ public class Model
 /*
     Territory territory = model.getTerritory("Ethiopia");
     model.drawBoundaryUsingMapPoints(pic, territory);
-
     territory = model.getTerritory("Kenya");
     model.drawBoundaryUsingMapPoints(pic, territory);
-
-
     territory = model.getTerritory("Tanzania");
     model.drawBoundaryUsingMapPoints(pic, territory);
-
     territory = model.getTerritory("Somalia");
     model.drawBoundaryUsingMapPoints(pic, territory);
-
     territory = model.getTerritory("Sudan");
     model.drawBoundaryUsingMapPoints(pic, territory);
-
     Region region = model.getRegion(EnumRegion.SUB_SAHARAN);
     model.drawBoundary(pic, region, Util.brighten(Color.MAGENTA, 0.5));
-
     region = model.getRegion(EnumRegion.MIDDLE_EAST);
     model.drawBoundary(pic, region, Util.brighten(EnumRegion.MIDDLE_EAST.getColor(), 0.5));
-
-
     //territory = model.getTerritory("Mauritania");
     //model.drawBoundary(pic, territory, Color.WHITE);
-
     //territory = model.getTerritory("Algeria");
     //model.drawBoundary(pic, territory, Color.GREEN);
-
     //territory = model.getTerritory("Mexico");
     //model.drawBoundary(pic, territory, Color.RED);
     */

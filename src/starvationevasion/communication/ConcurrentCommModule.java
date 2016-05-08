@@ -511,14 +511,13 @@ public class ConcurrentCommModule implements Communication
                       "-Xms4g",               // Try to allocate up to 4gb of heap space
                       "-jar",
                       "Server.jar",
-                      Integer.toString(port),
-                      "true");
+                      Integer.toString(port));//,
+                      //"true");
       process = builder.start();
       STREAM_REDIRECT_THREADS.clear();
       STREAM_REDIRECT_THREADS.add(new StreamRedirect(StreamType.STDOUT, process.getInputStream()));
       STREAM_REDIRECT_THREADS.add(new StreamRedirect(StreamType.STDERR, process.getErrorStream()));
       for (StreamRedirect redirect : STREAM_REDIRECT_THREADS) redirect.start();
-      //process.wait(1); // If the process failed, this should cause an exception to be thrown which is what we want
     }
     catch (Exception e)
     {

@@ -107,57 +107,59 @@ public class Server
     // Creating a server without listeners
     this(portNumber, null);
 
-    System.out.println(">>>>>> Inside New Server Constructor");
-
     // After instantiating server, spawn AI's for singleplayer
     // SPAWN 6 AI by starting a processes
-    for(int i = 0; i < SINGLEPLAYER_MAX_AI_PLAYERS; i++)
+    if (isSinglePlayer)
     {
-      try
+      for (int i = 0; i < SINGLEPLAYER_MAX_AI_PLAYERS; i++)
       {
-        System.out.println(">>> ------------------------Inside For Loop [" + i + "] ----------------------------------------------");
-        ProcessBuilder builder = new ProcessBuilder();
-        builder.directory(new File(System.getProperty("user.dir")));
-        builder.command("java",
-          "-jar",
-          "Ai.jar",
-          "localhost",
-          Integer.toString(portNumber));
-        builder.inheritIO();
-        builder.start();
-        //process.wait(1); // If the process failed, this should cause an exception to be thrown which is what we want
-      }
-      catch (Exception e)
-      {
-        e.printStackTrace();
-        System.exit(-125);
+        try
+        {
+          ProcessBuilder builder = new ProcessBuilder();
+          builder.directory(new File(System.getProperty("user.dir")));
+          builder.command("java",
+                          "-jar",
+                          "Ai.jar",
+                          "localhost",
+                          Integer.toString(portNumber));
+          builder.inheritIO();
+          builder.start();
+          //process.wait(1); // If the process failed, this should cause an exception to be thrown which is what we want
+        } catch (Exception e)
+        {
+          e.printStackTrace();
+          System.exit(-125);
+        }
       }
     }
-    waitForConnection(portNumber);
 
+    waitForConnection(portNumber);
   }
 
 
   /**
+   * This constructor spawns a server that immediately begins listening after it is
+   * created. In the future it will generate very basic AI to stand in place of
+   * actual players/capable AI until they are added, but for now this functionality
+   * has not been implemented.
    *
-   * @param portNumber
+   * @param portNumber port to bind to
    */
   public Server (int portNumber)
   {
-    this(portNumber, null); // null is used to differentiate between constructors
-
-    System.out.println(">>>> Inside Old Server constructor");
-    // Instantiate a class responsible for spawning AIs
-    // Spawner spawn = new Spawner();
-    // spawn.spawnAI;
-
-    waitForConnection(portNumber);
+    this(portNumber, false);
+    //waitForConnection(portNumber);
   }
 
+  /**
+   * This private constructor is here only to prevent code duplication between
+   * the public constructors to this class.
+   *
+   * @param portNumber port to bind to
+   * @param cheapDirtyHack differentiates this constructor from the other public constructor
+   */
   private Server(int portNumber, String cheapDirtyHack)
   {
-    System.out.println(">>>> Inside private server constructor");
-
     LOG.setLevel(Constant.LOG_LEVEL);
 
     connections.put(Temporary.class, new LinkedList<>());
@@ -171,7 +173,6 @@ public class Server
     {
       userList.add(user);
     }
-
 
     // startNanoSec = System.nanoTime();
     simulator = new Simulator();
@@ -1207,11 +1208,13 @@ public class Server
     //Valid port numbers are Port numbers are 1024 through 65535.
     //  ports under 1024 are reserved for system services http, ftp, etc.
     int port = 5555; //default
+    boolean isSinglePlayer = false;
     if (args.length > 0)
     {
       try
       {
         port = Integer.parseInt(args[0]);
+        if (args.length > 1) isSinglePlayer = Boolean.parseBoolean(args[1]);
         if (port < 1)
         {
           throw new Exception();
@@ -1219,12 +1222,12 @@ public class Server
       }
       catch(Exception e)
       {
-        System.out.println("Usage: Server portNumber");
+        System.out.println("Usage: Server portNumber <optional>isSinglePlayer");
         System.exit(0);
       }
     }
 
-    if(args.length == 2)new Server(port, true); // this constructor is used for singleplayer
+    if(isSinglePlayer) new Server(port, isSinglePlayer); // this constructor is used for singleplayer
     else new Server(port);  // is used for multiplayer
   }
 }

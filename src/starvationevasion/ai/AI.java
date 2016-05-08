@@ -1,7 +1,6 @@
 package starvationevasion.ai;
 
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -60,16 +59,16 @@ public class AI
    */
   public enum WorldFactors
   {
-    SEALEVEL, 
-    REVENUEBALANCE, 
-    POPULATION, 
-    UNDERNOURISHED, 
-    HDI, 
-    FOODPRODUCED, 
-    FOODINCOME, 
-    FOODIMPORTED, 
-    FOODEXPORTED, 
-    ETHANOLTAXCREDIT, 
+    SEALEVEL,
+    REVENUEBALANCE,
+    POPULATION,
+    UNDERNOURISHED,
+    HDI,
+    FOODPRODUCED,
+    FOODINCOME,
+    FOODIMPORTED,
+    FOODEXPORTED,
+    ETHANOLTAXCREDIT,
     FOODPRICE
 
   }
@@ -78,7 +77,7 @@ public class AI
   // be used in selecting
   // cards to play on each turn.
   public Map<WorldFactors, ArrayList<Object[]>> factorMap = new EnumMap<WorldFactors, ArrayList<Object[]>>(
-      WorldFactors.class);
+          WorldFactors.class);
 
   // The AI has a copy of the list of special events, if any occurred during the
   // last turn.
@@ -131,7 +130,7 @@ public class AI
     for (int i = worldData.size() - 2; i < worldData.size(); i++)
     {
       Double[] seaLevel =
-      { worldData.get(i).seaLevel };
+              { worldData.get(i).seaLevel };
       factorMap.get(WorldFactors.SEALEVEL).add(seaLevel);
       eventList.clear();
       if (worldData.get(i).eventList.size() > 0)
@@ -150,16 +149,16 @@ public class AI
         }
       }
       Integer[] revenueBalance =
-      { thisRegion.revenueBalance };
+              { thisRegion.revenueBalance };
       factorMap.get(WorldFactors.REVENUEBALANCE).add(revenueBalance);
       Integer[] population =
-      { thisRegion.population };
+              { thisRegion.population };
       factorMap.get(WorldFactors.POPULATION).add(population);
       Double[] undernourished =
-      { thisRegion.undernourished };
+              { thisRegion.undernourished };
       factorMap.get(WorldFactors.UNDERNOURISHED).add(undernourished);
       Double[] hdi =
-      { thisRegion.humanDevelopmentIndex };
+              { thisRegion.humanDevelopmentIndex };
       factorMap.get(WorldFactors.HDI).add(hdi);
       Long[] foodProduced = new Long[EnumFood.SIZE];
       for (int h = 0; h < EnumFood.SIZE; h++)
@@ -187,7 +186,7 @@ public class AI
       }
       factorMap.get(WorldFactors.FOODEXPORTED).add(foodExported);
       Integer[] ethanolCredit =
-      { thisRegion.ethanolProducerTaxCredit };
+              { thisRegion.ethanolProducerTaxCredit };
       factorMap.get(WorldFactors.ETHANOLTAXCREDIT).add(ethanolCredit);
       Integer[] foodPrice = new Integer[EnumFood.SIZE];
       for (int h = 0; h < EnumFood.SIZE; h++)
@@ -211,35 +210,6 @@ public class AI
         ArrayList<Response> responses = COMM.pollMessages();
         processServerInput(responses);
 
-//        Response currentResponse;
-//        if (responses.size()>0)
-//        {
-//          System.out.println("--- Responses ---");
-//          //System.out.println(responses.get(0).toJSON().toString());
-//          currentResponse = responses.get(0);
-//          List array = currentResponse.toJSON().array();
-//          if(array.size() > 1){
-//            System.out.println("INSIDE IF");
-//            System.out.println(">>> " + array.get(0));
-//          }
-//
-////          if(currentResponse.getType() == Type.CHAT)
-////          {
-////            if(currentResponse.toString().indexOf("message=") != -1)
-////            {
-////              String str = currentResponse.toString().substring(currentResponse.toString().indexOf("message="), currentResponse.toString().length());
-////              System.out.println("str: " + str);
-////            }
-////          }
-//
-//
-//          Type type = currentResponse.getType();
-//          String message = currentResponse.toString();
-//          //System.out.println("response: " + message + "\ttype: " + type);
-//
-//          //System.out.println(responses.get(0));
-//          System.out.println("-----------------");
-//        }
         // if commands is empty check again
         if (commands.size() == 0) continue;
 
@@ -255,7 +225,6 @@ public class AI
       }
       catch(InterruptedException e)
       {
-        System.out.println("Error in AI.java");
         e.printStackTrace();
       }
     }

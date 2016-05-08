@@ -1,20 +1,22 @@
 package starvationevasion.client.GUI.DraftLayout;
 
+import java.util.ArrayList;
+
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 import starvationevasion.client.GUI.ResizablePane;
 import starvationevasion.client.GUI.images.ImageGetter;
 import starvationevasion.common.EnumRegion;
@@ -35,9 +37,12 @@ public class CardNode extends ResizablePane
   public static final int FONT_SIZE = 40;
   public static final Font TITLE_FONT = Font.font("Arial", FontWeight.BOLD, FONT_SIZE);
   public static final Font TEXT_FONT = Font.font("Arial", FONT_SIZE);
-  public static final String TOGGLED = "-fx-background-color: linear-gradient(#666666, #BBBBBB)";
-  public static final String NORM = "-fx-background-color: linear-gradient(#EEEEEE, #BBBBBB)";
+  public static final String TOGGLED = "-fx-background-color: linear-gradient(#666666, #BBBBBB);" + 
+                                       " -fx-background-radius: 3 3 3 3;";
+  public static final String NORM = "-fx-background-color: linear-gradient(#EEEEEE, #BBBBBB);" + 
+                                    " -fx-background-radius: 3 3 3 3;";
   private GameCard gameCard;
+  private ArrayList<CardNode> cards;
   
   private Rectangle background;
   
@@ -49,8 +54,8 @@ public class CardNode extends ResizablePane
   public Label flavorText;
   public Label votes;
   public ImageView image;
-  public Button discardButton;
-  public Button draftButton;
+  public Label discardButton;
+  public Label draftButton;
   
   /**
    * CardNode constructor takes a EnumRegion and EnumPolicy object
@@ -62,6 +67,7 @@ public class CardNode extends ResizablePane
     gameCard = GameCard.create(owner, policy);
     
     background = new Rectangle();
+    background.setStrokeType(StrokeType.INSIDE);
     
     title = new Label(gameCard.getTitle());
     title.setFont(TITLE_FONT);
@@ -73,7 +79,7 @@ public class CardNode extends ResizablePane
     gameText.setTextFill(Color.WHITE);
     gameText.setBackground(new Background(new BackgroundFill(new Color(.2, .2, .2, .6), null, null)));
     gameText.setMaxWidth(gameText.getText().length()*5);
-    gameText.setAlignment(Pos.CENTER);
+    gameText.setTextAlignment(TextAlignment.CENTER);
     flavorText = new Label(gameCard.getFlavorText());
     flavorText.setFont(TEXT_FONT);
     votes = new Label("" + gameCard.votesRequired());
@@ -82,9 +88,9 @@ public class CardNode extends ResizablePane
     
     image = ImageGetter.getImageForCard(policy);
     
-    discardButton = new Button("Discard");
+    discardButton = new Label(" Discard ");
     discardButton.setStyle(NORM);
-    draftButton = new Button("Draft");
+    draftButton = new Label(" Draft ");
     draftButton.setStyle(NORM);
     
     addElements();
@@ -109,17 +115,17 @@ public class CardNode extends ResizablePane
   
   private void addListeners(){
     
-    discardButton.setOnAction(new EventHandler<ActionEvent>(){
+    discardButton.setOnMouseClicked(new EventHandler<MouseEvent>(){
       @Override
-      public void handle(ActionEvent arg0)
+      public void handle(MouseEvent arg0)
       {
         discard();
       }
     });
     
-    draftButton.setOnAction(new EventHandler<ActionEvent>(){
+    draftButton.setOnMouseClicked(new EventHandler<MouseEvent>(){
       @Override
-      public void handle(ActionEvent arg0)
+      public void handle(MouseEvent arg0)
       {
         draft();
       }
@@ -149,6 +155,10 @@ public class CardNode extends ResizablePane
   
   /**
    * executes when the draft button is pushed
+   * 
+   * removes draft status in other cards if the card list
+   * has been instantiated, and there are over the max
+   * number of drafts 
    */
   private void draft(){
     isDiscarded = false;
@@ -162,10 +172,45 @@ public class CardNode extends ResizablePane
       draftButton.setStyle(TOGGLED);
     }
     isDrafted ^= true;
+    
+    if (cards == null) return;
+    
+    int drafts = 0;
+    for (CardNode card: cards){
+      if (card.isDrafted){
+        drafts++;
+      }
+    }
+    
+    if (drafts > 2){
+      for (CardNode card: cards){
+        if (card.isDrafted && !card.equals(this)){
+          card.setDrafted(false);
+          drafts--;
+          if (drafts <= 2) break;
+        }
+      }
+    }
+  }
+  
+  @Override
+  /**
+   * checks for equality by comparing if the object is
+   * an instance of CardNode and calling the GameCard
+   * equals method
+   */
+  public boolean equals(Object o){
+    if (!(o instanceof CardNode)) return false;
+    CardNode card = (CardNode) o;
+    return card.gameCard.equals(this.gameCard);
   }
   
   /**
    * executes when the discard button is pushed;
+   * 
+   * removes discard status in other cards if the card list
+   * has been instantiated, and there are over the max
+   * number of discards 
    */
   private void discard(){
     isDrafted = false;
@@ -179,6 +224,54 @@ public class CardNode extends ResizablePane
       discardButton.setStyle(TOGGLED);
     }
     isDiscarded ^= true;
+    
+    if (cards == null) return;
+    
+    int discards = 0;
+    for (CardNode card: cards){
+      if (card.isDiscarded){
+        discards++;
+      }
+    }
+    
+    if (discards > 3){
+      for (CardNode card: cards){
+        if (card.isDiscarded && !card.equals(this)){
+          card.setDiscarded(false);
+          discards--;
+          if (discards <= 3) break;
+        }
+      }
+    }
+  }
+  
+  /**
+   * Sets the draft state of this card
+   * 
+   * @param drafted
+   */
+  public void setDrafted(boolean drafted){
+    isDrafted = !drafted;
+    draft();
+  }
+  
+  /**
+   * sets the discard state of this card
+   * 
+   * @param discarded
+   */
+  public void setDiscarded(boolean discarded){
+    isDiscarded = !discarded;
+    discard();
+  }
+  
+  /**
+   * passes a reference to an ArrayList of CardNode objects
+   * 
+   * @param cards - the ArrayList of CardNodes
+   */
+  public void setCards(ArrayList<CardNode> cards){
+    this.cards = cards;
   }
   
   /**

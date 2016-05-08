@@ -28,6 +28,8 @@ import java.util.Arrays;
  */
 public class ChatNode extends BorderPane
 {
+  private GUI gui;
+  
   private ScrollPane chatFrame=new ScrollPane();
   private TextField inputMessage=new TextField();
   private Text chatMessages=new Text("welcome to chat");
@@ -38,9 +40,9 @@ public class ChatNode extends BorderPane
   private Client client;
   private ChatManager chatManager;
   private ComboBox<EnumRegion> regionSelection;
-  private ComboBox cardSelection;
+  private ComboBox<EnumPolicy> cardSelection;
   private EnumPolicy[] currentHand = new EnumPolicy[6];
-  private int chatToggle = 0;
+//  private int chatToggle = 0;
   private boolean votingMode = false;
 
   /**
@@ -51,11 +53,12 @@ public class ChatNode extends BorderPane
    */
   public ChatNode(GUI gui)
   {
+    this.gui = gui;
     ArrayList<EnumRegion> regions = new ArrayList<>(Arrays.asList(EnumRegion.US_REGIONS));
     regions.add(null);
     ObservableList<EnumRegion> regionList = FXCollections.observableArrayList(regions);
     regionSelection = new ComboBox<>(regionList);
-    cardSelection = new ComboBox();
+    cardSelection = new ComboBox<EnumPolicy>();
     client = gui.getClient();
     chatManager = client.getChatManager();
     usersChat.getChildren().add(toggle);
@@ -132,6 +135,8 @@ public class ChatNode extends BorderPane
   public void setChatMessages(String messages)
   {
     chatMessages.setText(messages);
+    
+    
   }
 
   private void sendMessage()
@@ -141,12 +146,11 @@ public class ChatNode extends BorderPane
       // Sends too all regions if null
       if (regionSelection.getValue() == null)
       {
-        for (EnumRegion region : EnumRegion.US_REGIONS)
-        {
-          chatManager.sendChatToServer(inputMessage.getText(), region,
-              EnumPolicy.valueOf(cardSelection.getValue().toString()));
+//        for (EnumRegion region : EnumRegion.US_REGIONS)
+//        {
+          chatManager.sendChatToServer(inputMessage.getText(), gui.getAssignedRegion(), null);
           chatMessages.setText(chatMessages.getText() + "\n" + inputMessage.getText());
-        }
+//        }
       }
       else
       {

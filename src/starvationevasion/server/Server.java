@@ -133,7 +133,7 @@ public class Server
       {
         update();
       }
-    }, 0, 1000);
+    }, 1, 1000);
 
     waitForConnection(portNumber);
 

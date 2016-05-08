@@ -83,6 +83,7 @@ public class Draft extends AbstractCommand
   int revenueDiff=0;
   double avgUndernourished=0;
   boolean tryForMoneyCards=false;
+  int revenueBalance=0;
   
   public Draft(AI client)
   {
@@ -306,6 +307,7 @@ public class Draft extends AbstractCommand
     }
     if (numTurns == 0)
     {
+      getRevenueBalance();
       if(votesRequired.size()>0 && noVotesRequired.size()>0)
       {
         card = GameCard.create(getClient().getUser().getRegion(),
@@ -532,6 +534,18 @@ public class Draft extends AbstractCommand
       return true;
     }
   }
+  //On the first turn, get the starting revenue balance for this region. In future turns,
+  //this information is set in the checkOtherFactors() method.
+  private void getRevenueBalance()
+  {
+    for(RegionData data:getClient().getWorldData().get(1).regionData)
+    {
+      if(data.region.equals(getClient().getUser().getRegion()))
+      {
+        revenueBalance=data.revenueBalance;
+      }
+    }
+  }
   /**
    * Check factors such as the level of people undernourished in other regions, the revenue for
    * this AI's region and foods in this region. Prioritize different regions, foods and policies
@@ -570,6 +584,7 @@ public class Draft extends AbstractCommand
       if(data.region.name().equals(getClient().getUser().getRegion().name()))
       {
         thisRegion=data;
+        revenueBalance=data.revenueBalance;
       }
       avgUndernourished+=undernourishedPercent;
       //If production of a certain food in this region has gone down by more than 30%, take note of this
@@ -785,7 +800,7 @@ public class Draft extends AbstractCommand
               break;
             }
           }
-        }while(!Arrays.asList(card.getValidTargetRegions()).contains(currentRegion)
+        }while(card.getValidTargetRegions()!=null &&(!Arrays.asList(card.getValidTargetRegions()).contains(currentRegion))
             || (getClient().policyAndRegionMap.containsKey(card.getCardType())&&
                 !getClient().policyAndRegionMap.get(card.getCardType()).equals(currentRegion)));
       }
@@ -1192,12 +1207,59 @@ public class Draft extends AbstractCommand
     }
 
     ArrayList<Integer> legalValueList = card.getOptionsOfVariable();
-
+    
     if (legalValueList == null)
+    {
       card.setX(0);
+    }
     else
     {
-      card.setX(legalValueList.get(Util.rand.nextInt(legalValueList.size())));
+      if(getClient().cardVariables.containsKey(card.getCardType()))
+      {
+        if(getClient().cardVariables.get(card.getCardType()).equals(CardVariableTypes.MONEY))
+        {
+          for(int i=0;i<legalValueList.size();i++)
+          {
+            //Don't assign the X variable to be more than 10% of your income if possible.
+            if(legalValueList.get(i)<=(revenueBalance/10))
+            {
+              continue;
+            }
+            if(i!=0 && legalValueList.get(i)>(revenueBalance/10))
+            {
+              card.setX(legalValueList.get(i-1));
+              return;
+            }
+            if(i==legalValueList.size()-1)
+            {
+              card.setX(legalValueList.get(i));
+              return;
+            }
+          }
+          card.setX(legalValueList.get(0));
+        }
+        else if(getClient().cardVariables.get(card.getCardType()).equals(CardVariableTypes.PERCENTAGE))
+        {
+          //If revenue doing well, will be more likely to give farmers a bigger tax break. I revenue not doing
+          //well, will give them the bare minimum tax break.
+          if(revenueDiff<=0 && numTurns>0)
+          {
+            card.setX(legalValueList.get(0));
+          }
+          else if(numTurns>0 && revenueDiff>0)
+          {
+            card.setX(legalValueList.get(rand.nextInt(legalValueList.size()-1)+1));
+          }
+          else if(numTurns==0)
+          {
+            card.setX(legalValueList.get(rand.nextInt(legalValueList.size())));
+          }
+        }
+      }
+      else
+      {
+        card.setX(legalValueList.get(rand.nextInt(legalValueList.size())));
+      }
     }
   }
 

@@ -6,6 +6,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import starvationevasion.ai.commands.Command;
 import starvationevasion.ai.commands.Draft;
@@ -44,7 +45,7 @@ public class AI
   private volatile boolean aggregate=false;
   private ArrayList<User> allies = new ArrayList<>();
   private ArrayList<User> enemies = new ArrayList<>();
-
+  private AtomicBoolean mapsCreated=new AtomicBoolean(false);
 
   // time of server start
   private double startNanoSec = 0;
@@ -119,7 +120,6 @@ public class AI
 
     aiLoop();
     COMM.dispose();
-    createMapsAndLists();
   }
 
   /**
@@ -264,13 +264,17 @@ public class AI
         // since the last call
         ArrayList<Response> responses = COMM.pollMessages();
         processServerInput(responses);
-
+        
         // if commands is empty check again
         if (commands.size() == 0) continue;
 
         // take off the top of the stack
         Command c = commands.peek();
-
+        if(!mapsCreated.get() && c.commandString().equals("Draft"))
+        {
+          createMapsAndLists();
+          mapsCreated.set(true);
+        }
         boolean runAgain = c.run();
 
         // if it does not need to run again pop

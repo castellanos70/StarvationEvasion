@@ -367,7 +367,10 @@ public class Simulator
   
   /**
    * Iterates through all the cards intended to be applied to the simulator and
-   * then applies only the ones that effect a player's hand.
+   * then applies only the ones that do not directly affect the simulation model.
+   * 
+   * For example, effects like CovertIntelligence, which lets you look at another
+   * player's hand, do not directly affect the model.
    * 
    * @param cards
    *          The list of all cards intended to be applied to the simulation.
@@ -378,6 +381,8 @@ public class Simulator
     {
       switch(c.getCardType())
       {
+        case Policy_CovertIntelligence:
+          break;
         case Policy_DiverttheFunds:
           //remove all cards from owners hand
           discardPlayerHand(c.getOwner());

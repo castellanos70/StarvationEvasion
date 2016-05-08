@@ -37,7 +37,7 @@ public class AI
   private User u;
   private ArrayList<User> users = new ArrayList<>();
   private State state = null;
-  private ArrayList<WorldData> worldData;
+  private ArrayList<WorldData> worldData=new ArrayList<>();
   private List<GameCard> ballot;
   private Stack<Command> commands = new Stack<>();
   private volatile boolean isRunning = true;
@@ -182,12 +182,10 @@ public class AI
   {
     worldDataSize += 2;
     region = u.getRegion().name();
-    System.out.println("World data size:"+worldData.size());
     for (int i = worldData.size() - 2; i < worldData.size(); i++)
     {
       Double[] seaLevel =
       { worldData.get(i).seaLevel };
-      System.out.println("overall sea level:"+worldData.get(i).seaLevel);
       factorMap.get(WorldFactors.SEALEVEL).add(seaLevel);
       eventList.clear();
       if (worldData.get(i).eventList.size() > 0)
@@ -207,25 +205,20 @@ public class AI
       }
       Integer[] revenueBalance =
       { thisRegion.revenueBalance };
-      System.out.println("region revenue balance:"+thisRegion.revenueBalance);
       factorMap.get(WorldFactors.REVENUEBALANCE).add(revenueBalance);
       Integer[] population =
       { thisRegion.population };
-      System.out.println("population:"+thisRegion.population);
       factorMap.get(WorldFactors.POPULATION).add(population);
       Double[] undernourished =
       { thisRegion.undernourished };
-      System.out.println("undernourished:"+thisRegion.undernourished);
       factorMap.get(WorldFactors.UNDERNOURISHED).add(undernourished);
       Double[] hdi =
       { thisRegion.humanDevelopmentIndex };
-      System.out.println("HDI:"+thisRegion.humanDevelopmentIndex);
       factorMap.get(WorldFactors.HDI).add(hdi);
       Long[] foodProduced = new Long[EnumFood.SIZE];
       for (int h = 0; h < EnumFood.SIZE; h++)
       {
         foodProduced[h] = thisRegion.foodProduced[h];
-        System.out.println("food produced:"+thisRegion.foodProduced[h]);
       }
       // Food produced over the last year in metric tons.
       factorMap.get(WorldFactors.FOODPRODUCED).add(foodProduced);
@@ -233,7 +226,6 @@ public class AI
       for (int h = 0; h < EnumFood.SIZE; h++)
       {
         foodIncome[h] = thisRegion.foodIncome[h];
-        System.out.println("food income:"+thisRegion.foodIncome[h]);
       }
       factorMap.get(WorldFactors.FOODINCOME).add(foodIncome);
       Long[] foodImported = new Long[EnumFood.SIZE];
@@ -250,7 +242,6 @@ public class AI
       factorMap.get(WorldFactors.FOODEXPORTED).add(foodExported);
       Integer[] ethanolCredit =
       { thisRegion.ethanolProducerTaxCredit };
-      System.out.println("tax credit:"+thisRegion.ethanolProducerTaxCredit);
       factorMap.get(WorldFactors.ETHANOLTAXCREDIT).add(ethanolCredit);
       Integer[] foodPrice = new Integer[EnumFood.SIZE];
       for (int h = 0; h < EnumFood.SIZE; h++)
@@ -311,8 +302,17 @@ public class AI
         u = (User)data;
         COMM.sendChat("ALL", "User updated: " + u.getUsername(), null);
       }
-      else if (type == Type.WORLD_DATA_LIST) worldData = (ArrayList<WorldData>)data;
-      else if (type == Type.WORLD_DATA) worldData.add((WorldData)data);
+      else if (type == Type.WORLD_DATA_LIST) 
+      {
+        worldData.clear();
+        worldData.addAll((ArrayList<WorldData>)data);
+        //System.out.println("Initial world data size:"+worldData.size());
+      }
+//      else if (type == Type.WORLD_DATA) 
+//      {
+//        worldData.add((WorldData)data);
+//        System.out.println("Next world data size:"+worldData.size());
+//      }
       else if (type == Type.USERS_LOGGED_IN_LIST) users = (ArrayList<User>)data;
       else if (type == Type.VOTE_BALLOT) ballot = (List<GameCard>)data;
       else if (type == Type.GAME_STATE)

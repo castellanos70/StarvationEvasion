@@ -1,8 +1,33 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.geom.Area;
+import java.awt.geom.PathIterator;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import starvationevasion.common.Constant;
+import starvationevasion.common.EnumCropZone;
+import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.GeographicArea;
+import starvationevasion.common.MapPoint;
+import starvationevasion.common.MapProjectionMollweide;
+import starvationevasion.common.RegionData;
+import starvationevasion.common.SpecialEventData;
+import starvationevasion.common.Util;
+import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.common.gamecards.Policy_DivertFunds;
 import starvationevasion.sim.LandTile.Field;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
@@ -11,16 +36,6 @@ import starvationevasion.sim.io.GeographyXMLparser;
 import starvationevasion.sim.io.ProductionCSVLoader;
 import starvationevasion.sim.io.SpecialEventCSVLoader;
 import starvationevasion.util.Picture;
-
-import java.awt.*;
-import java.awt.geom.Area;
-import java.awt.geom.PathIterator;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The Simulator class is the main API for the Server to interact with the simulator.

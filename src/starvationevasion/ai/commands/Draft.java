@@ -458,6 +458,7 @@ public class Draft extends AbstractCommand
           {
             //System.out.println("Discarded cards, try re-drafting for money cards.");
             adjustMoneyCards();
+            tryForMoneyCards=false;
           }
           actionsRemaining--;
           policiesInHand.clear();
@@ -467,6 +468,11 @@ public class Draft extends AbstractCommand
           foodList.clear();
           regionList.clear();
           return false;
+        }
+        if(tryForMoneyCards)
+        {
+          adjustMoneyCards();
+          tryForMoneyCards=false;
         }
       }
       createProbabilityDistribution();
@@ -535,23 +541,28 @@ public class Draft extends AbstractCommand
   public void checkOtherFactors()
   {
     z=0;
+    double undernourishedPercent=0;
+    double lastUndernourishedPercent=0;
     System.out.println("World data size:"+getClient().getWorldData().size());
     //First check other regions for impending starvation events.
     for(RegionData data:getClient().getWorldData().get(1).regionData)
     {
+      undernourishedPercent=(data.undernourished/data.population)*100;
+      lastUndernourishedPercent=(getClient().getWorldData().get(0).regionData[data.region.ordinal()].undernourished/
+          getClient().getWorldData().get(0).regionData[data.region.ordinal()].population)*100;
       //System.out.println(data.region.name()+" undernourished level "+data.undernourished);
-      if(data.undernourished>40 && 
-          data.undernourished>=getClient().getWorldData().get(0).regionData[data.region.ordinal()].undernourished)
+      if(undernourishedPercent>40 && 
+          undernourishedPercent>=lastUndernourishedPercent)
       {
         //System.out.println(data.region.name()+" is undernourished, I'm more likely to pick a card that helps them.");
         amtToAdjust=probabilityMap.get(data.region.name());
-        amtToAdjust*=data.undernourished/10;
+        amtToAdjust*=undernourishedPercent/10;
         adjustProbability(amtToAdjust,data.region.name());
         amtToAdjust=0;
       }
       //If a region is doing well, make it less likely to get picked.
-      else if(data.undernourished<10 &&
-          data.undernourished<=getClient().getWorldData().get(0).regionData[data.region.ordinal()].undernourished)
+      else if(undernourishedPercent<10 &&
+          lastUndernourishedPercent>=undernourishedPercent)
       {
         //System.out.println(data.region.name()+" is doing well, I'm less likely to help them.");
         adjustProbability(rand.nextInt(5)+1,data.region.name());
@@ -560,7 +571,7 @@ public class Draft extends AbstractCommand
       {
         thisRegion=data;
       }
-      avgUndernourished+=data.undernourished;
+      avgUndernourished+=undernourishedPercent;
       //If production of a certain food in this region has gone down by more than 30%, take note of this
       //and take actions to fix it.
       for(p=0;p<data.foodProduced.length;p++)

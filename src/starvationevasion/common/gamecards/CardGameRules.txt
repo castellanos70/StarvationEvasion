@@ -11,9 +11,14 @@ Rules for the "card game" aspect of the StarvationEvasion project:
     -Votable (Other regions will vote on this card during the voting phase, ie: "Every 
       region sends 10 million dollars to help South Asia")
 
-3) Cards are used during the "DRAFTING" state (see file server.model.state.java). Possible 
-   exception being special cards like the "Filibuster" (which could be played during the 
-   VOTING state). 
+3) Cards are generally used during the "DRAFTING" state (see file server.model.state.java).
+   Some cards, however, can be played during a "POLICY_REVEAL" state. The only example of
+   this is the "Filibuster" card. The "POLICY_REVEAL" state is just before regions can
+   vote on Votable policies, but after drafting, and just after those policies are shown
+   to everyone. In this example, the Filibuster works by taking one of those revealed 
+   policies and sending it back to the hand of the person who played it.
+   Note that as of writing, this "POLICY_REVEAL" state is NOT in server.model.State. It 
+   needs to be implemented before cards that are to be used in that state can work.
    
 4) Each card has an "Action Point" value between 1-3, and each player has a set amount of 
    Action Points to use every turn (currently 3). Each card played will take away it's value

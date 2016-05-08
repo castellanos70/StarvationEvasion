@@ -382,11 +382,15 @@ public class Simulator
       switch(c.getCardType())
       {
         case Policy_CovertIntelligence:
+          // TODO: talk to ClientUI to allow player to determine who's hand to
+          // look at. Get the hand from the playerDeck array.
           break;
         case Policy_DiverttheFunds:
-          //remove all cards from owners hand
+          // remove all cards from owners hand
           discardPlayerHand(c.getOwner());
-          //give 14 million dollars to owner - applied in Model.java
+          // give 14 million dollars to owner - applied in Model.java
+          // TODO: potentially talk to ClientUI to make cool animation of card
+          // discarding.
           break;
         default:
           break;

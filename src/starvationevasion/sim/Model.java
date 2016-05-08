@@ -595,14 +595,14 @@ public class Model
    * Model.nextYear(), it doesn't alter any calculations as the model completes
    * a year's simulation.
    * 
-   * Pretty much all values are hardcoded right now as the policy card classes
-   * themselves are not structured in a way to access these values. A meeting
-   * with the policy card team confirmed they are working on updating this so we
-   * can remove the hardcoded values.
+   * Methods that are commented out do work correctly but policy cards are not
+   * currently structured in a way to access necessary variables. Furthermore,
+   * the Client UI does not currently provide a means of allowing a user to make
+   * a selection.
    * 
-   * Pretty much all values are hardcoded right now. Some of the values are
-   * hardcoded as the policy cards are not structured in a way to access these
-   * values.
+   * Hard-coded values are constants of the specific policy card. The card
+   * classes do not currently provide these values. In the future this will be
+   * updated.
    * 
    * @param cards
    *          the list of all cards to be applied to the model
@@ -630,7 +630,9 @@ public class Model
         case Policy_EfficientIrrigationIncentive:
           break;
         case Policy_EthanolTaxCreditChange:
-          getRegion(c.getOwner()).setEthanolProducerTaxCredit(25); //25% for now.
+          // if c.getUserSelection() == 25, user selected a 25% tax credit
+          // getter for user selection not implemented
+          // getRegion(c.getOwner()).setEthanolProducerTaxCredit(c.getUserSelection());
           break;
         case Policy_FarmInfrastructureSubSaharan:
           break;
@@ -652,20 +654,25 @@ public class Model
         case Policy_FertilizerSubsidy:
           break;
         case Policy_FoodReliefCentralAsia:
-          //Sends 5 thousand tons of selected food
-          sendFoodRelief(EnumRegion.CENTRAL_ASIA, c.getOwner(), EnumFood.CITRUS, 5000); //citrus for now
+          // Sends 5 thousand tons of selected food
+          // sendFoodRelief(EnumRegion.CENTRAL_ASIA, c.getOwner(),
+          // c.getUserSelection(), 5000);
           break;
         case Policy_FoodReliefMiddleAmerica:
-          sendFoodRelief(EnumRegion.MIDDLE_AMERICA, c.getOwner(), EnumFood.CITRUS, 5000); //citrus for now
+          // sendFoodRelief(EnumRegion.MIDDLE_AMERICA, c.getOwner(),
+          // c.getUserSelection(), 5000);
           break;
         case Policy_FoodReliefOceania:
-          sendFoodRelief(EnumRegion.OCEANIA, c.getOwner(), EnumFood.CITRUS, 5000); //citrus for now
+          // sendFoodRelief(EnumRegion.OCEANIA, c.getOwner(),
+          // c.getUserSelection(), 5000);
           break;
         case Policy_FoodReliefSouthAsia:
-          sendFoodRelief(EnumRegion.SOUTH_ASIA, c.getOwner(), EnumFood.CITRUS, 5000); //citrus for now
+          // sendFoodRelief(EnumRegion.SOUTH_ASIA, c.getOwner(),
+          // c.getUserSelection(), 5000);
           break;
         case Policy_FoodReliefSubSaharan:
-          sendFoodRelief(EnumRegion.SUB_SAHARAN, c.getOwner(), EnumFood.CITRUS, 5000); //citrus for now
+          // sendFoodRelief(EnumRegion.SUB_SAHARAN, c.getOwner(),
+          // c.getUserSelection(), 5000);
           break;
         case Policy_Fundraiser:
           break;

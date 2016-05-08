@@ -1582,7 +1582,7 @@ public class Model
     for(Region region: regionList)
     {
       region.resetProduction();
-      for (Territory territory : territoryList)
+      for (Territory territory : region.getTerritoryList())
       {
         for (LandTile tile : territory.getLandTiles())
         {

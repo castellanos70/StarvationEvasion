@@ -600,6 +600,10 @@ public class Model
    * with the policy card team confirmed they are working on updating this so we
    * can remove the hardcoded values.
    * 
+   * Pretty much all values are hardcoded right now. Some of the values are
+   * hardcoded as the policy cards are not structured in a way to access these
+   * values.
+   * 
    * @param cards
    *          the list of all cards to be applied to the model
    */

@@ -306,13 +306,11 @@ public class AI
       {
         worldData.clear();
         worldData.addAll((ArrayList<WorldData>)data);
-        //System.out.println("Initial world data size:"+worldData.size());
       }
-//      else if (type == Type.WORLD_DATA) 
-//      {
-//        worldData.add((WorldData)data);
-//        System.out.println("Next world data size:"+worldData.size());
-//      }
+      else if (type == Type.WORLD_DATA) 
+      {
+        worldData.add((WorldData)data);
+      }
       else if (type == Type.USERS_LOGGED_IN_LIST) users = (ArrayList<User>)data;
       else if (type == Type.VOTE_BALLOT) ballot = (List<GameCard>)data;
       else if (type == Type.GAME_STATE)

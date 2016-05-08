@@ -99,9 +99,26 @@ public class Region extends Territory
     ethanolProducerTaxCredit += credit;
   }
   
+  /**
+   * Offer a subsidy for subsidyPercent rebate to farmers in region purchasing
+   * commercial fertilizer or feed supplements for target crop or livestock.
+   * 
+   * @param subsidyPercent percent of subsidy offered by policy card
+   * @param target crop or livestock
+   */
+  public void setFertilizerSubsidy(int subsidyPercent, EnumFood target)
+  {
+    //TODO:
+  }
+  
   public void addFertilizerAid(int aid)
   {
     fertilizerAid += aid;
+  }
+  
+  public void addFarmInfrastructureAid(int aid)
+  {
+    //TODO:
   }
   
   public void addFoodRelief(EnumFood food, int amount)

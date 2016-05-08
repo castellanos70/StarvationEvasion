@@ -152,7 +152,6 @@ public class GUI extends Application
 
     // instantiate the DraftLayout
     draftLayout = new DraftLayout(this);
-    draftLayout.getChildren().add(b);
     votingLayout = new VotingLayout(this);
    
     

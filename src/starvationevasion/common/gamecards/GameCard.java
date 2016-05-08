@@ -124,9 +124,9 @@ public abstract class GameCard implements Sendable
       case Policy_CleanRiverIncentive:
         myCard = new Policy_CleanRiverIncentive();
         break;
-      case Policy_CovertIntelligence:
-        myCard = new Policy_CovertIntelligence();
-        break;
+      //case Policy_CovertIntelligence:
+      //  myCard = new Policy_CovertIntelligence();
+      //  break;
       case Policy_EducateTheWomenCampaign:
         myCard = new Policy_EducateTheWomenCampaign();
         break;
@@ -270,8 +270,8 @@ public abstract class GameCard implements Sendable
 	  switch (policy) {
       case Policy_CleanRiverIncentive:
         return 2;
-      case Policy_CovertIntelligence:
-        return 1;
+      //case Policy_CovertIntelligence:
+      //  return 1;
       case Policy_EducateTheWomenCampaign:
         return 2;
       case Policy_EfficientIrrigationIncentive:

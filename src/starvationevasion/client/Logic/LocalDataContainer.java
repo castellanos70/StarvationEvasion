@@ -114,7 +114,6 @@ public class LocalDataContainer
           
           
     });
-    System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     //Update annual stats for each of the three categories for every region.
     annualCropDistributionStats.clear();
     annualCropExportStats.clear();
@@ -123,7 +122,7 @@ public class LocalDataContainer
     regionToData.keySet().forEach(region -> annualCropDistributionStats.add(regionToData.get(region).foodProduced));
     regionToData.keySet().forEach(region -> annualCropExportStats.add(regionToData.get(region).foodProduced));
     regionToData.keySet().forEach(region -> annualCropImportStats.add(regionToData.get(region).foodProduced));
-    System.out.println("size 1: " + annualCropDistributionStats.size());
+  
     //Now update the data.
 
     manager.updateRegionalCropDistributionNumbers(year, annualCropDistributionStats);
@@ -131,7 +130,7 @@ public class LocalDataContainer
     manager.updateRegionalCropImportNumbers(year, annualCropImportStats);
     
     
-  
+    
 
     
       regionToData.keySet().forEach(region ->

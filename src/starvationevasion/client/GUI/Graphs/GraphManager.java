@@ -19,7 +19,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-
+import starvationevasion.common.EnumFood;
 /**
  * Graph Manager which handles all of the graphs attached to the GUI Has
  * functions which allows the client to add data to a graph or methods for the
@@ -29,21 +29,29 @@ public class GraphManager
 {
   private Label regionNameLabel = new Label();
   private Label currentYear = new Label();
-  private ArrayList<Integer> past10YearsNetExports = new ArrayList<>();
-  private ArrayList<Integer> past10YearsNetImports = new ArrayList<>();
-  private ArrayList<Integer> past10YearsNetProduction = new ArrayList<>();
-  private ArrayList<Integer> past10YearsNetDomesticConsumption = new ArrayList<>();
-  private ArrayList<Integer> past10YearsBestCropProduction = new ArrayList<>();
   CategoryAxis xAxis = new CategoryAxis();
   NumberAxis yAxis = new NumberAxis();
 
-  PieChart regionalCropDistributionPieChart = new PieChart();
   ArrayList<long[]> annualRegionsCropDistributionStatistics = new ArrayList<>();
-  PieChart regionalCropExportPieChart = new PieChart();
   ArrayList<long[]> annualRegionsCropExportStatistics = new ArrayList<>();
-  PieChart regionalCropImportPieChart = new PieChart();
   ArrayList<long[]> annualRegionsCropImportStatistics = new ArrayList<>();
 
+  
+  ArrayList<Long> annualCitrusRegionalProductionComparison =  new ArrayList<>();
+  ArrayList<Long> annualFruitRegionalProductionComparison =  new ArrayList<>();
+  ArrayList<Long> annualNutRegionalProductionComparison =  new ArrayList<>();
+  ArrayList<Long> annualGrainRegionalProductionComparison =  new ArrayList<>();
+  ArrayList<Long> annualOilRegionalProductionComparison =  new ArrayList<>();
+  ArrayList<Long> annualVeggiesRegionalProductionComparison =  new ArrayList<>();
+  ArrayList<Long> annualSpecialRegionalProductionComparison =  new ArrayList<>();
+  ArrayList<Long> annualFeedRegionalProductionComparison =  new ArrayList<>();
+  ArrayList<Long> annualFishRegionalProductionComparison =  new ArrayList<>();
+  ArrayList<Long> annualMeatRegionalProductionComparison =  new ArrayList<>();
+  ArrayList<Long> annualPoultryRegionalProductionComparison =  new ArrayList<>();
+  ArrayList<Long> annualDairyRegionalProductionComparison =  new ArrayList<>();
+  
+  ArrayList<ArrayList<Long>> listOfRegionalCropComparisonLists = new ArrayList<>();
+  
   PieChart masterPieChart = new PieChart();
 
   private int REGION_NUM = 0;
@@ -87,84 +95,83 @@ public class GraphManager
 
     masterPieChart.getStylesheets()
         .add(getClass().getResource("/starvationevasion/client/GUI/Graphs/pieChartCSS.css").toExternalForm());
-    regionalCropExportPieChart.getStylesheets()
-        .add(getClass().getResource("/starvationevasion/client/GUI/Graphs/pieChartCSS.css").toExternalForm());
-    regionalCropImportPieChart.getStylesheets()
-        .add(getClass().getResource("/starvationevasion/client/GUI/Graphs/pieChartCSS.css").toExternalForm());
     // Set initial region name (needs to be obtained from game once integrated)
     regionNameLabel.setText(regionName);
     regionNameLabel.setTextFill(Color.web("#FFFFFF")); // white
     initializeProductBarGraphs();
     initializeGraphNodeGraphs();
 
-    initializeData();
-    updateRegionalCropDistributionDisplay();
+   // updateRegionalCropDistributionDisplay();
     // updateRegionalCropExportsDisplay();
     // updateRegionalCropImportsDisplay();
 
   }
 
-  
-
-  // Regional stats can only be displayed once the data has been collected,
-  // so untill that happens 0's are inputted as the data.
-  public void initializeData()
-  {
-
-    for (int i = 0; i < 18; i++)
-    {
-      annualRegionsCropDistributionStatistics.add(new long[]
-      { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
-      annualRegionsCropExportStatistics.add(new long[]
-      { 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0 });
-      annualRegionsCropImportStatistics.add(new long[]
-      { 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0 });
-    }
-  }
 
   
   public void updateRegionalCropDistributionNumbers(int year, ArrayList<long[]> updatedStats)
   {
-
-   // System.out.println("size 2: " + updatedStats.size());
     annualRegionsCropDistributionStatistics = new ArrayList<>();
-    // this.annualRegionsCropDistributionStatistics=updatedStats;
     for (long[] region : updatedStats)
     {
 
       annualRegionsCropDistributionStatistics.add(region);
-    }
-   // System.out.println(Arrays.toString(updatedStats.get(8)));
-  // System.out.println("SIZE 1: " + annualRegionsCropDistributionStatistics.size());
-  //  annualRegionsCropDistributionStatistics.clear();
-   // System.out.println("size 3: " + annualRegionsCropDistributionStatistics.size());
-   // updateRegionalCropDistributionDisplay();
+    }  
+    updateRegionalCropComparison();
   }
   
   public void updateRegionalCropExportNumbers(int year,  ArrayList<long[]> updatedStats)
   {
     annualRegionsCropExportStatistics= new ArrayList<>();
-    //this.annualRegionsCropExportStatistics=updatedStats;
     for(long[] region: updatedStats)
     {
       annualRegionsCropExportStatistics.add(region);
     }
-   // System.out.println("SIZE 2: " + annualRegionsCropExportStatistics.size());
-   // annualRegionsCropExportStatistics.clear();
- //   updateRegionalCropExportsDisplay();
   }
   
   public void updateRegionalCropImportNumbers(int year,  ArrayList<long[]> updatedStats)
   {
     annualRegionsCropImportStatistics= new ArrayList<>();
-    //this.annualRegionsCropImportStatistics=updatedStats;
     for(long[] region: updatedStats)
     {
       annualRegionsCropImportStatistics.add(region);
     }
-   // System.out.println("SIZE 3: " + annualRegionsCropImportStatistics.size());
-    //annualRegionsCropImportStatistics.clear();
-   // updateRegionalCropImportsDisplay();
+  }
+  
+  
+  public void updateRegionalCropComparison()
+  {
+    //for(int i = 0; i < 12; i++)
+   // {
+      for(long[] regionCropDist: annualRegionsCropDistributionStatistics)
+      {
+      annualCitrusRegionalProductionComparison.add(regionCropDist[0]);
+      annualFruitRegionalProductionComparison.add(regionCropDist[1]);
+      annualNutRegionalProductionComparison.add(regionCropDist[2]);
+      annualGrainRegionalProductionComparison.add(regionCropDist[3]);
+      annualOilRegionalProductionComparison.add(regionCropDist[4]);
+      annualVeggiesRegionalProductionComparison.add(regionCropDist[5]);
+      annualSpecialRegionalProductionComparison.add(regionCropDist[6]);
+      annualFeedRegionalProductionComparison.add(regionCropDist[7]);
+      annualFishRegionalProductionComparison.add(regionCropDist[8]);
+      annualMeatRegionalProductionComparison.add(regionCropDist[9]);
+      annualPoultryRegionalProductionComparison.add(regionCropDist[10]);
+      annualDairyRegionalProductionComparison.add(regionCropDist[11]);
+     // }
+    }
+      listOfRegionalCropComparisonLists.add(annualCitrusRegionalProductionComparison);
+      listOfRegionalCropComparisonLists.add(annualFruitRegionalProductionComparison);
+      listOfRegionalCropComparisonLists.add(annualNutRegionalProductionComparison);
+      listOfRegionalCropComparisonLists.add(annualGrainRegionalProductionComparison);
+      listOfRegionalCropComparisonLists.add(annualOilRegionalProductionComparison);
+      listOfRegionalCropComparisonLists.add(annualVeggiesRegionalProductionComparison);
+      listOfRegionalCropComparisonLists.add(annualSpecialRegionalProductionComparison);
+      listOfRegionalCropComparisonLists.add(annualFeedRegionalProductionComparison);
+      listOfRegionalCropComparisonLists.add(annualFishRegionalProductionComparison);
+      listOfRegionalCropComparisonLists.add(annualMeatRegionalProductionComparison);
+      listOfRegionalCropComparisonLists.add(annualPoultryRegionalProductionComparison);
+      listOfRegionalCropComparisonLists.add(annualDairyRegionalProductionComparison);
+      
   }
   
   
@@ -288,43 +295,6 @@ public class GraphManager
   }
   
   
-  
-  public void buildDisplay(int displayNum)
-  {
-    // switch(displayNum)
-    // {
-    // case 1:
-    // displayRegionalCropDistribution();
-    // break;
-    // case 2:
-    // displayRegionalHDIComparison();
-    // break;
-    // case 3:
-    // displayBestCropChart();
-    // break;
-    // case 4:
-    // displayExportsChart();
-    // break;
-    // case 5:
-    // displayImportsChart();
-    // break;
-    // case 6:
-    // displayProductionChart();
-    // break;
-    // case 7:
-    // displayDomesticConsumptionChart();
-    // break;
-    // default:
-    // break;
-    // }
-  }
-
-  // public void updateCurrentRegionName(String regionClicked)
-  // {
-  // pieChart.setTitle(regionClicked + " Crop Distribution");
-  // regionNameLabel.setText(regionClicked);
-  // regionNameLabel.setTextFill(Color.web("#FFFFFF")); // white
-  // }
 
   /**
    * Gets the requested graph
@@ -371,18 +341,54 @@ public class GraphManager
   }
 
   
+  public PieChart setCropProductionPieChart(int crop)
+  {
+    masterPieChart.setVisible(true);
+    barChart.setVisible(false);
+    currentYear.setVisible(false);
+    masterPieChart.setLegendVisible(false);
+    masterPieChart.getData().clear();
+    masterPieChart.setTitle("Regional Production Comparison of " +PRODUCTS[crop-1].toString());
+    ObservableList<Data> list = FXCollections.observableArrayList(
+        new PieChart.Data("California", listOfRegionalCropComparisonLists.get(crop).get(0)),
+        new PieChart.Data("HeartLands", listOfRegionalCropComparisonLists.get(crop).get(1)),
+        new PieChart.Data("Northern Plains", listOfRegionalCropComparisonLists.get(crop).get(2)), 
+        new PieChart.Data("SouthEast", listOfRegionalCropComparisonLists.get(crop).get(3)),
+        new PieChart.Data("Northern Crescent", listOfRegionalCropComparisonLists.get(crop).get(4)),
+        new PieChart.Data("Southern Plains", listOfRegionalCropComparisonLists.get(crop).get(5)),
+        new PieChart.Data("Mountian", listOfRegionalCropComparisonLists.get(crop).get(6)),
+        new PieChart.Data("Arctic America", listOfRegionalCropComparisonLists.get(crop).get(7)),
+        new PieChart.Data("Middle America", listOfRegionalCropComparisonLists.get(crop).get(8)),
+        new PieChart.Data("South America", listOfRegionalCropComparisonLists.get(crop).get(9)),
+        new PieChart.Data("Europe", listOfRegionalCropComparisonLists.get(crop).get(10)),
+        new PieChart.Data("Middle East", listOfRegionalCropComparisonLists.get(crop).get(11)),
+        new PieChart.Data("Sub Saharan", listOfRegionalCropComparisonLists.get(crop).get(12)),
+        new PieChart.Data("Russia", listOfRegionalCropComparisonLists.get(crop).get(13)),
+        new PieChart.Data("Central Asia", listOfRegionalCropComparisonLists.get(crop).get(14)),
+        new PieChart.Data("South Asia", listOfRegionalCropComparisonLists.get(crop).get(14)),
+        new PieChart.Data("East Asia", listOfRegionalCropComparisonLists.get(crop).get(15)),
+        new PieChart.Data("Oceania", listOfRegionalCropComparisonLists.get(crop).get(16)));
+
+    masterPieChart.setData(list);
+    
+    return masterPieChart;
+  }
+  
+  
+  
+  
   /**
    * Set up the pie chart to display crop distribution for a region.
    */
   public void updateRegionalCropDistributionDisplay()
   {
     long[] regionsCropDistribution = annualRegionsCropDistributionStatistics.get(REGION_NUM);
-    regionalCropDistributionPieChart.setVisible(true);
+    masterPieChart.setVisible(true);
     barChart.setVisible(false);
     currentYear.setVisible(false);
     masterPieChart.setLegendVisible(false);
     masterPieChart.getData().clear();
-    masterPieChart.setTitle(regionName + " Crop Distribution");
+    masterPieChart.setTitle(regionName + " Crop Production");
     ObservableList<Data> list = FXCollections.observableArrayList(
         new PieChart.Data("Citrus Fruits", regionsCropDistribution[0]),
         new PieChart.Data("Non-Citrus Fruits", regionsCropDistribution[1]),

@@ -40,7 +40,11 @@ public class GraphNode extends StackPane
       {
         if(gui.getPopupManager().isOpen()==null)
         {
-          //Toggle world on world stats. 
+          if(gui.getPopupManager().isOpen()==null)
+          {
+          gui.getDraftLayout().getGraphDisplay().setDataVisMode(1);
+          gui.getPopupManager().toggleGraphDisplay();
+          }
         }
       }
     });

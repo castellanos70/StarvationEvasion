@@ -66,14 +66,6 @@ public class GraphDisplay extends BorderPane
 	    	{
 	    	  gui.updateState();
 	    	}
-	    	if(dataVisMode==1)
-	    	{
-	    	  
-	    	}
-	    	if(dataVisMode==2)
-	    	{
-	    	  
-	    	}
 	    }); 
 		
     this.gui = gui;
@@ -100,7 +92,7 @@ public class GraphDisplay extends BorderPane
     setLeft(left);
     setAlignment(right, Pos.CENTER);
     setRight(right);
-    this.setCenter(gui.getGraphManager().getPieChart(regionalGraphIndex));
+    //this.setCenter(gui.getGraphManager().getPieChart(regionalGraphIndex));
    // setAlignment(graphDisplay.getPieChart(),Pos.CENTER);
    // setCenter(graphDisplay.getPieChart());
   }
@@ -130,7 +122,7 @@ public class GraphDisplay extends BorderPane
 	  }
 	  if(dataVisMode==1)
 	  {
-		  
+	    this.setCenter(gui.getGraphManager().setCropProductionPieChart(worldGraphIndex));
 	  }
 	  if(dataVisMode==2)
 	  {
@@ -245,7 +237,11 @@ public class GraphDisplay extends BorderPane
 	  }
 	  if(dataVisMode==1)
 	  {
-		  
+	    worldGraphIndex += 1;
+      if (worldGraphIndex >= 13)
+      {
+        worldGraphIndex = 1;
+      } 
 		  
 	  }
 	  if(dataVisMode==2)
@@ -257,7 +253,6 @@ public class GraphDisplay extends BorderPane
 		    } 
 	  }
     boolean isPieChart = gui.getGraphManager().isPieChart(regionalGraphIndex);
-    gui.getGraphManager().buildDisplay(regionalGraphIndex);
     if(isPieChart)
     {
     	if(dataVisMode==0)
@@ -271,7 +266,7 @@ public class GraphDisplay extends BorderPane
     }
     if(dataVisMode==1)
 	{
-		
+      this.setCenter(gui.getGraphManager().setCropProductionPieChart(worldGraphIndex));
 	}
 	if(dataVisMode==2)
 	{
@@ -294,7 +289,11 @@ public class GraphDisplay extends BorderPane
 	}
 	if(dataVisMode==1)
 	{
-		
+	  worldGraphIndex -= 1;
+    if (worldGraphIndex < 1)
+    {
+      worldGraphIndex = 12;
+    }
 	}
 	if(dataVisMode==2)
 	{
@@ -323,7 +322,7 @@ public class GraphDisplay extends BorderPane
     
     if(dataVisMode==1)
 	{
-		
+      this.setCenter(gui.getGraphManager().setCropProductionPieChart(worldGraphIndex));
 	}
 	if(dataVisMode==2)
 	{

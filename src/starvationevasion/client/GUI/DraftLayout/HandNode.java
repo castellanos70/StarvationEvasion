@@ -130,7 +130,7 @@ public class HandNode extends ResizablePane
    * Creates the CardNode elements that will be displayed in this pane
    */
   public void createCards(){
-    for (int i = 0; i < Constant.MAX_HAND_SIZE; i++){
+    for (int i = 0; i < policies.length; i++){
       cards[i] = new CardNode(gui.getAssignedRegion(), policies[i]);
       cards[i].setManaged(false);
       this.getChildren().add(cards[i]);

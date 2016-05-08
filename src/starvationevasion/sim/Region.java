@@ -22,7 +22,9 @@ public class Region extends Territory
   private int totalTax = 0;
   private int revenue;
 
-  public int ethanolProducerTaxCredit = 0;
+  private int ethanolProducerTaxCredit = 0;
+  private int fertilizerAid = 0;
+  
   private int[] cropTaxes = new int[EnumFood.SIZE];
   private int[] cropRevenues = new int[EnumFood.SIZE];
   private long[][] cropImport = new long[Model.YEARS_OF_DATA][EnumFood.SIZE];  //in metric tons.
@@ -91,6 +93,15 @@ public class Region extends Territory
     return cropArea[yearIdx][cropIdx];
   }
 
+  public void setEthanolProducerTaxCredit(int credit)
+  {
+    ethanolProducerTaxCredit += credit;
+  }
+  
+  public void addFertilizerAid(int aid)
+  {
+    fertilizerAid += aid;
+  }
 
   /**
    * Each region is composed of 1 or more territories. This method sets this regions data
@@ -127,6 +138,11 @@ public class Region extends Territory
   public void addToRevenue(int money)
   {
     revenue += money;
+  }
+  
+  public void subtractFromRevenue(int money)
+  {
+    revenue -= money;
   }
 
   /**

@@ -3,23 +3,39 @@ package starvationevasion.client.GUI.votingHud;
 import java.io.File;
 import java.util.ArrayList;
 
+
+
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
+import starvationevasion.client.GUI.DraftLayout.DraftTimer;
 import starvationevasion.client.GUI.DraftLayout.WorldMap;
-import starvationevasion.client.GUI.DraftLayout.map.Map;
-import starvationevasion.client.GUI.VotingLayout.VotingTimer;
+import starvationevasion.client.GUI.VotingLayout.VotingNode;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.common.gamecards.GameCard;
 
+/**
+ * 
+ * @author Brian Downing
+ *
+ *         This is the container for all of the GUI elements of the VOting Phase
+ *         for the Game NodeTemplate is a Pane that has some added resizing
+ *         functionality.
+ */
 public class VotingLayout extends NodeTemplate
 {
   private static final int SCROLL_MOD = 4;
+  private double lastX;
+  private double lastY;
+  private double width;
+  private double height;
 
   private ChatNode chatNode;
   private boolean receivedCards = false;
@@ -32,12 +48,8 @@ public class VotingLayout extends NodeTemplate
   private boolean borders = false;
   private Rectangle2D viewPort;
   private VotingHand hand;
-
-  private double lastX;
-  private double lastY;
-
-  private double width;
-  private double height;
+  private DraftTimer votingTimer;
+  private ArrayList<VotingNode> votingNodes = new ArrayList<>();
   private starvationevasion.client.GUI.GUI gui;
 
   public VotingLayout(starvationevasion.client.GUI.GUI gui2)
@@ -48,6 +60,10 @@ public class VotingLayout extends NodeTemplate
     this.width = gui2.getPrimaryStage().getWidth();
     this.height = gui2.getPrimaryStage().getHeight();
 
+    /*
+     * Hand is a nodeTemplate and is the container that holds the cards and the
+     * other voting buttons and elements
+     */
     hand = new VotingHand(width * (2 / 3d), height / 2);
     hand.setLayoutX(20);
     hand.setLayoutY(height / 2 - 20);
@@ -55,15 +71,25 @@ public class VotingLayout extends NodeTemplate
     hand.setVisible(true);
     hand.setPickOnBounds(false);
 
-    File file = new File("src/starvationevasion/client/GUI/votingHud/testImages/WorldMap_MollweideProjection.png");
-    oldMap = new Image(file.toURI().toString());
-    imageView = new ImageView(oldMap);
-    imageView.setManaged(false);
-    imageView.setPreserveRatio(false);
+    chatNode = new ChatNode(gui);
+    chatNode.setVotingMode(true);
+
+    
+    /**
+     * votingTimer counts down from 2 minutes and sets votingFinished when time
+     * is out.
+     */
+    votingTimer = new DraftTimer();
+
+    votingTimer.setMinWidth(gui.getPrimaryStage().getWidth() / 10);
+    votingTimer.setMinHeight(gui.getPrimaryStage().getHeight() / 9);
+    votingTimer.draftTimer.setTime(120000);
+    
     viewPort = new Rectangle2D(0, 0, width, height);
-    imageView.setViewport(viewPort);
-    this.getChildren().add(imageView);
     this.getChildren().add(hand);
+    this.getChildren().add(votingTimer);
+    this.getChildren().add(chatNode);
+
     setHandlers();
   }
 
@@ -170,12 +196,8 @@ public class VotingLayout extends NodeTemplate
   @Override
   public void onResize()
   {
-    // this.height = this.gui.getPrimaryStage().getHeight();
-    // this.width = this.gui.getPrimaryStage().getWidth();
-    if (imageView == null) return;
-
-    imageView.setFitHeight(this.getHeight());
-    imageView.setFitWidth(this.getWidth());
+    this.height = this.gui.getPrimaryStage().getHeight();
+    this.width = this.gui.getPrimaryStage().getWidth();
 
     double x = viewPort.getMinX();
     double y = viewPort.getMinY();
@@ -196,25 +218,24 @@ public class VotingLayout extends NodeTemplate
     worldMap.setMaxWidth(this.getWidth());
     }
 
+    votingTimer.setMinWidth(gui.getPrimaryStage().getWidth() / 10);
+    votingTimer.setTranslateX(gui.getPrimaryStage().getWidth() - 1.5 * votingTimer.getMinWidth());
+    votingTimer.setTranslateY(votingTimer.getMinHeight() / 2);
+
+    chatNode.setMinWidth(gui.getPrimaryStage().getWidth() / 5.5);
+    chatNode.setMinHeight(gui.getPrimaryStage().getHeight() / 3);
+    chatNode.setTranslateX(gui.getPrimaryStage().getWidth() - chatNode.getMinWidth() * 1.5);
+    chatNode.setTranslateY(gui.getPrimaryStage().getHeight() - chatNode.getMinHeight() * 1.2);
+    hand.onResize();
   }
 
-  private void checkViewBounds()
+  private int getIndexOfRegion(EnumRegion region)
   {
-
-    imageView.setViewport(viewPort);
-  }
-
-  public void toggleBorders()
-  {
-    if (borders)
+    for (int i = 0; i < EnumRegion.US_REGIONS.length; i++)
     {
-      imageView.setImage(oldMap);
+      if (region.equals(EnumRegion.US_REGIONS[i])) return i;
     }
-    else
-    {
-      imageView.setImage(borderMap);
-    }
-    borders ^= true;
+    return -1;
   }
 
   public boolean hasReceivedCards()
@@ -222,20 +243,67 @@ public class VotingLayout extends NodeTemplate
     return receivedCards;
   }
 
-  public void setCards(GameCard[] cards)
-  {
-
-  }
-
   public ChatNode getChatNode()
   {
     return chatNode;
   }
 
-  public void updateCardSpaces(ArrayList<GameCard> votingCards)
+  public void resetVotingLayout()
+  {
+    receivedCards = false;
+  }
+
+  private void checkViewBounds()
   {
     // TODO Auto-generated method stub
-    
+  }
+
+  public void setCards(GameCard[] cards)
+  {
+    // TODO Auto-generated method stub
+  }
+
+  public void updateCardSpaces(ArrayList<GameCard> cards)
+  {
+    if (cards != null)
+    {
+      receivedCards = true;
+      for (GameCard card : cards)
+      {
+        int index = getIndexOfRegion(card.getOwner());
+        if (card.votesRequired() == 0)
+        {
+          // if (cardSpacesSecondRow.get(index).getCard() == null)
+          // {
+          // cardSpacesSecondRow.get(index).setCard(card.getOwner(),
+          // card.getCardType(), gui);
+          // }
+          // else cardSpacesFirstRow.get(index).setCard(card.getOwner(),
+          // card.getCardType(), gui);
+        }
+        else
+        {
+          Button[] buttons = votingNodes.get(index).addVotingButtons();
+          buttons[0].setOnAction(event ->
+          {
+            buttons[0].setDisable(true);
+            buttons[1].setDisable(true);
+          });
+          buttons[1].setOnAction(event ->
+          {
+            buttons[0].setDisable(true);
+            buttons[1].setDisable(true);
+          });
+        }
+      }
+    }
+  }
+
+  public void setChatNode(ChatNode chatNode2)
+  {
+    chatNode = chatNode2;
+    onResize();
+
   }
 
 }

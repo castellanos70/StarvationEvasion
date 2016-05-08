@@ -8,7 +8,6 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 
 public class VotingHand extends NodeTemplate
 {
@@ -16,10 +15,7 @@ public class VotingHand extends NodeTemplate
 
   private int cardCount = 11;
 
-  private double cardSpace;
   private double[] xLayouts = new double[cardCount];
-  private double lastWidth = 0;
-  private double lastHeight = 0;
   private double minWidth = 100;
 
   private boolean cardHasFocus = false;
@@ -56,7 +52,6 @@ public class VotingHand extends NodeTemplate
 
     this.setWidth(width);
     this.setHeight(height);
-    cardSpace = width / cardCount;
     focusedCard.setVisible(false);
 
     this.setOnMouseClicked(new EventHandler<Event>()
@@ -65,45 +60,7 @@ public class VotingHand extends NodeTemplate
       @Override
       public void handle(Event event)
       {
-        boolean noClick = true;
-
-        for (int i = 0; i < cards.length; i++)
-        {
-          cards[i].setClicked(false);
-          focusedCard.setClicked(false);
-          if (focusedCard.isFocused())
-          {
-            focusedCard.setClicked(true);
-            cardIsClicked = true;
-            votingButtons.setVisible(true);
-            noClick = false;
-          }
-          if (cards[i].isFocused())
-          {
-            votingButtons.setCard(cards[i]);
-            votingButtons.setVisible(true);
-            votingButtons.setVotes(0);
-
-            cards[i].setTranslateY(-10);
-            cards[i].setClicked(true);
-
-            cardIsClicked = true;
-            noClick = false;
-
-          }
-        }
-
-        if (noClick)
-        {
-          cardIsClicked = false;
-          votingButtons.setVisible(false);
-          focusedCard.setVisible(false);
-          for (int i = 0; i < cards.length; i++)
-          {
-            cards[i].setClicked(false);
-          }
-        }
-
+        mouseClickedEvent();
       }
 
     });
@@ -113,47 +70,9 @@ public class VotingHand extends NodeTemplate
       @Override
       public void handle(Event event)
       {
-        boolean noFocus = true;
-        for (int i = 0; i < cardCount; i++)
-        {
-
-          if (cards[i].isFocused())
-          {
-            cards[i].setTranslateY(-10);
-            focusedCard.setTargetCard(cards[i]);
-            focusedCard.setManaged(false);
-            noFocus = false;
-            cardHasFocus = true;
-          }
-          else if (cards[i].isClicked() == false)
-          {
-            cards[i].setTranslateY(0);
-          }
-          if (noFocus)
-          {
-            cards[i].setTranslateY(0);
-            cardHasFocus = false;
-            for (int j = 0; j < cards.length; j++)
-            {
-              if (cards[i].isClicked())
-              {
-                focusedCard.setCardImage(cards[i].getCardImage());
-              }
-            }
-          }
-
-        }
-
-        if (cardHasFocus || cardIsClicked)
-        {
-          focusedCard.setVisible(true);
-        }
-        else
-        {
-          focusedCard.setVisible(false);
-        }
-        onResize();
+        mouseMovedEvent();
       }
+
     });
     for (int i = 0; i < cards.length; i++)
     {
@@ -173,7 +92,6 @@ public class VotingHand extends NodeTemplate
     double width = this.getWidth() / cardCount;
     double height = this.getHeight();
 
-    cardSpace = ((2 / 3) * width) / cardCount;
     for (int i = 0; i < cards.length; i++)
     {
       VotingCard card = cards[i];
@@ -201,8 +119,6 @@ public class VotingHand extends NodeTemplate
         card.setLayoutY(height - cardHeight);
       }
       xLayouts[i] = width * i;
-      lastWidth = cardWidth;
-      lastHeight = cardHeight;
 
       if (this.getWidth() / 3.8 < minWidth)
       {
@@ -224,17 +140,102 @@ public class VotingHand extends NodeTemplate
 
   private void resetCards()
   {
-    for(int i= 0; i <cards.length; i++)
+    for (int i = 0; i < cards.length; i++)
     {
       cards[i].resetCard();
     }
     focusedCard.resetCard();
-    
+
     cardIsClicked = false;
     votingButtons.setVisible(false);
     focusedCard.setVisible(false);
-    
 
+  }
+
+  public void mouseClickedEvent()
+  {
+    boolean noClick = true;
+
+    for (int i = 0; i < cards.length; i++)
+    {
+      cards[i].setClicked(false);
+      focusedCard.setClicked(false);
+      if (focusedCard.isFocused())
+      {
+        focusedCard.setClicked(true);
+        cardIsClicked = true;
+        votingButtons.setVisible(true);
+        noClick = false;
+      }
+      if (cards[i].isFocused())
+      {
+        votingButtons.setCard(cards[i]);
+        votingButtons.setVisible(true);
+        votingButtons.setVotes(0);
+
+        cards[i].setTranslateY(-10);
+        cards[i].setClicked(true);
+
+        cardIsClicked = true;
+        noClick = false;
+
+      }
+    }
+
+    if (noClick)
+    {
+      cardIsClicked = false;
+      votingButtons.setVisible(false);
+      focusedCard.setVisible(false);
+      for (int i = 0; i < cards.length; i++)
+      {
+        cards[i].setClicked(false);
+      }
+    }
+  }
+
+  public void mouseMovedEvent()
+  {
+    boolean noFocus = true;
+    for (int i = 0; i < cardCount; i++)
+    {
+
+      if (cards[i].isFocused())
+      {
+        cards[i].setTranslateY(-10);
+        focusedCard.setTargetCard(cards[i]);
+        focusedCard.setManaged(false);
+        noFocus = false;
+        cardHasFocus = true;
+      }
+      else if (cards[i].isClicked() == false)
+      {
+        cards[i].setTranslateY(0);
+      }
+      if (noFocus)
+      {
+        cards[i].setTranslateY(0);
+        cardHasFocus = false;
+        for (int j = 0; j < cards.length; j++)
+        {
+          if (cards[i].isClicked())
+          {
+            focusedCard.setCardImage(cards[i].getCardImage());
+          }
+        }
+      }
+
+    }
+
+    if (cardHasFocus || cardIsClicked)
+    {
+      focusedCard.setVisible(true);
+    }
+    else
+    {
+      focusedCard.setVisible(false);
+    }
+    onResize();
   }
 
 }

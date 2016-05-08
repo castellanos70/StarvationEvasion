@@ -71,7 +71,6 @@ public class ChatNode extends BorderPane
     {
       if (!votingMode)
       {
-
         if (toggle.isSelected())
         {
           this.getChildren().remove(chatFrame);

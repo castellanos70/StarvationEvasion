@@ -39,7 +39,6 @@ import java.util.TimerTask;
  *
  * The GUI displays to the user the the time remaining in the phase, the
  * visualization, data graphs information related to food products, the user's
- * hand, the cards the user has drafted, the user's deck and discard pile, and
  * other information relating to the draft.
  *
  * This is how the user interacts with the game
@@ -323,8 +322,7 @@ public class GUI extends Application
   {
     if (currentRoot == draftLayout)
     {
-//      votingLayout.setChatNode(draftLayout.getChatNode());
-      
+      votingLayout.setWorldMap(draftLayout.getWorldMap());
       primaryStage.getScene().setRoot(votingLayout);
       currentRoot = votingLayout;
       draftingPhase = false;
@@ -332,7 +330,6 @@ public class GUI extends Application
     }
     else
     {
-//      draftLayout.setChatNode(votingLayout.getChatNode());
       primaryStage.getScene().setRoot(draftLayout);
       currentRoot = draftLayout;
       draftingPhase = true;

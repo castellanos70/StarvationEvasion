@@ -47,7 +47,7 @@ public class DraftLayout extends GridPane
   GlobalPricesVisNode globalPriceNode;
   
 
-  Hand hand;
+  Hand handNode;
   DraftTimer draftTimer;
   Map map;
   WorldMap worldMap;
@@ -131,8 +131,8 @@ public class DraftLayout extends GridPane
     this.add(draftedCards, 0, 8, 6, 6);
 
     // node which allows the user to view the current cards in their hand
-    hand = new Hand(gui, primaryStage);
-    this.add(hand, 7, 13, 19, 5);
+    handNode = new Hand(gui, primaryStage);
+    this.add(handNode, 7, 13, 19, 5);
 
     draftTimer = new DraftTimer();
     this.add(draftTimer, 27, 1, 5, 2);
@@ -218,8 +218,8 @@ public class DraftLayout extends GridPane
     this.add(draftedCards, 11, 5, 2, 3);
 
     // node which allows the user to view the current cards in their hand
-    hand = new Hand(gui, primaryStage);
-    this.add(hand, 1, 7, 10, 2);
+    handNode = new Hand(gui, primaryStage);
+    this.add(handNode, 1, 7, 10, 2);
 
     draftTimer = new DraftTimer();
     this.add(draftTimer, 11, 0, 2, 1);
@@ -335,7 +335,7 @@ public class DraftLayout extends GridPane
    */
   public Hand getHand()
   {
-    return hand;
+    return handNode;
   }
 
   public ChatNode getChatNode()

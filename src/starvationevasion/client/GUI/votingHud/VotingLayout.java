@@ -9,8 +9,10 @@ import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.VBox;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
 import starvationevasion.client.GUI.DraftLayout.DraftTimer;
+import starvationevasion.client.GUI.DraftLayout.TickerReel;
 import starvationevasion.client.GUI.DraftLayout.WorldMap;
 import starvationevasion.client.GUI.VotingLayout.VotingNode;
 import starvationevasion.common.EnumRegion;
@@ -40,6 +42,7 @@ public class VotingLayout extends NodeTemplate
   private VotingHand hand;
   private DraftTimer votingTimer;
   private ArrayList<VotingNode> votingNodes = new ArrayList<>();
+
   private starvationevasion.client.GUI.GUI gui;
 
   public VotingLayout(starvationevasion.client.GUI.GUI gui2)
@@ -69,38 +72,16 @@ public class VotingLayout extends NodeTemplate
     /*
      * worldMap loads the map and the region border polygons
      */
-    worldMap = new WorldMap(gui);
-    worldMap.setMaxHeight(gui.getPrimaryStage().getHeight());
-    worldMap.setMaxWidth(gui.getPrimaryStage().getWidth());
-    worldMap.setOnMouseMoved(new EventHandler<Event>()
-    {
-
-      @Override
-      public void handle(Event event)
-      {
-        hand.mouseMovedEvent();
-      }});
-    worldMap.setOnMouseClicked(new EventHandler<Event>()
-    {
-
-      @Override
-      public void handle(Event event)
-      {
-        hand.mouseClickedEvent();
-        
-      }});
 
     /**
      * votingTimer counts down from 2 minutes and sets votingFinished when time
      * is out.
      */
     votingTimer = new DraftTimer();
-
+    votingTimer.draftTimer.setTime(120000);
     votingTimer.setMinWidth(gui.getPrimaryStage().getWidth() / 10);
     votingTimer.setMinHeight(gui.getPrimaryStage().getHeight() / 9);
-    votingTimer.draftTimer.setTime(120000);
 
-    this.getChildren().add(worldMap);
     this.getChildren().add(hand);
     this.getChildren().add(votingTimer);
     this.getChildren().add(chatNode);
@@ -216,8 +197,11 @@ public class VotingLayout extends NodeTemplate
     hand.setLayoutX(20);
     hand.setLayoutY(height / 2 - 20);
 
-    worldMap.setMaxHeight(this.getHeight());
-    worldMap.setMaxWidth(this.getWidth());
+    if (worldMap != null)
+    {
+      worldMap.setMaxHeight(this.getHeight());
+      worldMap.setMaxWidth(this.getWidth());
+    }
 
     votingTimer.setMinWidth(gui.getPrimaryStage().getWidth() / 10);
     votingTimer.setTranslateX(gui.getPrimaryStage().getWidth() - 1.5 * votingTimer.getMinWidth());
@@ -305,6 +289,35 @@ public class VotingLayout extends NodeTemplate
     chatNode = chatNode2;
     onResize();
 
+  }
+
+  public void setWorldMap(WorldMap map)
+  {
+    worldMap = map;
+    worldMap.setMaxHeight(gui.getPrimaryStage().getHeight());
+    worldMap.setMaxWidth(gui.getPrimaryStage().getWidth());
+    worldMap.setOnMouseMoved(new EventHandler<Event>()
+    {
+
+      @Override
+      public void handle(Event event)
+      {
+        hand.mouseMovedEvent();
+      }
+    });
+    worldMap.setOnMouseClicked(new EventHandler<Event>()
+    {
+
+      @Override
+      public void handle(Event event)
+      {
+        hand.mouseClickedEvent();
+
+      }
+    });
+    
+    this.getChildren().add(worldMap);
+    worldMap.toBack();
   }
 
 }

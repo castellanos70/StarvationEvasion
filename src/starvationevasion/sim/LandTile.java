@@ -67,6 +67,10 @@ public class LandTile
 
   private int currentProduction;
 
+
+
+  private int currentCost;
+
   /**
    * curCrop == null indicates there that no crop is currently planted in this LandTile.
    */
@@ -145,6 +149,15 @@ public class LandTile
     this.currentProduction = currentProduction;
   }
 
+  public int getCurrentCost()
+  {
+    return currentCost;
+  }
+
+  public void setCurrentCost(int currentCost)
+  {
+    this.currentCost = currentCost;
+  }
 
   public void setCrop(EnumFood crop)
   {

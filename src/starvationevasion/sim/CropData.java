@@ -41,9 +41,9 @@ public class CropData
     TEMPERATURE_MIN,        //Temperature Min (Deg C). Crops die if temperature drops below this within its growing period.
     TEMPERATURE_IDEAL_LOW,  // Temperature Ideal Low (Deg C). Crops have max productivity if all days are within this range.
     TEMPERATURE_IDEAL_HIGH, // Temperature Ideal High (Deg C). Crops have max productivity if all days are within this range.
-    SEED_COST,              // Cost of seed for this crop. Made up for now.
-    PESTICIDE_COST,         // Cost of pesticides for this crop. Made up for now.
-    WATER_COST;             // Cost of water for this crop. Made up for now.
+    SEED_COST,              // Cost of seed for this crop per sq km. Made up for now.
+    PESTICIDE_COST,         // Cost of pesticides for this crop per sq km. Made up for now.
+    WATER_COST;             // Cost of water for this crop per sq km. Made up for now.
     public static final int SIZE = values().length;
   }
 

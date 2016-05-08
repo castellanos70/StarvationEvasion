@@ -7,7 +7,6 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.ResizablePane;
-import starvationevasion.common.Constant;
 import starvationevasion.common.gamecards.EnumPolicy;
 
 /**

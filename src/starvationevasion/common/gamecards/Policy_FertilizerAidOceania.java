@@ -43,11 +43,6 @@ public class Policy_FertilizerAidOceania extends GameCard
   @Override
   public String getGameText(){ return TEXT;}
   
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public int actionPointCost() {return 2;}
   
   /**
    * {@inheritDoc}

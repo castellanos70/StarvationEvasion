@@ -29,8 +29,8 @@ public class EventDriver
  
  
  
- private void addRandomEvents(float upperLimit)
- {
+ private void addRandomEvents()
+ { 
 	 float eventChoice;
 	 
 	 int regionChoice;
@@ -42,7 +42,7 @@ public class EventDriver
 	 Territory tmpTerrioty;
 	 EnumRegion tmpEnumRegion;
 	 EnumRegion[] regionEnums = EnumRegion.values();
-	 while((eventChoice=Util.rand.nextFloat()) < upperLimit)
+	 while((eventChoice=Util.rand.nextFloat()) < 0.8 )
 	 {
 		
 		 regionChoice = Util.rand.nextInt(EnumRegion.SIZE);
@@ -58,6 +58,7 @@ public class EventDriver
 		// determine what events to add to EventsList
 		 switch(eventIndex)
 		 {
+		 case 0: break;
 		 case 1: break;
 		 case 2: break;
 		 case 3: break;
@@ -65,6 +66,7 @@ public class EventDriver
 		 case 5: break;
 		 case 6: break;
 		 case 7: break;
+		
 		 
 		 }
 		 	

@@ -4,12 +4,10 @@ import starvationevasion.common.*;
 import starvationevasion.sim.io.CSVReader;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 
 /**
@@ -44,9 +42,9 @@ public class LandTile
    * Each record of PATH_COORDINATES must be in a one-to-one,
    * ordered matching with each record in each month of each annual file of PATH_CLIMATE_PREFIX.
    */
-  private static final String PATH_COORDINATES = "/sim/climate/";
+  private static final String PATH_COORDINATES = "/data/sim/climate/";
   private static final String COORDINATE_FILENAME = "GeodesicArableCoordinates_778km2";
-  private static final String PATH_CLIMATE = "/sim/climate/Climate_";
+  private static final String PATH_CLIMATE = "/data/sim/climate/Climate_";
   private static final String PREFIX_HISTORICAL = "Historical";
   private static final String PREFIX_RCP45 = "RCP45";
   private static final String PREFIX_RCP85 = "RCP85";

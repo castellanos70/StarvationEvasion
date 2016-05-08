@@ -1337,7 +1337,7 @@ public class Model
    */
   public Picture testShowMapProjection()
   {
-    return new Picture("assets/WorldMap_MollweideProjection.png");
+    return new Picture("assets/WorldMap_MollweideProjection-1280x641.png");
   }
 
   /**

@@ -94,7 +94,8 @@ public class Simulator
           }
         }
         assert ((totalFarmArea < region.landArea) && (totalFarmArea >= 0));
-      } //Check that WorldData is properly instantiated
+      }
+      //Check that WorldData is properly instantiated
       //for (int i = 0; i < EnumFood.SIZE; i++)
       //{
       //  assert (world.foodPrice[i] > 0);

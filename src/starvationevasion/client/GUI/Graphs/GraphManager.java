@@ -465,6 +465,7 @@ public class GraphManager
    */
   public void updateRegionalCropImportsDisplay()
   {
+	
     long[] regionsCropImports = annualRegionsCropImportStatistics.get(REGION_NUM);
     masterPieChart.setVisible(true);
     barChart.setVisible(false);

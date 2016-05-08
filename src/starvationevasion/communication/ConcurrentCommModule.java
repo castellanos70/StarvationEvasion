@@ -216,7 +216,7 @@ public class ConcurrentCommModule implements Communication
       if (HOST.toLowerCase().startsWith("local"))
       {
         IS_CONNECTED.set(openConnection(HOST, PORT));
-        if (!IS_CONNECTED.get()) localServer = spawnLocalServer(PORT);
+        //if (!IS_CONNECTED.get()) localServer = spawnLocalServer(PORT);
       }
 
       final long millisecondTimeStamp = System.currentTimeMillis();

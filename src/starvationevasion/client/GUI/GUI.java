@@ -152,18 +152,6 @@ public class GUI extends Application
 
     // instantiate the DraftLayout
     draftLayout = new DraftLayout(this);
-    Button b = new Button("Click me");
-    b.setOnAction(new EventHandler<ActionEvent>()
-    {
-
-      @Override
-      public void handle(ActionEvent event)
-      {
-        switchScenes();
-
-      }
-    });
-    draftLayout.getChildren().add(b);
     votingLayout = new VotingLayout(this);
    
     

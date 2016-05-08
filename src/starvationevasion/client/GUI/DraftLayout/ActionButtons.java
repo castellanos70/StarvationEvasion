@@ -30,7 +30,6 @@ public class ActionButtons extends HBox
   {
     this.gui = gui;
     HBox layout = new HBox();
-
     tempText = new Text("ACTION BUTTONS");
     tempText.setFill(Color.BLUE);
     ImageView image =new ImageView(gui.getImageGetter().getUndoButton());

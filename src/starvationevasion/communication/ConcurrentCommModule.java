@@ -91,6 +91,7 @@ public class ConcurrentCommModule implements Communication
         if (response == null)
         {
           encounteredError = true;
+          dispose();
           return;
         }
         pushResponse(response);
@@ -104,7 +105,8 @@ public class ConcurrentCommModule implements Communication
       catch (Exception e)
       {
         commError("Error reading response from server");
-        e.printStackTrace();
+        encounteredError = true;
+        dispose();
       }
     }
 
@@ -282,12 +284,10 @@ public class ConcurrentCommModule implements Communication
         } else if (localServer != null && !localServer.isAlive())
         {
           commError("Failed to start the local server");
-          dispose();
           System.exit(-1);
         } else if (HOST.toLowerCase().startsWith("local") && secureProcessPort() != null)
         {
           commError("Another client tried and failed to start a local server");
-          dispose();
           System.exit(-1);
         }
         deltaSeconds = (System.currentTimeMillis() - millisecondTimeStamp) / 1000.0;
@@ -716,6 +716,7 @@ public class ConcurrentCommModule implements Communication
     }
     catch (Exception e)
     {
+      commError("An error occurred while trying to send data to the server");
       dispose(); // Assume something went very wrong (Ex: server shut down)
     }
     finally

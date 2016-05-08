@@ -385,7 +385,7 @@ public class Simulator
           // TODO: talk to ClientUI to allow player to determine who's hand to
           // look at. Provide ClientUI the appropriate hand from playerDeck.
           break;
-        case Policy_DiverttheFunds:
+        case Policy_DivertFunds:
           // remove all cards from owners hand
           discardPlayerHand(c.getOwner());
           // give 14 million dollars to owner - applied in Model.java

@@ -617,7 +617,7 @@ public class Model
         case Policy_CleanRiverIncentive:
           //TODO:
           break;
-        case Policy_DiverttheFunds:
+        case Policy_DivertFunds:
           //remove all cards from owners hand -- done in Simulator.java
           //give 14 million dollars to owner
           getRegion(c.getOwner()).addToRevenue(14000000);

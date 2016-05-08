@@ -156,7 +156,7 @@ public class AI
     cardsOfGeneralBenefit.add(EnumPolicy.Policy_MyPlatePromotionCampaign);
     cardsOfGeneralBenefit.add(EnumPolicy.Policy_ResearchInsectResistanceGrain);
     moneyCards.add(EnumPolicy.valueOf("Policy_Loan"));
-    moneyCards.add(EnumPolicy.valueOf("Policy_DiverttheFunds"));
+    moneyCards.add(EnumPolicy.valueOf("Policy_DivertFunds"));
     moneyCards.add(EnumPolicy.valueOf("Policy_Fundraiser"));
     cardVariables.put(EnumPolicy.Policy_CleanRiverIncentive, CardVariableTypes.PERCENTAGE);
     cardVariables.put(EnumPolicy.Policy_EfficientIrrigationIncentive, CardVariableTypes.PERCENTAGE);

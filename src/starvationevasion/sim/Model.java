@@ -1494,7 +1494,7 @@ public class Model
           tile.setCurrentCost(cost);
         }
       }
-      region.setTotalProduction();
+//      region.setTotalProduction();
     }
   }
 
@@ -1505,15 +1505,20 @@ public class Model
 
   private int calculateTileProduction(Region region, LandTile tile, EnumFood crop)
   {
+    if(crop == null) return 0;
+    
     int tileSize = region.getLandTotal() / region.getNumTiles() ;
     int index = crop.ordinal();
-    int revenue = (int)(tile.getCropRatings()[index].productionRate() * cropData.getPrice(2009, EnumFood.values()[index]) * tileSize);
+    int revenue = (int) (tile.getCropRatings()[index].productionRate() * cropData.getPrice(2009,
+        EnumFood.values()[index]) * tileSize);
     return revenue;
   }
 
 
   private int calculateTileCost(Region region, EnumFood crop)
   {
+    if(crop == null) return 0;
+    
     int tileSize = region.getLandTotal() / region.getNumTiles() ;
     int index = crop.ordinal();
     int cost = tileSize * ( cropData.getData(CropData.Field.PESTICIDE_COST,crop) +
@@ -1526,7 +1531,6 @@ public class Model
   /**
    * This method is to be called at the end of a year.
    * For each landTile, farmer decides whether or not to replant same crop
-   *
    */
   private void replantCrops()
   {

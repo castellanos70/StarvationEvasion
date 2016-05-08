@@ -155,7 +155,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(13);
       clickedRegion = 1;
-
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger Africa Regional Stats");
       // TODO: Have Africa's Regional Statics be displayed.
       styleRegionPaths(1, fillColor, 2); // Change Fill Color
@@ -229,7 +229,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(10);
       clickedRegion = 2;
-      
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger South American Regional Stats");
       // TODO: Have South America's Regional Statics be displayed.
       styleRegionPaths(2, fillColor, 2); // Change Fill Color
@@ -386,7 +386,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(9);
       clickedRegion = 3;
-      
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger Middle American Regional Stats");
       // TODO: Have Middle America's Regional Statics be displayed.
       styleRegionPaths(3, fillColor, 2); // Change Fill Color
@@ -474,7 +474,7 @@ public class BuildInteractiveRegionBoarders
       gui.getGraphManager().setRegionNum(1);
       clickedRegion = 4;
       
-      
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger California Regional Stats");
       // TODO: Have California's Statics be displayed.
       styleRegionPaths(4, fillColor, 2); // Change Fill Color
@@ -537,7 +537,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(7);
       clickedRegion = 5;
-      
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger PWN & MNT Regional Stats");
       // TODO: Have PWN & MNT Regional Statics be displayed.
       styleRegionPaths(5, fillColor, 2); // Change Fill Color
@@ -599,7 +599,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(3);
       clickedRegion = 6;
-      
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger Northern Planes Regional Stats");
       // TODO: Have Northern Planes Regional Statics be displayed.
       styleRegionPaths(6, fillColor, 2); // Change Fill Color
@@ -662,6 +662,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(2);
       clickedRegion = 7;
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger HeartLand Regional Stats");
       // TODO: Have HeartLand's Regional Statics be displayed.
       styleRegionPaths(7, fillColor, 2); // Change Fill Color
@@ -725,7 +726,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(6);
       clickedRegion = 8;
-      
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out
           .println("Trigger Southern Planes and Delta States Regional Stats");
       // TODO: Have Southern Planes and Delta States Regional Statics be
@@ -735,7 +736,10 @@ public class BuildInteractiveRegionBoarders
 
     southernPlanesDeltaStatesPath.setOnMouseReleased((event) ->
     {
+        if(!clicked)
+        {
       styleRegionPaths(8, TRANSPARENT, 2); // Change Fill Color
+        }
     });
 
     sp.getChildren().add(southernPlanesDeltaStatesPath);
@@ -786,12 +790,16 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(4);
       clickedRegion = 9;
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger Southeast Regional Stats");
       styleRegionPaths(9, fillColor, 2); // Change Fill Color
     });
     southeastPath.setOnMouseReleased((event) ->
     {
+        if(!clicked)
+        {
       styleRegionPaths(9, TRANSPARENT, 2); // Change Fill Color
+        }
     });
 
     sp.getChildren().add(southeastPath);
@@ -843,13 +851,17 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(5);
       clickedRegion = 10;
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger Northern Crecents Regional Stats");
       styleRegionPaths(10, fillColor, 2); // Change Fill Color
       // TODO: Have Northern Crecents Regional Statics be displayed.
     });
     northernCrescentPath.setOnMouseReleased((event) ->
     {
+        if(!clicked)
+        {
       styleRegionPaths(10, TRANSPARENT, 2); // Change Fill Color
+        }
     });
 
     sp.getChildren().add(northernCrescentPath);
@@ -914,14 +926,17 @@ public class BuildInteractiveRegionBoarders
     gui.getPopupManager().toggleGraphDisplay();;
     gui.getGraphManager().setRegionNum(12);
     clickedRegion = 11;
-      
+    gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger Middle East Regional Stats");
       styleRegionPaths(11, fillColor, 2); // Change Fill Color
       // TODO: Have the Middle East's Regional Statics be displayed.
     });
     middleEastMainPath.setOnMouseReleased((event) ->
     {
+        if(!clicked)
+        {
       styleRegionPaths(11, TRANSPARENT, 2); // Change Fill Color
+        }
     });
 
     sp.getChildren().addAll(middleEastMainPath, middleEastSubPath);
@@ -973,6 +988,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(15);
       clickedRegion = 12;
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger Central Asia's Regional Stats");
       styleRegionPaths(12, fillColor, 2); // Change Fill Color
       // TODO: Have Central Asia's Regional Statics be displayed.
@@ -980,7 +996,10 @@ public class BuildInteractiveRegionBoarders
 
     centralAsiaPath.setOnMouseReleased((event) ->
     {
+        if(!clicked)
+        {
       styleRegionPaths(12, TRANSPARENT, 2); // Change Fill Color
+        }
     });
     sp.getChildren().add(centralAsiaPath);
   }
@@ -1049,6 +1068,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(16);
       clickedRegion = 13;
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger South Asia's Regional Stats");
       styleRegionPaths(13, fillColor, 2); // Change Fill Color
       // TODO: Have South Asia's Regional Statics be displayed.
@@ -1056,7 +1076,10 @@ public class BuildInteractiveRegionBoarders
 
     southAsiaMainPath.setOnMouseReleased((event) ->
     {
+        if(!clicked)
+        {
       styleRegionPaths(13, TRANSPARENT, 2); // Change Fill Color
+        }
     });
     sp.getChildren().addAll(southAsiaMainPath, southAsiaSubPath);
   }
@@ -1184,6 +1207,7 @@ public class BuildInteractiveRegionBoarders
     	gui.getGraphManager().setRegionNum(8);
       System.out.println("Trigger South Asia's Regional Stats");
       clickedRegion = 14;
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       styleRegionPaths(14,RegionColor,1);
       styleRegionPaths(14, fillColor, 2); // Change Fill Color
       //clicked = false;
@@ -1311,6 +1335,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(14);
       clickedRegion = 15;
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger Russia and Caucaus Regional Stats");
       styleRegionPaths(15, fillColor, 2); // Change Fill Color
       // TODO: Have Russia and Caucaus Regional Statics be displayed.
@@ -1477,14 +1502,18 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(11);
       clickedRegion = 16;
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger Europes Regional Stats");
       styleRegionPaths(16, fillColor, 2); // Change Fill Color
       // TODO: Have Eurpoe's Regional Statics be displayed.
     });
     europeMainPath.setOnMouseReleased((event) ->
     {
+        if(!clicked)
+        {
       styleRegionPaths(16, TRANSPARENT, 2); // Change Fill Color
       // TODO: Have Eurpoe's Regional Statics be displayed.
+        }
     });
 
     europeSubPath1.setOnMousePressed((event) ->
@@ -1627,6 +1656,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(17);
       clickedRegion = 17;
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger East Asia Regional Stats");
       // TODO: Have East Asia's Regional Statics be displayed.
       styleRegionPaths(17, fillColor, 2); // Change Fill Color
@@ -1634,7 +1664,10 @@ public class BuildInteractiveRegionBoarders
 
     eastAsiaMainPath.setOnMouseReleased((event) ->
     {
+        if(!clicked)
+        {
       styleRegionPaths(17, TRANSPARENT, 2); // Change Fill Color
+        }
     });
     eastAsiaSubPath1.setOnMousePressed((event) ->
     {
@@ -1976,6 +2009,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(18);
       clickedRegion = 18;
+      gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       System.out.println("Trigger Oceania Regional Stats");
       // TODO: Have Oceania's Regional Statics be displayed.
       styleRegionPaths(18, fillColor, 2); // Change Fill Color
@@ -1983,7 +2017,10 @@ public class BuildInteractiveRegionBoarders
 
     oceaniaMainPath.setOnMouseReleased((event) ->
     {
+        if(!clicked)
+        {
       styleRegionPaths(18, TRANSPARENT, 2); // Change Fill Color
+        }
     });
 
     sp.getChildren().addAll(oceaniaMainPath, oceaniaSubPath1, oceaniaSubPath2,

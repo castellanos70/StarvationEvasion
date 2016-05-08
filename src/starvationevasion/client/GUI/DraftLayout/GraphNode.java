@@ -26,8 +26,8 @@ public class GraphNode extends StackPane
   public GraphNode(GUI gui)
   {
     this.gui = gui;
-    tempText = new Text("Region Statistics");
-    tempText.setFont(Font.font(null, FontWeight.BOLD, 25));
+    tempText = new Text("Global Statistics");
+    tempText.setFont(Font.font(null, FontWeight.BOLD, 15));
 
     this.getStylesheets().add("/starvationevasion/client/GUI/DraftLayout/style.css");
     this.getStyleClass().add("graphnode");

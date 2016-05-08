@@ -43,6 +43,8 @@ public class DraftLayout extends GridPane
   ProductBarDataDisplay pbDataDisplay;
   GraphDisplay graphDisplay;
   DiscardDisplay discardDisplay;
+  GlobalPricesVisNode globalPriceNode;
+  
 
   Hand hand;
   DraftTimer draftTimer;
@@ -88,8 +90,11 @@ public class DraftLayout extends GridPane
     
     //node to let the user see graphs and region statistics
     graphNode = new GraphNode(gui);
-    this.add(graphNode, 0, 1, 5, 2);
+    this.add(graphNode, 0, 1, 3, 1);
 
+    globalPriceNode = new GlobalPricesVisNode(gui);
+    this.add(globalPriceNode, 0, 2,3,1);
+    
     //node at the top of the screen to let the user know basic stats
     summaryBar = new SummaryBar(gui);
     this.add(summaryBar, 8, 2, 17, 3);
@@ -125,7 +130,7 @@ public class DraftLayout extends GridPane
 
     //node which allows the user to view the current cards in their hand
     hand = new Hand(gui, primaryStage);
-    this.add(hand, 7, 12, 19, 5);
+    this.add(hand, 7, 13, 19, 5);
 
     draftTimer = new DraftTimer();
     this.add(draftTimer, 27, 1, 5, 2);
@@ -134,7 +139,7 @@ public class DraftLayout extends GridPane
     this.add(pbDataDisplay, 7, 4, 13, 4);
 
     graphDisplay = new GraphDisplay(gui);
-    this.add(graphDisplay, 1, 1, 10, 6);
+    this.add(graphDisplay, 8, 6, 15, 6);
 
     discardDisplay = new DiscardDisplay(gui);
     this.add(discardDisplay,1, 5, 3, 4);
@@ -266,6 +271,12 @@ public class DraftLayout extends GridPane
       rowConstraintsList.get(i).setPercentHeight(100d/ROWS);
     }
   }
+  public GraphDisplay getGraphDisplay()
+  {
+	  return graphDisplay;
+  }
+  
+  
   /**
    * 
    * @return Reference to the world map. 

@@ -138,6 +138,11 @@ public class PopupManager
     }
   }
 
+  public ProductBarDataDisplay getPBDataDisplay()
+  {
+	  return pbDataDisplay;
+  }
+  
   /**
    * sets the pbDataDisplay to the passed in pbDataDisplay
    * @param pbDataDisplay something

@@ -24,6 +24,7 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import java.io.File;
 import java.io.IOException;
 import java.net.*;
 import java.security.KeyFactory;
@@ -76,6 +77,8 @@ public class Server
   public static int TOTAL_HUMAN_PLAYERS = 1;
   public static int TOTAL_AI_PLAYERS = 2;
   public static int TOTAL_PLAYERS = TOTAL_HUMAN_PLAYERS + TOTAL_AI_PLAYERS;
+  public static int SINGLEPLAYER_MAX_HUMAN_PLAYERS = 1; // defines what is the max number of humans in singleplayer
+  public static int SINGLEPLAYER_MAX_AI_PLAYERS = 2;    // defines max number of AI
   public static final long TIMEOUT = 3; // seconds
 
   // Create a backend, currently sqlite
@@ -91,8 +94,70 @@ public class Server
 
   private final static Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
 
+
+  /**
+   * This constructor is used whenever a player is playing Singleplayer. It spawns the
+   * server, then later enables listeners. In this way the AIs know to continue listening indefinitely.
+   *
+   * @param portNumber Port number of the server
+   * @param isSinglePlayer tells server if singleplayer is active
+   */
+  public Server (int portNumber, boolean isSinglePlayer)
+  {
+    // Creating a server without listeners
+    this(portNumber, null);
+
+    System.out.println(">>>>>> Inside New Server Constructor");
+
+    // After instantiating server, spawn AI's for singleplayer
+    // SPAWN 6 AI by starting a processes
+    for(int i = 0; i < SINGLEPLAYER_MAX_AI_PLAYERS; i++)
+    {
+      try
+      {
+        System.out.println(">>> ------------------------Inside For Loop [" + i + "] ----------------------------------------------");
+        ProcessBuilder builder = new ProcessBuilder();
+        builder.directory(new File(System.getProperty("user.dir")));
+        builder.command("java",
+          "-jar",
+          "Ai.jar",
+          "localhost",
+          Integer.toString(portNumber));
+        builder.inheritIO();
+        builder.start();
+        //process.wait(1); // If the process failed, this should cause an exception to be thrown which is what we want
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+        System.exit(-125);
+      }
+    }
+    waitForConnection(portNumber);
+
+  }
+
+
+  /**
+   *
+   * @param portNumber
+   */
   public Server (int portNumber)
   {
+    this(portNumber, null); // null is used to differentiate between constructors
+
+    System.out.println(">>>> Inside Old Server constructor");
+    // Instantiate a class responsible for spawning AIs
+    // Spawner spawn = new Spawner();
+    // spawn.spawnAI;
+
+    waitForConnection(portNumber);
+  }
+
+  private Server(int portNumber, String cheapDirtyHack)
+  {
+    System.out.println(">>>> Inside private server constructor");
+
     LOG.setLevel(Constant.LOG_LEVEL);
 
     connections.put(Temporary.class, new LinkedList<>());
@@ -134,9 +199,6 @@ public class Server
         update();
       }
     }, 0, 1000);
-
-    waitForConnection(portNumber);
-
   }
 
 
@@ -1162,6 +1224,7 @@ public class Server
       }
     }
 
-    new Server(port);
+    if(args.length == 2)new Server(port, true); // this constructor is used for singleplayer
+    else new Server(port);  // is used for multiplayer
   }
 }

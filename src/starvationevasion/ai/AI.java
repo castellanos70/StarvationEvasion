@@ -1,6 +1,7 @@
 package starvationevasion.ai;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -210,6 +211,35 @@ public class AI
         ArrayList<Response> responses = COMM.pollMessages();
         processServerInput(responses);
 
+//        Response currentResponse;
+//        if (responses.size()>0)
+//        {
+//          System.out.println("--- Responses ---");
+//          //System.out.println(responses.get(0).toJSON().toString());
+//          currentResponse = responses.get(0);
+//          List array = currentResponse.toJSON().array();
+//          if(array.size() > 1){
+//            System.out.println("INSIDE IF");
+//            System.out.println(">>> " + array.get(0));
+//          }
+//
+////          if(currentResponse.getType() == Type.CHAT)
+////          {
+////            if(currentResponse.toString().indexOf("message=") != -1)
+////            {
+////              String str = currentResponse.toString().substring(currentResponse.toString().indexOf("message="), currentResponse.toString().length());
+////              System.out.println("str: " + str);
+////            }
+////          }
+//
+//
+//          Type type = currentResponse.getType();
+//          String message = currentResponse.toString();
+//          //System.out.println("response: " + message + "\ttype: " + type);
+//
+//          //System.out.println(responses.get(0));
+//          System.out.println("-----------------");
+//        }
         // if commands is empty check again
         if (commands.size() == 0) continue;
 
@@ -225,6 +255,7 @@ public class AI
       }
       catch(InterruptedException e)
       {
+        System.out.println("Error in AI.java");
         e.printStackTrace();
       }
     }

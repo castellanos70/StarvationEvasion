@@ -511,7 +511,8 @@ public class ConcurrentCommModule implements Communication
                       "-Xms4g",               // Try to allocate up to 4gb of heap space
                       "-jar",
                       "Server.jar",
-                      Integer.toString(port));
+                      Integer.toString(port),
+                      "true");
       process = builder.start();
       STREAM_REDIRECT_THREADS.clear();
       STREAM_REDIRECT_THREADS.add(new StreamRedirect(StreamType.STDOUT, process.getInputStream()));

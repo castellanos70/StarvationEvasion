@@ -17,7 +17,7 @@ public enum EnumPolicy implements Sendable
    */ 
   Policy_CleanRiverIncentive, 
   Policy_CovertIntelligence, 
-  Policy_DiverttheFunds, 
+  Policy_DivertFunds, 
   Policy_EducateTheWomenCampaign, 
   Policy_EfficientIrrigationIncentive, 
   Policy_EthanolTaxCreditChange, 
@@ -28,7 +28,7 @@ public enum EnumPolicy implements Sendable
   Policy_FertilizerAidSouthAsia, 
   Policy_FertilizerAidSubSaharan, 
   Policy_FertilizerSubsidy, 
-  Policy_Filibuster,
+  //Policy_Filibuster,
   Policy_FoodReliefCentralAsia, 
   Policy_FoodReliefMiddleAmerica, 
   Policy_FoodReliefOceania, 
@@ -41,7 +41,7 @@ public enum EnumPolicy implements Sendable
   //Policy_Redraft, 
   Policy_ResearchInsectResistanceGrain, 
   //Policy_SearchforAnswers, 
-  //Policy_SharetheKnowledge, 
+  //Policy_SharedKnowledge, 
   Policy_SpecialInterests;
   
   public String getImagePath()

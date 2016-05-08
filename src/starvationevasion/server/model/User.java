@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class User implements Encryptable, Sendable
 {
-  public volatile transient int actionsRemaining = 2;
+  public volatile transient int actionPointsRemaining = 3;
   public volatile transient int policyCardsDiscarded = 0;
   public volatile transient int drafts = 0;
   public volatile transient int draftVoteCard = 0;
@@ -299,7 +299,7 @@ public class User implements Encryptable, Sendable
   @Transient
   public void reset ()
   {
-    actionsRemaining = 2;
+    actionPointsRemaining = 3;
     policyCardsDiscarded = 0;
     drafts = 0;
     draftVoteCard = 0;

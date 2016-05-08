@@ -170,16 +170,16 @@ public abstract class GameCard implements Sendable
       case Policy_MyPlatePromotionCampaign:
         myCard = new Policy_MyPlatePromotionCampaign();
         break;
-      case Policy_DiverttheFunds:
+      case Policy_DivertFunds:
         myCard = new Policy_DivertFunds();
         break;
-      case Policy_Filibuster:
-        myCard = new Policy_Filibuster();
-        break;
+      //case Policy_Filibuster:
+      //  myCard = new Policy_Filibuster();
+      //  break;
       case Policy_Fundraiser:
         myCard = new Policy_Fundraiser();
         break;
-      //case Policy_SharetheKnowledge:
+      //case Policy_SharedKnowledge:
       //  myCard = new Policy_SharedKnowledge();
       //  break;
       //case Policy_Redraft:
@@ -261,14 +261,81 @@ public abstract class GameCard implements Sendable
   
 //=========================================================================================
   /**
-   * In the abstract GameCard class, this method returns the default
-   * Action Point cost of a Policy Card, 1.  If a class that extends GameCard costs
-   * more than one Action Point to use, it will override this method.
+   * In the abstract GameCard class, this method returns the action point
+   * cost of a given policy type.
    */
 
-  public int actionPointCost() 
+  public int actionPointCost(EnumPolicy policy) 
   {
-    return 1;
+    int ap = -1; //default action point cost
+	  switch (policy) {
+      case Policy_CleanRiverIncentive:
+        return 2;
+      case Policy_CovertIntelligence:
+        return 1;
+      case Policy_EducateTheWomenCampaign:
+        return 2;
+      case Policy_EfficientIrrigationIncentive:
+        return 2;
+      case Policy_EthanolTaxCreditChange:
+        return 2;
+      case Policy_FertilizerSubsidy:
+        return 2;
+      case Policy_FarmInfrastructureSubSaharan:
+        return 2;
+      case Policy_FertilizerAidCentralAsia:
+        return 2;
+      case Policy_FertilizerAidMiddleAmerica:
+        return 2;
+      case Policy_FertilizerAidOceania:
+        return 2;
+      case Policy_FertilizerAidSouthAsia:
+        return 2;
+      case Policy_FertilizerAidSubSaharan:
+        return 2;
+      case Policy_ResearchInsectResistanceGrain:
+        return 2;
+      case Policy_InternationalFoodRelief:
+        return 3;
+      case Policy_Loan:
+        return 1;
+      case Policy_MyPlatePromotionCampaign:
+        return 2;
+      case Policy_DivertFunds:
+        return 3;
+      //case Policy_Filibuster:
+      //  return 1;
+      case Policy_Fundraiser:
+        return 1;
+      //case Policy_SharetheKnowledge:
+      //  return 3;
+      //case Policy_Redraft:
+      //	return 1;
+      //case Policy_SearchforAnswers:
+      //	return 3;
+      case Policy_SpecialInterests:
+      	return 1;
+      case Policy_FoodReliefCentralAsia:
+        return 2;
+      case Policy_FoodReliefMiddleAmerica:
+        return 2;
+      case Policy_FoodReliefOceania:
+        return 2;
+      case Policy_FoodReliefSouthAsia:
+        return 2;
+      case Policy_FoodReliefSubSaharan:
+        return 2;
+	  }
+	  //if we didn't set AP in the above switch, then there's a problem
+	  if(ap == -1) 
+	  {
+	    String s = "ERROR: could not get the action point value for this policy: ";
+	    s += policy.toString() + "; " + policy.name();
+	    System.err.println(s);
+	    System.err.println("Check to see if the policy is in GameCard.java's actionPointCost()");
+	    ap = 3;
+	  }
+	  return ap;
   }
   
   // =========================================================================================

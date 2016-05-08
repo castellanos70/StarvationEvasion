@@ -152,6 +152,9 @@ public class AI
     policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefOceania, EnumRegion.OCEANIA);
     policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefSouthAsia, EnumRegion.SOUTH_ASIA);
     policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefSubSaharan, EnumRegion.SUB_SAHARAN);
+    policyAndRegionMap.put(EnumPolicy.Policy_DivertFunds, getUser().getRegion());
+    policyAndRegionMap.put(EnumPolicy.Policy_Fundraiser, getUser().getRegion());
+    policyAndRegionMap.put(EnumPolicy.Policy_Loan, getUser().getRegion());
     cardsOfGeneralBenefit.add(EnumPolicy.Policy_InternationalFoodRelief);
     cardsOfGeneralBenefit.add(EnumPolicy.Policy_MyPlatePromotionCampaign);
     cardsOfGeneralBenefit.add(EnumPolicy.Policy_ResearchInsectResistanceGrain);

@@ -50,6 +50,9 @@ public class GraphManager
   ArrayList<Long> annualPoultryRegionalProductionComparison =  new ArrayList<>();
   ArrayList<Long> annualDairyRegionalProductionComparison =  new ArrayList<>();
   
+  private int[] populations = new int[18];
+  
+  
   ArrayList<ArrayList<Long>> listOfRegionalCropComparisonLists = new ArrayList<>();
   
   PieChart masterPieChart = new PieChart();
@@ -62,8 +65,7 @@ public class GraphManager
 
   // NOTE: These values below are all just for testing and
   // will be obtained via the game flow once integrated.
-  private String regionName = "Pacific Northwest and Mountain States";
-  String bestCropName = "Citrus";
+  private String regionName = "";
   GUI gui;
   ArrayList<Graph[]> graphs = new ArrayList<>();
   HashMap<EnumRegion, Graph[]> graphMap = new HashMap<>();
@@ -96,19 +98,36 @@ public class GraphManager
     masterPieChart.getStylesheets()
         .add(getClass().getResource("/starvationevasion/client/GUI/Graphs/pieChartCSS.css").toExternalForm());
     // Set initial region name (needs to be obtained from game once integrated)
-    regionNameLabel.setText(regionName);
-    regionNameLabel.setTextFill(Color.web("#FFFFFF")); // white
     initializeProductBarGraphs();
     initializeGraphNodeGraphs();
 
-   // updateRegionalCropDistributionDisplay();
-    // updateRegionalCropExportsDisplay();
-    // updateRegionalCropImportsDisplay();
 
   }
 
-
+  /**
+   *  Update Regions Population
+   * @param pop
+   * @param index
+   */
+  public void updateRegionsPopulation(int pop, int index)
+  {
+    populations[index] = pop;
+  }
+  /**
+   * Get Regions Population
+   * @param region
+   * @return
+   */
+  public int getPopulation(int region)
+  {
+    return populations[region];
+  }
   
+  /**
+   * Update a regions crop production distribution numbers. 
+   * @param year
+   * @param updatedStats
+   */
   public void updateRegionalCropDistributionNumbers(int year, ArrayList<long[]> updatedStats)
   {
     annualRegionsCropDistributionStatistics = new ArrayList<>();
@@ -119,7 +138,11 @@ public class GraphManager
     }  
     updateRegionalCropComparison();
   }
-  
+  /**
+   * Update a regions total crop export numbers. 
+   * @param year
+   * @param updatedStats
+   */
   public void updateRegionalCropExportNumbers(int year,  ArrayList<long[]> updatedStats)
   {
     annualRegionsCropExportStatistics= new ArrayList<>();
@@ -128,7 +151,11 @@ public class GraphManager
       annualRegionsCropExportStatistics.add(region);
     }
   }
-  
+  /**
+   * Update a regions total crop import numbers. 
+   * @param year
+   * @param updatedStats
+   */
   public void updateRegionalCropImportNumbers(int year,  ArrayList<long[]> updatedStats)
   {
     annualRegionsCropImportStatistics= new ArrayList<>();
@@ -138,11 +165,11 @@ public class GraphManager
     }
   }
   
-  
+  /**
+   * Update Global Crop production comparison numbers. 
+   */
   public void updateRegionalCropComparison()
   {
-    //for(int i = 0; i < 12; i++)
-   // {
       for(long[] regionCropDist: annualRegionsCropDistributionStatistics)
       {
       annualCitrusRegionalProductionComparison.add(regionCropDist[0]);
@@ -340,7 +367,11 @@ public class GraphManager
     // return g;
   }
 
-  
+  /**
+   * Update a crops global production comparison pie chart. 
+   * @param crop
+   * @return
+   */
   public PieChart setCropProductionPieChart(int crop)
   {
     masterPieChart.setVisible(true);
@@ -404,7 +435,9 @@ public class GraphManager
 
     masterPieChart.setData(list);
   }
-
+  /**
+   * Set up the pie chart to display crop exports for a region.
+   */
   public void updateRegionalCropExportsDisplay()
   {
     long[] regionsCropExports = annualRegionsCropExportStatistics.get(REGION_NUM);
@@ -427,7 +460,9 @@ public class GraphManager
 
     masterPieChart.setData(list);
   }
-
+  /**
+   * Set up the pie chart to display crop imports for a region.
+   */
   public void updateRegionalCropImportsDisplay()
   {
     long[] regionsCropImports = annualRegionsCropImportStatistics.get(REGION_NUM);
@@ -450,223 +485,9 @@ public class GraphManager
 
     masterPieChart.setData(list);
   }
-  /**
-   * Set up pie chart to display a regional comparison of HDI of each reigon.
-   */
-  // public void displayRegionalHDIComparison()
-  // {
-  // pieChart.setVisible(true);
-  // barChart.setVisible(false);
-  // currentYear.setVisible(false);
-  // pieChart.getData().clear();
-  // pieChart.setTitle("Regional Human Development Index Comparison");
-  // ObservableList<Data> list = FXCollections.observableArrayList(
-  // new PieChart.Data("California", 7),
-  // new PieChart.Data("Heartland", 9),
-  // new PieChart.Data("Northern Plains", 15),
-  // new PieChart.Data("Southeast", 10),
-  // new PieChart.Data("Northern Crescent", 11),
-  // new PieChart.Data("SP & Delta States", 13),
-  // new PieChart.Data("PNW & MNT States", 35)
-  // );
-  // pieChart.setData(list);
-  //
-  // }
-
-  // /**
-  // * Set up a stacked bar chart to display the production
-  // * of the 'best' crop from the past 10 years (not in including current one)
-  // * the current ones yearly to date information is displayed below the chart.
-  // * Note the 'best' crop is hard coded in but again through integration
-  // * it will be defined programatically.
-  // */
-  // public void displayBestCropChart()
-  // {
-  // //Toggle what's visible (they are overlaid)
-  // pieChart.setVisible(false);
-  // barChart.setVisible(true);
-  // //Animation must be turned off unfortunately due to glitch
-  // //see: https://bugs.openjdk.java.net/browse/JDK-8093151
-  // barChart.setAnimated(false);
-  // barChart.setLegendVisible(false); //Useless in our case.
-  // barChart.getData().clear(); //Clear old data
-  // barChart.setTitle("Yearly Production of " +bestCropName+" Over Past 10
-  // Years");
-  // //Set the values for testing (this information will obtained during
-  // //game flow once integrated.
-  // setTestValues1();
-  // int index = 0;
-  // //Create the series (each series is bar in our case) with
-  // //the correct information.
-  // for(int i = (presentYear-11); i <(presentYear-1);i++)
-  // {
-  // XYChart.Series<String, Number> series =
-  // new XYChart.Series<String, Number>();
-  // series.getData().add(new XYChart.Data<String,
-  // Number>((presentYear-10+index)+"",past10YearsBestCropProduction.get(index)));
-  // series.setName(presentYear-1-index+"");
-  // barChart.getData().add(series);
-  // ++index;
-  // }
-  // currentYear.setText("Current Yearly Production of "+ bestCropName+" to
-  // date: " + currentYearlyBestCropProduction);
-  // currentYear.setTextFill(Color.web("#FFFFFF"));
-  // currentYear.setVisible(true);
-  // barChart.setVisible(true);
-  // }
-  //
-  // /**
-  // * Set up a stacked bar chart to display the regions net exports over
-  // * the past 10 years.
-  // */
-  // public void displayExportsChart()
-  // {
-  // pieChart.setVisible(false);
-  // barChart.setVisible(true);
-  // barChart.setLegendVisible(false);
-  // barChart.setAnimated(true);
-  // barChart.getData().clear();
-  // barChart.setTitle("Net Yearly Regional Exports from the Past 10 Years");
-  // //Set the values for testing (this information will obtained during
-  // //game flow once integrated.
-  // setTestValues2();
-  // int index = 0;
-  // //Create the series (each series is bar in our case) with
-  // //the correct information.
-  // for(int i = (presentYear-11); i <(presentYear-1);i++)
-  // {
-  // XYChart.Series<String, Number> series =
-  // new XYChart.Series<String, Number>();
-  // series.getData().add(new XYChart.Data<String,
-  // Number>((presentYear-10+index)+"",past10YearsNetExports.get(index)));
-  // series.setName(presentYear-1-index+"");
-  // barChart.getData().add(series);
-  // ++index;
-  // }
-  // currentYear.setText("Current Yearly Net Exports thus far: " +
-  // currentYearlyNetExports );
-  // currentYear.setTextFill(Color.web("#FFFFFF"));
-  // currentYear.setVisible(true);
-  // barChart.setVisible(true);
-  // }
-  // /**
-  // * Set up a stacked bar chart to display the regions net imports over
-  // * the past 10 years.
-  // */
-  // public void displayImportsChart()
-  // {
-  // pieChart.setVisible(false);
-  // barChart.setVisible(true);
-  // barChart.setLegendVisible(false);
-  // barChart.setAnimated(true);
-  // barChart.getData().clear();
-  // barChart.setTitle("Net Yearly Regional Imports from the Past 10 Years");
-  // //Set the values for testing (this information will obtained during
-  // //game flow once integrated.
-  // setTestValues3();
-  // int index = 0;
-  // //Create the series (each series is bar in our case) with
-  // //the correct information.
-  // for(int i = (presentYear-11); i <(presentYear-1);i++)
-  // {
-  // XYChart.Series<String, Number> series =
-  // new XYChart.Series<String, Number>();
-  // series.getData().add(new XYChart.Data<String,
-  // Number>((presentYear-10+index)+"",past10YearsNetImports.get(index)));
-  // series.setName(presentYear-1-index+"");
-  // barChart.getData().add(series);
-  // ++index;
-  // }
-  // currentYear.setText("Current Yearly Net Imports thus far: " +
-  // currentYearlyNetImports );
-  // currentYear.setTextFill(Color.web("#FFFFFF"));
-  // currentYear.setVisible(true);
-  // barChart.setVisible(true);
-  // }
-  // /**
-  // * Set up a stacked bar chart to display the regions net production over
-  // * the past 10 years.
-  // */
-  // public void displayProductionChart()
-  // {
-  // System.out.println("here");
-  // pieChart.setVisible(false);
-  // barChart.setVisible(true);
-  // barChart.setLegendVisible(false);
-  // barChart.setAnimated(true);
-  // barChart.getData().clear();
-  // barChart.setTitle("Net Yearly Regional Production from the Past 10 Years");
-  // //Set the values for testing (this information will obtained during
-  // //game flow once integrated
-  // setTestValues4();
-  // int index = 0;
-  // //Create the series (each series is bar in our case) with
-  // //the correct information.
-  // for(int i = (presentYear-11); i <(presentYear-1);i++)
-  // {
-  // XYChart.Series<String, Number> series =
-  // new XYChart.Series<String, Number>();
-  // series.getData().add(new XYChart.Data<String,
-  // Number>((presentYear-10+index)+"",past10YearsNetProduction.get(index)));
-  // series.setName(presentYear-1-index+"");
-  // barChart.getData().add(series);
-  // ++index;
-  // }
-  // currentYear.setText("Current Yearly Net Production thus far: " +
-  // currentYearlyNetProduction );
-  // currentYear.setTextFill(Color.web("#FFFFFF"));
-  // currentYear.setVisible(true);
-  // barChart.setVisible(true);
-  // }
-  // /**
-  // * Set up a stacked bar chart to display the regions net domestic
-  // consumption over
-  // * the past 10 years.
-  // */
-  // public void displayDomesticConsumptionChart()
-  // {
-  // pieChart.setVisible(false);
-  // barChart.setVisible(true);
-  // barChart.setLegendVisible(false);
-  // barChart.setAnimated(true);
-  // barChart.getData().clear();
-  // barChart.setTitle("Net Regional Domestic Consumption from the Past 10
-  // Years");
-  // //Set the values for testing (this information will obtained during
-  // //game flow once integrated
-  // setTestValues5();
-  // int index = 0;
-  // //Create the series (each series is bar in our case) with
-  // //the correct information.
-  // for(int i = (presentYear-11); i <(presentYear-1);i++)
-  // {
-  // XYChart.Series<String, Number> series =
-  // new XYChart.Series<String, Number>();
-  // series.getData().add(new XYChart.Data<String,
-  // Number>((presentYear-10+index)+"",past10YearsNetDomesticConsumption.get(index)));
-  // series.setName(presentYear-1-index+"");
-  // barChart.getData().add(series);
-  // ++index;
-  // }
-  // currentYear.setText("Current Yearly Net Domestic Consumption thus far: " +
-  // currentYearlyNetDomesticConsumption );
-  // currentYear.setTextFill(Color.web("#FFFFFF"));
-  // currentYear.setVisible(true);
-  // barChart.setVisible(true);
-  // }
-
-  // /**
-  // *
-  // * @param Exit the program when exit button is clicked.
-  // */
-  // @FXML
-  // public void exit(ActionEvent event) {
-  // Stage stage = (Stage) exitButton.getScene().getWindow();
-  // stage.close();
-  // }
+ 
 
 
-   
 
   /**
    * Gets the request product bar graph

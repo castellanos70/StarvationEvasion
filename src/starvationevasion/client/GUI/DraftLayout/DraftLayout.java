@@ -52,7 +52,7 @@ public class DraftLayout extends GridPane
   GraphDisplay graphDisplay;
   DiscardDisplay discardDisplay;
   GlobalPricesVisNode globalPriceNode;
-  
+  TickerReel reel;
 
   HandNode hand;
   DraftTimer draftTimer;
@@ -104,7 +104,7 @@ public class DraftLayout extends GridPane
     this.add(worldMap, 0, 0, COLS, ROWS);
 
     VBox tickerReel = new VBox();
-    TickerReel reel = new TickerReel(tickerReel);
+    reel = new TickerReel(tickerReel);
     tickerReel.getChildren().add(reel);
     this.add(tickerReel, 0, 0, COLS, 1);
 
@@ -234,8 +234,14 @@ public class DraftLayout extends GridPane
     return productBar;
   }
 
-  
-  
+  /**
+   * 
+   * @return Instance of Ticker Real 
+   */
+  public TickerReel getTickerReel()
+  {
+    return reel;
+  }
   
   
 
@@ -305,6 +311,10 @@ public class DraftLayout extends GridPane
     chatNode = chatNode2;
 
   }
+  /**
+   * 
+   * @return Instance of Graph Display
+   */
   public GraphDisplay getGraphDisplay()
   {
     return graphDisplay;

@@ -103,6 +103,8 @@ public class LocalDataContainer
     GraphManager manager =  gui.getGraphManager();
     regionToData.keySet().forEach(region ->{
       manager.addData(year,worldData.foodPrice);
+      
+      //Uncomment to see the values of things being passed.
 //      System.out.println("Region: " + region.toString() + "Year: " +year + "\n"
 //          + "population " + regionToData.get(region).population + "\n"
 //          + "HDI"+ regionToData.get(region).humanDevelopmentIndex +"\n" 
@@ -111,29 +113,27 @@ public class LocalDataContainer
 //          +   "imports" + Arrays.toString(regionToData.get(region).foodImported) + "\n"
 //           +"income" + Arrays.toString(regionToData.get(region).foodIncome) + "\n;"
 //           + "food produced"+ Arrays.toString(regionToData.get(region).foodProduced) );
-          
-          
+                 
     });
-    //Update annual stats for each of the three categories for every region.
+    //Clear previous stats
     annualCropDistributionStats.clear();
     annualCropExportStats.clear();
     annualCropImportStats.clear();
-    
+    //Update annual stats for each of the three categories for every region.
     regionToData.keySet().forEach(region -> annualCropDistributionStats.add(regionToData.get(region).foodProduced));
     regionToData.keySet().forEach(region -> annualCropExportStats.add(regionToData.get(region).foodProduced));
     regionToData.keySet().forEach(region -> annualCropImportStats.add(regionToData.get(region).foodProduced));
   
     //Now update the data.
-
     manager.updateRegionalCropDistributionNumbers(year, annualCropDistributionStats);
     manager.updateRegionalCropExportNumbers(year, annualCropExportStats);
     manager.updateRegionalCropImportNumbers(year, annualCropImportStats);
-    
-    
-    
-
-    
+    //Update regions population data. 
       regionToData.keySet().forEach(region ->
+      manager.updateRegionsPopulation(regionToData.get(region).population, region.ordinal()));   
+      
+     
+     regionToData.keySet().forEach(region ->
         manager.addData(region, 0, year, regionToData.get(region).population));
       regionToData.keySet().forEach(region ->
         manager.addData(region, 1, year, (int) regionToData.get(region).humanDevelopmentIndex));

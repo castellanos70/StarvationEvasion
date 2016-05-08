@@ -157,6 +157,7 @@ public class BuildInteractiveRegionBoarders
       {
       clicked = true;
       gui.getGraphManager().setRegionName("Sub Saharan");
+      gui.getDraftLayout().getTickerReel().addMessage("Sub Saharan, Population: " + gui.getGraphManager().getPopulation(12));
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(12);
       clickedRegion = 1;
@@ -235,6 +236,7 @@ public class BuildInteractiveRegionBoarders
       clicked = true;
       gui.getPopupManager().toggleGraphDisplay();
       gui.getGraphManager().setRegionName("South America");
+      gui.getDraftLayout().getTickerReel().addMessage("South America, Population: " + gui.getGraphManager().getPopulation(9));
       gui.getGraphManager().setRegionNum(9);
       clickedRegion = 2;
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
@@ -394,6 +396,7 @@ public class BuildInteractiveRegionBoarders
       clicked = true;
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(8);
+      gui.getDraftLayout().getTickerReel().addMessage("Middle America, Population: " + gui.getGraphManager().getPopulation(8));
       gui.getGraphManager().setRegionName("Middle America");
       clickedRegion = 3;
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
@@ -485,6 +488,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(0);
       clickedRegion = 4;
+      gui.getDraftLayout().getTickerReel().addMessage("California, Population: " + gui.getGraphManager().getPopulation(0));
       gui.getGraphManager().setRegionName("California");
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       styleRegionPaths(4, fillColor, 2); // Change Fill Color
@@ -550,6 +554,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(6);
       clickedRegion = 5;
+      gui.getDraftLayout().getTickerReel().addMessage("PNW And MNT Region, Population: " + gui.getGraphManager().getPopulation(6));
       gui.getGraphManager().setRegionName("PNW And MNT Region");
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       styleRegionPaths(5, fillColor, 2); // Change Fill Color
@@ -613,6 +618,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(2);
       clickedRegion = 6;
+      gui.getDraftLayout().getTickerReel().addMessage("Northern Planes, Population: " + gui.getGraphManager().getPopulation(2));
       gui.getGraphManager().setRegionName("Northern Planes");
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       styleRegionPaths(6, fillColor, 2); // Change Fill Color
@@ -677,6 +683,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(1);
       clickedRegion = 7;
+      gui.getDraftLayout().getTickerReel().addMessage("HeartLands, Population: " + gui.getGraphManager().getPopulation(1));
       gui.getGraphManager().setRegionName("HeartLands");
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       styleRegionPaths(7, fillColor, 2); // Change Fill Color
@@ -743,6 +750,7 @@ public class BuildInteractiveRegionBoarders
       clicked = true;
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(5);
+      gui.getDraftLayout().getTickerReel().addMessage("Southern Planes, Population: " + gui.getGraphManager().getPopulation(5));;
       gui.getGraphManager().setRegionName("Southern Planes");
       clickedRegion = 8;
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
@@ -808,6 +816,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(3);
       clickedRegion = 9;
+      gui.getDraftLayout().getTickerReel().addMessage("Southeast, Population: " + gui.getGraphManager().getPopulation(3));
       gui.getGraphManager().setRegionName("Southeast");
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       styleRegionPaths(9, fillColor, 2); // Change Fill Color
@@ -872,6 +881,7 @@ public class BuildInteractiveRegionBoarders
       clicked = true;
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(4);
+      gui.getDraftLayout().getTickerReel().addMessage("Northern Crescent, Population: " + gui.getGraphManager().getPopulation(4));;
       gui.getGraphManager().setRegionName("Northern Crescent");
       clickedRegion = 10;
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
@@ -950,6 +960,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(11);
       clickedRegion = 11;
+      gui.getDraftLayout().getTickerReel().addMessage("Middle East, Population: " + gui.getGraphManager().getPopulation(11));;
       gui.getGraphManager().setRegionName("Middle East");
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       styleRegionPaths(11, fillColor, 2); // Change Fill Color
@@ -1013,6 +1024,7 @@ public class BuildInteractiveRegionBoarders
       clicked = true;
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(14);
+      gui.getDraftLayout().getTickerReel().addMessage("Central Asia, Population: " + gui.getGraphManager().getPopulation(14));;
       gui.getGraphManager().setRegionName("Central Asia");
       clickedRegion = 12;
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
@@ -1096,6 +1108,7 @@ public class BuildInteractiveRegionBoarders
       clicked = true;
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(15);
+      gui.getDraftLayout().getTickerReel().addMessage("South Asia");
       gui.getGraphManager().setRegionName("South Asia");
       clickedRegion = 13;
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
@@ -1230,6 +1243,7 @@ public class BuildInteractiveRegionBoarders
     {
       if(gui.getPopupManager().isOpen()==null)
       {
+        gui.getDraftLayout().getTickerReel().addMessage("Arctic America, Population: " + gui.getGraphManager().getPopulation(7));
       gui.getGraphManager().setRegionName("Arctic America");
     	clicked = true;
     	gui.getPopupManager().toggleGraphDisplay();
@@ -1365,6 +1379,7 @@ public class BuildInteractiveRegionBoarders
       clicked = true;
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(13);
+      gui.getDraftLayout().getTickerReel().addMessage("Russia Caucaus, Population: " + gui.getGraphManager().getPopulation(13));;
       gui.getGraphManager().setRegionName("Russia Caucaus");
       clickedRegion = 15;
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
@@ -1532,6 +1547,7 @@ public class BuildInteractiveRegionBoarders
       if(gui.getPopupManager().isOpen()==null)
       {
       //  System.out.println("here1");
+        gui.getDraftLayout().getTickerReel().addMessage("Europe, Population: " + gui.getGraphManager().getPopulation(10));;
       gui.getGraphManager().setRegionName("Europe");
       clicked = true;
       gui.getPopupManager().toggleGraphDisplay();;
@@ -1691,6 +1707,7 @@ public class BuildInteractiveRegionBoarders
       if(gui.getPopupManager().isOpen()==null)
       {
       clicked = true;
+      gui.getDraftLayout().getTickerReel().addMessage("East Asia, Population: " + gui.getGraphManager().getPopulation(16));;
       gui.getGraphManager().setRegionName("East Asia");
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(16);
@@ -2050,6 +2067,7 @@ public class BuildInteractiveRegionBoarders
       gui.getPopupManager().toggleGraphDisplay();;
       gui.getGraphManager().setRegionNum(17);
       clickedRegion = 18;
+      gui.getDraftLayout().getTickerReel().addMessage("Oceania, Population: " + gui.getGraphManager().getPopulation(17));;
       gui.getGraphManager().setRegionName("Oceania");
       gui.getDraftLayout().getGraphDisplay().setDataVisMode(0);
       styleRegionPaths(18, fillColor, 2); // Change Fill Color

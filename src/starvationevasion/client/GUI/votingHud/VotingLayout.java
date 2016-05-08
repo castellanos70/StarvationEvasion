@@ -1,22 +1,33 @@
 package starvationevasion.client.GUI.votingHud;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import starvationevasion.client.GUI.ResizablePane;
+import starvationevasion.client.GUI.DraftLayout.ChatNode;
+import starvationevasion.client.GUI.DraftLayout.WorldMap;
+import starvationevasion.client.GUI.DraftLayout.map.Map;
+import starvationevasion.client.GUI.VotingLayout.VotingTimer;
+import starvationevasion.common.gamecards.GameCard;
 
-public class VotingNode extends ResizablePane
+public class VotingLayout extends NodeTemplate
 {
   private static final int SCROLL_MOD = 4;
 
+  private ChatNode chatNode;
+  private boolean receivedCards = false;
   private ImageView imageView;
-  private Image map;
+
+  private WorldMap worldMap;
+
+  private Image oldMap;
   private Image borderMap;
   private boolean borders = false;
   private Rectangle2D viewPort;
@@ -27,35 +38,55 @@ public class VotingNode extends ResizablePane
 
   private double width;
   private double height;
+  private starvationevasion.client.GUI.GUI gui;
 
-  public VotingNode(double width, double height){
+  public VotingLayout(starvationevasion.client.GUI.GUI gui2)
+  {
     super();
+    this.gui = gui2;
     this.setSize(width, height);
-    this.width = width;
-    this.height = height;
+    this.width = gui2.getPrimaryStage().getWidth();
+    this.height = gui2.getPrimaryStage().getHeight();
 
     hand = new VotingHand(width * (2 / 3d), height / 2);
     hand.setLayoutX(20);
     hand.setLayoutY(height / 2 - 20);
     hand.setManaged(false);
     hand.setVisible(true);
+    hand.setPickOnBounds(false);
 
-    System.out.println("Before File");
     File file = new File("src/starvationevasion/client/GUI/votingHud/testImages/WorldMap_MollweideProjection.png");
-    System.out.println("After File");
-    map = new Image(file.toURI().toString());
-
-    imageView = new ImageView(map);
+    oldMap = new Image(file.toURI().toString());
+    imageView = new ImageView(oldMap);
     imageView.setManaged(false);
     imageView.setPreserveRatio(false);
-
     viewPort = new Rectangle2D(0, 0, width, height);
     imageView.setViewport(viewPort);
+//    this.getChildren().add(imageView);
 
-    this.getChildren().add(imageView);
+    worldMap = new WorldMap(gui);
+    worldMap.setMaxHeight(gui.getPrimaryStage().getHeight());
+    worldMap.setMaxWidth(gui.getPrimaryStage().getWidth());
+    
+    this.getChildren().add(worldMap);
+
+
     this.getChildren().add(hand);
-
     setHandlers();
+  }
+
+  public void update()
+  {
+    worldMap.getBoardersManager().update();
+  }
+
+  /**
+   * 
+   * @return Reference to the world map.
+   */
+  public WorldMap getWorldMap()
+  {
+    return worldMap;
   }
 
   private void setHandlers()
@@ -136,6 +167,8 @@ public class VotingNode extends ResizablePane
   @Override
   public void onResize()
   {
+    // this.height = this.gui.getPrimaryStage().getHeight();
+    // this.width = this.gui.getPrimaryStage().getWidth();
     if (imageView == null) return;
 
     imageView.setFitHeight(this.getHeight());
@@ -153,10 +186,9 @@ public class VotingNode extends ResizablePane
     hand.setSize(width * (2 / 3d), height / 2);
     hand.setLayoutX(20);
     hand.setLayoutY(height / 2 - 20);
-  }
-
-  private void zoomIn(double amount)
-  {
+    
+    worldMap.setMaxHeight(this.getHeight());
+    worldMap.setMaxWidth(this.getWidth());
 
   }
 
@@ -170,7 +202,7 @@ public class VotingNode extends ResizablePane
   {
     if (borders)
     {
-      imageView.setImage(map);
+      imageView.setImage(oldMap);
     }
     else
     {
@@ -178,4 +210,26 @@ public class VotingNode extends ResizablePane
     }
     borders ^= true;
   }
+
+  public boolean hasReceivedCards()
+  {
+    return receivedCards;
+  }
+
+  public void setCards(GameCard[] cards)
+  {
+
+  }
+
+  public ChatNode getChatNode()
+  {
+    return chatNode;
+  }
+
+  public void updateCardSpaces(ArrayList<GameCard> votingCards)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
 }

@@ -13,6 +13,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import starvationevasion.client.GUI.DraftLayout.TickerReel;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.gamecards.EnumPolicy;
 
 public class TestLauncher extends Application
 {
@@ -40,36 +42,40 @@ public class TestLauncher extends Application
 //    Clock clock = new Clock(pane, new ResizeStrategy(1, 1, 1, 1));
 //    pane.getChildren().add(clock);
     
-    TickerReel reel = new TickerReel(pane);
-    pane.getChildren().add(reel);
+//    TickerReel reel = new TickerReel(pane);
+//    pane.getChildren().add(reel);
+//    
+    int index = random.nextInt(EnumPolicy.values().length);
+    CardNode card = new CardNode(EnumRegion.USA_CALIFORNIA, EnumPolicy.values()[index], pane);
+    pane.getChildren().add(card);
     
-    scene = new Scene(pane, 1377, 80);
-    scene.setFill(Color.TRANSPARENT);
+    scene = new Scene(pane, 600, 300);
+//    scene.setFill(Color.TRANSPARENT);
     stage.setScene(scene);
-    stage.initStyle(StageStyle.TRANSPARENT);
+//    stage.initStyle(StageStyle.TRANSPARENT);
     stage.show();
     
-    last = System.nanoTime();
+//    last = System.nanoTime();
     
-    AnimationTimer timer = new AnimationTimer(){
-      @Override
-      public void handle(long now)
-      {
-        if ((now - last)/1_000_000_000d > 1/TPS){
-          String message = "";
-          int rand = random.nextInt(40);
-          
-          for (int i = 0; i < rand; i++){
-            message += alphabet.charAt(random.nextInt(alphabet.length()));
-          }
-          reel.addMessage(message);
-          System.out.println(message);
-          last = now;
-        }
-      }
-    };
+//    AnimationTimer timer = new AnimationTimer(){
+//      @Override
+//      public void handle(long now)
+//      {
+//        if ((now - last)/1_000_000_000d > 1/TPS){
+//          String message = "";
+//          int rand = random.nextInt(40);
+//          
+//          for (int i = 0; i < rand; i++){
+//            message += alphabet.charAt(random.nextInt(alphabet.length()));
+//          }
+//          reel.addMessage(message);
+//          System.out.println(message);
+//          last = now;
+//        }
+//      }
+//    };
     
-    timer.start();
+//    timer.start();
   }
   
   public static void main(String args[]){

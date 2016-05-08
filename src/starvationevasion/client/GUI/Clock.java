@@ -1,4 +1,6 @@
 package starvationevasion.client.GUI;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Bounds;
 import javafx.geometry.VPos;
@@ -24,7 +26,9 @@ public class Clock extends ResizablePane
   private Text clock;
   private static long last = 0;
   private static long start = 0;
-//  private State gameState;
+  private double totalTime = 0;
+  private double elapsedTime = 0;
+  private AtomicBoolean paused;
   
   public Clock(){
     super();
@@ -35,10 +39,15 @@ public class Clock extends ResizablePane
     clock.setFont(FONT);
     clock.setManaged(false);
     
+    paused = new AtomicBoolean();
+    paused.set(true);
+    
     this.getChildren().add(clock);
     onResize();
     
-    updateClock(DEFAULT_TIME, 0);
+    totalTime = DEFAULT_TIME;
+    
+    updateClock();
     
     last = System.currentTimeMillis();
     start = System.currentTimeMillis();
@@ -49,8 +58,8 @@ public class Clock extends ResizablePane
       public void handle(long now)
       {
         now = System.currentTimeMillis();
-        if ((now - last)/1000 > 1/FPS){
-          updateClock(DEFAULT_TIME, now - start);
+        if ((now - last)/1000 > 1/FPS && !paused.get()){
+          updateClock();
           last = System.currentTimeMillis();
         }
       }
@@ -63,11 +72,8 @@ public class Clock extends ResizablePane
   /**
    * updates the digital time given the amount of total
    * time and the amount of elapsed time
-   * 
-   * @param totalTime - the total time in miliseconds
-   * @param elapsedTime - the total time in nanosecods
    */
-  private void updateClock(double totalTime, double elapsedTime){
+  private void updateClock(){
     if (elapsedTime >= totalTime) return;
     
     double time = totalTime - elapsedTime;
@@ -120,5 +126,33 @@ public class Clock extends ResizablePane
     
 //    System.out.println(clock.getTranslateY());
   }
+  
+  /**
+   * Starts the clock
+   */
+  public void startClock(){
+    System.out.println("starting clock");
+    paused.set(false);
+  }
+  
+  /**
+   * Pauses the clock
+   */
+  public void pauseClock(){
+    paused.set(true);
+  }
+  
+  /**
+   * Sets the total amount of time for this clock in milliseconds
+   */
+  public void setTime(double totalTime){
+    this.totalTime = totalTime;
+  }
+  
+  /**
+   * Resets the clock back to max time
+   */
+  public void reset(){
+    elapsedTime = 0;
+  }
 }
-

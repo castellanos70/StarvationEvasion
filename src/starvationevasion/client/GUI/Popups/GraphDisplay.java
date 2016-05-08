@@ -31,14 +31,20 @@ public class GraphDisplay extends BorderPane
 
   ComboBox<EnumRegion> regionSelect;
 
+  private int dataVisMode = 0; //0 for region data, 1 for world data, and 2 for world food prices. 
+  
   EnumRegion currentRegion;
-  int graphIndex = 1;
+  int regionalGraphIndex = 1;
+  int foodCropGraphIndex = 1;
+  int worldGraphIndex = 1;
 
   Button left;
   Button right;
   Graph graphDisplay;
 
   Label regionName = new Label("SDFSDF");
+  
+  
   
   /**
    * Constructor for GraphDisplay
@@ -55,7 +61,18 @@ public class GraphDisplay extends BorderPane
 		exitButton.setOnAction(evt ->
 	    {
 	    	gui.getPopupManager().toggleGraphDisplay();
-	    	gui.updateState();
+	    	if(dataVisMode==0)
+	    	{
+	    	  gui.updateState();
+	    	}
+	    	if(dataVisMode==1)
+	    	{
+	    	  
+	    	}
+	    	if(dataVisMode==2)
+	    	{
+	    	  
+	    	}
 	    }); 
 		
     this.gui = gui;
@@ -64,7 +81,7 @@ public class GraphDisplay extends BorderPane
     this.setVisible(false);
 
     currentRegion = EnumRegion.USA_CALIFORNIA;//GUI.getAssignedRegion();
-    graphDisplay = gui.getGraphManager().getGraphNodeGraph(currentRegion, graphIndex);
+    graphDisplay = gui.getGraphManager().getGraphNodeGraph(currentRegion, regionalGraphIndex);
 
     initializeComboBox();
     initializeLeft();
@@ -82,7 +99,7 @@ public class GraphDisplay extends BorderPane
     setLeft(left);
     setAlignment(right, Pos.CENTER);
     setRight(right);
-    this.setCenter(gui.getGraphManager().getPieChart(graphIndex));
+    this.setCenter(gui.getGraphManager().getPieChart(regionalGraphIndex));
    // setAlignment(graphDisplay.getPieChart(),Pos.CENTER);
    // setCenter(graphDisplay.getPieChart());
   }
@@ -103,6 +120,29 @@ public class GraphDisplay extends BorderPane
     this.setVisible(false);
   }
 
+  public void setDataVisMode(int mode)
+  {
+	  this.dataVisMode = mode;
+	  if(dataVisMode==0)
+	  {
+		  this.setCenter(gui.getGraphManager().getPieChart(regionalGraphIndex));
+	  }
+	  if(dataVisMode==1)
+	  {
+		  
+	  }
+	  if(dataVisMode==2)
+	  {
+		  this.setCenter(gui.getGraphManager().getGraph(foodCropGraphIndex));
+	  }
+  }
+  
+  public int getMode()
+  {
+    return dataVisMode;
+  }
+  
+  
   private void initializeComboBox()
   {
     ArrayList<EnumRegion> regions=new ArrayList<>(Arrays.asList(EnumRegion.values()));
@@ -117,7 +157,7 @@ public class GraphDisplay extends BorderPane
 
     regionSelect.setOnAction((event) -> {
         currentRegion = regionSelect.getValue();
-        graphDisplay = gui.getGraphManager().getGraphNodeGraph(currentRegion, graphIndex);
+        graphDisplay = gui.getGraphManager().getGraphNodeGraph(currentRegion, regionalGraphIndex);
       setCenter(graphDisplay.getLineChart());
     });
   }
@@ -194,43 +234,100 @@ public class GraphDisplay extends BorderPane
 
   private void moveRight()
   {
-    graphIndex += 1;
-    if (graphIndex >= 4)
+	  if(dataVisMode==0)
+	  {
+    regionalGraphIndex += 1;
+    if (regionalGraphIndex >= 4)
     {
-      graphIndex = 1;
+      regionalGraphIndex = 1;
     }
-    boolean isPieChart = gui.getGraphManager().isPieChart(graphIndex);
-    gui.getGraphManager().buildDisplay(graphIndex);
+	  }
+	  if(dataVisMode==1)
+	  {
+		  
+		  
+	  }
+	  if(dataVisMode==2)
+	  {
+			foodCropGraphIndex += 1;
+		    if (foodCropGraphIndex >= 13)
+		    {
+		    	foodCropGraphIndex = 1;
+		    } 
+	  }
+    boolean isPieChart = gui.getGraphManager().isPieChart(regionalGraphIndex);
+    gui.getGraphManager().buildDisplay(regionalGraphIndex);
     if(isPieChart)
     {
-    	this.setCenter(gui.getGraphManager().getPieChart(graphIndex));
+    	if(dataVisMode==0)
+    	{
+    	this.setCenter(gui.getGraphManager().getPieChart(regionalGraphIndex));
+    	}
     }
     else
     {
     	this.setCenter(gui.getGraphManager().getBarGraph());
     }
+    if(dataVisMode==1)
+	{
+		
+	}
+	if(dataVisMode==2)
+	{
+	 this.setCenter(gui.getGraphManager().getGraph(foodCropGraphIndex));
+	}
+    
    // graphDisplay = gui.getGraphManager().getGraphNodeGraph(currentRegion, graphIndex);
    // this.setCenter(graphDisplay.getLineChart());
   }
 
   private void moveLeft()
   {
-    graphIndex -= 1;
-    if (graphIndex < 1)
+	if(dataVisMode==0)
+	{
+    regionalGraphIndex -= 1;
+    if (regionalGraphIndex < 1)
     {
-      graphIndex = 3;
+      regionalGraphIndex = 3;
     }
+	}
+	if(dataVisMode==1)
+	{
+		
+	}
+	if(dataVisMode==2)
+	{
+		foodCropGraphIndex -= 1;
+	    if (foodCropGraphIndex < 1)
+	    {
+	    	foodCropGraphIndex = 12;
+	    }
+	}
     
-    boolean isPieChart = gui.getGraphManager().isPieChart(graphIndex);
+	
+    boolean isPieChart = gui.getGraphManager().isPieChart(regionalGraphIndex);
   //  gui.getGraphManager().buildDisplay(graphIndex);
     if(isPieChart)
     {
-    	this.setCenter(gui.getGraphManager().getPieChart(graphIndex));
+    	if(dataVisMode==0)
+    	{
+    	this.setCenter(gui.getGraphManager().getPieChart(regionalGraphIndex));
+    	}
+    	
     }
     else
     {
     	this.setCenter(gui.getGraphManager().getBarGraph());
     }
+    
+    if(dataVisMode==1)
+	{
+		
+	}
+	if(dataVisMode==2)
+	{
+	 this.setCenter(gui.getGraphManager().getGraph(foodCropGraphIndex));
+	}
 //    graphDisplay = gui.getGraphManager().getGraphNodeGraph(currentRegion, graphIndex);
 //    this.setCenter(graphDisplay.getLineChart());
   }

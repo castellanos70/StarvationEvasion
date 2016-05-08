@@ -17,6 +17,7 @@ import javafx.scene.chart.PieChart.Data;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 
 /**
@@ -110,6 +111,8 @@ public class GraphManager
 
   }
 
+  
+
   // Regional stats can only be displayed once the data has been collected,
   // so untill that happens 0's are inputted as the data.
   public void initializeData()
@@ -126,6 +129,7 @@ public class GraphManager
     }
   }
 
+  
   public void updateRegionalCropDistributionNumbers(int year, ArrayList<long[]> updatedStats)
   {
     NOSTATS = false;
@@ -283,6 +287,8 @@ public class GraphManager
     return barChart;
   }
 
+  
+  
   public void buildDisplay(int displayNum)
   {
     // switch(displayNum)
@@ -839,7 +845,10 @@ public class GraphManager
     // northernCresentGraphs[3] = new
     // GraphProductsDollars(EnumRegion.USA_NORTHERN_CRESCENT);
   }
-
+  public BorderPane getGraph(int graphNum)
+  {
+    return gui.getPopupManager().getPBDataDisplay().getProductData().get(graphNum-1).getGraph();
+  }
   private void initNPGraph()
   {
     northernPlainsGraphs = new Graph[3];

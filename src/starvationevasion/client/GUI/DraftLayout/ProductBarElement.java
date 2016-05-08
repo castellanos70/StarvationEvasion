@@ -122,7 +122,10 @@ public class ProductBarElement extends StackPane
         else
         {     
            heatMapGraphics = gui.getDraftLayout().getWorldMap().getGraphicsContext();
-           gui.getPopupManager().toggleFoodPopup(ID);
+           
+          // gui.getGraphManager()event.g
+           
+           ///gui.getPopupManager().toggleFoodPopup(ID);
              pb.pressElement(ID);  
             if(selected)
             {

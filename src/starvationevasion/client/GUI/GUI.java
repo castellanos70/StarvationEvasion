@@ -321,12 +321,16 @@ public class GUI extends Application
   {
     if (currentRoot == draftLayout)
     {
+//      votingLayout.setChatNode(draftLayout.getChatNode());
+      
       primaryStage.getScene().setRoot(votingLayout);
       currentRoot = votingLayout;
       draftingPhase = false;
+      votingLayout.onResize();
     }
     else
     {
+//      draftLayout.setChatNode(votingLayout.getChatNode());
       primaryStage.getScene().setRoot(draftLayout);
       currentRoot = draftLayout;
       draftingPhase = true;

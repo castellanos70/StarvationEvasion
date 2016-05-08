@@ -44,6 +44,7 @@ public class ImageGetter implements ImageConstants
   private static Image discardRightArrowSmall;
   
   private static Image chatToggle;
+  private static Image coin;
 
   private Image undoButton;
   private ImageView voteIcon;
@@ -69,6 +70,7 @@ public class ImageGetter implements ImageConstants
     discardRightArrowSmall = new Image("ActionButtons/rightArrowSmall.png");
 
     chatToggle = new Image("ActionButtons/chatToggle.png");
+    coin = new Image("ActionButtons/coin.png");
     
     undoButton = new Image("ActionButtons/undoResized.png");
     voteIcon = new ImageView("cardImages/vote.png");
@@ -162,6 +164,11 @@ public class ImageGetter implements ImageConstants
   public Image getChatToggleImage()
   {
 	  return chatToggle;
+  }
+  
+  public Image getCoin()
+  {
+	  return coin;
   }
   
   

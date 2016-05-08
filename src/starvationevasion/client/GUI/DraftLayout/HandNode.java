@@ -10,6 +10,15 @@ import starvationevasion.client.GUI.ResizablePane;
 import starvationevasion.common.Constant;
 import starvationevasion.common.gamecards.EnumPolicy;
 
+/**
+ * @author Ben Matthews
+ * 
+ * HandNode creates a ResizablePane that contains an array
+ * of CardNode objects. Cards are dynamically resized using a gaussian
+ * area distribution based on the location of the mouse, e.g. a card hovered
+ * over directly by themouse will be much larger than the other cards surounding it
+ *
+ */
 public class HandNode extends ResizablePane
 {
   private static final double MAX_SMALL_SIZE = 1;

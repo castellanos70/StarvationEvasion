@@ -598,6 +598,8 @@ public class Model
    * Hard-coded values are constants of the specific policy card. The card
    * classes do not currently provide these values.
    * 
+   * Cases in switch statement with TODO: still need to be implemented.
+   * 
    * @param cards
    *          the list of all cards to be applied to the model
    */
@@ -613,6 +615,7 @@ public class Model
       switch(c.getCardType())
       {
         case Policy_CleanRiverIncentive:
+          //TODO:
           break;
         case Policy_DiverttheFunds:
           //remove all cards from owners hand -- done in Simulator.java
@@ -671,8 +674,10 @@ public class Model
           getRegion(c.getOwner()).addToRevenue(1000000);
           break;
         case Policy_InternationalFoodRelief:
+          //TODO:
           break;
         case Policy_Loan:
+          //TODO:
           break;
         case Policy_MyPlatePromotionCampaign:
           getRegion(c.getOwner()).subtractFromRevenue(c.getX());

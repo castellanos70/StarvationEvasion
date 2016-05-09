@@ -185,6 +185,17 @@ public class Simulator
     return boundaryList;
   }
 
+  /**
+   * This data should be sent over the server to every client once they connect
+   * as this will be important for them to have. It should only be sent once.
+   *
+   * @return packed tile data that was built during the model's initialization
+   */
+  public PackedTileData getPackedTileData()
+  {
+    return model.getPackedTileData();
+  }
+
 
 
   /**

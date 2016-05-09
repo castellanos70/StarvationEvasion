@@ -7,10 +7,10 @@ import starvationevasion.sim.Territory;
 public class Earthquake extends AbstractEvent
 {
 
-  public Earthquake(EnumSpecialEvent eventType, Territory landArea, int duration)
+  public Earthquake(Territory landArea, int duration)
   {
-    super(eventType, landArea, duration);
-    // TODO Auto-generated constructor stub
+    super(landArea, duration);
+    // TODo Auto-generated constructor stub
   }
 
   @Override

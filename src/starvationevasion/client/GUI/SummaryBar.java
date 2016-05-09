@@ -20,6 +20,10 @@ import java.util.ArrayList;
  */
 public class SummaryBar extends GridPane
 {
+  private static final String STYLE = "-fx-background-color: rgba(255, 255, 255, 0.45);"+
+                                      " -fx-border-radius: 0 0 10 10;\n" +
+                                      " -fx-background-radius: 0 0 10 10;";
+  
   private ArrayList<ColumnConstraints> colConstraintsList;
   private ArrayList<RowConstraints> rowConstraintsList;
 
@@ -53,7 +57,7 @@ public class SummaryBar extends GridPane
   public SummaryBar(GUI gui)
   {
     this.gui = gui;
-    this.setBackground(new Background(new BackgroundFill(new Color(1, 1, 1, .45), null, null)));
+    this.setStyle(STYLE);
     initializeGridSizes();
     this.getColumnConstraints().addAll(colConstraintsList);
     this.getRowConstraints().addAll(rowConstraintsList);

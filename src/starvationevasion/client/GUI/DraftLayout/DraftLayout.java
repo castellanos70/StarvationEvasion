@@ -125,7 +125,7 @@ public class DraftLayout extends GridPane
     
     // node at the top of the screen to let the user know basic stats
     summaryBar = new SummaryBar(gui);
-    this.add(summaryBar, 8, 2, 17, 3);
+    this.add(summaryBar, 8, 1, 17, 3);
 
     // node which lets the user see if other players have played cards/finished
     // draft phase
@@ -139,11 +139,12 @@ public class DraftLayout extends GridPane
 
     // node which holds the ProductBar
     productBar = new ProductBar(gui);
-    int productBarSize = productBar.getElements().size();
-    for (int i = 0; i < productBarSize; ++i)
-    {
-      this.add(productBar.getElements().get(i), i + COLS / 2 - productBarSize / 2, 1, 1, 1);
-    }
+    this.add(productBar, 0, 6, 5, 7);
+    
+//    for (int i = 0; i < productBarSize; ++i)
+//    {
+//      this.add(productBar.getElements().get(i), i + COLS / 2 - productBarSize / 2, 1, 1, 1);
+//    }
 
     // node which holds the user's deck/discard pile information
     deckNode = new DeckNode(gui);
@@ -167,15 +168,15 @@ public class DraftLayout extends GridPane
     pbDataDisplay = new ProductBarDataDisplay(gui);
     this.add(pbDataDisplay, 7, 4, 13, 4);
 
-    graphDisplay = new GraphDisplay(gui);
-    this.add(graphDisplay, 8, 6, 15, 6);
-
     discardDisplay = new DiscardDisplay(gui);
     this.add(discardDisplay, 1, 5, 3, 4);
 
     chatNode = new ChatNode(gui);
     chatNode.setStyle("-fx-background-color:rgb(84, 84, 84, 0.5)");
     this.add(chatNode, 27, 7, 6, 11);
+    
+    graphDisplay = new GraphDisplay(gui);
+    this.add(graphDisplay, 0, 1, COLS, ROWS-1);
 
     // Places a background, not in use for testing
     // this.setBackground(new Background(new BackgroundImage(

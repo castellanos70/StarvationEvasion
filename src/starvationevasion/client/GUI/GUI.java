@@ -153,7 +153,6 @@ public class GUI extends Application
     // instantiate the DraftLayout
     draftLayout = new DraftLayout(this);
     votingLayout = new VotingLayout(this);
-   
     
 
     // make a scene for displaying the game

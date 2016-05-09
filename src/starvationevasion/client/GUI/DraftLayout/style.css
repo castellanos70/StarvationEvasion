@@ -2,6 +2,14 @@
     -fx-background-color: #2f4f4f;
 }
 
+
+.cardspace {
+	
+	-fx-background-color: rgb(0, 153, 153, 0.75);
+}
+
+
+
 .graphnode
 {
     -fx-background-color: rgb(84, 84, 84, 0.75);

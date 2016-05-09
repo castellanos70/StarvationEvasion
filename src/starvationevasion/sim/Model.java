@@ -1539,7 +1539,7 @@ public class Model
           tile.setCurrentCost(cost);
         }
       }
-//      region.setTotalProduction();
+      region.setTotalProduction();
     }
   }
 

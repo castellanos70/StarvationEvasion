@@ -24,8 +24,12 @@ public abstract class AbstractEvent
   private ArrayList <LandTile> tiles;	
   private int duration;
   private Territory landArea;
+  
+  // if you want to use an Event graph for a AbstracteEvent than your methods must use this set of landtiles
   private ArrayList<LandTile> effectedTiles;
-
+  
+  
+  
   /**
    * Creates a special event object
    *
@@ -33,9 +37,9 @@ public abstract class AbstractEvent
    * @param landArea The land area (Territory, Region, etc...) this event effects
    * @param duration How many simulator years this event lasts
    */
-  public AbstractEvent(EnumSpecialEvent eventType, Territory landArea, int duration)
+  public AbstractEvent(Territory landArea, int duration)
   {
-    this.landArea = landArea;
+    
     this.duration = duration;
     this.landArea = landArea;
     tiles = landArea.getLandTiles();
@@ -56,7 +60,7 @@ public abstract class AbstractEvent
    * @return latitude and longitude stored in a MapPoint.
    */
   public abstract MapPoint getLocation();
-
+ 
   public int getDuration()
   {
     return duration;
@@ -67,9 +71,14 @@ public abstract class AbstractEvent
     return landArea;
   }
 
-  private void destroyFarmEquipment()
+  public ArrayList<LandTile> getEffectedTiles()
   {
-    for(LandTile tile : landArea.getLandTiles())
+	  return effectedTiles;
+  }
+  
+  public void destroyFarmEquipment(ArrayList<LandTile> landArea)
+  {
+    for(LandTile tile : landArea)
     {
       if(tile.getProductionMultiplier() >= 0.3)
       {
@@ -79,9 +88,9 @@ public abstract class AbstractEvent
     }
   }
   
-  private void destroyInfrastrucure()
+  public void destroyInfrastrucure(ArrayList <LandTile> landArea)
   {
-    for(LandTile tile : landArea.getLandTiles())
+    for(LandTile tile : landArea)
     {
       if(tile.getProductionMultiplier() >= 0.3)
       {
@@ -91,9 +100,19 @@ public abstract class AbstractEvent
     }
   }
   
-  private void causeFlood()
+  public void resetMultipers(ArrayList<LandTile> landArea)
   {
-    Flood flood = new Flood(eventType, landArea, duration);
+	  for(LandTile tile : landArea)
+	  {
+		tile.setProductionMultiplier(1.0);  
+	  }
+	  
+	  
+  }
+  
+  public void causeFlood()
+  {
+   // Flood flood = new Flood( landArea, duration);
     //TODO: add to events list.
   }
   
@@ -105,15 +124,16 @@ public abstract class AbstractEvent
     while(numWiped < amtToWipe)
     {
       tilesToWipe.remove(Util.rand.nextInt(tilesToWipe.size())).setProductionMultiplier(0);
+      numWiped++;
     }
     
   }
   
-  private void wipeOutCrop(EnumFood crop)
+  private void wipeOutCrop(EnumFood crop,ArrayList<LandTile> landArea)
   {
-    for(LandTile tile : landArea.getLandTiles())
+    for(LandTile tile : landArea)
     {
-      if(tile.getClass().equals(crop))
+      if(tile.getCrop().equals(crop))
       {
         tile.setProductionMultiplier(0);
       }
@@ -140,7 +160,17 @@ public abstract class AbstractEvent
 	  eventGraph.createSpreadPattern(initProbability, severity);
 	  
   }
-  
+  /*
+   * EventGraph is one way an event could be spread through out an area.
+   * 
+   * the class will populate the effectedTile list of the AbstractEvent class 
+   * 
+   * 
+   * 
+   * assignNieghbors() populate every nodes neighbor list in graph
+   * 
+   * 
+   * */
   
   
   class EventGraph
@@ -197,7 +227,11 @@ public abstract class AbstractEvent
 		 
 	  }
 	  
-	  
+	  /*
+	   * This 
+	   * 
+	   * 
+	   * */
 	  public void createSpreadPattern(float initProbability , int severity)
 	  {
 		  
@@ -238,7 +272,7 @@ public abstract class AbstractEvent
 	   * 
 	   * this is where i found the formula  http://andrew.hedges.name/experiments/haversine/
 	   * 
-	   * 
+	   * this method may be useful for other uses as well 
 	   * 
 	   * */
 	  
@@ -256,7 +290,16 @@ public abstract class AbstractEvent
 		  return distance;
 		  
 	  }
-	  
+	  /*
+	   * this class hold the EventNode 
+	   * 
+	   * stores the nieghbors of this node
+	   * 
+	   *  also stores the nodes it transfered the event too (memory ineffeicent should be changed)
+	   * 
+	   *  
+	   * 
+	   * */
 	  
 	  class EventNode
 	  {
@@ -291,7 +334,7 @@ public abstract class AbstractEvent
 				  if(!effectedTiles.contains(node.landTile))
 				  {
 				  nieghborsThatNodeEffected.add(node);	  
-				  effectedTiles.add(node.landTile);
+				  node.addToEffectedList();
 				  }
 				 }
 			 }

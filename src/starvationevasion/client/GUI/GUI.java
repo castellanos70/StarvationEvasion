@@ -6,12 +6,10 @@ import java.util.TimerTask;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -23,8 +21,8 @@ import starvationevasion.client.GUI.DraftLayout.map.MapController;
 import starvationevasion.client.GUI.Graphs.GraphManager;
 import starvationevasion.client.GUI.Popups.PopupManager;
 import starvationevasion.client.GUI.images.ImageGetter;
-//import starvationevasion.client.GUI.votingHud.VotingLayout;
-import starvationevasion.client.GUI.VotingLayout.VotingLayout;
+import starvationevasion.client.GUI.votingHud.VotingLayout;
+//import starvationevasion.client.GUI.VotingLayout.VotingLayout;
 import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.client.Networking.Client;
@@ -109,15 +107,15 @@ public class GUI extends Application
     return client;
   }
 
-//  /**
-//   * Main function which launches the GUI thread
-//   * 
-//   * @param args
-//   */
-//  public static void main(String[] args)
-//  {
-//    launch(args);
-//  }
+  // /**
+  // * Main function which launches the GUI thread
+  // *
+  // * @param args
+  // */
+  // public static void main(String[] args)
+  // {
+  // launch(args);
+  // }
 
   @Override
   public void start(Stage primaryStage)
@@ -153,8 +151,6 @@ public class GUI extends Application
     // instantiate the DraftLayout
     draftLayout = new DraftLayout(this);
     votingLayout = new VotingLayout(this);
-    
-
     // make a scene for displaying the game
     gameScene = new Scene(draftLayout);
     currentRoot = draftLayout;
@@ -240,7 +236,7 @@ public class GUI extends Application
     needHand = true;
     cardsInHand.clear();
     cardsInHand = null;
-//    draftLayout.getHand().newTurn();
+    // draftLayout.getHand().newTurn();
     draftLayout.getActionButtons().resetActionButtons();
   }
 
@@ -254,7 +250,7 @@ public class GUI extends Application
    */
   public void resetVotingPhase()
   {
-    votingLayout.resetVotingLayout();
+    // votingLayout.resetVotingLayout();
   }
 
   /**
@@ -311,13 +307,15 @@ public class GUI extends Application
     {
       primaryStage.getScene().setRoot(votingLayout);
       currentRoot = votingLayout;
-      draftingPhase=false;
+      draftingPhase = false;
+      votingLayout.onResize();
     }
     else
     {
       primaryStage.getScene().setRoot(draftLayout);
       currentRoot = draftLayout;
-      draftingPhase=true;
+      draftingPhase = true;
+      draftLayout.getHand().onResize();
     }
   }
 
@@ -509,9 +507,9 @@ public class GUI extends Application
             resetVotingPhase();
             switchScenes();
           }
-           if (client.getVotingCards() != null &&
-           !getVotingLayout().hasReceivedCards())
-           getVotingLayout().updateCardSpaces(client.getVotingCards());
+          // if (client.getVotingCards() != null &&
+          // !getVotingLayout().hasReceivedCards())
+          // getVotingLayout().updateCardSpaces(client.getVotingCards());
 
         });
       }

@@ -1,11 +1,5 @@
 package starvationevasion.ai.commands;
 
-/**
- * Ederin Igharoro
- * 
- */
-
-import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
 
 public class AIVotingPhase 
@@ -28,7 +22,7 @@ public class AIVotingPhase
 			System.out.println("I AM NEW BY YOU: LOAN");
 			break;
 			
-		case Policy_DiverttheFunds:
+		case Policy_DivertFunds:
 			cost = "Discard current hand";
 			benefit = "$14 million";
 			System.out.println("I AM NEW BY YOU: DIVERT");

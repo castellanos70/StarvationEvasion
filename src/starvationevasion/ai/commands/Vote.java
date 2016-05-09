@@ -58,16 +58,16 @@ public class Vote extends AbstractCommand
         	  int pros = 0;
               int cons = 0;
               
-              AIVote.readCardDetails(card);
-              
-              if(AIVote.checkResources()){pros++;}
-              else{cons++;}
-              
-              if(AIVote.checkBeneficialToSelf()){pros++;}
-              else{cons++;}
-              
-              if(AIVote.checkBeneficialToOthers()){pros++;}
-              else{cons++;}
+//              AIVote.readCardDetails(card);
+//              
+//              if(AIVote.checkResources()){pros++;}
+//              else{cons++;}
+//              
+//              if(AIVote.checkBeneficialToSelf()){pros++;}
+//              else{cons++;}
+//              
+//              if(AIVote.checkBeneficialToOthers()){pros++;}
+//              else{cons++;}
               
               Endpoint endpoint;
               if(pros > cons)

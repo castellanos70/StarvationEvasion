@@ -1,13 +1,13 @@
 package starvationevasion.common;
 
 
-//import javafx.scene.shape.Shape;
+import javafx.scene.shape.Polygon;
 
 import java.awt.*;
 import java.awt.geom.Area;
-import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 
 public class MapProjectionMollweide
 {
@@ -58,8 +58,7 @@ public class MapProjectionMollweide
    * @param regionID
    * @return
    */
-  //public Shape getPerimeterDrawable(EnumRegion regionID)
-  public Area getPerimeterDrawable(EnumRegion regionID)
+  public Polygon getPerimeterDrawable(EnumRegion regionID)
   {
     //default region (when regionID == null) is Antarctica's ice shelf
     //   stored at the end of the regionPerimetersSpherical[] array.
@@ -72,104 +71,113 @@ public class MapProjectionMollweide
     double edgeLongitude = centralMeridian + 180;
     if(edgeLongitude  >  180) edgeLongitude = edgeLongitude - 360;
 
-    Area[] perimeterList = null;
+    ArrayList<Area> perimeterList = new ArrayList<>();
 
-    System.out.printf("edge=%.1f  %s%n",edgeLongitude, regionID);
+    //System.out.printf("edge=%.1f  %s%n",edgeLongitude, regionID);
 
-    if (perimeter.intersects(edgeLongitude - 0.05,-90, 0.1, 90))
+    if (perimeter.intersects(edgeLongitude - 0.05,-90, 0.1,180))
     {
-      System.out.println(regionID + "     crosses edge");
-      perimeterList = new Area[2];
-      perimeterList[0] = new Area(perimeter);
-      perimeterList[1] = new Area(perimeter);
-      Area eastArea = null;
-      if (edgeLongitude>0)
+      //System.out.println(regionID + "     crosses edge");
+
+      Shape shapeEast = new Rectangle2D.Double(centralMeridian, -90, 179.9, 180);
+      Area areaEast = new Area(shapeEast);
+      areaEast.intersect(perimeter);
+      perimeterList.add(areaEast);
+
+      if (centralMeridian > 0)
       {
-        Shape east1 = new Rectangle2D.Double(edgeLongitude, -90, 180, 90);
-        Shape east2 = new Rectangle2D.Double(-180, -90, 180, 90);
-        eastArea = new Area(east1);
-        eastArea.add(new Area(east2));
-      }
-      else
-      {
-        Shape east1 = new Rectangle2D.Double(edgeLongitude, -90, 180+edgeLongitude, 90);
-        Shape east2 = new Rectangle2D.Double(0, -90, 180, 90);
-        eastArea = new Area(east1);
-        eastArea.add(new Area(east2));
+        shapeEast = new Rectangle2D.Double(-180, -90, centralMeridian-0.1, 180);
+        areaEast = new Area(shapeEast);
+        areaEast.intersect(perimeter);
+        perimeterList.add(areaEast);
       }
 
-      perimeterList[0].intersect(eastArea);
+
+      Shape shapeWest = new Rectangle2D.Double(edgeLongitude+0.1, -90, 179.9, 180);
+      Area areaWest = new Area(shapeWest);
+      areaWest.intersect(perimeter);
+      perimeterList.add(areaWest);
     }
-
-/*
-      Area westArea = null;
-      if (centralMeridian+Math.PI>Math.PI)
-      {
-        Shape west1 = new Rectangle2D.Double(centralMeridian, -Math.PI/2, Math.PI-centralMeridian, Math.PI);
-        Shape west2 = new Rectangle2D.Double(-Math.PI, -Math.PI/2, centralMeridian+Math.PI, Math.PI);
-        westArea = new Area(west1);
-        westArea.add(new Area(west2));
-      }
-      else if (edgeLongitude1 < 0 && edgeLongitude1 > -Math.PI)
-      {
-        Shape west1 = new Rectangle2D.Double(edgeLongitude1, -Math.PI/2, Math.PI+edgeLongitude1, Math.PI);
-        Shape west2 = new Rectangle2D.Double(0, -Math.PI/2, centralMeridian, Math.PI);
-        westArea = new Area(west1);
-        westArea.add(new Area(west2));
-      }
-      else
-      {
-        Shape west1 = new Rectangle2D.Double(centralMeridian, -Math.PI/2, Math.PI, Math.PI);
-        eastArea = new Area(west1);
-      }
-      perimeterList[1].intersect(westArea);
-    }
-*/
-
     else
     {
-      perimeterList = new Area[1];
-      perimeterList[0] = perimeter;
+      perimeterList.add(perimeter);
     }
 
 
-    Area drawBoundary = new Area();
+    Polygon drawBoundary = new Polygon();
 
     Point pixel = new Point();
     double[] coords = new double[6];
-    Path2D.Float shape = null;
+    ArrayList<Double> vertexList = new ArrayList<>();
 
-    for (int i=0; i<perimeterList.length; i++)
+    double lastLatitude = 0;
+    double lastLongitude = 0;
+    for (Area segment : perimeterList)
     {
-      PathIterator path = perimeterList[i].getPathIterator(null);
+      PathIterator path = segment.getPathIterator(null);
+
       while(!path.isDone())
       {
         int type = path.currentSegment(coords);
         path.next();
-        setPoint(pixel, coords[1], coords[0]);
+
         if (type == PathIterator.SEG_LINETO)
         {
-          shape.lineTo(pixel.x, pixel.y);
+          curveTo(vertexList, pixel, lastLatitude, lastLongitude, coords[1], coords[0]);
         }
         else if(type == PathIterator.SEG_MOVETO)
         {
-          shape = new Path2D.Float();
-          shape.moveTo(pixel.x, pixel.y);
+          setPoint(pixel, coords[1], coords[0]);
+          vertexList.clear();
+          vertexList.add(new Double(pixel.x));
+          vertexList.add(new Double(pixel.y));
         }
         else if(type == PathIterator.SEG_CLOSE)
         {
-          shape.lineTo(pixel.x, pixel.y);
-          Area area = new Area(shape);
-          drawBoundary.add(area);
+          curveTo(vertexList, pixel, lastLatitude, lastLongitude, coords[1], coords[0]);
+          double[] vertexArray = new double[vertexList.size()];
+          for (int i=0; i<vertexArray.length; i++)
+          {
+            vertexArray[i] = vertexList.get(i).doubleValue();
+          }
+          Polygon shape = new Polygon(vertexArray);
+          drawBoundary.union(drawBoundary, shape);
         }
         else
         {
           System.out.println("************ ERROR ***********");
         }
+        lastLatitude = coords[1];
+        lastLongitude = coords[0];
       }
     }
 
     return drawBoundary;
+  }
+
+
+  private void curveTo(ArrayList<Double> vertexList, Point pixel,
+                       double startLatitude, double startLongitude,
+                       double endLatitude, double endLongitude)
+  {
+    if (Math.abs(endLatitude - startLatitude) > 1.5) //degrees
+    {
+      int numSteps = (int) Math.abs(endLatitude - startLatitude);
+      double deltaLatitude  = (endLatitude  - startLatitude)/numSteps;
+      double deltaLongitude = (endLongitude - startLongitude)/numSteps;
+
+      for (int i=0; i<numSteps; i++)
+      {
+        startLatitude  = startLatitude + deltaLatitude;
+        startLongitude = startLongitude + deltaLongitude;
+        setPoint(pixel, startLatitude, startLongitude);
+        vertexList.add(new Double(pixel.x));
+        vertexList.add(new Double(pixel.y));
+      }
+    }
+    setPoint(pixel, endLatitude, endLongitude);
+    vertexList.add(new Double(pixel.x));
+    vertexList.add(new Double(pixel.y));
   }
 
   /**

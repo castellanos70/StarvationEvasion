@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -156,7 +157,7 @@ public class Model
 
     cropData = new CropData();
 
-/*
+
     Date dateStart = new Date();
     System.out.println("Model() Loading Climate Data: " +dateFormat.format(dateStart));
 
@@ -181,7 +182,7 @@ public class Model
     placeCrops();
 
     setRegionalProduction();
-*/
+
     for (int i = 0; i < YEARS_OF_DATA; i++)
     {
       worldData[i] = new WorldData();
@@ -1512,7 +1513,7 @@ public class Model
     //Graphics2D gfx = pic.getOffScreenGraphics();
     //gfx.setColor(Color.BLACK);
     //gfx.fillRect(0,0,pic.getImageWidth(), pic.getImageHeight());
-    Territory territory;
+   // Territory territory;
 
    //territory = model.getTerritory("US-Utah");
    //model.drawBoundary(pic, territory, Color.GREEN, 1);
@@ -1553,45 +1554,39 @@ public class Model
     //territory = model.getTerritory("Mexico");
     //model.drawBoundary(pic, territory, Color.RED);
     */
+
+    Color[] colorList = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN,
+      Color.BLUE, Color.MAGENTA}; //for debugging only
     MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
     map.setRegionPerimetersSpherical(model.getRegionPerimetersSpherical());
 
     Graphics2D gfx = pic.getOffScreenGraphics();
-    gfx.setStroke(new BasicStroke(2));
-    map.setCentralMeridian(0);
-    //for (int n = -180; n < 180; n+=10)
-    //{
-      gfx.drawImage(background, 0,0,null);
-      //map.setCentralMeridian(n);
+    gfx.setStroke(new BasicStroke(1));
+    //map.setCentralMeridian(-5);
+/*
+    for (int n = -180; n < 180; n+=1)
+    {
+      gfx.drawImage(background,0,0,null);
+      map.setCentralMeridian(n);
       for (EnumRegion regionID : EnumRegion.values())
       {
         Area drawArea = map.getPerimeterDrawable(regionID);
-        gfx.setColor(regionID.getColor());
+        gfx.setColor(Util.brighten(regionID.getColor(), 0.5));
 
         gfx.draw(drawArea);
       }
-
-    //Area drawArea = map.getPerimeterDrawable(EnumRegion.ARCTIC_AMERICA);
-    //gfx.setColor(EnumRegion.ARCTIC_AMERICA.getColor());
-
-    //gfx.draw(drawArea);
-
-      //for (EnumRegion regionID : EnumRegion.values())
-      //{
-      //  Region region = model.getRegion(regionID);
-      //  model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5), 1);
-      //}
       pic.repaint();
 
-      //try
-      //{
-      //  Thread.sleep(1000);
-      //} catch (InterruptedException e) { }
+      try
+      {
+        Thread.sleep(10);
+      } catch (InterruptedException e) { }
 
       //for (Constant.Month month : Constant.Month.values())
       //{
       //  model.drawRain(pic, 2000+n, month);
       //}
-    //}
+    }
+    */
   }
 }

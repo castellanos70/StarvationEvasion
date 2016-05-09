@@ -1,6 +1,11 @@
 package starvationevasion.sim.io;
 
-import org.xml.sax.*;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import starvationevasion.common.GeographicArea;
 import starvationevasion.common.MapPoint;
@@ -10,7 +15,11 @@ import starvationevasion.util.Picture;
 
 import javax.xml.parsers.SAXParserFactory;
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -159,15 +168,15 @@ public class GeographyXMLparser extends DefaultHandler
       if (qName.equals("area") || qName.equals("hole"))
       {
         islandCount++;
-        if (territory.getName().equals("Canada") || territory.getName().equals("US-Alaska"))
+        if (territory.getName().equals("Fiji"))
         {
           int colorIdx = Math.min(islandCount - 1, colorList.length - 1);
           Color edgeColor = colorList[colorIdx];
 
-          if (territory.getName().equals("Canada")) edgeColor = Color.WHITE;
-          else if (territory.getName().equals("US-Alaska")) edgeColor = Color.RED;
+         // if (territory.getName().equals("Canada")) edgeColor = Color.WHITE;
+          //else if (territory.getName().equals("US-Alaska")) edgeColor = Color.RED;
 
-          drawBoundaryUsingMapPoints(pic, tmpPerimeterSet, edgeColor, -142, -128, 51,70);
+          drawBoundaryUsingMapPoints(pic, tmpPerimeterSet, edgeColor, -179, 180, -90,90);
         }
       }
       */

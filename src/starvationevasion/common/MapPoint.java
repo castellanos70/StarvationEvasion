@@ -46,7 +46,6 @@ public class MapPoint implements Sendable
       throw new IllegalArgumentException("MapPoint("+latitude+", " + longitude +
         "): Argument out of bounds error.");
     }
-    if (longitude == -180) longitude = 180;
     this.latitude = latitude;
     this.longitude = longitude;
   }

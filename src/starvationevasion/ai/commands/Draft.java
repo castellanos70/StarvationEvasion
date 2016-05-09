@@ -796,7 +796,7 @@ public class Draft extends AbstractCommand
   }
   /*
    * Jeffrey McCall
-   * Called to discard up to three cards from the AI's hand. Three new
+   * Called to discard up to two cards from the AI's hand. Three new
    * cards are automatically re-drawn and added back to the AI's hand.
    */
   private void discardAndRedraw()
@@ -810,7 +810,7 @@ public class Draft extends AbstractCommand
         i++;
         cardsToDiscard.add(policy);
       }
-      if(i==3)break;
+      if(i==2)break;
     }
     Payload discardData=new Payload(cardsToDiscard);
     getClient().getCommModule().send(Endpoint.DELETE_AND_DRAW_CARDS, discardData, null);

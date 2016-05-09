@@ -26,10 +26,8 @@ public class Draft extends AbstractCommand
 {
   private boolean draftedCard = false;
   private boolean discarded = false;
-  private boolean drawn = false;
   private GameCard cardDrafted1;
   private GameCard cardDrafted2;
-  private GameCard[] draftedCards = new GameCard[2];
   private int tries = 2;
   private int numTurns = 0;
   // The region that the AI represents.
@@ -67,10 +65,21 @@ public class Draft extends AbstractCommand
   boolean foodsForThisRegion=false;
   EnumFood foodNeedingAttention=null;
   int count=0;
+  
+  //If set to false, then that combination of policy, region and food should not be picked this turn.
   boolean[][][] policyCardInfo=new boolean[EnumPolicy.values().length][EnumRegion.values().length][EnumFood.values().length];
+  
+  /*
+   * Jeffrey McCall
+   * Arrays used to partition the elements of the sample space used in the probability distribution that the AI uses to pick
+   * cards, regions and policies. The second dimension of each array is a lower and upper bound between 2 numbers. The larger
+   * the difference between these 2 numbers, the higher the chance that that policy, region or food will get selected to be drafted
+   * that turn.
+   */
   int[][] policyBounds=new int[7][2];
   int[][] regionBounds=new int[EnumRegion.values().length][2];
   int[][] foodBounds=new int[EnumFood.values().length][2];
+  
   int totalPolicyVal=0;
   int totalRegionVal=0;
   int totalFoodVal=0;
@@ -85,6 +94,11 @@ public class Draft extends AbstractCommand
   boolean tryForMoneyCards=false;
   int revenueBalance=0;
   
+  /**
+   * Creates new AI object. Fills policyCardInfo array with booleans.
+   * @param client
+   *        The AI object that is creating this Draft object.
+   */
   public Draft(AI client)
   {
     super(client);
@@ -100,12 +114,18 @@ public class Draft extends AbstractCommand
       }
     }  
   }
-
+  /**
+   *Get the String that represents which command this is.
+   */
   @Override
   public String commandString()
   {
     return "Draft";
   }
+  /**
+   * Called to draft cards each turn for the AI.
+   * @return False if done drafting cards, true otherwise.
+   */
   @Override
   public boolean run()
   {
@@ -139,7 +159,8 @@ public class Draft extends AbstractCommand
   }
 
   /**
-   * James Perry Returns a method to be sent to other players requesting support
+   * James Perry 
+   * Returns a method to be sent to other players requesting support
    * for a policy card. This method is called by draftCards() after the card has
    * been set up.
    * 
@@ -167,7 +188,10 @@ public class Draft extends AbstractCommand
       return "I'm going to draft a card of type " + card.getType()
           + " . Can anyone support it?";
   }
-
+  /**
+   * Random chance that a card will get discarded. can only be called once
+   * in a turn.
+   */
   private void randomlyDiscard()
   {
     EnumPolicy discard = null;
@@ -195,9 +219,12 @@ public class Draft extends AbstractCommand
     }
     discarded = true;
   }
-  /**
-   * Fill the map of probability values with new ProbabilityLevel objects and
-   * corresponding types of regions, foods and policies.
+  /*
+   * Jeffrey McCall
+   * Fill the map of probability values with Strings that represent policies,
+   * regions and foods and Integers that represent the probability that they
+   * will get picked. These are random at first, but will be modified in the course
+   * of the code in this class being called.
    */
   private void fillProbabilityMap()
   {
@@ -216,6 +243,16 @@ public class Draft extends AbstractCommand
       regionList.add(region);
     }
   }
+  /*
+   * Jeffrey McCall
+   * For every probability value mapped to a policy, region or food in the 
+   * probability map, add these values to the arrays that hold all of the
+   * lower and upper bounds of numbers that represent the percentage chance of
+   * a policy, region or food getting selected in the card drafting phase in
+   * the method draftCards(). This method is called after all operations have been
+   * performed on the probability map to create an appropriate probability distribution
+   * for selecting cards this turn. 
+   */
   private void createProbabilityDistribution()
   {
     probabilityMap.forEach((string,integer)->
@@ -262,14 +299,35 @@ public class Draft extends AbstractCommand
     });
   }
   /**
-   * Jeffrey McCall If this is the first turn, then randomly choose the card to
-   * draft. If this is not the first turn, then evaluate choice of next card to
-   * draft according to how things turned out after the last turn. If after the
-   * last turn, there was an overall decrease in factors that are relevant to
-   * this AI's region, then it is less likely that the AI will again choose that
-   * food, region or policy.
+   * Jeffrey McCall 
+   * First, the cards are divided into piles with cards that require no votes,
+   * and cards that require votes. Only one card that requires votes can be selected in
+   * a turn. On the first turn, one card is selected randomly from the no votes list,
+   * and the other selected randomly from the votes list. If the votes list is empty, than
+   * 2 are selected from the no votes list. If the no votes list is empty, than only 1 can be 
+   * selected for drafting. On the next and all subsequent turns, a checkLastPlay() is called to
+   * evaluate how factors have changed in the player's own region after the last turn. The cards
+   * drafted last turn, along with their corresponding regions and foods, are then either set to
+   * not be drafted this turn if there was a significant decrease of factors, or they are set to
+   * be more likely to get drafted again if there was an increase of factors. The method 
+   * checkOtherFactors() is then called to check other relevant factors that would affect the AI's
+   * choice about which policies to draft. In that method, there is a possibility that the AI will
+   * discard up to three cards and re-draw 3 new cards. If this happens, then this method will return
+   * false and get called again with a new set of cards. However, the AI will then only be able to
+   * draft 1 card. If the boolean tryForMoneyCards is set to true, that means that revenue is in trouble
+   * in this AI's region and the method adjustMoneyCards() is called. This makes it more likely that a
+   * card that benefits this AI's region monetarily will be called. The probability distribution will then
+   * be created now that all of the probabilities have been set and modified in the previous methods that
+   * were called. draftCards() is then called to draft cards for this turn. There is also checking done
+   * to see if a card has been drafted that requires monetary support, but this region's money is running
+   * low. If that is the case, then it is made more likely that the Special Interests card is drafted if
+   * it is in the player's hand. The probability distribution is then re-created. The actionsRemaining
+   * int is kept track of and represents how many actions the AI has available to it such as drafting
+   * a card or discarding and re-drawing up to three cards. 
+   * @return True if cards drafted or if no actions remaining for AI. False if not all cards drafted yet
+   * or actions remaining has not hit 0. 
    */
-  private boolean setDraftedCards()
+  public boolean setDraftedCards()
   {
     if(probabilityMap.size()==0 && foodList.size()==0 && regionList.size()==0)
     {
@@ -444,10 +502,10 @@ public class Draft extends AbstractCommand
       if(actionsRemaining==2)
       {
         playAgain = checkLastPlay();
-        distributeProbabilities(playAgain, lastCard1, "policy");
+        distributeProbabilities(playAgain, lastCard1);
         if(lastCard2!=null)
         {
-          distributeProbabilities(playAgain, lastCard2, "policy");
+          distributeProbabilities(playAgain, lastCard2);
         }
       }
       if(actionsRemaining==2)
@@ -547,8 +605,9 @@ public class Draft extends AbstractCommand
     }
   }
   /**
+   * Jeffrey McCall
    * Check factors such as the level of people undernourished in other regions, the revenue for
-   * this AI's region and foods in this region. Prioritize different regions, foods and policies
+   * this AI's region and foods in this and other regions. Prioritize different regions, foods and policies
    * based on this information. Also, make it more likely for this region to be picked if 
    * pickThisRegion is set to true.
    */
@@ -588,7 +647,7 @@ public class Draft extends AbstractCommand
       }
       avgUndernourished+=undernourishedPercent;
       //If production of a certain food in this region has gone down by more than 30%, take note of this
-      //and take actions to fix it.
+      //and take actions to fix it. Make it more likely for that food and region to get selected this turn.
       for(p=0;p<data.foodProduced.length;p++)
       {
         long difference=percentChangeLong(getClient().getWorldData().get(0).regionData[data.region.ordinal()].foodProduced[p],
@@ -598,18 +657,21 @@ public class Draft extends AbstractCommand
           foodNeedingAttention=EnumFood.values()[p];
           //System.out.println(foodNeedingAttention.name()+" is doing poorly in "+data.region.name()+ "\nI'm more likely to pick it.");
           adjustProbability((int) (probabilityMap.get(foodNeedingAttention.name())*(difference/10)),foodNeedingAttention.name());
+          adjustProbability((int) (probabilityMap.get(data.region.name())*(difference/10)),data.region.name());
         }
         //This food is doing fine, it doesn't need any attention this turn.
         else if(difference>0)
         {
           getClient().getUser().getHand().forEach(policy->
           {
-            policyCardInfo[policy.ordinal()][getClient().getUser().getRegion().ordinal()][EnumFood.values()[p].ordinal()]=false;
+            policyCardInfo[policy.ordinal()][data.region.ordinal()][EnumFood.values()[p].ordinal()]=false;
           });
         }
       }
     }
     avgUndernourished/=getClient().getWorldData().get(1).regionData.length;
+    //If the average percent of undernourished people around the world is over 30%, then make it
+    //more likely to pick a card that has general benefits across the whole world.
     if(avgUndernourished>=30)
     {
       //System.out.println("Average number of people undernourished is greater than 30%.");
@@ -619,6 +681,8 @@ public class Draft extends AbstractCommand
         adjustProbability(probabilityMap.get(policy.name())*((int)avgUndernourished/(10)),policy.name());
       });
     }
+    //If the average rate of undernourishment is fairly low, make it less likely to pick a card that has
+    //general benefits.
     else if(avgUndernourished<=10)
     {
       //System.out.println("Average number of people undernourished is less than 10%.");
@@ -650,6 +714,7 @@ public class Draft extends AbstractCommand
           cardsForThisRegion=true;
         }
       });
+      //If no cards in hand that help AI's region, discard up to three cards and re-draw.
       if(!cardsForThisRegion && !cardsDiscarded)
       {
         discardAndRedraw();
@@ -668,8 +733,19 @@ public class Draft extends AbstractCommand
       });
       amtToAdjust*=.75;
       adjustProbability(amtToAdjust,getClient().getUser().getRegion().name());
+      getClient().policyAndRegionMap.forEach((policy,region)->
+      {
+        if(region.equals(getClient().getUser().getRegion()))
+        {
+          adjustProbability(amtToAdjust,policy.name());
+        }
+        else
+        {
+          adjustProbability(rand.nextInt(5)+1,policy.name());
+        }
+      });
     }
-    //Check relevant factors in AI's own region.
+    //Check revenue in AI's region. 
     revenueDiff=percentChangeInt(thisRegion.revenueBalance, 
         getClient().getWorldData().get(0).regionData[thisRegion.region.ordinal()].revenueBalance);
     //If revenue severely down, increase likelihood of playing a card that will get the region more 
@@ -698,6 +774,11 @@ public class Draft extends AbstractCommand
       }
     }
   }
+  /*
+   * Jeffrey McCall
+   * Make it more likely to select a card that benefits the AI's region monetarily.
+   * This method is called if the AI region's revenue has gone down severely.
+   */
   private void adjustMoneyCards()
   {
     if(getClient().getUser().getHand().contains(EnumPolicy.valueOf("Policy_Loan")))
@@ -713,9 +794,13 @@ public class Draft extends AbstractCommand
       adjustProbability(probabilityMap.get("Policy_Fundraiser")*2,"Policy_Fundraiser");
     }
   }
+  /*
+   * Jeffrey McCall
+   * Called to discard up to three cards from the AI's hand. Three new
+   * cards are automatically re-drawn and added back to the AI's hand.
+   */
   private void discardAndRedraw()
   {
-    //System.out.println("Discarding up to 3 cards");
     ArrayList<EnumPolicy> cardsToDiscard=new ArrayList<>();
     int i=0;
     for(EnumPolicy policy:getClient().getUser().getHand())
@@ -731,14 +816,10 @@ public class Draft extends AbstractCommand
     getClient().getCommModule().send(Endpoint.DELETE_AND_DRAW_CARDS, discardData, null);
     cardsDiscarded=true;
   }
-  /**
+  /*
    * Jeffrey McCall
-   * Adjust the probability that an item will be selected. Either increase or
-   * decrease the probability by a certain amount.
-   * @param size
-   *        The size to increase or decrease.
-   * @param type
-   *        The type of the item, like food, region etc.
+   * Adjust the probability that an item will be selected. This method
+   * is called when a probability for a policy, region or food is being altered.
    */
   private void adjustProbability(int size,String type)
   {
@@ -746,13 +827,18 @@ public class Draft extends AbstractCommand
     probabilityMap.replace(type, oldVal, size);
   }
   /**
-   * Jeffrey McCall This method drafts 2 cards. The policy, region, and food
-   * sample space ArrayLists from AI.java are accessed to pick which policy,
-   * region and foods should be used when drafting the 2 cards. If the decrease
-   * of factor's in the AI's region are greater than 20% after the last turn,
-   * then pickThisRegion is true and the AI is much more likely to draft a card
-   * that affects it's own region.
-   * 
+   * Jeffrey McCall 
+   * This method drafts 2 cards. Random numbers are selected and used to select
+   * a random policy, region and food from the sample space. These are done in do while
+   * loops inside a larger do while loop. It is set up that way since there is condition
+   * checking I do for selecting the policy, region and food to make sure of certain things such
+   * as not selecting the wrong region for whichever policy card I chose. Overall condition 
+   * checking is done to make sure that the policy, region and food have not been set to false
+   * in the policyCardInfo array. A check is also done to ensure that only one card that requires
+   * votes is drafted each turn. If DivertFunds is drafted, then all the rest of the cards in
+   * the AI's hand must be discarded and no more policy cards can be drafted and this method returns
+   * true.
+   * @return True if card is drafted, false if not.
    */
   public boolean draftCards()
   {
@@ -764,6 +850,8 @@ public class Draft extends AbstractCommand
     EnumPolicy currentPolicy = null;
     EnumFood currentFood = null;
     int finalIndexChosen=0;
+    int secondCardChosen=0;
+    boolean draftedSecondCard=false;
     do
     {
       int i=0;
@@ -784,7 +872,15 @@ public class Draft extends AbstractCommand
           return false;
         }
       }while((secondCardToDraft  &&  i==indexOfLastCard) || !checkCardsWithVotes(card));
-      finalIndexChosen=i;
+      if(!secondCardToDraft)
+      {
+        finalIndexChosen=i;
+      }
+      if(secondCardToDraft)
+      {
+        secondCardChosen=i;
+        draftedSecondCard=true;
+      }
       int regionIndex=0;
       int foodIndex=0;
       if(card.getValidTargetRegions()!=null || getClient().policyAndRegionMap.containsKey(card.getCardType()))
@@ -834,6 +930,22 @@ public class Draft extends AbstractCommand
     }
     setupCard(card, currentFood, currentRegion);
     getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
+    //If the policy DivertFunds is drafted, then the rest of hand must be discarded and
+    //that will end the drafting phase for this turn. 
+    if(card.getCardType().equals(EnumPolicy.Policy_DivertFunds))
+    {
+      System.out.println("Divert funds drafted.");
+      for(int i=0;i<getClient().getUser().getHand().size();i++)
+      {
+        if(i!=indexOfLastCard || !(draftedSecondCard && i==secondCardChosen))
+        {
+          getClient().getCommModule().send(Endpoint.DELETE_CARD, getClient().getUser().getHand().get(i), null);
+        }
+      }
+      actionsRemaining=0;
+      getClient().draftedCards.get(numTurns).add(card);
+      return true;
+    }
     actionsRemaining--;
     System.out.println("Card drafted:"+card.getPolicyName());
     //System.out.println("Votes required:"+card.votesRequired());
@@ -854,12 +966,13 @@ public class Draft extends AbstractCommand
       cardDrafted2 = card;
     }
     getClient().draftedCards.get(numTurns).add(card);
-    if(!discarded && rand.nextBoolean())
-    {
-      randomlyDiscard();
-    }
     return true;
   }
+  /*
+   * Jeffrey McCall
+   * Ensure that this combination of policy, region and food has not been set to false
+   * in the policyCardInfo array. 
+   */
   private boolean checkCardVals(EnumPolicy policy,EnumRegion region,EnumFood food)
   {
     if(region!=null && food!=null)
@@ -880,6 +993,9 @@ public class Draft extends AbstractCommand
     }
     return false;
   }
+  /*
+   * Ensure that more than 1 card requiring votes doesn't get drafted.
+   */
   private boolean checkCardsWithVotes(GameCard card)
   {
     if(cardsNeedingSupport>0 && card.votesRequired()>0)
@@ -897,19 +1013,16 @@ public class Draft extends AbstractCommand
     return false;
   }
   /**
-   * Jeffrey McCall This method will change the probability values in an array
-   * list of probability values. The probability is decreased if playAgain==-1.
-   * It is increased if playAgain==1. This is done for foods, regions and
-   * policies.
+   * Jeffrey McCall 
+   * If playAgain=-1, then don't play that combination of card, region and food again this turn.
+   * If playAgain==1, then make it more likely that that policy will get drafted again.
    * 
    * @param playAgain
    *          An int value which determines how the probability is altered.
    * @param card
    *          The policy card that was drafted last turn that we are checking.
-   * @param type
-   *          The type of item that the probabilities relate to.
    */
-  public void distributeProbabilities(int playAgain, GameCard card, String type)
+  public void distributeProbabilities(int playAgain, GameCard card)
   {
     if (playAgain == -1)
     {
@@ -941,14 +1054,18 @@ public class Draft extends AbstractCommand
   }
 
   /**
-   * Jeffrey McCall Go through the relevant regional factors to determine how
+   * Jeffrey McCall 
+   * Go through the relevant regional factors to determine how
    * things have worsened or improved since the last turn. If the amount of
    * decrease of factors is greater than the increase, then this method will
-   * return -1 and the policy in question will be less likely to get played this
-   * turn. If the amount of decrease is equal to the increase, than 0 is
+   * return -1 and the combination of policy, region and food played last turn will
+   * not be drafted again this turn. If the amount of decrease is equal to the increase, than 0 is
    * returned and the likelihood of the card getting played this turn is
    * unaffected. If there was an overall improvement of factors greater than the
    * decrease, then it is more likely that the policy will get drafted again.
+   * If food production or overall factors have decreased by more than 20% in the AI's own
+   * region, than pickThisRegion is set to true and it is 75% more likely that a card that benefits
+   * the AI's own region exclusively will be drafted this turn. 
    * 
    * @return -1, 0 or 1
    */
@@ -1132,14 +1249,9 @@ public class Draft extends AbstractCommand
     return 0;
   }
 
-  /**
+  /*
+   * Jeffrey McCall
    * Returns the percent change between 2 ints.
-   * 
-   * @param originalVal
-   *          First int.
-   * @param newVal
-   *          Second int.
-   * @return The percent change between 2 ints.
    */
   private int percentChangeInt(int originalVal, int newVal)
   {
@@ -1152,14 +1264,9 @@ public class Draft extends AbstractCommand
     }
   }
 
-  /**
+  /*
+   * Jeffrey McCall
    * Get the percent change between 2 doubles.
-   * 
-   * @param originalVal
-   *          The first double.
-   * @param newVal
-   *          The second double.
-   * @return The percentage change.
    */
   private double percentChangeDouble(double originalVal, double newVal)
   {
@@ -1172,12 +1279,9 @@ public class Draft extends AbstractCommand
     }
   }
 
-  /**
+  /*
+   * Jeffrey McCall
    * The percent change between longs.
-   * 
-   * @param originalVal
-   * @param newVal
-   * @return The percentage change.
    */
   private long percentChangeLong(long originalVal, long newVal)
   {
@@ -1189,7 +1293,15 @@ public class Draft extends AbstractCommand
       return 0;
     }
   }
-
+  /*
+   * Jeffrey McCall
+   * Assign region, food and variable to card. If the variable to be assigned
+   * is millions of dollars, no value more than 10% of the region's revenue for the
+   * last year is allotted to this policy, unless the lowest value is more than 10% of
+   * the revenue, in which case that's what assigned to the card. If the variable to be
+   * assigned is a percentage tax break, then if the revenue is doing poorly, the lowest
+   * tax break is assigned. If it's not doing poorly, then a higher tax break is assigned.
+   */
   private void setupCard(GameCard card, EnumFood food, EnumRegion region)
   {
     if (card == null)

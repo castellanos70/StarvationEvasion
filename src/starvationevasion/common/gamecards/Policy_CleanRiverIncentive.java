@@ -1,10 +1,10 @@
 
 package starvationevasion.common.gamecards;
 
+import starvationevasion.server.model.State;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
-
-import starvationevasion.server.model.State;
 
 //TODO: Figure out a way to include when the card can be played on the Javadoc
 /**

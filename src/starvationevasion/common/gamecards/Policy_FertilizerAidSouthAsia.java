@@ -1,9 +1,9 @@
 package starvationevasion.common.gamecards;
 
+import starvationevasion.server.model.State;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
-
-import starvationevasion.server.model.State;
 
 
 public class Policy_FertilizerAidSouthAsia extends GameCard

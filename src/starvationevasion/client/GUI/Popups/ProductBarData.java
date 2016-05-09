@@ -31,7 +31,7 @@ public class ProductBarData extends BorderPane
     this.ID = id;
     this.gui = gui;
 
-    foodImg = new ImageView(gui.getImageGetter().getImageForFoodType256(gui.getFoodType(id)));
+    foodImg = new ImageView(gui.getImageGetter().getImageForFoodType64(gui.getFoodType(id)));
     foodType = gui.getProductList().get(id);
 
     foodGraph = gui.getGraphManager().getProductBarGraph(ID);
@@ -51,15 +51,20 @@ public class ProductBarData extends BorderPane
     centerPane = new HBox();
     centerPane.getChildren().add(foodImg);
     centerPane.getChildren().add(foodGraph.getLineChart());
-    centerPane.getChildren().add(box1);
+    //centerPane.getChildren().add(box1);
+    
 
-
-    this.setCenter(centerPane);
+    this.setRight(centerPane);
     setAlignment(title, Pos.TOP_CENTER);
     this.setTop(title);
   }
 
 
+  public BorderPane getGraph()
+  {
+	  return this;
+  }
+  
   public int getID()
   {
     return ID;

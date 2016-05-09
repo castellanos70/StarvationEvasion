@@ -3,7 +3,7 @@ package starvationevasion.common;
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
-import starvationevasion.common.Constant;
+
 import java.awt.*;
 import java.util.ResourceBundle;
 

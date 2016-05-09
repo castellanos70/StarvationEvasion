@@ -415,7 +415,7 @@ public class DeprecatedClient implements Client
     {
       gui.setAssignedRegion(region);
       gui.setCardsInHand(getHand());
-      Platform.runLater(() -> gui.getDraftLayout().getHand().setHand(getHand().toArray(new EnumPolicy[hand.size()])));
+      Platform.runLater(() -> gui.getDraftLayout().getHand().setPolicies(getHand().toArray(new EnumPolicy[hand.size()])));
     }
   }
   public void shutdown()

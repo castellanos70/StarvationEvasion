@@ -7,9 +7,9 @@ import starvationevasion.sim.Territory;
 public class Blight extends AbstractEvent
 {
 
-  public Blight(EnumSpecialEvent eventType, Territory landArea, int duration)
+  public Blight(Territory landArea, int duration)
   {
-    super(eventType, landArea, duration);
+    super(landArea, duration);
   }
 
   @Override
@@ -18,4 +18,11 @@ public class Blight extends AbstractEvent
     return null;
   }
 
+  public void applyEffects()
+  {
+	  
+	  
+  }
+  
+  
 }

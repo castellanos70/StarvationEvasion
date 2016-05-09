@@ -18,9 +18,8 @@ public class Hurricane extends AbstractEvent
 
   public void applyEffects()
   {
-    super.applyEffects();
-    this.causeFlood();
-    
+    causeFlood();
+    super.applyEffects();    
   }
 
   public MapPoint getLocation()

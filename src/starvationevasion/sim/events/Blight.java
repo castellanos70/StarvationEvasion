@@ -1,15 +1,17 @@
 package starvationevasion.sim.events;
 
-import starvationevasion.common.EnumSpecialEvent;
+import starvationevasion.common.EnumFood;
 import starvationevasion.common.MapPoint;
 import starvationevasion.sim.Territory;
 
 public class Blight extends AbstractEvent
 {
 
-  public Blight(Territory landArea, int duration)
+  EnumFood crop;
+  public Blight(Territory landArea, int duration, EnumFood crop)
   {
     super(landArea, duration);
+    this.crop = crop;
   }
 
   @Override
@@ -19,9 +21,9 @@ public class Blight extends AbstractEvent
   }
 
   public void applyEffects()
-  {
-	  
-	  
+  {	  
+	  wipeOutCrop(crop);
+	  super.applyEffects();
   }
   
   

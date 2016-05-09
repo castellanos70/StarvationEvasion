@@ -18,4 +18,9 @@ public class Flood extends AbstractEvent
     return null;
   }
 
+  public void applyEffects()
+  {
+    wipeOutLandTiles(0.5);
+    super.applyEffects();
+  }
 }

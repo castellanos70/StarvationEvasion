@@ -30,9 +30,9 @@ public class Fire extends AbstractEvent
   
   public void applyEffects()
   {
-	  
+	  destroyFarmEquipment();
+	  wipeOutLandTiles(0.7);
 	  super.applyEffects();
-	  this.destroyFarmEquipment(this.getEffectedTiles());
 	  
 	  // do something from the abstract class
 	  

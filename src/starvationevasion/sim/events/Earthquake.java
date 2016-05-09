@@ -19,5 +19,11 @@ public class Earthquake extends AbstractEvent
     // TODO Auto-generated method stub
     return null;
   }
+  
+  public void applyEffects()
+  {
+    destroyInfrastructure();
+    super.applyEffects();
+  }
 
 }

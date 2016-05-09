@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumSpecialEvent;
 import starvationevasion.common.MapPoint;
 import starvationevasion.common.Util;
+import starvationevasion.sim.CropData;
 import starvationevasion.sim.LandTile;
+import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
 
 
@@ -42,6 +43,7 @@ public abstract class AbstractEvent
     
     this.duration = duration;
     this.landArea = landArea;
+    
     tiles = landArea.getLandTiles();
   }
 
@@ -76,9 +78,9 @@ public abstract class AbstractEvent
 	  return effectedTiles;
   }
   
-  public void destroyFarmEquipment(ArrayList<LandTile> landArea)
+  public void destroyFarmEquipment()
   {
-    for(LandTile tile : landArea)
+    for(LandTile tile : landArea.getLandTiles())
     {
       if(tile.getProductionMultiplier() >= 0.3)
       {
@@ -88,9 +90,9 @@ public abstract class AbstractEvent
     }
   }
   
-  public void destroyInfrastrucure(ArrayList <LandTile> landArea)
+  public void destroyInfrastructure()
   {
-    for(LandTile tile : landArea)
+    for(LandTile tile : landArea.getLandTiles())
     {
       if(tile.getProductionMultiplier() >= 0.3)
       {
@@ -100,11 +102,11 @@ public abstract class AbstractEvent
     }
   }
   
-  public void resetMultipers(ArrayList<LandTile> landArea)
+  public void resetMultipers()
   {
-	  for(LandTile tile : landArea)
+	  for(LandTile tile : landArea.getLandTiles())
 	  {
-		tile.setProductionMultiplier(1.0);  
+	    tile.setProductionMultiplier(1.0);  
 	  }
 	  
 	  
@@ -116,7 +118,7 @@ public abstract class AbstractEvent
     //TODO: add to events list.
   }
   
-  private void wipeOutLandTiles(double percentToWipe)
+  public void wipeOutLandTiles(double percentToWipe)
   {
     List<LandTile> tilesToWipe = landArea.getLandTiles();
     int amtToWipe = (int) (tilesToWipe.size() * percentToWipe);
@@ -129,9 +131,9 @@ public abstract class AbstractEvent
     
   }
   
-  private void wipeOutCrop(EnumFood crop,ArrayList<LandTile> landArea)
+  public void wipeOutCrop(EnumFood crop)
   {
-    for(LandTile tile : landArea)
+    for(LandTile tile : landArea.getLandTiles())
     {
       if(tile.getCrop().equals(crop))
       {
@@ -141,9 +143,17 @@ public abstract class AbstractEvent
     
   }
   
-  private void reduceRainFall()
+  public void reduceRainFall()
   {
-    
+    double productionMultiplier;
+    for(LandTile tile : landArea.getLandTiles())
+    {
+      EnumFood food = tile.getCrop();
+      int foodOrdinal = food.ordinal();
+      productionMultiplier = tile.getProductionMultiplier() - 
+          (tile.getCropRatings()[foodOrdinal].productionRate() - tile.rateTileForCrop(food, region, 2009, cropData, 0.3).productionRate());
+      tile.setProductionMultiplier(productionMultiplier);
+    }
   }
   
   private void initEventGraph()

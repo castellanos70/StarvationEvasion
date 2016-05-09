@@ -26,12 +26,11 @@ public class GraphNode extends StackPane
   public GraphNode(GUI gui)
   {
     this.gui = gui;
-    tempText = new Text("Region Statistics");
-    tempText.setFont(Font.font(null, FontWeight.BOLD, 25));
+    tempText = new Text("Global Statistics");
+    tempText.setFont(Font.font(null, FontWeight.BOLD, 15));
 
     this.getStylesheets().add("/starvationevasion/client/GUI/DraftLayout/style.css");
     this.getStyleClass().add("graphnode");
-
     this.getChildren().add(tempText);
 
     this.setOnMouseClicked(new EventHandler<MouseEvent>()
@@ -39,7 +38,14 @@ public class GraphNode extends StackPane
       @Override
       public void handle(MouseEvent event)
       {
-        gui.getPopupManager().toggleGraphDisplay();
+        if(gui.getPopupManager().isOpen()==null)
+        {
+          if(gui.getPopupManager().isOpen()==null)
+          {
+          gui.getDraftLayout().getGraphDisplay().setDataVisMode(1);
+          gui.getPopupManager().toggleGraphDisplay();
+          }
+        }
       }
     });
   }

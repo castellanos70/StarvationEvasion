@@ -6,6 +6,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import starvationevasion.ai.commands.Command;
 import starvationevasion.ai.commands.Draft;
@@ -14,9 +15,11 @@ import starvationevasion.ai.commands.Login;
 import starvationevasion.ai.commands.Uptime;
 import starvationevasion.ai.commands.Vote;
 import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.SpecialEventData;
 import starvationevasion.common.WorldData;
+import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.communication.Communication;
 import starvationevasion.communication.ConcurrentCommModule;
@@ -24,9 +27,6 @@ import starvationevasion.server.model.Response;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.Type;
 import starvationevasion.server.model.User;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This is just a test/proof-of-concept for the CommModule implementation of the
@@ -45,7 +45,8 @@ public class AI
   private volatile boolean aggregate=false;
   private ArrayList<User> allies = new ArrayList<>();
   private ArrayList<User> enemies = new ArrayList<>();
-
+  //False if maps used in drafting phase not created yet.
+  private AtomicBoolean mapsCreated=new AtomicBoolean(false);
 
   // time of server start
   private double startNanoSec = 0;
@@ -72,13 +73,32 @@ public class AI
     FOODPRICE
 
   }
+  /*
+   * Represents card variables. As of now, some cards need a percentage or a dollar
+   * amount assigned to them when they are drafted.
+   */
+  public enum CardVariableTypes
+  {
+    PERCENTAGE,
+    MONEY
+  }
 
   // This map is used to store information about the world and region that will
-  // be used in selecting
-  // cards to play on each turn.
+  // be used in selecting cards to play on each turn.
   public Map<WorldFactors, ArrayList<Object[]>> factorMap = new EnumMap<WorldFactors, ArrayList<Object[]>>(
       WorldFactors.class);
-
+  
+  //This map is used to store the various game card policies and their associated region, if they only affect one
+  //region.
+  public Map<EnumPolicy, EnumRegion> policyAndRegionMap = new EnumMap<EnumPolicy, EnumRegion>(EnumPolicy.class);
+  //Used to store policies and their associated variables.
+  public Map<EnumPolicy,CardVariableTypes> cardVariables=new EnumMap<EnumPolicy,CardVariableTypes>(EnumPolicy.class);
+  
+  //Cards that benefit many regions, not just a specific one.
+  public ArrayList<EnumPolicy> cardsOfGeneralBenefit=new ArrayList<>();
+  //Cards that benefit the AI's region monetarily.
+  public ArrayList<EnumPolicy> moneyCards=new ArrayList<>();
+  
   // The AI has a copy of the list of special events, if any occurred during the
   // last turn.
   public ArrayList<SpecialEventData> eventList = new ArrayList<>();
@@ -105,8 +125,9 @@ public class AI
     COMM.dispose();
   }
 
-  /**
-   * Jeffrey McCall Create the EnumMap that will be passed to Draft.java which
+  /*
+   * Jeffrey McCall 
+   * Create the EnumMap that will be used by Draft.java which
    * will aid the AI in making decisions about which card to draft.
    */
   private void createMap()
@@ -116,9 +137,56 @@ public class AI
       factorMap.put(WorldFactors.values()[i], new ArrayList<Object[]>());
     }
   }
+  /*
+   * Jeffrey McCall
+   * In this method I'm adding items to policyAndRegionMap, which stores policy cards and
+   * their corresponding regions. I'm also adding policies to a couple lists. I'm also filling
+   * cardVariables which stores policies and their associated variable types. These maps and lists
+   * are all used in the drafting phase by the AI.
+   */
+  private void createMapsAndLists()
+  {
+    policyAndRegionMap.put(EnumPolicy.Policy_CleanRiverIncentive, getUser().getRegion());
+    policyAndRegionMap.put(EnumPolicy.Policy_EfficientIrrigationIncentive, getUser().getRegion());
+    policyAndRegionMap.put(EnumPolicy.Policy_EthanolTaxCreditChange, getUser().getRegion());
+    policyAndRegionMap.put(EnumPolicy.Policy_FarmInfrastructureSubSaharan, EnumRegion.SUB_SAHARAN);
+    policyAndRegionMap.put(EnumPolicy.Policy_FertilizerAidCentralAsia, EnumRegion.CENTRAL_ASIA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FertilizerAidMiddleAmerica, EnumRegion.MIDDLE_AMERICA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FertilizerAidOceania, EnumRegion.OCEANIA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FertilizerAidSouthAsia, EnumRegion.SOUTH_ASIA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FertilizerAidSubSaharan, EnumRegion.SUB_SAHARAN);
+    policyAndRegionMap.put(EnumPolicy.Policy_FertilizerSubsidy, getUser().getRegion());
+    policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefCentralAsia, EnumRegion.CENTRAL_ASIA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefMiddleAmerica,EnumRegion.MIDDLE_AMERICA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefOceania, EnumRegion.OCEANIA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefSouthAsia, EnumRegion.SOUTH_ASIA);
+    policyAndRegionMap.put(EnumPolicy.Policy_FoodReliefSubSaharan, EnumRegion.SUB_SAHARAN);
+    policyAndRegionMap.put(EnumPolicy.Policy_DivertFunds, getUser().getRegion());
+    policyAndRegionMap.put(EnumPolicy.Policy_Fundraiser, getUser().getRegion());
+    policyAndRegionMap.put(EnumPolicy.Policy_Loan, getUser().getRegion());
+    cardsOfGeneralBenefit.add(EnumPolicy.Policy_InternationalFoodRelief);
+    cardsOfGeneralBenefit.add(EnumPolicy.Policy_MyPlatePromotionCampaign);
+    cardsOfGeneralBenefit.add(EnumPolicy.Policy_ResearchInsectResistanceGrain);
+    moneyCards.add(EnumPolicy.valueOf("Policy_Loan"));
+    moneyCards.add(EnumPolicy.valueOf("Policy_DivertFunds"));
+    moneyCards.add(EnumPolicy.valueOf("Policy_Fundraiser"));
+    cardVariables.put(EnumPolicy.Policy_CleanRiverIncentive, CardVariableTypes.PERCENTAGE);
+    cardVariables.put(EnumPolicy.Policy_EfficientIrrigationIncentive, CardVariableTypes.PERCENTAGE);
+    cardVariables.put(EnumPolicy.Policy_EthanolTaxCreditChange, CardVariableTypes.PERCENTAGE);
+    cardVariables.put(EnumPolicy.Policy_FarmInfrastructureSubSaharan, CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_FertilizerAidCentralAsia, CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_FertilizerAidMiddleAmerica, CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_FertilizerAidOceania, CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_FertilizerAidSouthAsia, CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_FertilizerAidSubSaharan,CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_InternationalFoodRelief,CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_MyPlatePromotionCampaign, CardVariableTypes.MONEY);
+    cardVariables.put(EnumPolicy.Policy_ResearchInsectResistanceGrain,CardVariableTypes.MONEY);
+  }
 
-  /**
-   * Jeffrey McCall Collect all of the important data about the world and region
+  /*
+   * Jeffrey McCall 
+   * Collect all of the important data about the world and region
    * that has been updated since the last turn. Put this data in the factorMap
    * which is used in decision making by the AI regarding which cards it wants
    * to draft.
@@ -209,13 +277,19 @@ public class AI
         // since the last call
         ArrayList<Response> responses = COMM.pollMessages();
         processServerInput(responses);
-
+        
         // if commands is empty check again
         if (commands.size() == 0) continue;
 
         // take off the top of the stack
         Command c = commands.peek();
-
+        //If the first drafting phase is about to happen and the maps used in drafting haven't been
+        //created, call the method to create them.
+        if(!mapsCreated.get() && c.commandString().equals("Draft"))
+        {
+          createMapsAndLists();
+          mapsCreated.set(true);
+        }
         boolean runAgain = c.run();
 
         // if it does not need to run again pop
@@ -240,7 +314,7 @@ public class AI
       if (type == Type.AUTH_SUCCESS)
       {
         u = (User)data;
-        COMM.sendChat("ALL", "Hi, I am " + u.getUsername() + ". I'll be playing using (crappy) AI.", null);
+        COMM.sendChat("ALL", "Hi, I am " + u.getUsername() + ". I'll be playing using slightly better AI.", null);
       }
       else if (type == Type.USER)
       {

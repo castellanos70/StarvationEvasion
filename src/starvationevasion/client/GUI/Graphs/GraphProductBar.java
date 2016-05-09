@@ -18,9 +18,28 @@ public class GraphProductBar extends Graph
     this.food = food;
     this.title = "World Market Price for " + food.toString();
     lineChart.setTitle(title);
-
+    lineChart.getStylesheets().add(getClass().getResource("/starvationevasion/client/GUI/Graphs/graphCSS.css").toExternalForm());
     yAxis.setLabel("Price (millions of $)");
 
-    lineChart.setPrefSize(500,256);
+    lineChart.setPrefSize(725,330);
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

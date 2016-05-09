@@ -70,7 +70,7 @@ public class LandTile
 
   private int currentProduction;
 
-
+  private double productionMultiplier = 1;
 
   private int currentCost;
 
@@ -144,7 +144,7 @@ public class LandTile
    */
   public int getCurrentProduction()
   {
-    return currentProduction;
+    return (int) (currentProduction * productionMultiplier);
   }
 
   public void setCurrentProduction(int currentProduction)
@@ -166,6 +166,17 @@ public class LandTile
   {
     curCrop = crop;
   }
+  
+  public double getProductionMultiplier()
+  {
+    return productionMultiplier;
+  }
+  
+  public void setProductionMultiplier(double productionMultiplier)
+  {
+    this.productionMultiplier = productionMultiplier;
+  }
+  
   public EnumFood getCrop() { return curCrop; }
   
   public EnumCropZone[] getCropRatings() { return cropRatings; }

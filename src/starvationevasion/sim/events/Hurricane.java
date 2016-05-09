@@ -13,17 +13,14 @@ public class Hurricane extends AbstractEvent
 {
   public Hurricane(Territory landArea)
   {
-    super(EnumSpecialEvent.HURRICANE, landArea, 4);
+    super(landArea, 1);
   }
 
   public void applyEffects()
   {
-    Territory landArea = getLandArea();
-    for (LandTile tile : landArea.getLandTiles())
-    {
-      //tile.setRainfall(tile.getRainfall()*3);
-    }
     super.applyEffects();
+    this.causeFlood();
+    
   }
 
   public MapPoint getLocation()

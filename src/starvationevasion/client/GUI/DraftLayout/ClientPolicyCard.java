@@ -27,6 +27,8 @@ import java.util.Arrays;
 
 
 /**`
+ * @deprecated
+ * 
  * Created by arirappaport on 11/15/15.
  */
 public class ClientPolicyCard extends VBox

@@ -7,9 +7,9 @@ import starvationevasion.sim.Territory;
 public class Flood extends AbstractEvent
 {
 
-  public Flood(EnumSpecialEvent eventType, Territory landArea, int duration)
+  public Flood(Territory landArea, int duration)
   {
-    super(eventType, landArea, duration);
+    super(landArea, duration);
   }
 
   @Override

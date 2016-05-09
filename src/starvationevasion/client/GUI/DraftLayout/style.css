@@ -4,13 +4,24 @@
 
 .graphnode
 {
-    -fx-background-color: #5790ba;
+    -fx-background-color: rgb(84, 84, 84, 0.75);
     -fx-border-color: black;
     -fx-border-insets: 0;
-    -fx-border-width: 5;
-    -fx-border-radius: 10 10 10 10;
-    -fx-background-radius: 10 10 10 10;
+    -fx-border-width: 3;
+    -fx-border-radius: 5 5 5 5;
+    -fx-background-radius: 5 5 5 5;
 }
+
+.globalPricesVisNode
+{	
+    -fx-background-color: rgb(84, 84, 84, 0.75);
+    -fx-border-color: black;
+    -fx-border-insets: 0;
+    -fx-border-width: 4;
+    -fx-border-radius: 5 5 5 5;
+    -fx-background-radius: 5 5 5 5;
+}
+
 
 .handbar
 {

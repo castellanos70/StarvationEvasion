@@ -1,8 +1,16 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.*;
+import starvationevasion.common.Constant;
+import starvationevasion.common.EnumCropZone;
+import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.MapPoint;
+import starvationevasion.common.MapProjectionMollweide;
+import starvationevasion.common.RegionData;
+import starvationevasion.common.SpecialEventData;
+import starvationevasion.common.Util;
+import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.common.gamecards.Policy_DivertFunds;
 import starvationevasion.sim.LandTile.Field;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
@@ -15,10 +23,14 @@ import starvationevasion.util.Picture;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.PathIterator;
+import java.awt.image.BufferedImage;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -88,7 +100,7 @@ import java.util.logging.Logger;
 
 public class Model
 {
-  public static final int TOTAL_LAND_TILES = 245021;//167235;
+  public static final int TOTAL_LAND_TILES = 167235;
   public static double EVENT_CHANCE = 0.02;
   private static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
@@ -352,6 +364,18 @@ public class Model
     return regionList[regionCode.ordinal()].getGeographicArea();
   }
 
+
+  public Area[] getRegionPerimetersSpherical()
+  {
+    Area[] areaList = new Area[EnumRegion.SIZE];
+
+    for (EnumRegion regionID : EnumRegion.values())
+    {
+      int i = regionID.ordinal();
+      areaList[i] = regionList[i].getGeographicArea().getPerimeter();
+    }
+    return areaList;
+  }
 
   public List<AbstractEvent> getSpecialEvents()
   {
@@ -1569,7 +1593,8 @@ public class Model
    */
   public Picture testShowMapProjection()
   {
-    return new Picture("assets/WorldMap_MollweideProjection.png");
+    //return new Picture("assets/WorldMap_MollweideProjection-1280x641.png");
+    return new Picture("assets/BlankBlue_MollweideProjection-1280x641.png");
   }
 
   /**
@@ -1712,10 +1737,13 @@ public class Model
     Model model = new Model();
 
     Picture pic = model.testShowMapProjection();
+
+    BufferedImage background = pic.getImageCapture();
+
     //Graphics2D gfx = pic.getOffScreenGraphics();
     //gfx.setColor(Color.BLACK);
     //gfx.fillRect(0,0,pic.getImageWidth(), pic.getImageHeight());
-    Territory territory;
+   // Territory territory;
 
    //territory = model.getTerritory("US-Utah");
    //model.drawBoundary(pic, territory, Color.GREEN, 1);
@@ -1769,32 +1797,38 @@ public class Model
     //model.drawBoundary(pic, territory, Color.RED);
     */
 
-    for (int n = 0; n < 10; n++)
+    Color[] colorList = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN,
+      Color.BLUE, Color.MAGENTA}; //for debugging only
+    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
+    map.setRegionPerimetersSpherical(model.getRegionPerimetersSpherical());
+
+    Graphics2D gfx = pic.getOffScreenGraphics();
+    gfx.setStroke(new BasicStroke(1));
+    //map.setCentralMeridian(-5);
+/*
+    for (int n = -180; n < 180; n+=1)
     {
-
+      gfx.drawImage(background,0,0,null);
+      map.setCentralMeridian(n);
       for (EnumRegion regionID : EnumRegion.values())
       {
-        Region region = model.getRegion(regionID);
-        model.drawAllTiles(pic, region, regionID.getColor());
-      }
+        Area drawArea = map.getPerimeterDrawable(regionID);
+        gfx.setColor(Util.brighten(regionID.getColor(), 0.5));
 
-      for (EnumRegion regionID : EnumRegion.values())
-      {
-        Region region = model.getRegion(regionID);
-        model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5), 1);
+        gfx.draw(drawArea);
       }
       pic.repaint();
 
-
       try
       {
-        Thread.sleep(3000);
+        Thread.sleep(10);
       } catch (InterruptedException e) { }
 
-      for (Constant.Month month : Constant.Month.values())
-      {
-        model.drawRain(pic, 2000+n, month);
-      }
+      //for (Constant.Month month : Constant.Month.values())
+      //{
+      //  model.drawRain(pic, 2000+n, month);
+      //}
     }
+    */
   }
 }

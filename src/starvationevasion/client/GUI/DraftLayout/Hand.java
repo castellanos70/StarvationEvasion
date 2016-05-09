@@ -14,6 +14,8 @@ import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.sim.CardDeck;
 
 /**
+ * @deprecated
+ * 
  * Hand is the GUI element responsible for allowing the user to interact with the current cards in their hand
  * It will display the hards in the user's hand
  * On mouseover, the cards will become enlarged
@@ -56,6 +58,7 @@ public class Hand extends GridPane
     this.hand = hand;
     updateHand();
   }
+  
   public EnumPolicy[] getHand()
   {
     return hand;

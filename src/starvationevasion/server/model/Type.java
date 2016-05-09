@@ -1,47 +1,50 @@
 package starvationevasion.server.model;
 
-
 import com.oracle.javafx.jmx.json.JSONDocument;
 
 public enum Type implements Sendable
 {
 
-  AUTH {
+  AUTH
+  {
     @Override
-    public String getHeaderString ()
+    public String getHeaderString()
     {
-      return "HTTP/1.1 401 Not Authorized\r\n" +
-              "WWW-Authenticate: Basic realm=\"Starvation Evasion\"";
+      return "HTTP/1.1 401 Not Authorized\r\n" + "WWW-Authenticate: Basic realm=\"Starvation Evasion\"";
     }
   },
 
-  ERROR {
+  ERROR
+  {
     @Override
-    public String getHeaderString ()
+    public String getHeaderString()
     {
       return "HTTP/1.1 500 Internal Server Error";
     }
   },
 
-  SUCCESS {
+  SUCCESS
+  {
     @Override
-    public String getHeaderString ()
+    public String getHeaderString()
     {
       return "HTTP/1.1 200 OK";
     }
   },
 
-  AUTH_ERROR{
+  AUTH_ERROR
+  {
     @Override
-    public String getHeaderString ()
+    public String getHeaderString()
     {
       return "HTTP/1.1 403 Forbidden";
     }
   },
 
-  NOT_FOUND{
+  NOT_FOUND
+  {
     @Override
-    public String getHeaderString ()
+    public String getHeaderString()
     {
       return "HTTP/1.1 404 Not Found";
     }
@@ -71,23 +74,15 @@ public enum Type implements Sendable
 
   WORLD_DATA,
 
+  AREA, TIME, GAME_STATE, AVAILABLE_REGIONS, USER_HAND, WORLD_DATA_LIST, DRAFTED, DRAFTED_INTO_VOTE, VOTE_BALLOT, USERS_READY_LIST, USERS_LOGGED_IN_LIST, VOTE_ERROR, VOTE_SUCCESS, AUTH_SUCCESS, CREATE_SUCCESS, CREATE_ERROR, USERS, VOTE_RESULTS;
 
-  AREA,
-  TIME,
-  GAME_STATE,
-  AVAILABLE_REGIONS, USER_HAND,
-  WORLD_DATA_LIST, DRAFTED, DRAFTED_INTO_VOTE, VOTE_BALLOT, USERS_READY_LIST,
-  USERS_LOGGED_IN_LIST, VOTE_ERROR, VOTE_SUCCESS,
-  AUTH_SUCCESS, CREATE_SUCCESS, CREATE_ERROR, USERS, VOTE_RESULTS;
-
-
-  public String getHeaderString ()
+  public String getHeaderString()
   {
     return SUCCESS.getHeaderString();
   }
 
   @Override
-  public JSONDocument toJSON ()
+  public JSONDocument toJSON()
   {
     JSONDocument _json = JSONDocument.createObject();
     _json.setString("name", name());
@@ -96,14 +91,13 @@ public enum Type implements Sendable
   }
 
   @Override
-  public void fromJSON (Object doc)
+  public void fromJSON(Object doc)
   {
 
   }
 
-
   @Override
-  public Type getType ()
+  public Type getType()
   {
     return this;
   }

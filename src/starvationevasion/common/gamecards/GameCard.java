@@ -1,14 +1,15 @@
 package starvationevasion.common.gamecards;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+
 import com.oracle.javafx.jmx.json.JSONDocument;
+
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.Type;
-
-import java.util.ArrayList;
-import java.util.EnumSet;
 
 /**
  * GameCard is the structure used by the Client, Server and Simulator.
@@ -124,9 +125,9 @@ public abstract class GameCard implements Sendable
       case Policy_CleanRiverIncentive:
         myCard = new Policy_CleanRiverIncentive();
         break;
-      case Policy_CovertIntelligence:
-        myCard = new Policy_CovertIntelligence();
-        break;
+      //case Policy_CovertIntelligence:
+      //  myCard = new Policy_CovertIntelligence();
+      //  break;
       case Policy_EducateTheWomenCampaign:
         myCard = new Policy_EducateTheWomenCampaign();
         break;
@@ -270,8 +271,8 @@ public abstract class GameCard implements Sendable
 	  switch (policy) {
       case Policy_CleanRiverIncentive:
         return 2;
-      case Policy_CovertIntelligence:
-        return 1;
+      //case Policy_CovertIntelligence:
+      //  return 1;
       case Policy_EducateTheWomenCampaign:
         return 2;
       case Policy_EfficientIrrigationIncentive:

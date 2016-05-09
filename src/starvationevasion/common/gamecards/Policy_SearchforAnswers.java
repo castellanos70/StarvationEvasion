@@ -1,8 +1,8 @@
 package starvationevasion.common.gamecards;
 
-import java.util.EnumSet;
-
 import starvationevasion.server.model.State;
+
+import java.util.EnumSet;
 
 //Not functional, and not in EnumPolicy. Uncomment it there to re-enable this card.
 /**

@@ -1,6 +1,5 @@
 package starvationevasion.common.policies;
 
-import starvationevasion.common.EnumRegion;
 import starvationevasion.common.gamecards.GameCard;
 
 public class Policy_Fundraiser extends GameCard

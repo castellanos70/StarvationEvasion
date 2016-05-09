@@ -45,6 +45,7 @@ public class AI
   private volatile boolean aggregate=false;
   private ArrayList<User> allies = new ArrayList<>();
   private ArrayList<User> enemies = new ArrayList<>();
+  //False if maps used in drafting phase not created yet.
   private AtomicBoolean mapsCreated=new AtomicBoolean(false);
 
   // time of server start
@@ -72,7 +73,10 @@ public class AI
     FOODPRICE
 
   }
-  
+  /*
+   * Represents card variables. As of now, some cards need a percentage or a dollar
+   * amount assigned to them when they are drafted.
+   */
   public enum CardVariableTypes
   {
     PERCENTAGE,
@@ -80,20 +84,19 @@ public class AI
   }
 
   // This map is used to store information about the world and region that will
-  // be used in selecting
-  // cards to play on each turn.
+  // be used in selecting cards to play on each turn.
   public Map<WorldFactors, ArrayList<Object[]>> factorMap = new EnumMap<WorldFactors, ArrayList<Object[]>>(
       WorldFactors.class);
   
   //This map is used to store the various game card policies and their associated region, if they only affect one
   //region.
   public Map<EnumPolicy, EnumRegion> policyAndRegionMap = new EnumMap<EnumPolicy, EnumRegion>(EnumPolicy.class);
-  
+  //Used to store policies and their associated variables.
   public Map<EnumPolicy,CardVariableTypes> cardVariables=new EnumMap<EnumPolicy,CardVariableTypes>(EnumPolicy.class);
   
   //Cards that benefit many regions, not just a specific one.
   public ArrayList<EnumPolicy> cardsOfGeneralBenefit=new ArrayList<>();
-  
+  //Cards that benefit the AI's region monetarily.
   public ArrayList<EnumPolicy> moneyCards=new ArrayList<>();
   
   // The AI has a copy of the list of special events, if any occurred during the
@@ -122,8 +125,9 @@ public class AI
     COMM.dispose();
   }
 
-  /**
-   * Jeffrey McCall Create the EnumMap that will be passed to Draft.java which
+  /*
+   * Jeffrey McCall 
+   * Create the EnumMap that will be used by Draft.java which
    * will aid the AI in making decisions about which card to draft.
    */
   private void createMap()
@@ -133,8 +137,13 @@ public class AI
       factorMap.put(WorldFactors.values()[i], new ArrayList<Object[]>());
     }
   }
-  //In this map I'm adding cards that only affect one region. This is for use in the drafting phase
-  //so that I can evaluate the region that a card is affecting.
+  /*
+   * Jeffrey McCall
+   * In this method I'm adding items to policyAndRegionMap, which stores policy cards and
+   * their corresponding regions. I'm also adding policies to a couple lists. I'm also filling
+   * cardVariables which stores policies and their associated variable types. These maps and lists
+   * are all used in the drafting phase by the AI.
+   */
   private void createMapsAndLists()
   {
     policyAndRegionMap.put(EnumPolicy.Policy_CleanRiverIncentive, getUser().getRegion());
@@ -175,8 +184,9 @@ public class AI
     cardVariables.put(EnumPolicy.Policy_ResearchInsectResistanceGrain,CardVariableTypes.MONEY);
   }
 
-  /**
-   * Jeffrey McCall Collect all of the important data about the world and region
+  /*
+   * Jeffrey McCall 
+   * Collect all of the important data about the world and region
    * that has been updated since the last turn. Put this data in the factorMap
    * which is used in decision making by the AI regarding which cards it wants
    * to draft.
@@ -273,6 +283,8 @@ public class AI
 
         // take off the top of the stack
         Command c = commands.peek();
+        //If the first drafting phase is about to happen and the maps used in drafting haven't been
+        //created, call the method to create them.
         if(!mapsCreated.get() && c.commandString().equals("Draft"))
         {
           createMapsAndLists();
@@ -302,7 +314,7 @@ public class AI
       if (type == Type.AUTH_SUCCESS)
       {
         u = (User)data;
-        COMM.sendChat("ALL", "Hi, I am " + u.getUsername() + ". I'll be playing using (crappy) AI.", null);
+        COMM.sendChat("ALL", "Hi, I am " + u.getUsername() + ". I'll be playing using slightly better AI.", null);
       }
       else if (type == Type.USER)
       {

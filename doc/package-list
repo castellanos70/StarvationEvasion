@@ -17,6 +17,7 @@ starvationevasion.client.Networking
 starvationevasion.client.Setup
 starvationevasion.common
 starvationevasion.common.gamecards
+starvationevasion.common.policies
 starvationevasion.communication
 starvationevasion.communication.AITest
 starvationevasion.communication.AITest.commands

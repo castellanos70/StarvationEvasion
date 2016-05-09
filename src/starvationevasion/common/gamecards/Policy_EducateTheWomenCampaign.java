@@ -1,9 +1,9 @@
 package starvationevasion.common.gamecards;
 
-import java.util.EnumSet;
-
 import starvationevasion.common.EnumRegion;
 import starvationevasion.server.model.State;
+
+import java.util.EnumSet;
 
 
 /**

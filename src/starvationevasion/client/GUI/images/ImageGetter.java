@@ -42,6 +42,9 @@ public class ImageGetter implements ImageConstants
 
   private static Image discardLeftArrowSmall;
   private static Image discardRightArrowSmall;
+  
+  private static Image chatToggle;
+  private static Image coin;
 
   private Image undoButton;
   private ImageView voteIcon;
@@ -66,6 +69,9 @@ public class ImageGetter implements ImageConstants
     discardLeftArrowSmall = new Image("ActionButtons/leftArrowSmall.png");
     discardRightArrowSmall = new Image("ActionButtons/rightArrowSmall.png");
 
+    chatToggle = new Image("ActionButtons/chatToggle.png");
+    coin = new Image("ActionButtons/coin.png");
+    
     undoButton = new Image("ActionButtons/undoResized.png");
     voteIcon = new ImageView("cardImages/vote.png");
 
@@ -155,6 +161,17 @@ public class ImageGetter implements ImageConstants
     }
   }
 
+  public Image getChatToggleImage()
+  {
+	  return chatToggle;
+  }
+  
+  public Image getCoin()
+  {
+	  return coin;
+  }
+  
+  
   public Image getWorldMap()
   {
     return worldMap;
@@ -213,7 +230,7 @@ public class ImageGetter implements ImageConstants
    *          policy card you want to get an image for
    * @return image of the policy card
    */
-  public ImageView getImageForCard(EnumPolicy policy)
+  public static ImageView getImageForCard(EnumPolicy policy)
   {
     String desiredPath = policy.getImagePath(); 
     desiredPath = desiredPath.replace("\\", System.getProperty("file.separator")); // Double-escaped to be "\\" in regex

@@ -1,7 +1,10 @@
 package starvationevasion.common;
 
 
+import javafx.scene.shape.Shape;
+
 import java.awt.*;
+import java.awt.geom.Area;
 
 public class MapProjectionMollweide
 {
@@ -40,6 +43,19 @@ public class MapProjectionMollweide
     centralMeridian = degrees*DEG_TO_RAD;
   }
 
+  public void setRegionPerimetersSpherical(Area[] regionPerimeters)
+  {
+  }
+
+
+  /**
+   * @param regionID
+   * @return
+   */
+  public Shape getPerimeterDrawable(EnumRegion regionID)
+  {
+return null;
+  }
 
   /**
    *  * <li> Latitude</li>

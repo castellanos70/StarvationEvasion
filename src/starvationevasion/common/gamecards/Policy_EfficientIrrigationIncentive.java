@@ -1,10 +1,10 @@
 
 package starvationevasion.common.gamecards;
 
+import starvationevasion.server.model.State;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
-
-import starvationevasion.server.model.State;
 
 /**
  * Title: {@value #TITLE}<br><br>

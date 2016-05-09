@@ -4,12 +4,10 @@ import starvationevasion.common.*;
 import starvationevasion.sim.io.CSVReader;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 
 /**
@@ -45,7 +43,7 @@ public class LandTile
    * ordered matching with each record in each month of each annual file of PATH_CLIMATE_PREFIX.
    */
   private static final String PATH_COORDINATES = "/data/sim/climate/";
-  private static final String COORDINATE_FILENAME = "ArableCoordinates";
+  private static final String COORDINATE_FILENAME = "GeodesicArableCoordinates_778km2";
   private static final String PATH_CLIMATE = "/data/sim/climate/Climate_";
   private static final String PREFIX_HISTORICAL = "Historical";
   private static final String PREFIX_RCP45 = "RCP45";
@@ -391,7 +389,7 @@ public class LandTile
           String[] fieldList;
           recordIdx = 0;
           //Read each record of file.
-          while ((fieldList = fileReader.readRecord(Field.SIZE+1)) != null)
+          while ((fieldList = fileReader.readRecord(Field.SIZE)) != null)
           {
             LandTile tile = tileList.get(recordIdx);
 
@@ -399,9 +397,12 @@ public class LandTile
             //Read each field of record.
             for (int i=0; i<Field.SIZE; i++)
             {
-              int k = i;
-              if (i >= 1) k = i + 1; //This is temperary to skip the now unused column of max monthly temp
-              float value= Float.parseFloat(fieldList[k]);
+              float value= Float.parseFloat(fieldList[i]);
+
+              //There are locations for which rain data does not exist. For now, we set
+              // these values to 0.
+              if (i == Field.RAIN.ordinal() && value < 0f) value = 0f;
+
 
               //System.out.printf("     tile[%d].data[%d][%d][%d]=%f\n", recordIdx.yearEnum.ordinal(),month,i,value);
               tile.data[yearEnum.ordinal()][month][i] = value;
@@ -411,15 +412,16 @@ public class LandTile
             }
             recordIdx++;
           }
-          //fileReader.close();
+          fileReader.close();
+          assert (recordIdx == Model.TOTAL_LAND_TILES);
           month++;
         }
-        //zStream.close();
-        //zipFile.close();
+        zipFile.close();
       }
+
       catch (Exception e)
       {
-        System.out.println("Record# "+recordIdx+" "+ e.getMessage());
+        System.out.println("          Record# "+recordIdx+" "+ e.getMessage());
         e.printStackTrace();
         System.exit(0);
       }

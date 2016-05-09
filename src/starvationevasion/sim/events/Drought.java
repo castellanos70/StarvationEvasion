@@ -11,10 +11,9 @@ import starvationevasion.sim.*;
 public class Drought extends AbstractEvent
 {
   Region region;
-  public Drought(Region landArea)
+  public Drought(Territory landArea, Region region, CropData cropData, int duration)
   {
-    super(landArea, 4);
-    region = landArea;
+    super(landArea, region, cropData, duration);
   }
 
   public void applyEffects()

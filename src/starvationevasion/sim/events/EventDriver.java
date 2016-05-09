@@ -61,11 +61,11 @@ public class EventDriver
 		// determine what events to add to EventsList
 		 switch(eventIndex)
 		 {
-		 case 0: addEvent(new Drought(tmpRegion)); break;
-		 case 1: addEvent(new Fire(tmpTerritory,1)); break;
-		 case 2: addEvent(new Hurricane(tmpTerritory));break;
-		 case 3: addEvent(new Earthquake(tmpTerritory,2));break;
-		 case 4: addEvent(new Blight(tmpTerritory,2));break;
+		 case 0: addEvent(new Drought(tmpRegion, tmpRegion, null, counter)); break;
+		 case 1: addEvent(new Fire(tmpTerritory,tmpRegion, null, 1)); break;
+		 case 2: addEvent(new Hurricane(tmpTerritory, tmpRegion, null, counter));break;
+		 case 3: addEvent(new Earthquake(tmpTerritory,tmpRegion, null, 2));break;
+		 case 4: addEvent(new Blight(tmpTerritory,tmpRegion, null, 2));break;
 		 case 5: break;
 		 case 6: break;
 		 case 7: break;

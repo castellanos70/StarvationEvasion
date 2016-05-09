@@ -2,14 +2,16 @@ package starvationevasion.sim.events;
 
 import starvationevasion.common.EnumSpecialEvent;
 import starvationevasion.common.MapPoint;
+import starvationevasion.sim.CropData;
+import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
 
 public class Earthquake extends AbstractEvent
 {
 
-  public Earthquake(Territory landArea, int duration)
+  public Earthquake(Territory landArea, Region region, CropData cropData, int duration)
   {
-    super(landArea, duration);
+    super(landArea, region, cropData, duration);
     // TODo Auto-generated constructor stub
   }
 

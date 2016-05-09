@@ -795,71 +795,71 @@ public class Model
 
   private void generateSpecialEvents()
   {
-    // TODO: 12/6/2015 Alfred is working on this.
-    //
-    if (debugLevel.intValue() < Level.INFO.intValue())
-    {
-      Simulator.dbg.println("******************************************* Generating special events");
-    }
-
-    //check current currentYear.
-    int CURRENT_YEAR = 2015;
-    if (currentYear < CURRENT_YEAR)
-    {
-      //Then there should be a pre-existing event to draw upon. Then
-      //there ought to have been a process that loaded the events to draw from
-      for (SpecialEventData event : specialEventDatum)
-      {
-        if (event.year == currentYear)
-        {
-          //add current event to data structure of events for the currentYear
-        }
-      }
-    }
-    else
-    {
-      //If this is the case then examine the players behaviors. Is it probable
-      //that their region could experience an event based on the leaders actions
-      //through policy. So their current status is important:
-      //1. Are they in crisis already?
-      //2. What are their current policies?
-      //3. if in crisis will the current policies help or hurt?
-      //4. if not in crisis will the current policies improve the regions state?
-    }
-
-    // Temporary code just to make special events happen in the absence of Alfred's timeline.
-    //
-    int attempts = 5;
-    Random rand = new Random();
-    while (attempts > 0)
-    {
-      if (rand.nextFloat() < EVENT_CHANCE)
-      {
-        if (rand.nextBoolean())
-        {
-          // do a hurricane
-          Region us = regionList[EnumRegion.SIZE];
-          int idx = rand.nextInt(us.getTerritoryList().size() - 1) + 1;
-          for (Territory territory : us.getTerritoryList())
-          {
-            if (idx == 0)
-            {
-              specialEvents.add(new Hurricane(territory));
-              break;
-            }
-            idx--;
-          }
-        }
-        else
-        {
-          // do a drought
-          int idx = rand.nextInt(EnumRegion.US_REGIONS.length);
-          Region usRegion = regionList[EnumRegion.US_REGIONS[idx].ordinal()];
-          specialEvents.add(new Drought(usRegion));
-        }
-      }
-      attempts--;
-    }
+//    // TODO: 12/6/2015 Alfred is working on this.
+//    //
+//    if (debugLevel.intValue() < Level.INFO.intValue())
+//    {
+//      Simulator.dbg.println("******************************************* Generating special events");
+//    }
+//
+//    //check current currentYear.
+//    int CURRENT_YEAR = 2015;
+//    if (currentYear < CURRENT_YEAR)
+//    {
+//      //Then there should be a pre-existing event to draw upon. Then
+//      //there ought to have been a process that loaded the events to draw from
+//      for (SpecialEventData event : specialEventDatum)
+//      {
+//        if (event.year == currentYear)
+//        {
+//          //add current event to data structure of events for the currentYear
+//        }
+//      }
+//    }
+//    else
+//    {
+//      //If this is the case then examine the players behaviors. Is it probable
+//      //that their region could experience an event based on the leaders actions
+//      //through policy. So their current status is important:
+//      //1. Are they in crisis already?
+//      //2. What are their current policies?
+//      //3. if in crisis will the current policies help or hurt?
+//      //4. if not in crisis will the current policies improve the regions state?
+//    }
+//
+//    // Temporary code just to make special events happen in the absence of Alfred's timeline.
+//    //
+//    int attempts = 5;
+//    Random rand = new Random();
+//    while (attempts > 0)
+//    {
+//      if (rand.nextFloat() < EVENT_CHANCE)
+//      {
+//        if (rand.nextBoolean())
+//        {
+//          // do a hurricane
+//          Region us = regionList[EnumRegion.SIZE];
+//          int idx = rand.nextInt(us.getTerritoryList().size() - 1) + 1;
+//          for (Territory territory : us.getTerritoryList())
+//          {
+//            if (idx == 0)
+//            {
+//              specialEvents.add(new Hurricane(territory));
+//              break;
+//            }
+//            idx--;
+//          }
+//        }
+//        else
+//        {
+//          // do a drought
+//          int idx = rand.nextInt(EnumRegion.US_REGIONS.length);
+//          Region usRegion = regionList[EnumRegion.US_REGIONS[idx].ordinal()];
+//          specialEvents.add(new Drought(usRegion));
+//        }
+//      }
+//      attempts--;
+//    }
   }
 
   private void applySpecialEvents()

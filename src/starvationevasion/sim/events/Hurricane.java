@@ -2,7 +2,9 @@ package starvationevasion.sim.events;
 
 import starvationevasion.common.EnumSpecialEvent;
 import starvationevasion.common.MapPoint;
+import starvationevasion.sim.CropData;
 import starvationevasion.sim.LandTile;
+import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
 
 
@@ -11,9 +13,9 @@ import starvationevasion.sim.Territory;
  */
 public class Hurricane extends AbstractEvent
 {
-  public Hurricane(Territory landArea)
+  public Hurricane(Territory landArea, Region region, CropData cropData, int duration)
   {
-    super(landArea, 1);
+    super(landArea, region, cropData, duration);
   }
 
   public void applyEffects()

@@ -25,6 +25,8 @@ public abstract class AbstractEvent
   private ArrayList <LandTile> tiles;	
   private int duration;
   private Territory landArea;
+  private Region region;
+  private CropData cropData;
   
   // if you want to use an Event graph for a AbstracteEvent than your methods must use this set of landtiles
   private ArrayList<LandTile> effectedTiles;
@@ -38,7 +40,7 @@ public abstract class AbstractEvent
    * @param landArea The land area (Territory, Region, etc...) this event effects
    * @param duration How many simulator years this event lasts
    */
-  public AbstractEvent(Territory landArea, int duration)
+  public AbstractEvent(Territory landArea, Region region, CropData cropData, int duration)
   {
     
     this.duration = duration;

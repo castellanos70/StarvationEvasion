@@ -8,7 +8,7 @@ public class Blight extends AbstractEvent
 {
 
   EnumFood crop;
-  public Blight(Territory landArea, int duration, EnumFood crop)
+  public Blight(Territory landArea, int duration)
   {
     super(landArea, duration);
     this.crop = crop;

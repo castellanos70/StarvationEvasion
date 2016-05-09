@@ -1041,21 +1041,21 @@ public class Model
     }
 
     //uncomment the following code for testing
-    // List<LandTile> landTiles = new ArrayList<>();
-    // int num = 1;
-    // for (int i = 0; i < regionList.length; i++)
-    // { //For each Region
-    //   for (int j = 0; j < regionList[i].getTerritoryList().size(); j++)
-    //   { //For each Territory
-    //     landTiles = regionList[i].getTerritoryList().get(j).getLandTiles();
+     List<LandTile> landTiles = new ArrayList<>();
+     int num = 1;
+     for (int i = 0; i < regionList.length; i++)
+     { //For each Region
+       for (int j = 0; j < regionList[i].getTerritoryList().size(); j++)
+       { //For each Territory
+         landTiles = regionList[i].getTerritoryList().get(j).getLandTiles();
 
-    //     for (LandTile tile : landTiles)
-    //     {
-    //       if(tile.getCrop() != null) System.out.println(num + " " + tile.getCrop().name());
-    //       num++;
-    //     }
-    //   }
-    // }
+         for (LandTile tile : landTiles)
+         {
+           if(tile.getCrop() != null) System.out.println(num + " " + tile.getCrop().name());
+           num++;
+         }
+       }
+     }
     long end = System.nanoTime();
     System.out.println("Model.placeCrops() Done: Time: " + ((end - start) / 1000000000.0));
   }

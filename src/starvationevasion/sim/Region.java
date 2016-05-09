@@ -499,10 +499,13 @@ public class Region extends Territory
     {
       for(LandTile tile: territory.getLandTiles())
       {
-          int index = tile.getCrop().ordinal();
-          cropRevenues[index] += tile.getCurrentProduction();
-          cropCosts[index] += tile.getCurrentCost();
-          cropTaxes[index] += (int)(.3 * tile.getCurrentProduction());
+          if (tile.getCrop() != null)
+          {
+            int index = tile.getCrop().ordinal();
+            cropRevenues[index] += tile.getCurrentProduction();
+            cropCosts[index] += tile.getCurrentCost();
+            cropTaxes[index] += (int) (.3 * tile.getCurrentProduction());
+          }
       }
     }
     sumTotals();

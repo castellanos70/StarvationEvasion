@@ -1,4 +1,7 @@
 package starvationevasion.util;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -7,11 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 
 public class Picture extends JFrame implements ComponentListener
@@ -243,7 +241,13 @@ public class Picture extends JFrame implements ComponentListener
     
     return imageBuffer; 
   }
-  
+
+  public BufferedImage getImageCapture()
+  {
+    BufferedImage capture = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
+    capture.setData(offScreenImage.getData());
+    return capture;
+  }
   
   
   //=========================================================================

@@ -24,10 +24,10 @@ import starvationevasion.util.Picture;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.PathIterator;
+import java.awt.image.BufferedImage;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -156,7 +156,7 @@ public class Model
 
     cropData = new CropData();
 
-
+/*
     Date dateStart = new Date();
     System.out.println("Model() Loading Climate Data: " +dateFormat.format(dateStart));
 
@@ -181,7 +181,7 @@ public class Model
     placeCrops();
 
     setRegionalProduction();
-
+*/
     for (int i = 0; i < YEARS_OF_DATA; i++)
     {
       worldData[i] = new WorldData();
@@ -357,6 +357,18 @@ public class Model
     return regionList[regionCode.ordinal()].getGeographicArea();
   }
 
+
+  public Area[] getRegionPerimetersSpherical()
+  {
+    Area[] areaList = new Area[EnumRegion.SIZE];
+
+    for (EnumRegion regionID : EnumRegion.values())
+    {
+      int i = regionID.ordinal();
+      areaList[i] = regionList[i].getGeographicArea().getPerimeter();
+    }
+    return areaList;
+  }
 
   public List<AbstractEvent> getSpecialEvents()
   {
@@ -1350,7 +1362,8 @@ public class Model
    */
   public Picture testShowMapProjection()
   {
-    return new Picture("assets/WorldMap_MollweideProjection-1280x641.png");
+    //return new Picture("assets/WorldMap_MollweideProjection-1280x641.png");
+    return new Picture("assets/BlankBlue_MollweideProjection-1280x641.png");
   }
 
   /**
@@ -1493,6 +1506,9 @@ public class Model
     Model model = new Model();
 
     Picture pic = model.testShowMapProjection();
+
+    BufferedImage background = pic.getImageCapture();
+
     //Graphics2D gfx = pic.getOffScreenGraphics();
     //gfx.setColor(Color.BLACK);
     //gfx.fillRect(0,0,pic.getImageWidth(), pic.getImageHeight());
@@ -1537,33 +1553,39 @@ public class Model
     //territory = model.getTerritory("Mexico");
     //model.drawBoundary(pic, territory, Color.RED);
     */
+    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
+    map.setRegionPerimetersSpherical(model.getRegionPerimetersSpherical());
 
-    for (int n = 0; n < 10; n++)
+    Graphics2D gfx = pic.getOffScreenGraphics();
+    gfx.setStroke(new BasicStroke(2));
+    for (int n = -180; n < 180; n+=10)
     {
-
+      gfx.drawImage(background, 0,0,null);
+      map.setCentralMeridian(n);
       for (EnumRegion regionID : EnumRegion.values())
       {
-        Region region = model.getRegion(regionID);
-        model.drawAllTiles(pic, region, regionID.getColor());
+        Area drawArea = map.getPerimeterDrawable(regionID);
+        gfx.setColor(regionID.getColor());
+
+        gfx.draw(drawArea);
       }
 
-      for (EnumRegion regionID : EnumRegion.values())
-      {
-        Region region = model.getRegion(regionID);
-        model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5), 1);
-      }
+      //for (EnumRegion regionID : EnumRegion.values())
+      //{
+      //  Region region = model.getRegion(regionID);
+      //  model.drawBoundary(pic, region, Util.brighten(regionID.getColor(), 0.5), 1);
+      //}
       pic.repaint();
-
 
       try
       {
-        Thread.sleep(3000);
+        Thread.sleep(1000);
       } catch (InterruptedException e) { }
 
-      for (Constant.Month month : Constant.Month.values())
-      {
-        model.drawRain(pic, 2000+n, month);
-      }
+      //for (Constant.Month month : Constant.Month.values())
+      //{
+      //  model.drawRain(pic, 2000+n, month);
+      //}
     }
   }
 }

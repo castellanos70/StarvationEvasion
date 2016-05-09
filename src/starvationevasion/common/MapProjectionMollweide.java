@@ -1,10 +1,13 @@
 package starvationevasion.common;
 
 
-import javafx.scene.shape.Shape;
+//import javafx.scene.shape.Shape;
 
 import java.awt.*;
 import java.awt.geom.Area;
+import java.awt.geom.Path2D;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Rectangle2D;
 
 public class MapProjectionMollweide
 {
@@ -13,6 +16,7 @@ public class MapProjectionMollweide
   private static final double CX = 2.0*ROOT2/Math.PI;
   private static final double TOLERANCE = 0.0001;
 
+  private Area[] regionPerimetersSpherical;
 
   private int pixelWidth;
   private int pixelHeight;
@@ -45,6 +49,7 @@ public class MapProjectionMollweide
 
   public void setRegionPerimetersSpherical(Area[] regionPerimeters)
   {
+    regionPerimetersSpherical = regionPerimeters;
   }
 
 
@@ -52,9 +57,85 @@ public class MapProjectionMollweide
    * @param regionID
    * @return
    */
-  public Shape getPerimeterDrawable(EnumRegion regionID)
+  //public Shape getPerimeterDrawable(EnumRegion regionID)
+  public Area getPerimeterDrawable(EnumRegion regionID)
   {
-return null;
+    //default region (when regionID == null) is Antarctica's ice shelf
+    //   stored at the end of the regionPerimetersSpherical[] array.
+    Area perimeter = regionPerimetersSpherical[regionPerimetersSpherical.length -1];
+    if (regionID != null)
+    {
+      perimeter = regionPerimetersSpherical[regionID.ordinal()];
+    }
+
+    double edgeLongitude1 = centralMeridian - Math.PI;
+    double edgeLongitude2 = centralMeridian + Math.PI;
+
+    if (edgeLongitude1 < -Math.PI) edgeLongitude1 = 2.0*Math.PI + edgeLongitude1;
+    if (edgeLongitude2 >  Math.PI) edgeLongitude2 =-2.0*Math.PI + edgeLongitude2;
+
+    Area[] perimeterList = null;
+
+    if (perimeter.intersects(edgeLongitude2-0.01, -Math.PI/2, 0.25, Math.PI))
+    {
+      perimeterList = new Area[2];
+      perimeterList[0] = new Area(perimeter);
+      perimeterList[1] = new Area(perimeter);
+      Area eastArea = null;
+      double x2 = edgeLongitude1+Math.PI;
+      if (x2>Math.PI)
+      {
+        x2 = Math.PI;
+        double x3 = -Math.PI;
+
+        Shape east1 = new Rectangle2D.Double(edgeLongitude1, -Math.PI/2, Math.PI-edgeLongitude1, Math.PI);
+        Shape east2 = new Rectangle2D.Double(-Math.PI, -Math.PI/2, centralMeridian+Math.PI, Math.PI);
+        eastArea = new Area(east1);
+        eastArea.add(new Area(east2));
+      }
+      else if (
+        perimeterList[0].intersect(eastArea);
+    }
+    else
+    {
+      perimeterList = new Area[1];
+      perimeterList[0] = perimeter;
+    }
+
+    Area drawBoundary = new Area();
+
+    Point pixel = new Point();
+    double[] coords = new double[6];
+    Path2D.Float shape = null;
+
+    PathIterator path = perimeter.getPathIterator(null);
+    while(!path.isDone())
+    {
+      int type = path.currentSegment(coords);
+      path.next();
+      setPoint(pixel, coords[1], coords[0]);
+      if (type == PathIterator.SEG_LINETO)
+      {
+        shape.lineTo(pixel.x, pixel.y);
+      }
+      else if(type == PathIterator.SEG_MOVETO)
+      {
+        shape = new Path2D.Float();
+        shape.moveTo(pixel.x, pixel.y);
+      }
+      else if(type == PathIterator.SEG_CLOSE)
+      {
+        shape.lineTo(pixel.x, pixel.y);
+        Area area = new Area(shape);
+        drawBoundary.add(area);
+      }
+      else
+      {
+        System.out.println("************ ERROR ***********");
+      }
+    }
+
+    return drawBoundary;
   }
 
   /**

@@ -1,15 +1,25 @@
 package starvationevasion.sim.events;
 
+import java.util.ArrayList;
+
 import starvationevasion.common.EnumSpecialEvent;
 import starvationevasion.common.MapPoint;
+import starvationevasion.common.Util;
+import starvationevasion.sim.LandTile;
 import starvationevasion.sim.Territory;
 
 public class Fire extends AbstractEvent
 {
-
-  public Fire(EnumSpecialEvent eventType, Territory landArea, int duration)
+  Territory landArea;
+  LandTile startTile;
+  ArrayList <LandTile> tiles;
+  public Fire(Territory landArea, int duration)
   {
-    super(eventType, landArea, duration);
+	 
+    super(landArea, duration);
+    this.landArea = landArea;
+    this.getEventSpread(0.5f, 1);
+    
   }
 
   @Override
@@ -17,5 +27,14 @@ public class Fire extends AbstractEvent
   {
     return null;
   }
-
+  
+  public void applyEffects()
+  {
+	  
+	  super.applyEffects();
+	  this.destroyFarmEquipment(this.getEffectedTiles());
+	  
+	  // do something from the abstract class
+	  
+  }
 }

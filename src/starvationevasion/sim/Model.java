@@ -180,14 +180,14 @@ public class Model
     assert (assertLandTiles());
     
     packedTileData = new PackedTileData(TOTAL_LAND_TILES);
-
-    updateCropRatings(Constant.FIRST_GAME_YEAR-1);
-
-    placeCrops();
-
-    setRegionalProduction();
-    
-    populateUSRegionList();
+//
+//    updateCropRatings(Constant.FIRST_GAME_YEAR-1);
+//
+//    placeCrops();
+//
+//    setRegionalProduction();
+//    
+//    populateUSRegionList();
 
     for (int i = 0; i < YEARS_OF_DATA; i++)
     {
@@ -195,7 +195,6 @@ public class Model
       if (i < Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR)
       { populateWorldData(Constant.FIRST_DATA_YEAR + i); }
     }
-
   }
 
   public void init()
@@ -470,7 +469,6 @@ public class Model
     //}
   }
 
-
   /**
    * @return the simulation currentYear that has just finished.
    */
@@ -478,11 +476,11 @@ public class Model
   {
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
-    //applyPolicies(); // In progress
+    //applyPolicies(); // In progress.
 
     //updateLandUse(); // Not started.
 
-    //updatePopulation(); // Done.
+    //updatePopulation(); // In progress.
 
     //updateClimate(); // Done.
 
@@ -508,7 +506,10 @@ public class Model
     // currentYear);
     //  printRegion(regionList[debugRegion.ordinal()], currentYear);
     //}
-
+    
+    // updates the worlddata with all the values of this year. If none of the
+    // above methods are called, everything is 0.
+    populateWorldData(currentYear);
     currentYear++;
     return currentYear;
   }
@@ -776,6 +777,27 @@ public class Model
     if (debugLevel.intValue() < Level.INFO.intValue())
     {
       Simulator.dbg.println("******************************************* Updating land use");
+    }
+  }
+  
+  /**
+   * Updates the total population for the next year.
+   */
+  private void updatePopulation()
+  {
+    // TODO: As of now currentYear's population is just copied from the previous
+    // year. Make it not suck.
+    
+    for (Region r : regionList)
+    {
+      for (Territory t : r.getTerritoryList())
+      {
+        t.setPopulation(Constant.FIRST_GAME_YEAR, t.getPopulation(Constant.FIRST_GAME_YEAR-1));
+      }
+      // aggregateTerritoryData aggregates the landuse, the population, and the
+      // population that is undernourished. Pretty overkill as we're only
+      // updating the population. Oh well.
+      r.aggregateTerritoryData(Constant.FIRST_GAME_YEAR);
     }
   }
 

@@ -1,16 +1,34 @@
 package starvationevasion.sim;
 
-
-import starvationevasion.common.*;
+import starvationevasion.common.Constant;
+import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.GeographicArea;
+import starvationevasion.common.MapPoint;
+import starvationevasion.common.RegionData;
+import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.sim.events.AbstractEvent;
 
-import java.io.*;
+import java.awt.geom.Area;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.*;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+
 
 /**
  * This is the main API point of the Starvation Evasion Simulator.<br>
@@ -93,7 +111,8 @@ public class Simulator
           }
         }
         assert ((totalFarmArea < region.landArea) && (totalFarmArea >= 0));
-      } //Check that WorldData is properly instantiated
+      }
+      //Check that WorldData is properly instantiated
       //for (int i = 0; i < EnumFood.SIZE; i++)
       //{
       //  assert (world.foodPrice[i] > 0);
@@ -396,6 +415,12 @@ public class Simulator
     {
       deck.discard(deck.getCardsInHand()[i]);
     }
+  }
+
+  public Area getPerimeter(EnumRegion regionID)
+  {
+    Region region = model.getRegion(regionID);
+    return region.getGeographicArea().getPerimeter();
   }
 
   /**

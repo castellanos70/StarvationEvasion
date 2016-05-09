@@ -395,10 +395,10 @@ public class Simulator
     {
       switch(c.getCardType())
       {
-        case Policy_CovertIntelligence:
-          // TODO: talk to ClientUI to allow player to determine who's hand to
-          // look at. Provide ClientUI the appropriate hand from playerDeck.
-          break;
+//        case Policy_CovertIntelligence: //removed my policy card team?
+//          // TODO: talk to ClientUI to allow player to determine who's hand to
+//          // look at. Provide ClientUI the appropriate hand from playerDeck.
+//          break;
         case Policy_DivertFunds:
           // remove all cards from owners hand
           discardPlayerHand(c.getOwner());

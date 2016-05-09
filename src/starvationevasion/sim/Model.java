@@ -1,5 +1,6 @@
 package starvationevasion.sim;
 
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -36,6 +37,7 @@ import starvationevasion.sim.io.GeographyXMLparser;
 import starvationevasion.sim.io.ProductionCSVLoader;
 import starvationevasion.sim.io.SpecialEventCSVLoader;
 import starvationevasion.util.Picture;
+
 
 /**
  * The Simulator class is the main API for the Server to interact with the simulator.
@@ -103,7 +105,7 @@ import starvationevasion.util.Picture;
 
 public class Model
 {
-  public static final int TOTAL_LAND_TILES = 245021;//167235;
+  public static final int TOTAL_LAND_TILES = 167235;
   public static double EVENT_CHANCE = 0.02;
   private static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
@@ -1353,7 +1355,7 @@ public class Model
    */
   public Picture testShowMapProjection()
   {
-    return new Picture("assets/WorldMap_MollweideProjection.png");
+    return new Picture("assets/WorldMap_MollweideProjection-1280x641.png");
   }
 
   /**

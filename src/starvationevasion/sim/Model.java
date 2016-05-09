@@ -4,7 +4,6 @@ import starvationevasion.common.Constant;
 import starvationevasion.common.EnumCropZone;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.GeographicArea;
 import starvationevasion.common.MapPoint;
 import starvationevasion.common.MapProjectionMollweide;
 import starvationevasion.common.RegionData;

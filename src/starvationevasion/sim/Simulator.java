@@ -3,7 +3,6 @@ package starvationevasion.sim;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.GeographicArea;
 import starvationevasion.common.MapPoint;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.WorldData;
@@ -174,16 +173,12 @@ public class Simulator
     return dataList;
   }
 
-  public  GeographicArea[] getRegionBoundaries()
-  {
-    GeographicArea[] boundaryList = new GeographicArea[EnumRegion.SIZE];
 
-    for (EnumRegion region : EnumRegion.values())
-    {
-      boundaryList[region.ordinal()] = model.getGeographicArea(region);
-    }
-    return boundaryList;
+  public  Area[] getRegionBoundaries()
+  {
+    return model.getRegionPerimetersSpherical();
   }
+
 
 
 

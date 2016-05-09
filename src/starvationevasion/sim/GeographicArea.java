@@ -1,8 +1,7 @@
-package starvationevasion.common;
+package starvationevasion.sim;
 
 
-import com.oracle.javafx.jmx.json.JSONDocument;
-import starvationevasion.server.model.Sendable;
+import starvationevasion.common.MapPoint;
 import starvationevasion.server.model.Type;
 
 import java.awt.geom.Area;
@@ -10,7 +9,7 @@ import java.awt.geom.Path2D;
 import java.util.ArrayList;
 
 
-public class GeographicArea implements Sendable
+public class GeographicArea
 {
   private final String name;
 
@@ -121,26 +120,4 @@ public class GeographicArea implements Sendable
   }
 
 
-  @Override
-  public JSONDocument toJSON()
-  {
-    JSONDocument json = JSONDocument.createObject();
-    json.setString("name", name);
-//    JSONDocument jsonPerim = JSONDocument.createArray(perimeter.);
-//    int i =0;
-//    for (MapPoint mapPoint : perimeterMapPoints)
-//    {
-//      jsonPerim.set(i, mapPoint.toJSON());
-//      i++;
-//    }
-//    json.set("perimeter", jsonPerim);
-
-    return json;
-  }
-
-  @Override
-  public void fromJSON(Object doc)
-  {
-
-  }
 }

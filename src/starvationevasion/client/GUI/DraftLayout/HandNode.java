@@ -161,15 +161,12 @@ public class HandNode extends ResizablePane
     for (int i = 0; i < policies.size(); i++){
       CardNode card = new CardNode(gui.getAssignedRegion(), policies.get(i));
       card.setCards(cards);
-      card.setManaged(false);
       xLayouts.add(new Double(0));
+      card.setManaged(false);
       cards.add(card);
       this.getChildren().add(card);
     }
     onResize();
-    for (CardNode c: cards){
-      c.onResize();
-    }
   }
   
   public void removeOldCards()
@@ -259,12 +256,15 @@ public class HandNode extends ResizablePane
           constraint *= -1;
           double a = peak*Math.pow(Math.E, constraint);
           constraint = 1d/cards.size() + a*a;
+//          constraint *= xModifier;
         }
         
         constraints[(int)i] = constraint;
         total += constraint;
+//        System.out.println(constraint + ", " + i);
         
       }
+//      System.out.println("---------------");
       double totalWidth = 0;
       
       for (int i = 0; i < cards.size(); i++){
@@ -284,6 +284,8 @@ public class HandNode extends ResizablePane
         cardWidth -= cardWidth*MIN_GAP_SIZE;
         double cardHeight = cardWidth/CARD_RATIO;
         double yPos = height - cardHeight;
+        
+//        card.setSize(cardWidth, cardHeight);
         double scaleX = cardWidth/card.getWidth();
         double scaleY = cardHeight/card.getHeight();
         card.setScaleX(scaleX);

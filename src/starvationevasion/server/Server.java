@@ -680,8 +680,10 @@ public class Server
     }
   }
 
-  
-  void waitAndAdvance(Callable phase)
+  /**
+   * Wait the for the phase to end, then call the next.
+   */
+  private void waitAndAdvance(Callable phase)
   {
     startNanoSec = System.currentTimeMillis();
     endNanoSec = startNanoSec + currentState.getDuration();
@@ -920,6 +922,15 @@ public class Server
 
   }
 
+  /**
+   * Encrypt the private key with the received public key.
+   *
+   * @param desKey generated key used to encrypt data across the socket.
+   * @param clientPublicKey key received from the client
+   *
+   * @return bytes of encrypted private key.
+   *
+   */
   private static byte[] asymmetricHandshake (String desKey, String clientPublicKey)
   {
     PublicKey pubKey = null;
@@ -948,11 +959,11 @@ public class Server
   }
 
   /**
-   * Set up the worker with proper streams
+   * Set up the worker with proper Connector and proper reader and writer.
    *
-   * @param s socket that is opened
+   * @param s socket that is open.
    *
-   * @return boolean true if web-socket
+   * @return Connector that is a socket which can be used for http or socket
    */
   private Connector setStreamType (Socket s) throws NoSuchAlgorithmException,
                                                     NoSuchPaddingException,

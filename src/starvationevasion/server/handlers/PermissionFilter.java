@@ -18,8 +18,8 @@ public class PermissionFilter extends AbstractHandler
   protected boolean handleRequestImpl (Request request)
   {
     // No command will pass permission gate.
-    boolean isLoggedIn = !getClient().getUser().isLoggedIn();
-    if (isLoggedIn)
+    boolean cannotPass = !getClient().getUser().isLoggedIn();
+    if (cannotPass)
     {
       getClient().send(new ResponseFactory().build(server.uptime(),
                                                    null,
@@ -27,6 +27,6 @@ public class PermissionFilter extends AbstractHandler
                                                    "You must be logged in.",
                                                    request));
     }
-    return isLoggedIn;
+    return cannotPass;
   }
 }

@@ -1,4 +1,4 @@
-food,price2000,price2009,water,energy,fertilizerN,growDays,temperatureMin,temperatureIdealLow,temperatureIdealHigh
+food,price2000,price2009,water,energy,fertilizerCost,growDays,temperatureMin,temperatureIdealLow,temperatureIdealHigh
 Food Group,"Price (2000 US import price, Dollars per Metric Ton)","Price (2009 US import price, Dollars per Metric Ton)",Water (Cubic meters per Metric Ton),,Fertilizer Cost (Dollars/kg),Growing Period (days/year),Temperature Min (Deg C),Temperature Ideal Low (Deg C),Temperature Ideal High (Deg C)
 CITRUS,363,909,560,0,0,365,-2,12,32
 FRUIT,422,848,400,0,0,365,-40,-1,32

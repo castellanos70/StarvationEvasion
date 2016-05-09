@@ -25,7 +25,6 @@ import java.awt.geom.Area;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -153,7 +152,7 @@ public class Model
     ProductionCSVLoader.load(regionList);
 
     cropData = new CropData();
-
+/*
 
     Date dateStart = new Date();
     System.out.println("Model() Loading Climate Data: " +dateFormat.format(dateStart));
@@ -179,7 +178,7 @@ public class Model
     placeCrops();
 
     setRegionalProduction();
-
+*/
     for (int i = 0; i < YEARS_OF_DATA; i++)
     {
       worldData[i] = new WorldData();
@@ -1428,20 +1427,43 @@ public class Model
     System.out.println("      Running Test entry point: starvationevasion.sim.Model()");
     System.out.println("==========================================================================");
 
-    Model model = new Model();
+
 
     String[] imagePath = {"BlankBlue_MollweideProjection-1280x641.png"};
-    JavaFX_DebugViewer pic = new JavaFX_DebugViewer();
-    pic.launch(imagePath);
 
-    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
-    map.setCentralMeridian(0);
-    for (EnumRegion regionID : EnumRegion.values())
+    class GUIThread extends Thread
     {
-      Polygon drawArea = map.getPerimeterDrawable(regionID);
-      pic.add(drawArea, Util.brighten(regionID.getColor(), 0.5));
+      GUIThread()
+      {
+      }
+      public void run()
+      {
+        JavaFX_DebugViewer.main(imagePath);
+      }
     }
 
+    GUIThread gui = new GUIThread();
+    gui.start();
+
+    Model model = new Model();
+
+    JavaFX_DebugViewer pic = JavaFX_DebugViewer.me;
+    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
+
+    System.out.println("Model.main image size= "+pic.getImageWidth() + ", "+ pic.getImageHeight());
+    map.setCentralMeridian(0);
+    map.setRegionPerimetersSpherical(model.getRegionPerimetersSpherical());
+
+    System.out.println("model.getRegionPerimetersSpherical().length = " + model.getRegionPerimetersSpherical().length);
+
+    Polygon drawArea = map.getPerimeterDrawable(EnumRegion.SUB_SAHARAN);
+    drawArea.setStroke(Util.brighten(EnumRegion.SUB_SAHARAN.getColor(), 0.5));
+    pic.add(drawArea);
+    //for (EnumRegion regionID : EnumRegion.values())
+    //{
+    //  Polygon drawArea = map.getPerimeterDrawable(regionID);
+    //  pic.add(drawArea, Util.brighten(regionID.getColor(), 0.5));
+    //}
 
 
 /*

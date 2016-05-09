@@ -1,6 +1,5 @@
 package starvationevasion.client.GUI.DraftLayout;
 
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumFood;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
  * When a user selects a product icon, it should be highlighted.
  * A user should only be able to select one product at a time, or none at all.
  */
-public class ProductBar extends GridPane
+public class ProductBar
 {
   Stage primaryStage;
   GUI gui;
@@ -30,10 +29,6 @@ public class ProductBar extends GridPane
   public ProductBar(GUI gui)
   {
     this.gui = gui;
-//    this.setGridLinesVisible(true);
-    this.setPickOnBounds(false);
-    this.setHgap(10);
-    this.setVgap(10);
     int productListSize;
     productList = gui.getProductList();
     primaryStage = gui.getPrimaryStage();
@@ -47,9 +42,7 @@ public class ProductBar extends GridPane
     for (int i = 0; i < productListSize; ++i)
     {
       EnumFood food = productList.get(i);
-      ProductBarElement pb = new ProductBarElement(gui, food, i, elementWidth, elementHeight, this);
-      elements.add(pb);
-      this.add(pb, i%3, i/3);
+      elements.add(new ProductBarElement(gui, food, i, elementWidth, elementHeight, this));
     }
   }
 

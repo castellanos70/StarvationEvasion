@@ -4,16 +4,18 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.sun.prism.Image;
+
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
+import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import starvationevasion.client.GUI.GUI;
-import starvationevasion.client.GUI.ResizablePane;
 import starvationevasion.client.GUI.images.ImageGetter;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.MapPoint;
@@ -57,7 +59,7 @@ import starvationevasion.sim.LandTile;
  * 
  * 
  */
-public class ProductBarElement extends ResizablePane
+public class ProductBarElement extends StackPane
 {
   final EnumFood type;
   final int ID;
@@ -97,7 +99,7 @@ public class ProductBarElement extends ResizablePane
     this.IMAGE_HEIGHT = (int)gui.getImageGetter().getWorldMap().getHeight();
     this.IMAGE_WIDTH = (int)gui.getImageGetter().getWorldMap().getWidth();
     this.pb = pb;
-    this.ds = new DropShadow(35, Color.RED);
+    this.ds = new DropShadow(20, Color.AQUA);
     this.tile = new LandTile(0,0);
     this.points = tile.loadLocations();
     this.map = new MapProjectionMollweide(2048, 1026); //In the future make the dimensions not hard coded in..
@@ -113,15 +115,18 @@ public class ProductBarElement extends ResizablePane
       public void handle(MouseEvent event)
       {
         
-        press();
-        
+        if (gui.getSeletingProduct())
+        {
+          pb.pressElement(ID);
+        }
+        else
         {     
            heatMapGraphics = gui.getDraftLayout().getWorldMap().getGraphicsContext();
            
           // gui.getGraphManager()event.g
            
            ///gui.getPopupManager().toggleFoodPopup(ID);
-//             pb.pressElement(ID);
+             pb.pressElement(ID);  
             if(selected)
             {
             heatMapGraphics.clearRect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT);
@@ -177,7 +182,7 @@ public class ProductBarElement extends ResizablePane
       }
     });
 
-//    this.setAlignment(Pos.CENTER);
+    this.setAlignment(Pos.CENTER);
     this.getChildren().add(foodImg);
     this.getChildren().add(label);
   }
@@ -197,28 +202,6 @@ public class ProductBarElement extends ResizablePane
       selected = true;
       foodImg.setEffect(ds);
     }
-    
-    for (ProductBarElement p : pb.elements){
-      if (!p.equals(this)){
-        p.setSelected(false);
-      }
-    }
-    
-  }
-  
-  /**
-   * sets the selected value to the given boolean
-   * and updates the effect
-   * 
-   * @param selected
-   */
-  public void setSelected(boolean selected){
-    if (selected){
-      foodImg.setEffect(ds);
-    } else {
-      foodImg.setEffect(null);
-    }
-    this.selected = selected;
   }
 
   private void initializeLabel()
@@ -231,39 +214,6 @@ public class ProductBarElement extends ResizablePane
     label.setVisible(false);
     label.getStylesheets().add("/starvationevasion/client/GUI/DraftLayout/style.css");
     label.getStyleClass().add("pbarelement");
-  }
-
-  @Override
-  public void onResize()
-  {
-    double width = this.getWidth();
-    double height = this.getHeight();
-    
-    Bounds b = foodImg.getBoundsInLocal();
-    {//image
-      double scaleX = width/b.getWidth();
-      double scaleY = height/b.getHeight();
-      
-      foodImg.setScaleX(scaleX);
-      foodImg.setScaleY(scaleY);
-      
-      foodImg.setTranslateX((scaleX*b.getWidth() - b.getWidth())/2);
-      foodImg.setTranslateY((scaleY*b.getHeight() - b.getHeight())/2);
-    }
-    
-    {//label
-      b = label.getBoundsInLocal();
-      
-      double scaleX = width/b.getWidth();
-      double scaleY = scaleX;
-      
-      label.setScaleX(scaleX);
-      label.setScaleY(scaleY);
-      
-      label.setTranslateX((scaleX*b.getWidth() - b.getWidth())/2);
-      label.setTranslateY((scaleY*b.getHeight() - b.getHeight())/2);
-    }
-    
   }
 
 }

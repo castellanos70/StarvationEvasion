@@ -24,14 +24,8 @@ public class ChatManager
    */
   public void sendChatToServer(String message,EnumRegion region,EnumPolicy card)
   {
-    System.out.println("sending message");
-    if (region == null && client.getRegion() == null){
-      client.getCommunicationModule().sendChat("ALL", "?" + ": " + message, card);
-    } else if (client.getRegion() == null) {
-      client.getCommunicationModule().sendChat(region, "?" + ": " + message, card); 
-    } else {
-      client.getCommunicationModule().sendChat(region, client.getRegion().toString() + ": " + message, card); 
-    }
+    client.getCommunicationModule().sendChat(region, region.toString() + ": " + message, card);
+    //client.sendChatMessage(client.getRegion().toString()+": "+message,region);
     chat+=message+"\n";
   }
 

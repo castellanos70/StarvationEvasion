@@ -7,7 +7,6 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.ResizablePane;
-import starvationevasion.common.EnumRegion;
 import starvationevasion.common.gamecards.EnumPolicy;
 
 /**
@@ -21,7 +20,6 @@ import starvationevasion.common.gamecards.EnumPolicy;
  */
 public class HandNode extends ResizablePane
 {
-  private static final boolean DEBUG = false;
   private static final double MAX_SMALL_SIZE = 1;
   private static final double MIN_MOUSE_PICKUP = 0;
   private static final double MAX_HOVER_HEIGHT = 2;
@@ -29,9 +27,9 @@ public class HandNode extends ResizablePane
   private static final double MIN_GAP_SIZE = 0;
   private static final double CARD_RATIO = .77;
   
-  private ArrayList<CardNode> cards;
-  private ArrayList<EnumPolicy> policies;
-  private ArrayList<Double> xLayouts;
+  private CardNode[] cards = new CardNode[7];
+  private EnumPolicy[] policies;
+  private double[] xLayouts = new double[7];
   private double lastWidth = 0;
   private double lastHeight = 0;
   
@@ -41,23 +39,6 @@ public class HandNode extends ResizablePane
     super();
     this.gui = gui;
     this.setPickOnBounds(false);
-    
-    cards = new ArrayList<>();
-    policies = new ArrayList<>();
-    xLayouts = new ArrayList<>();
-    
-    if (DEBUG) { //creates a default hand
-      for (int i = 0; i < 7; i++){
-        int index = (int) (Math.random()*EnumPolicy.values().length);
-        EnumPolicy policy = EnumPolicy.values()[index];
-        policies.add(policy);
-        CardNode card = new CardNode(EnumRegion.USA_CALIFORNIA, policy);
-        card.setCards(cards);
-        cards.add(card);
-        card.setManaged(false);
-        this.getChildren().add(card);
-      }
-    }
     
     this.setBackground(new Background(new BackgroundFill(new Color(0, 0, 0, .6), null, null)));
     
@@ -133,10 +114,7 @@ public class HandNode extends ResizablePane
    * @param policies
    */
   public void setPolicies(EnumPolicy[] policies){
-    this.policies.clear();
-    for (EnumPolicy policy: policies){
-      this.policies.add(policy);
-    }
+    this.policies = policies;
     createCards();
   }
   
@@ -144,54 +122,43 @@ public class HandNode extends ResizablePane
    * Returns the current EnumPolicy array
    */
   public EnumPolicy[] getPolicies(){
-    EnumPolicy[] holder = new EnumPolicy[policies.size()];
-    for (int i = 0; i < policies.size(); i++){
-      holder[i] = policies.get(i);
-    }
-    
-    return holder;
+    return policies;
   }
   
   /**
    * Creates the CardNode elements that will be displayed in this pane
    */
   public void createCards(){
-    if (gui == null) return;
     removeOldCards();
-    for (int i = 0; i < policies.size(); i++){
-      CardNode card = new CardNode(gui.getAssignedRegion(), policies.get(i));
-      card.setCards(cards);
-      xLayouts.add(new Double(0));
-      card.setManaged(false);
-      cards.add(card);
-      this.getChildren().add(card);
+    for (int i = 0; i < policies.length; i++){
+      cards[i] = new CardNode(gui.getAssignedRegion(), policies[i]);
+      cards[i].setManaged(false);
+      this.getChildren().add(cards[i]);
     }
     onResize();
   }
   
   public void removeOldCards()
   {
-    xLayouts.clear();
-    for (int i = 0; i < cards.size(); i++){
-      this.getChildren().remove(cards.get(i));
+    for (int i = 0; i < cards.length; i++){
+      this.getChildren().remove(cards[i]);
     }
-    cards.clear();
   }
   
 
   @Override
   public void onResize()
   {
-    if (cards.size() == 0) return;
+    if (cards[0] == null) return;
     
-    double width = this.getWidth()/(double)cards.size();
+    double width = this.getWidth()/7;
     double height = this.getHeight();
     
-    for (int i = 0; i < cards.size(); i++){
+    for (int i = 0; i < cards.length; i++){
       
-      CardNode card = cards.get(i);
+      CardNode card = cards[i];
       if (card == null) return;
-      double cardWidth = width*(1d - MIN_GAP_SIZE);
+      double cardWidth = width*(7d/8d);
       double cardHeight = cardWidth/CARD_RATIO;
       
       if (cardHeight > height*MAX_SMALL_SIZE){
@@ -203,11 +170,7 @@ public class HandNode extends ResizablePane
       card.setLayoutX(width*i);
       card.setLayoutY(height - cardHeight);
       
-      if (xLayouts.size() - 1 < i){
-        xLayouts.add(new Double(0));
-      }
-      xLayouts.set(i, width*i);
-      
+      xLayouts[i] = width*i;
       lastWidth = cardWidth;
       lastHeight = cardHeight;
     }
@@ -221,11 +184,7 @@ public class HandNode extends ResizablePane
    * @param y
    */
   public void calculateMouseOver(double x, double y){
-    if (cards.size() == 0) return;
-    
-//    double halfWidth = this.getWidth()/2;
-//    double xModifier = 10d - 2*Math.abs(x - halfWidth)/halfWidth;
-//    System.out.println(xModifier);
+    if (cards[0] == null) return;
     
     double minMousePickup = this.getHeight()*MIN_MOUSE_PICKUP;
     
@@ -243,23 +202,21 @@ public class HandNode extends ResizablePane
       double shift = x/width;
       double breadth = CURVE_BREADTH;
       
-      double[] constraints = new double[cards.size()];
+      double[] constraints = new double[7];
       double total = 0;
       
-      for (double i = 0; i < 7; i++){
-        double constraint = (i/cards.size() + 1/14d);
+      for (int i = 0; i < 7; i++){
+        double constraint = (i/7d + 1/14d);
         
         {//gaussian equation
           constraint -= shift;
           constraint *= constraint;
           constraint /= (breadth*breadth);
           constraint *= -1;
-          double a = peak*Math.pow(Math.E, constraint);
-          constraint = 1d/cards.size() + a*a;
-//          constraint *= xModifier;
+          constraint = 1/7d + peak*Math.pow(Math.E, constraint);
         }
         
-        constraints[(int)i] = constraint;
+        constraints[i] = constraint;
         total += constraint;
 //        System.out.println(constraint + ", " + i);
         
@@ -267,8 +224,8 @@ public class HandNode extends ResizablePane
 //      System.out.println("---------------");
       double totalWidth = 0;
       
-      for (int i = 0; i < cards.size(); i++){
-        CardNode card = cards.get(i);
+      for (int i = 0; i < 7; i++){
+        CardNode card = cards[i];
         
         double sizeFactor = CARD_RATIO;
         double cardWidth = (constraints[i]/total)*width;
@@ -285,21 +242,17 @@ public class HandNode extends ResizablePane
         double cardHeight = cardWidth/CARD_RATIO;
         double yPos = height - cardHeight;
         
-//        card.setSize(cardWidth, cardHeight);
-        double scaleX = cardWidth/card.getWidth();
-        double scaleY = cardHeight/card.getHeight();
-        card.setScaleX(scaleX);
-        card.setScaleY(scaleY);
-        card.setLayoutX(xPos + (cardWidth - card.getWidth())/2);
-        card.setLayoutY(yPos + (cardHeight - card.getHeight())/2);
+        card.setSize(cardWidth, cardHeight);
+        card.setLayoutX(xPos);
+        card.setLayoutY(yPos);
       }
       
     } else {
       
-      for (int i = 0; i < cards.size(); i++){
-        CardNode card = cards.get(i);
+      for (int i = 0; i < cards.length; i++){
+        CardNode card = cards[i];
         card.setSize(lastWidth, lastHeight);
-        card.setLayoutX(xLayouts.get(i));
+        card.setLayoutX(xLayouts[i]);
         card.setLayoutY(this.getHeight() - lastHeight);
       }
     }

@@ -1,5 +1,6 @@
 package starvationevasion.sim;
 
+import javafx.scene.shape.Polygon;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumCropZone;
 import starvationevasion.common.EnumFood;
@@ -18,12 +19,9 @@ import starvationevasion.sim.events.Hurricane;
 import starvationevasion.sim.io.GeographyXMLparser;
 import starvationevasion.sim.io.ProductionCSVLoader;
 import starvationevasion.sim.io.SpecialEventCSVLoader;
-import starvationevasion.util.Picture;
+import starvationevasion.util.JavaFX_DebugViewer;
 
-import java.awt.*;
 import java.awt.geom.Area;
-import java.awt.geom.PathIterator;
-import java.awt.image.BufferedImage;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1353,83 +1351,10 @@ public class Model
     }
   }
 
-  /**
-   * This method is used only for testing the geographic boundaries.<br>
-   * It displays a javax.swing.JFrame containing a Mollweide projection of the
-   * world to be drawn on using drawBoundary(Picture pic, Territory territory);
-   *
-   * @return reference to the created JFrame.
-   */
-  public Picture testShowMapProjection()
-  {
-    //return new Picture("assets/WorldMap_MollweideProjection-1280x641.png");
-    return new Picture("assets/BlankBlue_MollweideProjection-1280x641.png");
-  }
-
-  /**
-   * This method is used only for testing the geographic boundaries.<br>
-   * Given a Picture frame containing a Mollweide would map projection and a territory,
-   * it draws the boundary of that territory on the map using different colors for
-   * disconnected segments (islands) of the territory.
-   */
-  public void drawBoundary(Picture pic, Territory territory, Color color, int thickness)
-  {
-    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
-    //map.setCentralMeridian(-83);
-    Point pixel = new Point();
-
-    Graphics2D gfx = pic.getOffScreenGraphics();
-    gfx.setStroke(new BasicStroke(thickness));
-
-
-    GeographicArea geographicArea = territory.getGeographicArea();
-    Area boundary = geographicArea.getPerimeter();
-
-    gfx.setColor(color);
-    int lastX = Integer.MAX_VALUE;
-    int lastY = Integer.MAX_VALUE;
-    int startX = Integer.MAX_VALUE;
-    int startY = Integer.MAX_VALUE;
-
-    double[] coords = new double[6];
-
-
-    PathIterator path = boundary.getPathIterator(null);
-    while(!path.isDone())
-    {
-        int type = path.currentSegment(coords);
-        path.next();
-        //map.setPoint(pixel, mapPoint.latitude, mapPoint.longitude);
-        //System.out.println("("+coords[1]+", "+ coords[0]+")");
-        map.setPoint(pixel, coords[1], coords[0]);
-        if (type == PathIterator.SEG_LINETO)
-        {
-          gfx.drawLine(lastX, lastY, pixel.x, pixel.y);
-        }
-        else if(type == PathIterator.SEG_MOVETO)
-        {
-          startX = pixel.x;
-          startY = pixel.y;
-        }
-        else if(type == PathIterator.SEG_CLOSE)
-        {
-          gfx.drawLine(lastX, lastY, startX, startY);
-        }
-        else
-        {
-          System.out.println("************ ERROR ***********");
-        }
-
-        lastX = pixel.x;
-        lastY = pixel.y;
-    }
-    pic.repaint();
-
-  }
 
 
 
-
+/*
 
   public void drawAllTiles(Picture pic, Region region, Color color)
   {
@@ -1488,7 +1413,7 @@ public class Model
     pic.repaint();
 
   }
-
+*/
 
   /**
    * Testing entry point. This creates an instance of the model which, among other things,
@@ -1505,63 +1430,20 @@ public class Model
 
     Model model = new Model();
 
-    Picture pic = model.testShowMapProjection();
+    String[] imagePath = {"BlankBlue_MollweideProjection-1280x641.png"};
+    JavaFX_DebugViewer pic = new JavaFX_DebugViewer();
+    pic.launch(imagePath);
 
-    BufferedImage background = pic.getImageCapture();
-
-    //Graphics2D gfx = pic.getOffScreenGraphics();
-    //gfx.setColor(Color.BLACK);
-    //gfx.fillRect(0,0,pic.getImageWidth(), pic.getImageHeight());
-   // Territory territory;
-
-   //territory = model.getTerritory("US-Utah");
-   //model.drawBoundary(pic, territory, Color.GREEN, 1);
-
-   //territory = model.getTerritory("US-Nevada");
-   //model.drawBoundary(pic, territory, Color.BLUE, 1);
-
-    /*
-   territory = model.getTerritory("Congo (Brazzaville)");
-   model.drawBoundary(pic, territory, Color.MAGENTA, 1);
-   Region region = model.getRegion(EnumRegion.SUB_SAHARAN);
-   model.drawBoundary(pic, region, Util.brighten(EnumRegion.SUB_SAHARAN.getColor(), 0.5), 3);
-*/
-    //Region region = model.getRegion(EnumRegion.OCEANIA);
-    //model.drawBoundary(pic, region, Color.WHITE);
-
-    //Territory territory = model.getTerritory("Tunisia");
-    //model.drawBoundary(pic, territory, Color.RED);
-/*
-    Territory territory = model.getTerritory("Ethiopia");
-    model.drawBoundaryUsingMapPoints(pic, territory);
-    territory = model.getTerritory("Kenya");
-    model.drawBoundaryUsingMapPoints(pic, territory);
-    territory = model.getTerritory("Tanzania");
-    model.drawBoundaryUsingMapPoints(pic, territory);
-    territory = model.getTerritory("Somalia");
-    model.drawBoundaryUsingMapPoints(pic, territory);
-    territory = model.getTerritory("Sudan");
-    model.drawBoundaryUsingMapPoints(pic, territory);
-    Region region = model.getRegion(EnumRegion.SUB_SAHARAN);
-    model.drawBoundary(pic, region, Util.brighten(Color.MAGENTA, 0.5));
-    region = model.getRegion(EnumRegion.MIDDLE_EAST);
-    model.drawBoundary(pic, region, Util.brighten(EnumRegion.MIDDLE_EAST.getColor(), 0.5));
-    //territory = model.getTerritory("Mauritania");
-    //model.drawBoundary(pic, territory, Color.WHITE);
-    //territory = model.getTerritory("Algeria");
-    //model.drawBoundary(pic, territory, Color.GREEN);
-    //territory = model.getTerritory("Mexico");
-    //model.drawBoundary(pic, territory, Color.RED);
-    */
-
-    Color[] colorList = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN,
-      Color.BLUE, Color.MAGENTA}; //for debugging only
     MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
-    map.setRegionPerimetersSpherical(model.getRegionPerimetersSpherical());
+    map.setCentralMeridian(0);
+    for (EnumRegion regionID : EnumRegion.values())
+    {
+      Polygon drawArea = map.getPerimeterDrawable(regionID);
+      pic.add(drawArea, Util.brighten(regionID.getColor(), 0.5));
+    }
 
-    Graphics2D gfx = pic.getOffScreenGraphics();
-    gfx.setStroke(new BasicStroke(1));
-    //map.setCentralMeridian(-5);
+
+
 /*
     for (int n = -180; n < 180; n+=1)
     {

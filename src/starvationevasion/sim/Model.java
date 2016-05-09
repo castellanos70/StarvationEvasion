@@ -448,11 +448,6 @@ public class Model
 
 
   /**
-   * 5/8/16 Note: Just because some things say "Done" doesn't mean it's totally
-   * implemented within Region or Territory. Not entirely sure who made the
-   * comments denoting the status of these methods. I was lead to believe some
-   * things were implemented that aren't even started on.
-   * 
    * @return the simulation currentYear that has just finished.
    */
   protected int nextYear(ArrayList<GameCard> cards)
@@ -463,7 +458,7 @@ public class Model
 
     //updateLandUse(); // Not started.
 
-    //updatePopulation(); // Done
+    //updatePopulation(); // Done.
 
     //updateClimate(); // Done.
 
@@ -550,11 +545,6 @@ public class Model
     return worldData[yearIdx];
   }
   
-  private void updatePopulations()
-  {
-    
-  }
-  
   /**
    * Searches the regionList for the US regions and adds them to
    * unitedStatesRegionList[].
@@ -608,8 +598,7 @@ public class Model
    * Hard-coded values are constants of the specific policy card. The card
    * classes do not currently provide these values.
    * 
-   * Cases in switch statement with TODO: still need to be implemented or a
-   * portion needs to be.
+   * Cases in switch statement with TODO: still need to be implemented.
    * 
    * @param cards
    *          the list of all cards to be applied to the model
@@ -626,31 +615,25 @@ public class Model
       switch(c.getCardType())
       {
         case Policy_CleanRiverIncentive:
-          // TODO:
+          //TODO:
           break;
         case Policy_DivertFunds:
-          // remove all cards from owners hand -- done in Simulator.java
-          // give 14 million dollars to owner
+          //remove all cards from owners hand -- done in Simulator.java
+          //give 14 million dollars to owner
           getRegion(c.getOwner()).addToRevenue(14000000);
           break;
         case Policy_EducateTheWomenCampaign:
-          // TODO:
+          //TODO:
           break;
         case Policy_EfficientIrrigationIncentive:
-          // TODO:
+          //TODO:
           break;
         case Policy_EthanolTaxCreditChange:
           // if c.getX() == 25, user selected a 25% tax credit
-          getRegion(c.getOwner()).setEthanolProducerTaxCredit(c.getX());
+           getRegion(c.getOwner()).setEthanolProducerTaxCredit(c.getX());
           break;
         case Policy_FarmInfrastructureSubSaharan:
-          // Each US Region sends X dollars to Sub_Saharan for farm
-          // infrastructure aid.
-          for (Region r : unitedStatesRegionList)
-          {
-            r.subtractFromRevenue(c.getX());
-          }
-          getRegion(EnumRegion.SUB_SAHARAN).addFarmInfrastructureAid(c.getX() * unitedStatesRegionList.length);
+          //TODO:
           break;
         case Policy_FertilizerAidCentralAsia:
           // if c.getX()==6 send 6 million dollars in fertilizer to Central Asia
@@ -669,9 +652,7 @@ public class Model
           sendFertilizerAid(EnumRegion.SUB_SAHARAN, c.getX());
           break;
         case Policy_FertilizerSubsidy:
-          // Offer 20% subsidy to farmers for purchising fertilizer or feed for
-          // targetFood of player's region.
-          getRegion(c.getOwner()).setFertilizerSubsidy(20, c.getTargetFood());
+          //TODO:
           break;
         case Policy_FoodReliefCentralAsia:
           // Sends 5 thousand tons of selected food
@@ -693,23 +674,17 @@ public class Model
           getRegion(c.getOwner()).addToRevenue(1000000);
           break;
         case Policy_InternationalFoodRelief:
-          // TODO:
+          //TODO:
           break;
         case Policy_Loan:
-          // TODO:
+          //TODO:
           break;
         case Policy_MyPlatePromotionCampaign:
           getRegion(c.getOwner()).subtractFromRevenue(c.getX());
-          // TODO: Apply effect of the advertising.
+          //TODO: Apply effect of the advertising effects.
           break;
         case Policy_ResearchInsectResistanceGrain:
-          // Each participating region spends X million dollars to research
-          // insect resistance grain
-          for (Region r : getEnactedRegions(c))
-          {
-            r.subtractFromRevenue(c.getX()); // regions spend X million dollars
-            // TODO: send the revenue from region to appropriate research
-          }
+          //TODO:
           break;
         case Policy_SpecialInterests:
           //TODO:
@@ -718,28 +693,6 @@ public class Model
           break;
       }
     }
-  }
-  
-  /**
-   * 
-   * @param card
-   *          A policy card that has been enacted by the players
-   * @return An array of all the player regions who voted to enact this policy.
-   */
-  private Region[] getEnactedRegions(GameCard card)
-  {
-    Region[] enactedRegions = new Region[card.getEnactingRegionCount()];
-    int i = 0;
-    for(Region r : unitedStatesRegionList)
-    {
-      if(card.didVoteYes(r.getRegionEnum()))
-      {
-        enactedRegions[i] = r;
-        i++;
-      }
-    }
-    
-    return enactedRegions;
   }
   
   /**
@@ -993,7 +946,6 @@ public class Model
       {
         regionTileList.addAll(territory.getLandTiles());
       }
-      System.out.println(regionList[i].getName() + " " + regionTileList.size() + " " + regionList[i].getLandTotal() / regionTileList.size());
       //go through the list of crops, one by one, and assign them to tiles, with
       //weighted probabilities, based on the crop ratings for each tile
       for(int j = 0; j < EnumFood.CROP_FOODS.length; j++)
@@ -1131,6 +1083,8 @@ public class Model
   
   /**
    * Rates a given tile's suitability for a particular crop.
+   * 
+   * Currently doesn't take into account the necessary amount of rain.
    * 
    * @param crop
    *          crop for which we want rating (citrus, fruit, nut, grain, oil,
@@ -1582,7 +1536,7 @@ public class Model
     for(Region region: regionList)
     {
       region.resetProduction();
-      for (Territory territory : region.getTerritoryList())
+      for (Territory territory : territoryList)
       {
         for (LandTile tile : territory.getLandTiles())
         {

@@ -1,8 +1,17 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.*;
+import starvationevasion.common.Constant;
+import starvationevasion.common.EnumCropZone;
+import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.GeographicArea;
+import starvationevasion.common.MapPoint;
+import starvationevasion.common.MapProjectionMollweide;
+import starvationevasion.common.RegionData;
+import starvationevasion.common.SpecialEventData;
+import starvationevasion.common.Util;
+import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.common.gamecards.Policy_DivertFunds;
 import starvationevasion.sim.LandTile.Field;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.Drought;
@@ -17,8 +26,11 @@ import java.awt.geom.Area;
 import java.awt.geom.PathIterator;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -88,7 +100,7 @@ import java.util.logging.Logger;
 
 public class Model
 {
-  public static final int TOTAL_LAND_TILES = 245021;//167235;
+  public static final int TOTAL_LAND_TILES = 167235;
   public static double EVENT_CHANCE = 0.02;
   private static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
@@ -1338,7 +1350,7 @@ public class Model
    */
   public Picture testShowMapProjection()
   {
-    return new Picture("assets/WorldMap_MollweideProjection.png");
+    return new Picture("assets/WorldMap_MollweideProjection-1280x641.png");
   }
 
   /**

@@ -19,8 +19,6 @@ public class GeographicArea implements Sendable
     ISLAND, HOLE
   }
 
-  ;
-
   /**
    * boundaryList is an ArrayList of an ArrayList of MapPoints.<br>.
    * Each ArrayList of MapPoints is the perimeter of <b><i>one continuous segment</i></b> of

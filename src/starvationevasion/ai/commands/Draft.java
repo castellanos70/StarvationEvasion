@@ -15,7 +15,6 @@ import starvationevasion.ai.AI.WorldFactors;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
-import starvationevasion.common.Util;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.server.model.Endpoint;
@@ -187,37 +186,6 @@ public class Draft extends AbstractCommand
     } else
       return "I'm going to draft a card of type " + card.getType()
           + " . Can anyone support it?";
-  }
-  /**
-   * Random chance that a card will get discarded. can only be called once
-   * in a turn.
-   */
-  private void randomlyDiscard()
-  {
-    EnumPolicy discard = null;
-
-    for (EnumPolicy policy : getClient().getUser().getHand())
-    {
-      GameCard card = GameCard.create(getClient().getUser().getRegion(),
-          policy);
-      // dont remove the card we just drafted!!!
-      if (cardDrafted1 != null && policy != cardDrafted1.getCardType()&&
-          cardDrafted2 != null && policy != cardDrafted2.getCardType()
-          && Util.rand.nextBoolean())
-      {
-        discard = policy;
-        break;
-      }
-        
-    }
-    int idx = getClient().getUser().getHand().indexOf(discard);
-    if (idx >= 0)
-    {
-
-      getClient().getCommModule().send(Endpoint.DELETE_CARD, discard, null);
-      System.out.println("Card discarded");
-    }
-    discarded = true;
   }
   /*
    * Jeffrey McCall
@@ -481,10 +449,6 @@ public class Draft extends AbstractCommand
         System.out.println("Card drafted:"+card.getPolicyName());
         getClient().draftedCards.get(numTurns).add(card);
       }
-      if(!discarded)
-      {
-        randomlyDiscard();
-      }
       draftedCard=true;
       tries=2;
       return true;
@@ -584,10 +548,6 @@ public class Draft extends AbstractCommand
         }while(!drafted);
       }
       draftedCard=true;
-      if(!discarded)
-      {
-        randomlyDiscard();
-      }
       tries=2;
       return true;
     }

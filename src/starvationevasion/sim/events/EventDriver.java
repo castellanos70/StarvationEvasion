@@ -8,12 +8,13 @@ import starvationevasion.common.Util;
 import starvationevasion.sim.Model;
 import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
+import starvationevasion.sim.events.AbstractEvent.EventGraph.EventNode;
 
    
 
 public class EventDriver 
 {
- private ArrayList<AbstractEvent> EventList = new ArrayList<>();	
+ public static  ArrayList<AbstractEvent> eventList = new ArrayList<>();	
  private Model model;
  
  public EventDriver(Model model)
@@ -29,7 +30,7 @@ public class EventDriver
  
  
  
- private void addRandomEvents()
+ private void addRandomEvents(int numberOfRandomEvents)
  { 
 	 float eventChoice;
 	 
@@ -39,18 +40,20 @@ public class EventDriver
 	 
 	 
 	 Region tmpRegion; 
-	 Territory tmpTerrioty;
+	 Territory tmpTerritory;
 	 EnumRegion tmpEnumRegion;
-	 EnumRegion[] regionEnums = EnumRegion.values();
-	 while((eventChoice=Util.rand.nextFloat()) < 0.8 )
+	 int counter = 0;
+	 while(counter != numberOfRandomEvents)
 	 {
-		
+		 eventChoice=Util.rand.nextFloat();
+		 
+		 EnumRegion[] regionEnums = EnumRegion.values();
 		 regionChoice = Util.rand.nextInt(EnumRegion.SIZE);
 		 tmpEnumRegion = regionEnums[regionChoice];
 		 tmpRegion = model.getRegion(tmpEnumRegion);
 		 
 		 terriotyChoice = Util.rand.nextInt(tmpRegion.getTerritoryList().size());
-		 tmpTerrioty = tmpRegion.getTerritoryList().get(terriotyChoice);
+		 tmpTerritory = tmpRegion.getTerritoryList().get(terriotyChoice);
 		 
 		 eventIndex = (int) (eventChoice * 10);
 		 
@@ -58,18 +61,20 @@ public class EventDriver
 		// determine what events to add to EventsList
 		 switch(eventIndex)
 		 {
-		 case 0: break;
-		 case 1: break;
-		 case 2: break;
-		 case 3: break;
-		 case 4: break;
+		 case 0: addEvent(new Drought(tmpRegion)); break;
+		 case 1: addEvent(new Fire(tmpTerritory,1)); break;
+		 case 2: addEvent(new Hurricane(tmpTerritory));break;
+		 case 3: addEvent(new Earthquake(tmpTerritory,2));break;
+		 case 4: addEvent(new Blight(tmpTerritory,2));break;
 		 case 5: break;
 		 case 6: break;
 		 case 7: break;
+		 case 8: break;
+		 case 9: break;
 		
 		 
 		 }
-		 	
+		 counter++;	
 		 
 		 	
 		 
@@ -81,20 +86,19 @@ public class EventDriver
  
  private void addEvent(AbstractEvent event)
  {
-	 EventList.add(event);
+	 eventList.add(event);
  }
- 
- 
+  
  public void applyEvents()
  {
-	 for (AbstractEvent event : EventList)
+	 for (AbstractEvent event : eventList)
 	 {
 	   if(event.getDuration()> 0)
 	   {
 		 event.applyEffects();
 	   }
 	   else
-		   EventList.remove(event);
+		   eventList.remove(event);
 	 }
  }
  

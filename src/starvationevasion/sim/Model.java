@@ -1558,10 +1558,11 @@ public class Model
 
     Graphics2D gfx = pic.getOffScreenGraphics();
     gfx.setStroke(new BasicStroke(2));
-    for (int n = -180; n < 180; n+=10)
-    {
+    map.setCentralMeridian(0);
+    //for (int n = -180; n < 180; n+=10)
+    //{
       gfx.drawImage(background, 0,0,null);
-      map.setCentralMeridian(n);
+      //map.setCentralMeridian(n);
       for (EnumRegion regionID : EnumRegion.values())
       {
         Area drawArea = map.getPerimeterDrawable(regionID);
@@ -1570,6 +1571,11 @@ public class Model
         gfx.draw(drawArea);
       }
 
+    //Area drawArea = map.getPerimeterDrawable(EnumRegion.ARCTIC_AMERICA);
+    //gfx.setColor(EnumRegion.ARCTIC_AMERICA.getColor());
+
+    //gfx.draw(drawArea);
+
       //for (EnumRegion regionID : EnumRegion.values())
       //{
       //  Region region = model.getRegion(regionID);
@@ -1577,15 +1583,15 @@ public class Model
       //}
       pic.repaint();
 
-      try
-      {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) { }
+      //try
+      //{
+      //  Thread.sleep(1000);
+      //} catch (InterruptedException e) { }
 
       //for (Constant.Month month : Constant.Month.values())
       //{
       //  model.drawRain(pic, 2000+n, month);
       //}
-    }
+    //}
   }
 }

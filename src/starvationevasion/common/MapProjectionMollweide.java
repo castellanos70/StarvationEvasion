@@ -20,7 +20,7 @@ public class MapProjectionMollweide
 
   private int pixelWidth;
   private int pixelHeight;
-  private double centralMeridian = 0;
+  private double centralMeridian = 0; //degrees
 
   private double scaleX;
   private double scaleY;
@@ -44,7 +44,8 @@ public class MapProjectionMollweide
         "MapProjectionMollweide.setCentralMeridian("+degrees +
         "): Argument out of bounds error.");
     }
-    centralMeridian = degrees*DEG_TO_RAD;
+   // centralMeridian = degrees*DEG_TO_RAD;
+    centralMeridian = degrees;
   }
 
   public void setRegionPerimetersSpherical(Area[] regionPerimeters)
@@ -68,39 +69,69 @@ public class MapProjectionMollweide
       perimeter = regionPerimetersSpherical[regionID.ordinal()];
     }
 
-    double edgeLongitude1 = centralMeridian - Math.PI;
-    double edgeLongitude2 = centralMeridian + Math.PI;
-
-    if (edgeLongitude1 < -Math.PI) edgeLongitude1 = 2.0*Math.PI + edgeLongitude1;
-    if (edgeLongitude2 >  Math.PI) edgeLongitude2 =-2.0*Math.PI + edgeLongitude2;
+    double edgeLongitude = centralMeridian + 180;
+    if(edgeLongitude  >  180) edgeLongitude = edgeLongitude - 360;
 
     Area[] perimeterList = null;
 
-    if (perimeter.intersects(edgeLongitude2-0.01, -Math.PI/2, 0.25, Math.PI))
+    System.out.printf("edge=%.1f  %s%n",edgeLongitude, regionID);
+
+    if (perimeter.intersects(edgeLongitude - 0.05,-90, 0.1, 90))
     {
+      System.out.println(regionID + "     crosses edge");
       perimeterList = new Area[2];
       perimeterList[0] = new Area(perimeter);
       perimeterList[1] = new Area(perimeter);
       Area eastArea = null;
-      double x2 = edgeLongitude1+Math.PI;
-      if (x2>Math.PI)
+      if (edgeLongitude>0)
       {
-        x2 = Math.PI;
-        double x3 = -Math.PI;
-
-        Shape east1 = new Rectangle2D.Double(edgeLongitude1, -Math.PI/2, Math.PI-edgeLongitude1, Math.PI);
-        Shape east2 = new Rectangle2D.Double(-Math.PI, -Math.PI/2, centralMeridian+Math.PI, Math.PI);
+        Shape east1 = new Rectangle2D.Double(edgeLongitude, -90, 180, 90);
+        Shape east2 = new Rectangle2D.Double(-180, -90, 180, 90);
         eastArea = new Area(east1);
         eastArea.add(new Area(east2));
       }
-      else if (
-        perimeterList[0].intersect(eastArea);
+      else
+      {
+        Shape east1 = new Rectangle2D.Double(edgeLongitude, -90, 180+edgeLongitude, 90);
+        Shape east2 = new Rectangle2D.Double(0, -90, 180, 90);
+        eastArea = new Area(east1);
+        eastArea.add(new Area(east2));
+      }
+
+      perimeterList[0].intersect(eastArea);
     }
+
+/*
+      Area westArea = null;
+      if (centralMeridian+Math.PI>Math.PI)
+      {
+        Shape west1 = new Rectangle2D.Double(centralMeridian, -Math.PI/2, Math.PI-centralMeridian, Math.PI);
+        Shape west2 = new Rectangle2D.Double(-Math.PI, -Math.PI/2, centralMeridian+Math.PI, Math.PI);
+        westArea = new Area(west1);
+        westArea.add(new Area(west2));
+      }
+      else if (edgeLongitude1 < 0 && edgeLongitude1 > -Math.PI)
+      {
+        Shape west1 = new Rectangle2D.Double(edgeLongitude1, -Math.PI/2, Math.PI+edgeLongitude1, Math.PI);
+        Shape west2 = new Rectangle2D.Double(0, -Math.PI/2, centralMeridian, Math.PI);
+        westArea = new Area(west1);
+        westArea.add(new Area(west2));
+      }
+      else
+      {
+        Shape west1 = new Rectangle2D.Double(centralMeridian, -Math.PI/2, Math.PI, Math.PI);
+        eastArea = new Area(west1);
+      }
+      perimeterList[1].intersect(westArea);
+    }
+*/
+
     else
     {
       perimeterList = new Area[1];
       perimeterList[0] = perimeter;
     }
+
 
     Area drawBoundary = new Area();
 
@@ -108,30 +139,33 @@ public class MapProjectionMollweide
     double[] coords = new double[6];
     Path2D.Float shape = null;
 
-    PathIterator path = perimeter.getPathIterator(null);
-    while(!path.isDone())
+    for (int i=0; i<perimeterList.length; i++)
     {
-      int type = path.currentSegment(coords);
-      path.next();
-      setPoint(pixel, coords[1], coords[0]);
-      if (type == PathIterator.SEG_LINETO)
+      PathIterator path = perimeterList[i].getPathIterator(null);
+      while(!path.isDone())
       {
-        shape.lineTo(pixel.x, pixel.y);
-      }
-      else if(type == PathIterator.SEG_MOVETO)
-      {
-        shape = new Path2D.Float();
-        shape.moveTo(pixel.x, pixel.y);
-      }
-      else if(type == PathIterator.SEG_CLOSE)
-      {
-        shape.lineTo(pixel.x, pixel.y);
-        Area area = new Area(shape);
-        drawBoundary.add(area);
-      }
-      else
-      {
-        System.out.println("************ ERROR ***********");
+        int type = path.currentSegment(coords);
+        path.next();
+        setPoint(pixel, coords[1], coords[0]);
+        if (type == PathIterator.SEG_LINETO)
+        {
+          shape.lineTo(pixel.x, pixel.y);
+        }
+        else if(type == PathIterator.SEG_MOVETO)
+        {
+          shape = new Path2D.Float();
+          shape.moveTo(pixel.x, pixel.y);
+        }
+        else if(type == PathIterator.SEG_CLOSE)
+        {
+          shape.lineTo(pixel.x, pixel.y);
+          Area area = new Area(shape);
+          drawBoundary.add(area);
+        }
+        else
+        {
+          System.out.println("************ ERROR ***********");
+        }
       }
     }
 
@@ -170,7 +204,7 @@ public class MapProjectionMollweide
     }
     //System.out.println("count="+count);
 
-    double lon2 = lon - centralMeridian;
+    double lon2 = lon - centralMeridian * DEG_TO_RAD;
     if (lon2 > Math.PI) lon2 = -Math.PI + (lon2 - Math.PI);
     else if (lon2 < -Math.PI) lon2 = Math.PI + (lon2 + Math.PI);
 

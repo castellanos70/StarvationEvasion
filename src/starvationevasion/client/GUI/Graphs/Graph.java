@@ -4,6 +4,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.PieChart.Data;
 import javafx.scene.chart.XYChart;
 
 /**
@@ -17,6 +19,10 @@ public class Graph
   LineChart lineChart;
   NumberAxis xAxis;
   NumberAxis yAxis;
+  
+  PieChart pieChart = new PieChart();;
+  
+  
   XYChart.Series series;
   ObservableList<XYChart.Data<Integer, Integer>> dataset;
 
@@ -41,6 +47,31 @@ public class Graph
     lineChart.setLegendVisible(false);
     series.setData(dataset);
     lineChart.getData().add(series);
+    
+    
+//     pieChart.getStylesheets().add(getClass().getResource("/starvationevasion/client/GUI/Graphs/pieChartCSS.css").toExternalForm());
+//    
+//	 pieChart.setVisible(true);
+//	 pieChart.getData().clear();
+//	 pieChart.setTitle("Regional Crop Distribution");
+//	 ObservableList<Data> list = FXCollections.observableArrayList(
+//		 new PieChart.Data("Citrus Fruits", 3),
+//		 new PieChart.Data("Non-Citrus Fruits", 4),
+//		 new PieChart.Data("Nuts", 3),
+//		 new PieChart.Data("Grains", 13),
+//		 new PieChart.Data("Oil Crops", 6),
+//		 new PieChart.Data("Vegetables", 8),
+//		 new PieChart.Data("Specialty Crops", 1),
+//		 new PieChart.Data("Feed Crops", 20),
+//		 new PieChart.Data("Fish", 7),
+//		 new PieChart.Data("Meat Animals", 15),
+//		 new PieChart.Data("Poultry and Eggs", 11),
+//		 new PieChart.Data("Dairy Products", 9)
+//		 );
+//	 
+//	 pieChart.setData(list);
+    
+    
   }
 
   /**
@@ -76,7 +107,11 @@ public class Graph
     return dataset;
   }
 
-
+//  public PieChart getPieChart()
+//  {
+//	  return pieChart;
+//  }
+  
   /**
    * Returns the lineChart to display on the GUI
    * @return

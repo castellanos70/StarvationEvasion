@@ -315,7 +315,7 @@ public class ClientTest implements Client
         hand = ((User)data).getHand();
         gui.setAssignedRegion(region);
         gui.setCardsInHand(getHand());
-        gui.getDraftLayout().getHand().setHand(getHand().toArray(new EnumPolicy[hand.size()]));
+        gui.getDraftLayout().getHand().setPolicies(getHand().toArray(new EnumPolicy[hand.size()]));
       }
       else if (type == Type.WORLD_DATA_LIST)
       {
@@ -338,7 +338,7 @@ public class ClientTest implements Client
       {
         System.out.println("Received voting cards");
         votingCards = (ArrayList<GameCard>)data;
-        gui.getVotingLayout().updateCardSpaces(votingCards);
+        gui.getVotingLayout().getVotingHand().setVotingCards(votingCards);
       }
       else if (type == Type.GAME_STATE)
       {

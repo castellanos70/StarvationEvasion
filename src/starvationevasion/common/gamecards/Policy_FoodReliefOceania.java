@@ -12,11 +12,11 @@ import java.util.EnumSet;
  * Draft Affects: When drafting this policy, player
  * selects a food to send 5 thousand tons to Oceania. <br><br>
  *
- * Votes Required: {@value #VOTES_REQUIRED} 1<br>
+ * Votes Required: Automatic<br><br>
  * Eligible Regions: All U.S.<br><br>
  *
  * Model Effects: Commodity food is distributed to relieve world hunger
- * in Oceania.  Import penaly costs apply to the aid.<br><br>
+ * in Oceania.  Import penalty costs apply to the aid.<br><br>
  *
  * Food purchased for relief inflates the global sell foodPrice of the food type by a
  * direct reduction of supply without effect on demand (since those to whom the
@@ -30,16 +30,8 @@ public class Policy_FoodReliefOceania extends GameCard
   public static final String TEXT = 
 	"This region sends 5 thousand tons of target food to Oceania";
 
-  public static final int VOTES_REQUIRED = 1;
-  
   public static final EnumSet<State> PLAY_STATES = //when the card can be used
       EnumSet.of(State.DRAFTING);
-
-  /**
-   *  {@inheritDoc}
-   */
-  @Override
-  public int votesRequired() {return VOTES_REQUIRED;}
 
   /**
    *  {@inheritDoc}

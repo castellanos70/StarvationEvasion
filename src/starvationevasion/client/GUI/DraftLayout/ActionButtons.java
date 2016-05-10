@@ -1,5 +1,7 @@
 package starvationevasion.client.GUI.DraftLayout;
 
+import java.util.ArrayList;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -9,8 +11,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import starvationevasion.client.GUI.GUI;
-
-import java.util.ArrayList;
 
 /**
  * ActionButtons are the GUI element which are responsible for allowing the user to tell the server that they're done with drafting,
@@ -30,14 +30,13 @@ public class ActionButtons extends HBox
   {
     this.gui = gui;
     HBox layout = new HBox();
-
     tempText = new Text("ACTION BUTTONS");
     tempText.setFill(Color.BLUE);
     ImageView image =new ImageView(gui.getImageGetter().getUndoButton());
 
     Button undo=new Button("",image);
 
-    undo.setOnAction(event -> gui.getDraftLayout().getHand().undo());
+    undo.setOnAction(event -> gui.getDraftLayout().getHand().reset());
     endTurn=new Button();
     endTurn.setText("End Turn");
 
@@ -62,18 +61,18 @@ public class ActionButtons extends HBox
     {
       bigDiscard.setDisable(true);
       doneDiscarding.setDisable(false);
-      gui.getDraftLayout().getHand().setSelectingCard(true);
+//      gui.getDraftLayout().getHand().setSelectingCard(true);
     });
 
-    doneDiscarding.setOnMouseClicked(event ->
-    {
-      Hand hand =gui.getDraftLayout().getHand();
-      if(hand.getNumberOfActionsUsed()<1)bigDiscard.setDisable(false);
-      else bigDiscard.setDisable(true);
-      doneDiscarding.setDisable(true);
-      hand.setSelectingCard(false);
-      hand.discardSelected();
-    });
+//    doneDiscarding.setOnMouseClicked(event ->
+//    {
+//      HandNode hand =gui.getDraftLayout().getHand();
+//      if(hand.getNumberOfActionsUsed()<1)bigDiscard.setDisable(false);
+//      else bigDiscard.setDisable(true);
+//      doneDiscarding.setDisable(true);
+//      hand.setSelectingCard(false);
+//      hand.discardSelected();
+//    });
     notUndoButtons.getChildren().addAll(endTurn,bigDiscard,doneDiscarding);
     layout.getChildren().addAll(undo, notUndoButtons);
 
@@ -91,18 +90,18 @@ public class ActionButtons extends HBox
    */
   public void endTurn()
   {
-    ArrayList<ClientPolicyCard> clientPolicyCards = gui.getDraftLayout().getHand().getDraftedCards();
+    ArrayList<CardNode> clientPolicyCards = gui.getDraftLayout().getHand().getDraftedCards();
     if (clientPolicyCards != null)
     {
-      for (ClientPolicyCard card : clientPolicyCards)
+      for (CardNode card : clientPolicyCards)
       {
-        gui.getClient().draftCard(card.getPolicyCard());
+        gui.getClient().draftCard(card.getGameCard());
 
       }
-      ArrayList<ClientPolicyCard> discardedCards = gui.getDraftLayout().getHand().getDiscardCards();
-      for (ClientPolicyCard card : discardedCards)
+      ArrayList<CardNode> discardedCards = gui.getDraftLayout().getHand().getDiscardedCards();
+      for (CardNode card : discardedCards)
       {
-        gui.getClient().discardCard(card.getPolicyCard());
+        gui.getClient().discardCard(card.getGameCard());
       }
     }
     endTurn.setDisable(true);

@@ -63,6 +63,12 @@ public class PopupManager
     }
   }
 
+  public Node isOpen()
+  {
+    return currentlyOpen;
+  }
+  
+  
   /**
    * When graph display is clicked, do the appropriate thing (close, open, close and open something else)
    */
@@ -138,6 +144,11 @@ public class PopupManager
     }
   }
 
+  public ProductBarDataDisplay getPBDataDisplay()
+  {
+	  return pbDataDisplay;
+  }
+  
   /**
    * sets the pbDataDisplay to the passed in pbDataDisplay
    * @param pbDataDisplay something

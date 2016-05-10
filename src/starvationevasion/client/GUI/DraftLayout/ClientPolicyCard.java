@@ -27,6 +27,7 @@ import java.util.Arrays;
 
 
 /**`
+ * 
  * Created by arirappaport on 11/15/15.
  */
 public class ClientPolicyCard extends VBox
@@ -202,19 +203,19 @@ public class ClientPolicyCard extends VBox
     else if(this.policy.getValidTargetFoods()!=null)
     {
       needsFood=true;
-      style="-fx-background-color: #00AD22;" + " -fx-border-radius: 10 10 10 10;\n" +
+      style="-fx-background-color: rgb(151,170,170);" + " -fx-border-radius: 10 10 10 10;\n" +
               "  -fx-background-radius: 10 10 10 10;" + "-fx-border-style:solid;";
       this.setStyle(style);
     }else if(this.policy.getValidTargetRegions()!=null)
     {
       needsRegion=true;
-      style="-fx-background-color: #666FC9;" + " -fx-border-radius: 10 10 10 10;\n" +
+      style="-fx-background-color: rgb(102,111,201,0.5);" + " -fx-border-radius: 10 10 10 10;\n" +
               "  -fx-background-radius: 10 10 10 10;" + "-fx-border-style:solid;";
       this.setStyle(style);
     }
     else
     {
-      style="-fx-background-color: #0f8ccc;" + " -fx-border-radius: 10 10 10 10;\n" +
+      style="-fx-background-color: rgb(15,140,204,0.5);" + " -fx-border-radius: 10 10 10 10;\n" +
               "  -fx-background-radius: 10 10 10 10;" + "-fx-border-style:solid;";
       this.setStyle(style);
     }

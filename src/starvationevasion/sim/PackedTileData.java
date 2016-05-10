@@ -1,7 +1,11 @@
 package starvationevasion.sim;
 
+import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.EnumCropZone;
 import starvationevasion.common.EnumFood;
+import starvationevasion.server.io.JSON;
+import starvationevasion.server.model.Sendable;
+import starvationevasion.server.model.Type;
 
 /**
  * Wrapper class for packed tile data. Tile coordinates are packed into a 32 bit integer.
@@ -16,7 +20,7 @@ import starvationevasion.common.EnumFood;
  * PackedTileData.unpackLongitude(PACKED_TILE_COORDINATES, index);
  * PackedTileData.unpackCropRatings(PACKED_CROP_RATINGS, index);
  */
-public class PackedTileData
+public class PackedTileData implements Sendable
 {
   public byte[] PACKED_CROP_RATINGS;
   public  int[] PACKED_TILE_COORDINATES;
@@ -27,7 +31,6 @@ public class PackedTileData
 
   public PackedTileData(int totalTiles)
   {
-
     PACKED_CROP_RATINGS = new byte[totalTiles * 3];
     PACKED_TILE_COORDINATES = new int[totalTiles];
   }
@@ -129,5 +132,48 @@ public class PackedTileData
   public static double unpackLongitude(int[] packedData, int index)
   {
     return ((packedData[index] & highMask) >> 16) / 100.0 ;
+  }
+
+  @Override
+  public Type getType()
+  {
+    return null;
+  }
+
+  /**
+   * Convert class into json
+   *
+   * @return JSON representation of class
+   */
+  @Override
+  public JSONDocument toJSON()
+  {
+    JSONDocument json = new JSONDocument(JSONDocument.Type.OBJECT);
+    json.setNumber("total_crop_tiles", PACKED_CROP_RATINGS.length);
+    json.setNumber("total_coord_tiles", PACKED_TILE_COORDINATES.length);
+    for (int i = 0; i < PACKED_CROP_RATINGS.length; i++)
+    {
+      json.setNumber("crop " + i, PACKED_CROP_RATINGS[i]);
+      if (i < PACKED_TILE_COORDINATES.length) json.setNumber("coord " + i, PACKED_TILE_COORDINATES[i]);
+    }
+    return json;
+  }
+
+  /**
+   * Convert String into JSON
+   *
+   * @param doc object to be converted
+   */
+  @Override
+  public void fromJSON(Object doc)
+  {
+    JSONDocument json = JSON.Parser.toJSON(doc);
+    PACKED_CROP_RATINGS = new byte[json.getNumber("total_crop_tiles").intValue()];
+    PACKED_TILE_COORDINATES = new int[json.getNumber("total_coord_tiles").intValue()];
+    for (int i = 0; i < PACKED_CROP_RATINGS.length; i++)
+    {
+      PACKED_CROP_RATINGS[i] = json.getNumber("crop " + i).byteValue();
+      if (i < PACKED_TILE_COORDINATES.length) PACKED_TILE_COORDINATES[i] = json.getNumber("coord " + i).intValue();
+    }
   }
 }

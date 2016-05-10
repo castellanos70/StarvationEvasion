@@ -1,14 +1,14 @@
-food,price2000,price2009,water,energy,fertilizerN,fertilizerP2O5,fertilizerK2O,growDays,temperatureMin,temperatureIdealLow,temperatureIdealHigh
-Food Group,"Price (2000 US import price, Dollars per Metric Ton)","Price (2009 US import price, Dollars per Metric Ton)",Water (Cubic meters per Metric Ton),,FertilizerN (kg per Metric ton),FertilizerP2O5 (kg per Metric ton),FertilizerK2O (kg per Metric ton),Growing Period (days/year),Temperature Min (Deg C),Temperature Ideal Low (Deg C),Temperature Ideal High (Deg C)
-CITRUS,363,909,560,0,0,0,0,365,-2,12,32
-FRUIT,422,848,400,0,0,0,0,365,-40,-1,32
-NUT,1200,2400,200,0,0,0,0,365,-40,10,35
-GRAIN,126,281,200,0,0,0,0,100,5,20,30
-OIL,363,804,1000,0,0,0,0,75,5,25,30
-VEGGIES,211,424,200,0,0,0,0,80,5,15,40
-SPECIAL,7000,7000,500,0,0,0,0,80,-40,10,35
-FEED,70,90,150,0,0,0,0,80,0,20,30
-FISH,333,333,100,0,0,0,0,365,-20,10,40
-MEAT,1935,2637,40000,0,0,0,0,365,-40,20,30
-POULTRY,1310,1887,6801,0,0,0,0,365,-40,20,30
-DAIRY,1500,1600,1000,0,0,0,0,365,-40,20,30
+food,price2000,price2009,water,energy,fertilizerN,growDays,temperatureMin,temperatureIdealLow,temperatureIdealHigh
+Food Group,"Price (2000 US import price, Dollars per Metric Ton)","Price (2009 US import price, Dollars per Metric Ton)",Water (Cubic meters per Metric Ton),,Fertilizer Cost (Dollars/kg),Growing Period (days/year),Temperature Min (Deg C),Temperature Ideal Low (Deg C),Temperature Ideal High (Deg C)
+CITRUS,363,909,560,0,0,365,-2,12,32
+FRUIT,422,848,400,0,0,365,-40,-1,32
+NUT,1200,2400,200,0,0,365,-40,10,35
+GRAIN,126,281,200,0,0,100,5,20,30
+OIL,363,804,1000,0,0,75,5,25,30
+VEGGIES,211,424,200,0,0,80,5,15,40
+SPECIAL,7000,7000,500,0,0,80,-40,10,35
+FEED,70,90,150,0,0,80,0,20,30
+FISH,333,333,100,0,0,365,-20,10,40
+MEAT,1935,2637,40000,0,0,365,-40,20,30
+POULTRY,1310,1887,6801,0,0,365,-40,20,30
+DAIRY,1500,1600,1000,0,0,365,-40,20,30

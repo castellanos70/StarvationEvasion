@@ -1,5 +1,9 @@
 package starvationevasion.client.GUI;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.TimerTask;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -11,51 +15,47 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
 import starvationevasion.client.GUI.DraftLayout.DraftLayout;
-import starvationevasion.client.GUI.DraftLayout.Hand;
+import starvationevasion.client.GUI.DraftLayout.HandNode;
 import starvationevasion.client.GUI.DraftLayout.map.GamePhaseMapController;
 import starvationevasion.client.GUI.DraftLayout.map.MapController;
 import starvationevasion.client.GUI.Graphs.GraphManager;
 import starvationevasion.client.GUI.Popups.PopupManager;
-import starvationevasion.client.GUI.VotingLayout.VotingLayout;
 import starvationevasion.client.GUI.images.ImageGetter;
+import starvationevasion.client.GUI.votingHud.VotingLayout;
+//import starvationevasion.client.GUI.VotingLayout.VotingLayout;
 import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.client.Logic.LocalDataContainer;
-import starvationevasion.client.Logic.MainGameLoop;
 import starvationevasion.client.Networking.Client;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.gamecards.EnumPolicy;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.TimerTask;
-
-
 /**
- * GUI.java is the class which holds the thread for running the main GUI of starvation evasion
- * The GUI is responsible for drawing the game state on the screen for the user and for receiving user input
+ * GUI.java is the class which holds the thread for running the main GUI of
+ * starvation evasion The GUI is responsible for drawing the game state on the
+ * screen for the user and for receiving user input
  *
- * The GUI displays to the user the the time remaining in the phase, the visualization, data graphs
- * information related to food products, the user's hand, the cards the user has drafted, the user's deck and discard pile,
- * and other information relating to the draft.
+ * The GUI displays to the user the the time remaining in the phase, the
+ * visualization, data graphs information related to food products, the user's
+ * other information relating to the draft.
  *
  * This is how the user interacts with the game
  */
 public class GUI extends Application
 {
-  final int STARTING_HAND=7;
+  final int STARTING_HAND = 7;
   private Stage primaryStage;
   private LocalDataContainer localDataContainer;
   private double boxHeight;
   private double boxWidth;
 
-  private int maxHeight=700;
-  private int maxWidth=1300;
+  private int maxHeight = 700;
+  private int maxWidth = 1300;
 
-  //the layout for the drafting phase
+  // the layout for the drafting phase
   DraftLayout draftLayout;
 
-  //the layout for the voting phase
+  // the layout for the voting phase
   VotingLayout votingLayout;
 
   private Scene gameScene;
@@ -64,52 +64,58 @@ public class GUI extends Application
 
   ArrayList<EnumFood> productList;
 
-  //Helper classes
+  // Helper classes
   ImageGetter imageGetter;
   PopupManager popupManager;
   GraphManager graphManager;
 
-  //The user's assigned region
+  // The user's assigned region
   EnumRegion assignedRegion;
   private ChatNode chatNode;
 
-  private ArrayList<EnumPolicy> cardsInHand=new ArrayList<>();
-  //context variables
+  private ArrayList<EnumPolicy> cardsInHand = new ArrayList<>();
+  // context variables
   boolean selectingRegion = false;
   boolean selectingProduct = false;
-  private boolean draftingPhase=true;
-  private boolean needHand=true;
+  private boolean draftingPhase = true;
+  private boolean needHand = true;
+
   /**
-   * Default constructor for GUI
-   * Used for debugging the GUI, cannot connect to a game
+   * Default constructor for GUI Used for debugging the GUI, cannot connect to a
+   * game
    */
   public GUI()
   {
-      super();
+    super();
   }
 
   /**
    * Constructor for the GUI which the client calls
    */
   private Client client;
-  private MainGameLoop mainGameLoop;
+
   public GUI(Client client, LocalDataContainer localDataContainer)
   {
     super();
-    this.client =client;
+    this.client = client;
     this.localDataContainer = localDataContainer;
     assignedRegion = client.getRegion();
   }
-  public Client getClient(){return client;}
 
-  /**
-   * Main function which launches the GUI thread
-   * @param args
-   */
-  public static void main(String[] args)
+  public Client getClient()
   {
-    launch(args);
+    return client;
   }
+
+  // /**
+  // * Main function which launches the GUI thread
+  // *
+  // * @param args
+  // */
+  // public static void main(String[] args)
+  // {
+  // launch(args);
+  // }
 
   @Override
   public void start(Stage primaryStage)
@@ -119,13 +125,13 @@ public class GUI extends Application
     this.primaryStage = primaryStage;
     primaryStage.setTitle("Starvation Evasion");
 
-    //fills a list of all the product types
+    // fills a list of all the product types
     initializeProductList();
 
-//    primaryStage.setMaxHeight(maxHeight);
-//    primaryStage.setMinHeight(maxHeight);
+    // primaryStage.setMaxHeight(maxHeight);
+    // primaryStage.setMinHeight(maxHeight);
     primaryStage.setResizable(true);
-    
+
     Screen screen = Screen.getPrimary();
     Rectangle2D bounds = screen.getVisualBounds();
 
@@ -133,27 +139,27 @@ public class GUI extends Application
     primaryStage.setY(bounds.getMinY());
     primaryStage.setWidth(bounds.getWidth());
     primaryStage.setHeight(bounds.getHeight());
-    
-    boxHeight = primaryStage.getWidth()/DraftLayout.ROWS;
-    boxWidth = primaryStage.getWidth()/DraftLayout.COLS;
-    
-    //instantiate helper classes
+
+    boxHeight = primaryStage.getWidth() / DraftLayout.ROWS;
+    boxWidth = primaryStage.getWidth() / DraftLayout.COLS;
+
+    // instantiate helper classes
     imageGetter = new ImageGetter();
     popupManager = new PopupManager(this);
     graphManager = new GraphManager(this);
 
-    //instantiate the DraftLayout
+    // instantiate the DraftLayout
     draftLayout = new DraftLayout(this);
     votingLayout = new VotingLayout(this);
-
-    //make a scene for displaying the game
+    // make a scene for displaying the game
     gameScene = new Scene(draftLayout);
     currentRoot = draftLayout;
     primaryStage.setScene(gameScene);
 
-      primaryStage.show();
-    
-    primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>(){
+    primaryStage.show();
+
+    primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>()
+    {
       @Override
       public void handle(WindowEvent arg0)
       {
@@ -161,10 +167,10 @@ public class GUI extends Application
         Platform.exit();
       }
     });
-    
+
     initGame();
   }
-  
+
   @Override
   public void stop()
   {
@@ -172,15 +178,15 @@ public class GUI extends Application
   }
 
   /**
-   *  basic initializing of things that only need to be called once
+   * basic initializing of things that only need to be called once
    */
   public void initGame()
   {
-    cardsInHand= client.getHand();
-    assignedRegion= client.getRegion();
-    if(cardsInHand!=null)
+    cardsInHand = client.getHand();
+    assignedRegion = client.getRegion();
+    if (cardsInHand != null)
     {
-      getDraftLayout().getHand().setHand(cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]));
+      getDraftLayout().getHand().setPolicies(cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]));
     }
 
     getDraftLayout().getSummaryBar().setRegion(assignedRegion);
@@ -188,40 +194,55 @@ public class GUI extends Application
 
   /**
    * Getter for hand arraylist
+   * 
    * @return
    */
-  public ArrayList<EnumPolicy> getCardsInHand() {return cardsInHand;}
+  public ArrayList<EnumPolicy> getCardsInHand()
+  {
+    return cardsInHand;
+  }
 
   /**
    * Sets the cards in hand and sets flag to indicate that cards have been set
+   * 
    * @param cards
    */
   public void setCardsInHand(ArrayList<EnumPolicy> cards)
   {
-    needHand=false;
-    cardsInHand=cards;
+    needHand = false;
+    cardsInHand = cards;
   }
 
   public void setAssignedRegion(EnumRegion region)
   {
-    assignedRegion=region;
+    assignedRegion = region;
   }
+
   /**
    * Returns flag indicating if hand has been set
+   * 
    * @return
    */
-  public boolean needsHand(){return needHand;}
+  public boolean needsHand()
+  {
+    return needHand;
+  }
 
   /**
    * resets hand and buttons
    */
   public void resetDraftingPhase()
   {
-    needHand=true;
+    needHand = true;
     cardsInHand.clear();
-    cardsInHand=null;
-    draftLayout.getHand().newTurn();
+    cardsInHand = null;
+    // draftLayout.getHand().newTurn();
     draftLayout.getActionButtons().resetActionButtons();
+  }
+
+  public void updateState()
+  {
+    draftLayout.update();
   }
 
   /**
@@ -229,7 +250,7 @@ public class GUI extends Application
    */
   public void resetVotingPhase()
   {
-    votingLayout.resetVotingLayout();
+    // votingLayout.resetVotingLayout();
   }
 
   /**
@@ -242,6 +263,7 @@ public class GUI extends Application
 
   /**
    * Simple getter to let nodes access the PopupManager
+   * 
    * @return popup manager in the GUI
    */
   public PopupManager getPopupManager()
@@ -251,6 +273,7 @@ public class GUI extends Application
 
   /**
    * Simple getter to let nodes access the ImageGetter
+   * 
    * @return
    */
   public ImageGetter getImageGetter()
@@ -259,8 +282,8 @@ public class GUI extends Application
   }
 
   /**
-   * Simple getter to allow classes to view the list of products
-   * Written before there was an list of products in the ENUM file
+   * Simple getter to allow classes to view the list of products Written before
+   * there was an list of products in the ENUM file
    *
    * @return
    */
@@ -268,9 +291,15 @@ public class GUI extends Application
   {
     return productList;
   }
-  public ChatNode getChatNode(){return chatNode;}
+
+  public ChatNode getChatNode()
+  {
+    return chatNode;
+  }
+
   /**
-   * Method which switches the which phase of the game is being displayed on the GUI
+   * Method which switches the which phase of the game is being displayed on the
+   * GUI
    */
   public void switchScenes()
   {
@@ -278,27 +307,38 @@ public class GUI extends Application
     {
       primaryStage.getScene().setRoot(votingLayout);
       currentRoot = votingLayout;
-      draftingPhase=false;
+      draftingPhase = false;
+      votingLayout.onResize();
     }
     else
     {
       primaryStage.getScene().setRoot(draftLayout);
       currentRoot = draftLayout;
-      draftingPhase=true;
+      draftingPhase = true;
+      draftLayout.getHand().onResize();
     }
   }
-  public boolean isDraftLayout(){
-    if(currentRoot==draftLayout) return true;
+
+  public boolean isDraftLayout()
+  {
+    if (currentRoot == draftLayout) return true;
     else return false;
   }
 
   /**
    * Getter that returns whether it is the drafting phase or not
+   * 
    * @return boolean true is drafting phase, false if voting
    */
-  public boolean isDraftingPhase(){return draftingPhase;}
+  public boolean isDraftingPhase()
+  {
+    return draftingPhase;
+  }
+
   /**
-   * sets the context that the user is selecting a region to draft a card to the passed in param
+   * sets the context that the user is selecting a region to draft a card to the
+   * passed in param
+   * 
    * @param toSet
    */
   public void setSelectingRegion(boolean toSet)
@@ -307,7 +347,9 @@ public class GUI extends Application
   }
 
   /**
-   * sets the context that the user is selecting a product to draft a card to the passed in param
+   * sets the context that the user is selecting a product to draft a card to
+   * the passed in param
+   * 
    * @param toSet
    */
   public void setSelectingProduct(boolean toSet)
@@ -316,7 +358,9 @@ public class GUI extends Application
   }
 
   /**
-   * Checks to see if the GUI's context that the user needs to select a product to draft a card
+   * Checks to see if the GUI's context that the user needs to select a product
+   * to draft a card
+   * 
    * @return
    */
   public boolean getSeletingProduct()
@@ -326,6 +370,7 @@ public class GUI extends Application
 
   /**
    * Simple getter for the screen height in pixels
+   * 
    * @return screen height
    */
   public double getMaxHeight()
@@ -335,6 +380,7 @@ public class GUI extends Application
 
   /**
    * Simple getter for the screen width in pixels
+   * 
    * @return screen width
    */
   public double getMaxWidth()
@@ -344,6 +390,7 @@ public class GUI extends Application
 
   /**
    * Gets the height of one of the grid spaces in the draft layout
+   * 
    * @return height of a grid box in pixels
    */
   public double getBoxHeight()
@@ -353,6 +400,7 @@ public class GUI extends Application
 
   /**
    * gets the width of one of the grid spaces in the draft layout
+   * 
    * @return height of a gird box in pixels
    */
   public double getBoxWidth()
@@ -360,19 +408,24 @@ public class GUI extends Application
     return boxWidth;
   }
 
-  
-  
   /**
    * Gets the DraftLayout to manipulate GUI elements of the draft phase
+   * 
    * @return The DraftLayout
    */
   public DraftLayout getDraftLayout()
   {
     return draftLayout;
   }
-  public VotingLayout getVotingLayout(){return votingLayout;}
+
+  public VotingLayout getVotingLayout()
+  {
+    return votingLayout;
+  }
+
   /**
    * Returns the GraphManger. Used by nodes which displays graphs
+   * 
    * @return GraphManager
    */
   public GraphManager getGraphManager()
@@ -382,6 +435,7 @@ public class GUI extends Application
 
   /**
    * gets the FoodType at index of the food product list
+   * 
    * @param index
    * @return EnumFood at the specified index
    */
@@ -392,6 +446,7 @@ public class GUI extends Application
 
   /**
    * Updates the GUI's assigned region to the passed in region
+   * 
    * @param region
    */
   public void updateAssignedRegion(EnumRegion region)
@@ -401,25 +456,30 @@ public class GUI extends Application
 
   /**
    * Returns the assigned region that the user was assigned
+   * 
    * @return region which the user has been assigned
    */
   public EnumRegion getAssignedRegion()
   {
     return assignedRegion;
   }
+
   private void initTimer()
-  {java.util.Timer timer=new java.util.Timer();
-    ChatNode chatNodeDraft=draftLayout.getChatNode();
-    ChatNode chatNodeVote=votingLayout.getChatNode();
-    ChatManager chatManager= client.getChatManager();
-    Hand hand=getDraftLayout().getHand();
-    TimerTask timerTask=new TimerTask()
+  {
+    java.util.Timer timer = new java.util.Timer();
+    ChatNode chatNodeDraft = draftLayout.getChatNode();
+    ChatNode chatNodeVote = votingLayout.getChatNode();
+    ChatManager chatManager = client.getChatManager();
+    HandNode hand = getDraftLayout().getHand();
+    TimerTask timerTask = new TimerTask()
     {
-      boolean flag=false;
+      boolean flag = false;
+
       @Override
       public void run()
       {
-        Platform.runLater(() -> {
+        Platform.runLater(() ->
+        {
 
           chatNodeDraft.setChatMessages(chatManager.getChat());
           chatNodeVote.setChatMessages(chatManager.getChat());
@@ -428,33 +488,36 @@ public class GUI extends Application
 
             setCardsInHand(client.getHand());
             cardsInHand = client.getHand();
-            hand.setHand(client.getHand().toArray(new EnumPolicy[cardsInHand.size()]));
-            System.out.println("please work " + Arrays.toString(hand.getHand()) + Platform.isFxApplicationThread());
+            hand.setPolicies(client.getHand().toArray(new EnumPolicy[cardsInHand.size()]));
+            System.out.println("please work " + Arrays.toString(hand.getPolicies()) + Platform.isFxApplicationThread());
           }
-          if (getDraftLayout().getHand().getHand() != null)
+          if (getDraftLayout().getHand().getPolicies() != null)
           {
-            chatNodeDraft.setHand(getDraftLayout().getHand().getHand());
-            chatNodeVote.setHand(getDraftLayout().getHand().getHand());
+            chatNodeDraft.setHand(getDraftLayout().getHand().getPolicies());
+            chatNodeVote.setHand(getDraftLayout().getHand().getPolicies());
           }
           if (isDraftingPhase() && client.getState().equals(starvationevasion.server.model.State.VOTING))
           {
             resetDraftingPhase();
             switchScenes();
           }
-          if (!isDraftingPhase() && (client.getState().equals(starvationevasion.server.model.State.DRAFTING) || client.getState().equals(starvationevasion.server.model.State.DRAWING)))
+          if (!isDraftingPhase() && (client.getState().equals(starvationevasion.server.model.State.DRAFTING)
+              || client.getState().equals(starvationevasion.server.model.State.DRAWING)))
           {
             resetVotingPhase();
             switchScenes();
           }
-          if (client.getVotingCards() != null && !getVotingLayout().hasReceivedCards())
-            getVotingLayout().updateCardSpaces(client.getVotingCards());
+          // if (client.getVotingCards() != null &&
+          // !getVotingLayout().hasReceivedCards())
+          // getVotingLayout().updateCardSpaces(client.getVotingCards());
 
         });
       }
     };
 
-    timer.schedule(timerTask,100,1000);
+    timer.schedule(timerTask, 100, 1000);
   }
+
   private void initializeProductList()
   {
     productList = new ArrayList<>();

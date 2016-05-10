@@ -35,10 +35,12 @@ public class WorldMap extends ScrollPane
   private GUI gui;
   private double zoomLevel=1;
   private static StackPane zoomGroup = new StackPane();
+  private BuildInteractiveRegionBoarders buildBoarders;
   private Canvas canvas;
   Image imageMap;
   public WorldMap(GUI gui)
   {
+   //System.out.println("SDFSD");
    // setHbarPolicy(ScrollBarPolicy.NEVER);
    // setVbarPolicy(ScrollBarPolicy.NEVER);
     this.gui=gui;
@@ -71,7 +73,7 @@ public class WorldMap extends ScrollPane
     zoomGroup.getChildren().add(canvas);
     
     //Create an object to build the regions interactive boarders. 
-    BuildInteractiveRegionBoarders buildBoarders = new BuildInteractiveRegionBoarders(zoomGroup);   
+    buildBoarders = new BuildInteractiveRegionBoarders(zoomGroup,gui);   
     //Build each regions boarders. 
     //NOTE Parameters are as follow, (Region Color, Glow Color, Fill Color)
     buildBoarders.buildAfricaPath(Color.CYAN, Color.CYAN, Color.rgb(0, 255, 255,0.5));
@@ -132,6 +134,7 @@ public class WorldMap extends ScrollPane
 
     //drawOnMap();
     //drawOutline();
+    
     addEventFilter(ScrollEvent.SCROLL, event -> {
 
       //      DoubleProperty zoomProperty = new SimpleDoubleProperty(200);
@@ -142,7 +145,6 @@ public class WorldMap extends ScrollPane
 
       contentGroup.getChildren().add(zoomGroup);
 
-
       setContent(contentGroup);
       if(event.getDeltaY()>0&&zoomLevel<1.5)zoomLevel += .1;
       else if(event.getDeltaY()<0 &&zoomLevel>1) zoomLevel -= .1;
@@ -152,7 +154,7 @@ public class WorldMap extends ScrollPane
       // Scale scaleTransform = new Scale(2, 2, -100, -10000000);
       // scaleTransform.transform(event.getX(),event.getY());
        scaleTransform.setPivotX(-event.getX());
-      scaleTransform.setPivotY(-event.getY());
+       scaleTransform.setPivotY(-event.getY());
 
       double oldHvalue=getHvalue();
       double oldVvalue=getVvalue();
@@ -160,12 +162,19 @@ public class WorldMap extends ScrollPane
       setVvalue(event.getY()/ getHeight()+oldVvalue*zoomLevel);
 
       //setHvalue(.75);
-     // setVvalue(.75);
+      //setVvalue(.75);
 
       //zoomGroup.getTransforms().removeAll();
       //zoomGroup.getTransforms().add(scaleTransform);
     });
   }
+  
+  
+  public BuildInteractiveRegionBoarders getBoardersManager()
+  {
+    return buildBoarders;
+  }
+  
   
   /**
    * 

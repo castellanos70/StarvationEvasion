@@ -3,7 +3,6 @@ package starvationevasion.sim;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.GeographicArea;
 import starvationevasion.common.MapPoint;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.WorldData;
@@ -174,16 +173,23 @@ public class Simulator
     return dataList;
   }
 
-  public  GeographicArea[] getRegionBoundaries()
-  {
-    GeographicArea[] boundaryList = new GeographicArea[EnumRegion.SIZE];
 
-    for (EnumRegion region : EnumRegion.values())
-    {
-      boundaryList[region.ordinal()] = model.getGeographicArea(region);
-    }
-    return boundaryList;
+  public  Area[] getRegionBoundaries()
+  {
+    return model.getRegionPerimetersSpherical();
   }
+
+  /**
+   * This data should be sent over the server to every client once they connect
+   * as this will be important for them to have. It should only be sent once.
+   *
+   * @return packed tile data that was built during the model's initialization
+   */
+  public PackedTileData getPackedTileData()
+  {
+    return model.getPackedTileData();
+  }
+
 
 
 

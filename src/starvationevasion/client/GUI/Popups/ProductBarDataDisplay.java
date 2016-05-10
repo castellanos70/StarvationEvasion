@@ -53,6 +53,11 @@ public class ProductBarDataDisplay extends Region
     this.setVisible(false);
   }
 
+  public ArrayList<ProductBarData> getProductData()
+  {
+	  return pbPopups;
+  }
+  
   private void initializePbPopups()
   {
     pbPopups = new ArrayList<>();

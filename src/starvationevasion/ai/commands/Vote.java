@@ -103,7 +103,12 @@ public class Vote extends AbstractCommand
             {
               endpoint = Endpoint.VOTE_DOWN;
             }
-
+            if(getClient().getSupportCards().contains(card)
+               && Util.likeliness(0.70f))
+            {
+              endpoint = Endpoint.VOTE_UP;
+              getClient().getSupportCards().remove(card);
+            }
             // Request request = new
             // RequestFactory().build(getClient().getStartNanoSec(), card,
             // endpoint);

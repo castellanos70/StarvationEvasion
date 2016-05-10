@@ -2,7 +2,9 @@ package starvationevasion.sim.events;
 
 import starvationevasion.common.EnumSpecialEvent;
 import starvationevasion.common.MapPoint;
+import starvationevasion.sim.CropData;
 import starvationevasion.sim.LandTile;
+import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
 
 
@@ -11,19 +13,22 @@ import starvationevasion.sim.Territory;
  */
 public class Hurricane extends AbstractEvent
 {
-  public Hurricane(Territory landArea)
+  private boolean isFirstYear = true;
+  
+  public Hurricane(Territory landArea, Region region, CropData cropData, int duration)
   {
-    super(EnumSpecialEvent.HURRICANE, landArea, 4);
+    super(landArea, region, cropData, duration);
   }
 
   public void applyEffects()
   {
-    Territory landArea = getLandArea();
-    for (LandTile tile : landArea.getLandTiles())
+    if(isFirstYear) 
     {
-      //tile.setRainfall(tile.getRainfall()*3);
+      causeFlood();
+      isFirstYear = false;
     }
-    super.applyEffects();
+    destroyInfrastructure();
+    super.applyEffects();    
   }
 
   public MapPoint getLocation()

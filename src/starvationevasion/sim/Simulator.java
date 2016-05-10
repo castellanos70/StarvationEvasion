@@ -126,6 +126,7 @@ public class Simulator
     //Constant check of enum value, hand should be full so nothing happens
     for(int i = 0; i < Constant.MAX_HAND_SIZE; i++){}
       //validate cards, doesn't do anything if they are enums
+
     Boolean ex = false;
     discard(player, hand[0]);
     try
@@ -224,7 +225,8 @@ public class Simulator
     LOGGER.info("Advancing Turn ...");
     ArrayList<WorldData> worldData = getWorldData();
     
-    //applyCardEffectsToHand(cards);
+    // uncomment to apply effects of cards not directly altering sim model
+    // applyCardEffectsToHand(cards);
     
     model.nextYear(cards);
     model.nextYear(cards);
@@ -391,7 +393,10 @@ public class Simulator
   
   /**
    * Iterates through all the cards intended to be applied to the simulator and
-   * then applies only the ones that effect a player's hand.
+   * then applies only the ones that do not directly affect the simulation model.
+   * 
+   * For example, effects like CovertIntelligence, which lets you look at another
+   * player's hand, do not directly affect the model.
    * 
    * @param cards
    *          The list of all cards intended to be applied to the simulation.
@@ -402,10 +407,16 @@ public class Simulator
     {
       switch(c.getCardType())
       {
+//        case Policy_CovertIntelligence: //removed my policy card team?
+//          // TODO: talk to ClientUI to allow player to determine who's hand to
+//          // look at. Provide ClientUI the appropriate hand from playerDeck.
+//          break;
         case Policy_DivertFunds:
-          //remove all cards from owners hand
+          // remove all cards from owners hand
           discardPlayerHand(c.getOwner());
-          //give 14 million dollars to owner - applied in Model.java
+          // give 14 million dollars to owner - applied in Model.java
+          // TODO: potentially talk to ClientUI to make cool animation of card
+          // discarding.
           break;
         default:
           break;
@@ -489,16 +500,15 @@ public class Simulator
       startingHandMsg += '\n';
     }
 
-    ArrayList<WorldData> worldDataList = sim.getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR-1);
+    ArrayList<GameCard> policiesEnactedThisTurnByAllPlayers = new ArrayList<>();
+    sim.nextTurn(policiesEnactedThisTurnByAllPlayers);
+
+    ArrayList<WorldData> worldDataList = sim.getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR);
     for (WorldData data : worldDataList)
     {
       LOGGER.info("==================================================\n"+data.toString()+"\n");
     }
     LOGGER.info(startingHandMsg);
-
-    ArrayList<GameCard> policiesEnactedThisTurnByAllPlayers = new ArrayList<>();
-    sim.nextTurn(policiesEnactedThisTurnByAllPlayers);
-
 
     try
     {

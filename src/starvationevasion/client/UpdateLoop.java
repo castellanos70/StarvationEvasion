@@ -141,7 +141,7 @@ public class UpdateLoop extends Application
 
 
     //client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
-    client = new ClientTest(this, connectURL, 5555);
+    client = new ClientTest(this, connectURL, connectPort);
     this.stage = stage;
     stage.setMaximized(true);
     stage.setTitle("Login");

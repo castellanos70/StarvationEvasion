@@ -513,7 +513,7 @@ public class ConcurrentCommModule implements Communication
                       "-jar",
                       "Server.jar",
                       Integer.toString(port));//,
-                      //"true");
+                      //"true"); // start up ai automatically
       process = builder.start();
       STREAM_REDIRECT_THREADS.clear();
       STREAM_REDIRECT_THREADS.add(new StreamRedirect(StreamType.STDOUT, process.getInputStream()));

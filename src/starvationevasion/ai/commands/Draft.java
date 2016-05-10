@@ -15,6 +15,7 @@ import starvationevasion.ai.AI.WorldFactors;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
+import starvationevasion.common.Util;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.server.model.Endpoint;
@@ -177,16 +178,23 @@ public class Draft extends AbstractCommand
   {
     if (food == null && region != null)
     {
-      return "I'm going to draft a card of type: " + card.getType() + " for "
-          + card.getTargetRegion() + " . Can anyone support it?";
-    } else if (food != null && region != null)
+      return getClient().getUser().getUsername()+": I'm going to draft the card: "
+                                                + card.getTitle() +" for "
+                                                + card.getTargetRegion()
+                                                + ". Can anyone support it?";
+    
+    } 
+    else if (food != null && region != null)
     {
-      return "I'm going to draft a card of type " + card.getType() + " with "
-          + card.getTargetFood() + " for " + card.getTargetRegion()
-          + " . Can anyone support it?";
-    } else
-      return "I'm going to draft a card of type " + card.getType()
-          + " . Can anyone support it?";
+      return getClient().getUser().getUsername()+": I'm going to draft the card: "
+                                                + card.getTitle()+ " with " 
+                                                + card.getTargetFood()+ " for "
+                                                + card.getTargetRegion()
+                                                +". Can anyone support it?";
+    } 
+    return   getClient().getUser().getUsername()+": I'm going to draft the card: "
+                                                + card.getTitle()                                            
+                                                +". Can anyone support it?";
   }
   /*
    * Jeffrey McCall
@@ -910,13 +918,12 @@ public class Draft extends AbstractCommand
     actionsRemaining--;
     System.out.println("Card drafted:"+card.getPolicyName());
     //System.out.println("Votes required:"+card.votesRequired());
-    if (card.votesRequired() != 0)
+    if (card.votesRequired() >= 1 
+        && Util.likeliness(0.5f)
+        && !(card.getTitle().toLowerCase().contains("covert")))
     {
-      String message = "I am drafing " + card.getTitle()
-          + ". Will you support it?";
-      // getClient().send(new
-      // RequestFactory().chat(getClient().getStartNanoSec(),
-      // "ALL", message, card));
+      String message = requestSupportMessage(card,currentFood,currentRegion);
+      getClient().getCommModule().sendChat("ALL", message, card);
     }
     if (!draftAgain)
     {

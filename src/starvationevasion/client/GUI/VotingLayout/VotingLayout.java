@@ -7,7 +7,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
-import starvationevasion.client.GUI.DraftLayout.GraphNode;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.SummaryBar;
 import starvationevasion.common.EnumRegion;

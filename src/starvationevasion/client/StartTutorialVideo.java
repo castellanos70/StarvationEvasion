@@ -1,8 +1,6 @@
 package starvationevasion.client;
 
 
-import java.io.File;
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -11,6 +9,8 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
+
+import java.io.File;
 
 
 /**

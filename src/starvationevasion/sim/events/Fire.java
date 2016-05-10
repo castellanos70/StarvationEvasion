@@ -1,14 +1,13 @@
 package starvationevasion.sim.events;
 
-import java.util.ArrayList;
-
-import starvationevasion.common.EnumSpecialEvent;
 import starvationevasion.common.MapPoint;
 import starvationevasion.common.Util;
 import starvationevasion.sim.CropData;
 import starvationevasion.sim.LandTile;
 import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
+
+import java.util.ArrayList;
 
 
 // the Fire event destorys land tiles and also farm equitment 

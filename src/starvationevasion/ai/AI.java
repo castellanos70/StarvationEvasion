@@ -1,15 +1,6 @@
 package starvationevasion.ai;
 
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Stack;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import starvationevasion.ai.commands.Command;
 import starvationevasion.ai.commands.Draft;
 import starvationevasion.ai.commands.GameState;
@@ -31,6 +22,15 @@ import starvationevasion.server.model.Response;
 import starvationevasion.server.model.State;
 import starvationevasion.server.model.Type;
 import starvationevasion.server.model.User;
+
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This is just a test/proof-of-concept for the CommModule implementation of the

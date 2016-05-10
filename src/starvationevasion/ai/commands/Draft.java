@@ -1,14 +1,5 @@
 package starvationevasion.ai.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.stream.Stream;
-
 import starvationevasion.ai.AI;
 import starvationevasion.ai.AI.CardVariableTypes;
 import starvationevasion.ai.AI.WorldFactors;
@@ -21,6 +12,15 @@ import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.State;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.stream.Stream;
 
 public class Draft extends AbstractCommand
 {

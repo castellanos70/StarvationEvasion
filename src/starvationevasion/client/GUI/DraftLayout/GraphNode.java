@@ -1,15 +1,14 @@
 package starvationevasion.client.GUI.DraftLayout;
 
-import starvationevasion.client.GUI.GUI;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import starvationevasion.client.GUI.GUI;
 
 /**
  * VotingGraphNode is the GUI element responsible for allowing the player to view graphs about the selected region

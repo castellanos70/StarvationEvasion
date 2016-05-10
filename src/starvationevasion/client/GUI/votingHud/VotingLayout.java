@@ -1,29 +1,19 @@
 package starvationevasion.client.GUI.votingHud;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Cursor;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.VBox;
-import starvationevasion.client.GUI.GUI;
-import starvationevasion.client.GUI.DraftLayout.CardNode;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
 import starvationevasion.client.GUI.DraftLayout.DraftTimer;
-import starvationevasion.client.GUI.DraftLayout.GraphNode;
 import starvationevasion.client.GUI.DraftLayout.TickerReel;
-import starvationevasion.client.GUI.DraftLayout.WorldMap;
-import starvationevasion.client.GUI.Popups.GraphDisplay;
+import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.VotingLayout.VotingNode;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.gamecards.GameCard;
+
+import java.util.ArrayList;
 
 /**
  * 

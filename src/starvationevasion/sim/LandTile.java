@@ -1,6 +1,10 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.*;
+import starvationevasion.common.Constant;
+import starvationevasion.common.EnumCropZone;
+import starvationevasion.common.EnumFood;
+import starvationevasion.common.MapPoint;
+import starvationevasion.common.Util;
 import starvationevasion.sim.io.CSVReader;
 
 import java.io.File;

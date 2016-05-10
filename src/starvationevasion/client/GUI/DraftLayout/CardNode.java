@@ -1,7 +1,5 @@
 package starvationevasion.client.GUI.DraftLayout;
 
-import java.util.ArrayList;
-
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -11,7 +9,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
@@ -23,6 +20,8 @@ import starvationevasion.client.GUI.images.ImageGetter;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
+
+import java.util.ArrayList;
 
 /**
  * @author Ben Matthews

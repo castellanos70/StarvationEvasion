@@ -779,28 +779,6 @@ public class Model
       Simulator.dbg.println("******************************************* Updating land use");
     }
   }
-  
-  /**
-   * Updates the total population for the next year.
-   */
-  private void updatePopulation()
-  {
-    // TODO: As of now currentYear's population is just copied from the previous
-    // year. Make it not suck.
-    
-    for (Region r : regionList)
-    {
-      for (Territory t : r.getTerritoryList())
-      {
-        t.setPopulation(Constant.FIRST_GAME_YEAR, t.getPopulation(Constant.FIRST_GAME_YEAR-1));
-      }
-      // aggregateTerritoryData aggregates the landuse, the population, and the
-      // population that is undernourished. Pretty overkill as we're only
-      // updating the population. Oh well.
-      r.aggregateTerritoryData(Constant.FIRST_GAME_YEAR);
-    }
-  }
-
 
   private void updateClimate()
   {

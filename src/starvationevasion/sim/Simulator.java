@@ -214,7 +214,8 @@ public class Simulator
     LOGGER.info("Advancing Turn ...");
     ArrayList<WorldData> worldData = getWorldData();
     
-    //applyCardEffectsToHand(cards);
+    // uncomment to apply effects of cards not directly altering sim model
+    // applyCardEffectsToHand(cards);
     
     model.nextYear(cards);
     model.nextYear(cards);

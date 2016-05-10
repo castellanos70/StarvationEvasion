@@ -1289,11 +1289,12 @@ public class Model
   private int calculateTileProduction(Region region, LandTile tile, EnumFood crop)
   {
     if(crop == null) return 0;
-    
-    int tileSize = region.getLandTotal() / region.getNumTiles() ;
+
+    double production_per_km = region.getCropProduction(2009, crop) / region.getCropArea(2009, crop);
+    double tileSize = region.getLandTotal() / region.getNumTiles() ;
     int index = crop.ordinal();
     int revenue = (int) (tile.getCropRatings()[index].productionRate() * cropData.getPrice(2009,
-        EnumFood.values()[index]) * tileSize);
+        EnumFood.values()[index]) * tileSize * production_per_km);
     return revenue;
   }
 
@@ -1301,15 +1302,17 @@ public class Model
   private int calculateTileCost(Region region, EnumFood crop)
   {
     if(crop == null) return 0;
-    
-    int tileSize = region.getLandTotal() / region.getNumTiles() ;
-    int index = crop.ordinal();
-    int cost = tileSize * ( cropData.getData(CropData.Field.PESTICIDE_COST,crop) +
-                            cropData.getData(CropData.Field.WATER_COST, crop) +
-                            cropData.getData(CropData.Field.SEED_COST, crop) );
+    double production_per_km = region.getCropProduction(2009, crop) / region.getCropArea(2009, crop);
+    double tileSize = region.getLandTotal() / region.getNumTiles() ;
+    int cost = (int)( tileSize *  production_per_km *
+        ( cropData.getData(CropData.Field.PESTICIDE_COST,crop) +
+            cropData.getData(CropData.Field.WATER_COST, crop) +
+            cropData.getData(CropData.Field.SEED_COST, crop)) );
 
     return cost;
   }
+
+
 
   /**
    * This method is to be called at the end of a year.

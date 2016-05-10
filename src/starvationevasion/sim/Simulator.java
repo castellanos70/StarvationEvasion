@@ -214,7 +214,8 @@ public class Simulator
     LOGGER.info("Advancing Turn ...");
     ArrayList<WorldData> worldData = getWorldData();
     
-    //applyCardEffectsToHand(cards);
+    // uncomment to apply effects of cards not directly altering sim model
+    // applyCardEffectsToHand(cards);
     
     model.nextYear(cards);
     model.nextYear(cards);
@@ -488,16 +489,15 @@ public class Simulator
       startingHandMsg += '\n';
     }
 
-    ArrayList<WorldData> worldDataList = sim.getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR-1);
+    ArrayList<GameCard> policiesEnactedThisTurnByAllPlayers = new ArrayList<>();
+    sim.nextTurn(policiesEnactedThisTurnByAllPlayers);
+
+    ArrayList<WorldData> worldDataList = sim.getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR);
     for (WorldData data : worldDataList)
     {
       LOGGER.info("==================================================\n"+data.toString()+"\n");
     }
     LOGGER.info(startingHandMsg);
-
-    ArrayList<GameCard> policiesEnactedThisTurnByAllPlayers = new ArrayList<>();
-    sim.nextTurn(policiesEnactedThisTurnByAllPlayers);
-
 
     try
     {

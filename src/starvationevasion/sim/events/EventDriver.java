@@ -63,6 +63,7 @@ public class EventDriver
 		// determine what events to add to EventsList
 		 switch(eventIndex)
 		 {
+<<<<<<< HEAD
 		 case 0: addEvent(new Drought(tmpTerritory, tmpRegion, cropData, Util.rand.nextInt(5))); break;
 		 case 1: addEvent(new Fire(tmpTerritory,null, null, 1)); break;
 		 case 2: addEvent(new Hurricane(tmpTerritory, null, null, 3));break;
@@ -91,6 +92,18 @@ public class EventDriver
 		   break;
 		 case 5: addEvent(new Flood(tmpTerritory, tmpRegion, cropData, 1));
 		
+=======
+		 case 0: addEvent(new Drought(tmpRegion, tmpRegion, null, counter)); break;
+		 case 1: addEvent(new Fire(tmpTerritory,tmpRegion, null, 1)); break;
+		 case 2: addEvent(new Hurricane(tmpTerritory, tmpRegion, null, counter));break;
+		 case 3: addEvent(new Earthquake(tmpTerritory,tmpRegion, null, 2));break;
+		 case 4: addEvent(new Blight(tmpTerritory,tmpRegion, null, 2));break;
+		 case 5: break;
+		 case 6: break;
+		 case 7: break;
+		 case 8: break;
+		 case 9: break;
+>>>>>>> 40f41cfe4934958536978f099d51e12aa4c3b952
 		
 		 
 		 }

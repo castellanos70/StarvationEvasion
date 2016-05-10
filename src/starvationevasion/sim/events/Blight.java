@@ -10,7 +10,9 @@ public class Blight extends AbstractEvent
 {
 
   EnumFood crop;
+
   public Blight(Territory landArea, Region region, CropData cropData, int duration, EnumFood crop)
+
   {
     super(landArea, region, cropData, duration);
     this.crop = crop;

@@ -197,7 +197,6 @@ public class Model
       if (i < Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR)
       { populateWorldData(Constant.FIRST_DATA_YEAR + i); }
     }
-
   }
 
   public void init()
@@ -477,25 +476,28 @@ public class Model
     //}
   }
 
-
   /**
+   * Every method is currently uncommented as not everything is currently implemented.
+   * 
    * @return the simulation currentYear that has just finished.
    */
   protected int nextYear(ArrayList<GameCard> cards)
   {
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
-    //applyPolicies(); // In progress
+    //applyPolicies(); // In progress.
 
     //updateLandUse(); // Not started.
 
-    //updatePopulation(); // Done.
+    //updatePopulation(); // In progress.
 
     //updateClimate(); // Done.
 
     //generateSpecialEvents(); // In progress (Alfred).
 
     //applySpecialEvents(); // Done.
+    
+    //replantCrops();
 
     //updateFarmProductYield(); // Done.
 
@@ -515,7 +517,10 @@ public class Model
     // currentYear);
     //  printRegion(regionList[debugRegion.ordinal()], currentYear);
     //}
-
+    
+    // updates the worlddata with all the values of this year. If none of the
+    // above methods are called, everything is 0.
+    populateWorldData(currentYear);
     currentYear++;
     return currentYear;
   }
@@ -790,7 +795,6 @@ public class Model
       Simulator.dbg.println("******************************************* Updating land use");
     }
   }
-
 
   private void updateClimate()
   {
@@ -1068,6 +1072,7 @@ public class Model
 //         }
 //       }
 //     }
+
     long end = System.nanoTime();
     System.out.println("Model.placeCrops() Done: Time: " + ((end - start) / 1000000000.0));
   }
@@ -1296,11 +1301,12 @@ public class Model
   private int calculateTileProduction(Region region, LandTile tile, EnumFood crop)
   {
     if(crop == null) return 0;
-    
-    int tileSize = region.getLandTotal() / region.getNumTiles() ;
+
+    double production_per_km = region.getCropProduction(2009, crop) / region.getCropArea(2009, crop);
+    double tileSize = region.getLandTotal() / region.getNumTiles() ;
     int index = crop.ordinal();
     int revenue = (int) (tile.getCropRatings()[index].productionRate() * cropData.getPrice(2009,
-        EnumFood.values()[index]) * tileSize);
+        EnumFood.values()[index]) * tileSize * production_per_km);
     return revenue;
   }
 
@@ -1308,15 +1314,17 @@ public class Model
   private int calculateTileCost(Region region, EnumFood crop)
   {
     if(crop == null) return 0;
-    
-    int tileSize = region.getLandTotal() / region.getNumTiles() ;
-    int index = crop.ordinal();
-    int cost = tileSize * ( cropData.getData(CropData.Field.PESTICIDE_COST,crop) +
-                            cropData.getData(CropData.Field.WATER_COST, crop) +
-                            cropData.getData(CropData.Field.SEED_COST, crop) );
+    double production_per_km = region.getCropProduction(2009, crop) / region.getCropArea(2009, crop);
+    double tileSize = region.getLandTotal() / region.getNumTiles() ;
+    int cost = (int)( tileSize *  production_per_km *
+        ( cropData.getData(CropData.Field.PESTICIDE_COST,crop) +
+            cropData.getData(CropData.Field.WATER_COST, crop) +
+            cropData.getData(CropData.Field.SEED_COST, crop)) );
 
     return cost;
   }
+
+
 
   /**
    * This method is to be called at the end of a year.

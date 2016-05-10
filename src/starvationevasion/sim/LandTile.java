@@ -190,8 +190,6 @@ public class LandTile
   /**
    * Rates a given tile's suitability for a particular crop.
    * 
-   * Currently doesn't take into account the necessary amount of rain.
-   * 
    * @param crop
    *          crop for which we want rating (citrus, fruit, nut, grain, oil,
    *          veggies, special, or feed)

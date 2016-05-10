@@ -3,7 +3,9 @@ package starvationevasion.ai;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,6 +20,8 @@ import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.SpecialEventData;
+import starvationevasion.common.Util;
+import starvationevasion.common.VoteData;
 import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
@@ -37,14 +41,17 @@ public class AI
   private final Communication COMM;
   private User u;
   private ArrayList<User> users = new ArrayList<>();
+  private int numUsers;
   private State state = null;
   private ArrayList<WorldData> worldData;
   private List<GameCard> ballot;
+  private List<GameCard supportCards = new ArrayList<>();
   private Stack<Command> commands = new Stack<>();
   private volatile boolean isRunning = true;
   private volatile boolean aggregate=false;
-  private ArrayList<User> allies = new ArrayList<>();
-  private ArrayList<User> enemies = new ArrayList<>();
+  private VoteData ballotResults;
+  private HashMap<EnumRegion,Integer> playerPolicyDrafts = new HashMap<>();
+  private Random rand = new Random();
   //False if maps used in drafting phase not created yet.
   private AtomicBoolean mapsCreated=new AtomicBoolean(false);
   
@@ -314,7 +321,7 @@ public class AI
       if (type == Type.AUTH_SUCCESS)
       {
         u = (User)data;
-        COMM.sendChat("ALL", "Hi, I am " + u.getUsername() + ". I'll be playing using slightly better AI.", null);
+        COMM.sendChat("ALL", u.getUsername()+": Hi, I am " + u.getUsername() + ". I'll be playing using slightly better AI.", null);
       }
       else if (type == Type.USER)
       {
@@ -323,8 +330,39 @@ public class AI
       }
       else if (type == Type.WORLD_DATA_LIST) worldData = (ArrayList<WorldData>)data;
       else if (type == Type.WORLD_DATA) worldData.add((WorldData)data);
-      else if (type == Type.USERS_LOGGED_IN_LIST) users = (ArrayList<User>)data;
+      else if (type == Type.USERS_LOGGED_IN_LIST)
+      {
+        users = (ArrayList<User>)data;
+        numUsers = users.size();
+        for(User user: users)
+        {
+          if(!(playerPolicyDrafts.keySet().contains(user)))
+          {
+            playerPolicyDrafts.put(user.getRegion(),0);
+          }
+        }
+      }  
       else if (type == Type.VOTE_BALLOT) ballot = (List<GameCard>)data;
+      else if (type == Type.VOTE_RESULTS)
+      {
+        ballotResults = (VoteData) data;
+        for(GameCard card: ballotResults.getEnacted())
+        {
+          if(!playerPolicyDrafts.containsKey(card.getOwner()))
+          {
+            playerPolicyDrafts.put(card.getOwner(),0);
+          }
+          if(card.votesRequired()>1)
+          {
+            int tally = playerPolicyDrafts.get(card.getOwner());
+            playerPolicyDrafts.put(card.getOwner(),tally++);
+          }
+        }
+      }
+      else if (type == Type.CHAT)
+      {
+        
+      }
       else if (type == Type.GAME_STATE)
       {
         state = (State)data;

@@ -158,9 +158,10 @@ public class UpdateLoop extends Application
   {
     try
     {
-      final java.net.URL resource = getClass().getResource("WhenThe3574792685754392ffffffffffffff.wav");
+    	// Maxwell Sanchez: This resource doesn't appear to exist any more, and attempting to play it creates a NullPointerException.
+      /* final java.net.URL resource = getClass().getResource("WhenThe3574792685754392ffffffffffffff.wav");
       clip = new AudioClip(resource.toString());
-      clip.play();
+      clip.play(); */
     }
     catch (Exception e)
     {
@@ -171,7 +172,8 @@ public class UpdateLoop extends Application
   {
     try
     {
-      clip.stop();
+      // Maxwell Sanchez: Also caused a NullPointerException because the clip is not running.
+      // clip.stop();
     }
     catch (Exception e)
     {

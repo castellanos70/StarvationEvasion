@@ -28,7 +28,8 @@ public class ProductionCSVLoader
     imports,  //Metric Tons
     exports,  //Metric Tons
     production,  //Domestic production. Does NOT include Beginning stocks
-    yield;       //Yield (MT/HA)
+    yield,       //Yield (MT/HA)
+    source;
 
     public static final int SIZE = values().length;
   }

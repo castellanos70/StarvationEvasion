@@ -47,7 +47,7 @@ public class AI
   private ArrayList<User> enemies = new ArrayList<>();
   //False if maps used in drafting phase not created yet.
   private AtomicBoolean mapsCreated=new AtomicBoolean(false);
-
+  
   // time of server start
   private double startNanoSec = 0;
 

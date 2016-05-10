@@ -508,6 +508,24 @@ public class Draft extends AbstractCommand
           drafted=draftCards();
         }while(!drafted);
       }
+      //Check if the first card drafted has an action point cost greater than 1.
+      if(cardDrafted1!=null && cardDrafted1.actionPointCost(cardDrafted1.getCardType())>1)
+      {
+        //Make cards left in hand that have an action point cost greater than 1 be less
+        //likely to get picked.
+        policiesInHand.forEach(policy->
+        {
+          if(cardDrafted1.actionPointCost(policy)>1)
+          {
+            adjustProbability(rand.nextInt(3)+1,policy.name());
+          }
+        });
+        //Re-create probability distribution.
+        totalPolicyVal=0;
+        totalRegionVal=0;
+        totalFoodVal=0;
+        createProbabilityDistribution();
+      }
       if(revenueDiff<-30)
       {
         if(getClient().getUser().getHand().contains(EnumPolicy.Policy_SpecialInterests)

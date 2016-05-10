@@ -105,7 +105,6 @@ public class AI
   public ArrayList<EnumPolicy> cardsOfGeneralBenefit=new ArrayList<>();
   //Cards that benefit the AI's region monetarily.
   public ArrayList<EnumPolicy> moneyCards=new ArrayList<>();
-  
   // The AI has a copy of the list of special events, if any occurred during the
   // last turn.
   public ArrayList<SpecialEventData> eventList = new ArrayList<>();

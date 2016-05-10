@@ -137,7 +137,7 @@ public class PackedTileData implements Sendable
   @Override
   public Type getType()
   {
-    return null;
+    return Type.PACKED_TILE_DATA;
   }
 
   /**

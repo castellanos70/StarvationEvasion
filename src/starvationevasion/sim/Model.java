@@ -195,7 +195,6 @@ public class Model
       if (i < Constant.FIRST_GAME_YEAR - Constant.FIRST_DATA_YEAR)
       { populateWorldData(Constant.FIRST_DATA_YEAR + i); }
     }
-
   }
 
   public void init()
@@ -470,7 +469,6 @@ public class Model
     //}
   }
 
-
   /**
    * @return the simulation currentYear that has just finished.
    */
@@ -478,11 +476,11 @@ public class Model
   {
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
-    //applyPolicies(); // In progress
+    //applyPolicies(); // In progress.
 
     //updateLandUse(); // Not started.
 
-    //updatePopulation(); // Done.
+    //updatePopulation(); // In progress.
 
     //updateClimate(); // Done.
 
@@ -508,7 +506,10 @@ public class Model
     // currentYear);
     //  printRegion(regionList[debugRegion.ordinal()], currentYear);
     //}
-
+    
+    // updates the worlddata with all the values of this year. If none of the
+    // above methods are called, everything is 0.
+    populateWorldData(currentYear);
     currentYear++;
     return currentYear;
   }
@@ -778,6 +779,27 @@ public class Model
       Simulator.dbg.println("******************************************* Updating land use");
     }
   }
+  
+  /**
+   * Updates the total population for the next year.
+   */
+  private void updatePopulation()
+  {
+    // TODO: As of now currentYear's population is just copied from the previous
+    // year. Make it not suck.
+    
+    for (Region r : regionList)
+    {
+      for (Territory t : r.getTerritoryList())
+      {
+        t.setPopulation(Constant.FIRST_GAME_YEAR, t.getPopulation(Constant.FIRST_GAME_YEAR-1));
+      }
+      // aggregateTerritoryData aggregates the landuse, the population, and the
+      // population that is undernourished. Pretty overkill as we're only
+      // updating the population. Oh well.
+      r.aggregateTerritoryData(Constant.FIRST_GAME_YEAR);
+    }
+  }
 
 
   private void updateClimate()
@@ -1041,21 +1063,22 @@ public class Model
     }
 
     //uncomment the following code for testing
-     List<LandTile> landTiles = new ArrayList<>();
-     int num = 1;
-     for (int i = 0; i < regionList.length; i++)
-     { //For each Region
-       for (int j = 0; j < regionList[i].getTerritoryList().size(); j++)
-       { //For each Territory
-         landTiles = regionList[i].getTerritoryList().get(j).getLandTiles();
-
-         for (LandTile tile : landTiles)
-         {
-           if(tile.getCrop() != null) System.out.println(num + " " + tile.getCrop().name());
-           num++;
-         }
-       }
-     }
+    // List<LandTile> landTiles = new ArrayList<>();
+    // int num = 1;
+    // for (int i = 0; i < regionList.length; i++)
+    // { //For each Region
+    // for (int j = 0; j < regionList[i].getTerritoryList().size(); j++)
+    // { //For each Territory
+    // landTiles = regionList[i].getTerritoryList().get(j).getLandTiles();
+    //
+    // for (LandTile tile : landTiles)
+    // {
+    // if(tile.getCrop() != null) System.out.println(num + " " +
+    // tile.getCrop().name());
+    // num++;
+    // }
+    // }
+    // }
     long end = System.nanoTime();
     System.out.println("Model.placeCrops() Done: Time: " + ((end - start) / 1000000000.0));
   }

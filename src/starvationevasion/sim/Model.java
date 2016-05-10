@@ -470,6 +470,8 @@ public class Model
   }
 
   /**
+   * Every method is currently uncommented as not everything is currently implemented.
+   * 
    * @return the simulation currentYear that has just finished.
    */
   protected int nextYear(ArrayList<GameCard> cards)
@@ -487,6 +489,8 @@ public class Model
     //generateSpecialEvents(); // In progress (Alfred).
 
     //applySpecialEvents(); // Done.
+    
+    //replantCrops();
 
     //updateFarmProductYield(); // Done.
 

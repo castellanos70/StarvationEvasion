@@ -549,7 +549,7 @@ public class DeprecatedClient implements Client
           ArrayList arrayList=(ArrayList)response.getPayload().getData();
           System.out.println(arrayList);
           votingCards=(ArrayList) response.getPayload().getData();
-          Platform.runLater(() -> gui.getVotingLayout().updateCardSpaces(votingCards));
+          Platform.runLater(() -> gui.getVotingLayout().getVotingHand().setVotingCards(votingCards));
         }
         else if(response.getPayload().get("data")instanceof ArrayList)
         {

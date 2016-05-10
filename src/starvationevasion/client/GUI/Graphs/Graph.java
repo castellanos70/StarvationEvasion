@@ -49,27 +49,27 @@ public class Graph
     lineChart.getData().add(series);
     
     
-     pieChart.getStylesheets().add(getClass().getResource("/starvationevasion/client/GUI/Graphs/pieChartCSS.css").toExternalForm());
-    
-	 pieChart.setVisible(true);
-	 pieChart.getData().clear();
-	 pieChart.setTitle("Regional Crop Distribution");
-	 ObservableList<Data> list = FXCollections.observableArrayList(
-		 new PieChart.Data("Citrus Fruits", 3),
-		 new PieChart.Data("Non-Citrus Fruits", 4),
-		 new PieChart.Data("Nuts", 3),
-		 new PieChart.Data("Grains", 13),
-		 new PieChart.Data("Oil Crops", 6),
-		 new PieChart.Data("Vegetables", 8),
-		 new PieChart.Data("Specialty Crops", 1),
-		 new PieChart.Data("Feed Crops", 20),
-		 new PieChart.Data("Fish", 7),
-		 new PieChart.Data("Meat Animals", 15),
-		 new PieChart.Data("Poultry and Eggs", 11),
-		 new PieChart.Data("Dairy Products", 9)
-		 );
-	 
-	 pieChart.setData(list);
+//     pieChart.getStylesheets().add(getClass().getResource("/starvationevasion/client/GUI/Graphs/pieChartCSS.css").toExternalForm());
+//    
+//	 pieChart.setVisible(true);
+//	 pieChart.getData().clear();
+//	 pieChart.setTitle("Regional Crop Distribution");
+//	 ObservableList<Data> list = FXCollections.observableArrayList(
+//		 new PieChart.Data("Citrus Fruits", 3),
+//		 new PieChart.Data("Non-Citrus Fruits", 4),
+//		 new PieChart.Data("Nuts", 3),
+//		 new PieChart.Data("Grains", 13),
+//		 new PieChart.Data("Oil Crops", 6),
+//		 new PieChart.Data("Vegetables", 8),
+//		 new PieChart.Data("Specialty Crops", 1),
+//		 new PieChart.Data("Feed Crops", 20),
+//		 new PieChart.Data("Fish", 7),
+//		 new PieChart.Data("Meat Animals", 15),
+//		 new PieChart.Data("Poultry and Eggs", 11),
+//		 new PieChart.Data("Dairy Products", 9)
+//		 );
+//	 
+//	 pieChart.setData(list);
     
     
   }

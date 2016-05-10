@@ -1,10 +1,33 @@
 package starvationevasion.server;
 
 
+/**
+ * @author Javier Chavez (javierc@cs.unm.edu)
+ */
+
+import starvationevasion.common.*;
+import starvationevasion.common.gamecards.EnumPolicy;
+import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.server.io.HttpParse;
+import starvationevasion.server.io.NetworkException;
+import starvationevasion.server.io.ReadStrategy;
+import starvationevasion.server.io.WriteStrategy;
+import starvationevasion.server.io.strategies.*;
+import starvationevasion.server.model.*;
+import starvationevasion.server.model.db.Transaction;
+import starvationevasion.server.model.db.Users;
+import starvationevasion.server.model.db.backends.Backend;
+import starvationevasion.server.model.db.backends.Sqlite;
+import starvationevasion.sim.PackedTileData;
+import starvationevasion.sim.Simulator;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -12,64 +35,11 @@ import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-
-/**
- * @author Javier Chavez (javierc@cs.unm.edu)
- */
-import starvationevasion.common.Constant;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.Util;
-import starvationevasion.common.VoteData;
-import starvationevasion.common.WorldData;
-import starvationevasion.common.gamecards.EnumPolicy;
-import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.server.io.HttpParse;
-import starvationevasion.server.io.NetworkException;
-import starvationevasion.server.io.ReadStrategy;
-import starvationevasion.server.io.WriteStrategy;
-import starvationevasion.server.io.strategies.HTTPWriteStrategy;
-import starvationevasion.server.io.strategies.JavaObjectReadStrategy;
-import starvationevasion.server.io.strategies.JavaObjectWriteStrategy;
-import starvationevasion.server.io.strategies.SocketReadStrategy;
-import starvationevasion.server.io.strategies.SocketWriteStrategy;
-import starvationevasion.server.io.strategies.WebSocketReadStrategy;
-import starvationevasion.server.io.strategies.WebSocketWriteStrategy;
-import starvationevasion.server.model.DataType;
-import starvationevasion.server.model.Payload;
-import starvationevasion.server.model.Response;
-import starvationevasion.server.model.ResponseFactory;
-import starvationevasion.server.model.State;
-import starvationevasion.server.model.Type;
-import starvationevasion.server.model.User;
-import starvationevasion.server.model.db.Transaction;
-import starvationevasion.server.model.db.Users;
-import starvationevasion.server.model.db.backends.Backend;
-import starvationevasion.server.model.db.backends.Sqlite;
-import starvationevasion.sim.Simulator;
 
 
 /**
@@ -108,6 +78,8 @@ public class Server
   public static int TOTAL_HUMAN_PLAYERS = 1;
   public static int TOTAL_AI_PLAYERS = 2;
   public static int TOTAL_PLAYERS = TOTAL_HUMAN_PLAYERS + TOTAL_AI_PLAYERS;
+  public static int SINGLEPLAYER_MAX_HUMAN_PLAYERS = 1; // defines what is the max number of humans in singleplayer
+  public static int SINGLEPLAYER_MAX_AI_PLAYERS = 2;    // defines max number of AI
   public static final long TIMEOUT = 3; // seconds
 
   // Create a backend, currently sqlite
@@ -123,7 +95,71 @@ public class Server
 
   private final static Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
 
+
+  /**
+   * This constructor is used whenever a player is playing Singleplayer. It spawns the
+   * server, then later enables listeners. In this way the AIs know to continue listening indefinitely.
+   *
+   * @param portNumber Port number of the server
+   * @param isSinglePlayer tells server if singleplayer is active
+   */
+  public Server (int portNumber, boolean isSinglePlayer)
+  {
+    // Creating a server without listeners
+    this(portNumber, null);
+
+    // After instantiating server, spawn AI's for singleplayer
+    // SPAWN 6 AI by starting a processes
+    if (isSinglePlayer)
+    {
+      for (int i = 0; i < SINGLEPLAYER_MAX_AI_PLAYERS; i++)
+      {
+        try
+        {
+          ProcessBuilder builder = new ProcessBuilder();
+          builder.directory(new File(System.getProperty("user.dir")));
+          builder.command("java",
+                          "-jar",
+                          "Ai.jar",
+                          "localhost",
+                          Integer.toString(portNumber));
+          builder.inheritIO();
+          builder.start();
+          //process.wait(1); // If the process failed, this should cause an exception to be thrown which is what we want
+        } catch (Exception e)
+        {
+          e.printStackTrace();
+          System.exit(-125);
+        }
+      }
+    }
+
+    waitForConnection(portNumber);
+  }
+
+
+  /**
+   * This constructor spawns a server that immediately begins listening after it is
+   * created. In the future it will generate very basic AI to stand in place of
+   * actual players/capable AI until they are added, but for now this functionality
+   * has not been implemented.
+   *
+   * @param portNumber port to bind to
+   */
   public Server (int portNumber)
+  {
+    this(portNumber, false);
+    //waitForConnection(portNumber);
+  }
+
+  /**
+   * This private constructor is here only to prevent code duplication between
+   * the public constructors to this class.
+   *
+   * @param portNumber port to bind to
+   * @param cheapDirtyHack differentiates this constructor from the other public constructor
+   */
+  private Server(int portNumber, String cheapDirtyHack)
   {
     LOG.setLevel(Constant.LOG_LEVEL);
 
@@ -138,7 +174,6 @@ public class Server
     {
       userList.add(user);
     }
-
 
     // startNanoSec = System.nanoTime();
     simulator = new Simulator();
@@ -166,9 +201,6 @@ public class Server
         update();
       }
     }, 0, 1000);
-
-    waitForConnection(portNumber);
-
   }
 
 
@@ -735,6 +767,7 @@ public class Server
     }
 
     broadcast(new ResponseFactory().build(uptime(), new Payload(worldDataList), Type.WORLD_DATA_LIST));
+    broadcast(new ResponseFactory().build(uptime(), new Payload(simulator.getPackedTileData()), Type.PACKED_TILE_DATA));
     draft();
     return null;
   }
@@ -1188,11 +1221,13 @@ public class Server
     //Valid port numbers are Port numbers are 1024 through 65535.
     //  ports under 1024 are reserved for system services http, ftp, etc.
     int port = 5555; //default
+    boolean isSinglePlayer = false;
     if (args.length > 0)
     {
       try
       {
         port = Integer.parseInt(args[0]);
+        if (args.length > 1) isSinglePlayer = Boolean.parseBoolean(args[1]);
         if (port < 1)
         {
           throw new Exception();
@@ -1200,11 +1235,12 @@ public class Server
       }
       catch(Exception e)
       {
-        System.out.println("Usage: Server portNumber");
+        System.out.println("Usage: Server portNumber <optional>isSinglePlayer");
         System.exit(0);
       }
     }
 
-    new Server(port);
+    if(isSinglePlayer) new Server(port, isSinglePlayer); // this constructor is used for singleplayer
+    else new Server(port);  // is used for multiplayer
   }
 }

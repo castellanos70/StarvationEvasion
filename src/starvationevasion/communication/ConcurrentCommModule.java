@@ -338,7 +338,7 @@ public class ConcurrentCommModule implements Communication
     {
       LOCK.lock();
       //if (!isConnected()) return; // Already disposed/the connection never succeeded
-      //IS_CONNECTED.set(false);
+      IS_CONNECTED.set(false);
       commError("Shutting down communication module");
       clearResponses();
       closeProcessSocket();

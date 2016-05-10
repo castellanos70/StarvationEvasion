@@ -179,7 +179,7 @@ public abstract class AbstractEvent
    * the class will populate the effectedTile list of the AbstractEvent class 
    * 
    * 
-   * 
+   * to use an eventGraph in a Event you must call the getEventSpread() function from abstract event class
    * assignNieghbors() populate every nodes neighbor list in graph
    * 
    * 
@@ -204,7 +204,7 @@ public abstract class AbstractEvent
 		 startNode = graph.get(startIndex);
 		 assignNeighbors();
 	  }
-	  
+	  //this populates the neighbors for each node of the graph.
 	  private void assignNeighbors()
 	  {
 		  ArrayList<EventNode> tmpNeighbors = new ArrayList<EventNode>();

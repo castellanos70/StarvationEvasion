@@ -45,7 +45,11 @@ public class ImageGetter implements ImageConstants
   
   private static Image chatToggle;
   private static Image coin;
-
+  private static Image pop;
+  private static Image HDI;
+  private static Image crop;
+  
+  
   private Image undoButton;
   private ImageView voteIcon;
 
@@ -74,8 +78,10 @@ public class ImageGetter implements ImageConstants
     
     undoButton = new Image("ActionButtons/undoResized.png");
     voteIcon = new ImageView("cardImages/vote.png");
-
-
+    
+    pop = new Image("ActionButtons/Pop.png");
+    HDI = new Image("ActionButtons/HDI.png");
+    crop = new Image("ActionButtons/crop.png");
 
     background = new Image("background.png");
   }
@@ -202,6 +208,21 @@ public class ImageGetter implements ImageConstants
     return discardRightArrowSmall;
   }
 
+  public Image getCropIcon()
+  {
+	  return crop;
+  }
+  
+  public Image getPopIcon()
+  {
+	  return pop;
+  }
+  
+  public Image getHDIIcon()
+  {
+	  return HDI;
+  }
+  
   /**
    * Get the undo button image
    * 

@@ -1298,9 +1298,15 @@ public class Model
     return calculateTileProduction(region, tile, tile.getCrop());
   }
 
+
+
   private int calculateTileProduction(Region region, LandTile tile, EnumFood crop)
   {
+
     if(crop == null) return 0;
+
+    //total production of tile in USD:
+    // (crop rating) * (metric tons yield  / sq km) * (area of land tile in sq km) * (USD food price  / metric ton)
 
     double production_per_km = region.getCropProduction(2009, crop) / region.getCropArea(2009, crop);
     double tileSize = region.getLandTotal() / region.getNumTiles() ;
@@ -1314,6 +1320,10 @@ public class Model
   private int calculateTileCost(Region region, EnumFood crop)
   {
     if(crop == null) return 0;
+
+    //total cost of tile in USD:
+    // (metric tons yield  / sq km) * (area of land tile in sq km) * (pesticide cost + water cost + seed cost)
+
     double production_per_km = region.getCropProduction(2009, crop) / region.getCropArea(2009, crop);
     double tileSize = region.getLandTotal() / region.getNumTiles() ;
     int cost = (int)( tileSize *  production_per_km *

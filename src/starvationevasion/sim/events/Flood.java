@@ -10,6 +10,7 @@ import starvationevasion.sim.CropData;
 import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
 
+//Flood event wipes out land tiles.  can be created by a Hurricane event
 public class Flood extends AbstractEvent
 {
 

@@ -361,7 +361,46 @@ public class AI
       }
       else if (type == Type.CHAT)
       {
-        
+        String msg = (String) response.getPayload().get("text");
+        System.out.println(msg);
+        if(msg.contains("I'm going to draft"))
+        {
+          GameCard card = (GameCard) response.getPayload().get("card");
+          Integer sum = 0;
+          for(Integer playerTally:playerPolicyDrafts.values())
+          {
+            sum+=playerTally;
+          }
+          Integer average = sum/numUsers;
+          String[] words = msg.split(" ");
+          String username = words[0].substring(0,words[0].length()-1);
+          if(u.getUsername().equals(username)) continue;
+          for(User user: users)
+          {
+            if(playerPolicyDrafts.get(user.getRegion())>=average)
+            {
+              if(Util.likeliness(0.65f))
+              {
+                supportCards.add(card); 
+                int reply = rand.nextInt(2);
+                switch(reply)
+                {
+                  case 0:
+                  COMM.sendChat(username, 
+                                u.getUsername()+": I'll support it, "+username+".", 
+                                null);
+                  break;
+                  case 1:
+                  COMM.sendChat(username, 
+                                u.getUsername()+": I think I can help, "+username+".", 
+                                null);
+                  break;
+                }
+              }
+            }
+          }
+        }
+        else if(msg.contains("Hi,")) sendGreeting(msg);
       }
       else if (type == Type.GAME_STATE)
       {
@@ -386,7 +425,37 @@ public class AI
       }
     }
   }
-
+  private void sendGreeting(String msg) 
+  {
+    try
+	  {
+	    Thread.sleep(1000);
+	  }
+	  catch(InterruptedException e)
+	  {
+	    System.out.println("Chat Response was interrupted");
+	  }
+	  int reply = rand.nextInt(3);
+	  
+	  String[] words = msg.split(" ");
+	  String username = words[0].substring(0,words[0].length()-1);
+	  if(u.getUsername().equals(username)) reply = -1;
+	  numUsers++;
+	  switch(reply)
+	  {
+	    case -1:
+	    break;
+	    case 0:
+	    COMM.sendChat(username, u.getUsername()+": Hi There!", null);	  
+	    break;
+	    case 1:
+      COMM.sendChat(username, u.getUsername()+": Good Day, "+username+"!", null);
+	    break;
+      case 2:
+      COMM.sendChat(username, u.getUsername()+": Hello, "+username, null);
+      break;
+	  }
+  }
   public Communication getCommModule()
   {
     return COMM;

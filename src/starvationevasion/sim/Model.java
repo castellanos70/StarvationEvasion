@@ -1035,7 +1035,7 @@ public class Model
       //do the same for non-crops
       for(int j = 0; j < EnumFood.NON_CROP_FOODS.length; j++)
       {
-
+        //right now, this is just placing crops using FIRST_DATA_YEAR. Year updates will need to be implemented.
         int numTilesForCrop = (int) regionList[i].getCropArea(Constant.FIRST_DATA_YEAR, EnumFood.NON_CROP_FOODS[j])
                 / (regionList[i].getLandTotal() / regionList[i].getNumTiles());
 

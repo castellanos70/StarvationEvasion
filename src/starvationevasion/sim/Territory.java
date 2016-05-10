@@ -222,7 +222,26 @@ public class Territory
     return population[year - Constant.FIRST_DATA_YEAR];
   }
 
-
+  public int[] getMostPlantedCrop()
+  {
+    int[] cropAmts = new int[12];
+    int max = 0;
+    int maxIndex = 0;
+    for(LandTile tile : landTiles)
+    {
+      cropAmts[tile.getCrop().ordinal()]++;
+    }
+    for(int i = 0; i < cropAmts.length; i++)
+    {
+      if(cropAmts[i] > max)
+      {
+        max = cropAmts[i];
+        maxIndex = i;
+      }
+    }
+    int[] mostPlantedCrop = {maxIndex, max};
+    return mostPlantedCrop;
+  }
 
   /**
    * @return % undernourished at end of the current year of the simulation.

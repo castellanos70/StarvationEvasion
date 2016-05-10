@@ -25,9 +25,11 @@ public abstract class AbstractEvent
   private ArrayList <LandTile> tiles;	
   private int duration;
   private Territory landArea;
+  private Region region;
+  private CropData cropData;
   
   // if you want to use an Event graph for a AbstracteEvent than your methods must use this set of landtiles
-  private ArrayList<LandTile> effectedTiles;
+  private ArrayList<LandTile> affectedTiles;
   
   
   
@@ -38,7 +40,7 @@ public abstract class AbstractEvent
    * @param landArea The land area (Territory, Region, etc...) this event effects
    * @param duration How many simulator years this event lasts
    */
-  public AbstractEvent(Territory landArea, int duration)
+  public AbstractEvent(Territory landArea, Region region, CropData cropData, int duration)
   {
     
     this.duration = duration;
@@ -67,6 +69,11 @@ public abstract class AbstractEvent
   {
     return duration;
   }
+  
+  public void setDuration(int duration)
+  {
+    this.duration = duration;
+  }
 
   public Territory getLandArea()
   {
@@ -75,12 +82,12 @@ public abstract class AbstractEvent
 
   public ArrayList<LandTile> getEffectedTiles()
   {
-	  return effectedTiles;
+	  return affectedTiles;
   }
   
   public void destroyFarmEquipment()
   {
-    for(LandTile tile : landArea.getLandTiles())
+    for(LandTile tile : affectedTiles)
     {
       if(tile.getProductionMultiplier() >= 0.3)
       {
@@ -118,15 +125,11 @@ public abstract class AbstractEvent
     //TODO: add to events list.
   }
   
-  public void wipeOutLandTiles(double percentToWipe)
+  public void wipeOutLandTiles()
   {
-    List<LandTile> tilesToWipe = landArea.getLandTiles();
-    int amtToWipe = (int) (tilesToWipe.size() * percentToWipe);
-    int numWiped = 0;
-    while(numWiped < amtToWipe)
+    for(LandTile tile : affectedTiles)
     {
-      tilesToWipe.remove(Util.rand.nextInt(tilesToWipe.size())).setProductionMultiplier(0);
-      numWiped++;
+      tile.setProductionMultiplier(0);
     }
     
   }
@@ -143,7 +146,7 @@ public abstract class AbstractEvent
     
   }
   
-  public void reduceRainFall()
+  public void reduceRainFall(double severity)
   {
     double productionMultiplier;
     for(LandTile tile : landArea.getLandTiles())
@@ -151,7 +154,7 @@ public abstract class AbstractEvent
       EnumFood food = tile.getCrop();
       int foodOrdinal = food.ordinal();
       productionMultiplier = tile.getProductionMultiplier() - 
-          (tile.getCropRatings()[foodOrdinal].productionRate() - tile.rateTileForCrop(food, region, 2009, cropData, 0.3).productionRate());
+          (tile.getCropRatings()[foodOrdinal].productionRate() - tile.rateTileForCrop(food, region, 2009, cropData, severity).productionRate());
       tile.setProductionMultiplier(productionMultiplier);
     }
   }
@@ -160,7 +163,7 @@ public abstract class AbstractEvent
   {  
 	 int startIndex = Util.rand.nextInt(tiles.size()); 
 	 startTile = tiles.get(startIndex);
-	 effectedTiles .add(startTile); 
+	 affectedTiles .add(startTile); 
 	 eventGraph = new EventGraph(tiles, startIndex);
   }
   public void getEventSpread(float initProbability, int severity)
@@ -204,7 +207,7 @@ public abstract class AbstractEvent
 	  
 	  private void assignNeighbors()
 	  {
-		  ArrayList<EventNode> tmpNieghbors = new ArrayList<EventNode>();
+		  ArrayList<EventNode> tmpNeighbors = new ArrayList<EventNode>();
 		  EventNode curNode; 
 		  for(EventNode node : graph)
 		  {
@@ -224,14 +227,14 @@ public abstract class AbstractEvent
 					  if(distanceBetweenLandTiles(tileLat, tileLong, tmpLat,tmpLong) <= 100 )
 					  {
 						 
-						  tmpNieghbors.add(curNode);
+						  tmpNeighbors.add(curNode);
 						  
 					  }
 					 
 				  }
 			  }
-			  node.setNieghbors(tmpNieghbors);
-			  tmpNieghbors.clear();
+			  node.setNieghbors(tmpNeighbors);
+			  tmpNeighbors.clear();
 			  
 		  }
 		 
@@ -322,15 +325,14 @@ public abstract class AbstractEvent
 		 }
 		 public void setNieghbors(ArrayList <EventNode> nieghbors)
 		 {
-			 this.nieghbors= nieghbors;
-			
+			 this.nieghbors= nieghbors;			
 		 }
 		 
 		 
 		 
 		 private void addToEffectedList()
 		 {
-			effectedTiles.add(this.landTile);
+			 affectedTiles.add(this.landTile);
 		 }
 		 
 		 
@@ -341,7 +343,7 @@ public abstract class AbstractEvent
 			 {	
 				 if(randFloat > curProbability)
 				 {
-				  if(!effectedTiles.contains(node.landTile))
+				  if(!affectedTiles.contains(node.landTile))
 				  {
 				  nieghborsThatNodeEffected.add(node);	  
 				  node.addToEffectedList();

@@ -1,14 +1,15 @@
 package starvationevasion.sim.events;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.SpecialEventData.EnumSpecialEvent;
 import starvationevasion.common.Util;
+import starvationevasion.sim.CropData;
 import starvationevasion.sim.Model;
 import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
-import starvationevasion.sim.events.AbstractEvent.EventGraph.EventNode;
 
    
 
@@ -16,26 +17,27 @@ public class EventDriver
 {
  public static  ArrayList<AbstractEvent> eventList = new ArrayList<>();	
  private Model model;
+ private CropData cropData;
  
  public EventDriver(Model model)
  {
   this.model=model;	 
-	 
+	this.cropData = model.getCropData();
  }
  
- private void initEvents()
+ public void initEvents(int numEvents)
  {
-	 
+	 addRandomEvents(numEvents);
  }
  
  
  
  private void addRandomEvents(int numberOfRandomEvents)
  { 
-	 float eventChoice;
+	 
 	 
 	 int regionChoice;
-	 int terriotyChoice;
+	 int territoryChoice;
 	 int eventIndex;
 	 
 	 
@@ -45,32 +47,50 @@ public class EventDriver
 	 int counter = 0;
 	 while(counter != numberOfRandomEvents)
 	 {
-		 eventChoice=Util.rand.nextFloat();
+		
 		 
 		 EnumRegion[] regionEnums = EnumRegion.values();
 		 regionChoice = Util.rand.nextInt(EnumRegion.SIZE);
 		 tmpEnumRegion = regionEnums[regionChoice];
 		 tmpRegion = model.getRegion(tmpEnumRegion);
 		 
-		 terriotyChoice = Util.rand.nextInt(tmpRegion.getTerritoryList().size());
-		 tmpTerritory = tmpRegion.getTerritoryList().get(terriotyChoice);
+		 territoryChoice = Util.rand.nextInt(tmpRegion.getTerritoryList().size());
+		 tmpTerritory = tmpRegion.getTerritoryList().get(territoryChoice);
 		 
-		 eventIndex = (int) (eventChoice * 10);
+		 eventIndex = Util.rand.nextInt(6);
 		 
 		 
 		// determine what events to add to EventsList
 		 switch(eventIndex)
 		 {
-		 case 0: addEvent(new Drought(tmpRegion)); break;
-		 case 1: addEvent(new Fire(tmpTerritory,1)); break;
-		 case 2: addEvent(new Hurricane(tmpTerritory));break;
-		 case 3: addEvent(new Earthquake(tmpTerritory,2));break;
-		 case 4: addEvent(new Blight(tmpTerritory,2));break;
-		 case 5: break;
-		 case 6: break;
-		 case 7: break;
-		 case 8: break;
-		 case 9: break;
+		 case 0: addEvent(new Drought(tmpTerritory, tmpRegion, cropData, Util.rand.nextInt(5))); break;
+		 case 1: addEvent(new Fire(tmpTerritory,null, null, 1)); break;
+		 case 2: addEvent(new Hurricane(tmpTerritory, null, null, 3));break;
+		 case 3: addEvent(new Earthquake(tmpTerritory, null, null, 5));break;
+		 case 4:
+		   Region[] regionList = model.getRegionList();
+		   List<Territory> allTerritories = new ArrayList<>();
+		   List<Territory> possibleBlights = new ArrayList<>();
+		   for(int i = 0; i < regionList.length; i++)
+		   {
+		     allTerritories.addAll(regionList[i].getTerritoryList());
+		   }
+		   for(int i = 0; i < 20; i++)
+		   {
+		     possibleBlights.add(allTerritories.remove(Util.rand.nextInt(allTerritories.size())));
+		   }
+		   for(Territory territory : possibleBlights)
+		   {
+		     int[] mostPlanted = territory.getMostPlantedCrop();
+		     if(mostPlanted[1] / territory.getLandTiles().size() > .7)
+		     {
+		       EnumFood crop = EnumFood.values()[mostPlanted[0]];
+		       addEvent(new Blight(territory, null, cropData, 2, crop));
+		     }
+		   }		   
+		   break;
+		 case 5: addEvent(new Flood(tmpTerritory, tmpRegion, cropData, 1));
+		
 		
 		 
 		 }

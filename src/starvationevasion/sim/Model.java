@@ -1,5 +1,21 @@
 package starvationevasion.sim;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.geom.Area;
+import java.awt.geom.PathIterator;
+import java.awt.image.BufferedImage;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumCropZone;
 import starvationevasion.common.EnumFood;
@@ -11,28 +27,12 @@ import starvationevasion.common.SpecialEventData;
 import starvationevasion.common.Util;
 import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.sim.LandTile.Field;
 import starvationevasion.sim.events.AbstractEvent;
-import starvationevasion.sim.events.Drought;
-import starvationevasion.sim.events.Hurricane;
+import starvationevasion.sim.events.EventDriver;
 import starvationevasion.sim.io.GeographyXMLparser;
 import starvationevasion.sim.io.ProductionCSVLoader;
 import starvationevasion.sim.io.SpecialEventCSVLoader;
 import starvationevasion.util.Picture;
-
-import java.awt.*;
-import java.awt.geom.Area;
-import java.awt.geom.PathIterator;
-import java.awt.image.BufferedImage;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The Simulator class is the main API for the Server to interact with the simulator.
@@ -184,6 +184,8 @@ public class Model
     updateCropRatings(Constant.FIRST_GAME_YEAR-1);
 
     placeCrops();
+    
+    EventDriver driver = new EventDriver(this);
 
     setRegionalProduction();
     
@@ -356,6 +358,11 @@ public class Model
     //  if (territory.getName().equals(name)) return territory;
     //}
     //return null;
+  }
+  
+  public Region[] getRegionList()
+  {
+    return regionList;
   }
 
 
@@ -567,6 +574,11 @@ public class Model
   {
     int yearIdx = year - Constant.FIRST_DATA_YEAR;
     return worldData[yearIdx];
+  }
+  
+  public CropData getCropData()
+  {
+    return this.cropData;
   }
   
   /**
@@ -795,71 +807,71 @@ public class Model
 
   private void generateSpecialEvents()
   {
-    // TODO: 12/6/2015 Alfred is working on this.
-    //
-    if (debugLevel.intValue() < Level.INFO.intValue())
-    {
-      Simulator.dbg.println("******************************************* Generating special events");
-    }
-
-    //check current currentYear.
-    int CURRENT_YEAR = 2015;
-    if (currentYear < CURRENT_YEAR)
-    {
-      //Then there should be a pre-existing event to draw upon. Then
-      //there ought to have been a process that loaded the events to draw from
-      for (SpecialEventData event : specialEventDatum)
-      {
-        if (event.year == currentYear)
-        {
-          //add current event to data structure of events for the currentYear
-        }
-      }
-    }
-    else
-    {
-      //If this is the case then examine the players behaviors. Is it probable
-      //that their region could experience an event based on the leaders actions
-      //through policy. So their current status is important:
-      //1. Are they in crisis already?
-      //2. What are their current policies?
-      //3. if in crisis will the current policies help or hurt?
-      //4. if not in crisis will the current policies improve the regions state?
-    }
-
-    // Temporary code just to make special events happen in the absence of Alfred's timeline.
-    //
-    int attempts = 5;
-    Random rand = new Random();
-    while (attempts > 0)
-    {
-      if (rand.nextFloat() < EVENT_CHANCE)
-      {
-        if (rand.nextBoolean())
-        {
-          // do a hurricane
-          Region us = regionList[EnumRegion.SIZE];
-          int idx = rand.nextInt(us.getTerritoryList().size() - 1) + 1;
-          for (Territory territory : us.getTerritoryList())
-          {
-            if (idx == 0)
-            {
-              specialEvents.add(new Hurricane(territory));
-              break;
-            }
-            idx--;
-          }
-        }
-        else
-        {
-          // do a drought
-          int idx = rand.nextInt(EnumRegion.US_REGIONS.length);
-          Region usRegion = regionList[EnumRegion.US_REGIONS[idx].ordinal()];
-          specialEvents.add(new Drought(usRegion));
-        }
-      }
-      attempts--;
-    }
+//    // TODO: 12/6/2015 Alfred is working on this.
+//    //
+//    if (debugLevel.intValue() < Level.INFO.intValue())
+//    {
+//      Simulator.dbg.println("******************************************* Generating special events");
+//    }
+//
+//    //check current currentYear.
+//    int CURRENT_YEAR = 2015;
+//    if (currentYear < CURRENT_YEAR)
+//    {
+//      //Then there should be a pre-existing event to draw upon. Then
+//      //there ought to have been a process that loaded the events to draw from
+//      for (SpecialEventData event : specialEventDatum)
+//      {
+//        if (event.year == currentYear)
+//        {
+//          //add current event to data structure of events for the currentYear
+//        }
+//      }
+//    }
+//    else
+//    {
+//      //If this is the case then examine the players behaviors. Is it probable
+//      //that their region could experience an event based on the leaders actions
+//      //through policy. So their current status is important:
+//      //1. Are they in crisis already?
+//      //2. What are their current policies?
+//      //3. if in crisis will the current policies help or hurt?
+//      //4. if not in crisis will the current policies improve the regions state?
+//    }
+//
+//    // Temporary code just to make special events happen in the absence of Alfred's timeline.
+//    //
+//    int attempts = 5;
+//    Random rand = new Random();
+//    while (attempts > 0)
+//    {
+//      if (rand.nextFloat() < EVENT_CHANCE)
+//      {
+//        if (rand.nextBoolean())
+//        {
+//          // do a hurricane
+//          Region us = regionList[EnumRegion.SIZE];
+//          int idx = rand.nextInt(us.getTerritoryList().size() - 1) + 1;
+//          for (Territory territory : us.getTerritoryList())
+//          {
+//            if (idx == 0)
+//            {
+//              specialEvents.add(new Hurricane(territory));
+//              break;
+//            }
+//            idx--;
+//          }
+//        }
+//        else
+//        {
+//          // do a drought
+//          int idx = rand.nextInt(EnumRegion.US_REGIONS.length);
+//          Region usRegion = regionList[EnumRegion.US_REGIONS[idx].ordinal()];
+//          specialEvents.add(new Drought(usRegion));
+//        }
+//      }
+//      attempts--;
+//    }
   }
 
   private void applySpecialEvents()
@@ -1041,21 +1053,21 @@ public class Model
     }
 
     //uncomment the following code for testing
-     List<LandTile> landTiles = new ArrayList<>();
-     int num = 1;
-     for (int i = 0; i < regionList.length; i++)
-     { //For each Region
-       for (int j = 0; j < regionList[i].getTerritoryList().size(); j++)
-       { //For each Territory
-         landTiles = regionList[i].getTerritoryList().get(j).getLandTiles();
-
-         for (LandTile tile : landTiles)
-         {
-           if(tile.getCrop() != null) System.out.println(num + " " + tile.getCrop().name());
-           num++;
-         }
-       }
-     }
+//     List<LandTile> landTiles = new ArrayList<>();
+//     int num = 1;
+//     for (int i = 0; i < regionList.length; i++)
+//     { //For each Region
+//       for (int j = 0; j < regionList[i].getTerritoryList().size(); j++)
+//       { //For each Territory
+//         landTiles = regionList[i].getTerritoryList().get(j).getLandTiles();
+//
+//         for (LandTile tile : landTiles)
+//         {
+//           if(tile.getCrop() != null) System.out.println(num + " " + tile.getCrop().name());
+//           num++;
+//         }
+//       }
+//     }
     long end = System.nanoTime();
     System.out.println("Model.placeCrops() Done: Time: " + ((end - start) / 1000000000.0));
   }

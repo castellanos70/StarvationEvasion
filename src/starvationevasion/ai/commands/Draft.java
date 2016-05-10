@@ -517,7 +517,7 @@ public class Draft extends AbstractCommand
         totalFoodVal=0;
         createProbabilityDistribution();
       }
-      if(revenueDiff<-30)
+      if(revenueDiff>30)
       {
         if(getClient().getUser().getHand().contains(EnumPolicy.Policy_SpecialInterests)
             && cardDrafted1!=null && getClient().cardVariables.containsKey(cardDrafted1.getCardType())
@@ -747,7 +747,7 @@ public class Draft extends AbstractCommand
   }
   /*
    * Jeffrey McCall
-   * Called to discard up to two cards from the AI's hand. Three new
+   * Called to discard up to two cards from the AI's hand. Two new
    * cards are automatically re-drawn and added back to the AI's hand.
    */
   private void discardAndRedraw()
@@ -1306,11 +1306,11 @@ public class Draft extends AbstractCommand
         {
           //If revenue doing well, will be more likely to give farmers a bigger tax break. I revenue not doing
           //well, will give them the bare minimum tax break.
-          if(revenueDiff<=0 && numTurns>0)
+          if(revenueDiff>0 && numTurns>0)
           {
             card.setX(legalValueList.get(0));
           }
-          else if(numTurns>0 && revenueDiff>0)
+          else if(numTurns>0 && revenueDiff<0)
           {
             card.setX(legalValueList.get(rand.nextInt(legalValueList.size()-1)+1));
           }

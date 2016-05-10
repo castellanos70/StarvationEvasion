@@ -48,7 +48,7 @@ If you build a .jar file to run the server, as of writing it results in a .jar t
 
 1. Build an executable .jar file that points to starvationevasion.server.Server
 2. Rename it "Server.jar" and move it to the top-level folder for the project (StarvationEvasion - not the package)
-3. Open Server.jar inside of something like 7Zip so that you can modify its contents.
+3. Open Server.jar inside of something like 7zip so that you can modify its contents.
 4. Remove the following folders: ActionButtons, cardImages, farmProductIcons, sim/climate, visResources, starvationevasion/client
 5. Remove the following files: background.png, Mollweide_projection.jpg, WorldMap_MollweideProjection.png, WorldMap_MollweideProjection2.png, WorldMap_MollweideProjection_With_Region_Boarders_Added.png
 

@@ -39,6 +39,7 @@ import starvationevasion.common.EnumRegion;
 public class UpdateLoop extends Application
 {
   private static String connectURL = "localhost";
+  private static int connectPort = 5555;
 
   private int width = 300;
   private int height = 250;
@@ -237,9 +238,23 @@ public class UpdateLoop extends Application
 
   public static void main(String[] args)
   {
-    if(args.length > 0) {
-      connectURL = args[0];
+
+    try
+    {
+      if(args.length == 1)
+      {
+        connectURL = args[0];
+      }
+      else if(args.length == 2)
+      {
+        connectURL = args[0];
+        connectPort = Integer.parseInt(args[1]);
+      }
+    } catch (Exception e)
+    {
+      System.exit(0);
     }
+
     launch(args);
   }
 }

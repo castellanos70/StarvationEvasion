@@ -20,6 +20,7 @@ public class Fire extends AbstractEvent
 	 
     super(landArea, region, cropData, duration);
     this.landArea = landArea;
+    //create event graph and populate the affected tiles
     this.getEventSpread(0.5f, Util.rand.nextInt(10) + 1);
     
   }

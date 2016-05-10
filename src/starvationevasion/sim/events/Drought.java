@@ -11,21 +11,14 @@ import starvationevasion.sim.*;
 public class Drought extends AbstractEvent
 {
   Region region;
-  public Drought(Region landArea)
+  public Drought(Territory landArea, Region region, CropData cropData, int duration)
   {
-    super(EnumSpecialEvent.DROUGHT, landArea, 4);
-    region = landArea;
+    super(landArea, region, cropData, duration);
   }
 
   public void applyEffects()
   {
-    for (Territory territory : region.getTerritoryList())
-    {
-      for (starvationevasion.sim.LandTile tile : territory.getLandTiles())
-      {
-        //tile.setRainfall(tile.getRainfall() / 3);
-      }
-    }
+    reduceRainFall(Util.rand.nextDouble() * 0.4 + 0.2);
     super.applyEffects();
   }
 

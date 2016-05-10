@@ -37,9 +37,9 @@ public class CropData
     TEMPERATURE_MIN,        //Temperature Min (Deg C). Crops die if temperature drops below this within its growing period.
     TEMPERATURE_IDEAL_LOW,  // Temperature Ideal Low (Deg C). Crops have max productivity if all days are within this range.
     TEMPERATURE_IDEAL_HIGH, // Temperature Ideal High (Deg C). Crops have max productivity if all days are within this range.
-    SEED_COST,              // Cost of seed for this crop. Made up for now.
-    PESTICIDE_COST,         // Cost of pesticides for this crop. Made up for now.
-    WATER_COST;             // Cost of water for this crop. Made up for now.
+    SEED_COST,              // Cost of seed for this crop per metric ton produced. Made up for now.
+    PESTICIDE_COST,         // Cost of pesticides for this crop per metric ton produced. Made up for now.
+    WATER_COST;             // Cost of water for this crop per sq metric ton produced. Made up for now.
     public static final int SIZE = values().length;
   }
 
@@ -107,15 +107,17 @@ public class CropData
       //add a seed,water, and pesticide cost for each food group
       for(int i = 0; i < EnumFood.SIZE; i++)
       {
-        data[Field.SEED_COST.ordinal()][i] = 100;
-        data[Field.PESTICIDE_COST.ordinal()][i] = 100;
-        data[Field.WATER_COST.ordinal()][i] = 100;
+        //costs set to be 20 % of price per metric ton when summed
+        double totalCost = foodPrice[Model.YEARS_OF_DATA-1][EnumFood.values()[i].ordinal()] / 5;
+        data[Field.SEED_COST.ordinal()][i] = (int)(totalCost / 3 );
+        data[Field.PESTICIDE_COST.ordinal()][i] = (int)(totalCost / 3 );
+        data[Field.WATER_COST.ordinal()][i] = (int)(totalCost / 3 );
       }
 
       for (int yearIdx=1; yearIdx<9; yearIdx++)
       {
         foodPrice[yearIdx][foodIdx] =
-          (int) Util.linearInterpolate(0, yearIdx, 9, foodPrice[0][foodIdx], foodPrice[9][foodIdx]);
+            (int) Util.linearInterpolate(0, yearIdx, 9, foodPrice[0][foodIdx], foodPrice[9][foodIdx]);
       }
     }
     fileReader.close();

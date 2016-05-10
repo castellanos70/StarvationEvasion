@@ -3,8 +3,10 @@ package starvationevasion.ai;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -18,6 +20,8 @@ import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.SpecialEventData;
+import starvationevasion.common.Util;
+import starvationevasion.common.VoteData;
 import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
@@ -37,17 +41,20 @@ public class AI
   private final Communication COMM;
   private User u;
   private ArrayList<User> users = new ArrayList<>();
+  private int numUsers;
   private State state = null;
   private ArrayList<WorldData> worldData;
   private List<GameCard> ballot;
+  private List<GameCard> supportCards = new ArrayList<>();
   private Stack<Command> commands = new Stack<>();
   private volatile boolean isRunning = true;
   private volatile boolean aggregate=false;
-  private ArrayList<User> allies = new ArrayList<>();
-  private ArrayList<User> enemies = new ArrayList<>();
+  private VoteData ballotResults;
+  private HashMap<EnumRegion,Integer> playerPolicyDrafts = new HashMap<>();
+  private Random rand = new Random();
   //False if maps used in drafting phase not created yet.
   private AtomicBoolean mapsCreated=new AtomicBoolean(false);
-
+  
   // time of server start
   private double startNanoSec = 0;
 
@@ -314,7 +321,7 @@ public class AI
       if (type == Type.AUTH_SUCCESS)
       {
         u = (User)data;
-        COMM.sendChat("ALL", "Hi, I am " + u.getUsername() + ". I'll be playing using slightly better AI.", null);
+        COMM.sendChat("ALL", u.getUsername()+": Hi, I am " + u.getUsername() + ". I'll be playing using kind of okay AI.", null);
       }
       else if (type == Type.USER)
       {
@@ -323,8 +330,78 @@ public class AI
       }
       else if (type == Type.WORLD_DATA_LIST) worldData = (ArrayList<WorldData>)data;
       else if (type == Type.WORLD_DATA) worldData.add((WorldData)data);
-      else if (type == Type.USERS_LOGGED_IN_LIST) users = (ArrayList<User>)data;
+      else if (type == Type.USERS_LOGGED_IN_LIST)
+      {
+        users = (ArrayList<User>)data;
+        numUsers = users.size();
+        for(User user: users)
+        {
+          if(!(playerPolicyDrafts.keySet().contains(user)))
+          {
+            playerPolicyDrafts.put(user.getRegion(),0);
+          }
+        }
+      }  
       else if (type == Type.VOTE_BALLOT) ballot = (List<GameCard>)data;
+      else if (type == Type.VOTE_RESULTS)
+      {
+        ballotResults = (VoteData) data;
+        for(GameCard card: ballotResults.getEnacted())
+        {
+          if(!playerPolicyDrafts.containsKey(card.getOwner()))
+          {
+            playerPolicyDrafts.put(card.getOwner(),0);
+          }
+          if(card.votesRequired()>1)
+          {
+            int tally = playerPolicyDrafts.get(card.getOwner());
+            playerPolicyDrafts.put(card.getOwner(),tally++);
+          }
+        }
+      }
+      else if (type == Type.CHAT)
+      {
+        String msg = (String) response.getPayload().get("text");
+        System.out.println(msg);
+        if(msg.contains("I'm going to draft"))
+        {
+          GameCard card = (GameCard) response.getPayload().get("card");
+          Integer sum = 0;
+          for(Integer playerTally:playerPolicyDrafts.values())
+          {
+            sum+=playerTally;
+          }
+          Integer average = sum/numUsers;
+          String[] words = msg.split(" ");
+          String username = words[0].substring(0,words[0].length()-1);
+          if(u.getUsername().equals(username)) continue;
+          for(User user: users)
+          {
+            if(playerPolicyDrafts.get(user.getRegion())>=average)
+            {
+              if(Util.likeliness(0.65f))
+              {
+                supportCards.add(card); 
+                int reply = rand.nextInt(2);
+                switch(reply)
+                {
+                  case 0:
+                  COMM.sendChat(username, 
+                                u.getUsername()+": I'll support it, "+username+".", 
+                                null);
+                  break;
+                  case 1:
+                  COMM.sendChat(username, 
+                                u.getUsername()+": I think I can help, "+username+".", 
+                                null);
+                  break;
+                }
+              }
+            }
+          }
+        }
+        else if(msg.contains("Hi,")) sendGreeting(msg);
+      }
       else if (type == Type.GAME_STATE)
       {
         state = (State)data;
@@ -348,12 +425,51 @@ public class AI
       }
     }
   }
-
+  /**
+   * James Perry
+   * AI bots use this method to greet new players
+   * @param msg Greeting message sent from player who has 
+   *            just entered the game.
+   */
+  private void sendGreeting(String msg) 
+  {
+    try
+	  {
+	    Thread.sleep(1000);
+	  }
+	  catch(InterruptedException e)
+	  {
+	    System.out.println("Chat Response was interrupted");
+	  }
+	  int reply = rand.nextInt(3);
+	  
+	  String[] words = msg.split(" ");
+	  String username = words[0].substring(0,words[0].length()-1);
+	  if(u.getUsername().equals(username)) reply = -1;
+	  numUsers++;
+	  switch(reply)
+	  {
+	    case -1:
+	    break;
+	    case 0:
+	    COMM.sendChat(username, u.getUsername()+": Hi There!", null);	  
+	    break;
+	    case 1:
+      COMM.sendChat(username, u.getUsername()+": Good Day, "+username+"!", null);
+	    break;
+      case 2:
+      COMM.sendChat(username, u.getUsername()+": Hello, "+username, null);
+      break;
+	  }
+  }
   public Communication getCommModule()
   {
     return COMM;
   }
-
+  public List<GameCard> getSupportCards()
+  {
+    return supportCards;
+  }
 
   public ArrayList<WorldData> getWorldData()
   {

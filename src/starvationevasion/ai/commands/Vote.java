@@ -10,6 +10,7 @@ import starvationevasion.server.model.State;
 public class Vote extends AbstractCommand
 {
   private int tries = 2;
+  private AIVotingPhase AIVote = new AIVotingPhase();
 
   public Vote(AI client)
   {
@@ -47,15 +48,67 @@ public class Vote extends AbstractCommand
           if (card.isEligibleToVote(getClient().getUser().getRegion())) // Game
                                                                         // play
           {
-            Endpoint endpoint;
+        	  /**
+        	   * Ederin Igharoro
+        	   * Instead of having the Voting decision be random for the AI,
+        	   * I've created a new Class that checks different phases in 
+        	   * making the voting decision.
+        	   */
+        	  
+        	  int pros = 0;
+              int cons = 0;
+              
+//              AIVote.readCardDetails(card);
+//              
+//              if(AIVote.checkResources()){pros++;}
+//              else{cons++;}
+//              
+//              if(AIVote.checkBeneficialToSelf()){pros++;}
+//              else{cons++;}
+//              
+//              if(AIVote.checkBeneficialToOthers()){pros++;}
+//              else{cons++;}
+              
+              Endpoint endpoint;
+              if(pros > cons)
+              {
+                //endpoint = Endpoint.VOTE_UP; // Vote yes
+              }
+              
+              else if(cons > pros)
+              {
+                //endpoint = Endpoint.VOTE_DOWN; // Vote no
+              }
+              
+              else
+              {
+                /*
+                if (Util.likeliness(.45f))
+                {
+                  endpoint = Endpoint.VOTE_UP; // Vote yes
+                }
+                else
+                {
+                  endpoint = Endpoint.VOTE_DOWN; // Vote no
+                }
+                */
+              }
+        	  
+        	  
             if (Util.likeliness(.45f))
             {
               endpoint = Endpoint.VOTE_UP;
-            } else
+            } 
+            else
             {
               endpoint = Endpoint.VOTE_DOWN;
             }
-
+            if(getClient().getSupportCards().contains(card)
+               && Util.likeliness(0.70f))
+            {
+              endpoint = Endpoint.VOTE_UP;
+              getClient().getSupportCards().remove(card);
+            }
             // Request request = new
             // RequestFactory().build(getClient().getStartNanoSec(), card,
             // endpoint);

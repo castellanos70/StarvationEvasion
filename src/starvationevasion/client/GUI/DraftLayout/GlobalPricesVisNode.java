@@ -25,17 +25,17 @@ public class GlobalPricesVisNode extends BorderPane{
 
 	    this.getStylesheets().add("/starvationevasion/client/GUI/DraftLayout/style.css");
 	    this.getStyleClass().add("globalPricesVisNode");	    
-	 //   this.getChildren().add(new ImageView(gui.getImageGetter().getCoin()));
-	  //  this.getChildren().add(tempText);
+	    //  this.getChildren().add(new ImageView(gui.getImageGetter().getCoin()));
+	    //  this.getChildren().add(tempText);
 	    this.setCenter(title);
 	    //this.setLeft(new ImageView(gui.getImageGetter().getCoin()));
 	    ImageView coin = new ImageView(gui.getImageGetter().getCoin());
 	    this.setAlignment(coin, Pos.CENTER_RIGHT);
 	    this.setRight(coin);
 	    
-	  //  this.getChildren().add(1,new ImageView(gui.getImageGetter().getCoin()));
-	    //this.getChildren().
-//	    
+	    //  this.getChildren().add(1,new ImageView(gui.getImageGetter().getCoin()));
+	    //  this.getChildren().
+        //	    
 	    this.setOnMouseClicked(new EventHandler<MouseEvent>()
 	    {
 	      @Override

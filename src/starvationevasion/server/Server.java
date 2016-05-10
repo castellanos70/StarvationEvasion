@@ -1,6 +1,7 @@
 package starvationevasion.server;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -108,6 +109,8 @@ public class Server
   public static int TOTAL_HUMAN_PLAYERS = 1;
   public static int TOTAL_AI_PLAYERS = 2;
   public static int TOTAL_PLAYERS = TOTAL_HUMAN_PLAYERS + TOTAL_AI_PLAYERS;
+  public static int SINGLEPLAYER_MAX_HUMAN_PLAYERS = 1; // defines what is the max number of humans in singleplayer
+  public static int SINGLEPLAYER_MAX_AI_PLAYERS = 2;    // defines max number of AI
   public static final long TIMEOUT = 3; // seconds
 
   // Create a backend, currently sqlite
@@ -123,7 +126,71 @@ public class Server
 
   private final static Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
 
+
+  /**
+   * This constructor is used whenever a player is playing Singleplayer. It spawns the
+   * server, then later enables listeners. In this way the AIs know to continue listening indefinitely.
+   *
+   * @param portNumber Port number of the server
+   * @param isSinglePlayer tells server if singleplayer is active
+   */
+  public Server (int portNumber, boolean isSinglePlayer)
+  {
+    // Creating a server without listeners
+    this(portNumber, null);
+
+    // After instantiating server, spawn AI's for singleplayer
+    // SPAWN 6 AI by starting a processes
+    if (isSinglePlayer)
+    {
+      for (int i = 0; i < SINGLEPLAYER_MAX_AI_PLAYERS; i++)
+      {
+        try
+        {
+          ProcessBuilder builder = new ProcessBuilder();
+          builder.directory(new File(System.getProperty("user.dir")));
+          builder.command("java",
+                          "-jar",
+                          "Ai.jar",
+                          "localhost",
+                          Integer.toString(portNumber));
+          builder.inheritIO();
+          builder.start();
+          //process.wait(1); // If the process failed, this should cause an exception to be thrown which is what we want
+        } catch (Exception e)
+        {
+          e.printStackTrace();
+          System.exit(-125);
+        }
+      }
+    }
+
+    waitForConnection(portNumber);
+  }
+
+
+  /**
+   * This constructor spawns a server that immediately begins listening after it is
+   * created. In the future it will generate very basic AI to stand in place of
+   * actual players/capable AI until they are added, but for now this functionality
+   * has not been implemented.
+   *
+   * @param portNumber port to bind to
+   */
   public Server (int portNumber)
+  {
+    this(portNumber, false);
+    //waitForConnection(portNumber);
+  }
+
+  /**
+   * This private constructor is here only to prevent code duplication between
+   * the public constructors to this class.
+   *
+   * @param portNumber port to bind to
+   * @param cheapDirtyHack differentiates this constructor from the other public constructor
+   */
+  private Server(int portNumber, String cheapDirtyHack)
   {
     LOG.setLevel(Constant.LOG_LEVEL);
 
@@ -138,7 +205,6 @@ public class Server
     {
       userList.add(user);
     }
-
 
     // startNanoSec = System.nanoTime();
     simulator = new Simulator();
@@ -166,9 +232,6 @@ public class Server
         update();
       }
     }, 0, 1000);
-
-    waitForConnection(portNumber);
-
   }
 
 
@@ -735,6 +798,7 @@ public class Server
     }
 
     broadcast(new ResponseFactory().build(uptime(), new Payload(worldDataList), Type.WORLD_DATA_LIST));
+    broadcast(new ResponseFactory().build(uptime(), new Payload(simulator.getPackedTileData()), Type.PACKED_TILE_DATA));
     draft();
     return null;
   }
@@ -1188,11 +1252,13 @@ public class Server
     //Valid port numbers are Port numbers are 1024 through 65535.
     //  ports under 1024 are reserved for system services http, ftp, etc.
     int port = 5555; //default
+    boolean isSinglePlayer = false;
     if (args.length > 0)
     {
       try
       {
         port = Integer.parseInt(args[0]);
+        if (args.length > 1) isSinglePlayer = Boolean.parseBoolean(args[1]);
         if (port < 1)
         {
           throw new Exception();
@@ -1200,11 +1266,12 @@ public class Server
       }
       catch(Exception e)
       {
-        System.out.println("Usage: Server portNumber");
+        System.out.println("Usage: Server portNumber <optional>isSinglePlayer");
         System.exit(0);
       }
     }
 
-    new Server(port);
+    if(isSinglePlayer) new Server(port, isSinglePlayer); // this constructor is used for singleplayer
+    else new Server(port);  // is used for multiplayer
   }
 }

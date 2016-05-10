@@ -1,6 +1,7 @@
 package starvationevasion.client.GUI.votingHud;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -8,12 +9,20 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import starvationevasion.client.GUI.GUI;
+import starvationevasion.client.GUI.DraftLayout.CardNode;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.gamecards.EnumPolicy;
+import starvationevasion.common.gamecards.GameCard;
 
 public class VotingHand extends NodeTemplate
 {
   private static final double MAX_SMALL_SIZE = .5;
+  private static final double CARD_RATIO = .77;
 
-  private int cardCount = 11;
+  private EnumPolicy[] policies;
+
+  private int cardCount;
 
   private double[] xLayouts = new double[cardCount];
   private double minWidth = 100;
@@ -21,17 +30,32 @@ public class VotingHand extends NodeTemplate
   private boolean cardHasFocus = false;
   private boolean cardIsClicked = false;
 
-  private VotingCard[] cards = new VotingCard[cardCount];
-  private VotingCard focusedCard = new VotingCard();
+  private CardNode[] cardNode;
+
+  private CardNode focusedCard = new CardNode(EnumRegion.USA_CALIFORNIA, EnumPolicy.values()[0]);
   private VotnigButtonNode votingButtons;
   private File f = new File("src/starvationevasion/client/GUI/votingHud/testImages/FinishedVotingButton.png");
   private Image votingFin = new Image(f.toURI().toString());
   private ImageView viv = new ImageView(votingFin);
   private Button finishedButton;
+  private boolean testCards = true;
 
-  public VotingHand(double width, double height)
+  public VotingHand(GUI gui, double width, double height)
   {
     super();
+    policies = EnumPolicy.values();
+
+    if (testCards)
+    {
+      ArrayList<GameCard> cardList = new ArrayList<>();
+      cardList.add(GameCard.create(EnumRegion.USA_CALIFORNIA, EnumPolicy.values()[0]));
+      cardList.add(GameCard.create(EnumRegion.USA_HEARTLAND, EnumPolicy.values()[1]));
+      cardList.add(GameCard.create(EnumRegion.USA_MOUNTAIN, EnumPolicy.values()[2]));
+      cardList.add(GameCard.create(EnumRegion.USA_NORTHERN_CRESCENT, EnumPolicy.values()[3]));
+      cardList.add(GameCard.create(EnumRegion.USA_NORTHERN_PLAINS, EnumPolicy.values()[4]));
+      setVotingCards(cardList);
+    }
+
     viv.setPreserveRatio(true);
     finishedButton = new Button("", viv);
     finishedButton.setStyle("-fx-background-color: transparent;");
@@ -41,7 +65,18 @@ public class VotingHand extends NodeTemplate
       public void handle(ActionEvent event)
       {
         System.out.println("Finished Button Pressed");
-        resetCards();
+        for (int i = 0; i < cardNode.length; i++)
+        {
+          if (cardNode[i].isDrafted)
+          {
+            gui.getClient().voteUp(cardNode[i].getGameCard());
+          }
+          else if (cardNode[i].isDiscarded)
+          {
+            gui.getClient().voteDown(cardNode[i].getGameCard());
+          }
+        }
+        gui.getClient().done();
       }
 
     });
@@ -52,34 +87,12 @@ public class VotingHand extends NodeTemplate
 
     this.setWidth(width);
     this.setHeight(height);
+
+    focusedCard.discardButton.setVisible(false);
+    focusedCard.draftButton.setVisible(false);
     focusedCard.setVisible(false);
+    focusedCard.setManaged(false);
 
-    this.setOnMouseClicked(new EventHandler<Event>()
-    {
-
-      @Override
-      public void handle(Event event)
-      {
-        mouseClickedEvent();
-      }
-
-    });
-    this.setOnMouseMoved(new EventHandler<Event>()
-    {
-
-      @Override
-      public void handle(Event event)
-      {
-        mouseMovedEvent();
-      }
-
-    });
-    for (int i = 0; i < cards.length; i++)
-    {
-      cards[i] = new VotingCard(i);
-      cards[i].setManaged(false);
-      this.getChildren().add(cards[i]);
-    }
     this.getChildren().add(focusedCard);
     this.getChildren().add(votingButtons);
     this.getChildren().add(finishedButton);
@@ -92,59 +105,47 @@ public class VotingHand extends NodeTemplate
     double width = this.getWidth() / cardCount;
     double height = this.getHeight();
 
-    for (int i = 0; i < cards.length; i++)
+    if (cardNode != null && votingButtons!=null)
     {
-      VotingCard card = cards[i];
-      if (card == null) return;
-      double cardWidth = width * (7d / 8d);
-      double cardHeight = cardWidth / card.getSizeRatio();
-      double votingY = height - 20 - cardHeight - focusedCard.getHeight();
-      if (cardHeight > height * MAX_SMALL_SIZE)
+      for (int i = 0; i < cardNode.length; i++)
       {
-        cardHeight = height * MAX_SMALL_SIZE;
-        cardWidth = cardHeight * card.getSizeRatio();
+        CardNode card = cardNode[i];
+        if (card == null) return;
+        double cardWidth = width * (7d / 8d);
+        double cardHeight = cardWidth / CARD_RATIO;
+
+        if (cardHeight > height * MAX_SMALL_SIZE)
+        {
+          cardHeight = height * MAX_SMALL_SIZE;
+          cardWidth = cardHeight * CARD_RATIO;
+        }
+
+        card.setSize(cardWidth, cardHeight);
+        card.setLayoutX((cardWidth / 4) * 3 * i);
+        card.setLayoutY(height - cardHeight - 10);
+        cardNode[i].onResize();
+
+        if (this.getWidth() / 3.8 < minWidth)
+        {
+          focusedCard.setSize(minWidth, minWidth / CARD_RATIO);
+        }
+        else focusedCard.setSize(this.getWidth() / 3.8, (this.getWidth() / 3.8) / CARD_RATIO);
+        focusedCard.setLayoutX(10);
+        focusedCard.setLayoutY(this.getHeight() - 20 - cardHeight - (this.getWidth() / 3.8) / CARD_RATIO);
+        //
+        votingButtons.setLayoutX(focusedCard.getWidth() + votingButtons.getWidth());
+        votingButtons.setLayoutY(this.getHeight() - 20 - cardHeight - (this.getWidth() / 3.8) / CARD_RATIO);
+        votingButtons.setSize(this.getWidth() / 18.6, this.getWidth() / 18.6);
+
+        finishedButton.setLayoutX(10 * cardCount + (cardWidth / 4) * 3 * cardCount);
+        finishedButton.setLayoutY(height - finishedButton.getHeight() - 10);
       }
-
-      card.setSize(cardWidth, cardHeight);
-      card.setLayoutX((cardWidth / 4) * 3 * i);
-
-      if (card.isClicked())
-      {
-        card.setLayoutY(height - cardHeight);
-        card.setTranslateY(-10);
-      }
-      else
-      {
-
-        card.setLayoutY(height - cardHeight);
-      }
-      xLayouts[i] = width * i;
-
-      if (this.getWidth() / 3.8 < minWidth)
-      {
-        focusedCard.setSize(minWidth, minWidth / focusedCard.getSizeRatio());
-      }
-      else focusedCard.setSize(this.getWidth() / 3.8, (this.getWidth() / 3.8) / focusedCard.getSizeRatio());
-      focusedCard.setLayoutX(10);
-      focusedCard.setLayoutY(votingY);
-
-      votingButtons.setLayoutX(focusedCard.getWidth() + votingButtons.getWidth());
-      votingButtons.setLayoutY(votingY);
-      votingButtons.setSize(this.getWidth() / 18.6, this.getWidth() / 18.6);
-
-      finishedButton.setLayoutY(height - finishedButton.getHeight() - 10);
-      finishedButton.setLayoutX(20 + (cardWidth / 4) * 3 * cards.length);
     }
-
   }
 
   private void resetCards()
   {
-    for (int i = 0; i < cards.length; i++)
-    {
-      cards[i].resetCard();
-    }
-    focusedCard.resetCard();
+    // focusedCard.resetCard();
 
     cardIsClicked = false;
     votingButtons.setVisible(false);
@@ -152,90 +153,156 @@ public class VotingHand extends NodeTemplate
 
   }
 
-  public void mouseClickedEvent()
+  public void mouseClickedEvent(Event event)
   {
-    boolean noClick = true;
-
-    for (int i = 0; i < cards.length; i++)
+    if (cardNode != null)
     {
-      cards[i].setClicked(false);
-      focusedCard.setClicked(false);
-      if (focusedCard.isFocused())
-      {
-        focusedCard.setClicked(true);
-        cardIsClicked = true;
-        votingButtons.setVisible(true);
-        noClick = false;
-      }
-      if (cards[i].isFocused())
-      {
-        votingButtons.setCard(cards[i]);
-        votingButtons.setVisible(true);
-        votingButtons.setVotes(0);
+      boolean noClick = true;
 
-        cards[i].setTranslateY(-10);
-        cards[i].setClicked(true);
-
-        cardIsClicked = true;
-        noClick = false;
-
-      }
-    }
-
-    if (noClick)
-    {
-      cardIsClicked = false;
-      votingButtons.setVisible(false);
-      focusedCard.setVisible(false);
-      for (int i = 0; i < cards.length; i++)
+      for (int i = 0; i < cardNode.length; i++)
       {
-        cards[i].setClicked(false);
-      }
-    }
-  }
-
-  public void mouseMovedEvent()
-  {
-    boolean noFocus = true;
-    for (int i = 0; i < cardCount; i++)
-    {
-
-      if (cards[i].isFocused())
-      {
-        cards[i].setTranslateY(-10);
-        focusedCard.setTargetCard(cards[i]);
-        focusedCard.setManaged(false);
-        noFocus = false;
-        cardHasFocus = true;
-      }
-      else if (cards[i].isClicked() == false)
-      {
-        cards[i].setTranslateY(0);
-      }
-      if (noFocus)
-      {
-        cards[i].setTranslateY(0);
-        cardHasFocus = false;
-        for (int j = 0; j < cards.length; j++)
+        cardNode[i].isClicked = false;
+        if (focusedCard.isFocused())
         {
-          if (cards[i].isClicked())
-          {
-            focusedCard.setCardImage(cards[i].getCardImage());
-          }
+          cardIsClicked = true;
+          votingButtons.setVisible(true);
+          noClick = false;
+        }
+        if (event.getSource().equals(cardNode[i]))
+        {
+          votingButtons.setCard(cardNode[i]);
+          votingButtons.setVisible(true);
+
+          cardNode[i].setTranslateY(-10);
+          cardNode[i].setClicked(true);
+
+          cardIsClicked = true;
+          noClick = false;
+
         }
       }
 
+      if (noClick)
+      {
+        cardIsClicked = false;
+        votingButtons.setVisible(false);
+        focusedCard.setVisible(false);
+        for (int i = 0; i < cardNode.length; i++)
+        {
+          cardNode[i].setClicked(false);
+        }
+      }
     }
-
-    if (cardHasFocus || cardIsClicked)
-    {
-      focusedCard.setVisible(true);
-    }
-    else
-    {
-      focusedCard.setVisible(false);
-    }
-    onResize();
   }
 
+  public void mouseMovedEvent(Event event)
+  {
+    if (cardNode != null)
+    {
+      boolean noFocus = true;
+      for (int i = 0; i < cardNode.length; i++)
+      {
+        if (event.getSource().equals(cardNode[i]))
+        {
+          setFocusedCard(cardNode[i]);
+          focusedCard.onResize();
+          cardNode[i].setTranslateY(-10);
+          noFocus = false;
+          cardHasFocus = true;
+        }
+        else if (cardNode[i].isClicked() == false)
+        {
+          cardNode[i].setTranslateY(0);
+        }
+        if (noFocus)
+        {
+          cardNode[i].setTranslateY(0);
+          cardHasFocus = false;
+          for (int j = 0; j < cardNode.length; j++)
+          {
+            if (cardNode[i].isClicked())
+            {
+              setFocusedCard(cardNode[i]);
+            }
+          }
+        }
+
+      }
+
+      if (cardHasFocus || cardIsClicked)
+      {
+        focusedCard.setVisible(true);
+      }
+      else
+      {
+        focusedCard.setVisible(false);
+      }
+      onResize();
+    }
+  }
+
+  private void setFocusedCard(CardNode card)
+  {
+    focusedCard.image.setImage(card.image.getImage());
+    focusedCard.gameText.setText(card.getGameCard().getGameText());
+    focusedCard.title.setText(card.getGameCard().getTitle());
+    focusedCard.votes.setText("" + card.getGameCard().votesRequired());
+  }
+
+  public void setVotingCards(ArrayList<GameCard> cardInfo)
+  {
+    clearCards();
+    cardNode = new CardNode[cardInfo.size()];
+    cardCount = cardInfo.size();
+    if (cardInfo != null)
+    {
+      for (int i = 0; i < cardInfo.size(); i++)
+      {
+        for (int j = 0; j < policies.length; j++)
+        {
+          if (cardInfo.get(i).getPolicyName().equals(policies[j].name()))
+          {
+            cardNode[i] = new CardNode(cardInfo.get(i).getOwner(), policies[j]);
+            this.getChildren().add(cardNode[i]);
+            cardNode[i].setManaged(false);
+            cardNode[i].setPickOnBounds(false);
+            cardNode[i].draftButton.setVisible(false);
+            cardNode[i].discardButton.setVisible(false);
+            cardNode[i].setOnMouseMoved(new EventHandler<Event>()
+            {
+              @Override
+              public void handle(Event event)
+              {
+                mouseMovedEvent(event);
+              }
+            });
+            cardNode[i].setOnMouseClicked(new EventHandler<Event>()
+            {
+              @Override
+              public void handle(Event event)
+              {
+                mouseClickedEvent(event);
+              }
+            });
+
+          }
+        }
+
+      }
+    }
+    onResize();
+    
+  }
+
+  public void clearCards()
+  {
+
+    if (cardNode == null) return;
+    for (int i = 0; i < cardNode.length; i++)
+    {
+      this.getChildren().remove(cardNode[i]);
+      cardNode[i] = null;
+    }
+
+  }
 }

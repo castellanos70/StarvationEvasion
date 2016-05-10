@@ -30,7 +30,7 @@ Each player client is started on a separate computer and connects to the server 
 
 ## Starting up the Game
 The client entry point is:<br>
-<tt>starvationevasion.client.Setup.Main</tt> Running this should ask you for single or multi-player.
+<tt>starvationevasion.client.UpdateLoop</tt> Running this should ask you for single or multi-player.
 Multi-player will attempt to connect to <tt>foodgame.cs.unm.edu:5555</tt>.
 Assuming the server is up and running, this will work. <br><br>
 

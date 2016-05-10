@@ -282,7 +282,7 @@ public abstract class AbstractEvent
 		 nextNodes.addAll(affectedNodes);
 		 if(nextNodes.size()!=0)
 		 {	   
-		  while(initProbability > 0)
+		  while(((int)(10 * initProbability)) > 0)
 		  {
 			  
 			  for(EventNode node : nextNodes)
@@ -294,7 +294,7 @@ public abstract class AbstractEvent
 			  nextNodes.addAll(affectedNodes);	  
 			  
 			  
-		  initProbability = initProbability - (1/(10*severity) );
+		  initProbability = initProbability - (1.f/(10*severity) );
 		  }
 		 }
 	  }

@@ -51,6 +51,7 @@ If you build a .jar file to run the server, as of writing it results in a .jar t
 3. Open Server.jar inside of something like 7zip so that you can modify its contents.
 4. Remove the following folders: ActionButtons, cardImages, farmProductIcons, sim/climate, visResources, starvationevasion/client
 5. Remove the following files: background.png, Mollweide_projection.jpg, WorldMap_MollweideProjection.png, WorldMap_MollweideProjection2.png, WorldMap_MollweideProjection_With_Region_Boarders_Added.png
+6. Remove any additional jars that are irrelevant, such as previous server or ai jars that you may have made in the past. These folders are usually found in your output file folder.
 
 At the time of writing, this could reduce the .jar file from about 800 mb to ~15 mb. This makes it much more reasonable to rebuild and push to github.
 

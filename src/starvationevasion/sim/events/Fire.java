@@ -10,6 +10,8 @@ import starvationevasion.sim.LandTile;
 import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
 
+
+// the Fire event destorys land tiles and also farm equitment 
 public class Fire extends AbstractEvent
 {
   Territory landArea;
@@ -37,7 +39,7 @@ public class Fire extends AbstractEvent
 	  wipeOutLandTiles();
 	  super.applyEffects();
 	  
-	  // do something from the abstract class
+	 
 	  
   }
 }

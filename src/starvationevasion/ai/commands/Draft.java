@@ -592,11 +592,9 @@ public class Draft extends AbstractCommand
       undernourishedPercent=(data.undernourished/data.population)*100;
       lastUndernourishedPercent=(getClient().getWorldData().get(0).regionData[data.region.ordinal()].undernourished/
           getClient().getWorldData().get(0).regionData[data.region.ordinal()].population)*100;
-      //System.out.println(data.region.name()+" undernourished level "+data.undernourished);
-      if(undernourishedPercent>40 && 
+      if(undernourishedPercent>30 && 
           undernourishedPercent>=lastUndernourishedPercent)
       {
-        //System.out.println(data.region.name()+" is undernourished, I'm more likely to pick a card that helps them.");
         amtToAdjust=probabilityMap.get(data.region.name());
         amtToAdjust*=undernourishedPercent/10;
         adjustProbability(amtToAdjust,data.region.name());
@@ -606,7 +604,6 @@ public class Draft extends AbstractCommand
       else if(undernourishedPercent<10 &&
           lastUndernourishedPercent>=undernourishedPercent)
       {
-        //System.out.println(data.region.name()+" is doing well, I'm less likely to help them.");
         adjustProbability(rand.nextInt(5)+1,data.region.name());
       }
       if(data.region.name().equals(getClient().getUser().getRegion().name()))
@@ -621,20 +618,11 @@ public class Draft extends AbstractCommand
       {
         long difference=percentChangeLong(getClient().getWorldData().get(0).regionData[data.region.ordinal()].foodProduced[p],
             data.foodProduced[p]);
-        if(difference<-30)
+        if(difference>30)
         {
           foodNeedingAttention=EnumFood.values()[p];
-          //System.out.println(foodNeedingAttention.name()+" is doing poorly in "+data.region.name()+ "\nI'm more likely to pick it.");
-          adjustProbability((int) (probabilityMap.get(foodNeedingAttention.name())*(difference/10)*-1),foodNeedingAttention.name());
-          adjustProbability((int) (probabilityMap.get(data.region.name())*(difference/10)*-1),data.region.name());
-        }
-        //This food is doing fine, it doesn't need any attention this turn.
-        else if(difference>0)
-        {
-          getClient().getUser().getHand().forEach(policy->
-          {
-            policyCardInfo[policy.ordinal()][data.region.ordinal()][EnumFood.values()[p].ordinal()]=false;
-          });
+          adjustProbability((int) (probabilityMap.get(foodNeedingAttention.name())*2),foodNeedingAttention.name());
+          adjustProbability((int) (probabilityMap.get(data.region.name())*2),data.region.name());
         }
       }
     }
@@ -643,8 +631,6 @@ public class Draft extends AbstractCommand
     //more likely to pick a card that has general benefits across the whole world.
     if(avgUndernourished>=30)
     {
-      //System.out.println("Average number of people undernourished is greater than 30%.");
-      //System.out.println("More likely to pick a card that has broad benefits.");
       getClient().cardsOfGeneralBenefit.forEach(policy->
       {
         adjustProbability(probabilityMap.get(policy.name())*((int)avgUndernourished/(10)),policy.name());
@@ -654,8 +640,6 @@ public class Draft extends AbstractCommand
     //general benefits.
     else if(avgUndernourished<=10)
     {
-      //System.out.println("Average number of people undernourished is less than 10%.");
-      //System.out.println("Less likely to pick a card that has broad benefits.");
       getClient().cardsOfGeneralBenefit.forEach(policy->
       {
         adjustProbability(rand.nextInt(5)+1,policy.name());
@@ -665,8 +649,6 @@ public class Draft extends AbstractCommand
     //75% more likely that this region will be picked.
     if(pickThisRegion)
     {
-      //System.out.println("Things have been declining in my region, therefore I'm");
-      //System.out.println("75% more likely to pick a card that helps my region.");
       getClient().getUser().getHand().forEach(policy->
       {
         card = GameCard.create(getClient().getUser().getRegion(),policy);
@@ -719,7 +701,7 @@ public class Draft extends AbstractCommand
         getClient().getWorldData().get(0).regionData[thisRegion.region.ordinal()].revenueBalance);
     //If revenue severely down, increase likelihood of playing a card that will get the region more 
     //money.
-    if(revenueDiff<-50)
+    if(revenueDiff>50)
     {
       if(!(getClient().getUser().getHand().contains(getClient().moneyCards.get(0)) ||
           getClient().getUser().getHand().contains(getClient().moneyCards.get(1))||
@@ -735,7 +717,7 @@ public class Draft extends AbstractCommand
       }
     }
     //If the region doesn't need the money, don't select getting a loan.
-    else if(revenueDiff>0)
+    else if(revenueDiff<0)
     {
       if(getClient().getUser().getHand().contains(EnumPolicy.valueOf("Policy_Loan")))
       {
@@ -1142,60 +1124,57 @@ public class Draft extends AbstractCommand
           {
             int percentChange = percentChangeInt((int) numArray[i][0],
                 (int) numArray[i][1]);
-            if (percentChange < 0)
+            if (percentChange > 0)
             {
-              overallPercentDecrease += (percentChange * -1);
-            } else if (percentChange > 0)
+              overallPercentDecrease += percentChange;
+            } else if (percentChange <= 0)
             {
-              overallPercentIncrease += percentChange;
+              overallPercentIncrease += (percentChange * -1);
             }
           }
           else if (i == 1)
           {
             double percentChange = percentChangeDouble((double) numArray[i][0],
                 (double) numArray[i][1]);
-            if (percentChange > 0)
+            if (percentChange >= 0)
             {
-              overallPercentDecrease += percentChange;
+              overallPercentIncrease += percentChange;
             } else if (percentChange < 0)
             {
-              overallPercentIncrease += (percentChange * -1);
+              overallPercentDecrease += (percentChange * -1);
             }
           } 
           else if (i == 2)
           {
             double percentChange = percentChangeDouble((double) numArray[i][0],
                 (double) numArray[i][1]);
-            if (percentChange < 0)
+            if (percentChange > 0)
             {
-              overallPercentDecrease += (percentChange * -1);
-            } else if (percentChange > 0)
+              overallPercentDecrease += percentChange;
+            } else if (percentChange <= 0)
             {
-              overallPercentIncrease += percentChange;
+              overallPercentIncrease += (percentChange * -1);
             }
           } 
           else if (i == 3 || i > 4)
           {
             long percentChange = percentChangeLong((long) numArray[i][0],
                 (long) numArray[i][1]);
-            if (percentChange < 0)
+            if (percentChange > 0)
             {
-              overallPercentDecrease += (percentChange * -1);
-            } else if (percentChange > 0)
+              overallPercentDecrease += percentChange;
+            } else if (percentChange <= 0)
             {
-              overallPercentIncrease += percentChange;
+              overallPercentIncrease += (percentChange * -1);
             }
           }
         }
-        //System.out.println("Overall percent decrease:"+overallPercentDecrease);
-        //System.out.println("Overall percent increase:"+overallPercentIncrease);
         if (overallPercentIncrease > overallPercentDecrease)
         {
           //If there has been an increase of over 20%, make it less likely to pick
           //this region again.
           if((overallPercentIncrease-overallPercentDecrease)>20)
           {
-            //System.out.println("Things are going well in my region, I'll more likely help another region out.");
             adjustProbability(rand.nextInt(5)+1,getClient().getUser().getRegion().name());
           }
           totalIncrease=overallPercentIncrease;
@@ -1223,9 +1202,11 @@ public class Draft extends AbstractCommand
    */
   private int percentChangeInt(int originalVal, int newVal)
   {
+    double original=originalVal;
     if (originalVal != 0)
     {
-      return ((originalVal - newVal) / originalVal) * 100;
+      double result= ((originalVal - newVal) / original) * 100.0;
+      return (int)result;
     } else
     {
       return 0;
@@ -1240,7 +1221,7 @@ public class Draft extends AbstractCommand
   {
     if (originalVal != 0)
     {
-      return ((originalVal - newVal) / originalVal) * 100;
+      return ((originalVal - newVal) / originalVal) * 100.0;
     } 
     else
     {
@@ -1254,9 +1235,10 @@ public class Draft extends AbstractCommand
    */
   private long percentChangeLong(long originalVal, long newVal)
   {
+    double original=originalVal;
     if (originalVal != 0)
     {
-      return ((originalVal - newVal) / originalVal) * 100;
+      return (long)(((originalVal - newVal) / original) * 100.0);
     } 
     else
     {

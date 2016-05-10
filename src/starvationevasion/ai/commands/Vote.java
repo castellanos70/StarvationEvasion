@@ -1,8 +1,35 @@
 package starvationevasion.ai.commands;
 
 import starvationevasion.ai.AI;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Util;
 import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.gamecards.Policy_CleanRiverIncentive;
+import starvationevasion.common.gamecards.Policy_CovertIntelligence;
+import starvationevasion.common.gamecards.Policy_DivertFunds;
+import starvationevasion.common.gamecards.Policy_EducateTheWomenCampaign;
+import starvationevasion.common.gamecards.Policy_EfficientIrrigationIncentive;
+import starvationevasion.common.gamecards.Policy_EthanolTaxCreditChange;
+import starvationevasion.common.gamecards.Policy_FarmInfrastructureSubSaharan;
+import starvationevasion.common.gamecards.Policy_FertilizerAidCentralAsia;
+import starvationevasion.common.gamecards.Policy_FertilizerAidMiddleAmerica;
+import starvationevasion.common.gamecards.Policy_FertilizerAidOceania;
+import starvationevasion.common.gamecards.Policy_FertilizerAidSouthAsia;
+import starvationevasion.common.gamecards.Policy_FertilizerAidSubSaharan;
+import starvationevasion.common.gamecards.Policy_FertilizerSubsidy;
+import starvationevasion.common.gamecards.Policy_Filibuster;
+import starvationevasion.common.gamecards.Policy_FoodReliefCentralAsia;
+import starvationevasion.common.gamecards.Policy_FoodReliefMiddleAmerica;
+import starvationevasion.common.gamecards.Policy_FoodReliefOceania;
+import starvationevasion.common.gamecards.Policy_FoodReliefSouthAsia;
+import starvationevasion.common.gamecards.Policy_FoodReliefSubSaharan;
+import starvationevasion.common.gamecards.Policy_Fundraiser;
+import starvationevasion.common.gamecards.Policy_InternationalFoodRelief;
+import starvationevasion.common.gamecards.Policy_Loan;
+import starvationevasion.common.gamecards.Policy_MyPlatePromotionCampaign;
+import starvationevasion.common.gamecards.Policy_ResearchInsectResistanceGrain;
+import starvationevasion.common.gamecards.Policy_SpecialInterests;
+import starvationevasion.communication.AITest.AI.WorldFactors;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.State;
@@ -10,7 +37,9 @@ import starvationevasion.server.model.State;
 public class Vote extends AbstractCommand
 {
   private int tries = 2;
-  private AIVotingPhase AIVote = new AIVotingPhase();
+  public String cost;
+  public String benefit;
+  public AI aiInfo;
 
   public Vote(AI client)
   {
@@ -58,31 +87,33 @@ public class Vote extends AbstractCommand
         	  int pros = 0;
               int cons = 0;
               
-//              AIVote.readCardDetails(card);
-//              
-//              if(AIVote.checkResources()){pros++;}
-//              else{cons++;}
-//              
-//              if(AIVote.checkBeneficialToSelf()){pros++;}
-//              else{cons++;}
-//              
-//              if(AIVote.checkBeneficialToOthers()){pros++;}
-//              else{cons++;}
+              readCardDetails(card);
+              
+              if(checkResources(card)){pros++;}
+              else{cons++;}
+              
+              if(checkBeneficialToSelf(card)){pros++;}
+              else{cons++;}
+              
+              if(checkBeneficialToOthers()){pros++;}
+              else{cons++;}
               
               Endpoint endpoint;
               if(pros > cons)
               {
-                //endpoint = Endpoint.VOTE_UP; // Vote yes
+                endpoint = Endpoint.VOTE_UP; // Vote yes
+                System.out.println("An AI voted Yes");
               }
               
               else if(cons > pros)
               {
-                //endpoint = Endpoint.VOTE_DOWN; // Vote no
+                endpoint = Endpoint.VOTE_DOWN; // Vote no
+                System.out.println("An AI voted No");
               }
               
               else
               {
-                /*
+                
                 if (Util.likeliness(.45f))
                 {
                   endpoint = Endpoint.VOTE_UP; // Vote yes
@@ -91,24 +122,15 @@ public class Vote extends AbstractCommand
                 {
                   endpoint = Endpoint.VOTE_DOWN; // Vote no
                 }
-                */
+                
               }
         	  
-        	  
-            if (Util.likeliness(.45f))
-            {
-              endpoint = Endpoint.VOTE_UP;
-            } 
-            else
-            {
-              endpoint = Endpoint.VOTE_DOWN;
-            }
-            if(getClient().getSupportCards().contains(card)
-               && Util.likeliness(0.70f))
-            {
-              endpoint = Endpoint.VOTE_UP;
-              getClient().getSupportCards().remove(card);
-            }
+              if(getClient().getSupportCards().contains(card)&& Util.likeliness(0.70f))
+              {
+            	endpoint = Endpoint.VOTE_UP;
+            	getClient().getSupportCards().remove(card);
+              }
+
             // Request request = new
             // RequestFactory().build(getClient().getStartNanoSec(), card,
             // endpoint);
@@ -129,6 +151,275 @@ public class Vote extends AbstractCommand
     return false;
   }
 
+  public void readCardDetails(GameCard card)
+  {
+	  switch(card.getCardType())
+	  {
+		case Policy_Loan:
+			cost = "10% interest of $25 million each year";
+			benefit = "$25 million each year for 10 years";
+			System.out.println("I AM NEW BY YOU: LOAN");
+			break;
+			
+		case Policy_DivertFunds:
+			cost = "Discard current hand";
+			benefit = "$14 million";
+			System.out.println("I AM NEW BY YOU: DIVERT");
+			break;
+			
+		case Policy_CleanRiverIncentive:
+			cost = "none";
+			benefit = "X% tax break for farmers in my region";
+			System.out.println("I AM NEW BY YOU: CLEAN_RIVER");
+			break;
+			
+		case Policy_CovertIntelligence:
+			cost = "none";
+			benefit = "You get to covertly examine target player's hand and the top seven cards";
+			System.out.println("I AM NEW BY YOU: COVERT_INTEL");
+			break;
+			
+		case Policy_EducateTheWomenCampaign:
+			cost = "US sends a total of $70 million to educate woman of the target world";
+			benefit = "Educate woman of the target world " +
+					  "region including reading, basic business and farming techniques.";
+			System.out.println("I AM NEW BY YOU: EDUCATE_WOMEN");
+			break;
+			
+	      case Policy_EfficientIrrigationIncentive:
+	        cost = "none";
+	        benefit = "X% of money spent by farmers " +
+	        		  "in player\'s region for improved irrigation efficiency is tax deductible";
+	        System.out.println("I AM NEW BY YOU: EFFICENT_IRRI");
+	        break;
+	        
+	      case Policy_EthanolTaxCreditChange:
+	    	  cost = "none";
+		      benefit = "X% tax credit to cost of ethanol production, including " +
+		    		    "cellulosic ethanol.";
+		      System.out.println("I AM NEW BY YOU: ETHANOL");
+	        break;
+	        
+	      case Policy_FertilizerSubsidy:
+	    	  cost = "none";
+		      benefit = "20% rebate to farmers in your region purchasing " +
+		    		  	"commercial fertilizer or feed supplements for target crop or live stock";
+		      System.out.println("I AM NEW BY YOU: FERTILIZER");
+	        break;
+	        
+	      case Policy_FarmInfrastructureSubSaharan:
+	    	  cost = "X million dollars";
+		      benefit = "Development " +
+		    		    "of farming infrastructure to Sub-Saharan Africa.";
+		      System.out.println("I AM NEW BY YOU: FARM");
+	        break;
+	        
+	      case Policy_FertilizerAidCentralAsia:
+	    	  cost = "X million dollars";
+		      benefit = "Fertilizer to CentralAsia.";
+		      System.out.println("I AM NEW BY YOU: FERTILIZER_ASIA");
+	        break;
+	        
+	      case Policy_FertilizerAidMiddleAmerica:
+	    	  cost = "X million dollars";
+		      benefit = "Fertilizer to Middle America.";
+		      System.out.println("I AM NEW BY YOU: FERTILIZER_AMERICA");
+	        break;
+	        
+	      case Policy_FertilizerAidOceania:
+	    	  cost = "X million dollars";
+		      benefit = "Fertilizer to Oceania.";
+		      System.out.println("I AM NEW BY YOU: FERTILIZER_OCEANIA");
+	        break;
+	        
+	      case Policy_FertilizerAidSouthAsia:
+	    	  cost = "X million dollars";
+		      benefit = "Fertilizer to SouthAsia.";
+		      System.out.println("I AM NEW BY YOU: FERTILIZER_SOUTHASIA");
+	        break;
+	        
+	      case Policy_FertilizerAidSubSaharan:
+	    	  cost = "X million dollars";
+		      benefit = "Fertilizer to Sub Saharan Africa.";
+	        break;
+	        
+	      case Policy_ResearchInsectResistanceGrain:
+	    	  cost = "X million dollars";
+		      benefit = "GMO seed research " +
+		    		  	"for increasing insect resistance of a grain crop.";
+	        break;
+	        
+	      case Policy_InternationalFoodRelief:
+	    	  cost = "X million dollars";
+		      benefit = "Purchase " +
+		    		  	"from its local farmers surplus commodity food for redistribution to where it is" +
+		    		  	"most needed.";
+	        break;
+	        
+	      case Policy_MyPlatePromotionCampaign:
+	    	  cost = "X million dollars";
+		      benefit = "Promoting " +
+		    		  	"public awareness of the United States Department of Agriculture's MyPlate nutrition guide.";
+	        break;
+	        
+	      case Policy_Filibuster:
+	    	  cost = "none";
+		      benefit = "Play this card at the start of the voting phase to return target " +
+		    		  	"policy card its owner\'s hand.";
+	        break;
+	        
+	      case Policy_Fundraiser:
+	    	  cost = "none";
+		      benefit = "$1 million dollars";
+	        break;
+	        
+	        
+	      case Policy_SpecialInterests:
+	    	  cost = "none";
+		      benefit = "Owner of this card " +
+		    		  	"gains $100 million that they may spend " +
+		    		  	"only to support policies drafted this turn";
+	      	break;
+	      case Policy_FoodReliefCentralAsia:
+	    	  cost = "5 thousand tons of target food to CentralAsia";
+		      benefit = "none";
+	        break;
+	      case Policy_FoodReliefMiddleAmerica:
+	    	  cost = "5 thousand tons of target food to Middle America";
+		      benefit = "none";
+	        break;
+	      case Policy_FoodReliefOceania:
+	    	  cost = "5 thousand tons of target food to Oceania";
+		      benefit = "none";
+	        break;
+	      case Policy_FoodReliefSouthAsia:
+	    	  cost = "5 thousand tons of target food to SouthAsia";
+		      benefit = "none";
+	        break;
+	      case Policy_FoodReliefSubSaharan:
+	    	  cost = "5 thousand tons of target food to Sub Saharan Africa";
+		      benefit = "none";
+	        break;
+		
+			
+		default:
+			cost = "none";
+			benefit = "none";
+			break;
+			
+	  }
+  }
+  
+  public boolean checkResources(GameCard card) 
+  {
+		// TODO Auto-generated method stub
+		if(cost.startsWith("Discard")){return true;}
+		if(cost.startsWith("10%"))
+		{
+			return true;
+			
+		}
+		if(cost.startsWith("none")){return true;}
+		if(cost.startsWith("X million"))
+		{
+			int curBal = (int)aiInfo.factorMap.get(WorldFactors.REVENUEBALANCE).get(getClient().worldDataSize-1)[0];
+			System.out.println("current Ball  = " + curBal);
+			
+			int xAmount = card.getX();
+			
+			if(xAmount >= curBal){return false;}
+			else{return true;}
+		}
+		if(cost.startsWith("5 thousand tons"))
+		{
+			card.getTargetFood();
+		}
+		
+		return false;
+		
+  }
+  public boolean checkBeneficialToSelf(GameCard card) 
+  {
+		// TODO Auto-generated method stub
+		int moneyInc = 0;
+		int educationInc = 0;
+		if(benefit.charAt(0)=='$')//You get money
+		{
+			int startBal = benefit.indexOf("$")+ 1;
+			int endBal = benefit.indexOf(" ");
+			
+			moneyInc = Integer.parseInt(benefit.substring(startBal, endBal));
+			
+			int curBal = (int)aiInfo.factorMap.get(WorldFactors.REVENUEBALANCE).get(getClient().worldDataSize-1)[0];
+			
+			if(curBal >= moneyInc*2){return false;}
+			else{return true;}
+
+			
+		}
+		
+		if(benefit.startsWith("X%"))
+		{
+			//int percentage = card.getX();
+			return true;
+			
+		}
+		if(benefit.startsWith("20%")){return true;}
+		
+		if(benefit.startsWith("X million"))
+		{
+			int aiBal = card.getX();
+			
+		}
+		
+		if(benefit.startsWith("Educate woman"))
+		{
+			if(card.getTargetRegion().equals(EnumRegion.WORLD_REGIONS))
+			{
+				double curHdi = (double)aiInfo.factorMap.get(WorldFactors.HDI)
+						.get(getClient().worldDataSize-1)[0];
+				if(curHdi<=70){return true;}
+				//if()
+			}
+		}
+		
+		if(benefit.startsWith("Development")){return true;}
+		
+		if(benefit.startsWith("none")){return false;}
+		
+		return false;
+		
+  }
+  
+  public boolean checkBeneficialToOthers() 
+  {
+		// TODO Auto-generated method stub
+	  if(benefit.startsWith("Development"))
+	  {
+		  if (Util.likeliness(.45f)){return true;}
+	  }
+	  if(benefit.startsWith("Educate woman"))
+	  {
+		  if (Util.likeliness(.45f)){return true;}
+	  }
+	  if(cost.startsWith("5 thousand tons"))
+	  {
+		  if (Util.likeliness(.45f)){return true;}
+	  }
+	  if(benefit.startsWith("Owner of this card"))
+	  {
+		  if (Util.likeliness(.45f)){return true;}
+	  }
+	  
+	  if(benefit.startsWith("Fertilizer"))
+	  {
+		  if (Util.likeliness(.45f)){return true;}
+	  }
+	  
+		return false;
+		
+  }
+  
   @Override
   public String commandString()
   {

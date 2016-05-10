@@ -241,7 +241,7 @@ public abstract class AbstractEvent
 	  }
 	  
 	  /*
-	   * This 
+	   * This is where events can create the spread through the of landtiles the affected territory 
 	   * 
 	   * 
 	   * */
@@ -335,7 +335,7 @@ public abstract class AbstractEvent
 			 affectedTiles.add(this.landTile);
 		 }
 		 
-		 
+		 // this spreads the event to its neighbors
 		 private void spreadEvent(float curProbability)
 		 {
 			 float randFloat = Util.rand.nextFloat();	

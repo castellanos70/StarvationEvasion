@@ -1,35 +1,10 @@
 package starvationevasion.ai.commands;
 
 import starvationevasion.ai.AI;
+import starvationevasion.ai.AI.WorldFactors;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Util;
 import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.common.gamecards.Policy_CleanRiverIncentive;
-import starvationevasion.common.gamecards.Policy_CovertIntelligence;
-import starvationevasion.common.gamecards.Policy_DivertFunds;
-import starvationevasion.common.gamecards.Policy_EducateTheWomenCampaign;
-import starvationevasion.common.gamecards.Policy_EfficientIrrigationIncentive;
-import starvationevasion.common.gamecards.Policy_EthanolTaxCreditChange;
-import starvationevasion.common.gamecards.Policy_FarmInfrastructureSubSaharan;
-import starvationevasion.common.gamecards.Policy_FertilizerAidCentralAsia;
-import starvationevasion.common.gamecards.Policy_FertilizerAidMiddleAmerica;
-import starvationevasion.common.gamecards.Policy_FertilizerAidOceania;
-import starvationevasion.common.gamecards.Policy_FertilizerAidSouthAsia;
-import starvationevasion.common.gamecards.Policy_FertilizerAidSubSaharan;
-import starvationevasion.common.gamecards.Policy_FertilizerSubsidy;
-import starvationevasion.common.gamecards.Policy_Filibuster;
-import starvationevasion.common.gamecards.Policy_FoodReliefCentralAsia;
-import starvationevasion.common.gamecards.Policy_FoodReliefMiddleAmerica;
-import starvationevasion.common.gamecards.Policy_FoodReliefOceania;
-import starvationevasion.common.gamecards.Policy_FoodReliefSouthAsia;
-import starvationevasion.common.gamecards.Policy_FoodReliefSubSaharan;
-import starvationevasion.common.gamecards.Policy_Fundraiser;
-import starvationevasion.common.gamecards.Policy_InternationalFoodRelief;
-import starvationevasion.common.gamecards.Policy_Loan;
-import starvationevasion.common.gamecards.Policy_MyPlatePromotionCampaign;
-import starvationevasion.common.gamecards.Policy_ResearchInsectResistanceGrain;
-import starvationevasion.common.gamecards.Policy_SpecialInterests;
-import starvationevasion.communication.AITest.AI.WorldFactors;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.State;
@@ -39,7 +14,6 @@ public class Vote extends AbstractCommand
   private int tries = 2;
   public String cost;
   public String benefit;
-  public AI aiInfo;
 
   public Vote(AI client)
   {
@@ -173,12 +147,6 @@ public class Vote extends AbstractCommand
 			System.out.println("I AM NEW BY YOU: CLEAN_RIVER");
 			break;
 			
-		case Policy_CovertIntelligence:
-			cost = "none";
-			benefit = "You get to covertly examine target player's hand and the top seven cards";
-			System.out.println("I AM NEW BY YOU: COVERT_INTEL");
-			break;
-			
 		case Policy_EducateTheWomenCampaign:
 			cost = "US sends a total of $70 million to educate woman of the target world";
 			benefit = "Educate woman of the target world " +
@@ -262,12 +230,6 @@ public class Vote extends AbstractCommand
 		    		  	"public awareness of the United States Department of Agriculture's MyPlate nutrition guide.";
 	        break;
 	        
-	      case Policy_Filibuster:
-	    	  cost = "none";
-		      benefit = "Play this card at the start of the voting phase to return target " +
-		    		  	"policy card its owner\'s hand.";
-	        break;
-	        
 	      case Policy_Fundraiser:
 	    	  cost = "none";
 		      benefit = "$1 million dollars";
@@ -322,7 +284,7 @@ public class Vote extends AbstractCommand
 		if(cost.startsWith("none")){return true;}
 		if(cost.startsWith("X million"))
 		{
-			int curBal = (int)aiInfo.factorMap.get(WorldFactors.REVENUEBALANCE).get(getClient().worldDataSize-1)[0];
+			int curBal = (int)getClient().factorMap.get(WorldFactors.REVENUEBALANCE).get(getClient().worldDataSize-1)[0];
 			System.out.println("current Ball  = " + curBal);
 			
 			int xAmount = card.getX();
@@ -350,7 +312,7 @@ public class Vote extends AbstractCommand
 			
 			moneyInc = Integer.parseInt(benefit.substring(startBal, endBal));
 			
-			int curBal = (int)aiInfo.factorMap.get(WorldFactors.REVENUEBALANCE).get(getClient().worldDataSize-1)[0];
+			int curBal = (int)getClient().factorMap.get(WorldFactors.REVENUEBALANCE).get(getClient().worldDataSize-1)[0];
 			
 			if(curBal >= moneyInc*2){return false;}
 			else{return true;}
@@ -376,7 +338,7 @@ public class Vote extends AbstractCommand
 		{
 			if(card.getTargetRegion().equals(EnumRegion.WORLD_REGIONS))
 			{
-				double curHdi = (double)aiInfo.factorMap.get(WorldFactors.HDI)
+				double curHdi = (double)getClient().factorMap.get(WorldFactors.HDI)
 						.get(getClient().worldDataSize-1)[0];
 				if(curHdi<=70){return true;}
 				//if()

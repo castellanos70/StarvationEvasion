@@ -45,7 +45,7 @@ public class AI
   private State state = null;
   private ArrayList<WorldData> worldData;
   private List<GameCard> ballot;
-  private List<GameCard supportCards = new ArrayList<>();
+  private List<GameCard> supportCards = new ArrayList<>();
   private Stack<Command> commands = new Stack<>();
   private volatile boolean isRunning = true;
   private volatile boolean aggregate=false;

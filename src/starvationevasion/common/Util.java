@@ -1,11 +1,11 @@
 package starvationevasion.common;
 
+import javafx.scene.paint.Color;
 import starvationevasion.server.model.DataType;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,7 +13,12 @@ import java.net.Socket;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Random;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,7 +62,7 @@ public class Util
     int r = (int)Math.min(255.0,color.getRed()*(1.0+percentage));
     int g = (int)Math.min(255.0,color.getGreen()*(1.0+percentage));
     int b = (int)Math.min(255.0,color.getBlue()*(1.0+percentage));
-    return new Color(r,g,b);
+    return Color.rgb(r,g,b);
   }
 
 

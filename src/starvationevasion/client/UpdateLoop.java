@@ -38,6 +38,8 @@ import starvationevasion.common.EnumRegion;
  */
 public class UpdateLoop extends Application
 {
+  private static String connectURL = "localhost";
+
   private int width = 300;
   private int height = 250;
   private Stage stage;
@@ -138,7 +140,7 @@ public class UpdateLoop extends Application
 
 
     //client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
-    client = new ClientTest(this, "localhost", 5555);
+    client = new ClientTest(this, connectURL, 5555);
     this.stage = stage;
     stage.setMaximized(true);
     stage.setTitle("Login");
@@ -235,6 +237,9 @@ public class UpdateLoop extends Application
 
   public static void main(String[] args)
   {
+    if(args.length > 0) {
+      connectURL = args[0];
+    }
     launch(args);
   }
 }

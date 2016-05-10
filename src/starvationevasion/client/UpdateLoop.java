@@ -75,7 +75,7 @@ public class UpdateLoop extends Application
   private FlowPane pane2;
   private Label labelForScene2;
   private AudioClip clip;
-  
+
   public void notifyOfSuccessfulLogin()
   {
     System.out.println("Starting game . . .");
@@ -89,18 +89,18 @@ public class UpdateLoop extends Application
   @Override
   public void start(Stage primaryStage)
   {
-	  
-   StartIntroVideo video = new StartIntroVideo();  
-    
-		try 
-		{
-	      video.start(primaryStage);
-		} catch (Exception e) 
-		{
-		  e.printStackTrace();
-		}
-      
-      startTimer(primaryStage);
+
+    StartIntroVideo video = new StartIntroVideo();
+
+    try
+    {
+      video.start(primaryStage);
+    } catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+
+    startTimer(primaryStage);
   }
 
 
@@ -151,14 +151,14 @@ public class UpdateLoop extends Application
 
   /**
    * Method starts the audio file for background music
-   * 
+   *
    * @param args
    */
-  private void playMusic() 
+  private void playMusic()
   {
     try
     {
-    	// Maxwell Sanchez: This resource doesn't appear to exist any more, and attempting to play it creates a NullPointerException.
+      // Maxwell Sanchez: This resource doesn't appear to exist any more, and attempting to play it creates a NullPointerException.
       /* final java.net.URL resource = getClass().getResource("WhenThe3574792685754392ffffffffffffff.wav");
       clip = new AudioClip(resource.toString());
       clip.play(); */
@@ -168,7 +168,7 @@ public class UpdateLoop extends Application
       e.printStackTrace();
     }
   }
-  private void pauseMusic() 
+  private void pauseMusic()
   {
     try
     {
@@ -180,224 +180,224 @@ public class UpdateLoop extends Application
       e.printStackTrace();
     }
   }
- 
-  
+
+
   /**
    * This method allows the first intro video to play without
    * locking the window up. Once a time limit or the skip
    * button has been invoked, the primary Stage then shows
    * the start menu (login page)
-   * 
+   *
    * @param primaryStage
    */
   private void startTimer(Stage primaryStage)
   {
-      timer = new AnimationTimer() 
+    timer = new AnimationTimer()
+    {
+      int seconds    = 150;
+      long startTime = System.currentTimeMillis();
+      long endTime   = System.currentTimeMillis() + (seconds * 100);
+      long temp      = startTime + 150;
+
+      @Override
+      public void handle(long l)
       {
-         	int seconds    = 150;
-         	long startTime = System.currentTimeMillis();
-         	long endTime   = System.currentTimeMillis() + (seconds * 100);
-         	long temp      = startTime + 150;
-         	
-          @Override
-          public void handle(long l)
-          {
-            temp++;
-           
-            if(MediaControl.getFlag_To_ExitVideo()) showStartMenu(primaryStage);
-            else if(temp > endTime)
-            {
-              showStartMenu(primaryStage);
-         	}
-          }
-      };
-      
-      timer.start();
+        temp++;
+
+        if(MediaControl.getFlag_To_ExitVideo()) showStartMenu(primaryStage);
+        else if(temp > endTime)
+        {
+          showStartMenu(primaryStage);
+        }
+      }
+    };
+
+    timer.start();
   }
-  
+
   /**
    * When invoked, this method will show the start menu and 
    * all of the elements on the page, such as user login,
    * password, create user etc.
-   * 
+   *
    * @param primaryStage
    */
- public void showStartMenu(Stage primaryStage)
- {
-	 timer.stop();
-	 
-	 username.setPromptText("USER NAME");
-	    password.setPromptText("PASSWORD");
-	    screen = Screen.getPrimary();
-	    bounds = screen.getVisualBounds();
+  public void showStartMenu(Stage primaryStage)
+  {
+    timer.stop();
 
-	    primaryStage.setX(bounds.getMinX());
-	    primaryStage.setY(bounds.getMinY());
-	    primaryStage.setWidth(bounds.getWidth());
-	    primaryStage.setHeight(bounds.getHeight());
+    username.setPromptText("USER NAME");
+    password.setPromptText("PASSWORD");
+    screen = Screen.getPrimary();
+    bounds = screen.getVisualBounds();
 
-	    stage = primaryStage;
+    primaryStage.setX(bounds.getMinX());
+    primaryStage.setY(bounds.getMinY());
+    primaryStage.setWidth(bounds.getWidth());
+    primaryStage.setHeight(bounds.getHeight());
 
-	    Pane root = new Pane();
-	    root.setPrefSize(bounds.getWidth(), bounds.getHeight());
-	    Image logo = new Image("file:assets/visResources/TempLogo.png");
+    stage = primaryStage;
 
-
-	    ImageView ivLogo = new ImageView(logo);
-	    ivLogo.setFitHeight(bounds.getHeight() / 7);
-	    ivLogo.setFitWidth(bounds.getWidth() / 7);
-
-	    ImageView imgView = new ImageView(background);
-	    imgView.setFitWidth(bounds.getWidth());
-	    imgView.setFitHeight(bounds.getHeight());
-
-	    ivLogo.setTranslateX(bounds.getWidth() / 5 * 3.25);
-	    ivLogo.setTranslateY(bounds.getHeight() / 5 * 3);
-	    root.getChildren().addAll(imgView,ivLogo);
-	    menu = new Menu();
+    Pane root = new Pane();
+    root.setPrefSize(bounds.getWidth(), bounds.getHeight());
+    Image logo = new Image("file:assets/visResources/TempLogo.png");
 
 
-	    login.setOnMouseClicked((event) ->
-	    {
-	      if (!client.isRunning())
-	      {
-	        System.err.println("ERROR: Not connected to server");
-	        return;
-	      }
-	      client.loginToServer(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.USA_CALIFORNIA);
-	    });
-	    
-	    createUser.setOnMouseClicked((event) ->
-	    {
-	      if (!client.isRunning())
-	      {
-	        System.err.println("ERROR: Not connected to server");
-	        return;
-	      }
-	      client.createUser(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.USA_CALIFORNIA);
-	    });
-	    
-	    credits.setOnMouseClicked(event -> {
+    ImageView ivLogo = new ImageView(logo);
+    ivLogo.setFitHeight(bounds.getHeight() / 7);
+    ivLogo.setFitWidth(bounds.getWidth() / 7);
 
-	    });
-	    exit.setOnMouseClicked(event -> {
-	      client.shutdown();
-	    });
-      
-      credits.setOnMouseClicked((event) ->
+    ImageView imgView = new ImageView(background);
+    imgView.setFitWidth(bounds.getWidth());
+    imgView.setFitHeight(bounds.getHeight());
+
+    ivLogo.setTranslateX(bounds.getWidth() / 5 * 3.25);
+    ivLogo.setTranslateY(bounds.getHeight() / 5 * 3);
+    root.getChildren().addAll(imgView,ivLogo);
+    menu = new Menu();
+
+
+    login.setOnMouseClicked((event) ->
+    {
+      if (!client.isRunning())
       {
-              newStage.showAndWait();
-      });
-      
-      tutorial.setOnMouseClicked((event) ->
+        System.err.println("ERROR: Not connected to server");
+        return;
+      }
+      client.loginToServer(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.USA_CALIFORNIA);
+    });
+
+    createUser.setOnMouseClicked((event) ->
+    {
+      if (!client.isRunning())
       {
-        
-        pauseMusic();
-        
-        StartTutorialVideo video = new StartTutorialVideo();  
-        FlowPane pane  = new FlowPane();
-        Scene scene = new Scene(pane, 1300, 2000);
-         
-     
-        //make another stage for scene2
-        Stage newStage = new Stage();
-        newStage.setScene(scene);
-         
-        //tell stage it is meant to pop-up (Modal)
-        newStage.initModality(Modality.APPLICATION_MODAL);
-        newStage.setTitle("Tutorial");
-        //newStage.addEventHandler(eventType, eventHandler);
+        System.err.println("ERROR: Not connected to server");
+        return;
+      }
+      client.createUser(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.USA_CALIFORNIA);
+    });
 
-        try 
-        {
-            video.start(newStage);
-        } catch (Exception e) 
-        {
-          e.printStackTrace();
-        }
-       
-      });
+    credits.setOnMouseClicked(event -> {
+
+    });
+    exit.setOnMouseClicked(event -> {
+      client.shutdown();
+    });
+
+    credits.setOnMouseClicked((event) ->
+    {
+      newStage.showAndWait();
+    });
+
+    tutorial.setOnMouseClicked((event) ->
+    {
+
+      pauseMusic();
+
+      StartTutorialVideo video = new StartTutorialVideo();
+      FlowPane pane  = new FlowPane();
+      Scene scene = new Scene(pane, 1300, 2000);
+
+
+      //make another stage for scene2
+      Stage newStage = new Stage();
+      newStage.setScene(scene);
+
+      //tell stage it is meant to pop-up (Modal)
+      newStage.initModality(Modality.APPLICATION_MODAL);
+      newStage.setTitle("Tutorial");
+      //newStage.addEventHandler(eventType, eventHandler);
+
+      try
+      {
+        video.start(newStage);
+      } catch (Exception e)
+      {
+        e.printStackTrace();
+      }
+
+    });
 
 
 
-	    //client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
-	    //client = new ClientTest(this, "localhost", 5555);
+    //client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
+    //client = new ClientTest(this, "localhost", 5555);
     client = new ClientTest(this, connectURL, connectPort);
-	    this.stage = stage;
-	    stage.setMaximized(true);
-	    stage.setTitle("Login");
-	    stage.setOnCloseRequest((event) -> client.shutdown());
-	    //Sets up the initial stage
-	    gridRoot.setVgap(5);
-	    stage.setScene(new Scene(root, width, height));
-	    stage.setMaximized(true);
-	    
-	    
-	    //The following code is for the credits
-	    
-	    labelForScene2 = new Label(showCreditText());
-	    
-	    pane2  = new FlowPane();
-	    scene2 = new Scene(pane2, 350, 500);
-	     
-	    pane2.getChildren().addAll(labelForScene2);
-	     
-	    //make another stage for scene2
-	    newStage = new Stage();
-	    newStage.setScene(scene2);
-	     
-	    //tell stage it is meant to pop-up (Modal)
-	    newStage.initModality(Modality.APPLICATION_MODAL);
-	    newStage.setTitle("Credits");
-	    
-	    
-	    username.setFocusTraversable(false);
-	    password.setFocusTraversable(false);
-	    gridRoot.add(username, 0, 1);
-	    gridRoot.add(password, 0, 2);
-	    gridRoot.add(login, 0, 3);
-	    gridRoot.add(createUser, 0, 4);
-	    gridRoot.add(tutorial,0,5);
-	    gridRoot.add(credits,0,6);
-	    gridRoot.add(exit,0,7);
-	    root.getChildren().add(gridRoot);
-	    gridRoot.setTranslateY(bounds.getHeight()/5*3);
-	    gridRoot.setTranslateX(50);
-	    
-	    stage.show();
-	    startGameLoop();
-	    
-	    playMusic();
- }
-  
-  
- 
- /**
-  * This string gets passed into one of the button labels
-  * to show the credits.
-  * 
-  * @return A string with all of the team members
-  */
- public String showCreditText(){
-	 
-	 String text = "Music: \"When the Sun Goes Down\"" 
-	 		         + "\n\t produced by DJ MAC n' Cheese"
-			 
-			         +"\n\n Developers:"
-			         +"\n Joel"
-			         +"\n Scott, Christopher, Isaiah, Miri"
-			         +"\n Tommy, Robert, Rob"
-			         +"\n John, Elijah, Jesus"
-			         +"\n Atle, Michael, Stephen"
-			         +"\n Justin, George"
-			         +"\n Ben, Christian, Brian"
-			         +"\n Jeff, Ederin, Antonio, Philip"
-			         +"\n Max Sanchez";
-	 return text;
- }
-  
+    this.stage = stage;
+    stage.setMaximized(true);
+    stage.setTitle("Login");
+    stage.setOnCloseRequest((event) -> client.shutdown());
+    //Sets up the initial stage
+    gridRoot.setVgap(5);
+    stage.setScene(new Scene(root, width, height));
+    stage.setMaximized(true);
+
+
+    //The following code is for the credits
+
+    labelForScene2 = new Label(showCreditText());
+
+    pane2  = new FlowPane();
+    scene2 = new Scene(pane2, 350, 500);
+
+    pane2.getChildren().addAll(labelForScene2);
+
+    //make another stage for scene2
+    newStage = new Stage();
+    newStage.setScene(scene2);
+
+    //tell stage it is meant to pop-up (Modal)
+    newStage.initModality(Modality.APPLICATION_MODAL);
+    newStage.setTitle("Credits");
+
+
+    username.setFocusTraversable(false);
+    password.setFocusTraversable(false);
+    gridRoot.add(username, 0, 1);
+    gridRoot.add(password, 0, 2);
+    gridRoot.add(login, 0, 3);
+    gridRoot.add(createUser, 0, 4);
+    gridRoot.add(tutorial,0,5);
+    gridRoot.add(credits,0,6);
+    gridRoot.add(exit,0,7);
+    root.getChildren().add(gridRoot);
+    gridRoot.setTranslateY(bounds.getHeight()/5*3);
+    gridRoot.setTranslateX(50);
+
+    stage.show();
+    startGameLoop();
+
+    playMusic();
+  }
+
+
+
+  /**
+   * This string gets passed into one of the button labels
+   * to show the credits.
+   *
+   * @return A string with all of the team members
+   */
+  public String showCreditText(){
+
+    String text = "Music: \"When the Sun Goes Down\""
+            + "\n\t produced by DJ MAC n' Cheese"
+
+            +"\n\n Developers:"
+            +"\n Joel"
+            +"\n Scott, Christopher, Isaiah, Miri"
+            +"\n Tommy, Robert, Rob"
+            +"\n John, Elijah, Jesus"
+            +"\n Atle, Michael, Stephen"
+            +"\n Justin, George"
+            +"\n Ben, Christian, Brian"
+            +"\n Jeff, Ederin, Antonio, Philip"
+            +"\n Max Sanchez";
+    return text;
+  }
+
   /***************************************************************************************/
-  
+
   private void startGameLoop()
   {
     new AnimationTimer()

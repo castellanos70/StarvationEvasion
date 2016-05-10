@@ -284,11 +284,13 @@ public class ConcurrentCommModule implements Communication
         } else if (localServer != null && !localServer.isAlive())
         {
           commError("Failed to start the local server");
-          System.exit(-1);
+          dispose();
+          break;
         } else if (HOST.toLowerCase().startsWith("local") && secureProcessPort() != null)
         {
           commError("Another client tried and failed to start a local server");
-          System.exit(-1);
+          dispose();
+          break;
         }
         deltaSeconds = (System.currentTimeMillis() - millisecondTimeStamp) / 1000.0;
       }
@@ -298,8 +300,7 @@ public class ConcurrentCommModule implements Communication
       // See if the connect attempt went badly
       if (!IS_CONNECTED.get())
       {
-        commError("Failed to establish connection at host " + HOST + ", port " + PORT + " within " + MAX_SECONDS + " " +
-                  "seconds.");
+        commError("Failed to establish connection at host " + HOST + ", port " + PORT + " (connection timed out)");
         return;
       }
 
@@ -336,7 +337,7 @@ public class ConcurrentCommModule implements Communication
     try
     {
       LOCK.lock();
-      if (!isConnected()) return; // Already disposed/the connection never succeeded
+      //if (!isConnected()) return; // Already disposed/the connection never succeeded
       IS_CONNECTED.set(false);
       commError("Shutting down communication module");
       clearResponses();
@@ -345,9 +346,12 @@ public class ConcurrentCommModule implements Communication
       localServer = null;
       for (StreamRedirect redirect : STREAM_REDIRECT_THREADS) redirect.close();
 
-      writer.close();
-      reader.close();
-      clientSocket.close();
+      if (writer != null) writer.close();
+      if (reader != null) reader.close();
+      if (clientSocket != null) clientSocket.close();
+      writer = null;
+      reader = null;
+      clientSocket = null;
     }
     catch (IOException e)
     {
@@ -513,7 +517,7 @@ public class ConcurrentCommModule implements Communication
                       "-jar",
                       "Server.jar",
                       Integer.toString(port));//,
-                      //"true");
+                      //"true"); // start up ai automatically.
       process = builder.start();
       STREAM_REDIRECT_THREADS.clear();
       STREAM_REDIRECT_THREADS.add(new StreamRedirect(StreamType.STDOUT, process.getInputStream()));

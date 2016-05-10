@@ -1103,9 +1103,8 @@ public class Draft extends AbstractCommand
         //Check if the amount of food being produced in AI's region is decreasing.
         if(h == getClient().worldDataSize - 1)
         {
-          if(percentChangeLong(firstYearProduced,secondYearProduced)<-20)
+          if(percentChangeLong(firstYearProduced,secondYearProduced)>20)
           {
-            //System.out.println("I'm more likely to pick my region this time since food production is down.");
             pickThisRegion=true;
           }
         }

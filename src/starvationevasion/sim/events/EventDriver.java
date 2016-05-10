@@ -11,6 +11,8 @@ import starvationevasion.sim.Model;
 import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
 
+   // EventDriver class stores a list of events that are currently in effect around the world
+   // this class will be the primary driver of the events taking place in the world
    
 
 public class EventDriver 
@@ -30,7 +32,7 @@ public class EventDriver
 	 addRandomEvents(numEvents);
  }
  
- 
+ // this method will add a specified number of random events to the event list
  
  private void addRandomEvents(int numberOfRandomEvents)
  { 
@@ -109,7 +111,7 @@ public class EventDriver
  {
 	 eventList.add(event);
  }
-  
+  //this method will iterate through the list of events and apply there effects
  public void applyEvents()
  {
 	 for (AbstractEvent event : eventList)

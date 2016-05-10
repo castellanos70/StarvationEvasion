@@ -1,16 +1,23 @@
 package starvationevasion.sim.io;
 
-import org.xml.sax.*;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import starvationevasion.common.GeographicArea;
 import starvationevasion.common.MapPoint;
+import starvationevasion.sim.GeographicArea;
 import starvationevasion.sim.Model;
 import starvationevasion.sim.Territory;
-import starvationevasion.util.Picture;
 
 import javax.xml.parsers.SAXParserFactory;
-import java.awt.*;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,11 +40,6 @@ public class GeographyXMLparser extends DefaultHandler
   private Territory territory;
   private ArrayList<MapPoint> tmpPerimeterSet;
   private boolean name;
-  private int islandCount;
-
-  //private Picture pic;  //for debugging only
-  //private Color[] colorList = {Color.RED, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.CYAN,
-  //  Color.BLUE, Color.MAGENTA}; //for debugging only
 
   public GeographyXMLparser(Model model)
   {
@@ -79,7 +81,6 @@ public class GeographyXMLparser extends DefaultHandler
   {
     tmpPerimeterSet = new ArrayList<>();
     territoryName = null;
-    islandCount = 0;
   }
 
   @Override
@@ -154,25 +155,6 @@ public class GeographyXMLparser extends DefaultHandler
   {
     try
     {
-      //For Debugging only
-      /*
-      if (qName.equals("area") || qName.equals("hole"))
-      {
-        islandCount++;
-        if (territory.getName().equals("Canada") || territory.getName().equals("US-Alaska"))
-        {
-          int colorIdx = Math.min(islandCount - 1, colorList.length - 1);
-          Color edgeColor = colorList[colorIdx];
-
-          if (territory.getName().equals("Canada")) edgeColor = Color.WHITE;
-          else if (territory.getName().equals("US-Alaska")) edgeColor = Color.RED;
-
-          drawBoundaryUsingMapPoints(pic, tmpPerimeterSet, edgeColor, -142, -128, 51,70);
-        }
-      }
-      */
-
-
       if (qName.equals("area"))
       {
         territory.getGeographicArea().addToPerimeter(new ArrayList<>(tmpPerimeterSet), GeographicArea.BoundaryType
@@ -224,42 +206,6 @@ public class GeographyXMLparser extends DefaultHandler
     }
 
     return files;
-  }
-
-
-  /**
-   * This method is used only for testing the geographic boundaries.<br>
-   * Given a Picture frame containing a Mollweide would map projection and a territory,
-   * it draws the boundary of that territory on the map using different colors for
-   * disconnected segments (islands) of the territory.
-   */
-  private static void drawBoundaryUsingMapPoints(Picture pic, ArrayList<MapPoint> island, Color color,
-                                                 float minLon, float maxLon, float minLat, float maxLat)
-  {
-
-    float scaleX = pic.getImageWidth() / (maxLon - minLon);
-    float scaleY = pic.getImageHeight() / (maxLat - minLat);
-    float scale = Math.min(scaleX, scaleY);
-
-    Graphics2D gfx = pic.getOffScreenGraphics();
-    gfx.setColor(color);
-
-    int lastX = Integer.MAX_VALUE;
-    int lastY = Integer.MAX_VALUE;
-
-    for (MapPoint mapPoint : island)
-    {
-      int x = (int) ((mapPoint.longitude - minLon) * scale);
-      int y = pic.getImageHeight() - (int) ((mapPoint.latitude - minLat) * scale);
-
-      if (lastX != Integer.MAX_VALUE)
-      {
-        gfx.drawLine(lastX, lastY, x, y);
-      }
-      lastX = x;
-      lastY = y;
-    }
-    pic.repaint();
   }
 }
 

@@ -170,6 +170,7 @@ public class GraphManager
    */
   public void updateRegionalCropComparison()
   {
+	  
       for(long[] regionCropDist: annualRegionsCropDistributionStatistics)
       {
       annualCitrusRegionalProductionComparison.add(regionCropDist[0]);
@@ -331,11 +332,14 @@ public class GraphManager
    * @param number
    *          number of the graph you want to get
    * @return
+  
    */
+
+  
   public Graph getGraphNodeGraph(EnumRegion region, int number)
   {
     Graph g;
-    Graph[] regionGraphs = graphMap.get(region);
+    Graph[] regionGraphs = graphMap.get(region);   
     return regionGraphs[number];
     // switch (region)
     // {
@@ -374,6 +378,8 @@ public class GraphManager
    */
   public PieChart setCropProductionPieChart(int crop)
   {
+	if(listOfRegionalCropComparisonLists.size()>0)
+	{
     masterPieChart.setVisible(true);
     barChart.setVisible(false);
     currentYear.setVisible(false);
@@ -401,7 +407,7 @@ public class GraphManager
         new PieChart.Data("Oceania", listOfRegionalCropComparisonLists.get(crop).get(16)));
 
     masterPieChart.setData(list);
-    
+	}
     return masterPieChart;
   }
   
@@ -413,6 +419,8 @@ public class GraphManager
    */
   public void updateRegionalCropDistributionDisplay()
   {
+	if(annualRegionsCropDistributionStatistics.size()!=0)
+	{
     long[] regionsCropDistribution = annualRegionsCropDistributionStatistics.get(REGION_NUM);
     masterPieChart.setVisible(true);
     barChart.setVisible(false);
@@ -434,12 +442,15 @@ public class GraphManager
         new PieChart.Data("Dairy Products", regionsCropDistribution[11]));
 
     masterPieChart.setData(list);
+	}
   }
   /**
    * Set up the pie chart to display crop exports for a region.
    */
   public void updateRegionalCropExportsDisplay()
   {
+	if(annualRegionsCropExportStatistics.size()!=0)
+	{
     long[] regionsCropExports = annualRegionsCropExportStatistics.get(REGION_NUM);
     masterPieChart.setVisible(true);
     barChart.setVisible(false);
@@ -459,13 +470,15 @@ public class GraphManager
         new PieChart.Data("Dairy Products", regionsCropExports[11]));
 
     masterPieChart.setData(list);
+	}
   }
   /**
    * Set up the pie chart to display crop imports for a region.
    */
   public void updateRegionalCropImportsDisplay()
   {
-	
+	if(annualRegionsCropImportStatistics.size()!=0)
+	{
     long[] regionsCropImports = annualRegionsCropImportStatistics.get(REGION_NUM);
     masterPieChart.setVisible(true);
     barChart.setVisible(false);
@@ -485,6 +498,7 @@ public class GraphManager
         new PieChart.Data("Dairy Products", regionsCropImports[11]));
 
     masterPieChart.setData(list);
+	}
   }
  
 
@@ -530,6 +544,12 @@ public class GraphManager
 //    initNCGraph();
   }
 
+  public BorderPane getGraph(int graphNum)
+  {
+    return gui.getPopupManager().getPBDataDisplay().getProductData().get(graphNum-1).getGraph();
+  }
+  
+  
   private void initCaliGraph()
   {
     californiaGraphs = new Graph[3];
@@ -583,10 +603,7 @@ public class GraphManager
     northernCresentGraphs[2] = new GraphFarmingBalance(EnumRegion.USA_NORTHERN_CRESCENT);
     //northernCresentGraphs[3] = new GraphProductsDollars(EnumRegion.USA_NORTHERN_CRESCENT);
   }
-  public BorderPane getGraph(int graphNum)
-  {
-    return gui.getPopupManager().getPBDataDisplay().getProductData().get(graphNum-1).getGraph();
-  }
+
   private void initNPGraph()
   {
     northernPlainsGraphs = new Graph[3];

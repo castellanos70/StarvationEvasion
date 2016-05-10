@@ -60,16 +60,16 @@ public class AI
    */
   public enum WorldFactors
   {
-    SEALEVEL,
-    REVENUEBALANCE,
-    POPULATION,
-    UNDERNOURISHED,
-    HDI,
-    FOODPRODUCED,
-    FOODINCOME,
-    FOODIMPORTED,
-    FOODEXPORTED,
-    ETHANOLTAXCREDIT,
+    SEALEVEL, 
+    REVENUEBALANCE, 
+    POPULATION, 
+    UNDERNOURISHED, 
+    HDI, 
+    FOODPRODUCED, 
+    FOODINCOME, 
+    FOODIMPORTED, 
+    FOODEXPORTED, 
+    ETHANOLTAXCREDIT, 
     FOODPRICE
 
   }
@@ -85,7 +85,8 @@ public class AI
 
   // This map is used to store information about the world and region that will
   // be used in selecting cards to play on each turn.
-  public Map<WorldFactors, ArrayList<Object[]>> factorMap = new EnumMap<WorldFactors, ArrayList<Object[]>>(WorldFactors.class);
+  public Map<WorldFactors, ArrayList<Object[]>> factorMap = new EnumMap<WorldFactors, ArrayList<Object[]>>(
+      WorldFactors.class);
   
   //This map is used to store the various game card policies and their associated region, if they only affect one
   //region.
@@ -97,7 +98,6 @@ public class AI
   public ArrayList<EnumPolicy> cardsOfGeneralBenefit=new ArrayList<>();
   //Cards that benefit the AI's region monetarily.
   public ArrayList<EnumPolicy> moneyCards=new ArrayList<>();
-
   // The AI has a copy of the list of special events, if any occurred during the
   // last turn.
   public ArrayList<SpecialEventData> eventList = new ArrayList<>();
@@ -197,7 +197,7 @@ public class AI
     for (int i = worldData.size() - 2; i < worldData.size(); i++)
     {
       Double[] seaLevel =
-              { worldData.get(i).seaLevel };
+      { worldData.get(i).seaLevel };
       factorMap.get(WorldFactors.SEALEVEL).add(seaLevel);
       eventList.clear();
       if (worldData.get(i).eventList.size() > 0)
@@ -216,16 +216,16 @@ public class AI
         }
       }
       Integer[] revenueBalance =
-              { thisRegion.revenueBalance };
+      { thisRegion.revenueBalance };
       factorMap.get(WorldFactors.REVENUEBALANCE).add(revenueBalance);
       Integer[] population =
-              { thisRegion.population };
+      { thisRegion.population };
       factorMap.get(WorldFactors.POPULATION).add(population);
       Double[] undernourished =
-              { thisRegion.undernourished };
+      { thisRegion.undernourished };
       factorMap.get(WorldFactors.UNDERNOURISHED).add(undernourished);
       Double[] hdi =
-              { thisRegion.humanDevelopmentIndex };
+      { thisRegion.humanDevelopmentIndex };
       factorMap.get(WorldFactors.HDI).add(hdi);
       Long[] foodProduced = new Long[EnumFood.SIZE];
       for (int h = 0; h < EnumFood.SIZE; h++)
@@ -253,7 +253,7 @@ public class AI
       }
       factorMap.get(WorldFactors.FOODEXPORTED).add(foodExported);
       Integer[] ethanolCredit =
-              { thisRegion.ethanolProducerTaxCredit };
+      { thisRegion.ethanolProducerTaxCredit };
       factorMap.get(WorldFactors.ETHANOLTAXCREDIT).add(ethanolCredit);
       Integer[] foodPrice = new Integer[EnumFood.SIZE];
       for (int h = 0; h < EnumFood.SIZE; h++)

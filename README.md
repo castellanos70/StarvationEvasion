@@ -1,4 +1,4 @@
-# Starvation Evasion Simulator, Sever and Visualizer
+# Starvation Evasion Simulator, Server and Visualizer
 
 [JavaDoc](http://castellanos70.github.io/StarvationEvasion/)
 

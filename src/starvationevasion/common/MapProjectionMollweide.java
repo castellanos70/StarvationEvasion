@@ -1,10 +1,13 @@
 package starvationevasion.common;
 
 
-import javafx.scene.shape.Shape;
+import javafx.scene.shape.Polygon;
 
 import java.awt.*;
 import java.awt.geom.Area;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 
 public class MapProjectionMollweide
 {
@@ -13,10 +16,11 @@ public class MapProjectionMollweide
   private static final double CX = 2.0*ROOT2/Math.PI;
   private static final double TOLERANCE = 0.0001;
 
+  private Area[] regionPerimetersSpherical;
 
   private int pixelWidth;
   private int pixelHeight;
-  private double centralMeridian = 0;
+  private double centralMeridian = 0; //degrees
 
   private double scaleX;
   private double scaleY;
@@ -40,11 +44,13 @@ public class MapProjectionMollweide
         "MapProjectionMollweide.setCentralMeridian("+degrees +
         "): Argument out of bounds error.");
     }
-    centralMeridian = degrees*DEG_TO_RAD;
+   // centralMeridian = degrees*DEG_TO_RAD;
+    centralMeridian = degrees;
   }
 
   public void setRegionPerimetersSpherical(Area[] regionPerimeters)
   {
+    regionPerimetersSpherical = regionPerimeters;
   }
 
 
@@ -52,9 +58,126 @@ public class MapProjectionMollweide
    * @param regionID
    * @return
    */
-  public Shape getPerimeterDrawable(EnumRegion regionID)
+  public Polygon getPerimeterDrawable(EnumRegion regionID)
   {
-return null;
+    //default region (when regionID == null) is Antarctica's ice shelf
+    //   stored at the end of the regionPerimetersSpherical[] array.
+    Area perimeter = regionPerimetersSpherical[regionPerimetersSpherical.length -1];
+    if (regionID != null)
+    {
+      perimeter = regionPerimetersSpherical[regionID.ordinal()];
+    }
+
+    double edgeLongitude = centralMeridian + 180;
+    if(edgeLongitude  >  180) edgeLongitude = edgeLongitude - 360;
+
+    ArrayList<Area> perimeterList = new ArrayList<>();
+
+    //System.out.printf("edge=%.1f  %s%n",edgeLongitude, regionID);
+
+    if (perimeter.intersects(edgeLongitude - 0.05,-90, 0.1,180))
+    {
+      //System.out.println(regionID + "     crosses edge");
+
+      Shape shapeEast = new Rectangle2D.Double(centralMeridian, -90, 179.9, 180);
+      Area areaEast = new Area(shapeEast);
+      areaEast.intersect(perimeter);
+      perimeterList.add(areaEast);
+
+      if (centralMeridian > 0)
+      {
+        shapeEast = new Rectangle2D.Double(-180, -90, centralMeridian-0.1, 180);
+        areaEast = new Area(shapeEast);
+        areaEast.intersect(perimeter);
+        perimeterList.add(areaEast);
+      }
+
+
+      Shape shapeWest = new Rectangle2D.Double(edgeLongitude+0.1, -90, 179.9, 180);
+      Area areaWest = new Area(shapeWest);
+      areaWest.intersect(perimeter);
+      perimeterList.add(areaWest);
+    }
+    else
+    {
+      perimeterList.add(perimeter);
+    }
+
+
+    Polygon drawBoundary = new Polygon();
+
+    Point pixel = new Point();
+    double[] coords = new double[6];
+    ArrayList<Double> vertexList = new ArrayList<>();
+
+    double lastLatitude = 0;
+    double lastLongitude = 0;
+    for (Area segment : perimeterList)
+    {
+      PathIterator path = segment.getPathIterator(null);
+
+      while(!path.isDone())
+      {
+        int type = path.currentSegment(coords);
+        path.next();
+
+        if (type == PathIterator.SEG_LINETO)
+        {
+          curveTo(vertexList, pixel, lastLatitude, lastLongitude, coords[1], coords[0]);
+        }
+        else if(type == PathIterator.SEG_MOVETO)
+        {
+          setPoint(pixel, coords[1], coords[0]);
+          vertexList.clear();
+          vertexList.add(new Double(pixel.x));
+          vertexList.add(new Double(pixel.y));
+        }
+        else if(type == PathIterator.SEG_CLOSE)
+        {
+          curveTo(vertexList, pixel, lastLatitude, lastLongitude, coords[1], coords[0]);
+          double[] vertexArray = new double[vertexList.size()];
+          for (int i=0; i<vertexArray.length; i++)
+          {
+            vertexArray[i] = vertexList.get(i).doubleValue();
+          }
+          Polygon shape = new Polygon(vertexArray);
+          drawBoundary.union(drawBoundary, shape);
+        }
+        else
+        {
+          System.out.println("************ ERROR ***********");
+        }
+        lastLatitude = coords[1];
+        lastLongitude = coords[0];
+      }
+    }
+
+    return drawBoundary;
+  }
+
+
+  private void curveTo(ArrayList<Double> vertexList, Point pixel,
+                       double startLatitude, double startLongitude,
+                       double endLatitude, double endLongitude)
+  {
+    if (Math.abs(endLatitude - startLatitude) > 1.5) //degrees
+    {
+      int numSteps = (int) Math.abs(endLatitude - startLatitude);
+      double deltaLatitude  = (endLatitude  - startLatitude)/numSteps;
+      double deltaLongitude = (endLongitude - startLongitude)/numSteps;
+
+      for (int i=0; i<numSteps; i++)
+      {
+        startLatitude  = startLatitude + deltaLatitude;
+        startLongitude = startLongitude + deltaLongitude;
+        setPoint(pixel, startLatitude, startLongitude);
+        vertexList.add(new Double(pixel.x));
+        vertexList.add(new Double(pixel.y));
+      }
+    }
+    setPoint(pixel, endLatitude, endLongitude);
+    vertexList.add(new Double(pixel.x));
+    vertexList.add(new Double(pixel.y));
   }
 
   /**
@@ -89,7 +212,7 @@ return null;
     }
     //System.out.println("count="+count);
 
-    double lon2 = lon - centralMeridian;
+    double lon2 = lon - centralMeridian * DEG_TO_RAD;
     if (lon2 > Math.PI) lon2 = -Math.PI + (lon2 - Math.PI);
     else if (lon2 < -Math.PI) lon2 = Math.PI + (lon2 + Math.PI);
 

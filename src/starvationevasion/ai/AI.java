@@ -466,7 +466,10 @@ public class AI
   {
     return COMM;
   }
-
+  public List<GameCard> getSupportCards()
+  {
+    return supportCards;
+  }
 
   public ArrayList<WorldData> getWorldData()
   {

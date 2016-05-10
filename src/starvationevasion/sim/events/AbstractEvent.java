@@ -80,15 +80,11 @@ public abstract class AbstractEvent
     return landArea;
   }
 
-  public ArrayList<LandTile> getAffectedTiles()
+  public ArrayList<LandTile> getEffectedTiles()
   {
 	  return affectedTiles;
   }
   
-  /**
-   * A possible effect for a special event that destroys farm equipment, 
-   * reducing an area's production.
-   */
   public void destroyFarmEquipment()
   {
     for(LandTile tile : affectedTiles)
@@ -101,13 +97,9 @@ public abstract class AbstractEvent
     }
   }
   
-  /**
-   * A possible effect for a special event that destroys infrastructure, 
-   * reducing an area's production.
-   */
   public void destroyInfrastructure()
   {
-    for(LandTile tile : affectedTiles)
+    for(LandTile tile : landArea.getLandTiles())
     {
       if(tile.getProductionMultiplier() >= 0.3)
       {
@@ -127,19 +119,12 @@ public abstract class AbstractEvent
 	  
   }
   
-  /**
-   * A possible effect for a special event that creates a new flood event.
-   */
   public void causeFlood()
   {
-    Flood flood = new Flood( landArea, null, null, 1);
-    EventDriver.eventList.add(flood);
+   // Flood flood = new Flood( landArea, duration);
+    //TODO: add to events list.
   }
   
-  /**
-   * A possible effect for a special event that sets production of
-   * affected land tiles to 0.
-   */
   public void wipeOutLandTiles()
   {
     for(LandTile tile : affectedTiles)
@@ -149,12 +134,6 @@ public abstract class AbstractEvent
     
   }
   
-  /**
-   * 
-   * @param crop the crop to be wiped out
-   * 
-   * A possible effect for a special event that wipes out all of a certain crop in a territory.
-   */
   public void wipeOutCrop(EnumFood crop)
   {
     for(LandTile tile : landArea.getLandTiles())
@@ -166,14 +145,7 @@ public abstract class AbstractEvent
     }
     
   }
-  /**
-   * 
-   * @param severity the amount by which to decrease rainfall
-   * 
-   * A possible effect for a special event that reduces the amount of rainfall
-   * on the given territory.
-   * 
-   */
+  
   public void reduceRainFall(double severity)
   {
     double productionMultiplier;
@@ -181,7 +153,6 @@ public abstract class AbstractEvent
     {
       EnumFood food = tile.getCrop();
       int foodOrdinal = food.ordinal();
-      //reduce the production multiplier by the difference between the normal productionRate and the affected productionRate
       productionMultiplier = tile.getProductionMultiplier() - 
           (tile.getCropRatings()[foodOrdinal].productionRate() - tile.rateTileForCrop(food, region, 2009, cropData, severity).productionRate());
       tile.setProductionMultiplier(productionMultiplier);
@@ -234,6 +205,7 @@ public abstract class AbstractEvent
 		 assignNeighbors();
 	  }
 	  //this populates the neighbors for each node of the graph.
+	  // this method should be redone with out calculating the distance
 	  private void assignNeighbors()
 	  {
 		  ArrayList<EventNode> tmpNeighbors = new ArrayList<EventNode>();
@@ -253,6 +225,9 @@ public abstract class AbstractEvent
 					  float tileLong = node.landTile.getLongitude();
 					 
 					  // need to change 100 to actual size of landtile
+					  // change from distance to latitude longitude checking
+					  //if(Math.abs(tmpLat-tileLat) < .26 || Math.abs(tmpLong-tileLong) < .26)
+					  // {landTile.neighbors.add(tmp);}
 					  if(distanceBetweenLandTiles(tileLat, tileLong, tmpLat,tmpLong) <= 100 )
 					  {
 						 
@@ -339,8 +314,8 @@ public abstract class AbstractEvent
 	   * 
 	   *  also stores the nodes it transfered the event too (memory ineffeicent should be changed)
 	   * 
-	   *  
-	   * 
+	   *  this should be implement in the Terriorty class. this could be done by adding pointers for the up,down,left, right neihbor  
+	   *   and also adding a boolean flag that keeps track of whether the neighbors have been calculating.
 	   * */
 	  
 	  class EventNode

@@ -64,6 +64,7 @@ public class Draft extends AbstractCommand
   boolean foodsForThisRegion=false;
   EnumFood foodNeedingAttention=null;
   int count=0;
+  boolean duplicateCards=false;
   
   //If set to false, then that combination of policy, region and food should not be picked this turn.
   boolean[][][] policyCardInfo=new boolean[EnumPolicy.values().length][EnumRegion.values().length][EnumFood.values().length];
@@ -223,48 +224,30 @@ public class Draft extends AbstractCommand
    */
   private void createProbabilityDistribution()
   {
-    probabilityMap.forEach((string,integer)->
+    for(int i=0;i<policiesInHand.size();i++)
     {
-      EnumPolicy currPolicy=null;
-      EnumRegion currRegion=null;
-      EnumFood currFood=null;
-      try
-      {
-        currPolicy=EnumPolicy.valueOf(string);
-      }catch(IllegalArgumentException e){};
-      if(currPolicy==null)
-      {
-        try
-        {
-          currRegion=EnumRegion.valueOf(string);
-        }catch(IllegalArgumentException e){};
-      }
-      if(currRegion==null)
-      {
-        try
-        {
-          currFood=EnumFood.valueOf(string);
-        }catch(IllegalArgumentException e){};
-      }
-      if(currPolicy!=null)
-      {
-        totalPolicyVal+=integer;
-        policyBounds[getClient().getUser().getHand().indexOf(currPolicy)][0]=totalPolicyVal-integer;
-        policyBounds[getClient().getUser().getHand().indexOf(currPolicy)][1]=totalPolicyVal;
-      }
-      else if(currRegion!=null)
-      {
-        totalRegionVal+=integer;
-        regionBounds[regionList.indexOf(currRegion)][0]=totalRegionVal-integer;
-        regionBounds[regionList.indexOf(currRegion)][1]=totalRegionVal;
-      }
-      else if(currFood!=null)
-      {
-        totalFoodVal+=integer;
-        foodBounds[foodList.indexOf(currFood)][0]=totalFoodVal-integer;
-        foodBounds[foodList.indexOf(currFood)][1]=totalFoodVal;
-      }
-    });
+      EnumPolicy currPolicy=policiesInHand.get(i);
+      int probLevel=probabilityMap.get(currPolicy.name());
+      totalPolicyVal+=probLevel;
+      policyBounds[i][0]=totalPolicyVal-probLevel;
+      policyBounds[i][1]=totalPolicyVal;
+    }
+    for(int i=0;i<regionList.size();i++)
+    {
+      EnumRegion currRegion=regionList.get(i);
+      int probLevel=probabilityMap.get(currRegion.name());
+      totalRegionVal+=probLevel;
+      regionBounds[i][0]=totalRegionVal-probLevel;
+      regionBounds[i][1]=totalRegionVal;
+    }
+    for(int i=0;i<foodList.size();i++)
+    {
+      EnumFood currFood=foodList.get(i);
+      int probLevel=probabilityMap.get(currFood.name());
+      totalFoodVal+=probLevel;
+      foodBounds[i][0]=totalFoodVal-probLevel;
+      foodBounds[i][1]=totalFoodVal;
+    }
   }
   /**
    * Jeffrey McCall 
@@ -634,8 +617,8 @@ public class Draft extends AbstractCommand
         {
           foodNeedingAttention=EnumFood.values()[p];
           //System.out.println(foodNeedingAttention.name()+" is doing poorly in "+data.region.name()+ "\nI'm more likely to pick it.");
-          adjustProbability((int) (probabilityMap.get(foodNeedingAttention.name())*(difference/10)),foodNeedingAttention.name());
-          adjustProbability((int) (probabilityMap.get(data.region.name())*(difference/10)),data.region.name());
+          adjustProbability((int) (probabilityMap.get(foodNeedingAttention.name())*(difference/10)*-1),foodNeedingAttention.name());
+          adjustProbability((int) (probabilityMap.get(data.region.name())*(difference/10)*-1),data.region.name());
         }
         //This food is doing fine, it doesn't need any attention this turn.
         else if(difference>0)
@@ -704,7 +687,7 @@ public class Draft extends AbstractCommand
         {
           if(EnumRegion.valueOf(key)!=null)
           {
-            amtToAdjust+=probabilityMap.get(key);
+            amtToAdjust+=val;
           }
         }
         catch(IllegalArgumentException e){}
@@ -1251,7 +1234,8 @@ public class Draft extends AbstractCommand
     if (originalVal != 0)
     {
       return ((originalVal - newVal) / originalVal) * 100;
-    } else
+    } 
+    else
     {
       return 0;
     }
@@ -1266,7 +1250,8 @@ public class Draft extends AbstractCommand
     if (originalVal != 0)
     {
       return ((originalVal - newVal) / originalVal) * 100;
-    } else
+    } 
+    else
     {
       return 0;
     }

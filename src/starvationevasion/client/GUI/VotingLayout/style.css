@@ -1,5 +1,7 @@
 .cardspace {
-    -fx-background-color: #caeabf;
+  	
+	-fx-background-color: rgb(0, 0, 0, 0.50);
+	-fx-border-color:  rgb(0, 102, 102, 0.75);
     -fx-background-radius: 22;
 }
 
@@ -15,7 +17,7 @@
 
 .votingnode
 {
-    -fx-background-color: #974069;
+    -fx-background-color: rgb(255, 255, 255, 0.50);
 }
 
 .regionmap

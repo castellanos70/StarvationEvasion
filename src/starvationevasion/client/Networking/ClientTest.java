@@ -338,7 +338,7 @@ public class ClientTest implements Client
       {
         System.out.println("Received voting cards");
         votingCards = (ArrayList<GameCard>)data;
-        gui.getVotingLayout().updateCardSpaces(votingCards);
+        gui.getVotingLayout().getVotingHand().setVotingCards(votingCards);
       }
       else if (type == Type.GAME_STATE)
       {

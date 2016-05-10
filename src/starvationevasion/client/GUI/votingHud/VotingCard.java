@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import starvationevasion.client.GUI.DraftLayout.CardNode;
 
 public class VotingCard extends NodeTemplate
 {
@@ -34,7 +35,6 @@ public class VotingCard extends NodeTemplate
 
   public VotingCard(int i)
   {
-
     super();
 
     votes = 0;

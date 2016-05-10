@@ -9,6 +9,7 @@ import javafx.scene.control.ContentDisplay;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
+import starvationevasion.client.GUI.DraftLayout.CardNode;
 
 public class VotnigButtonNode extends NodeTemplate
 {
@@ -21,26 +22,19 @@ public class VotnigButtonNode extends NodeTemplate
   private File d = new File("src/starvationevasion/client/GUI/votingHud/testImages/down.png");
   private ImageView div = new ImageView(new Image(d.toURI().toString()));
   private Button down = new Button("", div);
-  private File v = new File("src/starvationevasion/client/GUI/votingHud/testImages/votes.png");
-  private ImageView viv = new ImageView(new Image(v.toURI().toString()));
   private File s = new File("src/starvationevasion/client/GUI/votingHud/testImages/selection.png");
   private ImageView siv = new ImageView(new Image(s.toURI().toString()));
   private Button selection = new Button("", siv);
-  private Button votes = new Button("", viv);
-  private Button[] buttons = new Button[4];
+  private Button[] buttons = new Button[3];
   private ImageView[] images = new ImageView[4];
-  private VotingCard card;
+  private CardNode card;
   private int buttonID;
 
   public VotnigButtonNode()
   {
-    votes.setTextFill(Color.BLACK);
-    votes.setContentDisplay(ContentDisplay.CENTER);
-
     images[0] = uiv;
     images[1] = aiv;
     images[2] = div;
-    images[3] = viv;
 
     up.setOnAction(new EventHandler<ActionEvent>()
     {
@@ -49,6 +43,8 @@ public class VotnigButtonNode extends NodeTemplate
       public void handle(ActionEvent event)
       {
         System.out.println("Card gets +1 vote");
+        card.setDrafted(true);
+        card.onResize();
         setVotes(1);
         buttonID = card.getStatus();
         onResize();
@@ -63,9 +59,9 @@ public class VotnigButtonNode extends NodeTemplate
       public void handle(ActionEvent event)
       {
         System.out.println("Player abstains");
+        setVotes(10);
         buttonID = 1;
         onResize();
-        setVotes(10);
         selection.setVisible(true);
 
       }
@@ -77,6 +73,8 @@ public class VotnigButtonNode extends NodeTemplate
       public void handle(ActionEvent event)
       {
         System.out.println("Card gets -1 vote");
+        card.setDiscarded(true);
+        card.onResize();
         setVotes(-1);
         buttonID = 2;
         onResize();
@@ -88,7 +86,6 @@ public class VotnigButtonNode extends NodeTemplate
     buttons[0] = up;
     buttons[1] = abs;
     buttons[2] = down;
-    buttons[3] = votes;
 
     double height = 10;
 
@@ -130,7 +127,6 @@ public class VotnigButtonNode extends NodeTemplate
     selection.setLayoutX(-this.getWidth());
     selection.setTranslateY(10);
     selection.setLayoutY(spacing * buttonID);
-    votes.setStyle("-fx-font: " + this.getWidth() / 2.5 + " arial; -fx-background-color: transparent;");
   }
 
   public void setSize(double width, double height)
@@ -139,7 +135,7 @@ public class VotnigButtonNode extends NodeTemplate
     this.setHeight(height);
   }
 
-  public void setCard(VotingCard card)
+  public void setCard(CardNode card)
   {
     this.card = card;
     buttonID = card.getStatus();
@@ -158,9 +154,8 @@ public class VotnigButtonNode extends NodeTemplate
       card.setHasBeenVoted(true);
     }
     card.setVotes(i);
-    votes.setText(Integer.toString(card.getVotes()) + "/" + Integer.toString(card.getVotesNeeded()));
-    
-    card.setBorders(true);
+
   }
+  
 
 }

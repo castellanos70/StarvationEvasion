@@ -1,15 +1,30 @@
 package starvationevasion.sim.events;
 
+import java.util.ArrayList;
+
 import starvationevasion.common.EnumSpecialEvent;
 import starvationevasion.common.MapPoint;
+import starvationevasion.common.Util;
+import starvationevasion.sim.CropData;
+import starvationevasion.sim.LandTile;
+import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
 
+
+// the Fire event destorys land tiles and also farm equitment 
 public class Fire extends AbstractEvent
 {
-
-  public Fire(EnumSpecialEvent eventType, Territory landArea, int duration)
+  Territory landArea;
+  LandTile startTile;
+  ArrayList <LandTile> tiles;
+  public Fire(Territory landArea, Region region, CropData cropData, int duration)
   {
-    super(eventType, landArea, duration);
+	 
+    super(landArea, region, cropData, duration);
+    this.landArea = landArea;
+    //create event graph and populate the affected tiles
+    this.getEventSpread(0.5f, Util.rand.nextInt(10) + 1);
+    
   }
 
   @Override
@@ -17,5 +32,14 @@ public class Fire extends AbstractEvent
   {
     return null;
   }
-
+  
+  public void applyEffects()
+  {
+	  destroyFarmEquipment();
+	  wipeOutLandTiles();
+	  super.applyEffects();
+	  
+	 
+	  
+  }
 }

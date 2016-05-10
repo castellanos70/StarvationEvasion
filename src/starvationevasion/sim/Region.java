@@ -20,13 +20,14 @@ public class Region extends Territory
 
   private int totalProduction = 0;
   private int totalTax = 0;
+  private int netIncome = 0;
   private int revenue;
 
   private int ethanolProducerTaxCredit = 0;
   private int fertilizerAid = 0;
-  
   private int[] cropTaxes = new int[EnumFood.SIZE];
   private int[] cropRevenues = new int[EnumFood.SIZE];
+  private int[] cropCosts = new int[EnumFood.SIZE];
   private long[][] cropImport = new long[Model.YEARS_OF_DATA][EnumFood.SIZE];  //in metric tons.
   private long[][] cropExport = new long[Model.YEARS_OF_DATA][EnumFood.SIZE];  //in metric tons.
   private long[][] cropConsumption = new long[Model.YEARS_OF_DATA][EnumFood.SIZE]; // in metric tons.
@@ -98,9 +99,32 @@ public class Region extends Territory
     ethanolProducerTaxCredit += credit;
   }
   
+  /**
+   * Offer a subsidy for subsidyPercent rebate to farmers in region purchasing
+   * commercial fertilizer or feed supplements for target crop or livestock.
+   * 
+   * @param subsidyPercent percent of subsidy offered by policy card
+   * @param target crop or livestock
+   */
+  public void setFertilizerSubsidy(int subsidyPercent, EnumFood target)
+  {
+    //TODO:
+  }
+  
   public void addFertilizerAid(int aid)
   {
     fertilizerAid += aid;
+  }
+  
+  public void addFarmInfrastructureAid(int aid)
+  {
+    //TODO:
+  }
+  
+  public void addFoodRelief(EnumFood food, int amount)
+  {
+    // TODO: Store the food relief to be assessed by farmers when determining
+    // what to grow.
   }
 
   /**
@@ -452,31 +476,68 @@ public class Region extends Territory
   }
 
   /**
+   * Scales tax for a given crop type.
+   * Can be used to model a policy card effect.
+   * Ex: giving tax breaks for corn production: scaleCropTax(0.8, EnumFood.GRAIN)
+   * This would decrease taxes on grain by 20%
+   * @param scaleFactor    factor by which to scale the tax
+   * @param crop           the crop to be affected
+   */
+  public void scaleCropTax(double scaleFactor, EnumFood crop )
+  {
+    cropTaxes[crop.ordinal()] *= scaleFactor;
+  }
+
+  /**
    * Sets total production for as a sum of productions for all crops
    * Sets total taxes as 30% of total production
-   * @param data     crop Data used to calculate production
    */
-  public void setTotalProduction(CropData data)
+  public void setTotalProduction()
   {
-    int production = 0;
+
     for(Territory territory: territoryList)
     {
       for(LandTile tile: territory.getLandTiles())
       {
-        for(int i = 0; i < tile.getCropRatings().length;i ++)
-        {
-          int tileSize = getLandTotal() / getNumTiles() ;
-          cropRevenues[i] = (int)(tile.getCropRatings()[i].productionRate() * data.getPrice(2009, EnumFood.values()[i]) * tileSize);
-          cropTaxes[i] = (int)(.3 * cropRevenues[i]);
-          totalProduction +=  cropRevenues[i];
-          totalTax += cropTaxes[i];
-        }
+          if (tile.getCrop() != null)
+          {
+            int index = tile.getCrop().ordinal();
+            cropRevenues[index] += tile.getCurrentProduction();
+            cropCosts[index] += tile.getCurrentCost();
+            cropTaxes[index] += (int) (.3 * tile.getCurrentProduction());
+          }
       }
     }
-    totalProduction = production;
-    totalTax = (int)(production * .3);
+    sumTotals();
   }
 
+  /**
+   * resets production back to 0
+   */
+  public void resetProduction()
+  {
+    totalTax = 0;
+    totalProduction = 0;
+    netIncome = 0;
+    for(int i = 0; i < cropRevenues.length; i ++ )
+    {
+      cropRevenues[i] = 0;
+      cropCosts[i] =0;
+      cropTaxes[i] = 0;
+    }
+  }
+
+  private void sumTotals()
+  {
+    int totalCosts = 0;
+    for(int i = 0; i < cropRevenues.length; i ++ )
+    {
+      totalCosts += cropCosts[i];
+      totalProduction +=  cropRevenues[i];
+      totalTax += cropTaxes[i];
+    }
+    netIncome = totalProduction - totalTax - totalCosts;
+  }
   public MapPoint getCenter()
   {
     return null;

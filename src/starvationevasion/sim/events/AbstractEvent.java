@@ -22,7 +22,7 @@ public abstract class AbstractEvent
 {
   private EventGraph eventGraph;	
   private LandTile startTile;
-  private ArrayList <LandTile> tiles;	
+  private ArrayList <LandTile> tiles = new ArrayList<>();	
   private int duration;
   private Territory landArea;
   private Region region;
@@ -220,8 +220,9 @@ public abstract class AbstractEvent
 	  
 	 
 	  private EventNode startNode;
-	  private ArrayList<EventNode> graph;
-	  private ArrayList<LandTile> tiles;
+	  private ArrayList<EventNode> graph= new ArrayList<>();
+	  private ArrayList<EventNode> affectedNodes=new ArrayList<>();
+	  private ArrayList<LandTile> tiles= new ArrayList<>();
 	  
 	  public EventGraph(ArrayList<LandTile> tiles, int startIndex)
 	  {
@@ -244,7 +245,7 @@ public abstract class AbstractEvent
 			  {
 				  curNode= graph.get(i);
 				  LandTile tmp =curNode.landTile;
-				  if(tmp != node.landTile)
+				  if(curNode != node)
 				  {
 					  float tmpLat =tmp.getLatitude();
 					  float tmpLong =tmp.getLongitude();
@@ -253,11 +254,9 @@ public abstract class AbstractEvent
 					  float tileLong = node.landTile.getLongitude();
 					 
 					  // need to change 100 to actual size of landtile
-					  if(distanceBetweenLandTiles(tileLat, tileLong, tmpLat,tmpLong) <= 100 )
+					  if((Math.abs(tmpLat - tileLat) < .26)  ||  Math.abs(tileLong-tmpLong) < 0.26 )
 					  {
-						 
-						  tmpNeighbors.add(curNode);
-						  
+						  tmpNeighbors.add(curNode);  
 					  }
 					 
 				  }
@@ -276,11 +275,11 @@ public abstract class AbstractEvent
 	   * */
 	  public void createSpreadPattern(float initProbability , int severity)
 	  {
-		  
+		//does not guarantee that an event will spread  
 		 startNode.spreadEvent(initProbability);
+		 ArrayList <EventNode> nextNodes = new ArrayList<>();
 		
-		 ArrayList<EventNode> nextNodes = startNode.nieghborsThatNodeEffected;
-		  
+		 nextNodes.addAll(affectedNodes);
 		 if(nextNodes.size()!=0)
 		 {	   
 		  while(initProbability > 0)
@@ -289,20 +288,13 @@ public abstract class AbstractEvent
 			  for(EventNode node : nextNodes)
 			  {
 				  node.spreadEvent(initProbability);
-				  
-				  for(EventNode effected : node.nieghborsThatNodeEffected)
-				  { 
-				    if(!nextNodes.contains(effected))
-				    {
-				    	nextNodes.add(effected);
-				    }
-				  }
-				  
-				  
-				  
+				  affectedNodes.remove(node);
+				  nextNodes.remove(node);
 			  }
+			  nextNodes.addAll(affectedNodes);	  
 			  
-			  initProbability = initProbability - (1/(10*severity) );
+			  
+		  initProbability = initProbability - (1/(10*severity) );
 		  }
 		 }
 	  }
@@ -332,6 +324,14 @@ public abstract class AbstractEvent
 		  return distance;
 		  
 	  }
+	  private void printAffectedtiles()
+	  {
+		  for(LandTile tile: affectedTiles)
+		  {
+			  System.out.println(tile.toString());
+		  }
+	  }
+	  
 	  /*
 	   * this class hold the EventNode 
 	   * 
@@ -346,8 +346,9 @@ public abstract class AbstractEvent
 	  class EventNode
 	  {
          LandTile landTile;
-		 ArrayList <EventNode> nieghbors;
-		 ArrayList <EventNode> nieghborsThatNodeEffected;
+		 ArrayList <EventNode> nieghbors = new ArrayList<>();
+		 boolean affectedFlag= false;
+		 
 		 public EventNode(LandTile landTile)
 		 {
 			this.landTile = landTile;
@@ -363,19 +364,27 @@ public abstract class AbstractEvent
 		 {
 			 affectedTiles.add(this.landTile);
 		 }
+		 private void setAffectedFlagTrue()
+		 {
+			 affectedFlag= true;
+			 
+		 }
+		 
 		 
 		 // this spreads the event to its neighbors
 		 private void spreadEvent(float curProbability)
 		 {
-			 float randFloat = Util.rand.nextFloat();	
+			 float randFloat;
 			 for (EventNode node : nieghbors)
 			 {	
-				 if(randFloat > curProbability)
+				 randFloat = Util.rand.nextFloat();
+				 if(randFloat < curProbability)
 				 {
-				  if(!affectedTiles.contains(node.landTile))
+				  if(node.affectedFlag == false)
 				  {
-				  nieghborsThatNodeEffected.add(node);	  
+				  node.setAffectedFlagTrue();
 				  node.addToEffectedList();
+				  affectedNodes.add(node);
 				  }
 				 }
 			 }
@@ -385,7 +394,9 @@ public abstract class AbstractEvent
 	  
   }
   
-  
+
+ 
+ 
   
   
 }

@@ -42,7 +42,7 @@ Selecting single player requires that you first start a local server. the server
 
 Take a look at it [here](https://github.com/castellanos70/StarvationEvasion/tree/master/src/starvationevasion/server).
 
-## Compiling A Lightweight Server.jar
+## Compiling A Lightweight Server.jar/Ai.jar
 
 If you build a .jar file to run the server, as of writing it results in a .jar that is about 800 mb in size. To reduce the overhead in pushing updated Server.jar files to the repository, it is necessary to modify the result to include only what is needed.
 

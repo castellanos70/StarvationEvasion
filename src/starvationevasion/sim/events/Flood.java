@@ -2,10 +2,7 @@ package starvationevasion.sim.events;
 
 import starvationevasion.common.EnumSpecialEvent;
 import starvationevasion.common.MapPoint;
-<<<<<<< HEAD
 import starvationevasion.common.Util;
-=======
->>>>>>> 40f41cfe4934958536978f099d51e12aa4c3b952
 import starvationevasion.sim.CropData;
 import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;

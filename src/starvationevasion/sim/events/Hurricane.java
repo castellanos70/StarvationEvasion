@@ -14,8 +14,7 @@ import starvationevasion.sim.Territory;
 public class Hurricane extends AbstractEvent
 {
   private boolean isFirstYear = true;
-  private int duration;
-
+  
   public Hurricane(Territory landArea, Region region, CropData cropData, int duration)
   {
     super(landArea, region, cropData, duration);

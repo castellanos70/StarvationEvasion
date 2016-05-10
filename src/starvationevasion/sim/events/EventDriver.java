@@ -91,7 +91,7 @@ public class EventDriver
   		     }
   		   }		   
   		   break;
-  		 case 5: addEvent(new Flood(tmpTerritory, tmpRegion, cropData, 1));
+  		 case 5: addEvent(new Flood(tmpTerritory, null, null, 1));
 
 
 

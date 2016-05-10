@@ -80,11 +80,15 @@ public abstract class AbstractEvent
     return landArea;
   }
 
-  public ArrayList<LandTile> getEffectedTiles()
+  public ArrayList<LandTile> getAffectedTiles()
   {
 	  return affectedTiles;
   }
   
+  /**
+   * A possible effect for a special event that destroys farm equipment, 
+   * reducing an area's production.
+   */
   public void destroyFarmEquipment()
   {
     for(LandTile tile : affectedTiles)
@@ -97,9 +101,13 @@ public abstract class AbstractEvent
     }
   }
   
+  /**
+   * A possible effect for a special event that destroys infrastructure, 
+   * reducing an area's production.
+   */
   public void destroyInfrastructure()
   {
-    for(LandTile tile : landArea.getLandTiles())
+    for(LandTile tile : affectedTiles)
     {
       if(tile.getProductionMultiplier() >= 0.3)
       {
@@ -119,12 +127,19 @@ public abstract class AbstractEvent
 	  
   }
   
+  /**
+   * A possible effect for a special event that creates a new flood event.
+   */
   public void causeFlood()
   {
-   // Flood flood = new Flood( landArea, duration);
-    //TODO: add to events list.
+    Flood flood = new Flood( landArea, null, null, 1);
+    EventDriver.eventList.add(flood);
   }
   
+  /**
+   * A possible effect for a special event that sets production of
+   * affected land tiles to 0.
+   */
   public void wipeOutLandTiles()
   {
     for(LandTile tile : affectedTiles)
@@ -134,6 +149,12 @@ public abstract class AbstractEvent
     
   }
   
+  /**
+   * 
+   * @param crop the crop to be wiped out
+   * 
+   * A possible effect for a special event that wipes out all of a certain crop in a territory.
+   */
   public void wipeOutCrop(EnumFood crop)
   {
     for(LandTile tile : landArea.getLandTiles())
@@ -145,7 +166,14 @@ public abstract class AbstractEvent
     }
     
   }
-  
+  /**
+   * 
+   * @param severity the amount by which to decrease rainfall
+   * 
+   * A possible effect for a special event that reduces the amount of rainfall
+   * on the given territory.
+   * 
+   */
   public void reduceRainFall(double severity)
   {
     double productionMultiplier;
@@ -153,6 +181,7 @@ public abstract class AbstractEvent
     {
       EnumFood food = tile.getCrop();
       int foodOrdinal = food.ordinal();
+      //reduce the production multiplier by the difference between the normal productionRate and the affected productionRate
       productionMultiplier = tile.getProductionMultiplier() - 
           (tile.getCropRatings()[foodOrdinal].productionRate() - tile.rateTileForCrop(food, region, 2009, cropData, severity).productionRate());
       tile.setProductionMultiplier(productionMultiplier);

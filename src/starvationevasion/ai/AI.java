@@ -425,6 +425,12 @@ public class AI
       }
     }
   }
+  /**
+   * James Perry
+   * AI bots use this method to greet new players
+   * @param msg Greeting message sent from player who has 
+   *            just entered the game.
+   */
   private void sendGreeting(String msg) 
   {
     try

@@ -262,7 +262,7 @@ public class ClientMain extends Application
         System.err.println("ERROR: Not connected to server");
         return;
       }
-      client.loginToServer(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.USA_CALIFORNIA);
+      client.loginToServer(username.getText(), password.getText(), EnumRegion.USA_CALIFORNIA);
     });
 
     createUser.setOnMouseClicked((event) ->
@@ -272,7 +272,7 @@ public class ClientMain extends Application
         System.err.println("ERROR: Not connected to server");
         return;
       }
-      client.createUser(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.USA_CALIFORNIA);
+      client.createUser(username.getText(), password.getText(), EnumRegion.USA_CALIFORNIA);
     });
 
     credits.setOnMouseClicked(event -> {

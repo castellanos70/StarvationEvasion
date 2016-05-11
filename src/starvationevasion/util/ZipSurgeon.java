@@ -42,7 +42,6 @@ public class ZipSurgeon
       Enumeration<? extends ZipEntry> entries = zipFile.entries();
       ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(newZipFile));
       final HashSet<String> BLACKLISTED_FILES = processArgs(args);
-      System.err.println("BLACKLIST " + BLACKLISTED_FILES.toString());
 
       while (entries.hasMoreElements())
       {

@@ -2,11 +2,9 @@ package starvationevasion.util;
 
 import java.io.*;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -23,10 +21,10 @@ import java.util.zip.ZipOutputStream;
  *
  * @author Justin Hall
  */
-public class ZipEditor
+public class ZipSurgeon
 {
   /**
-   * Creates a new ZipEditor which will result in a brand new zip file if nothing went wrong.
+   * Creates a new ZipSurgeon which will result in a brand new zip file if nothing went wrong.
    * Note that if the arguments passed into it are of length 0, it will perform a simple
    * copy of the existing zip to the new zip.
    *
@@ -34,7 +32,7 @@ public class ZipEditor
    * @param newZipFile name of the new zip file (exact path + name + extension)
    * @param args valid arguments to use while producing the new zip file
    */
-  public ZipEditor(String existingZip, String newZipFile, String ... args)
+  public ZipSurgeon(String existingZip, String newZipFile, String ... args)
   {
     try
     {
@@ -141,6 +139,6 @@ public class ZipEditor
     String _existingZip = args[0];
     String _newZip = args[1];
     String[] argList = getArgList(args[2]).split(" ");
-    new ZipEditor(_existingZip, _newZip, argList);
+    new ZipSurgeon(_existingZip, _newZip, argList);
   }
 }

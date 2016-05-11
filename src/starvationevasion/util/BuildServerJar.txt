@@ -1,4 +1,5 @@
 ActionButtons
+artifacts
 cardImages
 farmProductIcons
 Media

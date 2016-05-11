@@ -42,7 +42,7 @@ import starvationevasion.common.EnumRegion;
  * Moves the client over to a single-threaded game
  * loop (built on the JavaFX thread).
  */
-public class UpdateLoop extends Application
+public class ClientMain extends Application
 {
   private static String connectURL = "localhost";
   private static int connectPort = 5555;
@@ -90,7 +90,7 @@ public class UpdateLoop extends Application
   public void start(Stage primaryStage)
   {
 
-    StartIntroVideo video = new StartIntroVideo();
+    IntroVideo video = new IntroVideo();
 
     try
     {
@@ -294,7 +294,7 @@ public class UpdateLoop extends Application
 
       pauseMusic();
 
-      StartTutorialVideo video = new StartTutorialVideo();
+      TutorialVideo video = new TutorialVideo();
       FlowPane pane  = new FlowPane();
       Scene scene = new Scene(pane, 1300, 2000);
 

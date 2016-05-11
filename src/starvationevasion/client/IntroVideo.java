@@ -1,6 +1,8 @@
 package starvationevasion.client;
 
 
+import java.io.File;
+
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -10,16 +12,13 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 
-import java.io.File;
-
 
 /**
- * Launches the tutorial video 
+ * Launches the intro video right before the start menu
  * @author christopher sanchez
- * @author scott cooper
  *
  */
-public class StartTutorialVideo extends Application
+public class IntroVideo extends Application
 {
 
   private AnimationTimer timer;
@@ -28,7 +27,7 @@ public class StartTutorialVideo extends Application
   public void start(Stage primaryStage) throws Exception
   {
     //The location of your file
-    Media media = new Media(new File("assets/Media/tutorial.mp4").toURI().toString());
+    Media media = new Media(new File("assets/Media/Intro.mp4").toURI().toString());
 
     MediaPlayer mediaPlayer = new MediaPlayer(media);
    
@@ -38,15 +37,17 @@ public class StartTutorialVideo extends Application
 
     BorderPane borderPane = new BorderPane();
     borderPane.setCenter(mediaView);
+
     borderPane.setStyle("-fx-background-color: Black");
 
-    MediaControlTutorial mediaControlTutorial = new MediaControlTutorial(mediaPlayer);
+    //Add controls, mainly the "skip intro" option
+    MediaControl mediaControl = new MediaControl(mediaPlayer);
 
-    Scene scene = new Scene(borderPane, 1200, 700);
+    Scene scene = new Scene(borderPane, 850, 520);
 
-    scene.setRoot(mediaControlTutorial);
+    scene.setRoot(mediaControl);
     
-    primaryStage.setTitle("Starvation Evasion");
+    primaryStage.setTitle("Starvation Evasion!");
     primaryStage.setScene(scene);
     primaryStage.show();
   }

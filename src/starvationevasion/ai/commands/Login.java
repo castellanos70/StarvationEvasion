@@ -85,7 +85,7 @@ public class Login extends AbstractCommand
       }
 
 
-      System.out.println(">>>> PICKED: " + uTemp);
+      System.out.println(">>>> Ai PICKED USERNAME: " + uTemp);
       chosenUsername = uTemp;
       getClient().getCommModule().login(chosenUsername, "bot", null);
       return true;

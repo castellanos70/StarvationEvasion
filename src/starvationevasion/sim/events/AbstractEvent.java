@@ -268,7 +268,7 @@ public abstract class AbstractEvent
             float tileLong = node.landTile.getLongitude();
 
             // need to change 100 to actual size of landtile
-            if((Math.abs(tmpLat - tileLat) < 0.026) || (Math.abs(tileLong-tmpLong) < 0.026))
+            if((Math.abs(tmpLat - tileLat) < 0.26) && (Math.abs(tileLong-tmpLong) < 0.26))
             {
               tmpNeighbors.add(curNode);  
             }

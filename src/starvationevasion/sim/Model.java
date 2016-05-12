@@ -1339,17 +1339,20 @@ public class Model
 
   private int calculateTileProduction(Region region, LandTile tile, int year, EnumFood crop)
   {
-
+    int revenue = 0;
     if(crop == null) return 0;
 
     //total production of tile in USD:
     // (crop rating) * (metric tons yield  / sq km) * (area of land tile in sq km) * (USD food price  / metric ton)
 
-    double production_per_km = region.getCropProduction(year, crop) / region.getCropArea(year, crop);
-    double tileSize = region.getLandTotal() / region.getNumTiles() ;
-    int index = crop.ordinal();
-    int revenue = (int) (tile.getCropRatings()[index].productionRate() * cropData.getPrice(year,
-        EnumFood.values()[index]) * tileSize * production_per_km);
+    if(region.getCropArea(year, crop) != 0)
+    {
+      double production_per_km = region.getCropProduction(year, crop) / region.getCropArea(year, crop);
+      double tileSize = region.getLandTotal() / region.getNumTiles();
+      int index = crop.ordinal();
+      revenue = (int) (tile.getCropRatings()[index].productionRate() * cropData.getPrice(year,
+          EnumFood.values()[index]) * tileSize * production_per_km);
+    }
     return revenue;
   }
 

@@ -195,10 +195,10 @@ public class Model
     
     EventDriver driver = new EventDriver(this);
 
-    setRegionalProduction();
+    setRegionalProduction(Constant.FIRST_GAME_YEAR-1);
     
     populateUSRegionList();
-
+    
     for (int i = 0; i < YEARS_OF_DATA; i++)
     {
       worldData[i] = new WorldData();
@@ -814,8 +814,8 @@ public class Model
         {
           for(EnumFood crop: EnumFood.ALL_FOODS)
           {
-            int newCost =  calculateTileCost(region, crop);
-            int production = (int)(.8 * calculateTileProduction(region, tile,crop));
+            int newCost =  calculateTileCost(region, crop, currentYear);
+            int production = (int)(.8 * calculateTileProduction(region, tile, currentYear, crop));
             //proposed production is cut to 80% to account for cost of replanting
             int net = production - newCost;
             if(net > (tile.getCurrentProduction() - tile.getCurrentCost()))
@@ -1311,7 +1311,7 @@ public class Model
     }
   }
 
-  private void setRegionalProduction()
+  private void setRegionalProduction(int year)
   {
     for(Region region: regionList)
     {
@@ -1319,9 +1319,9 @@ public class Model
       {
         for(LandTile tile: territory.getLandTiles())
         {
-          int production = calculateTileProduction(region, tile);
+          int production = calculateTileProduction(region, tile, year);
           tile.setCurrentProduction(production);
-          int cost = calculateTileCost(region, tile.getCrop());
+          int cost = calculateTileCost(region, tile.getCrop(), year);
           tile.setCurrentCost(cost);
         }
       }
@@ -1329,14 +1329,14 @@ public class Model
     }
   }
 
-  private int calculateTileProduction(Region region, LandTile tile)
+  private int calculateTileProduction(Region region, LandTile tile, int year)
   {
-    return calculateTileProduction(region, tile, tile.getCrop());
+    return calculateTileProduction(region, tile, year, tile.getCrop());
   }
 
 
 
-  private int calculateTileProduction(Region region, LandTile tile, EnumFood crop)
+  private int calculateTileProduction(Region region, LandTile tile, int year, EnumFood crop)
   {
 
     if(crop == null) return 0;
@@ -1344,29 +1344,31 @@ public class Model
     //total production of tile in USD:
     // (crop rating) * (metric tons yield  / sq km) * (area of land tile in sq km) * (USD food price  / metric ton)
 
-    double production_per_km = region.getCropProduction(2009, crop) / region.getCropArea(2009, crop);
+    double production_per_km = region.getCropProduction(year, crop) / region.getCropArea(year, crop);
     double tileSize = region.getLandTotal() / region.getNumTiles() ;
     int index = crop.ordinal();
-    int revenue = (int) (tile.getCropRatings()[index].productionRate() * cropData.getPrice(2009,
+    int revenue = (int) (tile.getCropRatings()[index].productionRate() * cropData.getPrice(year,
         EnumFood.values()[index]) * tileSize * production_per_km);
     return revenue;
   }
 
 
-  private int calculateTileCost(Region region, EnumFood crop)
+  private int calculateTileCost(Region region, EnumFood crop, int year)
   {
+    int cost = 0;
     if(crop == null) return 0;
 
     //total cost of tile in USD:
     // (metric tons yield  / sq km) * (area of land tile in sq km) * (pesticide cost + water cost + seed cost)
 
-    double production_per_km = region.getCropProduction(2009, crop) / region.getCropArea(2009, crop);
-    double tileSize = region.getLandTotal() / region.getNumTiles() ;
-    int cost = (int)( tileSize *  production_per_km *
-        ( cropData.getData(CropData.Field.PESTICIDE_COST,crop) +
-            cropData.getData(CropData.Field.WATER_COST, crop) +
-            cropData.getData(CropData.Field.SEED_COST, crop)) );
-
+    if(region.getCropArea(year, crop) != 0)
+    {
+      double production_per_km = region.getCropProduction(year, crop) / region.getCropArea(year, crop);
+      double tileSize = region.getLandTotal() / region.getNumTiles();
+      cost = (int) (tileSize * production_per_km * (cropData.getData(CropData.Field.PESTICIDE_COST,
+          crop) + cropData.getData(CropData.Field.WATER_COST, crop) + cropData.getData(
+              CropData.Field.SEED_COST, crop)));
+    }
     return cost;
   }
 

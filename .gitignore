@@ -1,9 +1,7 @@
 .git
-.idea
 out
 _windows
 bin
-.settings
 *.iml
 .classpath
 .project
@@ -12,7 +10,6 @@ bin
 ## File-based project format:
 *.ipr
 *.iws
-notes_joel.txt
 
 # the dataSources folder is raw data not directly used by the project.
 dataSources

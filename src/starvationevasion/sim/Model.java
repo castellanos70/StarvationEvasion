@@ -186,7 +186,7 @@ public class Model
     
     eventDriver = new EventDriver(this);
 
-    setRegionalProduction(Constant.FIRST_GAME_YEAR-1);
+    setRegionalProduction(Constant.FIRST_GAME_YEAR-1, true);
     
     populateUSRegionList();
     
@@ -839,7 +839,7 @@ public class Model
           }
         }
       }
-      region.setTotalProduction();
+      region.setTotalProduction(false);
     }
   }
 
@@ -1322,7 +1322,7 @@ public class Model
     }
   }
 
-  private void setRegionalProduction(int year)
+  private void setRegionalProduction(int year, boolean isInit)
   {
     for(Region region: regionList)
     {
@@ -1336,7 +1336,7 @@ public class Model
           tile.setCurrentCost(cost);
         }
       }
-      region.setTotalProduction();
+      region.setTotalProduction(isInit);
     }
   }
 

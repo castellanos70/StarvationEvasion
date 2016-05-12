@@ -669,7 +669,7 @@ public class Model
         case Policy_DivertFunds:
           //remove all cards from owners hand -- done in Simulator.java
           //give 14 million dollars to owner
-          getRegion(c.getOwner()).addToRevenue(14000000);
+          getRegion(c.getOwner()).addToRevenue(14);
           break;
         case Policy_EducateTheWomenCampaign:
           //TODO:
@@ -720,7 +720,7 @@ public class Model
           sendFoodRelief(EnumRegion.SUB_SAHARAN, c.getOwner(), c.getTargetFood(), 5000);
           break;
         case Policy_Fundraiser:
-          getRegion(c.getOwner()).addToRevenue(1000000);
+          getRegion(c.getOwner()).addToRevenue(1);
           break;
         case Policy_InternationalFoodRelief:
           //TODO:

@@ -493,7 +493,7 @@ public class Model
   {
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
-    //applyPolicies(); // In progress.
+    applyPolicies(cards); // In progress.
 
     //updateLandUse(); // Not started.
 

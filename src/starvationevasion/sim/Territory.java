@@ -229,7 +229,11 @@ public class Territory
     int maxIndex = 0;
     for(LandTile tile : landTiles)
     {
-      cropAmts[tile.getCrop().ordinal()]++;
+      if(tile.getCrop() != null)
+      {
+        cropAmts[tile.getCrop().ordinal()]++;
+      }
+      
     }
     for(int i = 0; i < cropAmts.length; i++)
     {

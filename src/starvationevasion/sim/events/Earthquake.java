@@ -9,9 +9,9 @@ import starvationevasion.sim.Territory;
 public class Earthquake extends AbstractEvent
 {
 
-  public Earthquake(Territory landArea, Region region, CropData cropData, int duration)
+  public Earthquake(Territory landArea, Region region, CropData cropData, int duration, String eventType)
   {
-    super(landArea, region, cropData, duration);
+    super(landArea, region, cropData, duration, eventType);
     // TODo Auto-generated constructor stub
   }
 
@@ -27,5 +27,7 @@ public class Earthquake extends AbstractEvent
     destroyInfrastructure();
     super.applyEffects();
   }
+  
+  
 
 }

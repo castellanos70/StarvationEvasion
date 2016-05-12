@@ -11,9 +11,9 @@ import starvationevasion.sim.Territory;
 public class Flood extends AbstractEvent
 {
 
-  public Flood(Territory landArea, Region region, CropData cropData, int duration)
+  public Flood(Territory landArea, Region region, CropData cropData, int duration, String eventType)
   {
-    super(landArea, region, cropData, duration);
+    super(landArea, region, cropData, duration, eventType);
     this.getEventSpread(0.5f, Util.rand.nextInt(10) + 1);
 
   }
@@ -30,4 +30,6 @@ public class Flood extends AbstractEvent
     // TODO Auto-generated method stub
     return null;
   }
+  
+  
 }

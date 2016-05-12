@@ -17,13 +17,13 @@ public class Fire extends AbstractEvent
   Territory landArea;
   LandTile startTile;
   ArrayList <LandTile> tiles;
-  public Fire(Territory landArea, Region region, CropData cropData, int duration)
+  public Fire(Territory landArea, Region region, CropData cropData, int duration, String eventType)
   {
 	 
-    super(landArea, region, cropData, duration);
+    super(landArea, region, cropData, duration, eventType);
     this.landArea = landArea;
     //create event graph and populate the affected tiles
-    this.getEventSpread(0.5f, Util.rand.nextInt(10) + 1);
+    getEventSpread(0.9f, Util.rand.nextInt(10) + 1);
     
   }
 
@@ -37,9 +37,9 @@ public class Fire extends AbstractEvent
   {
 	  destroyFarmEquipment();
 	  wipeOutLandTiles();
-	  super.applyEffects();
-	  
-	 
+	  super.applyEffects();	 
 	  
   }
+  
+  
 }

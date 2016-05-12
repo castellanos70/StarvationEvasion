@@ -31,17 +31,6 @@ import starvationevasion.sim.events.EventDriver;
 import starvationevasion.sim.io.GeographyXMLparser;
 import starvationevasion.sim.io.ProductionCSVLoader;
 import starvationevasion.sim.io.SpecialEventCSVLoader;
-import starvationevasion.util.JavaFX_DebugViewer;
-import java.awt.geom.Area;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 /**
  * The Simulator class is the main API for the Server to interact with the simulator.
  * This Model class is home to the calculations supporting that API.
@@ -155,6 +144,8 @@ public class Model
   private List<AbstractEvent> specialEvents = new ArrayList<>();
 
   private PackedTileData packedTileData;
+  
+  private EventDriver eventDriver;
 
   public Model()
   {
@@ -193,7 +184,7 @@ public class Model
 
     placeCrops();
     
-    EventDriver driver = new EventDriver(this);
+    eventDriver = new EventDriver(this);
 
     setRegionalProduction(Constant.FIRST_GAME_YEAR-1);
     
@@ -483,6 +474,20 @@ public class Model
     //  if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(region, Constant.FIRST_YEAR);
     //}
   }
+  
+  private void resetMultipliers()
+  {
+    for(int i = 0; i < regionList.length; i++)
+    {
+      for(Territory territory : regionList[i].getTerritoryList())
+      {
+        for(LandTile tile : territory.getLandTiles())
+        {
+          tile.setProductionMultiplier(1);
+        }
+      }
+    }
+  }
 
   /**
    * Every method is currently uncommented as not everything is currently implemented.
@@ -494,6 +499,8 @@ public class Model
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
     applyPolicies(cards); // In progress.
+    
+    eventDriver.initEvents(20);
 
     updateLandUse(); // In progress.
 
@@ -528,8 +535,11 @@ public class Model
     // above methods are called, everything is 0.
     populateWorldData(currentYear);
     currentYear++;
+    resetMultipliers();
     return currentYear;
   }
+  
+  
 
   protected WorldData populateWorldData(int year)
   {
@@ -1452,10 +1462,17 @@ public class Model
     System.out.println("==========================================================================");
 
     Model model = new Model();
+    //code below is simply for the testing of the event driver.
+    EventDriver eDriver = new EventDriver(model);
+    eDriver.initEvents(20);
+    for(AbstractEvent event : EventDriver.eventList)
+    {
+      System.out.println("Event Placed: " + event.getEventType());
+    }
 
     String[] imagePath = {"BlankBlue_MollweideProjection-1280x641.png"};
-    JavaFX_DebugViewer pic = new JavaFX_DebugViewer();
-    pic.launch(imagePath);
+//    JavaFX_DebugViewer pic = new JavaFX_DebugViewer();
+//    pic.launch(imagePath);
 
     //Graphics2D gfx = pic.getOffScreenGraphics();
     //gfx.setColor(Color.BLACK);
@@ -1514,13 +1531,13 @@ public class Model
     //model.drawBoundary(pic, territory, Color.RED);
     */
 
-    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
-    map.setCentralMeridian(0);
-    for (EnumRegion regionID : EnumRegion.values())
-    {
-      Polygon drawArea = map.getPerimeterDrawable(regionID);
-      pic.add(drawArea, Util.brighten(regionID.getColor(), 0.5));
-    }
+//    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
+//    map.setCentralMeridian(0);
+//    for (EnumRegion regionID : EnumRegion.values())
+//    {
+//      Polygon drawArea = map.getPerimeterDrawable(regionID);
+//      pic.add(drawArea, Util.brighten(regionID.getColor(), 0.5));
+//    }
     
 
 

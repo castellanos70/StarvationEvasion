@@ -815,6 +815,7 @@ public class Model
           for(EnumFood crop: EnumFood.ALL_FOODS)
           {
             int newCost =  calculateTileCost(region, crop, currentYear);
+            // not sure if this does what it should be
             int production = (int)(.8 * calculateTileProduction(region, tile, currentYear, crop));
             //proposed production is cut to 80% to account for cost of replanting
             int net = production - newCost;

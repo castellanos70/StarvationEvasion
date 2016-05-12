@@ -495,29 +495,27 @@ public class Model
 
     applyPolicies(cards); // In progress.
 
-    //updateLandUse(); // Not started.
+    updateLandUse(); // In progress.
 
-    //updatePopulation(); // In progress.
+    //updatePopulation();
 
-    //updateClimate(); // Done.
+    //updateClimate();
 
     //generateSpecialEvents(); // In progress (Alfred).
 
-    //applySpecialEvents(); // Done.
+    //applySpecialEvents(); 
     
-    //replantCrops();
+    //updateFarmProductYield(); 
 
-    //updateFarmProductYield(); // Done.
+    //updateFarmProductNeed(); 
 
-    //updateFarmProductNeed(); // Done.
+    //updateFarmProductMarket(); 
 
-    //updateFarmProductMarket(); // Not started.
+    //updateFoodDistribution(); 
 
-    //updateFoodDistribution(); // Not started.
+    //updatePlayerRegionRevenue();
 
-    //updatePlayerRegionRevenue(); // Not started.
-
-    //updateHumanDevelopmentIndex(); // Done.
+    //updateHumanDevelopmentIndex();
 
 
     //if (debugLevel.intValue() < Level.INFO.intValue())
@@ -788,7 +786,11 @@ public class Model
       }
     }
   }
-
+  
+  /**
+   * This method is to be called at the end of a year.
+   * For each landTile, farmer decides whether or not to replant same crop
+   */
   private void updateLandUse()
   {
     // TODO : Land use is based on policies.
@@ -801,6 +803,32 @@ public class Model
     if (debugLevel.intValue() < Level.INFO.intValue())
     {
       Simulator.dbg.println("******************************************* Updating land use");
+    }
+    
+    for(Region region: regionList)
+    {
+      region.resetProduction();
+      for (Territory territory : territoryList)
+      {
+        for (LandTile tile : territory.getLandTiles())
+        {
+          for(EnumFood crop: EnumFood.ALL_FOODS)
+          {
+            int newCost =  calculateTileCost(region, crop);
+            int production = (int)(.8 * calculateTileProduction(region, tile,crop));
+            //proposed production is cut to 80% to account for cost of replanting
+            int net = production - newCost;
+            if(net > (tile.getCurrentProduction() - tile.getCurrentCost()))
+            {
+              tile.setCrop(crop);
+              tile.setCurrentProduction(production);
+              tile.setCurrentCost(newCost);
+              break;
+            }
+          }
+        }
+      }
+      region.setTotalProduction();
     }
   }
 
@@ -1341,43 +1369,6 @@ public class Model
 
     return cost;
   }
-
-
-
-  /**
-   * This method is to be called at the end of a year.
-   * For each landTile, farmer decides whether or not to replant same crop
-   */
-  private void replantCrops()
-  {
-    for(Region region: regionList)
-    {
-      region.resetProduction();
-      for (Territory territory : territoryList)
-      {
-        for (LandTile tile : territory.getLandTiles())
-        {
-          for(EnumFood crop: EnumFood.ALL_FOODS)
-          {
-            int newCost =  calculateTileCost(region, crop);
-            int production = (int)(.8 * calculateTileProduction(region, tile,crop));
-            //proposed production is cut to 80% to account for cost of replanting
-            int net = production - newCost;
-            if(net > (tile.getCurrentProduction() - tile.getCurrentCost()))
-            {
-              tile.setCrop(crop);
-              tile.setCurrentProduction(production);
-              tile.setCurrentCost(newCost);
-              break;
-            }
-          }
-        }
-      }
-      region.setTotalProduction();
-    }
-  }
-
-
 
 
 /*

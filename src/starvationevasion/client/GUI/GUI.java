@@ -22,7 +22,6 @@ import starvationevasion.client.GUI.Graphs.GraphManager;
 import starvationevasion.client.GUI.Popups.PopupManager;
 import starvationevasion.client.GUI.images.ImageGetter;
 import starvationevasion.client.GUI.votingHud.VotingLayout;
-//import starvationevasion.client.GUI.VotingLayout.VotingLayout;
 import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.client.Networking.Client;
@@ -120,6 +119,8 @@ public class GUI extends Application
   @Override
   public void start(Stage primaryStage)
   {
+    System.out.println("GUI.start()");
+
     // TODO: THIS WILL BE REMOVED WHEN PHASE HANDLING IS FULLY IMPLEMENTED
     MapController.setCurrentController(GamePhaseMapController.class);
     this.primaryStage = primaryStage;

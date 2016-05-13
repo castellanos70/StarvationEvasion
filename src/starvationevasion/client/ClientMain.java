@@ -67,7 +67,7 @@ public class ClientMain extends Application
   private Screen screen;
   static Rectangle2D bounds;
   private Menu menu;
-  private Image background = new Image("file:assets/visResources/DIFFUSE_MAP.jpg");
+  private Image background = new Image("file:assets/LoginBackground.png");
   private AnimationTimer timer;
   private Scene scene2;
   private Stage newStage;
@@ -151,8 +151,6 @@ public class ClientMain extends Application
 
   /**
    * Method starts the audio file for background music
-   *
-   * @param args
    */
   private void playMusic()
   {
@@ -216,7 +214,7 @@ public class ClientMain extends Application
   }
 
   /**
-   * When invoked, this method will show the start menu and 
+   * When invoked, this method will show the start menu and
    * all of the elements on the page, such as user login,
    * password, create user etc.
    *

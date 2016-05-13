@@ -50,9 +50,9 @@ public class ConfigPhaseMapController extends MapController
     region.setScaleX(1.0);
     region.setScaleY(1.0);
     region.setScaleZ(1.0);
-  //  if (client.getAvailableRegions().contains(MapUtil.regionIdToEnumRegion(region.getId())))
+    //  if (client.getAvailableRegions().contains(MapUtil.regionIdToEnumRegion(region.getId())))
     {
-   //   client.sendRegionChoice(MapUtil.regionIdToEnumRegion(region.getId()));
+      //   client.sendRegionChoice(MapUtil.regionIdToEnumRegion(region.getId()));
     }
   }
 }

@@ -25,13 +25,8 @@ import java.util.ArrayList;
  */
 public class VotingLayout extends NodeTemplate
 {
-  private static final int SCROLL_MOD = 4;
-  private double lastX;
-  private double lastY;
   private double width;
   private double height;
-
-  private boolean receivedCards = false;
 
   private VBox tickerReel;
   private TickerReel reel;
@@ -40,15 +35,9 @@ public class VotingLayout extends NodeTemplate
 
   private ImageView imageView;
 
-  // private WorldMap worldMap;
-
-  private Image oldMap;
-  private Image borderMap;
-  private boolean borders = false;
   private Rectangle2D viewPort;
   private VotingHand hand;
   private DraftTimer votingTimer;
-  private ArrayList<VotingNode> votingNodes = new ArrayList<>();
   private ImageView view;
 
   private GUI gui;
@@ -57,22 +46,11 @@ public class VotingLayout extends NodeTemplate
   {
     super();
 
-    // File f = new
-    // File("StarvationEvasion/src/starvationevasion/client/GUI/votingHud/testImages/WorldMap_MollweideProjection.png");
-    // Image i = new Image(f.toURI().toString());
-    // ImageView iv = new ImageView(i);
-    // iv.fitHeightProperty().bind(this.widthProperty());
-    // iv.fitHeightProperty().bind(this.heightProperty());
-    // this.getChildren().add(iv);
 
     this.gui = gui2;
     this.setSize(width, height);
     this.width = gui2.getPrimaryStage().getWidth();
     this.height = gui2.getPrimaryStage().getHeight();
-
-    // File f = new
-    // File("StarvationEvasion/src/starvationevasion/client/GUI/votingHud/testImages/WorldMap_MollweideProjection.png");
-    // ImageView iv = new ImageView(new Image(f.toURI().toString()));
 
     /*
      * Hand is a nodeTemplate and is the container that holds the cards and the
@@ -137,10 +115,6 @@ public class VotingLayout extends NodeTemplate
     onResize();
   }
 
-  public void update()
-  {
-    // worldMap.getBoardersManager().update();
-  }
 
   @Override
   public void onResize()
@@ -163,14 +137,6 @@ public class VotingLayout extends NodeTemplate
     view.fitWidthProperty().bind(this.widthProperty());
     view.fitHeightProperty().bind(this.heightProperty());
 
-    // if (worldMap != null)
-    // {
-    // if (worldMap != null)
-    // {
-    // worldMap.setMaxHeight(this.getHeight());
-    // worldMap.setMaxWidth(this.getWidth());
-    // }
-    // }
 
     votingTimer.setMinWidth(gui.getPrimaryStage().getWidth() / 10);
     votingTimer.setTranslateX(gui.getPrimaryStage().getWidth() - 1.5 * votingTimer.getMinWidth());
@@ -184,71 +150,17 @@ public class VotingLayout extends NodeTemplate
     hand.onResize();
   }
 
-  private int getIndexOfRegion(EnumRegion region)
-  {
-    for (int i = 0; i < EnumRegion.US_REGIONS.length; i++)
-    {
-      if (region.equals(EnumRegion.US_REGIONS[i])) return i;
-    }
-    return -1;
-  }
 
-  public boolean hasReceivedCards()
-  {
-    return receivedCards;
-  }
 
   public ChatNode getChatNode()
   {
     return chatNode;
   }
 
-  public void resetVotingLayout()
-  {
-    receivedCards = false;
-    hand.clearCards();
-  }
-
-  public void setChatNode(ChatNode chatNode2)
-  {
-    chatNode = chatNode2;
-    onResize();
-
-  }
 
   public VotingHand getVotingHand()
   {
     return hand;
   }
 
-  // public void setWorldMap(WorldMap map)
-  // {
-  // worldMap = map;
-  // worldMap.setMaxHeight(gui.getPrimaryStage().getHeight());
-  // worldMap.setMaxWidth(gui.getPrimaryStage().getWidth());
-  // worldMap.setOnMouseMoved(new EventHandler<Event>()
-  // {
-  //
-  // @Override
-  // public void handle(Event event)
-  // {
-  // hand.mouseMovedEvent(event);
-  // }
-  // });
-  // worldMap.setOnMouseClicked(new EventHandler<Event>()
-  // {
-  //
-  // @Override
-  // public void handle(Event event)
-  // {
-  // hand.mouseClickedEvent(event);
-  //
-  // }
-  // });
-  //
-  // this.getChildren().add(worldMap);
-  // worldMap.toBack();
-  // }
-  //
-  // }
 }

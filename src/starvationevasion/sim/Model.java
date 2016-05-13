@@ -1,19 +1,5 @@
 package starvationevasion.sim;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.geom.Area;
-import java.awt.geom.PathIterator;
-import java.awt.image.BufferedImage;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javafx.scene.shape.Polygon;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumCropZone;
@@ -26,11 +12,25 @@ import starvationevasion.common.SpecialEventData;
 import starvationevasion.common.Util;
 import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.sim.LandTile.Field;
 import starvationevasion.sim.events.AbstractEvent;
+import starvationevasion.sim.events.Drought;
 import starvationevasion.sim.events.EventDriver;
+import starvationevasion.sim.events.Hurricane;
 import starvationevasion.sim.io.GeographyXMLparser;
 import starvationevasion.sim.io.ProductionCSVLoader;
 import starvationevasion.sim.io.SpecialEventCSVLoader;
+import starvationevasion.util.JavaFX_DebugViewer;
+import java.awt.geom.Area;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  * The Simulator class is the main API for the Server to interact with the simulator.
  * This Model class is home to the calculations supporting that API.
@@ -131,7 +131,7 @@ public class Model
   // purposes.
   //
   private Region[] regionList = new Region[EnumRegion.SIZE];
-  
+
   /**
    * Right now, the players control the 7 US Regions.
    */
@@ -357,7 +357,7 @@ public class Model
     //}
     //return null;
   }
-  
+
   public Region[] getRegionList()
   {
     return regionList;
@@ -491,7 +491,7 @@ public class Model
 
   /**
    * Every method is currently uncommented as not everything is currently implemented.
-   * 
+   *
    * @return the simulation currentYear that has just finished.
    */
   protected int nextYear(ArrayList<GameCard> cards)
@@ -499,38 +499,38 @@ public class Model
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
     applyPolicies(cards); // In progress.
-    
+
     eventDriver.initEvents(20);
 
     updateLandUse(); // In progress.
 
-    //updatePopulation();
+    // updatePopulation();
 
-    //updateClimate();
+    // updateClimate();
 
-    //generateSpecialEvents(); // In progress (Alfred).
+    // generateSpecialEvents(); // In progress (Alfred).
 
-    //applySpecialEvents(); 
-    
-    //updateFarmProductYield(); 
+    // applySpecialEvents();
 
-    //updateFarmProductNeed(); 
+    // updateFarmProductYield();
 
-    //updateFarmProductMarket(); 
+    // updateFarmProductNeed();
 
-    //updateFoodDistribution(); 
+    // updateFarmProductMarket();
 
-    //updatePlayerRegionRevenue();
+    // updateFoodDistribution();
 
-    //updateHumanDevelopmentIndex();
+    // updatePlayerRegionRevenue();
 
+    // updateHumanDevelopmentIndex();
 
-    //if (debugLevel.intValue() < Level.INFO.intValue())
-    //{ Simulator.dbg.println("******************************************* FINAL Stats for " + debugRegion + " in " +
+    // if (debugLevel.intValue() < Level.INFO.intValue())
+    // { Simulator.dbg.println("*******************************************
+    // FINAL Stats for " + debugRegion + " in " +
     // currentYear);
-    //  printRegion(regionList[debugRegion.ordinal()], currentYear);
-    //}
-    
+    // printRegion(regionList[debugRegion.ordinal()], currentYear);
+    // }
+
     // updates the worlddata with all the values of this year. If none of the
     // above methods are called, everything is 0.
     populateWorldData(currentYear);
@@ -596,26 +596,26 @@ public class Model
     int yearIdx = year - Constant.FIRST_DATA_YEAR;
     return worldData[yearIdx];
   }
-  
+
   public CropData getCropData()
   {
     return this.cropData;
   }
-  
+
   /**
    * Searches the regionList for the US regions and adds them to
    * unitedStatesRegionList[].
    */
   private void populateUSRegionList()
   {
-    int it = 0;    
+    int it = 0;
     ArrayList<EnumRegion> usRegions = new ArrayList<>();
-    
+
     for(int i = 0; i < EnumRegion.US_REGIONS.length; i++)
     {
       usRegions.add(EnumRegion.US_REGIONS[i]);
     }
-    
+
     for(int i = 0; i < regionList.length; i++)
     {
       if(usRegions.contains(regionList[i].getRegionEnum()))
@@ -644,19 +644,19 @@ public class Model
   /**
    * Looks at each policy enacted for this turn and applies the appropriate
    * ones.
-   * 
+   *
    * Cards not directly affecting the simulation model presumably should not be
    * handled here. Cards like CovertIntelligence, which lets you look at another
    * player's hand, do not directly affect the model. Right now they are handled
    * in Simulator.NextTurn(). Since policy cards are the first thing applied in
    * Model.nextYear(), it doesn't alter any calculations as the model completes
    * a year's simulation.
-   * 
+   *
    * Hard-coded values are constants of the specific policy card. The card
    * classes do not currently provide these values.
-   * 
+   *
    * Cases in switch statement with TODO: still need to be implemented.
-   * 
+   *
    * @param cards
    *          the list of all cards to be applied to the model
    */
@@ -751,11 +751,11 @@ public class Model
       }
     }
   }
-  
+
   /**
    * These cards are of the same type: Each US region sends fertilizer aid to a
    * specific region.
-   * 
+   *
    * Subtract amount from each US Region, and send 7 times that amount to the
    * specific region
    */
@@ -765,7 +765,7 @@ public class Model
     {
       unitedStatesRegionList[i].subtractFromRevenue(amount);
     }
-    
+
     for(int i = 0; i < regionList.length; i++)
     {
       if(regionList[i].getRegionEnum().equals(region))
@@ -774,10 +774,10 @@ public class Model
       }
     }
   }
-  
+
   /**
    * Policy card handler. Moves x amount of y food from sender to target.
-   * 
+   *
    * @param target The region receiving the food
    * @param sender The region sending the food
    * @param food The type of EnumFood.
@@ -787,7 +787,7 @@ public class Model
   {
     // TODO: determine where the food is coming from (from the sender). 5 thousand
     // tons of food needs to come from somewhere, we don't just make it magically.
-    
+
     for(int i = 0; i < regionList.length; i++)
     {
       if(regionList[i].getRegionEnum().equals(target))
@@ -1104,22 +1104,21 @@ public class Model
     }
 
     //uncomment the following code for testing
-//     List<LandTile> landTiles = new ArrayList<>();
-//     int num = 1;
-//     for (int i = 0; i < regionList.length; i++)
-//     { //For each Region
-//       for (int j = 0; j < regionList[i].getTerritoryList().size(); j++)
-//       { //For each Territory
-//         landTiles = regionList[i].getTerritoryList().get(j).getLandTiles();
-//
-//         for (LandTile tile : landTiles)
-//         {
-//           if(tile.getCrop() != null) System.out.println(num + " " + tile.getCrop().name());
-//           num++;
-//         }
-//       }
-//     }
+    // List<LandTile> landTiles = new ArrayList<>();
+    // int num = 1;
+    // for (int i = 0; i < regionList.length; i++)
+    // { //For each Region
+    //   for (int j = 0; j < regionList[i].getTerritoryList().size(); j++)
+    //   { //For each Territory
+    //     landTiles = regionList[i].getTerritoryList().get(j).getLandTiles();
 
+    //     for (LandTile tile : landTiles)
+    //     {
+    //       if(tile.getCrop() != null) System.out.println(num + " " + tile.getCrop().name());
+    //       num++;
+    //     }
+    //   }
+    // }
     long end = System.nanoTime();
     System.out.println("Model.placeCrops() Done: Time: " + ((end - start) / 1000000000.0));
   }
@@ -1169,7 +1168,7 @@ public class Model
         / 1000000000.0));
   }
   
-  
+
   private void loadExistingSpecialEvents()
   {
     SpecialEventCSVLoader loader = null;
@@ -1457,91 +1456,50 @@ public class Model
    */
   public static void main(String[] args)
   {
-    System.out.println("==========================================================================");
+  	System.out.println("==========================================================================");
     System.out.println("      Running Test entry point: starvationevasion.sim.Model()");
     System.out.println("==========================================================================");
 
-    Model model = new Model();
-    //code below is simply for the testing of the event driver.
-    EventDriver eDriver = new EventDriver(model);
-    eDriver.initEvents(20);
-    for(AbstractEvent event : EventDriver.eventList)
-    {
-      System.out.println("Event Placed: " + event.getEventType());
-    }
+
 
     String[] imagePath = {"BlankBlue_MollweideProjection-1280x641.png"};
-//    JavaFX_DebugViewer pic = new JavaFX_DebugViewer();
-//    pic.launch(imagePath);
 
-    //Graphics2D gfx = pic.getOffScreenGraphics();
-    //gfx.setColor(Color.BLACK);
-    //gfx.fillRect(0,0,pic.getImageWidth(), pic.getImageHeight());
-   // Territory territory;
+    class GUIThread extends Thread
+    {
+      GUIThread()
+      {
+      }
+      public void run()
+      {
+        JavaFX_DebugViewer.main(imagePath);
+      }
+    }
 
-   //territory = model.getTerritory("US-Utah");
-   //model.drawBoundary(pic, territory, Color.GREEN, 1);
+    GUIThread gui = new GUIThread();
+    gui.start();
 
-   //territory = model.getTerritory("US-Nevada");
-   //model.drawBoundary(pic, territory, Color.BLUE, 1);
+    Model model = new Model();
 
-    /*
-   territory = model.getTerritory("Congo (Brazzaville)");
-   model.drawBoundary(pic, territory, Color.MAGENTA, 1);
+    JavaFX_DebugViewer pic = JavaFX_DebugViewer.me;
+    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
 
-   Region region = model.getRegion(EnumRegion.SUB_SAHARAN);
-   model.drawBoundary(pic, region, Util.brighten(EnumRegion.SUB_SAHARAN.getColor(), 0.5), 3);
-*/
-    //Region region = model.getRegion(EnumRegion.OCEANIA);
-    //model.drawBoundary(pic, region, Color.WHITE);
+    System.out.println("Model.main image size= "+pic.getImageWidth() + ", "+ pic.getImageHeight());
+    map.setCentralMeridian(0);
+    map.setRegionPerimetersSpherical(model.getRegionPerimetersSpherical());
 
-    //Territory territory = model.getTerritory("Tunisia");
-    //model.drawBoundary(pic, territory, Color.RED);
-/*
-    Territory territory = model.getTerritory("Ethiopia");
-    model.drawBoundaryUsingMapPoints(pic, territory);
+    System.out.println("model.getRegionPerimetersSpherical().length = " + model.getRegionPerimetersSpherical().length);
 
-    territory = model.getTerritory("Kenya");
-    model.drawBoundaryUsingMapPoints(pic, territory);
-
-
-    territory = model.getTerritory("Tanzania");
-    model.drawBoundaryUsingMapPoints(pic, territory);
-
-    territory = model.getTerritory("Somalia");
-    model.drawBoundaryUsingMapPoints(pic, territory);
-
-    territory = model.getTerritory("Sudan");
-    model.drawBoundaryUsingMapPoints(pic, territory);
-
-    Region region = model.getRegion(EnumRegion.SUB_SAHARAN);
-    model.drawBoundary(pic, region, Util.brighten(Color.MAGENTA, 0.5));
-
-    region = model.getRegion(EnumRegion.MIDDLE_EAST);
-    model.drawBoundary(pic, region, Util.brighten(EnumRegion.MIDDLE_EAST.getColor(), 0.5));
+    Polygon drawArea = map.getPerimeterDrawable(EnumRegion.SUB_SAHARAN);
+    drawArea.setStroke(Util.brighten(EnumRegion.SUB_SAHARAN.getColor(), 0.5));
+    pic.add(drawArea);
+  //for (EnumRegion regionID : EnumRegion.values())
+  //{
+  //  Polygon drawArea = map.getPerimeterDrawable(regionID);
+  //  pic.add(drawArea, Util.brighten(regionID.getColor(), 0.5));
+  //}
 
 
-    //territory = model.getTerritory("Mauritania");
-    //model.drawBoundary(pic, territory, Color.WHITE);
-
-    //territory = model.getTerritory("Algeria");
-    //model.drawBoundary(pic, territory, Color.GREEN);
-
-    //territory = model.getTerritory("Mexico");
-    //model.drawBoundary(pic, territory, Color.RED);
-    */
-
-//    MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());
-//    map.setCentralMeridian(0);
-//    for (EnumRegion regionID : EnumRegion.values())
-//    {
-//      Polygon drawArea = map.getPerimeterDrawable(regionID);
-//      pic.add(drawArea, Util.brighten(regionID.getColor(), 0.5));
-//    }
-    
-
-
-/*
+  /*
     for (int n = -180; n < 180; n+=1)
     {
       gfx.drawImage(background,0,0,null);
@@ -1550,16 +1508,13 @@ public class Model
       {
         Area drawArea = map.getPerimeterDrawable(regionID);
         gfx.setColor(Util.brighten(regionID.getColor(), 0.5));
-
         gfx.draw(drawArea);
       }
       pic.repaint();
-
       try
       {
         Thread.sleep(10);
       } catch (InterruptedException e) { }
-
       //for (Constant.Month month : Constant.Month.values())
       //{
       //  model.drawRain(pic, 2000+n, month);

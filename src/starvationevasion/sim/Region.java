@@ -1,6 +1,10 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.*;
+import starvationevasion.common.Constant;
+import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.MapPoint;
+import starvationevasion.common.Util;
 
 import java.awt.geom.Area;
 import java.util.ArrayList;

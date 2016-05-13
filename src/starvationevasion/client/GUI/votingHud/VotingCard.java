@@ -1,8 +1,5 @@
 package starvationevasion.client.GUI.votingHud;
 
-import java.io.File;
-import java.util.Random;
-
 import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.image.Image;
@@ -10,7 +7,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import starvationevasion.client.GUI.DraftLayout.CardNode;
+
+import java.io.File;
+import java.util.Random;
 
 public class VotingCard extends NodeTemplate
 {

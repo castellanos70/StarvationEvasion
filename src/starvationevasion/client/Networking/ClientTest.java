@@ -3,7 +3,7 @@ package starvationevasion.client.Networking;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.client.Logic.LocalDataContainer;
-import starvationevasion.client.UpdateLoop;
+import starvationevasion.client.ClientMain;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
 import starvationevasion.common.gamecards.EnumPolicy;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
  */
 public class ClientTest implements Client
 {
-  private final UpdateLoop GAME_LOOP;
+  private final ClientMain GAME_LOOP;
   private final Communication COMM;
   private final LocalDataContainer CONTAINER;
   private final ChatManager CHAT;
@@ -30,7 +30,7 @@ public class ClientTest implements Client
   private ArrayList<EnumPolicy> hand;
   private State state;
 
-  public ClientTest(UpdateLoop gameLoop, String host, int port)
+  public ClientTest(ClientMain gameLoop, String host, int port)
   {
     GAME_LOOP = gameLoop;
     COMM = new ConcurrentCommModule(host, port);

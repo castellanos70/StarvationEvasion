@@ -1,19 +1,19 @@
 package starvationevasion.client.GUI.votingHud;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.DraftLayout.CardNode;
+import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public class VotingHand extends NodeTemplate
 {

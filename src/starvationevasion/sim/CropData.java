@@ -19,9 +19,7 @@ public class CropData
     price2009, // int: Price (2009 US import price, Dollars per Metric Ton)
     water,     // int: Water (Cubic meters per Metric Ton)
     energy,    // not implemented yet.
-    fertilizerN,    // not implemented yet.
-    fertilizerP2O5, // not implemented yet.
-    fertilizerK2O,  // not implemented yet.
+    fertilizerCost,    // dollars/kg.
     growDays,       //Growing Period (days/year)
     temperatureMin,        //Temperature Min (Deg C). Crops die if temperature drops below this within its growing period.
     temperatureIdealLow,  // Temperature Ideal Low (Deg C). Crops have max productivity if all days are within this range.
@@ -34,9 +32,7 @@ public class CropData
   {
     WATER,     // int: Water (Cubic meters per Metric Ton)
     ENERGY,    // not implemented yet.
-    FERTILIZER_N,    // not implemented yet.
-    FERTILIZER_P2O5, // not implemented yet.
-    FERTILIZER_K2O,  // not implemented yet.
+    FERTILIZER_COST,    // dollars/kg.
     GROW_DAYS,       //Growing Period (days/year)
     TEMPERATURE_MIN,        //Temperature Min (Deg C). Crops die if temperature drops below this within its growing period.
     TEMPERATURE_IDEAL_LOW,  // Temperature Ideal Low (Deg C). Crops have max productivity if all days are within this range.
@@ -64,8 +60,8 @@ public class CropData
       if (!header.name().equals(fieldList[i]))
       {
         LOGGER.severe("**ERROR** Reading " + PATH_CROPDATA +
-            ": Expected header[" + i + "]=" + header + ", Found: " + fieldList[i]);
-        return;
+          ": Expected header[" + i + "]=" + header + ", Found: " + fieldList[i]);
+        System.exit(1);
       }
     }
     fileReader.trashRecord();
@@ -95,12 +91,8 @@ public class CropData
             data[Field.WATER.ordinal()][foodIdx] = value; break;
           case energy:
             data[Field.ENERGY.ordinal()][foodIdx] = value; break;
-          case fertilizerN:
-            data[Field.FERTILIZER_N.ordinal()][foodIdx] = value; break;
-          case fertilizerP2O5:
-            data[Field.FERTILIZER_P2O5.ordinal()][foodIdx] = value; break;
-          case fertilizerK2O:
-            data[Field.FERTILIZER_K2O.ordinal()][foodIdx] = value; break;
+          case fertilizerCost:
+            data[Field.FERTILIZER_COST.ordinal()][foodIdx] = value; break;
           case growDays:
             data[Field.GROW_DAYS.ordinal()][foodIdx] = value; break;
           case temperatureMin:

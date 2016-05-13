@@ -104,7 +104,7 @@ public class MapProjectionMollweide
     }
 
 
-    Polygon drawBoundary = new Polygon();
+    Polygon drawBoundary = null;
 
     Point pixel = new Point();
     double[] coords = new double[6];
@@ -141,7 +141,9 @@ public class MapProjectionMollweide
             vertexArray[i] = vertexList.get(i).doubleValue();
           }
           Polygon shape = new Polygon(vertexArray);
-          drawBoundary.union(drawBoundary, shape);
+
+          if (drawBoundary == null)  drawBoundary = shape;
+          else drawBoundary.union(drawBoundary, shape);
         }
         else
         {

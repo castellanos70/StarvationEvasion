@@ -2,19 +2,17 @@ package starvationevasion.client.GUI.Popups;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import starvationevasion.client.GUI.GUI;
-import starvationevasion.client.GUI.Graphs.Graph;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.image.*;
-import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
+import starvationevasion.client.GUI.GUI;
+import starvationevasion.client.GUI.Graphs.Graph;
 import starvationevasion.common.EnumRegion;
 
 import java.util.ArrayList;

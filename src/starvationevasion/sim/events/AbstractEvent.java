@@ -1,9 +1,6 @@
 package starvationevasion.sim.events;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.MapPoint;
 import starvationevasion.common.Util;
@@ -11,6 +8,8 @@ import starvationevasion.sim.CropData;
 import starvationevasion.sim.LandTile;
 import starvationevasion.sim.Region;
 import starvationevasion.sim.Territory;
+
+import java.util.ArrayList;
 
 
 /**

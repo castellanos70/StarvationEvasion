@@ -7,7 +7,6 @@ import javafx.scene.effect.InnerShadow;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
-import starvationevasion.client.Setup.RegionChooser;
 import starvationevasion.client.Networking.Client;
 import starvationevasion.client.Logic.geography.MapConstants;
 import starvationevasion.client.Logic.geography.MapUtil;
@@ -69,6 +68,7 @@ public class MapController implements MapConstants
    * @param controllerClass the controller to set as current
    * @param <T> the class type of controller
    */
+
   public static <T extends MapController> void setCurrentController(Class<T> controllerClass)
   {
     if (controllerClass.isAssignableFrom(ConfigPhaseMapController.class))
@@ -144,12 +144,12 @@ public class MapController implements MapConstants
     for (java.util.Map.Entry<EnumRegion, String> regionEntry : regions.entrySet())
     {
       Color styleColor;
-     // if (regionEntry.getValue().equals(client.getUsername()))
+      // if (regionEntry.getValue().equals(client.getUsername()))
       {
         styleColor = Color.GREEN;
-        RegionChooser.selectionText.setText("Selected:\n\n" + regionEntry.getKey().toString());
+        //RegionChooser.selectionText.setText("Selected:\n\n" + regionEntry.getKey().toString());
       }
-     // else styleColor = Color.RED;
+      // else styleColor = Color.RED;
       styleRegion(mapNode, regionEntry.getKey(), styleColor, new InnerShadow(SELECT_RADIUS, Color.BLACK));
     }
   }

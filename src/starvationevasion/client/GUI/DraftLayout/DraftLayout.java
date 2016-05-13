@@ -8,16 +8,12 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-import starvationevasion.client.GUI.DraftLayout.ProductBar;
-import starvationevasion.client.GUI.DraftLayout.Hand;
 import starvationevasion.client.GUI.DraftLayout.map.Map;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.SummaryBar;
-import starvationevasion.client.GUI.DraftLayout.map.Map;
 import starvationevasion.client.GUI.Popups.DiscardDisplay;
 import starvationevasion.client.GUI.Popups.GraphDisplay;
 import starvationevasion.client.GUI.Popups.ProductBarDataDisplay;
-import starvationevasion.client.GUI.SummaryBar;
 
 import java.util.ArrayList;
 

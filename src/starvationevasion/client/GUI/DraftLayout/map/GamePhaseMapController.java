@@ -54,7 +54,7 @@ public class GamePhaseMapController extends MapController
    * Defines the behavior of the map whena region is click on by the user's mouse
    * @param event Mouse event that was triggered upon clicking a region
    */
-   @Override
+  @Override
   public void handleMouseClicked(MouseEvent event)
   {
     Group region = (Group) event.getSource();

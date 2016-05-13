@@ -77,14 +77,17 @@ public class EventDriver
   		   {
   		     allTerritories.addAll(regionList[i].getTerritoryList());
   		   }
+  		   //pick 50 random territories.
   		   for(int i = 0; i < 50; i++)
   		   {
   		     possibleBlights.add(allTerritories.remove(Util.rand.nextInt(allTerritories.size())));
   		   }
   		   for(Territory territory : possibleBlights)
   		   {
+  		     //iterate through each randomly selected territory
   		     int[] mostPlanted = territory.getMostPlantedCrop();
-
+		     //if the most planted crop takes up more than 50% of the territory's land tiles
+		     //create a blight on that territory.
   		     if(territory.getLandTiles().size() > 0 && (float) (mostPlanted[1]) / territory.getLandTiles().size() > .5)
   		     {
   		       EnumFood crop = EnumFood.values()[mostPlanted[0]];

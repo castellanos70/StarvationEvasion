@@ -62,6 +62,7 @@ public class ClientMain extends Application
   private MenuButton credits = new MenuButton("  CREDITS");
   private MenuButton tutorial = new MenuButton("  TUTORIAL");
   private MenuButton exit = new MenuButton("  EXIT");
+  private Thread backgroundClientLoader = null;
 
   private Screen screen;
   static Rectangle2D bounds;
@@ -87,7 +88,8 @@ public class ClientMain extends Application
   @Override
   public void start(Stage primaryStage)
   {
-
+    backgroundClientLoader = new Thread(() -> client = new ClientTest(this, connectURL, connectPort));
+    backgroundClientLoader.start();
     IntroVideo video = new IntroVideo();
 
     try
@@ -223,6 +225,15 @@ public class ClientMain extends Application
   public void showStartMenu(Stage primaryStage)
   {
     timer.stop();
+    // Make sure the background client loader thread is done with its work
+    // before we continue
+    try
+    {
+      if (backgroundClientLoader != null) backgroundClientLoader.join();
+    } catch (Exception e)
+    {
+      e.printStackTrace();
+    }
 
     username.setPromptText("USER NAME");
     password.setPromptText("PASSWORD");
@@ -262,7 +273,7 @@ public class ClientMain extends Application
         System.err.println("ERROR: Not connected to server");
         return;
       }
-      client.loginToServer(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.USA_CALIFORNIA);
+      client.loginToServer(username.getText(), password.getText(), EnumRegion.USA_CALIFORNIA);
     });
 
     createUser.setOnMouseClicked((event) ->
@@ -272,7 +283,7 @@ public class ClientMain extends Application
         System.err.println("ERROR: Not connected to server");
         return;
       }
-      client.createUser(usernameLabel.getText(), passwordLabel.getText(), EnumRegion.USA_CALIFORNIA);
+      client.createUser(username.getText(), password.getText(), EnumRegion.USA_CALIFORNIA);
     });
 
     credits.setOnMouseClicked(event -> {
@@ -320,7 +331,7 @@ public class ClientMain extends Application
 
     //client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
     //client = new ClientTest(this, "localhost", 5555);
-    client = new ClientTest(this, connectURL, connectPort);
+    //client = new ClientTest(this, connectURL, connectPort);
     this.stage = stage;
     stage.setMaximized(true);
     stage.setTitle("Login");

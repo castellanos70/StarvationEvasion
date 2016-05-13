@@ -18,10 +18,7 @@ import starvationevasion.common.gamecards.EnumPolicy;
 import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.communication.Communication;
 import starvationevasion.communication.ConcurrentCommModule;
-import starvationevasion.server.model.Response;
-import starvationevasion.server.model.State;
-import starvationevasion.server.model.Type;
-import starvationevasion.server.model.User;
+import starvationevasion.server.model.*;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -54,7 +51,9 @@ public class AI
   private Random rand = new Random();
   //False if maps used in drafting phase not created yet.
   private AtomicBoolean mapsCreated=new AtomicBoolean(false);
-  
+  private Login login;
+  private boolean notLoggedIn = true;
+
   // time of server start
   private double startNanoSec = 0;
 
@@ -125,7 +124,10 @@ public class AI
     // Add the starting commands
     commands.add(new GameState(this));
     commands.add(new Uptime(this));
-    commands.add(new Login(this));
+
+    COMM.send(Endpoint.USERS_LOGGED_IN, null, null);
+    login = new Login(this);
+    commands.add(login);
 
     aiLoop();
     COMM.dispose();
@@ -283,12 +285,20 @@ public class AI
         // since the last call
         ArrayList<Response> responses = COMM.pollMessages();
         processServerInput(responses);
-        
+
         // if commands is empty check again
         if (commands.size() == 0) continue;
 
         // take off the top of the stack
         Command c = commands.peek();
+
+        // Passes to login object all names that have been taken this round
+        if(c.commandString().equals("Login"))
+        {
+          if(responses.size() <= 0) continue;
+          login.setUsersLoggedIn(responses);
+        }
+
         //If the first drafting phase is about to happen and the maps used in drafting haven't been
         //created, call the method to create them.
         if(!mapsCreated.get() && c.commandString().equals("Draft"))

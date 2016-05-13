@@ -55,5 +55,15 @@ If you build a .jar file to run the server, as of writing it results in a .jar t
 
 At the time of writing, this could reduce the .jar file from about 800 mb to ~15 mb. This makes it much more reasonable to rebuild and push to github.
 
+## Compiling Server.jar/Ai.jar Using ZipSurgeon
 
+If you want to instead build the Server/AI jar files using the ZipSurgeon, first build an executable jar that points to starvationevasion.server.Server.
+
+Go to starvationevasion.util.ZipSurgeon - open its command line arguments and add the following:
+
+"<exact path to executable jar>" "<exact path to destination with jar name>" "<exact path to a blacklist.txt file>"
+
+The quotes enable you to insert file paths with spaces. When you run the ZipSurgeon, it will crawl through the existing executable jar and make a copy of it as it does this. It uses the blacklist file as a list ot keywords to help it figure out which zip entries to keep and which to ignore.
+
+The blacklist file for building the Server/AI jars is called "ServerBlacklist.txt" and it is inside the root directory (StarvationEvasion).
 

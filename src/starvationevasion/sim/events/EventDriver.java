@@ -65,10 +65,10 @@ public class EventDriver
 		// determine what events to add to EventsList
 		 switch(eventIndex)
 		 {
-  		 case 0: addEvent(new Drought(tmpTerritory, tmpRegion, cropData, Util.rand.nextInt(5))); break;
-  		 case 1: addEvent(new Fire(tmpTerritory,null, null, 1)); break;
-  		 case 2: addEvent(new Hurricane(tmpTerritory, null, null, 3));break;
-  		 case 3: addEvent(new Earthquake(tmpTerritory, null, null, 5));break;
+  		 case 0: addEvent(new Drought(tmpTerritory, tmpRegion, cropData, Util.rand.nextInt(5), "Drought")); break;
+  		 case 1: addEvent(new Fire(tmpTerritory,null, null, 1, "Fire")); break;
+  		 case 2: addEvent(new Hurricane(tmpTerritory, null, null, 3, "Hurricane"));break;
+  		 case 3: addEvent(new Earthquake(tmpTerritory, null, null, 5, "EarthQuake"));break;
   		 case 4:
   		   Region[] regionList = model.getRegionList();
   		   List<Territory> allTerritories = new ArrayList<>();
@@ -77,21 +77,25 @@ public class EventDriver
   		   {
   		     allTerritories.addAll(regionList[i].getTerritoryList());
   		   }
-  		   for(int i = 0; i < 20; i++)
+  		   //pick 50 random territories.
+  		   for(int i = 0; i < 50; i++)
   		   {
   		     possibleBlights.add(allTerritories.remove(Util.rand.nextInt(allTerritories.size())));
   		   }
   		   for(Territory territory : possibleBlights)
   		   {
+  		     //iterate through each randomly selected territory
   		     int[] mostPlanted = territory.getMostPlantedCrop();
-  		     if(mostPlanted[1] / territory.getLandTiles().size() > .7)
+		     //if the most planted crop takes up more than 50% of the territory's land tiles
+		     //create a blight on that territory.
+  		     if(territory.getLandTiles().size() > 0 && (float) (mostPlanted[1]) / territory.getLandTiles().size() > .5)
   		     {
   		       EnumFood crop = EnumFood.values()[mostPlanted[0]];
-  		       addEvent(new Blight(territory, null, cropData, 2, crop));
+  		       addEvent(new Blight(territory, null, cropData, 2, "Blight", crop));
   		     }
   		   }		   
   		   break;
-  		 case 5: addEvent(new Flood(tmpTerritory, null, null, 1));
+  		 case 5: addEvent(new Flood(tmpTerritory, null, null, 1, "Flood"));
 
 
 
@@ -124,6 +128,8 @@ public class EventDriver
 		   eventList.remove(event);
 	 }
  }
+ 
+
  
  
  

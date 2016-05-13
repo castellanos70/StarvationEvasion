@@ -1,18 +1,24 @@
 .git
-.idea
 out
 _windows
 bin
-.settings
 *.iml
 .classpath
-.project
+
 *~
 .DS_Store
 ## File-based project format:
 *.ipr
 *.iws
-notes_joel.txt
+
+##I (Joel) would like a way to have as part of the repo, IntelliJ project 
+## configuration files that define a project wide code style, project build 
+## paths, libs and resorce directories. However, my first attempt of including
+## .idea broke the project for Javier who is running
+## IntelliJ in Linux.
+.idea     ##IntelliJ IDE project config
+.settings ##Eclipse IDE project config
+.project  ##Eclipse IDE project config
 
 # the dataSources folder is raw data not directly used by the project.
 dataSources

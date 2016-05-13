@@ -31,8 +31,6 @@ import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Networking.Client;
 import starvationevasion.client.Networking.ClientTest;
 import starvationevasion.common.EnumRegion;
-
-
 /**
  * Update loop starts up the home screen for the client. From here the user is able
  * to launch a game and connect to a single or multiplayer. When the user clicks
@@ -391,19 +389,30 @@ public class ClientMain extends Application
    */
   public String showCreditText(){
 
-    String text = "Music: \"When the Sun Goes Down\""
-            + "\n\t produced by DJ MAC n' Cheese"
+    String text = "Music:"
+      +"\n \"When the Sun Goes Down\""
+      +"\n produced by DJ MAC n' Cheese"
 
-            +"\n\n Developers:"
-            +"\n Joel"
-            +"\n Scott, Christopher, Isaiah, Miri"
-            +"\n Tommy, Robert, Rob"
-            +"\n John, Elijah, Jesus"
-            +"\n Atle, Michael, Stephen"
-            +"\n Justin, George"
-            +"\n Ben, Christian, Brian"
-            +"\n Jeff, Ederin, Antonio, Philip"
-            +"\n Max Sanchez";
+      +"\n\n\t\t\t\t\t   Developers"
+      +"\n\n Project Lead:"
+      +"\n Joel Castellanos"
+      +"\n\n Intro Screen:"
+      +"\n Christopher Sanchez, Isaiah Waltemire, Miri Ryu, Scott Cooper,"
+      +"\n\n Data Collection, Data Preprocessing:"
+      +"\n Chris Wu, James Green, Rob Spidle, Tommy Manzanares"
+      +"\n\n Simulator:"
+      +"\n John Clark, Elijah Griffo-Black, Jesus Lopez"
+      +"\n\n Policy Card Development:"
+      +"\n Atle Olson, Michael Martin, Stephen Sagartz"
+      +"\n\n Server and Client Communication:"
+      +"\n Javier Chavez, Justin Hall, George Boujaoude"
+      +"\n\n Client User Interface (GUI):"
+      +"\n Ben Matthews, Brian Downing, Christian Seely, Nate Gonzales"
+      +"\n\n Client Artificial Intelligence:"
+      +"\n Antonio Griego, Ederin Igharoro, Jeff McCall"
+      +"\n\n Testing and Integration:"
+      +"\n Max Sanchez";
+
     return text;
   }
 

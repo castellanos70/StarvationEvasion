@@ -222,28 +222,36 @@ public class Territory
     return population[year - Constant.FIRST_DATA_YEAR];
   }
 
+  /**
+   * A function to return the most planted crop in this territory.
+   * @return int[] mostPlantedCrop an int array of size 2, holding the most planted
+   * crop and the number of land tiles it is planted on.
+   */
   public int[] getMostPlantedCrop()
   {
     int[] cropAmts = new int[12];
-    int max = 0;
+    int maxCropAmt = 0;
     int maxIndex = 0;
     for(LandTile tile : landTiles)
     {
       if(tile.getCrop() != null)
       {
+        /*for each landtile, add to a bucket that corresponds to the 
+          ordinal value of the plant that is in the landtile.*/
         cropAmts[tile.getCrop().ordinal()]++;
       }
       
     }
     for(int i = 0; i < cropAmts.length; i++)
     {
-      if(cropAmts[i] > max)
+      //get the max number in the array, and it's index.
+      if(cropAmts[i] > maxCropAmt)
       {
-        max = cropAmts[i];
+        maxCropAmt = cropAmts[i];
         maxIndex = i;
       }
     }
-    int[] mostPlantedCrop = {maxIndex, max};
+    int[] mostPlantedCrop = {maxIndex, maxCropAmt};
     return mostPlantedCrop;
   }
 

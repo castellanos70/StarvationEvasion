@@ -30,11 +30,12 @@ import javafx.stage.Stage;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Networking.Client;
 import starvationevasion.client.Networking.ClientTest;
+import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
 /**
  * Update loop starts up the home screen for the client. From here the user is able
  * to launch a game and connect to a single or multiplayer. When the user clicks
- * login, it initializes a client object and tries to connect to the
+ * buttonLogin, it initializes a client object and tries to connect to the
  * selected server.
  * <p>
  * Moves the client over to a single-threaded game
@@ -42,9 +43,6 @@ import starvationevasion.common.EnumRegion;
  */
 public class ClientMain extends Application
 {
-  private static String connectURL = "localhost";
-  private static int connectPort = 5555;
-
   private int width  = 300;
   private int height = 250;
   private Stage stage;
@@ -53,16 +51,17 @@ public class ClientMain extends Application
   private Client client;
   private Pane root = new Pane();
   private GridPane gridRoot = new GridPane();
-  private MenuButton login = new MenuButton("  LOGIN");
-  private Label usernameLabel = new Label("Username");
-  private TextField username = new TextField();
-  private Label passwordLabel = new Label("Password");
-  private PasswordField password = new PasswordField();
-  private MenuButton createUser = new MenuButton("  CREATE USER");
+  private TextField editServer = new TextField("foodgame.cs.unm.edu");
+  private MenuButton buttonConnect = new MenuButton("  CONNECT");
+  private MenuButton buttonLogin = new MenuButton("  LOGIN");
+  private Label labelUsername = new Label("Username");
+  private TextField editUsername = new TextField();
+  private Label labelPassword = new Label("Password");
+  private PasswordField editPassword = new PasswordField();
+  private MenuButton buttonCreateUser = new MenuButton("  CREATE USER");
   private MenuButton credits = new MenuButton("  CREDITS");
   private MenuButton tutorial = new MenuButton("  TUTORIAL");
   private MenuButton exit = new MenuButton("  EXIT");
-  private Thread backgroundClientLoader = null;
 
   private Screen screen;
   static Rectangle2D bounds;
@@ -88,8 +87,7 @@ public class ClientMain extends Application
   @Override
   public void start(Stage primaryStage)
   {
-    backgroundClientLoader = new Thread(() -> client = new ClientTest(this, connectURL, connectPort));
-    backgroundClientLoader.start();
+
     IntroVideo video = new IntroVideo();
 
     try
@@ -184,7 +182,7 @@ public class ClientMain extends Application
    * This method allows the first intro video to play without
    * locking the window up. Once a time limit or the skip
    * button has been invoked, the primary Stage then shows
-   * the start menu (login page)
+   * the start menu (buttonLogin page)
    *
    * @param primaryStage
    */
@@ -215,26 +213,17 @@ public class ClientMain extends Application
 
   /**
    * When invoked, this method will show the start menu and
-   * all of the elements on the page, such as user login,
-   * password, create user etc.
+   * all of the elements on the page, such as user buttonLogin,
+   * editPassword, create user etc.
    *
    * @param primaryStage
    */
   public void showStartMenu(Stage primaryStage)
   {
     timer.stop();
-    // Make sure the background client loader thread is done with its work
-    // before we continue
-    try
-    {
-      if (backgroundClientLoader != null) backgroundClientLoader.join();
-    } catch (Exception e)
-    {
-      e.printStackTrace();
-    }
 
-    username.setPromptText("USER NAME");
-    password.setPromptText("PASSWORD");
+    editUsername.setPromptText("USER NAME");
+    editPassword.setPromptText("PASSWORD");
     screen = Screen.getPrimary();
     bounds = screen.getVisualBounds();
 
@@ -247,41 +236,49 @@ public class ClientMain extends Application
 
     Pane root = new Pane();
     root.setPrefSize(bounds.getWidth(), bounds.getHeight());
-    Image logo = new Image("file:assets/visResources/TempLogo.png");
 
-
-    ImageView ivLogo = new ImageView(logo);
-    ivLogo.setFitHeight(bounds.getHeight() / 7);
-    ivLogo.setFitWidth(bounds.getWidth() / 7);
 
     ImageView imgView = new ImageView(background);
     imgView.setFitWidth(bounds.getWidth());
     imgView.setFitHeight(bounds.getHeight());
 
-    ivLogo.setTranslateX(bounds.getWidth() / 5 * 3.25);
-    ivLogo.setTranslateY(bounds.getHeight() / 5 * 3);
-    root.getChildren().addAll(imgView,ivLogo);
+    root.getChildren().addAll(imgView);
     menu = new Menu();
 
+    buttonConnect.setOnMouseClicked((event) ->
+      {
+    //client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
+    //client = new ClientTest(this, "localhost", 5555);
+    String host = editServer.getText();
+    client = new ClientTest(this, host, Constant.SERVER_PORT);
+      });
 
-    login.setOnMouseClicked((event) ->
+
+    buttonLogin.setOnMouseClicked((event) ->
     {
       if (!client.isRunning())
       {
         System.err.println("ERROR: Not connected to server");
         return;
       }
-      client.loginToServer(username.getText(), password.getText(), EnumRegion.USA_CALIFORNIA);
+
+        client.loginToServer(editUsername.getText(),editPassword.getText(), EnumRegion.USA_CALIFORNIA);
     });
 
-    createUser.setOnMouseClicked((event) ->
+    buttonCreateUser.setOnMouseClicked((event) ->
     {
       if (!client.isRunning())
       {
         System.err.println("ERROR: Not connected to server");
         return;
       }
-      client.createUser(username.getText(), password.getText(), EnumRegion.USA_CALIFORNIA);
+
+      System.out.println("ClientMain.buttonCreateUser.setOnMouseClicked:" +
+        "editUsername.getText()="+editUsername.getText());
+
+
+
+      client.createUser(editUsername.getText(), editPassword.getText(), EnumRegion.USA_CALIFORNIA);
     });
 
     credits.setOnMouseClicked(event -> {
@@ -327,9 +324,8 @@ public class ClientMain extends Application
 
 
 
-    //client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
-    //client = new ClientTest(this, "localhost", 5555);
-    //client = new ClientTest(this, connectURL, connectPort);
+
+
     this.stage = stage;
     stage.setMaximized(true);
     stage.setTitle("Login");
@@ -358,15 +354,16 @@ public class ClientMain extends Application
     newStage.setTitle("Credits");
 
 
-    username.setFocusTraversable(false);
-    password.setFocusTraversable(false);
-    gridRoot.add(username, 0, 1);
-    gridRoot.add(password, 0, 2);
-    gridRoot.add(login, 0, 3);
-    gridRoot.add(createUser, 0, 4);
-    gridRoot.add(tutorial,0,5);
-    gridRoot.add(credits,0,6);
-    gridRoot.add(exit,0,7);
+    editUsername.setFocusTraversable(false);
+    editPassword.setFocusTraversable(false);
+    gridRoot.add(editServer, 0, 1); gridRoot.add(buttonConnect, 1, 1);
+    gridRoot.add(editUsername, 0, 2);
+    gridRoot.add(editPassword, 0, 3);
+    gridRoot.add(buttonLogin, 0, 4);
+    gridRoot.add(buttonCreateUser, 0, 5);
+    gridRoot.add(tutorial,0,6);
+    gridRoot.add(credits,0,7);
+    gridRoot.add(exit,0,8);
     root.getChildren().add(gridRoot);
     gridRoot.setTranslateY(bounds.getHeight()/5*3);
     gridRoot.setTranslateX(50);
@@ -425,8 +422,10 @@ public class ClientMain extends Application
       {
         deltaSeconds = (System.currentTimeMillis() - millisecondTimeStamp) / 1000.0;
         millisecondTimeStamp = System.currentTimeMillis();
-        client.update(deltaSeconds);
-        if (!client.isRunning()) stop();
+        if (client != null)
+        { client.update(deltaSeconds);
+          if (!client.isRunning()) stop();
+        }
       }
 
       public void stop()
@@ -442,23 +441,6 @@ public class ClientMain extends Application
 
   public static void main(String[] args)
   {
-
-    try
-    {
-      if(args.length == 1)
-      {
-        connectURL = args[0];
-      }
-      else if(args.length == 2)
-      {
-        connectURL = args[0];
-        connectPort = Integer.parseInt(args[1]);
-      }
-    } catch (Exception e)
-    {
-      System.exit(0);
-    }
-
     launch(args);
   }
 

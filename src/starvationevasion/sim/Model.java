@@ -21,7 +21,6 @@ import starvationevasion.sim.io.GeographyXMLparser;
 import starvationevasion.sim.io.ProductionCSVLoader;
 import starvationevasion.sim.io.SpecialEventCSVLoader;
 import starvationevasion.util.JavaFX_DebugViewer;
-
 import java.awt.geom.Area;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -145,6 +144,8 @@ public class Model
   private List<AbstractEvent> specialEvents = new ArrayList<>();
 
   private PackedTileData packedTileData;
+  
+  private EventDriver eventDriver;
 
   public Model()
   {
@@ -182,13 +183,13 @@ public class Model
     updateCropRatings(Constant.FIRST_GAME_YEAR-1);
 
     placeCrops();
+    
+    eventDriver = new EventDriver(this);
 
-    EventDriver driver = new EventDriver(this);
-
-    setRegionalProduction();
-
+    setRegionalProduction(Constant.FIRST_GAME_YEAR-1, true);
+    
     populateUSRegionList();
-
+    
     for (int i = 0; i < YEARS_OF_DATA; i++)
     {
       worldData[i] = new WorldData();
@@ -473,6 +474,20 @@ public class Model
     //  if (debugLevel.intValue() < Level.INFO.intValue()) printRegion(region, Constant.FIRST_YEAR);
     //}
   }
+  
+  private void resetMultipliers()
+  {
+    for(int i = 0; i < regionList.length; i++)
+    {
+      for(Territory territory : regionList[i].getTerritoryList())
+      {
+        for(LandTile tile : territory.getLandTiles())
+        {
+          tile.setProductionMultiplier(1);
+        }
+      }
+    }
+  }
 
   /**
    * Every method is currently uncommented as not everything is currently implemented.
@@ -483,45 +498,48 @@ public class Model
   {
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
-    //applyPolicies(); // In progress.
+    applyPolicies(cards); // In progress.
 
-    //updateLandUse(); // Not started.
+    eventDriver.initEvents(20);
 
-    //updatePopulation(); // In progress.
+    updateLandUse(); // In progress.
 
-    //updateClimate(); // Done.
+    // updatePopulation();
 
-    //generateSpecialEvents(); // In progress (Alfred).
+    // updateClimate();
 
-    //applySpecialEvents(); // Done.
+    // generateSpecialEvents(); // In progress (Alfred).
 
-    //replantCrops();
+    // applySpecialEvents();
 
-    //updateFarmProductYield(); // Done.
+    // updateFarmProductYield();
 
-    //updateFarmProductNeed(); // Done.
+    // updateFarmProductNeed();
 
-    //updateFarmProductMarket(); // Not started.
+    // updateFarmProductMarket();
 
-    //updateFoodDistribution(); // Not started.
+    // updateFoodDistribution();
 
-    //updatePlayerRegionRevenue(); // Not started.
+    // updatePlayerRegionRevenue();
 
-    //updateHumanDevelopmentIndex(); // Done.
+    // updateHumanDevelopmentIndex();
 
-
-    //if (debugLevel.intValue() < Level.INFO.intValue())
-    //{ Simulator.dbg.println("******************************************* FINAL Stats for " + debugRegion + " in " +
+    // if (debugLevel.intValue() < Level.INFO.intValue())
+    // { Simulator.dbg.println("*******************************************
+    // FINAL Stats for " + debugRegion + " in " +
     // currentYear);
-    //  printRegion(regionList[debugRegion.ordinal()], currentYear);
-    //}
+    // printRegion(regionList[debugRegion.ordinal()], currentYear);
+    // }
 
     // updates the worlddata with all the values of this year. If none of the
     // above methods are called, everything is 0.
     populateWorldData(currentYear);
     currentYear++;
+    resetMultipliers();
     return currentYear;
   }
+  
+  
 
   protected WorldData populateWorldData(int year)
   {
@@ -659,7 +677,7 @@ public class Model
         case Policy_DivertFunds:
           //remove all cards from owners hand -- done in Simulator.java
           //give 14 million dollars to owner
-          getRegion(c.getOwner()).addToRevenue(14000000);
+          getRegion(c.getOwner()).addToRevenue(14);
           break;
         case Policy_EducateTheWomenCampaign:
           //TODO:
@@ -710,7 +728,7 @@ public class Model
           sendFoodRelief(EnumRegion.SUB_SAHARAN, c.getOwner(), c.getTargetFood(), 5000);
           break;
         case Policy_Fundraiser:
-          getRegion(c.getOwner()).addToRevenue(1000000);
+          getRegion(c.getOwner()).addToRevenue(1);
           break;
         case Policy_InternationalFoodRelief:
           //TODO:
@@ -778,7 +796,11 @@ public class Model
       }
     }
   }
-
+  
+  /**
+   * This method is to be called at the end of a year.
+   * For each landTile, farmer decides whether or not to replant same crop
+   */
   private void updateLandUse()
   {
     // TODO : Land use is based on policies.
@@ -791,6 +813,33 @@ public class Model
     if (debugLevel.intValue() < Level.INFO.intValue())
     {
       Simulator.dbg.println("******************************************* Updating land use");
+    }
+    
+    for(Region region: regionList)
+    {
+      region.resetProduction();
+      for (Territory territory : territoryList)
+      {
+        for (LandTile tile : territory.getLandTiles())
+        {
+          for(EnumFood crop: EnumFood.ALL_FOODS)
+          {
+            int newCost =  calculateTileCost(region, crop, currentYear);
+            // not sure if this does what it should be
+            int production = (int)(.8 * calculateTileProduction(region, tile, currentYear, crop));
+            //proposed production is cut to 80% to account for cost of replanting
+            int net = production - newCost;
+            if(net > (tile.getCurrentProduction() - tile.getCurrentCost()))
+            {
+              tile.setCrop(crop);
+              tile.setCurrentProduction(production);
+              tile.setCurrentCost(newCost);
+              break;
+            }
+          }
+        }
+      }
+      region.setTotalProduction(false);
     }
   }
 
@@ -1272,7 +1321,7 @@ public class Model
     }
   }
 
-  private void setRegionalProduction()
+  private void setRegionalProduction(int year, boolean isInit)
   {
     for(Region region: regionList)
     {
@@ -1280,93 +1329,61 @@ public class Model
       {
         for(LandTile tile: territory.getLandTiles())
         {
-          int production = calculateTileProduction(region, tile);
+          int production = calculateTileProduction(region, tile, year);
           tile.setCurrentProduction(production);
-          int cost = calculateTileCost(region, tile.getCrop());
+          int cost = calculateTileCost(region, tile.getCrop(), year);
           tile.setCurrentCost(cost);
         }
       }
-      region.setTotalProduction();
+      region.setTotalProduction(isInit);
     }
   }
 
-  private int calculateTileProduction(Region region, LandTile tile)
+  private int calculateTileProduction(Region region, LandTile tile, int year)
   {
-    return calculateTileProduction(region, tile, tile.getCrop());
+    return calculateTileProduction(region, tile, year, tile.getCrop());
   }
 
 
 
-  private int calculateTileProduction(Region region, LandTile tile, EnumFood crop)
+  private int calculateTileProduction(Region region, LandTile tile, int year, EnumFood crop)
   {
-
+    int revenue = 0;
     if(crop == null) return 0;
 
     //total production of tile in USD:
     // (crop rating) * (metric tons yield  / sq km) * (area of land tile in sq km) * (USD food price  / metric ton)
 
-    double production_per_km = region.getCropProduction(2009, crop) / region.getCropArea(2009, crop);
-    double tileSize = region.getLandTotal() / region.getNumTiles() ;
-    int index = crop.ordinal();
-    int revenue = (int) (tile.getCropRatings()[index].productionRate() * cropData.getPrice(2009,
-        EnumFood.values()[index]) * tileSize * production_per_km);
+    if(region.getCropArea(year, crop) != 0)
+    {
+      double production_per_km = region.getCropProduction(year, crop) / region.getCropArea(year, crop);
+      double tileSize = region.getLandTotal() / region.getNumTiles();
+      int index = crop.ordinal();
+      revenue = (int) (tile.getCropRatings()[index].productionRate() * cropData.getPrice(year,
+          EnumFood.values()[index]) * tileSize * production_per_km);
+    }
     return revenue;
   }
 
 
-  private int calculateTileCost(Region region, EnumFood crop)
+  private int calculateTileCost(Region region, EnumFood crop, int year)
   {
+    int cost = 0;
     if(crop == null) return 0;
 
     //total cost of tile in USD:
     // (metric tons yield  / sq km) * (area of land tile in sq km) * (pesticide cost + water cost + seed cost)
 
-    double production_per_km = region.getCropProduction(2009, crop) / region.getCropArea(2009, crop);
-    double tileSize = region.getLandTotal() / region.getNumTiles() ;
-    int cost = (int)( tileSize *  production_per_km *
-        ( cropData.getData(CropData.Field.PESTICIDE_COST,crop) +
-            cropData.getData(CropData.Field.WATER_COST, crop) +
-            cropData.getData(CropData.Field.SEED_COST, crop)) );
-
+    if(region.getCropArea(year, crop) != 0)
+    {
+      double production_per_km = region.getCropProduction(year, crop) / region.getCropArea(year, crop);
+      double tileSize = region.getLandTotal() / region.getNumTiles();
+      cost = (int) (tileSize * production_per_km * (cropData.getData(CropData.Field.PESTICIDE_COST,
+          crop) + cropData.getData(CropData.Field.WATER_COST, crop) + cropData.getData(
+              CropData.Field.SEED_COST, crop)));
+    }
     return cost;
   }
-
-
-
-  /**
-   * This method is to be called at the end of a year.
-   * For each landTile, farmer decides whether or not to replant same crop
-   */
-  private void replantCrops()
-  {
-    for(Region region: regionList)
-    {
-      region.resetProduction();
-      for (Territory territory : territoryList)
-      {
-        for (LandTile tile : territory.getLandTiles())
-        {
-          for(EnumFood crop: EnumFood.ALL_FOODS)
-          {
-            int newCost =  calculateTileCost(region, crop);
-            int production = (int)(.8 * calculateTileProduction(region, tile,crop));
-            //proposed production is cut to 80% to account for cost of replanting
-            int net = production - newCost;
-            if(net > (tile.getCurrentProduction() - tile.getCurrentCost()))
-            {
-              tile.setCrop(crop);
-              tile.setCurrentProduction(production);
-              tile.setCurrentCost(newCost);
-              break;
-            }
-          }
-        }
-      }
-      region.setTotalProduction();
-    }
-  }
-
-
 
 
 /*
@@ -1439,7 +1456,7 @@ public class Model
    */
   public static void main(String[] args)
   {
-    System.out.println("==========================================================================");
+  	System.out.println("==========================================================================");
     System.out.println("      Running Test entry point: starvationevasion.sim.Model()");
     System.out.println("==========================================================================");
 
@@ -1475,14 +1492,14 @@ public class Model
     Polygon drawArea = map.getPerimeterDrawable(EnumRegion.SUB_SAHARAN);
     drawArea.setStroke(Util.brighten(EnumRegion.SUB_SAHARAN.getColor(), 0.5));
     pic.add(drawArea);
-    //for (EnumRegion regionID : EnumRegion.values())
-    //{
-    //  Polygon drawArea = map.getPerimeterDrawable(regionID);
-    //  pic.add(drawArea, Util.brighten(regionID.getColor(), 0.5));
-    //}
+  //for (EnumRegion regionID : EnumRegion.values())
+  //{
+  //  Polygon drawArea = map.getPerimeterDrawable(regionID);
+  //  pic.add(drawArea, Util.brighten(regionID.getColor(), 0.5));
+  //}
 
 
-/*
+  /*
     for (int n = -180; n < 180; n+=1)
     {
       gfx.drawImage(background,0,0,null);
@@ -1491,16 +1508,13 @@ public class Model
       {
         Area drawArea = map.getPerimeterDrawable(regionID);
         gfx.setColor(Util.brighten(regionID.getColor(), 0.5));
-
         gfx.draw(drawArea);
       }
       pic.repaint();
-
       try
       {
         Thread.sleep(10);
       } catch (InterruptedException e) { }
-
       //for (Constant.Month month : Constant.Month.values())
       //{
       //  model.drawRain(pic, 2000+n, month);

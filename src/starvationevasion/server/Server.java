@@ -704,7 +704,7 @@ public class Server
                                                        "-classpath",
                                                        "./dist:./dist/libs/*",
                                                        "starvationevasion/ai/AI",
-                                                       "foodgame.cs.unm.edu", "5555"});
+                                                       "foodgame.cs.unm.edu", String.valueOf(Constant.SERVER_PORT)});
     if (p != null)
     {
       processes.add(p);

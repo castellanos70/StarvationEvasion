@@ -433,6 +433,8 @@ public class ConcurrentCommModule implements Communication
 
     // Send the built request
     send(request);
+
+    System.out.println("ConcurrentCommModule.send(): ["+request+"]");
     return true;
   }
 

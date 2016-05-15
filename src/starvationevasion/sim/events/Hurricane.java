@@ -13,9 +13,9 @@ public class Hurricane extends AbstractEvent
 {
   private boolean isFirstYear = true;
   
-  public Hurricane(Territory landArea, Region region, CropData cropData, int duration)
+  public Hurricane(Territory landArea, Region region, CropData cropData, int duration, String eventType)
   {
-    super(landArea, region, cropData, duration);
+    super(landArea, region, cropData, duration, eventType);
   }
 
   public void applyEffects()
@@ -33,4 +33,6 @@ public class Hurricane extends AbstractEvent
   {
     return getLandArea().getCenter();
   }
+  
+  
 }

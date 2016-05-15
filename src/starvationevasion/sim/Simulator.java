@@ -223,16 +223,22 @@ public class Simulator
   public ArrayList<WorldData> nextTurn(ArrayList<GameCard> cards)
   {
     LOGGER.info("Advancing Turn ...");
-    ArrayList<WorldData> worldData = getWorldData();
-    
+    // ArrayList<WorldData> worldData = getWorldData();
+
     // uncomment to apply effects of cards not directly altering sim model
     // applyCardEffectsToHand(cards);
     
+    // Right now because of this structure, policy cards are applied TWICE.
+    // This means that if a card is played that is meant to give a player 14
+    // million dollars, this will occur in EACH call of nextYear()
+    //
+    // I think the appropriate solution is to move applyPolicyCard() to this
+    // class.
     model.nextYear(cards);
     model.nextYear(cards);
 
     LOGGER.info("Turn complete. Game is now Jan 1, " + getCurrentYear());
-    return worldData;
+    return getWorldData();
   }
 
   public int getCurrentYear()
@@ -501,10 +507,18 @@ public class Simulator
     }
 
     ArrayList<GameCard> policiesEnactedThisTurnByAllPlayers = new ArrayList<>();
-    sim.nextTurn(policiesEnactedThisTurnByAllPlayers);
+    
+    // This means that the player controlling USA_CALIFORNIA played the DivertFunds card.
+    // As of now, DivertFunds doesn't apply the discard all cards from hand
+    // effect, so, as of now, all it does is add 14 million dollars this
+    // player's total amount of money
+    policiesEnactedThisTurnByAllPlayers.add(GameCard.create(EnumRegion.USA_CALIFORNIA,
+        EnumPolicy.Policy_DivertFunds));
 
-    ArrayList<WorldData> worldDataList = sim.getWorldData(Constant.FIRST_DATA_YEAR, Constant.FIRST_GAME_YEAR);
-    for (WorldData data : worldDataList)
+    ArrayList<WorldData> worldDataListForFirstTurn = sim.nextTurn(
+        policiesEnactedThisTurnByAllPlayers);
+    
+    for (WorldData data : worldDataListForFirstTurn)
     {
       LOGGER.info("==================================================\n"+data.toString()+"\n");
     }

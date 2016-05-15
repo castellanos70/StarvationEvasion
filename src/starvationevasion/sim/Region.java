@@ -491,14 +491,17 @@ public class Region extends Territory
   {
     cropTaxes[crop.ordinal()] *= scaleFactor;
   }
-
+  
   /**
-   * Sets total production for as a sum of productions for all crops
-   * Sets total taxes as 30% of total production
+   * Sets total production for as a sum of productions for all crops Sets total
+   * taxes as 30% of total production.
+   * 
+   * @param isInit
+   *          boolean value to pass to sumTotals when settotalProduction is
+   *          finished
    */
-  public void setTotalProduction()
+  public void setTotalProduction(boolean isInit)
   {
-
     for(Territory territory: territoryList)
     {
       for(LandTile tile: territory.getLandTiles())
@@ -512,7 +515,7 @@ public class Region extends Territory
           }
       }
     }
-    sumTotals();
+    sumTotals(isInit);
   }
 
   /**
@@ -531,7 +534,17 @@ public class Region extends Territory
     }
   }
 
-  private void sumTotals()
+  /**
+   * Called to sum the total 
+   * 
+   * @param isInit
+   *          if true, that means we are initializing these values and do not
+   *          want to add to the total revenue amount for a Region, as this
+   *          means that not all players would start with 50 million dollars. If
+   *          we're not initializing then obviously each region will earn
+   *          different amounts dependent of their crops.
+   */
+  private void sumTotals(boolean isInit)
   {
     int totalCosts = 0;
     for(int i = 0; i < cropRevenues.length; i ++ )
@@ -541,7 +554,12 @@ public class Region extends Territory
       totalTax += cropTaxes[i];
     }
     netIncome = totalProduction - totalTax - totalCosts;
+    if(!isInit)
+    {
+      revenue += netIncome/1000000;
+    }
   }
+  
   public MapPoint getCenter()
   {
     return null;

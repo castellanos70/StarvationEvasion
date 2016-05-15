@@ -59,47 +59,7 @@ public class Map implements MapConstants
     return this.mapNode;
   }
 
-  /**
-   * Returns an instance of the map node styled for the configuration phase
-   * @param client
-   * @return
-   */
-  public Node getConfigMapNode(Client client)
-  {
-    this.mapNode.setTranslateY(-40);
-    loader.<MapController>getController().setClient(client);
-   // updateStyling(client.getAvailableRegions(), client.getTakenRegions(), client.getGameConfigurationType());
-    return mapNode;
-  }
 
-  /**
-   * Updates the styling for the map with a new set of region data
-   * @param availableRegions list of currently available regions
-   * @param takenRegions list of taken regions
-   *  gameConfigurationType type of game configuration (chosen vs. assigned)
-   */
-//  public void updateStyling(
-//      ArrayList<EnumRegion> availableRegions,
-//      TreeMap<EnumRegion, String> takenRegions,
-//    //  LoginResponse.ResponseType gameConfigurationType)
-//  {
-//    // color available and taken regions
-//    //loader.<MapController>getController().colorAvailableRegions(mapNode, availableRegions, gameConfigurationType);
-//    loader.<MapController>getController().colorTakenRegions(mapNode, takenRegions);
-//  }
-
-  /**
-   * Unselects the currently selected region, if it exists
-   */
-  public void unselectRegion()
-  {
-    Map.currentlySelectedRegion = Optional.empty();
-    for (EnumRegion usRegion : EnumRegion.US_REGIONS)
-    {
-      loader.<MapController>getController().styleRegion(
-        mapNode, usRegion, MapUtil.getRegionColor(usRegion), new InnerShadow(UNSELECT_RADIUS, Color.BLACK));
-    }
-  }
 
   /**
    * May god bless our children for he has given us hashtagification

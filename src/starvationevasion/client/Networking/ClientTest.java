@@ -32,6 +32,7 @@ public class ClientTest implements Client
 
   public ClientTest(ClientMain gameLoop, String host, int port)
   {
+    System.out.println("ClientTest: "+host+":"+port);
     GAME_LOOP = gameLoop;
     COMM = new ConcurrentCommModule(host, port);
     CONTAINER = new LocalDataContainer(this);
@@ -157,10 +158,11 @@ public class ClientTest implements Client
   @Override
   public boolean createUser(String username, String password, EnumRegion region)
   {
+    System.out.println("ClientTest.createUser("+username+", "+password+")");
     Payload data = new Payload();
     data.put("username", username);
     data.put("password", password);
-    data.put("region", region);
+    //data.put("region", region);
     return COMM.send(Endpoint.USER_CREATE, data, null);
   }
 

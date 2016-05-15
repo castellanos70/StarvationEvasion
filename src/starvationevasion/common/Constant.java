@@ -9,6 +9,7 @@ import java.util.logging.Level;
  */
 public class Constant
 {
+  public static final int SERVER_PORT = 5555;
   public static final String[] AI_NAMES =
           {"Emma", "Olivia", "Noah", "Sophia", "Liam", "Mason", "Isabella", "Jacob", "William", "Ethan"};
 

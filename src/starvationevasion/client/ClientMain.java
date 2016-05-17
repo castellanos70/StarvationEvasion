@@ -43,6 +43,12 @@ import starvationevasion.common.EnumRegion;
  */
 public class ClientMain extends Application
 {
+  public enum EnumClientState
+  {
+    LOADING, READY_TO_CONNECT, READY_TO_LOGIN, READY_TO_PLAY, DRAFT_PHASE,
+    VOTE_PHASE, GAME_OVER;
+  }
+  private EnumClientState clientState = EnumClientState.LOADING;
   private int width  = 300;
   private int height = 250;
   private Stage stage;
@@ -64,7 +70,7 @@ public class ClientMain extends Application
   private MenuButton exit = new MenuButton("  EXIT");
 
   private Screen screen;
-  static Rectangle2D bounds;
+  private static Rectangle2D bounds;
   private Menu menu;
   private Image background = new Image("file:assets/LoginBackground.png");
   private AnimationTimer timer;

@@ -28,7 +28,7 @@ public class ClientTest implements Client
   private EnumRegion region;
   private ArrayList<GameCard> votingCards;
   private ArrayList<EnumPolicy> hand;
-  private State state;
+  private State serverState;
 
   public ClientTest(ClientMain gameLoop, String host, int port)
   {
@@ -90,14 +90,13 @@ public class ClientTest implements Client
   }
 
   /**
-   * This should return a valid state for this client (as received from server).
+   * This should return a valid serverState for this client (as received from server).
    *
-   * @return last-valid state sent to the client
+   * @return last-valid serverState sent to the client
    */
-  @Override
-  public State getState()
+  public State getServerState()
   {
-    return state;
+    return serverState;
   }
 
   /**
@@ -268,7 +267,7 @@ public class ClientTest implements Client
 
   /**
    * When called, this should perform all necessary updates to keep the client up to date with
-   * the current state of the game. This function should only ever be called from one thread.
+   * the current serverState of the game. This function should only ever be called from one thread.
    *
    * @param deltaSeconds change in seconds since the last time this function was called
    */
@@ -285,12 +284,12 @@ public class ClientTest implements Client
 
   private void respondToStateChange()
   {
-    if (state == State.DRAWING && !gui.isDraftingPhase())
+    if (serverState == State.DRAWING && !gui.isDraftingPhase())
     {
       gui.resetVotingPhase();
       gui.switchScenes();
     }
-    else if (state == State.VOTING && gui.isDraftingPhase())
+    else if (serverState == State.VOTING && gui.isDraftingPhase())
     {
       gui.resetDraftingPhase();
       gui.switchScenes();
@@ -308,6 +307,7 @@ public class ClientTest implements Client
     {
       Type type = response.getType();
       Object data = response.getPayload().getData();
+      System.out.println("ClientTest:processServerInput(): " + type);
 
       if (type == Type.AUTH_SUCCESS) GAME_LOOP.notifyOfSuccessfulLogin();
       else if (type == Type.USER)
@@ -344,9 +344,9 @@ public class ClientTest implements Client
       }
       else if (type == Type.GAME_STATE)
       {
-        state = (State)data;
-        System.out.println("Received game state update " + state);
-        if(state.equals(State.DRAWING)) readHand();
+        serverState = (State)data;
+        System.out.println("Received game serverState update " + serverState);
+        if(serverState.equals(State.DRAWING)) readHand();
         respondToStateChange();
       }
     }

@@ -98,4 +98,10 @@ public class Request implements Sendable
 
   }
 
+  public String toString()
+  {
+    return destination + ": " + data;
+  }
+
+
 }

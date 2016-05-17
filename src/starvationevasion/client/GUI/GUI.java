@@ -497,13 +497,13 @@ public class GUI extends Application
             chatNodeDraft.setHand(getDraftLayout().getHand().getPolicies());
             chatNodeVote.setHand(getDraftLayout().getHand().getPolicies());
           }
-          if (isDraftingPhase() && client.getState().equals(starvationevasion.server.model.State.VOTING))
+          if (isDraftingPhase() && client.getServerState().equals(starvationevasion.server.model.State.VOTING))
           {
             resetDraftingPhase();
             switchScenes();
           }
-          if (!isDraftingPhase() && (client.getState().equals(starvationevasion.server.model.State.DRAFTING)
-              || client.getState().equals(starvationevasion.server.model.State.DRAWING)))
+          if (!isDraftingPhase() && (client.getServerState().equals(starvationevasion.server.model.State.DRAFTING)
+              || client.getServerState().equals(starvationevasion.server.model.State.DRAWING)))
           {
             resetVotingPhase();
             switchScenes();

@@ -55,7 +55,7 @@ public interface Client
    *
    * @return last-valid state sent to the client
    */
-  State getState();
+  State getServerState();
 
   /**
    * Gets a list of policy cards that this client currently has.

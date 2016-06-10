@@ -6,8 +6,8 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.common.MapPoint;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.WorldData;
-import starvationevasion.common.gamecards.EnumPolicy;
-import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.sim.events.AbstractEvent;
 
 import java.awt.geom.Area;
@@ -220,7 +220,7 @@ public class Simulator
    * @return data structure populated with all game state data needed by the client
    * except high resolution data that might be needed by the visualizer.
    */
-  public ArrayList<WorldData> nextTurn(ArrayList<GameCard> cards)
+  public ArrayList<WorldData> nextTurn(ArrayList<AbstractPolicy> cards)
   {
     LOGGER.info("Advancing Turn ...");
     // ArrayList<WorldData> worldData = getWorldData();
@@ -407,9 +407,9 @@ public class Simulator
    * @param cards
    *          The list of all cards intended to be applied to the simulation.
    */
-  private void applyCardEffectsToHand(ArrayList<GameCard> cards)
+  private void applyCardEffectsToHand(ArrayList<AbstractPolicy> cards)
   {
-    for (GameCard c : cards)
+    for (AbstractPolicy c : cards)
     {
       switch(c.getCardType())
       {
@@ -506,13 +506,13 @@ public class Simulator
       startingHandMsg += '\n';
     }
 
-    ArrayList<GameCard> policiesEnactedThisTurnByAllPlayers = new ArrayList<>();
+    ArrayList<AbstractPolicy> policiesEnactedThisTurnByAllPlayers = new ArrayList<>();
     
     // This means that the player controlling USA_CALIFORNIA played the DivertFunds card.
     // As of now, DivertFunds doesn't apply the discard all cards from hand
     // effect, so, as of now, all it does is add 14 million dollars this
     // player's total amount of money
-    policiesEnactedThisTurnByAllPlayers.add(GameCard.create(EnumRegion.USA_CALIFORNIA,
+    policiesEnactedThisTurnByAllPlayers.add(AbstractPolicy.create(EnumRegion.USA_CALIFORNIA,
         EnumPolicy.Policy_DivertFunds));
 
     ArrayList<WorldData> worldDataListForFirstTurn = sim.nextTurn(

@@ -168,7 +168,7 @@ implements <a href="../../../starvationevasion/client/Networking/Client.html" ti
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../starvationevasion/client/Networking/DeprecatedClient.html#discardCard-starvationevasion.common.gamecards.GameCard-">discardCard</a></span>(<a href="../../../starvationevasion/common/gamecards/GameCard.html" title="class in starvationevasion.common.gamecards">GameCard</a>&nbsp;card)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../starvationevasion/client/Networking/DeprecatedClient.html#discardCard-starvationevasion.common.card.GameCard-">discardCard</a></span>(<a href="../../../starvationevasion/common/gamecards/GameCard.html" title="class in starvationevasion.common.gamecards">GameCard</a>&nbsp;card)</code>
 <div class="block">Tries to discard the given card (interfaces with server).</div>
 </td>
 </tr>
@@ -180,7 +180,7 @@ implements <a href="../../../starvationevasion/client/Networking/Client.html" ti
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../starvationevasion/client/Networking/DeprecatedClient.html#draftCard-starvationevasion.common.gamecards.GameCard-">draftCard</a></span>(<a href="../../../starvationevasion/common/gamecards/GameCard.html" title="class in starvationevasion.common.gamecards">GameCard</a>&nbsp;card)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../starvationevasion/client/Networking/DeprecatedClient.html#draftCard-starvationevasion.common.card.GameCard-">draftCard</a></span>(<a href="../../../starvationevasion/common/gamecards/GameCard.html" title="class in starvationevasion.common.gamecards">GameCard</a>&nbsp;card)</code>
 <div class="block">Tries to draft the given card (interfaces with server).</div>
 </td>
 </tr>
@@ -310,13 +310,13 @@ implements <a href="../../../starvationevasion/client/Networking/Client.html" ti
 </tr>
 <tr id="i28" class="altColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../starvationevasion/client/Networking/DeprecatedClient.html#voteDown-starvationevasion.common.gamecards.GameCard-">voteDown</a></span>(<a href="../../../starvationevasion/common/gamecards/GameCard.html" title="class in starvationevasion.common.gamecards">GameCard</a>&nbsp;card)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../starvationevasion/client/Networking/DeprecatedClient.html#voteDown-starvationevasion.common.card.GameCard-">voteDown</a></span>(<a href="../../../starvationevasion/common/gamecards/GameCard.html" title="class in starvationevasion.common.gamecards">GameCard</a>&nbsp;card)</code>
 <div class="block">Asks the client to vote the given card down.</div>
 </td>
 </tr>
 <tr id="i29" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../starvationevasion/client/Networking/DeprecatedClient.html#voteUp-starvationevasion.common.gamecards.GameCard-">voteUp</a></span>(<a href="../../../starvationevasion/common/gamecards/GameCard.html" title="class in starvationevasion.common.gamecards">GameCard</a>&nbsp;card)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../starvationevasion/client/Networking/DeprecatedClient.html#voteUp-starvationevasion.common.card.GameCard-">voteUp</a></span>(<a href="../../../starvationevasion/common/gamecards/GameCard.html" title="class in starvationevasion.common.gamecards">GameCard</a>&nbsp;card)</code>
 <div class="block">Asks the client to vote the given card up.</div>
 </td>
 </tr>
@@ -656,11 +656,11 @@ implements <a href="../../../starvationevasion/client/Networking/Client.html" ti
 <li class="blockList">
 <h4>draftCard</h4>
 <pre>public&nbsp;boolean&nbsp;draftCard(<a href="../../../starvationevasion/common/gamecards/GameCard.html" title="class in starvationevasion.common.gamecards">GameCard</a>&nbsp;card)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html#draftCard-starvationevasion.common.gamecards.GameCard-">Client</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html#draftCard-starvationevasion.common.card.GameCard-">Client</a></code></span></div>
 <div class="block">Tries to draft the given card (interfaces with server).</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../starvationevasion/client/Networking/Client.html#draftCard-starvationevasion.common.gamecards.GameCard-">draftCard</a></code>&nbsp;in interface&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html" title="interface in starvationevasion.client.Networking">Client</a></code></dd>
+<dd><code><a href="../../../starvationevasion/client/Networking/Client.html#draftCard-starvationevasion.common.card.GameCard-">draftCard</a></code>&nbsp;in interface&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html" title="interface in starvationevasion.client.Networking">Client</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>card</code> - card to draft</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -675,11 +675,11 @@ implements <a href="../../../starvationevasion/client/Networking/Client.html" ti
 <li class="blockList">
 <h4>voteUp</h4>
 <pre>public&nbsp;boolean&nbsp;voteUp(<a href="../../../starvationevasion/common/gamecards/GameCard.html" title="class in starvationevasion.common.gamecards">GameCard</a>&nbsp;card)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html#voteUp-starvationevasion.common.gamecards.GameCard-">Client</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html#voteUp-starvationevasion.common.card.GameCard-">Client</a></code></span></div>
 <div class="block">Asks the client to vote the given card up.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../starvationevasion/client/Networking/Client.html#voteUp-starvationevasion.common.gamecards.GameCard-">voteUp</a></code>&nbsp;in interface&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html" title="interface in starvationevasion.client.Networking">Client</a></code></dd>
+<dd><code><a href="../../../starvationevasion/client/Networking/Client.html#voteUp-starvationevasion.common.card.GameCard-">voteUp</a></code>&nbsp;in interface&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html" title="interface in starvationevasion.client.Networking">Client</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>card</code> - card to vote up</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -694,11 +694,11 @@ implements <a href="../../../starvationevasion/client/Networking/Client.html" ti
 <li class="blockList">
 <h4>voteDown</h4>
 <pre>public&nbsp;boolean&nbsp;voteDown(<a href="../../../starvationevasion/common/gamecards/GameCard.html" title="class in starvationevasion.common.gamecards">GameCard</a>&nbsp;card)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html#voteDown-starvationevasion.common.gamecards.GameCard-">Client</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html#voteDown-starvationevasion.common.card.GameCard-">Client</a></code></span></div>
 <div class="block">Asks the client to vote the given card down.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../starvationevasion/client/Networking/Client.html#voteDown-starvationevasion.common.gamecards.GameCard-">voteDown</a></code>&nbsp;in interface&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html" title="interface in starvationevasion.client.Networking">Client</a></code></dd>
+<dd><code><a href="../../../starvationevasion/client/Networking/Client.html#voteDown-starvationevasion.common.card.GameCard-">voteDown</a></code>&nbsp;in interface&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html" title="interface in starvationevasion.client.Networking">Client</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>card</code> - card to vote down</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -713,11 +713,11 @@ implements <a href="../../../starvationevasion/client/Networking/Client.html" ti
 <li class="blockList">
 <h4>discardCard</h4>
 <pre>public&nbsp;boolean&nbsp;discardCard(<a href="../../../starvationevasion/common/gamecards/GameCard.html" title="class in starvationevasion.common.gamecards">GameCard</a>&nbsp;card)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html#discardCard-starvationevasion.common.gamecards.GameCard-">Client</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html#discardCard-starvationevasion.common.card.GameCard-">Client</a></code></span></div>
 <div class="block">Tries to discard the given card (interfaces with server).</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../starvationevasion/client/Networking/Client.html#discardCard-starvationevasion.common.gamecards.GameCard-">discardCard</a></code>&nbsp;in interface&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html" title="interface in starvationevasion.client.Networking">Client</a></code></dd>
+<dd><code><a href="../../../starvationevasion/client/Networking/Client.html#discardCard-starvationevasion.common.card.GameCard-">discardCard</a></code>&nbsp;in interface&nbsp;<code><a href="../../../starvationevasion/client/Networking/Client.html" title="interface in starvationevasion.client.Networking">Client</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>card</code> - card to discard</dd>
 <dt><span class="returnLabel">Returns:</span></dt>

@@ -1,18 +1,11 @@
 package starvationevasion.ai.commands;
 
-import static starvationevasion.common.Constant.AI_NAMES;
-
 import starvationevasion.ai.AI;
 import starvationevasion.common.Constant;
-import starvationevasion.common.Util;
-import starvationevasion.common.VoteData;
-import starvationevasion.common.WorldData;
-import starvationevasion.common.gamecards.GameCard;
 import starvationevasion.communication.Communication;
 import starvationevasion.server.model.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Login extends AbstractCommand
 {

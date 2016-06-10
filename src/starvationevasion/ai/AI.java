@@ -14,8 +14,8 @@ import starvationevasion.common.SpecialEventData;
 import starvationevasion.common.Util;
 import starvationevasion.common.VoteData;
 import starvationevasion.common.WorldData;
-import starvationevasion.common.gamecards.EnumPolicy;
-import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.communication.Communication;
 import starvationevasion.communication.ConcurrentCommModule;
 import starvationevasion.server.model.*;
@@ -41,8 +41,8 @@ public class AI
   private int numUsers;
   private State state = null;
   private ArrayList<WorldData> worldData;
-  private List<GameCard> ballot;
-  private List<GameCard> supportCards = new ArrayList<>();
+  private List<AbstractPolicy> ballot;
+  private List<AbstractPolicy> supportCards = new ArrayList<>();
   private Stack<Command> commands = new Stack<>();
   private volatile boolean isRunning = true;
   private volatile boolean aggregate=false;
@@ -94,10 +94,10 @@ public class AI
   public Map<WorldFactors, ArrayList<Object[]>> factorMap = new EnumMap<WorldFactors, ArrayList<Object[]>>(
       WorldFactors.class);
   
-  //This map is used to store the various game card policies and their associated region, if they only affect one
+  //This map is used to store the various game card card and their associated region, if they only affect one
   //region.
   public Map<EnumPolicy, EnumRegion> policyAndRegionMap = new EnumMap<EnumPolicy, EnumRegion>(EnumPolicy.class);
-  //Used to store policies and their associated variables.
+  //Used to store card and their associated variables.
   public Map<EnumPolicy,CardVariableTypes> cardVariables=new EnumMap<EnumPolicy,CardVariableTypes>(EnumPolicy.class);
   
   //Cards that benefit many regions, not just a specific one.
@@ -109,7 +109,7 @@ public class AI
   public ArrayList<SpecialEventData> eventList = new ArrayList<>();
 
   // List of pairs of cards played in previous hands.
-  public ArrayList<ArrayList<GameCard>> draftedCards = new ArrayList<>();
+  public ArrayList<ArrayList<AbstractPolicy>> draftedCards = new ArrayList<>();
 
   // The region that this AI represents.
   String region = "";
@@ -148,8 +148,8 @@ public class AI
   /*
    * Jeffrey McCall
    * In this method I'm adding items to policyAndRegionMap, which stores policy cards and
-   * their corresponding regions. I'm also adding policies to a couple lists. I'm also filling
-   * cardVariables which stores policies and their associated variable types. These maps and lists
+   * their corresponding regions. I'm also adding card to a couple lists. I'm also filling
+   * cardVariables which stores card and their associated variable types. These maps and lists
    * are all used in the drafting phase by the AI.
    */
   private void createMapsAndLists()
@@ -351,11 +351,11 @@ public class AI
           }
         }
       }  
-      else if (type == Type.VOTE_BALLOT) ballot = (List<GameCard>)data;
+      else if (type == Type.VOTE_BALLOT) ballot = (List<AbstractPolicy>)data;
       else if (type == Type.VOTE_RESULTS)
       {
         ballotResults = (VoteData) data;
-        for(GameCard card: ballotResults.getEnacted())
+        for(AbstractPolicy card: ballotResults.getEnacted())
         {
           if(!playerPolicyDrafts.containsKey(card.getOwner()))
           {
@@ -374,7 +374,7 @@ public class AI
         System.out.println(msg);
         if(msg.contains("I'm going to draft"))
         {
-          GameCard card = (GameCard) response.getPayload().get("card");
+          AbstractPolicy card = (AbstractPolicy) response.getPayload().get("card");
           Integer sum = 0;
           for(Integer playerTally:playerPolicyDrafts.values())
           {
@@ -421,7 +421,7 @@ public class AI
         else if (state == starvationevasion.server.model.State.DRAFTING)
         {
           aggregateData();
-          draftedCards.add(new ArrayList<GameCard>());
+          draftedCards.add(new ArrayList<AbstractPolicy>());
           Draft newDraft = new Draft(AI.this);
           AI.this.commands.add(newDraft);
           numTurns++;
@@ -475,7 +475,7 @@ public class AI
   {
     return COMM;
   }
-  public List<GameCard> getSupportCards()
+  public List<AbstractPolicy> getSupportCards()
   {
     return supportCards;
   }
@@ -505,7 +505,7 @@ public class AI
     return commands;
   }
 
-  public List<GameCard> getBallot()
+  public List<AbstractPolicy> getBallot()
   {
     return ballot;
   }

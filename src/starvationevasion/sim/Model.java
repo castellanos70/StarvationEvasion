@@ -11,12 +11,9 @@ import starvationevasion.common.RegionData;
 import starvationevasion.common.SpecialEventData;
 import starvationevasion.common.Util;
 import starvationevasion.common.WorldData;
-import starvationevasion.common.gamecards.GameCard;
-import starvationevasion.sim.LandTile.Field;
+import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.sim.events.AbstractEvent;
-import starvationevasion.sim.events.Drought;
 import starvationevasion.sim.events.EventDriver;
-import starvationevasion.sim.events.Hurricane;
 import starvationevasion.sim.io.GeographyXMLparser;
 import starvationevasion.sim.io.ProductionCSVLoader;
 import starvationevasion.sim.io.SpecialEventCSVLoader;
@@ -28,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 /**
@@ -41,7 +37,7 @@ import java.util.logging.Logger;
  * trade penalty functions are calculated and applied.</li>
  * <li>Changes in land use: At the start of each simulated currentYear, it is assumed that
  * farmers in each region of the world each adjust how they use land based on currently
- * enacted policies, the last currentYear's crop yields and the last currentYear's crop prices so as
+ * enacted card, the last currentYear's crop yields and the last currentYear's crop prices so as
  * to maximize individual profit while staying within any enacted laws.</li>
  * <li>Population: In this model, each region's population is based only on data from
  * external population projections and a random number chosen at the start of the game.
@@ -61,9 +57,9 @@ import java.util.logging.Logger;
  * unseasonable frost, a harsh winter, or out breaks of crop disease, blight, or insects.
  * Special events can also be positive the result in bumper crops in some areas. While
  * these events are random, their probabilities are largely affected by actions players
- * may or may not take. For example, policies encouraging improving irrigation can
+ * may or may not take. For example, card encouraging improving irrigation can
  * mitigate the effects of drought, preemptive flood control spending can mitigate the
- * effects of floods and major storms and policies that encourage / discourage
+ * effects of floods and major storms and card that encourage / discourage
  * monocropping can increase / decrease the probability of crop disease, blight, or
  * insects problems.</li>
  * <li>Farm Product Yield: The current currentYear's yield or each crop in each region is largely
@@ -71,7 +67,7 @@ import java.util.logging.Logger;
  * calculated.</li>
  * <li>Farm Product Need: This is based on each region's population, regional dietary
  * preferences, and required per capita caloric and nutritional needs.</li>
- * <li>Policy Directed Food Distribution: Some player enacted policies may cause the
+ * <li>Policy Directed Food Distribution: Some player enacted card may cause the
  * distribution of some foods to take place before the calculation of farm product
  * prices and such distributions may affect farm product prices. For example, sending
  * grain to very low income populations reduces the supply of that grain while not
@@ -494,7 +490,7 @@ public class Model
    *
    * @return the simulation currentYear that has just finished.
    */
-  protected int nextYear(ArrayList<GameCard> cards)
+  protected int nextYear(ArrayList<AbstractPolicy> cards)
   {
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
@@ -660,14 +656,14 @@ public class Model
    * @param cards
    *          the list of all cards to be applied to the model
    */
-  private void applyPolicies(ArrayList<GameCard> cards)
+  private void applyPolicies(ArrayList<AbstractPolicy> cards)
   {
     if (debugLevel.intValue() < Level.INFO.intValue())
     {
-      Simulator.dbg.println("******************************************* Applying policies");
+      Simulator.dbg.println("******************************************* Applying card");
     }
     
-    for (GameCard c : cards)
+    for (AbstractPolicy c : cards)
     {
       switch(c.getCardType())
       {
@@ -803,7 +799,7 @@ public class Model
    */
   private void updateLandUse()
   {
-    // TODO : Land use is based on policies.
+    // TODO : Land use is based on card.
     // Notes :
     // Start with how much each country is producing v/s how much land they are using.
     // This gives us a yield factor.  If a country with a high yield applies irrigation
@@ -885,9 +881,9 @@ public class Model
 //      //that their region could experience an event based on the leaders actions
 //      //through policy. So their current status is important:
 //      //1. Are they in crisis already?
-//      //2. What are their current policies?
-//      //3. if in crisis will the current policies help or hurt?
-//      //4. if not in crisis will the current policies improve the regions state?
+//      //2. What are their current card?
+//      //3. if in crisis will the current card help or hurt?
+//      //4. if not in crisis will the current card improve the regions state?
 //    }
 //
 //    // Temporary code just to make special events happen in the absence of Alfred's timeline.

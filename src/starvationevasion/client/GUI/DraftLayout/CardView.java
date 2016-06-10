@@ -1,16 +1,10 @@
 package starvationevasion.client.GUI.DraftLayout;
   
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import javafx.animation.AnimationTimer;
-import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -23,12 +17,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontSmoothingType;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import starvationevasion.client.GUI.ResizablePane;
 import starvationevasion.client.GUI.images.ImageGetter;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.gamecards.EnumPolicy;
-import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.common.card.AbstractPolicy;
 
 
 public class CardView extends ResizablePane
@@ -55,7 +48,7 @@ public class CardView extends ResizablePane
       (cardWidth/9),   (cardHeight/13)
       };
   private String color = "0xaba9db"; 
-  private GameCard gameCard;
+  private AbstractPolicy gameCard;
 
   private Polygon topTrapezoid        = new Polygon();
   private Polygon bottomTrapezoid     = new Polygon();
@@ -69,7 +62,7 @@ public class CardView extends ResizablePane
   
   public CardView(EnumRegion owner, EnumPolicy policy)
   {
-    gameCard = GameCard.create(owner, policy);
+    gameCard = AbstractPolicy.create(owner, policy);
     actionPointCost = gameCard.actionPointCost(policy);
     cardImage.setFitWidth(cardWidth);
     cardImage.setFitHeight(cardHeight);

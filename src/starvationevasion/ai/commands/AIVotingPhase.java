@@ -1,12 +1,12 @@
 package starvationevasion.ai.commands;
 
-import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.card.AbstractPolicy;
 
 public class AIVotingPhase 
 {
 	private String cost;
 	private String benefit;
-	public void readCardDetails(GameCard card) 
+	public void readCardDetails(AbstractPolicy card)
 	{
 		// TODO Auto-generated method stub
 		/*if(card.getCardType() == EnumPolicy.Policy_Loan)

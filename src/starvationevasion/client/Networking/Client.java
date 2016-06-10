@@ -3,8 +3,8 @@ package starvationevasion.client.Networking;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.gamecards.EnumPolicy;
-import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.communication.Communication;
 import starvationevasion.server.model.State;
 
@@ -62,7 +62,7 @@ public interface Client
    *
    * @return list of policy cards
    */
-  ArrayList<GameCard> getVotingCards();
+  ArrayList<AbstractPolicy> getVotingCards();
 
   /**
    * Gets the GUI object that was registered with this client.
@@ -105,7 +105,7 @@ public interface Client
    * @param card card to vote up
    * @return true if the vote up request was sent and false if the send failed
    */
-  boolean voteUp(GameCard card);
+  boolean voteUp(AbstractPolicy card);
 
   /**
    * Asks the client to vote the given card down.
@@ -113,7 +113,7 @@ public interface Client
    * @param card card to vote down
    * @return true if the vote up request was sent and false if the send failed
    */
-  boolean voteDown(GameCard card);
+  boolean voteDown(AbstractPolicy card);
 
   /**
    * Tells the client to send a ready request.
@@ -135,7 +135,7 @@ public interface Client
    * @param card card to draft
    * @return true if the draft request was sent and false if the send failed
    */
-  boolean draftCard(GameCard card);
+  boolean draftCard(AbstractPolicy card);
 
   /**
    * Tries to discard the given card (interfaces with server).
@@ -143,7 +143,7 @@ public interface Client
    * @param card card to discard
    * @return true if the discard request was sent and false if the send failed
    */
-  boolean discardCard(GameCard card);
+  boolean discardCard(AbstractPolicy card);
 
   /**
    * Checks to see if the client is still running. This might return false if something

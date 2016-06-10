@@ -4,7 +4,7 @@ import starvationevasion.ai.AI;
 import starvationevasion.ai.AI.WorldFactors;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Util;
-import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.State;
@@ -43,7 +43,7 @@ public class Vote extends AbstractCommand
         System.out.println(
             "Ballot got it. With size: " + getClient().getBallot().size());
 
-        for (GameCard card : getClient().getBallot())
+        for (AbstractPolicy card : getClient().getBallot())
         {
 
           // if (card.getOwner() != getClient().getUser().getRegion()) //
@@ -125,7 +125,7 @@ public class Vote extends AbstractCommand
     return false;
   }
 
-  public void readCardDetails(GameCard card)
+  public void readCardDetails(AbstractPolicy card)
   {
 	  switch(card.getCardType())
 	  {
@@ -240,7 +240,7 @@ public class Vote extends AbstractCommand
 	    	  cost = "none";
 		      benefit = "Owner of this card " +
 		    		  	"gains $100 million that they may spend " +
-		    		  	"only to support policies drafted this turn";
+		    		  	"only to support card drafted this turn";
 	      	break;
 	      case Policy_FoodReliefCentralAsia:
 	    	  cost = "5 thousand tons of target food to CentralAsia";
@@ -272,7 +272,7 @@ public class Vote extends AbstractCommand
 	  }
   }
   
-  public boolean checkResources(GameCard card) 
+  public boolean checkResources(AbstractPolicy card)
   {
 		// TODO Auto-generated method stub
 		if(cost.startsWith("Discard")){return true;}
@@ -300,7 +300,7 @@ public class Vote extends AbstractCommand
 		return false;
 		
   }
-  public boolean checkBeneficialToSelf(GameCard card) 
+  public boolean checkBeneficialToSelf(AbstractPolicy card)
   {
 		// TODO Auto-generated method stub
 		int moneyInc = 0;

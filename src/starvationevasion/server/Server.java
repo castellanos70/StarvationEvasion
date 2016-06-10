@@ -46,8 +46,8 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Util;
 import starvationevasion.common.VoteData;
 import starvationevasion.common.WorldData;
-import starvationevasion.common.gamecards.EnumPolicy;
-import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.server.io.HttpParse;
 import starvationevasion.server.io.NetworkException;
 import starvationevasion.server.io.ReadStrategy;
@@ -66,26 +66,6 @@ import starvationevasion.server.model.db.backends.Backend;
 import starvationevasion.server.model.db.backends.Sqlite;
 import starvationevasion.sim.Simulator;
 
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import java.io.File;
-import java.io.IOException;
-import java.net.*;
-import java.security.KeyFactory;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 /**
  * Class that holds all the logic for managing connections,
  * game progression, and Simulator.
@@ -114,7 +94,7 @@ public class Server
   // list of available regions
   private final List<EnumRegion> availableRegions = new ArrayList<>(EnumRegion.US_REGIONS.length);
 
-  private final GameCard[][] _drafted = new GameCard[EnumRegion.US_REGIONS.length][2];
+  private final AbstractPolicy[][] _drafted = new AbstractPolicy[EnumRegion.US_REGIONS.length][2];
 
   // bool that listen for connections is looping over
   private boolean isWaiting = true;
@@ -535,7 +515,7 @@ public class Server
 
     for (int i = 0; i < _drafted.length; i++)
     {
-      _drafted[i] = new GameCard[2];
+      _drafted[i] = new AbstractPolicy[2];
     }
     isPlaying = true;
     currentState = State.LOGIN;
@@ -636,7 +616,7 @@ public class Server
    * @param card Card to add into ballot
    * @param u User that is drafting
    */
-  public void draftCard (GameCard card, User u)
+  public void draftCard (AbstractPolicy card, User u)
   {
     synchronized (_drafted)
     {
@@ -651,7 +631,7 @@ public class Server
    *
    * @return true if vote was accounted for
    */
-  public boolean addVote (GameCard card, EnumRegion user)
+  public boolean addVote (AbstractPolicy card, EnumRegion user)
   {
     synchronized(_drafted)
     {
@@ -838,12 +818,12 @@ public class Server
   {
     currentState = State.VOTING;
 
-    ArrayList<GameCard> _list = new ArrayList<>();
+    ArrayList<AbstractPolicy> _list = new ArrayList<>();
     synchronized(_drafted)
     {
-      for (GameCard[] policyCards : _drafted)
+      for (AbstractPolicy[] policyCards : _drafted)
       {
-        for (GameCard policyCard : policyCards)
+        for (AbstractPolicy policyCard : policyCards)
         {
           if (policyCard != null)
           {
@@ -868,13 +848,13 @@ public class Server
   private Void draw ()
   {
 
-    ArrayList<GameCard> enactedPolicyCards = new ArrayList<>();
-    ArrayList<GameCard> _list = new ArrayList<>();
+    ArrayList<AbstractPolicy> enactedPolicyCards = new ArrayList<>();
+    ArrayList<AbstractPolicy> _list = new ArrayList<>();
 
 
-    for (GameCard[] policyCards : _drafted)
+    for (AbstractPolicy[] policyCards : _drafted)
     {
-      for (GameCard p : policyCards)
+      for (AbstractPolicy p : policyCards)
       {
         if (p == null) continue;
         if (p.votesRequired() == 0 || p.getEnactingRegionCount() > p.votesRequired())
@@ -922,7 +902,7 @@ public class Server
         if (_drafted[i][j] == null) continue;
         _drafted[i][j].clearVotes();
       }
-      _drafted[i] = new GameCard[2];
+      _drafted[i] = new AbstractPolicy[2];
     }
 
     if (simulator.getCurrentYear() >= Constant.LAST_YEAR)

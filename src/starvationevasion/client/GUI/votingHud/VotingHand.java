@@ -9,8 +9,8 @@ import javafx.scene.image.ImageView;
 import starvationevasion.client.GUI.DraftLayout.CardNode;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.gamecards.EnumPolicy;
-import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.common.card.AbstractPolicy;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,12 +47,12 @@ public class VotingHand extends NodeTemplate
 
     if (testCards)
     {
-      ArrayList<GameCard> cardList = new ArrayList<>();
-      cardList.add(GameCard.create(EnumRegion.USA_CALIFORNIA, EnumPolicy.values()[0]));
-      cardList.add(GameCard.create(EnumRegion.USA_HEARTLAND, EnumPolicy.values()[1]));
-      cardList.add(GameCard.create(EnumRegion.USA_MOUNTAIN, EnumPolicy.values()[2]));
-      cardList.add(GameCard.create(EnumRegion.USA_NORTHERN_CRESCENT, EnumPolicy.values()[3]));
-      cardList.add(GameCard.create(EnumRegion.USA_NORTHERN_PLAINS, EnumPolicy.values()[4]));
+      ArrayList<AbstractPolicy> cardList = new ArrayList<>();
+      cardList.add(AbstractPolicy.create(EnumRegion.USA_CALIFORNIA, EnumPolicy.values()[0]));
+      cardList.add(AbstractPolicy.create(EnumRegion.USA_HEARTLAND, EnumPolicy.values()[1]));
+      cardList.add(AbstractPolicy.create(EnumRegion.USA_MOUNTAIN, EnumPolicy.values()[2]));
+      cardList.add(AbstractPolicy.create(EnumRegion.USA_NORTHERN_CRESCENT, EnumPolicy.values()[3]));
+      cardList.add(AbstractPolicy.create(EnumRegion.USA_NORTHERN_PLAINS, EnumPolicy.values()[4]));
       setVotingCards(cardList);
     }
 
@@ -249,7 +249,7 @@ public class VotingHand extends NodeTemplate
     focusedCard.votes.setText("" + card.getGameCard().votesRequired());
   }
 
-  public void setVotingCards(ArrayList<GameCard> cardInfo)
+  public void setVotingCards(ArrayList<AbstractPolicy> cardInfo)
   {
     clearCards();
     cardNode = new CardNode[cardInfo.size()];

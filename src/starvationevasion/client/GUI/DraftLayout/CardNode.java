@@ -18,8 +18,8 @@ import javafx.scene.text.TextAlignment;
 import starvationevasion.client.GUI.ResizablePane;
 import starvationevasion.client.GUI.images.ImageGetter;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.gamecards.EnumPolicy;
-import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.common.card.AbstractPolicy;
 
 import java.util.ArrayList;
 
@@ -42,7 +42,7 @@ public class CardNode extends ResizablePane
       + " -fx-background-radius: 3 3 3 3;";
   public static final String NORM = "-fx-background-color: linear-gradient(#EEEEEE, #BBBBBB);"
       + " -fx-background-radius: 3 3 3 3;";
-  private GameCard gameCard;
+  private AbstractPolicy gameCard;
   private ArrayList<CardNode> cards;
 
   private Rectangle background;
@@ -78,7 +78,7 @@ public class CardNode extends ResizablePane
   public CardNode(EnumRegion owner, EnumPolicy policy)
   {
     super();
-    gameCard = GameCard.create(owner, policy);
+    gameCard = AbstractPolicy.create(owner, policy);
     ePolicy = policy;
     region = owner;
 
@@ -335,7 +335,7 @@ public class CardNode extends ResizablePane
    * 
    * @return a GameCard Object
    */
-  public GameCard getGameCard()
+  public AbstractPolicy getGameCard()
   {
     return gameCard;
   }

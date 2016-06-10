@@ -3,7 +3,7 @@ package starvationevasion.sim;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.Util;
-import starvationevasion.common.gamecards.EnumPolicy;
+import starvationevasion.common.card.EnumPolicy;
 
 import java.util.ArrayList;
 import java.util.Collections;

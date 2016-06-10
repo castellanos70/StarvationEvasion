@@ -7,8 +7,8 @@ import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.Util;
-import starvationevasion.common.gamecards.EnumPolicy;
-import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
 import starvationevasion.server.model.State;
@@ -26,8 +26,8 @@ public class Draft extends AbstractCommand
 {
   private boolean draftedCard = false;
   private boolean discarded = false;
-  private GameCard cardDrafted1;
-  private GameCard cardDrafted2;
+  private AbstractPolicy cardDrafted1;
+  private AbstractPolicy cardDrafted2;
   private int tries = 2;
   private int numTurns = 0;
   // The region that the AI represents.
@@ -46,7 +46,7 @@ public class Draft extends AbstractCommand
   boolean pickThisRegion = false;
   double pickThisRegionChance = .75;
   int z = 0;
-  GameCard card = null;
+  AbstractPolicy card = null;
   int probModifier = 0;
   int draftIndex = 0;
   private Map<String,Integer> probabilityMap=new LinkedHashMap<>();
@@ -73,7 +73,7 @@ public class Draft extends AbstractCommand
   /*
    * Jeffrey McCall
    * Arrays used to partition the elements of the sample space used in the probability distribution that the AI uses to pick
-   * cards, regions and policies. The second dimension of each array is a lower and upper bound between 2 numbers. The larger
+   * cards, regions and card. The second dimension of each array is a lower and upper bound between 2 numbers. The larger
    * the difference between these 2 numbers, the higher the chance that that policy, region or food will get selected to be drafted
    * that turn.
    */
@@ -173,8 +173,8 @@ public class Draft extends AbstractCommand
    *          the Card's target region, if any
    * @return a request String to be sent in a chat message
    */
-  private String requestSupportMessage(GameCard card, EnumFood food,
-      EnumRegion region)
+  private String requestSupportMessage(AbstractPolicy card, EnumFood food,
+                                       EnumRegion region)
   {
     if (food == null && region != null)
     {
@@ -198,7 +198,7 @@ public class Draft extends AbstractCommand
   }
   /*
    * Jeffrey McCall
-   * Fill the map of probability values with Strings that represent policies,
+   * Fill the map of probability values with Strings that represent card,
    * regions and foods and Integers that represent the probability that they
    * will get picked. These are random at first, but will be modified in the course
    * of the code in this class being called.
@@ -270,7 +270,7 @@ public class Draft extends AbstractCommand
    * not be drafted this turn if there was a significant decrease of factors, or they are set to
    * be more likely to get drafted again if there was an increase of factors. The method 
    * checkOtherFactors() is then called to check other relevant factors that would affect the AI's
-   * choice about which policies to draft. In that method, there is a possibility that the AI will
+   * choice about which card to draft. In that method, there is a possibility that the AI will
    * discard up to three cards and re-draw 3 new cards. If this happens, then this method will return
    * false and get called again with a new set of cards. However, the AI will then only be able to
    * draft 1 card. If the boolean tryForMoneyCards is set to true, that means that revenue is in trouble
@@ -299,13 +299,13 @@ public class Draft extends AbstractCommand
         policiesInHand.add(getClient().getUser().getHand().get(i));
       } 
     }
-    GameCard card = null;
+    AbstractPolicy card = null;
     System.out.println("Hand size:" + getClient().getUser().getHand().size());
     if(noVotesRequired.size()==0 && votesRequired.size()==0)
     {
       for (int i = 0; i < getClient().getUser().getHand().size(); i++)
       {
-        card = GameCard.create(getClient().getUser().getRegion(),
+        card = AbstractPolicy.create(getClient().getUser().getRegion(),
             getClient().getUser().getHand().get(i));
         if(card.votesRequired()==0)
         {
@@ -327,7 +327,7 @@ public class Draft extends AbstractCommand
       getRevenueBalance();
       if(votesRequired.size()>0 && noVotesRequired.size()>0)
       {
-        card = GameCard.create(getClient().getUser().getRegion(),
+        card = AbstractPolicy.create(getClient().getUser().getRegion(),
             votesRequired.get(rand.nextInt(votesRequired.size())));
         cardDrafted1=card;
         EnumFood[] foods=card.getValidTargetFoods();
@@ -347,7 +347,7 @@ public class Draft extends AbstractCommand
         actionsRemaining--;
         System.out.println("Card drafted:"+card.getPolicyName());
         getClient().draftedCards.get(numTurns).add(card);
-        card = GameCard.create(getClient().getUser().getRegion(),
+        card = AbstractPolicy.create(getClient().getUser().getRegion(),
             noVotesRequired.get(rand.nextInt(noVotesRequired.size())));
         cardDrafted2=card;
         EnumFood[] foods2=card.getValidTargetFoods();
@@ -376,7 +376,7 @@ public class Draft extends AbstractCommand
         {
           randNum2=rand.nextInt(noVotesRequired.size());
         }while(randNum1==randNum2);
-        card = GameCard.create(getClient().getUser().getRegion(),
+        card = AbstractPolicy.create(getClient().getUser().getRegion(),
             noVotesRequired.get(randNum1));
         cardDrafted1=card;
         EnumFood[] foods=card.getValidTargetFoods();
@@ -396,7 +396,7 @@ public class Draft extends AbstractCommand
         actionsRemaining--;
         System.out.println("Card drafted:"+card.getPolicyName());
         getClient().draftedCards.get(numTurns).add(card);
-        card = GameCard.create(getClient().getUser().getRegion(),
+        card = AbstractPolicy.create(getClient().getUser().getRegion(),
             noVotesRequired.get(randNum2));
         cardDrafted2=card;
         EnumFood[] foods2=card.getValidTargetFoods();
@@ -419,7 +419,7 @@ public class Draft extends AbstractCommand
       }
       else if(noVotesRequired.size()==0)
       {
-        card = GameCard.create(getClient().getUser().getRegion(),
+        card = AbstractPolicy.create(getClient().getUser().getRegion(),
             votesRequired.get(rand.nextInt(votesRequired.size())));
         cardDrafted1=card;
         EnumFood[] foods=card.getValidTargetFoods();
@@ -447,8 +447,8 @@ public class Draft extends AbstractCommand
     else
     {
       pickThisRegion = false;
-      GameCard lastCard1=getClient().draftedCards.get(numTurns - 1).get(0);
-      GameCard lastCard2=null;
+      AbstractPolicy lastCard1=getClient().draftedCards.get(numTurns - 1).get(0);
+      AbstractPolicy lastCard2=null;
       if(getClient().draftedCards.get(numTurns-1).size()>1)
       {
         lastCard2 = getClient().draftedCards.get(numTurns - 1).get(1);
@@ -576,7 +576,7 @@ public class Draft extends AbstractCommand
   /**
    * Jeffrey McCall
    * Check factors such as the level of people undernourished in other regions, the revenue for
-   * this AI's region and foods in this and other regions. Prioritize different regions, foods and policies
+   * this AI's region and foods in this and other regions. Prioritize different regions, foods and card
    * based on this information. Also, make it more likely for this region to be picked if 
    * pickThisRegion is set to true.
    */
@@ -651,7 +651,7 @@ public class Draft extends AbstractCommand
     {
       getClient().getUser().getHand().forEach(policy->
       {
-        card = GameCard.create(getClient().getUser().getRegion(),policy);
+        card = AbstractPolicy.create(getClient().getUser().getRegion(),policy);
         if(card.getValidTargetRegions()!=null)
         {
           if(Arrays.asList(card.getValidTargetRegions()).contains(getClient().getUser().getRegion()))
@@ -793,7 +793,7 @@ public class Draft extends AbstractCommand
    */
   public boolean draftCards()
   {
-    GameCard card=null;
+    AbstractPolicy card=null;
     EnumRegion currentRegion = null;
     String regionString = "";
     boolean regionFound = false;
@@ -817,7 +817,7 @@ public class Draft extends AbstractCommand
             break;
           }
         }
-        card = GameCard.create(getClient().getUser().getRegion(), currentPolicy);
+        card = AbstractPolicy.create(getClient().getUser().getRegion(), currentPolicy);
         if(card==null || currentPolicy==null)
         {
           return false;
@@ -946,7 +946,7 @@ public class Draft extends AbstractCommand
   /*
    * Ensure that more than 1 card requiring votes doesn't get drafted.
    */
-  private boolean checkCardsWithVotes(GameCard card)
+  private boolean checkCardsWithVotes(AbstractPolicy card)
   {
     if(cardsNeedingSupport>0 && card.votesRequired()>0)
     {
@@ -972,7 +972,7 @@ public class Draft extends AbstractCommand
    * @param card
    *          The policy card that was drafted last turn that we are checking.
    */
-  public void distributeProbabilities(int playAgain, GameCard card)
+  public void distributeProbabilities(int playAgain, AbstractPolicy card)
   {
     if (playAgain == -1)
     {
@@ -1253,7 +1253,7 @@ public class Draft extends AbstractCommand
    * assigned is a percentage tax break, then if the revenue is doing poorly, the lowest
    * tax break is assigned. If it's not doing poorly, then a higher tax break is assigned.
    */
-  private void setupCard(GameCard card, EnumFood food, EnumRegion region)
+  private void setupCard(AbstractPolicy card, EnumFood food, EnumRegion region)
   {
     if (card == null)
     {

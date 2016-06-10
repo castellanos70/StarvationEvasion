@@ -6,8 +6,8 @@ import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.client.ClientMain;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.WorldData;
-import starvationevasion.common.gamecards.EnumPolicy;
-import starvationevasion.common.gamecards.GameCard;
+import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.communication.Communication;
 import starvationevasion.communication.ConcurrentCommModule;
 import starvationevasion.server.model.*;
@@ -26,7 +26,7 @@ public class ClientTest implements Client
   private boolean isRunning = false;
   private GUI gui;
   private EnumRegion region;
-  private ArrayList<GameCard> votingCards;
+  private ArrayList<AbstractPolicy> votingCards;
   private ArrayList<EnumPolicy> hand;
   private State serverState;
 
@@ -105,7 +105,7 @@ public class ClientTest implements Client
    * @return list of policy cards
    */
   @Override
-  public ArrayList<GameCard> getVotingCards()
+  public ArrayList<AbstractPolicy> getVotingCards()
   {
     return votingCards;
   }
@@ -172,7 +172,7 @@ public class ClientTest implements Client
    * @return true if the vote up request was sent and false if the send failed
    */
   @Override
-  public boolean voteUp(GameCard card)
+  public boolean voteUp(AbstractPolicy card)
   {
     Payload data = new Payload();
     data.putData(card);
@@ -187,7 +187,7 @@ public class ClientTest implements Client
    * @return true if the vote up request was sent and false if the send failed
    */
   @Override
-  public boolean voteDown(GameCard card)
+  public boolean voteDown(AbstractPolicy card)
   {
     Payload data = new Payload();
     data.putData(card);
@@ -224,7 +224,7 @@ public class ClientTest implements Client
    * @return true if the draft request was sent and false if the send failed
    */
   @Override
-  public boolean draftCard(GameCard card)
+  public boolean draftCard(AbstractPolicy card)
   {
     Payload data = new Payload();
     data.putData(card.getCardType());
@@ -238,7 +238,7 @@ public class ClientTest implements Client
    * @return true if the discard request was sent and false if the send failed
    */
   @Override
-  public boolean discardCard(GameCard card)
+  public boolean discardCard(AbstractPolicy card)
   {
     return false;
   }
@@ -339,7 +339,7 @@ public class ClientTest implements Client
       else if (type == Type.VOTE_BALLOT)
       {
         System.out.println("Received voting cards");
-        votingCards = (ArrayList<GameCard>)data;
+        votingCards = (ArrayList<AbstractPolicy>)data;
         gui.getVotingLayout().getVotingHand().setVotingCards(votingCards);
       }
       else if (type == Type.GAME_STATE)

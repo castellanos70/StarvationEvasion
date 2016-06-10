@@ -42,6 +42,13 @@ public enum EnumPolicy implements Sendable
   Policy_ResearchInsectResistanceGrain, 
   //Policy_SearchforAnswers, 
   //Policy_SharedKnowledge, 
+  //Policy_McLibelII,
+  //Policy_TexasAramilloBeefII,
+  //Policy_FixColoradoMeat,
+  //Policy CaliforniaVendingMachine,
+  //Policy_DryPortAgreement,
+  //Policy_BiofuelProduction
+  //Policy_HealthierFoodInSchools,
   Policy_SpecialInterests;
   
   public String getImagePath()

@@ -6,6 +6,7 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -13,6 +14,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import starvationevasion.client.GUI.DraftLayout.CardNode;
+import starvationevasion.client.GUI.DraftLayout.CardView;
 import starvationevasion.client.GUI.DraftLayout.HandNode;
 import starvationevasion.client.GUI.DraftLayout.TickerReel;
 import starvationevasion.common.EnumRegion;
@@ -40,7 +42,7 @@ public class TestLauncher extends Application
   @Override
   public void start(Stage stage) throws Exception
   {
-    VBox pane = new VBox();
+    HBox pane = new HBox();
 //    Clock clock = new Clock(pane, new ResizeStrategy(1, 1, 1, 1));
 //    pane.getChildren().add(clock);
     
@@ -48,8 +50,9 @@ public class TestLauncher extends Application
 //    pane.getChildren().add(reel);
 //   
     int index = random.nextInt(EnumPolicy.values().length);
-    CardNode card = new CardNode(EnumRegion.USA_CALIFORNIA, EnumPolicy.values()[index]);
-    pane.getChildren().add(card);
+//    CardNode card = new CardNode(EnumRegion.USA_CALIFORNIA, EnumPolicy.values()[index]);
+    CardView card = new CardView(EnumRegion.USA_CALIFORNIA, EnumPolicy.values()[index]);
+//    pane.getChildren().add(card);
     
 //    GUI gui = new GUI();
 //    gui.setAssignedRegion(EnumRegion.USA_CALIFORNIA);
@@ -66,7 +69,7 @@ public class TestLauncher extends Application
 //    pane.getChildren().add(hand);
     
     
-    scene = new Scene(pane, 600, 300);
+    scene = new Scene(card.getCardView(), 370, 520);
 //    scene.setFill(Color.TRANSPARENT);
     stage.setScene(scene);
 //    stage.initStyle(StageStyle.TRANSPARENT);

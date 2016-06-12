@@ -2,16 +2,13 @@
 package starvationevasion.common.card.cardlist;
 
 import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.card.EnumPolicy;
 import starvationevasion.server.model.State;
 
 import java.util.EnumSet;
 
 //TODO: Figure out a way to include when the card can be played on the Javadoc
 /**
- * Title: {@value #TITLE}<br><br>
- * Game Text: {@value #TEXT}<br><br>
- * Flavor Text: <i>{@value #FLAVOR_TEXT}</i><br><br>
- *
  * Draft Affects: 
  *
  * Votes Required: Automatic<br><br>
@@ -40,7 +37,10 @@ public class Policy_DryPortAgreement extends AbstractPolicy
   */
   @Override
   public String getGameText(){ return TEXT; }
-  
+
+
+  @Override
+  public int getActionPointCost(EnumPolicy policy) {return 1;}
   
   /**
    * {@inheritDoc}

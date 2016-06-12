@@ -13,7 +13,7 @@ public enum EnumPolicy implements Sendable
    * your discard pile, first the ability to look at your discard needs to be implemented in).
    * 
    * If you make the card function, then uncomment it here, as well as both switch() in 
-   * GameCard's constructor and actionPointCost(). If you don't, I'll be mildly disappointed.
+   * GameCard's constructor and getActionPointCost(). If you don't, I'll be mildly disappointed.
    */ 
   Policy_CleanRiverIncentive, 
   //Policy_CovertIntelligence, 

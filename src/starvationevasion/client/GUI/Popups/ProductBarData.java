@@ -31,7 +31,9 @@ public class ProductBarData extends BorderPane
     this.ID = id;
     this.gui = gui;
 
-    foodImg = new ImageView(gui.getImageGetter().getImageForFoodType64(gui.getFoodType(id)));
+    //TODO: DO NOT create new new ImageView: reuse from ProductBarElement
+    foodImg = new ImageView(gui.getFoodType(id).getIconSmall());
+
     foodType = gui.getProductList().get(id);
 
     foodGraph = gui.getGraphManager().getProductBarGraph(ID);

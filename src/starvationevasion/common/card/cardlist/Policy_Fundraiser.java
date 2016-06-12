@@ -1,6 +1,7 @@
 package starvationevasion.common.card.cardlist;
 
 import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.card.EnumPolicy;
 
 public class Policy_Fundraiser extends AbstractPolicy
 {
@@ -15,7 +16,9 @@ public class Policy_Fundraiser extends AbstractPolicy
    */
   @Override
   public String getTitle() {return TITLE;}
-  
+
+  @Override
+  public int getActionPointCost(EnumPolicy policy) {return 1;}
   /**
    * {@inheritDoc}
    */

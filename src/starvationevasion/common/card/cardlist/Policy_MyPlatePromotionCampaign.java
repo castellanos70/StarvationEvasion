@@ -1,6 +1,7 @@
 package starvationevasion.common.card.cardlist;
 
 import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.card.EnumPolicy;
 import starvationevasion.server.model.State;
 
 import java.util.ArrayList;
@@ -55,7 +56,8 @@ public class Policy_MyPlatePromotionCampaign extends AbstractPolicy
   @Override
   public String getFlavorText(){ return FLAVOR_TEXT;}
 
-  
+  @Override
+  public int getActionPointCost(EnumPolicy policy) {return 1;}
   /**
    * {@inheritDoc}
    */

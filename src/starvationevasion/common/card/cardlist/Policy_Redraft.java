@@ -3,6 +3,7 @@ package starvationevasion.common.card.cardlist;
 import java.util.EnumSet;
 
 import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.card.EnumPolicy;
 import starvationevasion.server.model.State;
 
 //Not functional, and not in EnumPolicy. Uncomment it there to re-enable this card.
@@ -41,7 +42,8 @@ public class Policy_Redraft extends AbstractPolicy
    */
   @Override
   public String getGameText() {return TEXT;}
-  
+  @Override
+  public int getActionPointCost(EnumPolicy policy) {return 1;}
   /**
    * {@inheritDoc}
    */

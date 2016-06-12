@@ -4,6 +4,7 @@ import java.util.EnumSet;
 
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.card.EnumPolicy;
 import starvationevasion.server.model.State;
 
 /**
@@ -61,8 +62,11 @@ public class Policy_CovertIntelligence extends AbstractPolicy
    * {@inheritDoc}
    */
   @Override
-  public String getFlavorTextSource(){ return FLAVOR_TEXT_SOURCE;}
+  public String getFlavorTextAuthor(){ return FLAVOR_TEXT_SOURCE;}
 
+
+  @Override
+  public int getActionPointCost(EnumPolicy policy) {return 1;}
   /**
    * {@inheritDoc}
    */

@@ -288,78 +288,7 @@ public abstract class AbstractPolicy implements Sendable
    * cost of a given policy type.
    */
 
-  public int actionPointCost(EnumPolicy policy) 
-  {
-    int ap = -1; //default action point cost
-	  switch (policy) {
-      case Policy_CleanRiverIncentive:
-        return 2;
-      //case Policy_CovertIntelligence:
-      //  return 1;
-      case Policy_EducateTheWomenCampaign:
-        return 2;
-      case Policy_EfficientIrrigationIncentive:
-        return 2;
-      case Policy_EthanolTaxCreditChange:
-        return 2;
-      case Policy_FertilizerSubsidy:
-        return 2;
-      case Policy_FarmInfrastructureSubSaharan:
-        return 2;
-      case Policy_FertilizerAidCentralAsia:
-        return 2;
-      case Policy_FertilizerAidMiddleAmerica:
-        return 2;
-      case Policy_FertilizerAidOceania:
-        return 2;
-      case Policy_FertilizerAidSouthAsia:
-        return 2;
-      case Policy_FertilizerAidSubSaharan:
-        return 2;
-      case Policy_ResearchInsectResistanceGrain:
-        return 2;
-      case Policy_InternationalFoodRelief:
-        return 3;
-      case Policy_Loan:
-        return 1;
-      case Policy_MyPlatePromotionCampaign:
-        return 2;
-      case Policy_DivertFunds:
-        return 3;
-      //case Policy_Filibuster:
-      //  return 1;
-      case Policy_Fundraiser:
-        return 1;
-      //case Policy_SharetheKnowledge:
-      //  return 3;
-      //case Policy_Redraft:
-      //	return 1;
-      //case Policy_SearchforAnswers:
-      //	return 3;
-      case Policy_SpecialInterests:
-      	return 1;
-      case Policy_FoodReliefCentralAsia:
-        return 2;
-      case Policy_FoodReliefMiddleAmerica:
-        return 2;
-      case Policy_FoodReliefOceania:
-        return 2;
-      case Policy_FoodReliefSouthAsia:
-        return 2;
-      case Policy_FoodReliefSubSaharan:
-        return 2;
-	  }
-	  //if we didn't set AP in the above switch, then there's a problem
-	  if(ap == -1) 
-	  {
-	    String s = "ERROR: could not get the action point value for this policy: ";
-	    s += policy.toString() + "; " + policy.name();
-	    System.err.println(s);
-	    System.err.println("Check to see if the policy is in GameCard.java's actionPointCost()");
-	    ap = 3;
-	  }
-	  return ap;
-  }
+  public abstract int getActionPointCost(EnumPolicy policy);
   
   // =========================================================================================
   /**
@@ -380,7 +309,7 @@ public abstract class AbstractPolicy implements Sendable
    * will look something like "-Ronald Reagan". <p>
    * Note: Not every card's flavor text will have a source, so this may return null.
    */
-  public String getFlavorTextSource() 
+  public String getFlavorTextAuthor()
   {
     return null;
   }

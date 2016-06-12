@@ -3,6 +3,7 @@ package starvationevasion.common.card.cardlist;
 import java.util.EnumSet;
 
 import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.card.EnumPolicy;
 import starvationevasion.server.model.State;
 
 /**
@@ -39,7 +40,9 @@ public class Policy_SpecialInterests extends AbstractPolicy
    */
   @Override
   public String getGameText() {return TEXT;}
-  
+
+  @Override
+  public int getActionPointCost(EnumPolicy policy) {return 1;}
   /**
    * {@inheritDoc}
    */

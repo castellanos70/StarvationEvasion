@@ -102,7 +102,7 @@ public class CardHandler extends AbstractHandler
     {
       AbstractPolicy policyCard = (AbstractPolicy) request.getPayload().getData();
 
-      if (getClient().getUser().actionPointsRemaining >= policyCard.actionPointCost(policyCard.getCardType()) && getClient().getUser().drafts < 2)
+      if (getClient().getUser().actionPointsRemaining >= policyCard.getActionPointCost(policyCard.getCardType()) && getClient().getUser().drafts < 2)
       {
 
         if (policyCard.getOwner().equals(getClient().getUser().getRegion()))
@@ -134,7 +134,7 @@ public class CardHandler extends AbstractHandler
               getClient().send(new ResponseFactory().build(server.uptime(), getClient().getUser(), Type.USER));
             }
             getClient().getUser().drafts++;
-            getClient().getUser().actionPointsRemaining -= policyCard.actionPointCost(policyCard.getCardType());
+            getClient().getUser().actionPointsRemaining -= policyCard.getActionPointCost(policyCard.getCardType());
             return true;
           }
           else

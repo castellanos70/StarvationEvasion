@@ -63,7 +63,7 @@ public class CardView extends ResizablePane
   public CardView(EnumRegion owner, EnumPolicy policy)
   {
     gameCard = AbstractPolicy.create(owner, policy);
-    actionPointCost = gameCard.actionPointCost(policy);
+    actionPointCost = gameCard.getActionPointCost(policy);
     cardImage.setFitWidth(cardWidth);
     cardImage.setFitHeight(cardHeight);
     cardPane = new StackPane();

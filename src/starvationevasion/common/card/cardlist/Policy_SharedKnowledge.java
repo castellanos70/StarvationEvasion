@@ -2,6 +2,7 @@ package starvationevasion.common.card.cardlist;
 
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.card.EnumPolicy;
 import starvationevasion.server.model.State;
 
 import java.util.EnumSet;
@@ -41,7 +42,9 @@ public class Policy_SharedKnowledge extends AbstractPolicy
    */
   @Override
   public String getGameText() {return TEXT;}
-  
+
+  @Override
+  public int getActionPointCost(EnumPolicy policy) {return 1;}
   /**
    * {@inheritDoc}
    */

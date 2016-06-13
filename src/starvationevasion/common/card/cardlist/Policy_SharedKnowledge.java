@@ -3,7 +3,7 @@ package starvationevasion.common.card.cardlist;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.common.card.EnumPolicy;
-import starvationevasion.server.model.State;
+import starvationevasion.common.GameState;
 
 import java.util.EnumSet;
 
@@ -28,8 +28,8 @@ public class Policy_SharedKnowledge extends AbstractPolicy
       "You may play one card from the revealed hand as though it is in your hand. " +
       "Pay that player $10 million.";
   
-  public static final EnumSet<State> PLAY_STATES = //when the card can be used
-      EnumSet.of(State.DRAFTING);
+  public static final EnumSet<GameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(GameState.DRAFTING);
 
   /**
    * {@inheritDoc}
@@ -49,7 +49,7 @@ public class Policy_SharedKnowledge extends AbstractPolicy
    * {@inheritDoc}
    */
   @Override
-  public EnumSet<State> getUsableStates()
+  public EnumSet<GameState> getUsableStates()
   {
     return PLAY_STATES;
   }

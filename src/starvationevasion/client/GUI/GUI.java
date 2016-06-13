@@ -27,6 +27,7 @@ import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.client.Networking.Client;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.GameState;
 import starvationevasion.common.card.EnumPolicy;
 
 /**
@@ -497,13 +498,13 @@ public class GUI extends Application
             chatNodeDraft.setHand(getDraftLayout().getHand().getPolicies());
             chatNodeVote.setHand(getDraftLayout().getHand().getPolicies());
           }
-          if (isDraftingPhase() && client.getServerState().equals(starvationevasion.server.model.State.VOTING))
+          if (isDraftingPhase() && client.getServerState().equals(GameState.VOTING))
           {
             resetDraftingPhase();
             switchScenes();
           }
-          if (!isDraftingPhase() && (client.getServerState().equals(starvationevasion.server.model.State.DRAFTING)
-              || client.getServerState().equals(starvationevasion.server.model.State.DRAWING)))
+          if (!isDraftingPhase() && (client.getServerState().equals(GameState.DRAFTING)
+              || client.getServerState().equals(GameState.DRAWING)))
           {
             resetVotingPhase();
             switchScenes();

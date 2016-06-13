@@ -5,6 +5,7 @@ package starvationevasion.server.handlers;
  */
 
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.GameState;
 import starvationevasion.common.card.EnumPolicy;
 import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.server.Connector;
@@ -24,7 +25,7 @@ public class CardHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-    if (!server.getGameState().equals(State.DRAFTING))
+    if (!server.getGameState().equals(GameState.DRAFTING))
     {
       return false;
     }

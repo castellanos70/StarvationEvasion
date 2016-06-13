@@ -43,6 +43,7 @@ import javax.crypto.SecretKey;
  */
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.GameState;
 import starvationevasion.common.Util;
 import starvationevasion.common.VoteData;
 import starvationevasion.common.WorldData;
@@ -87,7 +88,7 @@ public class Server
   // list of ALL the users
   private final List<User> userList = new ArrayList<>();//Collections.synchronizedList(new ArrayList<>());
 
-  private State currentState = State.LOGIN;
+  private GameState currentState = GameState.LOGIN;
   private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
   private Date date = new Date();
 
@@ -491,7 +492,7 @@ public class Server
    *
    * @return current state of the Game
    */
-  public State getGameState ()
+  public GameState getGameState ()
   {
       return currentState;
   }
@@ -518,7 +519,7 @@ public class Server
       _drafted[i] = new AbstractPolicy[2];
     }
     isPlaying = true;
-    currentState = State.LOGIN;
+    currentState = GameState.LOGIN;
     broadcastStateChange();
   }
 
@@ -528,7 +529,7 @@ public class Server
    */
   public void stopGame ()
   {
-    currentState = State.END;
+    currentState = GameState.END;
     isPlaying = false;
     broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE, "Game has been stopped."));
   }
@@ -564,7 +565,7 @@ public class Server
    */
   public synchronized boolean addPlayer (User u)
   {
-    if (getPlayerCount() == TOTAL_PLAYERS || currentState.ordinal() > State.LOGIN.ordinal())
+    if (getPlayerCount() == TOTAL_PLAYERS || currentState.ordinal() > GameState.LOGIN.ordinal())
     {
       LOG.info("Too many players. not adding " + u.toString());
       return false;
@@ -777,7 +778,7 @@ public class Server
     ArrayList<WorldData> worldDataList = simulator.getWorldData(Constant.FIRST_DATA_YEAR,
                                                                 Constant.FIRST_GAME_YEAR - 1);
 
-    currentState = State.BEGINNING;
+    currentState = GameState.BEGINNING;
     broadcastStateChange();
     isPlaying = true;
 
@@ -802,7 +803,7 @@ public class Server
    */
   private Void draft ()
   {
-    currentState = State.DRAFTING;
+    currentState = GameState.DRAFTING;
     broadcastStateChange();
 
     waitAndAdvance(Server.this::vote);
@@ -816,7 +817,7 @@ public class Server
    */
   private Void vote ()
   {
-    currentState = State.VOTING;
+    currentState = GameState.VOTING;
 
     ArrayList<AbstractPolicy> _list = new ArrayList<>();
     synchronized(_drafted)
@@ -868,7 +869,7 @@ public class Server
     VoteData voteData = new VoteData(_list, enactedPolicyCards, _drafted);
     broadcast(new ResponseFactory().build(uptime(), voteData, Type.VOTE_RESULTS));
 
-    currentState = State.DRAWING;
+    currentState = GameState.DRAWING;
     broadcastStateChange();
 
 
@@ -911,7 +912,7 @@ public class Server
       {
         LOG.info("Ending game due to last year");
       }
-      currentState = State.END;
+      currentState = GameState.END;
       broadcastStateChange();
       isPlaying = false;
       return null;
@@ -929,10 +930,10 @@ public class Server
    */
   private void update ()
   {
-    if (getPlayerCount() == TOTAL_PLAYERS && currentState == State.LOGIN)
+    if (getPlayerCount() == TOTAL_PLAYERS && currentState == GameState.LOGIN)
     {
       isPlaying = true;
-      currentState = State.BEGINNING;
+      currentState = GameState.BEGINNING;
       broadcast(new ResponseFactory().build(uptime(), currentState, Type.GAME_STATE, "Game will begin in 10s"));
       waitAndAdvance(this::begin);
     }

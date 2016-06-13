@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.common.card.EnumPolicy;
-import starvationevasion.server.model.State;
+import starvationevasion.common.GameState;
 
 //Not functional, and not in EnumPolicy. Uncomment it there to re-enable this card.
 /**
@@ -28,8 +28,8 @@ public class Policy_Redraft extends AbstractPolicy
   public static final String FLAVOR_TEXT = 
       "Yeah, that was a good idea, let's do it again!";
   
-  public static final EnumSet<State> PLAY_STATES = //when the card can be used
-      EnumSet.of(State.DRAFTING);
+  public static final EnumSet<GameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(GameState.DRAFTING);
   
   /**
    * {@inheritDoc}
@@ -54,7 +54,7 @@ public class Policy_Redraft extends AbstractPolicy
    * {@inheritDoc}
    */
   @Override
-  public EnumSet<State> getUsableStates()
+  public EnumSet<GameState> getUsableStates()
   {
     return PLAY_STATES;
   }

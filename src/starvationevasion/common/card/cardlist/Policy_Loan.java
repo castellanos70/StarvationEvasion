@@ -5,7 +5,7 @@ import java.util.EnumSet;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.common.card.EnumPolicy;
-import starvationevasion.server.model.State;
+import starvationevasion.common.GameState;
 
 
 /**
@@ -40,8 +40,8 @@ public class Policy_Loan extends AbstractPolicy
   public static final String FLAVOR_TEXT_SOURCE =
       "-Ronald Reagan";
 
-  public static final EnumSet<State> PLAY_STATES = //when the card can be used
-      EnumSet.of(State.DRAFTING);
+  public static final EnumSet<GameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(GameState.DRAFTING);
 
   /**
    * The number of votes required for this policy.  A value of 0 means that
@@ -82,7 +82,7 @@ public class Policy_Loan extends AbstractPolicy
    * {@inheritDoc}
    */
   @Override
-  public EnumSet<State> getUsableStates()
+  public EnumSet<GameState> getUsableStates()
   {
     return PLAY_STATES;
   }

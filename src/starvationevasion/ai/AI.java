@@ -3,7 +3,6 @@ package starvationevasion.ai;
 
 import starvationevasion.ai.commands.Command;
 import starvationevasion.ai.commands.Draft;
-import starvationevasion.ai.commands.GameState;
 import starvationevasion.ai.commands.Login;
 import starvationevasion.ai.commands.Uptime;
 import starvationevasion.ai.commands.Vote;
@@ -11,6 +10,7 @@ import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.SpecialEventData;
+import starvationevasion.common.GameState;
 import starvationevasion.common.Util;
 import starvationevasion.common.VoteData;
 import starvationevasion.common.WorldData;
@@ -39,7 +39,7 @@ public class AI
   private User u;
   private ArrayList<User> users = new ArrayList<>();
   private int numUsers;
-  private State state = null;
+  private GameState state = null;
   private ArrayList<WorldData> worldData;
   private List<AbstractPolicy> ballot;
   private List<AbstractPolicy> supportCards = new ArrayList<>();
@@ -122,7 +122,7 @@ public class AI
     createMap();
 
     // Add the starting commands
-    commands.add(new GameState(this));
+    commands.add(new starvationevasion.ai.commands.GameState(this));
     commands.add(new Uptime(this));
 
     COMM.send(Endpoint.USERS_LOGGED_IN, null, null);
@@ -413,12 +413,12 @@ public class AI
       }
       else if (type == Type.GAME_STATE)
       {
-        state = (State)data;
-        if (state == starvationevasion.server.model.State.VOTING)
+        state = (GameState)data;
+        if (state == GameState.VOTING)
         {
           AI.this.commands.add(new Vote(AI.this));
         }
-        else if (state == starvationevasion.server.model.State.DRAFTING)
+        else if (state == GameState.DRAFTING)
         {
           aggregateData();
           draftedCards.add(new ArrayList<AbstractPolicy>());
@@ -426,7 +426,7 @@ public class AI
           AI.this.commands.add(newDraft);
           numTurns++;
         }
-        else if (state == starvationevasion.server.model.State.DRAWING)
+        else if (state == GameState.DRAWING)
         {
           // AI.this.commands.add(new Draft(AI.this));
           commands.clear();
@@ -490,7 +490,7 @@ public class AI
     return COMM.getStartNanoTime();
   }
 
-  public State getState()
+  public GameState getState()
   {
     return state;
   }

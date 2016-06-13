@@ -5,6 +5,7 @@ package starvationevasion.server.handlers;
  */
 
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.GameState;
 import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
 import starvationevasion.server.model.*;
@@ -98,7 +99,7 @@ public class UserHandler extends AbstractHandler
     }
     else if (request.getDestination().equals(Endpoint.READY) && getClient().getUser().isLoggedIn())
     {
-      if (server.getGameState() == State.LOGIN)
+      if (server.getGameState() == GameState.LOGIN)
       {
         User _u = getClient().getUser();
 

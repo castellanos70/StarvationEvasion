@@ -2,7 +2,7 @@ package starvationevasion.common.card.cardlist;
 
 import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.common.card.EnumPolicy;
-import starvationevasion.server.model.State;
+import starvationevasion.common.GameState;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -43,8 +43,8 @@ public class Policy_InternationalFoodRelief extends AbstractPolicy
     "from its local farmers surplus commodity food for redistribution to where it is" +
       "most needed.";
   
-  public static final EnumSet<State> PLAY_STATES = //when the card can be used
-      EnumSet.of(State.DRAFTING);
+  public static final EnumSet<GameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(GameState.DRAFTING);
 
   /* The number of votes required for this policy.  A value of 1 means that
    * only one player must vote to enact this policy.
@@ -81,7 +81,7 @@ public class Policy_InternationalFoodRelief extends AbstractPolicy
    * {@inheritDoc}
    */
   @Override
-  public EnumSet<State> getUsableStates()
+  public EnumSet<GameState> getUsableStates()
   {
     return PLAY_STATES;
   }

@@ -5,6 +5,7 @@ import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.client.ClientMain;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.GameState;
 import starvationevasion.common.WorldData;
 import starvationevasion.common.card.EnumPolicy;
 import starvationevasion.common.card.AbstractPolicy;
@@ -28,7 +29,7 @@ public class ClientTest implements Client
   private EnumRegion region;
   private ArrayList<AbstractPolicy> votingCards;
   private ArrayList<EnumPolicy> hand;
-  private State serverState;
+  private GameState serverState;
 
   public ClientTest(ClientMain gameLoop, String host, int port)
   {
@@ -94,7 +95,7 @@ public class ClientTest implements Client
    *
    * @return last-valid serverState sent to the client
    */
-  public State getServerState()
+  public GameState getServerState()
   {
     return serverState;
   }
@@ -284,12 +285,12 @@ public class ClientTest implements Client
 
   private void respondToStateChange()
   {
-    if (serverState == State.DRAWING && !gui.isDraftingPhase())
+    if (serverState == GameState.DRAWING && !gui.isDraftingPhase())
     {
       gui.resetVotingPhase();
       gui.switchScenes();
     }
-    else if (serverState == State.VOTING && gui.isDraftingPhase())
+    else if (serverState == GameState.VOTING && gui.isDraftingPhase())
     {
       gui.resetDraftingPhase();
       gui.switchScenes();
@@ -344,9 +345,9 @@ public class ClientTest implements Client
       }
       else if (type == Type.GAME_STATE)
       {
-        serverState = (State)data;
+        serverState = (GameState)data;
         System.out.println("Received game serverState update " + serverState);
-        if(serverState.equals(State.DRAWING)) readHand();
+        if(serverState.equals(GameState.DRAWING)) readHand();
         respondToStateChange();
       }
     }

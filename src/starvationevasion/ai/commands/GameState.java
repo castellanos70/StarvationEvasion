@@ -2,7 +2,6 @@ package starvationevasion.ai.commands;
 
 import starvationevasion.ai.AI;
 import starvationevasion.server.model.Endpoint;
-import starvationevasion.server.model.State;
 
 public class GameState extends AbstractCommand
 {
@@ -26,7 +25,7 @@ public class GameState extends AbstractCommand
       return true;
     }
 
-    if (!sentReady && getClient().getState().equals(State.LOGIN))
+    if (!sentReady && getClient().getState().equals(starvationevasion.common.GameState.LOGIN))
     {
       sentReady = true;
       getClient().getCommModule().send(Endpoint.READY, null, null);

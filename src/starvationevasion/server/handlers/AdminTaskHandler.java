@@ -4,6 +4,7 @@ package starvationevasion.server.handlers;
  * @author Javier Chavez (javierc@cs.unm.edu)
  */
 
+import starvationevasion.common.GameState;
 import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
 import starvationevasion.server.model.*;
@@ -63,7 +64,7 @@ public class AdminTaskHandler extends AbstractHandler
       {
         long num = (long) request.getPayload().getData();
         boolean started = false;
-        if (server.getGameState() != State.LOGIN)
+        if (server.getGameState() != GameState.LOGIN)
         {
           // send out notification?
           server.stopGame();

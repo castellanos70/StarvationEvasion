@@ -7,7 +7,7 @@ import starvationevasion.common.Util;
 import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
-import starvationevasion.server.model.State;
+import starvationevasion.common.GameState;
 
 public class Vote extends AbstractCommand
 {
@@ -23,7 +23,7 @@ public class Vote extends AbstractCommand
   @Override
   public boolean run()
   {
-    if (getClient().getState().equals(State.VOTING))
+    if (getClient().getState().equals(GameState.VOTING))
     {
 
       if (tries <= 0)

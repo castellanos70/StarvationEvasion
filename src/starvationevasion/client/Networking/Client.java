@@ -6,7 +6,7 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.common.card.EnumPolicy;
 import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.communication.Communication;
-import starvationevasion.server.model.State;
+import starvationevasion.common.GameState;
 
 import java.util.ArrayList;
 
@@ -55,7 +55,7 @@ public interface Client
    *
    * @return last-valid state sent to the client
    */
-  State getServerState();
+  GameState getServerState();
 
   /**
    * Gets a list of policy cards that this client currently has.

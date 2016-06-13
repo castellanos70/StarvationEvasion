@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.common.card.EnumPolicy;
-import starvationevasion.server.model.State;
+import starvationevasion.common.GameState;
 
 /**
  * Title: {@value #TITLE}<br><br>
@@ -26,8 +26,8 @@ public class Policy_SpecialInterests extends AbstractPolicy
       "gains $100 million that they may spend " +
       "only to support card drafted this turn.";
   
-  public static final EnumSet<State> PLAY_STATES = //when the card can be used
-      EnumSet.of(State.DRAFTING);
+  public static final EnumSet<GameState> PLAY_STATES = //when the card can be used
+      EnumSet.of(GameState.DRAFTING);
   
   /**
    * {@inheritDoc}
@@ -47,7 +47,7 @@ public class Policy_SpecialInterests extends AbstractPolicy
    * {@inheritDoc}
    */
   @Override
-  public EnumSet<State> getUsableStates()
+  public EnumSet<GameState> getUsableStates()
   {
     return PLAY_STATES;
   }

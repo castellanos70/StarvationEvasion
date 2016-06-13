@@ -1,4 +1,4 @@
-package starvationevasion.server.model;
+package starvationevasion.common;
 
 /**
  * @author Javier Chavez (javierc@cs.unm.edu)
@@ -6,11 +6,13 @@ package starvationevasion.server.model;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 import starvationevasion.common.Constant;
+import starvationevasion.server.model.Sendable;
+import starvationevasion.server.model.Type;
 
 /**
  * Class that is used by the server set state of game.
  */
-public enum State implements Sendable
+public enum GameState implements Sendable
 {
   LOGIN,
   BEGINNING {

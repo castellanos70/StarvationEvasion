@@ -11,7 +11,7 @@ import starvationevasion.common.card.EnumPolicy;
 import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
-import starvationevasion.server.model.State;
+import starvationevasion.common.GameState;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -130,7 +130,7 @@ public class Draft extends AbstractCommand
   @Override
   public boolean run()
   {
-    if (!getClient().getState().equals(State.DRAFTING) && tries > 0)
+    if (!getClient().getState().equals(GameState.DRAFTING) && tries > 0)
     {
       tries--;
       if (tries <= 0)
@@ -138,7 +138,7 @@ public class Draft extends AbstractCommand
         return false;
       }
     }
-    if (getClient().getState().equals(State.DRAFTING))
+    if (getClient().getState().equals(GameState.DRAFTING))
     {
       synchronized(getClient())
       {

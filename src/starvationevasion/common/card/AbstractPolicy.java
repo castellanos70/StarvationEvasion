@@ -7,6 +7,7 @@ import com.oracle.javafx.jmx.json.JSONDocument;
 
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.GameState;
 import starvationevasion.common.card.cardlist.Policy_CleanRiverIncentive;
 import starvationevasion.common.card.cardlist.Policy_DivertFunds;
 import starvationevasion.common.card.cardlist.Policy_EducateTheWomenCampaign;
@@ -31,7 +32,6 @@ import starvationevasion.common.card.cardlist.Policy_ResearchInsectResistanceGra
 import starvationevasion.common.card.cardlist.Policy_SpecialInterests;
 import starvationevasion.common.card.cardlist.Policy_Fundraiser;
 import starvationevasion.server.model.Sendable;
-import starvationevasion.server.model.State;
 import starvationevasion.server.model.Type;
 
 /**
@@ -122,7 +122,7 @@ public abstract class AbstractPolicy implements Sendable
    * must be played during the planning phase. This is a list of what game states that the
    * card can be played in.
    */
-  private EnumSet<EnumGameState> usableStates;
+  private EnumSet<GameState> usableStates;
 
   //=========================================================================================
   /**
@@ -374,18 +374,9 @@ public abstract class AbstractPolicy implements Sendable
   //=========================================================================================
   /**
    * @return the game states in which it is valid to use this card.
-   * @see starvationevasion.server.model.State
+   * @see GameState
    */
-  public EnumSet<State> getUsableStates() {return null;}
-
-  
-  
-  //=========================================================================================
-  /**
-   * @deprecated JUST OVERRIDE getUsableStates() INSTEAD 
-   * @param states ArrayList of states of when this card can be played.
-   */
-  public void setUsableStates(EnumSet<EnumGameState> states) {states = usableStates;}
+  public EnumSet<GameState> getUsableStates() {return null;}
 
 
   

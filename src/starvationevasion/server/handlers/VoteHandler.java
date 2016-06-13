@@ -1,5 +1,6 @@
 package starvationevasion.server.handlers;
 
+import starvationevasion.common.GameState;
 import starvationevasion.common.card.AbstractPolicy;
 import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
@@ -15,7 +16,7 @@ public class VoteHandler extends AbstractHandler
   @Override
   protected boolean handleRequestImpl (Request request)
   {
-    if (!server.getGameState().equals(State.VOTING))
+    if (!server.getGameState().equals(GameState.VOTING))
     {
       return false;
     }

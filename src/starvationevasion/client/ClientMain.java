@@ -1,9 +1,9 @@
 package starvationevasion.client;
 
 
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -32,6 +32,11 @@ import starvationevasion.client.Networking.Client;
 import starvationevasion.client.Networking.ClientTest;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+
 /**
  * Update loop starts up the home screen for the client. From here the user is able
  * to launch a game and connect to a single or multiplayer. When the user clicks
@@ -46,7 +51,7 @@ public class ClientMain extends Application
   public enum EnumClientState
   {
     LOADING, READY_TO_CONNECT, READY_TO_LOGIN, READY_TO_PLAY, DRAFT_PHASE,
-    VOTE_PHASE, GAME_OVER;
+    VOTE_PHASE, GAME_OVER
   }
   private EnumClientState clientState = EnumClientState.LOADING;
   private int width  = 300;
@@ -69,6 +74,9 @@ public class ClientMain extends Application
   private MenuButton tutorial = new MenuButton("  TUTORIAL");
   private MenuButton exit = new MenuButton("  EXIT");
 
+
+  private TextField consoleTextField=new TextField();
+
   private Screen screen;
   private static Rectangle2D bounds;
   private Menu menu;
@@ -89,7 +97,14 @@ public class ClientMain extends Application
     client.ready(); // Send a ready response to the server
     stage.close();
   }
-
+  private void startBasicGUINoServer()
+  {
+    GUI gui = new GUI();
+    gui.start(new Stage());
+    client.setGUI(gui);
+    client.ready(); // Send a ready response to the server
+    stage.close();
+  }
   @Override
   public void start(Stage primaryStage)
   {
@@ -98,7 +113,9 @@ public class ClientMain extends Application
 
     try
     {
-      video.start(primaryStage);
+      //Todo add video back in, removed for testing
+      //video.start(primaryStage);
+      showStartMenu(primaryStage);
     } catch (Exception e)
     {
       e.printStackTrace();
@@ -109,7 +126,7 @@ public class ClientMain extends Application
 
 
   /**
-   * Menu button attributes are in this method
+   * Menu button attributes are in this class
    */
   private static class MenuButton extends StackPane
   {
@@ -213,7 +230,6 @@ public class ClientMain extends Application
         }
       }
     };
-
     timer.start();
   }
 
@@ -226,10 +242,10 @@ public class ClientMain extends Application
    */
   public void showStartMenu(Stage primaryStage)
   {
-    timer.stop();
+    //Todo add back in when video is reimplemented
+   // timer.stop();
 
-    editUsername.setPromptText("USER NAME");
-    editPassword.setPromptText("PASSWORD");
+
     screen = Screen.getPrimary();
     bounds = screen.getVisualBounds();
 
@@ -256,36 +272,13 @@ public class ClientMain extends Application
     //client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
     //client = new ClientTest(this, "localhost", 5555);
     String host = editServer.getText();
-    client = new ClientTest(this, host, Constant.SERVER_PORT);
-      });
-
-
-    buttonLogin.setOnMouseClicked((event) ->
-    {
-      if (!client.isRunning())
-      {
-        System.err.println("ERROR: Not connected to server");
-        return;
-      }
-
-        client.loginToServer(editUsername.getText(),editPassword.getText(), EnumRegion.USA_CALIFORNIA);
-    });
-
-    buttonCreateUser.setOnMouseClicked((event) ->
-    {
-      if (!client.isRunning())
-      {
-        System.err.println("ERROR: Not connected to server");
-        return;
-      }
-
-      System.out.println("ClientMain.buttonCreateUser.setOnMouseClicked:" +
-        "editUsername.getText()="+editUsername.getText());
-
-
-
-      client.createUser(editUsername.getText(), editPassword.getText(), EnumRegion.USA_CALIFORNIA);
-    });
+        try {
+          client = new ClientTest(this, host, Constant.SERVER_PORT);
+        }catch (Exception e){
+          e.printStackTrace();
+          showErrorMessage();
+        }
+        });
 
     credits.setOnMouseClicked(event -> {
 
@@ -329,13 +322,162 @@ public class ClientMain extends Application
     });
 
 
+    //TOdo make the console output prettier
+    //http://stackoverflow.com/questions/26874701/redirect-console-output-to-javafx-textarea
+    //makes a text field with console output for testing
+    OutputStream out = new OutputStream() {
+      @Override
+      public void write(int b) throws IOException {
+        Platform.runLater(() -> consoleTextField.appendText((String.valueOf((char) b))));
+      }
+    };
+    PrintStream newStream=new PrintStream(out,true);
+    //System.setOut(newStream);
+    //System.setErr(newStream);
 
 
 
-    this.stage = stage;
     stage.setMaximized(true);
     stage.setTitle("Login");
-    stage.setOnCloseRequest((event) -> client.shutdown());
+    stage.setOnCloseRequest((event) ->
+    {
+      if(client!=null) client.shutdown();
+    });
+    //Sets up the initial stage
+    gridRoot.setVgap(5);
+    stage.setScene(new Scene(root, width, height));
+    stage.setMaximized(true);
+
+
+    //The following code is for the credits
+
+    labelForScene2 = new Label(showCreditText());
+
+    pane2  = new FlowPane();
+    scene2 = new Scene(pane2, 350, 500);
+
+    pane2.getChildren().addAll(labelForScene2);
+
+    //make another stage for scene2
+    newStage = new Stage();
+    newStage.setScene(scene2);
+
+    //tell stage it is meant to pop-up (Modal)
+    newStage.initModality(Modality.APPLICATION_MODAL);
+    newStage.setTitle("Credits");
+
+
+    //Test stuff
+    MenuButton switchButton=new MenuButton("Go to Login");
+    switchButton.setOnMouseClicked(event -> {
+      gridRoot.getChildren().clear();
+      root.getChildren().clear();
+      showLoginScreen(primaryStage);
+    });
+    consoleTextField.setEditable(false);
+
+    gridRoot.add(editServer, 0, 1); gridRoot.add(buttonConnect, 1, 1);
+    gridRoot.add(tutorial,0,6);
+    gridRoot.add(credits,0,7);
+    gridRoot.add(exit,0,8);
+    gridRoot.add(consoleTextField,1,2,2,8);
+    gridRoot.add(switchButton,0,9);
+    root.getChildren().add(gridRoot);
+    gridRoot.setTranslateY(bounds.getHeight()/5*3);
+    gridRoot.setTranslateX(50);
+
+    stage.show();
+    startGameLoop();
+
+    playMusic();
+  }
+
+
+  private void showErrorMessage(){
+    consoleTextField.setText("An Error has occurred please try again");
+  }
+
+
+  private void showLoginScreen(Stage primaryStage)
+  {
+    //Todo add back in when video is reimplemented
+    // timer.stop();
+
+    editUsername.setPromptText("USER NAME");
+    editPassword.setPromptText("PASSWORD");
+    screen = Screen.getPrimary();
+    bounds = screen.getVisualBounds();
+
+    primaryStage.setX(bounds.getMinX());
+    primaryStage.setY(bounds.getMinY());
+    primaryStage.setWidth(bounds.getWidth());
+    primaryStage.setHeight(bounds.getHeight());
+
+    stage = primaryStage;
+
+    Pane root = new Pane();
+    root.setPrefSize(bounds.getWidth(), bounds.getHeight());
+
+
+    ImageView imgView = new ImageView(background);
+    imgView.setFitWidth(bounds.getWidth());
+    imgView.setFitHeight(bounds.getHeight());
+
+    root.getChildren().addAll(imgView);
+    menu = new Menu();
+
+    buttonLogin.setOnMouseClicked((event) ->
+    {
+      if (!client.isRunning())
+      {
+        System.err.println("ERROR: Not connected to server");
+        return;
+      }
+
+      client.loginToServer(editUsername.getText(),editPassword.getText(), EnumRegion.USA_CALIFORNIA);
+    });
+
+    buttonCreateUser.setOnMouseClicked((event) ->
+    {
+      if (!client.isRunning())
+      {
+        System.err.println("ERROR: Not connected to server");
+        return;
+      }
+
+      System.out.println("ClientMain.buttonCreateUser.setOnMouseClicked:" +
+              "editUsername.getText()="+editUsername.getText());
+
+
+
+      client.createUser(editUsername.getText(), editPassword.getText(), EnumRegion.USA_CALIFORNIA);
+    });
+
+    //TOdo make the console output prettier
+    //http://stackoverflow.com/questions/26874701/redirect-console-output-to-javafx-textarea
+    //makes a text field with console output for testing
+    OutputStream out = new OutputStream() {
+      @Override
+      public void write(int b) throws IOException {
+        Platform.runLater(() -> consoleTextField.appendText((String.valueOf((char) b))));
+      }
+    };
+    PrintStream newStream=new PrintStream(out,true);
+    //System.setOut(newStream);
+    //System.setErr(newStream);
+
+    //TESTING STuff
+    MenuButton switchToGUI=new MenuButton("GUI");
+    switchToGUI.setOnMouseClicked(event1 -> {
+      startBasicGUINoServer();
+    });
+
+
+    stage.setMaximized(true);
+    stage.setTitle("Login");
+    stage.setOnCloseRequest((event) ->{
+      if(client!=null) client.shutdown();
+    });
     //Sets up the initial stage
     gridRoot.setVgap(5);
     stage.setScene(new Scene(root, width, height));
@@ -362,14 +504,16 @@ public class ClientMain extends Application
 
     editUsername.setFocusTraversable(false);
     editPassword.setFocusTraversable(false);
-    gridRoot.add(editServer, 0, 1); gridRoot.add(buttonConnect, 1, 1);
+   // gridRoot.add(editServer, 0, 1); gridRoot.add(buttonConnect, 1, 1);
     gridRoot.add(editUsername, 0, 2);
     gridRoot.add(editPassword, 0, 3);
     gridRoot.add(buttonLogin, 0, 4);
     gridRoot.add(buttonCreateUser, 0, 5);
-    gridRoot.add(tutorial,0,6);
-    gridRoot.add(credits,0,7);
-    gridRoot.add(exit,0,8);
+    gridRoot.add(switchToGUI,0,6);
+    //gridRoot.add(tutorial,0,6);
+    //gridRoot.add(credits,0,7);
+    //gridRoot.add(exit,0,8);
+  //  gridRoot.add(consoleTextField,1,2,2,8);
     root.getChildren().add(gridRoot);
     gridRoot.setTranslateY(bounds.getHeight()/5*3);
     gridRoot.setTranslateX(50);
@@ -379,8 +523,6 @@ public class ClientMain extends Application
 
     playMusic();
   }
-
-
 
   /**
    * This string gets passed into one of the button labels

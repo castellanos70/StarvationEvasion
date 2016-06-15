@@ -7,10 +7,7 @@ import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.Glow;
@@ -33,9 +30,7 @@ import starvationevasion.client.Networking.ClientTest;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 
 /**
  * Update loop starts up the home screen for the client. From here the user is able
@@ -271,20 +266,16 @@ public class ClientMain extends Application
       {
     //client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
     //client = new ClientTest(this, "localhost", 5555);
-    String host = editServer.getText();
-        try {
-          client = new ClientTest(this, host, Constant.SERVER_PORT);
-        }catch (Exception e){
-          e.printStackTrace();
-          showErrorMessage();
-        }
+        String host = editServer.getText();
+
+        client = new ClientTest(this, host, Constant.SERVER_PORT);
+
         });
 
-    credits.setOnMouseClicked(event -> {
 
-    });
     exit.setOnMouseClicked(event -> {
-      client.shutdown();
+      if(client!=null) client.shutdown();
+      else stage.close();
     });
 
     credits.setOnMouseClicked((event) ->
@@ -332,8 +323,8 @@ public class ClientMain extends Application
       }
     };
     PrintStream newStream=new PrintStream(out,true);
-    //System.setOut(newStream);
-    //System.setErr(newStream);
+    //System.setOut(new PrintStream(out,true));
+   // System.setErr(new PrintStream(out,true));
 
 
 
@@ -380,7 +371,7 @@ public class ClientMain extends Application
     gridRoot.add(tutorial,0,6);
     gridRoot.add(credits,0,7);
     gridRoot.add(exit,0,8);
-    gridRoot.add(consoleTextField,1,2,2,8);
+    gridRoot.add(consoleTextField,0,10,10,10);
     gridRoot.add(switchButton,0,9);
     root.getChildren().add(gridRoot);
     gridRoot.setTranslateY(bounds.getHeight()/5*3);
@@ -394,9 +385,36 @@ public class ClientMain extends Application
 
 
   private void showErrorMessage(){
-    consoleTextField.setText("An Error has occurred please try again");
+    Alert alert=new Alert(Alert.AlertType.ERROR);
+    alert.setTitle("OH NO");
+
+
+    //consoleTextField.setText("An Error has occurred please try again");
+    alert.showAndWait();
   }
 
+  private void showErrorMessage(String message){
+    Alert alert=new Alert(Alert.AlertType.ERROR);
+    alert.setTitle(message);
+    alert.setContentText(message);
+
+    //consoleTextField.setText("An Error has occurred please try again");
+    alert.showAndWait();
+  }
+
+  private void showErrorMessage(Exception ex){
+    Alert alert=new Alert(Alert.AlertType.ERROR);
+    alert.setTitle("OH NO");
+    alert.setContentText("An error has occurred!!");
+
+    StringWriter stringWriter=new StringWriter();
+    PrintWriter printWriter=new PrintWriter(stringWriter);
+    ex.printStackTrace(printWriter);
+    TextArea textArea=new TextArea(stringWriter.toString());
+    //consoleTextField.setText("An Error has occurred please try again");
+    alert.getDialogPane().setExpandableContent(textArea);
+    alert.showAndWait();
+  }
 
   private void showLoginScreen(Stage primaryStage)
   {
@@ -428,8 +446,9 @@ public class ClientMain extends Application
 
     buttonLogin.setOnMouseClicked((event) ->
     {
-      if (!client.isRunning())
+      if (client==null||!client.isRunning())
       {
+        showErrorMessage("ERROR: Not connected to server");
         System.err.println("ERROR: Not connected to server");
         return;
       }
@@ -439,8 +458,9 @@ public class ClientMain extends Application
 
     buttonCreateUser.setOnMouseClicked((event) ->
     {
-      if (!client.isRunning())
+      if (client==null||!client.isRunning())
       {
+        showErrorMessage("ERROR: Not connected to server");
         System.err.println("ERROR: Not connected to server");
         return;
       }

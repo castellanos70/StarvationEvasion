@@ -35,10 +35,12 @@ public class ClientTest implements Client
   {
     System.out.println("ClientTest: "+host+":"+port);
     GAME_LOOP = gameLoop;
+
     COMM = new ConcurrentCommModule(host, port);
     CONTAINER = new LocalDataContainer(this);
     CHAT = new ChatManager(this);
     // Try to connect and then see how it went
+
     COMM.connect();
     isRunning = COMM.isConnected();
 

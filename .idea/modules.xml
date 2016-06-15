@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/StarvationEvasion.iml" filepath="$PROJECT_DIR$/StarvationEvasion.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/StarvationEvasion2.0.iml" filepath="$PROJECT_DIR$/.idea/StarvationEvasion2.0.iml" />
     </modules>
   </component>
 </project>

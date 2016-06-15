@@ -59,7 +59,7 @@ public enum Type implements Sendable
 
   BROADCAST,
 
-  POLICY,
+  POLICY_ENUM,
 
   REGION,
 

@@ -25,16 +25,7 @@ import java.util.EnumSet;
 public class Policy_EducateTheWomenCampaign extends AbstractPolicy
 {
 
-  public static final String TITLE =
-      "Educate the Women Campaign";
 
-  public static final String TEXT =
-      "The US sends a total of $70 million to educate woman of the target world " +
-      "region including reading, basic business and farming techniques.";
-
-  public static final EnumSet<GameState> PLAY_STATES = //when the card can be used
-      EnumSet.of(GameState.DRAFTING);
-  
   /**
    * The number of votes required for this policy to be enacted.
    */

@@ -96,8 +96,6 @@ public class ClientMain extends Application
   {
     GUI gui = new GUI();
     gui.start(new Stage());
-    client.setGUI(gui);
-    client.ready(); // Send a ready response to the server
     stage.close();
   }
   @Override
@@ -269,7 +267,8 @@ public class ClientMain extends Application
         String host = editServer.getText();
 
         client = new ClientTest(this, host, Constant.SERVER_PORT);
-
+        consoleTextField.setText("Successfully logged into "+host);
+        showLoginScreen(primaryStage);
         });
 
 
@@ -365,9 +364,23 @@ public class ClientMain extends Application
       root.getChildren().clear();
       showLoginScreen(primaryStage);
     });
+
+    buttonLogin.setOnMouseClicked((event) ->
+    {
+      if (client==null||!client.isRunning())
+      {
+        showErrorMessage("ERROR: Not connected to server");
+        System.err.println("ERROR: Not connected to server");
+        return;
+      }
+      client.loginToServer("admin","admin", EnumRegion.USA_CALIFORNIA);
+    });
+
+
     consoleTextField.setEditable(false);
 
     gridRoot.add(editServer, 0, 1); gridRoot.add(buttonConnect, 1, 1);
+    gridRoot.add(buttonLogin,0,2);
     gridRoot.add(tutorial,0,6);
     gridRoot.add(credits,0,7);
     gridRoot.add(exit,0,8);
@@ -418,6 +431,8 @@ public class ClientMain extends Application
 
   private void showLoginScreen(Stage primaryStage)
   {
+    gridRoot.getChildren().clear();
+    root.getChildren().clear();
     //Todo add back in when video is reimplemented
     // timer.stop();
 
@@ -452,7 +467,6 @@ public class ClientMain extends Application
         System.err.println("ERROR: Not connected to server");
         return;
       }
-
       client.loginToServer(editUsername.getText(),editPassword.getText(), EnumRegion.USA_CALIFORNIA);
     });
 
@@ -473,63 +487,51 @@ public class ClientMain extends Application
       client.createUser(editUsername.getText(), editPassword.getText(), EnumRegion.USA_CALIFORNIA);
     });
 
-    //TOdo make the console output prettier
-    //http://stackoverflow.com/questions/26874701/redirect-console-output-to-javafx-textarea
-    //makes a text field with console output for testing
-    OutputStream out = new OutputStream() {
-      @Override
-      public void write(int b) throws IOException {
-        Platform.runLater(() -> consoleTextField.appendText((String.valueOf((char) b))));
-      }
-    };
-    PrintStream newStream=new PrintStream(out,true);
-    //System.setOut(newStream);
-    //System.setErr(newStream);
-
     //TESTING STuff
     MenuButton switchToGUI=new MenuButton("GUI");
     switchToGUI.setOnMouseClicked(event1 -> {
       startBasicGUINoServer();
     });
 
+    MenuButton backToConnection = new MenuButton("To Connection");
+    backToConnection.setOnMouseClicked(event1 ->
+    {
+      gridRoot.getChildren().clear();
+      root.getChildren().clear();
+      showStartMenu(primaryStage);
+    });
 
+    MenuButton seeUsers=new MenuButton("Users");
+    seeUsers.setOnMouseClicked(event1 ->
+    {
+
+    });
     stage.setMaximized(true);
     stage.setTitle("Login");
     stage.setOnCloseRequest((event) ->{
       if(client!=null) client.shutdown();
     });
+
+
     //Sets up the initial stage
     gridRoot.setVgap(5);
     stage.setScene(new Scene(root, width, height));
     stage.setMaximized(true);
 
 
-    //The following code is for the credits
-
-    labelForScene2 = new Label(showCreditText());
-
-    pane2  = new FlowPane();
-    scene2 = new Scene(pane2, 350, 500);
-
-    pane2.getChildren().addAll(labelForScene2);
-
-    //make another stage for scene2
-    newStage = new Stage();
-    newStage.setScene(scene2);
-
-    //tell stage it is meant to pop-up (Modal)
-    newStage.initModality(Modality.APPLICATION_MODAL);
-    newStage.setTitle("Credits");
-
-
+    //Console preferences
+    consoleTextField.setEditable(false);
+    consoleTextField.setPrefSize(width,height);
     editUsername.setFocusTraversable(false);
     editPassword.setFocusTraversable(false);
-   // gridRoot.add(editServer, 0, 1); gridRoot.add(buttonConnect, 1, 1);
     gridRoot.add(editUsername, 0, 2);
     gridRoot.add(editPassword, 0, 3);
     gridRoot.add(buttonLogin, 0, 4);
     gridRoot.add(buttonCreateUser, 0, 5);
-    gridRoot.add(switchToGUI,0,6);
+    gridRoot.add(seeUsers,0,6);
+    gridRoot.add(switchToGUI,0,7);
+    gridRoot.add(backToConnection,0,8);
+    gridRoot.add(consoleTextField,1,0);
     //gridRoot.add(tutorial,0,6);
     //gridRoot.add(credits,0,7);
     //gridRoot.add(exit,0,8);

@@ -120,6 +120,7 @@ public class ConcurrentCommModule implements Communication
         int ch3 = reader.read();
         int ch4 = reader.read();
 
+        System.out.println(" " +ch1+" "+ch2 + " "+ch3+" "+ch4);
         if ((ch1 | ch2 | ch3 | ch4) < 0) throw new EOFException();
         int size = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
 
@@ -135,6 +136,7 @@ public class ConcurrentCommModule implements Communication
       }
       catch (Exception e)
       {
+        e.printStackTrace();
         // Ignore
       }
       return response;

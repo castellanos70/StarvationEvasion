@@ -1,9 +1,5 @@
 package starvationevasion.client.GUI;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.TimerTask;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -29,6 +25,10 @@ import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.GameState;
 import starvationevasion.common.card.EnumPolicy;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.TimerTask;
 
 /**
  * GUI.java is the class which holds the thread for running the main GUI of
@@ -165,7 +165,7 @@ public class GUI extends Application
       @Override
       public void handle(WindowEvent arg0)
       {
-        client.shutdown();
+        if(client!=null)client.shutdown();
         Platform.exit();
       }
     });
@@ -184,8 +184,10 @@ public class GUI extends Application
    */
   public void initGame()
   {
-    cardsInHand = client.getHand();
-    assignedRegion = client.getRegion();
+    if(client!=null) {
+      cardsInHand = client.getHand();
+      assignedRegion = client.getRegion();
+    }
     if (cardsInHand != null)
     {
       getDraftLayout().getHand().setPolicies(cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]));

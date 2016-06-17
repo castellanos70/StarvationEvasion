@@ -5,8 +5,6 @@ import javafx.scene.image.Image;
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 
-import java.util.ResourceBundle;
-
 /**
  * The game models the following 12 farm product categories.<br><br>
  * All farm products throughout the world used for food, animal
@@ -205,8 +203,8 @@ public enum EnumFood implements Sendable
     for (EnumFood type : values())
     {
       int i = type.ordinal();
-      imageSmall[i] = new Image(type.getIconPathSmall());
-      imageLarge[i] = new Image(type.getIconPathLarge());
+     // imageSmall[i] = new Image(type.getIconPathSmall());
+      //imageLarge[i] = new Image(type.getIconPathLarge());
     }
   }
 

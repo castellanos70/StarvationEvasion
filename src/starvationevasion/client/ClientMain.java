@@ -70,7 +70,9 @@ public class ClientMain extends Application
   private MenuButton exit = new MenuButton("  EXIT");
 
 
-  private TextField consoleTextField=new TextField();
+  private TextArea consoleTextField=new TextArea();
+  private TextArea usersAvaliableTextArea = new TextArea();
+  private TextArea usersOnlineTextArea = new TextArea();
 
   private Screen screen;
   private static Rectangle2D bounds;
@@ -380,11 +382,9 @@ public class ClientMain extends Application
     consoleTextField.setEditable(false);
 
     gridRoot.add(editServer, 0, 1); gridRoot.add(buttonConnect, 1, 1);
-    gridRoot.add(buttonLogin,0,2);
     gridRoot.add(tutorial,0,6);
     gridRoot.add(credits,0,7);
     gridRoot.add(exit,0,8);
-    gridRoot.add(consoleTextField,0,10,10,10);
     gridRoot.add(switchButton,0,9);
     root.getChildren().add(gridRoot);
     gridRoot.setTranslateY(bounds.getHeight()/5*3);
@@ -396,6 +396,19 @@ public class ClientMain extends Application
     playMusic();
   }
 
+  private TabPane createTabLayout(){
+
+
+    Tab usersTab = new Tab("users",usersAvaliableTextArea);
+    Tab onlineNow = new Tab("online now",usersOnlineTextArea);
+    Tab generalMessages = new Tab("information messages",consoleTextField);
+
+    onlineNow.setClosable(false);
+    usersTab.setClosable(false);
+    generalMessages.setClosable(false);
+    TabPane tabPane = new TabPane(generalMessages,usersTab,onlineNow);
+    return tabPane;
+  }
 
   private void showErrorMessage(){
     Alert alert=new Alert(Alert.AlertType.ERROR);
@@ -501,11 +514,6 @@ public class ClientMain extends Application
       showStartMenu(primaryStage);
     });
 
-    MenuButton seeUsers=new MenuButton("Users");
-    seeUsers.setOnMouseClicked(event1 ->
-    {
-
-    });
     stage.setMaximized(true);
     stage.setTitle("Login");
     stage.setOnCloseRequest((event) ->{
@@ -521,21 +529,16 @@ public class ClientMain extends Application
 
     //Console preferences
     consoleTextField.setEditable(false);
-    consoleTextField.setPrefSize(width,height);
+
     editUsername.setFocusTraversable(false);
     editPassword.setFocusTraversable(false);
-    gridRoot.add(editUsername, 0, 2);
-    gridRoot.add(editPassword, 0, 3);
-    gridRoot.add(buttonLogin, 0, 4);
-    gridRoot.add(buttonCreateUser, 0, 5);
-    gridRoot.add(seeUsers,0,6);
-    gridRoot.add(switchToGUI,0,7);
-    gridRoot.add(backToConnection,0,8);
-    gridRoot.add(consoleTextField,1,0);
-    //gridRoot.add(tutorial,0,6);
-    //gridRoot.add(credits,0,7);
-    //gridRoot.add(exit,0,8);
-  //  gridRoot.add(consoleTextField,1,2,2,8);
+    gridRoot.add(editUsername, 0, 0);
+    gridRoot.add(editPassword, 0, 1);
+    gridRoot.add(buttonLogin, 0, 2);
+    gridRoot.add(buttonCreateUser, 0, 3);
+    gridRoot.add(switchToGUI,0,5);
+    gridRoot.add(backToConnection,0,6);
+    gridRoot.add(createTabLayout(),2,0,1,7);
     root.getChildren().add(gridRoot);
     gridRoot.setTranslateY(bounds.getHeight()/5*3);
     gridRoot.setTranslateX(50);

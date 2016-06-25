@@ -375,7 +375,7 @@ public class ClientMain extends Application
         System.err.println("ERROR: Not connected to server");
         return;
       }
-      client.loginToServer("admin","admin", EnumRegion.USA_CALIFORNIA);
+      client.loginToServer(editUsername.getText(),editPassword.getText(), null);
     });
 
 
@@ -394,52 +394,6 @@ public class ClientMain extends Application
     startGameLoop();
 
     playMusic();
-  }
-
-  private TabPane createTabLayout(){
-
-
-    Tab usersTab = new Tab("users",usersAvaliableTextArea);
-    Tab onlineNow = new Tab("online now",usersOnlineTextArea);
-    Tab generalMessages = new Tab("information messages",consoleTextField);
-
-    onlineNow.setClosable(false);
-    usersTab.setClosable(false);
-    generalMessages.setClosable(false);
-    TabPane tabPane = new TabPane(generalMessages,usersTab,onlineNow);
-    return tabPane;
-  }
-
-  private void showErrorMessage(){
-    Alert alert=new Alert(Alert.AlertType.ERROR);
-    alert.setTitle("OH NO");
-
-
-    //consoleTextField.setText("An Error has occurred please try again");
-    alert.showAndWait();
-  }
-
-  private void showErrorMessage(String message){
-    Alert alert=new Alert(Alert.AlertType.ERROR);
-    alert.setTitle(message);
-    alert.setContentText(message);
-
-    //consoleTextField.setText("An Error has occurred please try again");
-    alert.showAndWait();
-  }
-
-  private void showErrorMessage(Exception ex){
-    Alert alert=new Alert(Alert.AlertType.ERROR);
-    alert.setTitle("OH NO");
-    alert.setContentText("An error has occurred!!");
-
-    StringWriter stringWriter=new StringWriter();
-    PrintWriter printWriter=new PrintWriter(stringWriter);
-    ex.printStackTrace(printWriter);
-    TextArea textArea=new TextArea(stringWriter.toString());
-    //consoleTextField.setText("An Error has occurred please try again");
-    alert.getDialogPane().setExpandableContent(textArea);
-    alert.showAndWait();
   }
 
   private void showLoginScreen(Stage primaryStage)
@@ -543,11 +497,93 @@ public class ClientMain extends Application
     gridRoot.setTranslateY(bounds.getHeight()/5*3);
     gridRoot.setTranslateX(50);
 
-    stage.show();
-    startGameLoop();
-
-    playMusic();
   }
+
+
+  private TabPane createTabLayout(){
+
+
+    Tab usersTab = new Tab("users",usersAvaliableTextArea);
+    Tab onlineNow = new Tab("online now",usersOnlineTextArea);
+    Tab generalMessages = new Tab("information messages",consoleTextField);
+    onlineNow.setClosable(false);
+    usersTab.setClosable(false);
+    generalMessages.setClosable(false);
+
+    usersTab.setOnSelectionChanged(event -> {
+      usersAvaliableTextArea.setText("The known users are:");
+    });
+
+    TabPane tabPane = new TabPane(generalMessages,usersTab,onlineNow);
+    return tabPane;
+  }
+
+  private void showErrorMessage(){
+    Alert alert=new Alert(Alert.AlertType.ERROR);
+    alert.setTitle("OH NO");
+
+
+    //consoleTextField.setText("An Error has occurred please try again");
+    alert.showAndWait();
+  }
+
+  private void showErrorMessage(String message){
+    Alert alert=new Alert(Alert.AlertType.ERROR);
+    alert.setTitle(message);
+    alert.setContentText(message);
+
+    //consoleTextField.setText("An Error has occurred please try again");
+    alert.showAndWait();
+  }
+
+  private void showErrorMessage(Exception ex){
+    Alert alert=new Alert(Alert.AlertType.ERROR);
+    alert.setTitle("OH NO");
+    alert.setContentText("An error has occurred!!");
+
+    StringWriter stringWriter=new StringWriter();
+    PrintWriter printWriter=new PrintWriter(stringWriter);
+    ex.printStackTrace(printWriter);
+    TextArea textArea=new TextArea(stringWriter.toString());
+    //consoleTextField.setText("An Error has occurred please try again");
+    alert.getDialogPane().setExpandableContent(textArea);
+    alert.showAndWait();
+  }
+
+  public void askToReconnect() {
+    consoleTextField.setText("LOST CONNECTION TO SERVER PLEASE RECONNECT");
+    //Alert alert = new Alert(Alert.AlertType.NONE);
+//    alert.setTitle("Lost communication with server");
+//    alert.setHeaderText("An error has occurred lost communication with server");
+//    alert.setContentText("Would you like to reconnect?");
+
+//    alert.showingProperty().addListener((observable,oldValue,newValue)->{
+//      if (!newValue){
+//              String host = editServer.getText();
+//
+//      client = new ClientTest(this, host, Constant.SERVER_PORT);
+//      consoleTextField.setText("Successfully logged into "+host);
+//      showLoginScreen(stage);
+//        try {
+//       //   func.call();
+//        } catch (Exception e) {
+//          e.printStackTrace();
+//        }
+//      }
+//    });
+//    Optional<ButtonType> result = alert.showAndWait();
+//    if (result.get() == ButtonType.OK){
+//      String host = editServer.getText();
+//
+//      client = new ClientTest(this, host, Constant.SERVER_PORT);
+//      consoleTextField.setText("Successfully logged into "+host);
+//      showLoginScreen(stage);
+//    } else {
+//      stage.close();
+//    }
+  }
+
+
 
   /**
    * This string gets passed into one of the button labels
@@ -584,11 +620,14 @@ public class ClientMain extends Application
     return text;
   }
 
+
+
   /***************************************************************************************/
 
+  AnimationTimer gameLoop;
   private void startGameLoop()
   {
-    new AnimationTimer()
+    gameLoop=new AnimationTimer()
     {
       @Override
       public void handle(long time)
@@ -597,17 +636,18 @@ public class ClientMain extends Application
         millisecondTimeStamp = System.currentTimeMillis();
         if (client != null)
         { client.update(deltaSeconds);
-          if (!client.isRunning()) stop();
+         // if (!client.isRunning()) stop();
+          if(!client.isRunning())
+          {
+           // gameLoop.stop();
+            askToReconnect();
+          }
         }
       }
 
-      public void stop()
-      {
-        super.stop();
-        stage.close();
-      }
 
-    }.start();
+    };
+            gameLoop.start();
   }
 
 

@@ -31,6 +31,7 @@ import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
 
 import java.io.*;
+import java.util.Optional;
 
 /**
  * Update loop starts up the home screen for the client. From here the user is able
@@ -116,7 +117,7 @@ public class ClientMain extends Application
       e.printStackTrace();
     }
 
-    startTimer(primaryStage);
+   // startTimer(primaryStage);
   }
 
 
@@ -271,6 +272,7 @@ public class ClientMain extends Application
         client = new ClientTest(this, host, Constant.SERVER_PORT);
         consoleTextField.setText("Successfully logged into "+host);
         showLoginScreen(primaryStage);
+        connectToServer(host);
         });
 
 
@@ -323,7 +325,7 @@ public class ClientMain extends Application
         Platform.runLater(() -> consoleTextField.appendText((String.valueOf((char) b))));
       }
     };
-    PrintStream newStream=new PrintStream(out,true);
+   // PrintStream newStream=new PrintStream(out,true);
     //System.setOut(new PrintStream(out,true));
    // System.setErr(new PrintStream(out,true));
 
@@ -365,17 +367,6 @@ public class ClientMain extends Application
       gridRoot.getChildren().clear();
       root.getChildren().clear();
       showLoginScreen(primaryStage);
-    });
-
-    buttonLogin.setOnMouseClicked((event) ->
-    {
-      if (client==null||!client.isRunning())
-      {
-        showErrorMessage("ERROR: Not connected to server");
-        System.err.println("ERROR: Not connected to server");
-        return;
-      }
-      client.loginToServer(editUsername.getText(),editPassword.getText(), null);
     });
 
 
@@ -430,8 +421,8 @@ public class ClientMain extends Application
     {
       if (client==null||!client.isRunning())
       {
-        showErrorMessage("ERROR: Not connected to server");
-        System.err.println("ERROR: Not connected to server");
+        //showErrorMessage("ERROR: Not connected to server");
+        askToReconnect();
         return;
       }
       client.loginToServer(editUsername.getText(),editPassword.getText(), EnumRegion.USA_CALIFORNIA);
@@ -441,16 +432,11 @@ public class ClientMain extends Application
     {
       if (client==null||!client.isRunning())
       {
-        showErrorMessage("ERROR: Not connected to server");
-        System.err.println("ERROR: Not connected to server");
+        askToReconnect();
         return;
       }
-
       System.out.println("ClientMain.buttonCreateUser.setOnMouseClicked:" +
               "editUsername.getText()="+editUsername.getText());
-
-
-
       client.createUser(editUsername.getText(), editPassword.getText(), EnumRegion.USA_CALIFORNIA);
     });
 
@@ -499,6 +485,11 @@ public class ClientMain extends Application
 
   }
 
+  private void connectToServer(String host){
+    client = new ClientTest(this, host, Constant.SERVER_PORT);
+    consoleTextField.setText("Successfully logged into "+host);
+    showLoginScreen(stage);
+  }
 
   private TabPane createTabLayout(){
 
@@ -550,37 +541,25 @@ public class ClientMain extends Application
     alert.showAndWait();
   }
 
-  public void askToReconnect() {
-    consoleTextField.setText("LOST CONNECTION TO SERVER PLEASE RECONNECT");
-    //Alert alert = new Alert(Alert.AlertType.NONE);
-//    alert.setTitle("Lost communication with server");
-//    alert.setHeaderText("An error has occurred lost communication with server");
-//    alert.setContentText("Would you like to reconnect?");
+  private void askToReconnect(){
+    TextInputDialog dialog = new TextInputDialog(editServer.getText());
+    dialog.setTitle("Would you like to connect to Server");
+    dialog.setHeaderText("Reconnect");
+    dialog.setContentText("Please enter the name of the host:");
 
-//    alert.showingProperty().addListener((observable,oldValue,newValue)->{
-//      if (!newValue){
-//              String host = editServer.getText();
-//
-//      client = new ClientTest(this, host, Constant.SERVER_PORT);
-//      consoleTextField.setText("Successfully logged into "+host);
-//      showLoginScreen(stage);
-//        try {
-//       //   func.call();
-//        } catch (Exception e) {
-//          e.printStackTrace();
-//        }
-//      }
-//    });
-//    Optional<ButtonType> result = alert.showAndWait();
-//    if (result.get() == ButtonType.OK){
-//      String host = editServer.getText();
-//
-//      client = new ClientTest(this, host, Constant.SERVER_PORT);
-//      consoleTextField.setText("Successfully logged into "+host);
-//      showLoginScreen(stage);
-//    } else {
-//      stage.close();
-//    }
+    String host;
+    Optional<String> result = dialog.showAndWait();
+    if (result.isPresent()){
+      host=result.get();
+      client = new ClientTest(this, host, Constant.SERVER_PORT);
+      consoleTextField.setText("Successfully logged into "+host);
+      showLoginScreen(stage);
+    }
+
+  }
+
+  public void lostConnection() {
+    consoleTextField.setText("LOST CONNECTION TO SERVER PLEASE RECONNECT");
   }
 
 
@@ -640,7 +619,7 @@ public class ClientMain extends Application
           if(!client.isRunning())
           {
            // gameLoop.stop();
-            askToReconnect();
+            lostConnection();
           }
         }
       }

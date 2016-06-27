@@ -16,7 +16,6 @@ public class ProductBar
   Stage primaryStage;
   GUI gui;
 
-  ArrayList<EnumFood> productList;
   ArrayList<ProductBarElement> elements;
 
   int selectedIndex = -1;
@@ -29,19 +28,16 @@ public class ProductBar
   public ProductBar(GUI gui)
   {
     this.gui = gui;
-    int productListSize;
-    productList = gui.getProductList();
     primaryStage = gui.getPrimaryStage();
 
     double elementWidth = gui.getBoxWidth();
     double elementHeight = gui.getBoxHeight();
 
-    productListSize = productList.size();
 
     elements = new ArrayList<>();
-    for (int i = 0; i < productListSize; ++i)
+    for (int i = 0; i < EnumFood.SIZE; ++i)
     {
-      EnumFood food = productList.get(i);
+      EnumFood food = EnumFood.values()[i];
       elements.add(new ProductBarElement(gui, food, i, elementWidth, elementHeight, this));
     }
   }
@@ -103,7 +99,7 @@ public class ProductBar
     }
     else
     {
-      return productList.get(selectedIndex);
+      return EnumFood.values()[selectedIndex];
     }
   }
 

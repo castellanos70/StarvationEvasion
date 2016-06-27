@@ -5,7 +5,6 @@ import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import javafx.collections.FXCollections;
@@ -15,11 +14,9 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.PieChart.Data;
 import javafx.scene.chart.StackedBarChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
-import starvationevasion.common.EnumFood;
+
 /**
  * Graph Manager which handles all of the graphs attached to the GUI Has
  * functions which allows the client to add data to a graph or methods for the
@@ -79,9 +76,6 @@ public class GraphManager
 
   Graph[] productBarGraphs = new Graph[12];
 
-  final EnumFood[] PRODUCTS =
-  { EnumFood.CITRUS, EnumFood.FRUIT, EnumFood.NUT, EnumFood.GRAIN, EnumFood.OIL, EnumFood.VEGGIES, EnumFood.SPECIAL,
-      EnumFood.FEED, EnumFood.FISH, EnumFood.MEAT, EnumFood.POULTRY, EnumFood.DAIRY };
 
   /**
    * Constructor for the GraphManger
@@ -385,7 +379,7 @@ public class GraphManager
     currentYear.setVisible(false);
     masterPieChart.setLegendVisible(false);
     masterPieChart.getData().clear();
-    masterPieChart.setTitle("Regional Production Comparison of " +PRODUCTS[crop-1].toString());
+    masterPieChart.setTitle("Regional Production Comparison of " +EnumFood.values()[crop-1].toString());
     ObservableList<Data> list = FXCollections.observableArrayList(
         new PieChart.Data("California", listOfRegionalCropComparisonLists.get(crop).get(0)),
         new PieChart.Data("HeartLands", listOfRegionalCropComparisonLists.get(crop).get(1)),
@@ -520,7 +514,7 @@ public class GraphManager
   {
     for (int i = 0; i < 12; ++i)
     {
-      productBarGraphs[i] = new GraphProductBar(PRODUCTS[i]);
+      productBarGraphs[i] = new GraphProductBar(EnumFood.values()[i]);
     }
   }
 

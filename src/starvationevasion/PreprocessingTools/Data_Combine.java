@@ -274,7 +274,7 @@ public class Data_Combine
         category = dataSplit[1];
         String completeData;
 
-        if (category.equals("FRUIT"))
+        if (category.equals("TEMPERATE_FRUIT"))
         {
           completeData = "";
           for (int i = 0; i < dataSplit.length; i++)
@@ -285,7 +285,7 @@ public class Data_Combine
               completeData = completeData + "," + dataSplit[i];
           }
           bannanaData.add(completeData);
-        } else if (category.equals("SPECIAL"))
+        } else if (category.equals("SPICE"))
         {
           completeData = "";
           for (int i = 0; i < dataSplit.length; i++)

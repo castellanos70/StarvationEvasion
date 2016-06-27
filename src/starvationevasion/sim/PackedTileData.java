@@ -92,7 +92,7 @@ public class PackedTileData implements Sendable
   /**
    * unpacks crop ratings for a single land tile.
    * example of use:
-   * cropRatings[EnumFood.CROP_FOODS[EnumFood.CITRUS.ordinal()]] returns rating for citrus
+   * cropRatings[EnumFood.CROP_FOODS[EnumFood.TROPICAL_FRUIT.ordinal()]] returns rating for citrus
    * @param    index    index of tile to unpack
    * @return   an array of ratings for each crop
    */

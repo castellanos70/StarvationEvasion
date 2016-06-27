@@ -6,10 +6,6 @@ import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 import starvationevasion.sim.io.CSVReader;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-
-
 
 public enum EnumPolicy implements Sendable
 {
@@ -30,7 +26,7 @@ public enum EnumPolicy implements Sendable
   ResearchInsectResistance,
   SpecialInterests;
 
-  private static final String PATH_POLICY_CARD_DATA = "/data/PolicyCardData.csv";
+  private static final String PATH_POLICY_CARD_DATA = "/PolicyCardData.csv";
 
   public static final int SIZE = values().length;
   private static final String[] title = new String[SIZE];
@@ -148,7 +144,6 @@ public enum EnumPolicy implements Sendable
    */
   public static void load()
   {
-
     CSVReader fileReader = new CSVReader(PATH_POLICY_CARD_DATA, 1);
 
     String[] fieldList;
@@ -169,26 +164,28 @@ public enum EnumPolicy implements Sendable
 
       title[idx]    = fieldList[1];
       ruleText[idx] = fieldList[2];
+
+      System.out.println("fieldList[4]="+fieldList[4]);
       votesRequired[idx] = Integer.parseInt(fieldList[4]);
       actionPointCost[idx] = Integer.parseInt(fieldList[5]);
 
 
       duration[idx] = EnumPolicyDuration.valueOf(fieldList[3]);
-      if (fieldList[6] != null) optionsRegions[idx] = EnumTargetRegionOptions.valueOf(fieldList[6]);
-      if (fieldList[7] != null) optionsFood[idx]    = EnumTargetFoodOptions.valueOf(fieldList[7]);
-
-      String[] optionXStr = fieldList[8].split(" ");
-      if (fieldList[9] != null) playableState[idx] = GameState.valueOf(fieldList[9]);
+      if (!fieldList[6].equals("null")) optionsRegions[idx] = EnumTargetRegionOptions.valueOf(fieldList[6]);
+      if (!fieldList[7].equals("null")) optionsFood[idx]    = EnumTargetFoodOptions.valueOf(fieldList[7]);
+      if (!fieldList[9].equals("null")) playableState[idx] = GameState.valueOf(fieldList[9]);
       flavorText[idx] = fieldList[10];
       flavorTextAuthor[idx] = fieldList[11];
 
-      optionsX[idx] = new int[optionXStr.length];
-      for(int i=0; i<optionXStr.length; i++)
-      {
-        optionsX[idx][i] = Integer.parseInt(optionXStr[i]);
+      if (!fieldList[8].equals("null"))
+      { String[] optionXStr = fieldList[8].split(" ");
+        optionsX[idx] = new int[optionXStr.length];
+        for(int i=0; i<optionXStr.length; i++)
+        {
+          optionsX[idx][i] = Integer.parseInt(optionXStr[i]);
+        }
       }
     }
-
     fileReader.close();
   }
 }

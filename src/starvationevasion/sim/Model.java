@@ -782,7 +782,7 @@ public class Model
       {
         for (LandTile tile : territory.getLandTiles())
         {
-          for(EnumFood crop: EnumFood.ALL_FOODS)
+          for(EnumFood crop: EnumFood.values())
           {
             int newCost =  calculateTileCost(region, crop, currentYear);
             // not sure if this does what it should be

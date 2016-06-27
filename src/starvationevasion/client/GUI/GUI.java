@@ -61,8 +61,6 @@ public class GUI extends Application
 
   private Node currentRoot;
 
-  ArrayList<EnumFood> productList;
-
   // Helper classes
   ImageGetter imageGetter;
   PopupManager popupManager;
@@ -131,7 +129,6 @@ public class GUI extends Application
     primaryStage.setTitle("Starvation Evasion");
 
     // fills a list of all the product types
-    initializeProductList();
 
     // primaryStage.setMaxHeight(maxHeight);
     // primaryStage.setMinHeight(maxHeight);
@@ -291,16 +288,6 @@ public class GUI extends Application
     return imageGetter;
   }
 
-  /**
-   * Simple getter to allow classes to view the list of products Written before
-   * there was an list of products in the ENUM file
-   *
-   * @return
-   */
-  public ArrayList<EnumFood> getProductList()
-  {
-    return productList;
-  }
 
   public ChatNode getChatNode()
   {
@@ -443,16 +430,6 @@ public class GUI extends Application
     return graphManager;
   }
 
-  /**
-   * gets the FoodType at index of the food product list
-   * 
-   * @param index
-   * @return EnumFood at the specified index
-   */
-  public EnumFood getFoodType(int index)
-  {
-    return productList.get(index);
-  }
 
   /**
    * Updates the GUI's assigned region to the passed in region
@@ -527,22 +504,4 @@ public class GUI extends Application
 
     timer.schedule(timerTask, 100, 1000);
   }
-
-  private void initializeProductList()
-  {
-    productList = new ArrayList<>();
-    productList.add(EnumFood.CITRUS);
-    productList.add(EnumFood.FRUIT);
-    productList.add(EnumFood.NUT);
-    productList.add(EnumFood.GRAIN);
-    productList.add(EnumFood.OIL);
-    productList.add(EnumFood.VEGGIES);
-    productList.add(EnumFood.SPECIAL);
-    productList.add(EnumFood.FEED);
-    productList.add(EnumFood.FISH);
-    productList.add(EnumFood.MEAT);
-    productList.add(EnumFood.POULTRY);
-    productList.add(EnumFood.DAIRY);
-  }
-
 }

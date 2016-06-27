@@ -70,15 +70,11 @@ public enum EnumRegion implements Sendable
     RUSSIA, CENTRAL_ASIA, SOUTH_ASIA, EAST_ASIA, OCEANIA
   };
 
-  private final ResourceBundle res = ResourceBundle.getBundle("strings_enum");
-  private final String shortName = res.getString("EnumRegion." + name() + ".shortName");
-
   @Override
   public JSONDocument toJSON ()
   {
     JSONDocument _json = JSONDocument.createObject();
     _json.setString("name", name());
-    _json.setString("short-name", shortName);
     _json.setBoolean("is-us", isUS());
 
     return _json;
@@ -105,7 +101,7 @@ public enum EnumRegion implements Sendable
     return 1 << ordinal();
   }
 
-  public String toString() { return shortName; }
+  public String toString() { return name(); }
 
   public Color getColor()
   {

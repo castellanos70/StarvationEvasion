@@ -66,10 +66,10 @@ public class SpecialEventCSVLoader
     {
       currentField = fieldList[0];
       SpecialEventData sed = new SpecialEventData(currentField);
-      System.out.println("SPECIAL EVENT RECORD " + currentField);
+      System.out.println("SPICE EVENT RECORD " + currentField);
       for (EnumHeader header : EnumHeader.values())
       {
-        //System.out.println("SPECIAL EVENT RECORD " + currentField + " HEADER "+header.name());
+        //System.out.println("SPICE EVENT RECORD " + currentField + " HEADER "+header.name());
         String value = null;
         switch (header)
         {

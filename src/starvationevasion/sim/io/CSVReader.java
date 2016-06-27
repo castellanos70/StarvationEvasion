@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +95,10 @@ public class CSVReader
     while ((line = reader.readLine()) != null)
     { // Process the line.
       //
-      String[] tokens = line.split(",");
+      //String[] tokens = line.split(",");
+      String[] tokens = split(line);
+
+
       if (lineNo == 0)
       { // The first line contains the column names.
         //
@@ -123,7 +127,32 @@ public class CSVReader
   }
 
 
+public static String[] split(String str)
+{
+  ArrayList<String> tokensList = new ArrayList<>();
+  boolean inQuotes = false;
+  StringBuilder b = new StringBuilder();
+  for (char c : str.toCharArray()) {
+  switch (c) {
+    case ',':
+      if (inQuotes) {
+        b.append(c);
+      } else {
+        tokensList.add(b.toString());
+        b = new StringBuilder();
+      }
+      break;
+    case '\"':
+      inQuotes = !inQuotes;
+    default:
+      b.append(c);
+      break;
+  }
+}
+  tokensList.add(b.toString());
 
+  return tokensList.toArray(new String[tokensList.size()]);
+}
 
 
   /**
@@ -152,7 +181,7 @@ public class CSVReader
       System.exit(0);
     }
 
-    String[] fields = str.split(",");
+    String[] fields = split(str);
     if (fieldCount > 0 && fields.length > fieldCount)
     {
       LOGGER.severe("****ERROR reading " + path + ": Expected " + fieldCount +

@@ -82,7 +82,7 @@ public class LandTile
   private EnumFood curCrop = null;
   
   /**
-   * cropRatings[EnumFood.CITRUS.ordinal()] returns this LandTiles rating for
+   * cropRatings[EnumFood.TROPICAL_FRUIT.ordinal()] returns this LandTiles rating for
    * citrus.
    */
   private EnumCropZone[] cropRatings = new EnumCropZone[EnumFood.SIZE];

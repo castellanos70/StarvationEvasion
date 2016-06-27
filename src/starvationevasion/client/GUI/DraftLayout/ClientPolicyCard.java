@@ -77,7 +77,7 @@ public class ClientPolicyCard extends VBox
     if(xVal!=0)policy.setX(xVal);
     else policy.setX(1);
 
-    if(selectedFood==null) policy.setTargetFood(EnumFood.CITRUS);
+    if(selectedFood==null) policy.setTargetFood(EnumFood.TROPICAL_FRUIT);
     else policy.setTargetFood(selectedFood);
     if(selectedRegion==null) policy.setTargetRegion(EnumRegion.USA_CALIFORNIA);
     else policy.setTargetRegion(selectedRegion);

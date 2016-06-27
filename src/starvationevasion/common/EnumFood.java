@@ -18,47 +18,20 @@ import starvationevasion.server.model.Type;
  * </ol>
  *
  *
- *
- *
- * 1) Tropical fruits [including Sub-tropical (Grapefruit, Lemons, Oranges, Pineapples, Grapes, ...) and Tropical (Mango, Banana, Papaya, ...)
-
- 2) Temperate fruits [including Apple, Peach, Pear, Plum, Strawberry, Apricot, Persimmon, Cherry, Kiwi ...]
-
- 3) Nuts [including Almonds, Pecans, Pistachios, Walnuts, ...]
-
- 4) Grains [including Rice, Wheat, Corn, Oats, Quinoa, ...]
-
- 5) Seed Oil [including Safflower, Sunflower, Canola...]
-
- 6) Legumes [including Pinto Beans, Kidney Beans, Chickpeas, Lentils, Mung beans, Mesquite, Carob, Soybeans, Peanuts, Tamarind, ...]
-
- 7) Vegetables [Bulb, Root, Flower, Leaf and Stem Vegetables, including Onions, Carrots, Broccoli, Eggplant, Kale, Lettuce, Tomato...]
-
- 8) Sea Vegetables [including Nori, Kombu, Kelp, ...]
-
- 9) Sugar and Spice [including Sugar, Spices, Coffee, Tea, ...]
-
- 10) Fish [including Fresh and salt water, wild caught and farm raised"]
-
- 11) Red Meat [including Beef, Pork, Mutten, ...]
-
- 12) Poultry [including Chicken, Turkey, Duck, Quail, Eggs..."]
-
- 13) Dairy [including Milk, Cheese, Butter, and Yogurt]
  */
 public enum EnumFood implements Sendable
 {
-  CITRUS
+  TROPICAL_FRUIT
   {
     public String toString() {return "Tropical fruits";};
     public String toLongString() {return "Sub-tropical (Grapefruit, Lemons, Oranges, Pineapples, Grapes, ...) and Tropical (Mango, Banana, Papaya, ...), ...";};
     public boolean isCrop() {return true;}
   },
 
-  FRUIT
+  TEMPERATE_FRUIT
   {
     public String toString() {return "Temperate fruits";};
-    public String toLongString() {return "Apple, Peach, Pear, Plum, Strawberry, Apricot, Persimmon, Cherry, Kiwi ...";};
+    public String toLongString() {return "Apple, Peach, Pear, Plum, Strawberry, Apricot, Persimmon, Cherry, Kiwi ...";}
     public boolean isCrop() {return true;}
   },
 
@@ -76,6 +49,27 @@ public enum EnumFood implements Sendable
     public boolean isCrop() {return true;}
   },
 
+  LEGUMES
+    { public String toString() {return "Legumes";};
+      public String toLongString() {return "Pinto Beans, Kidney Beans, Chickpeas, Lentils, Mung beans, Mesquite, Carob, Soybeans, Peanuts, Tamarind, ...";};
+      public boolean isCrop() {return true;}
+    },
+
+  VEGGIES
+    {
+      public String toString() {return "Vegetables";};
+      public String toLongString() {return "Bulb, Root, Flower, Leaf and Stem Vegetables, including Onions, Carrots, " +
+        "Broccoli, Eggplant, Kale, Lettuce, Tomato...";};
+      public boolean isCrop() {return true;}
+    },
+
+  SEAWEED
+    {
+      public String toString() {return "Sea Vegetables";};
+      public String toLongString() {return "Nori, Kombu, Kelp, ...";};
+      public boolean isCrop() {return true;}
+    },
+
   OIL
   {
     public String toString() {return "Seed Oil";};
@@ -83,26 +77,15 @@ public enum EnumFood implements Sendable
     public boolean isCrop() {return true;}
   },
 
-  VEGGIES //Split into vegetables and Legumes
-  {
-    public String toString() {return "Vegetables";};
-    public String toLongString() {return "Bulb, Flower, Leaf and Stem Vegetables, ...";};
-    public boolean isCrop() {return true;}
-  },
 
-  SPECIAL
+
+  SPICE
   {
     public String toString() {return "Sugar and Spice";};
     public String toLongString() {return "Sugar, Spices, Coffee, Tea, ...";};
     public boolean isCrop() {return true;}
   },
 
-  FEED //Cut
-  {
-    public String toString() {return "Animal Feed";};
-    public String toLongString() {return "Hay, Oats, Alfalfa, Feed Corn, ...";};
-    public boolean isCrop() {return true;}
-  },
 
   FISH
   {
@@ -123,14 +106,14 @@ public enum EnumFood implements Sendable
     // themselves but also for animal feed.
   {
     public String toString() {return "Poultry";};
-    public String toLongString() {return "Chicken, Turkey, ...";};
+    public String toLongString() {return "Chicken, Turkey, Duck, Quail, Eggs...";};
     public boolean isCrop() {return false;}
   },
 
   DAIRY
   {
     public String toString() {return "Dairy";};
-    public String toLongString() {return "Milk, Cheese, Eggs and Butter";};
+    public String toLongString() {return "Milk, Cheese, Butter, and Yogurt";};
     public boolean isCrop() {return false;}
   };
 
@@ -138,7 +121,7 @@ public enum EnumFood implements Sendable
    * Array of all crop foods used in the game.
    */
   public static final EnumFood[] CROP_FOODS =
-  { CITRUS, FRUIT, NUT, GRAIN, OIL, VEGGIES, SPECIAL, FEED
+  {TROPICAL_FRUIT, TEMPERATE_FRUIT, NUT, GRAIN, LEGUMES, VEGGIES, SEAWEED, OIL, SPICE
   };
 
   /**
@@ -146,11 +129,6 @@ public enum EnumFood implements Sendable
    */
   public static final EnumFood[] NON_CROP_FOODS =
   { FISH, MEAT, POULTRY, DAIRY,
-  };
-  
-  public static final EnumFood[] ALL_FOODS =
-  { CITRUS, FRUIT, NUT, GRAIN, OIL, VEGGIES, SPECIAL, FEED,
-	  FISH, MEAT, POULTRY, DAIRY,
   };
 
   public static final int SIZE = values().length;

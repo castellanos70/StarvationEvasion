@@ -78,6 +78,7 @@ public class CardNode extends ResizablePane
   public CardNode(EnumRegion owner, EnumPolicy policy)
   {
     super();
+    System.out.println("MAKING CARD " + policy.toString());
     gameCard = AbstractPolicy.create(owner, policy);
     ePolicy = policy;
     region = owner;

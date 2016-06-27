@@ -138,13 +138,13 @@ public enum EnumFood implements Sendable
   /**
    * @return file path of small icon.
    */
-  public String getIconPathSmall() { return "assets/farmProductIcons"+name()+"_64x64.png"; }
+  public String getIconPathSmall() { return "farmProductIcons/"+name()+"_64x64.png"; }
 
 
   /**
    * @return file path of large icon.
    */
-  public String getIconPathLarge()  { return "assets/farmProductIcons"+name()+"_256x256.png";}
+  public String getIconPathLarge()  { return "farmProductIcons/"+name()+"_256x256.png";}
 
   /**
    * Before this can be called, the images must be loaded.
@@ -196,18 +196,19 @@ public enum EnumFood implements Sendable
   /**
    * Must be called once when program in initilized.
    */
-  public static void loadIcons()
-  {
-    assert(imageSmall[0] == null); //As this method is called only once.
+  public static void loadIcons() {
+    assert (imageSmall[0] == null); //As this method is called only once.
 
-    for (EnumFood type : values())
-    {
+    for (EnumFood type : values()) {
       int i = type.ordinal();
-     // imageSmall[i] = new Image(type.getIconPathSmall());
-      //imageLarge[i] = new Image(type.getIconPathLarge());
+      try {
+        imageSmall[i] = new Image(type.getIconPathSmall());
+        imageLarge[i] = new Image(type.getIconPathLarge());
+      } catch (Exception e) {
+        System.err.println("MISSING: " + type.name() + "Trying this path: " + type.getIconPathSmall());
+      }
     }
   }
-
 }
 
 

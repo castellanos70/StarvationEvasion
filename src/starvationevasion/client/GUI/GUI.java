@@ -2,13 +2,11 @@ package starvationevasion.client.GUI;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
 import starvationevasion.client.GUI.DraftLayout.DraftLayout;
 import starvationevasion.client.GUI.DraftLayout.HandNode;
@@ -25,6 +23,7 @@ import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.GameState;
 import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.sim.CardDeck;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,13 +79,17 @@ public class GUI extends Application
   private boolean draftingPhase = true;
   private boolean needHand = true;
 
+  private boolean testing=false;
   /**
    * Default constructor for GUI Used for debugging the GUI, cannot connect to a
    * game
+   * This is ONLY for testing
    */
   public GUI()
   {
     super();
+    testing=true;
+    assignedRegion=EnumRegion.USA_CALIFORNIA;
   }
 
   /**
@@ -160,14 +163,9 @@ public class GUI extends Application
 
     primaryStage.show();
 
-    primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>()
-    {
-      @Override
-      public void handle(WindowEvent arg0)
-      {
-        if(client!=null)client.shutdown();
-        Platform.exit();
-      }
+    primaryStage.setOnCloseRequest(arg0 -> {
+      if(client!=null)client.shutdown();
+      Platform.exit();
     });
 
     initGame();
@@ -187,6 +185,14 @@ public class GUI extends Application
     if(client!=null) {
       cardsInHand = client.getHand();
       assignedRegion = client.getRegion();
+    }
+    if(testing){
+      CardDeck cardDeck= new CardDeck(EnumRegion.USA_MOUNTAIN);
+      EnumPolicy[] deck=cardDeck.drawCards();
+      draftLayout.getHand().setPolicies(deck);
+      System.out.println(Arrays.deepToString(deck));
+
+
     }
     if (cardsInHand != null)
     {

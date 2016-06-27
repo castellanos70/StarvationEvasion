@@ -1,13 +1,15 @@
 package starvationevasion.client.GUI.DraftLayout;
 
-import java.util.ArrayList;
-
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.ResizablePane;
 import starvationevasion.common.card.EnumPolicy;
+
+import java.util.ArrayList;
 
 /**
  * @author Ben Matthews
@@ -133,7 +135,10 @@ public class HandNode extends ResizablePane
     for (int i = 0; i < policies.length; i++){
       cards[i] = new CardNode(gui.getAssignedRegion(), policies[i]);
       cards[i].setManaged(false);
-      this.getChildren().add(cards[i]);
+      Rectangle rectangle=new Rectangle();
+      VBox vBox=new VBox();
+      vBox.getChildren().add(cards[i]);
+      this.getChildren().add(vBox);
     }
     onResize();
   }

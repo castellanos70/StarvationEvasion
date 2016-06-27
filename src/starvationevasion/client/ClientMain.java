@@ -3,7 +3,6 @@ package starvationevasion.client;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -30,7 +29,8 @@ import starvationevasion.client.Networking.ClientTest;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
 
-import java.io.*;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Optional;
 
 /**
@@ -104,9 +104,7 @@ public class ClientMain extends Application
   @Override
   public void start(Stage primaryStage)
   {
-
     IntroVideo video = new IntroVideo();
-
     try
     {
       //Todo add video back in, removed for testing
@@ -116,7 +114,6 @@ public class ClientMain extends Application
     {
       e.printStackTrace();
     }
-
    // startTimer(primaryStage);
   }
 
@@ -126,7 +123,6 @@ public class ClientMain extends Application
    */
   private static class MenuButton extends StackPane
   {
-
     private Text text;
 
     private MenuButton(String name)
@@ -240,8 +236,6 @@ public class ClientMain extends Application
   {
     //Todo add back in when video is reimplemented
    // timer.stop();
-
-
     screen = Screen.getPrimary();
     bounds = screen.getVisualBounds();
 
@@ -249,12 +243,9 @@ public class ClientMain extends Application
     primaryStage.setY(bounds.getMinY());
     primaryStage.setWidth(bounds.getWidth());
     primaryStage.setHeight(bounds.getHeight());
-
     stage = primaryStage;
-
     Pane root = new Pane();
     root.setPrefSize(bounds.getWidth(), bounds.getHeight());
-
 
     ImageView imgView = new ImageView(background);
     imgView.setFitWidth(bounds.getWidth());
@@ -281,20 +272,15 @@ public class ClientMain extends Application
       else stage.close();
     });
 
-    credits.setOnMouseClicked((event) ->
-    {
-      newStage.showAndWait();
-    });
+    credits.setOnMouseClicked((event) ->  newStage.showAndWait());
 
     tutorial.setOnMouseClicked((event) ->
     {
-
       pauseMusic();
 
       TutorialVideo video = new TutorialVideo();
       FlowPane pane  = new FlowPane();
       Scene scene = new Scene(pane, 1300, 2000);
-
 
       //make another stage for scene2
       Stage newStage = new Stage();
@@ -312,24 +298,7 @@ public class ClientMain extends Application
       {
         e.printStackTrace();
       }
-
     });
-
-
-    //TOdo make the console output prettier
-    //http://stackoverflow.com/questions/26874701/redirect-console-output-to-javafx-textarea
-    //makes a text field with console output for testing
-    OutputStream out = new OutputStream() {
-      @Override
-      public void write(int b) throws IOException {
-        Platform.runLater(() -> consoleTextField.appendText((String.valueOf((char) b))));
-      }
-    };
-   // PrintStream newStream=new PrintStream(out,true);
-    //System.setOut(new PrintStream(out,true));
-   // System.setErr(new PrintStream(out,true));
-
-
 
     stage.setMaximized(true);
     stage.setTitle("Login");
@@ -409,7 +378,6 @@ public class ClientMain extends Application
     Pane root = new Pane();
     root.setPrefSize(bounds.getWidth(), bounds.getHeight());
 
-
     ImageView imgView = new ImageView(background);
     imgView.setFitWidth(bounds.getWidth());
     imgView.setFitHeight(bounds.getHeight());
@@ -460,12 +428,10 @@ public class ClientMain extends Application
       if(client!=null) client.shutdown();
     });
 
-
     //Sets up the initial stage
     gridRoot.setVgap(5);
     stage.setScene(new Scene(root, width, height));
     stage.setMaximized(true);
-
 
     //Console preferences
     consoleTextField.setEditable(false);
@@ -482,7 +448,6 @@ public class ClientMain extends Application
     root.getChildren().add(gridRoot);
     gridRoot.setTranslateY(bounds.getHeight()/5*3);
     gridRoot.setTranslateX(50);
-
   }
 
   private void connectToServer(String host){
@@ -492,19 +457,15 @@ public class ClientMain extends Application
   }
 
   private TabPane createTabLayout(){
-
-
     Tab usersTab = new Tab("users",usersAvaliableTextArea);
     Tab onlineNow = new Tab("online now",usersOnlineTextArea);
     Tab generalMessages = new Tab("information messages",consoleTextField);
     onlineNow.setClosable(false);
     usersTab.setClosable(false);
     generalMessages.setClosable(false);
-
     usersTab.setOnSelectionChanged(event -> {
       usersAvaliableTextArea.setText("The known users are:");
     });
-
     TabPane tabPane = new TabPane(generalMessages,usersTab,onlineNow);
     return tabPane;
   }
@@ -512,8 +473,6 @@ public class ClientMain extends Application
   private void showErrorMessage(){
     Alert alert=new Alert(Alert.AlertType.ERROR);
     alert.setTitle("OH NO");
-
-
     //consoleTextField.setText("An Error has occurred please try again");
     alert.showAndWait();
   }
@@ -522,7 +481,6 @@ public class ClientMain extends Application
     Alert alert=new Alert(Alert.AlertType.ERROR);
     alert.setTitle(message);
     alert.setContentText(message);
-
     //consoleTextField.setText("An Error has occurred please try again");
     alert.showAndWait();
   }
@@ -546,7 +504,6 @@ public class ClientMain extends Application
     dialog.setTitle("Would you like to connect to Server");
     dialog.setHeaderText("Reconnect");
     dialog.setContentText("Please enter the name of the host:");
-
     String host;
     Optional<String> result = dialog.showAndWait();
     if (result.isPresent()){
@@ -561,8 +518,6 @@ public class ClientMain extends Application
   public void lostConnection() {
     consoleTextField.setText("LOST CONNECTION TO SERVER PLEASE RECONNECT");
   }
-
-
 
   /**
    * This string gets passed into one of the button labels
@@ -599,8 +554,6 @@ public class ClientMain extends Application
     return text;
   }
 
-
-
   /***************************************************************************************/
 
   AnimationTimer gameLoop;
@@ -628,8 +581,6 @@ public class ClientMain extends Application
     };
             gameLoop.start();
   }
-
-
 
   public static void main(String[] args)
   {

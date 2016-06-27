@@ -1,16 +1,12 @@
 package starvationevasion.client;
 
 
-
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.Glow;
@@ -32,6 +28,11 @@ import starvationevasion.client.Networking.Client;
 import starvationevasion.client.Networking.ClientTest;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Optional;
+
 /**
  * Update loop starts up the home screen for the client. From here the user is able
  * to launch a game and connect to a single or multiplayer. When the user clicks
@@ -46,7 +47,7 @@ public class ClientMain extends Application
   public enum EnumClientState
   {
     LOADING, READY_TO_CONNECT, READY_TO_LOGIN, READY_TO_PLAY, DRAFT_PHASE,
-    VOTE_PHASE, GAME_OVER;
+    VOTE_PHASE, GAME_OVER
   }
   private EnumClientState clientState = EnumClientState.LOADING;
   private int width  = 300;
@@ -69,6 +70,11 @@ public class ClientMain extends Application
   private MenuButton tutorial = new MenuButton("  TUTORIAL");
   private MenuButton exit = new MenuButton("  EXIT");
 
+
+  private TextArea consoleTextField=new TextArea();
+  private TextArea usersAvaliableTextArea = new TextArea();
+  private TextArea usersOnlineTextArea = new TextArea();
+
   private Screen screen;
   private static Rectangle2D bounds;
   private Menu menu;
@@ -89,31 +95,34 @@ public class ClientMain extends Application
     client.ready(); // Send a ready response to the server
     stage.close();
   }
-
+  private void startBasicGUINoServer()
+  {
+    GUI gui = new GUI();
+    gui.start(new Stage());
+    stage.close();
+  }
   @Override
   public void start(Stage primaryStage)
   {
-
     IntroVideo video = new IntroVideo();
-
     try
     {
-      video.start(primaryStage);
+      //Todo add video back in, removed for testing
+      //video.start(primaryStage);
+      showStartMenu(primaryStage);
     } catch (Exception e)
     {
       e.printStackTrace();
     }
-
-    startTimer(primaryStage);
+   // startTimer(primaryStage);
   }
 
 
   /**
-   * Menu button attributes are in this method
+   * Menu button attributes are in this class
    */
   private static class MenuButton extends StackPane
   {
-
     private Text text;
 
     private MenuButton(String name)
@@ -213,7 +222,6 @@ public class ClientMain extends Application
         }
       }
     };
-
     timer.start();
   }
 
@@ -226,10 +234,8 @@ public class ClientMain extends Application
    */
   public void showStartMenu(Stage primaryStage)
   {
-    timer.stop();
-
-    editUsername.setPromptText("USER NAME");
-    editPassword.setPromptText("PASSWORD");
+    //Todo add back in when video is reimplemented
+   // timer.stop();
     screen = Screen.getPrimary();
     bounds = screen.getVisualBounds();
 
@@ -237,12 +243,9 @@ public class ClientMain extends Application
     primaryStage.setY(bounds.getMinY());
     primaryStage.setWidth(bounds.getWidth());
     primaryStage.setHeight(bounds.getHeight());
-
     stage = primaryStage;
-
     Pane root = new Pane();
     root.setPrefSize(bounds.getWidth(), bounds.getHeight());
-
 
     ImageView imgView = new ImageView(background);
     imgView.setFitWidth(bounds.getWidth());
@@ -255,59 +258,29 @@ public class ClientMain extends Application
       {
     //client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
     //client = new ClientTest(this, "localhost", 5555);
-    String host = editServer.getText();
-    client = new ClientTest(this, host, Constant.SERVER_PORT);
-      });
+        String host = editServer.getText();
+
+        client = new ClientTest(this, host, Constant.SERVER_PORT);
+        consoleTextField.setText("Successfully logged into "+host);
+        showLoginScreen(primaryStage);
+        connectToServer(host);
+        });
 
 
-    buttonLogin.setOnMouseClicked((event) ->
-    {
-      if (!client.isRunning())
-      {
-        System.err.println("ERROR: Not connected to server");
-        return;
-      }
-
-        client.loginToServer(editUsername.getText(),editPassword.getText(), EnumRegion.USA_CALIFORNIA);
-    });
-
-    buttonCreateUser.setOnMouseClicked((event) ->
-    {
-      if (!client.isRunning())
-      {
-        System.err.println("ERROR: Not connected to server");
-        return;
-      }
-
-      System.out.println("ClientMain.buttonCreateUser.setOnMouseClicked:" +
-        "editUsername.getText()="+editUsername.getText());
-
-
-
-      client.createUser(editUsername.getText(), editPassword.getText(), EnumRegion.USA_CALIFORNIA);
-    });
-
-    credits.setOnMouseClicked(event -> {
-
-    });
     exit.setOnMouseClicked(event -> {
-      client.shutdown();
+      if(client!=null) client.shutdown();
+      else stage.close();
     });
 
-    credits.setOnMouseClicked((event) ->
-    {
-      newStage.showAndWait();
-    });
+    credits.setOnMouseClicked((event) ->  newStage.showAndWait());
 
     tutorial.setOnMouseClicked((event) ->
     {
-
       pauseMusic();
 
       TutorialVideo video = new TutorialVideo();
       FlowPane pane  = new FlowPane();
       Scene scene = new Scene(pane, 1300, 2000);
-
 
       //make another stage for scene2
       Stage newStage = new Stage();
@@ -325,17 +298,14 @@ public class ClientMain extends Application
       {
         e.printStackTrace();
       }
-
     });
 
-
-
-
-
-    this.stage = stage;
     stage.setMaximized(true);
     stage.setTitle("Login");
-    stage.setOnCloseRequest((event) -> client.shutdown());
+    stage.setOnCloseRequest((event) ->
+    {
+      if(client!=null) client.shutdown();
+    });
     //Sets up the initial stage
     gridRoot.setVgap(5);
     stage.setScene(new Scene(root, width, height));
@@ -360,16 +330,22 @@ public class ClientMain extends Application
     newStage.setTitle("Credits");
 
 
-    editUsername.setFocusTraversable(false);
-    editPassword.setFocusTraversable(false);
+    //Test stuff
+    MenuButton switchButton=new MenuButton("Go to Login");
+    switchButton.setOnMouseClicked(event -> {
+      gridRoot.getChildren().clear();
+      root.getChildren().clear();
+      showLoginScreen(primaryStage);
+    });
+
+
+    consoleTextField.setEditable(false);
+
     gridRoot.add(editServer, 0, 1); gridRoot.add(buttonConnect, 1, 1);
-    gridRoot.add(editUsername, 0, 2);
-    gridRoot.add(editPassword, 0, 3);
-    gridRoot.add(buttonLogin, 0, 4);
-    gridRoot.add(buttonCreateUser, 0, 5);
     gridRoot.add(tutorial,0,6);
     gridRoot.add(credits,0,7);
     gridRoot.add(exit,0,8);
+    gridRoot.add(switchButton,0,9);
     root.getChildren().add(gridRoot);
     gridRoot.setTranslateY(bounds.getHeight()/5*3);
     gridRoot.setTranslateX(50);
@@ -380,7 +356,168 @@ public class ClientMain extends Application
     playMusic();
   }
 
+  private void showLoginScreen(Stage primaryStage)
+  {
+    gridRoot.getChildren().clear();
+    root.getChildren().clear();
+    //Todo add back in when video is reimplemented
+    // timer.stop();
 
+    editUsername.setPromptText("USER NAME");
+    editPassword.setPromptText("PASSWORD");
+    screen = Screen.getPrimary();
+    bounds = screen.getVisualBounds();
+
+    primaryStage.setX(bounds.getMinX());
+    primaryStage.setY(bounds.getMinY());
+    primaryStage.setWidth(bounds.getWidth());
+    primaryStage.setHeight(bounds.getHeight());
+
+    stage = primaryStage;
+
+    Pane root = new Pane();
+    root.setPrefSize(bounds.getWidth(), bounds.getHeight());
+
+    ImageView imgView = new ImageView(background);
+    imgView.setFitWidth(bounds.getWidth());
+    imgView.setFitHeight(bounds.getHeight());
+
+    root.getChildren().addAll(imgView);
+    menu = new Menu();
+
+    buttonLogin.setOnMouseClicked((event) ->
+    {
+      if (client==null||!client.isRunning())
+      {
+        //showErrorMessage("ERROR: Not connected to server");
+        askToReconnect();
+        return;
+      }
+      client.loginToServer(editUsername.getText(),editPassword.getText(), EnumRegion.USA_CALIFORNIA);
+    });
+
+    buttonCreateUser.setOnMouseClicked((event) ->
+    {
+      if (client==null||!client.isRunning())
+      {
+        askToReconnect();
+        return;
+      }
+      System.out.println("ClientMain.buttonCreateUser.setOnMouseClicked:" +
+              "editUsername.getText()="+editUsername.getText());
+      client.createUser(editUsername.getText(), editPassword.getText(), EnumRegion.USA_CALIFORNIA);
+    });
+
+    //TESTING STuff
+    MenuButton switchToGUI=new MenuButton("GUI");
+    switchToGUI.setOnMouseClicked(event1 -> {
+      startBasicGUINoServer();
+    });
+
+    MenuButton backToConnection = new MenuButton("To Connection");
+    backToConnection.setOnMouseClicked(event1 ->
+    {
+      gridRoot.getChildren().clear();
+      root.getChildren().clear();
+      showStartMenu(primaryStage);
+    });
+
+    stage.setMaximized(true);
+    stage.setTitle("Login");
+    stage.setOnCloseRequest((event) ->{
+      if(client!=null) client.shutdown();
+    });
+
+    //Sets up the initial stage
+    gridRoot.setVgap(5);
+    stage.setScene(new Scene(root, width, height));
+    stage.setMaximized(true);
+
+    //Console preferences
+    consoleTextField.setEditable(false);
+
+    editUsername.setFocusTraversable(false);
+    editPassword.setFocusTraversable(false);
+    gridRoot.add(editUsername, 0, 0);
+    gridRoot.add(editPassword, 0, 1);
+    gridRoot.add(buttonLogin, 0, 2);
+    gridRoot.add(buttonCreateUser, 0, 3);
+    gridRoot.add(switchToGUI,0,5);
+    gridRoot.add(backToConnection,0,6);
+    gridRoot.add(createTabLayout(),2,0,1,7);
+    root.getChildren().add(gridRoot);
+    gridRoot.setTranslateY(bounds.getHeight()/5*3);
+    gridRoot.setTranslateX(50);
+  }
+
+  private void connectToServer(String host){
+    client = new ClientTest(this, host, Constant.SERVER_PORT);
+    consoleTextField.setText("Successfully logged into "+host);
+    showLoginScreen(stage);
+  }
+
+  private TabPane createTabLayout(){
+    Tab usersTab = new Tab("users",usersAvaliableTextArea);
+    Tab onlineNow = new Tab("online now",usersOnlineTextArea);
+    Tab generalMessages = new Tab("information messages",consoleTextField);
+    onlineNow.setClosable(false);
+    usersTab.setClosable(false);
+    generalMessages.setClosable(false);
+    usersTab.setOnSelectionChanged(event -> {
+      usersAvaliableTextArea.setText("The known users are:");
+    });
+    TabPane tabPane = new TabPane(generalMessages,usersTab,onlineNow);
+    return tabPane;
+  }
+
+  private void showErrorMessage(){
+    Alert alert=new Alert(Alert.AlertType.ERROR);
+    alert.setTitle("OH NO");
+    //consoleTextField.setText("An Error has occurred please try again");
+    alert.showAndWait();
+  }
+
+  private void showErrorMessage(String message){
+    Alert alert=new Alert(Alert.AlertType.ERROR);
+    alert.setTitle(message);
+    alert.setContentText(message);
+    //consoleTextField.setText("An Error has occurred please try again");
+    alert.showAndWait();
+  }
+
+  private void showErrorMessage(Exception ex){
+    Alert alert=new Alert(Alert.AlertType.ERROR);
+    alert.setTitle("OH NO");
+    alert.setContentText("An error has occurred!!");
+
+    StringWriter stringWriter=new StringWriter();
+    PrintWriter printWriter=new PrintWriter(stringWriter);
+    ex.printStackTrace(printWriter);
+    TextArea textArea=new TextArea(stringWriter.toString());
+    //consoleTextField.setText("An Error has occurred please try again");
+    alert.getDialogPane().setExpandableContent(textArea);
+    alert.showAndWait();
+  }
+
+  private void askToReconnect(){
+    TextInputDialog dialog = new TextInputDialog(editServer.getText());
+    dialog.setTitle("Would you like to connect to Server");
+    dialog.setHeaderText("Reconnect");
+    dialog.setContentText("Please enter the name of the host:");
+    String host;
+    Optional<String> result = dialog.showAndWait();
+    if (result.isPresent()){
+      host=result.get();
+      client = new ClientTest(this, host, Constant.SERVER_PORT);
+      consoleTextField.setText("Successfully logged into "+host);
+      showLoginScreen(stage);
+    }
+
+  }
+
+  public void lostConnection() {
+    consoleTextField.setText("LOST CONNECTION TO SERVER PLEASE RECONNECT");
+  }
 
   /**
    * This string gets passed into one of the button labels
@@ -419,9 +556,10 @@ public class ClientMain extends Application
 
   /***************************************************************************************/
 
+  AnimationTimer gameLoop;
   private void startGameLoop()
   {
-    new AnimationTimer()
+    gameLoop=new AnimationTimer()
     {
       @Override
       public void handle(long time)
@@ -430,20 +568,19 @@ public class ClientMain extends Application
         millisecondTimeStamp = System.currentTimeMillis();
         if (client != null)
         { client.update(deltaSeconds);
-          if (!client.isRunning()) stop();
+         // if (!client.isRunning()) stop();
+          if(!client.isRunning())
+          {
+           // gameLoop.stop();
+            lostConnection();
+          }
         }
       }
 
-      public void stop()
-      {
-        super.stop();
-        stage.close();
-      }
 
-    }.start();
+    };
+            gameLoop.start();
   }
-
-
 
   public static void main(String[] args)
   {

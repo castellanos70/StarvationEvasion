@@ -57,7 +57,7 @@ public class ChatNode extends BorderPane
     regionSelection = new ComboBox<>(regionList);
     cardSelection = new ComboBox();
     client = gui.getClient();
-    chatManager = client.getChatManager();
+    if(client!=null) chatManager = client.getChatManager();
     usersChat.getChildren().add(toggle);
     usersChat.getChildren().add(confirm);
     usersChat.getChildren().add(regionSelection);

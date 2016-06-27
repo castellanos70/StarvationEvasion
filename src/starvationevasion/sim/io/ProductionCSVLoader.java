@@ -83,6 +83,7 @@ public class ProductionCSVLoader
             if (year < Constant.FIRST_DATA_YEAR) year = Constant.FIRST_DATA_YEAR;
             break;
           case category:
+            //System.out.println("=======================>"+fieldList[i]);
             food = EnumFood.valueOf(fieldList[i]);
             break;
           case region:

@@ -151,7 +151,7 @@ public enum EnumPolicy implements Sendable
 
     while ((fieldList = fileReader.readRecord()) != null)
     {
-      System.out.println("EnumPolicy(): record="+fieldList[0]+", "+fieldList[2]+", len="+fieldList.length);
+      //System.out.println("EnumPolicy(): record="+fieldList[0]+", "+fieldList[2]+", len="+fieldList.length);
       EnumPolicy enumPolicy = valueOf(fieldList[0]);
       if (enumPolicy == null)
       {
@@ -165,7 +165,7 @@ public enum EnumPolicy implements Sendable
       title[idx]    = fieldList[1];
       ruleText[idx] = fieldList[2];
 
-      System.out.println("fieldList[4]="+fieldList[4]);
+      //System.out.println("fieldList[4]="+fieldList[4]);
       votesRequired[idx] = Integer.parseInt(fieldList[4]);
       actionPointCost[idx] = Integer.parseInt(fieldList[5]);
 

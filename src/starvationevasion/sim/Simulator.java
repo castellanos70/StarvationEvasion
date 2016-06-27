@@ -57,14 +57,6 @@ public class Simulator
     assert ((Constant.LAST_YEAR - (Constant.FIRST_GAME_YEAR+1)) % Constant.YEARS_PER_TURN == 0);
 
     LOGGER.info("Loading and initializing model");
-    EnumPolicy.load();
-
-    assert (EnumPolicy.DivertFunds.getGameText().equals("Divert Funds2"));
-    assert (EnumPolicy.Loan.getVotesRequired() == 77);
-
-    assert (EnumPolicy.EfficientIrrigationIncentive.getOptionsX()[0] == 11);
-    assert (EnumPolicy.EfficientIrrigationIncentive.getOptionsX()[1] == 25);
-    assert (EnumPolicy.EfficientIrrigationIncentive.getOptionsX()[2] == 50);
 
     model = new Model();
 

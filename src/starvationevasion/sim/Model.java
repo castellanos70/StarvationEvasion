@@ -4,6 +4,7 @@ import javafx.scene.shape.Polygon;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumCropZone;
 import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.MapPoint;
 import starvationevasion.common.MapProjectionMollweide;
@@ -145,6 +146,14 @@ public class Model
 
   public Model()
   {
+    EnumPolicy.load();
+    assert (EnumPolicy.DivertFunds.getGameText().equals("Divert Funds2"));
+    assert (EnumPolicy.Loan.getVotesRequired() == 77);
+
+    assert (EnumPolicy.EfficientIrrigationIncentive.getOptionsX()[0] == 11);
+    assert (EnumPolicy.EfficientIrrigationIncentive.getOptionsX()[1] == 25);
+    assert (EnumPolicy.EfficientIrrigationIncentive.getOptionsX()[2] == 50);
+
     territoryList = Territory.territoryLoader();
     new GeographyXMLparser(this);
 

@@ -233,7 +233,7 @@ public class Territory
    */
   public int[] getMostPlantedCrop()
   {
-    int[] cropAmts = new int[12];
+    int[] cropAmts = new int[EnumFood.SIZE];
     int maxCropAmt = 0;
     int maxIndex = 0;
     for(LandTile tile : landTiles)

@@ -7,11 +7,12 @@ import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.Util;
-import starvationevasion.common.card.EnumPolicy;
-import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.PolicyCard;
 import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.Payload;
 import starvationevasion.common.GameState;
+import starvationevasion.server.model.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,8 +27,8 @@ public class Draft extends AbstractCommand
 {
   private boolean draftedCard = false;
   private boolean discarded = false;
-  private AbstractPolicy cardDrafted1;
-  private AbstractPolicy cardDrafted2;
+  private PolicyCard cardDrafted1;
+  private PolicyCard cardDrafted2;
   private int tries = 2;
   private int numTurns = 0;
   // The region that the AI represents.
@@ -46,7 +47,7 @@ public class Draft extends AbstractCommand
   boolean pickThisRegion = false;
   double pickThisRegionChance = .75;
   int z = 0;
-  AbstractPolicy card = null;
+  PolicyCard card = null;
   int probModifier = 0;
   int draftIndex = 0;
   private Map<String,Integer> probabilityMap=new LinkedHashMap<>();
@@ -173,7 +174,7 @@ public class Draft extends AbstractCommand
    *          the Card's target region, if any
    * @return a request String to be sent in a chat message
    */
-  private String requestSupportMessage(AbstractPolicy card, EnumFood food,
+  private String requestSupportMessage(PolicyCard card, EnumFood food,
                                        EnumRegion region)
   {
     if (food == null && region != null)
@@ -288,37 +289,38 @@ public class Draft extends AbstractCommand
    */
   public boolean setDraftedCards()
   {
+    User user = getClient().getUser();
     if(probabilityMap.size()==0 && foodList.size()==0 && regionList.size()==0)
     {
       fillProbabilityMap();
     }
     if(policiesInHand.size()==0)
     {
-      for (int i = 0; i < getClient().getUser().getHand().size(); i++)
+      for (int i = 0; i < user.getHand().size(); i++)
       {
-        policiesInHand.add(getClient().getUser().getHand().get(i));
+        policiesInHand.add(user.getHand().get(i));
       } 
     }
-    AbstractPolicy card = null;
-    System.out.println("Hand size:" + getClient().getUser().getHand().size());
+    PolicyCard card = null;
+    System.out.println("Hand size:" + user.getHand().size());
     if(noVotesRequired.size()==0 && votesRequired.size()==0)
     {
-      for (int i = 0; i < getClient().getUser().getHand().size(); i++)
+      for (int i = 0; i < user.getHand().size(); i++)
       {
-        card = AbstractPolicy.create(getClient().getUser().getRegion(),
-            getClient().getUser().getHand().get(i));
+        card = new PolicyCard(user.getHand().get(i), user.getRegion());
+
         if(card.votesRequired()==0)
         {
-          noVotesRequired.add(getClient().getUser().getHand().get(i));
+          noVotesRequired.add(user.getHand().get(i));
         }
         else
         {
-          votesRequired.add(getClient().getUser().getHand().get(i)); 
+          votesRequired.add(user.getHand().get(i));
         }
       }
-      //System.out.println("Hand:"+getClient().getUser().getHand().get(i).name());
+
     }
-    if (getClient().getUser().getHand().size() == 0)
+    if (user.getHand().size() == 0)
     {
       return false;
     }
@@ -327,9 +329,8 @@ public class Draft extends AbstractCommand
       getRevenueBalance();
       if(votesRequired.size()>0 && noVotesRequired.size()>0)
       {
-        card = AbstractPolicy.create(getClient().getUser().getRegion(),
-            votesRequired.get(rand.nextInt(votesRequired.size())));
-        cardDrafted1=card;
+
+        card = null;
         EnumFood[] foods=card.getValidTargetFoods();
         EnumRegion[] regions=card.getValidTargetRegions();
         EnumFood food=null;
@@ -347,8 +348,7 @@ public class Draft extends AbstractCommand
         actionsRemaining--;
         System.out.println("Card drafted:"+card.getPolicyName());
         getClient().draftedCards.get(numTurns).add(card);
-        card = AbstractPolicy.create(getClient().getUser().getRegion(),
-            noVotesRequired.get(rand.nextInt(noVotesRequired.size())));
+        card = null;
         cardDrafted2=card;
         EnumFood[] foods2=card.getValidTargetFoods();
         EnumRegion[] regions2=card.getValidTargetRegions();
@@ -376,8 +376,7 @@ public class Draft extends AbstractCommand
         {
           randNum2=rand.nextInt(noVotesRequired.size());
         }while(randNum1==randNum2);
-        card = AbstractPolicy.create(getClient().getUser().getRegion(),
-            noVotesRequired.get(randNum1));
+        card = null;
         cardDrafted1=card;
         EnumFood[] foods=card.getValidTargetFoods();
         EnumRegion[] regions=card.getValidTargetRegions();
@@ -396,8 +395,7 @@ public class Draft extends AbstractCommand
         actionsRemaining--;
         System.out.println("Card drafted:"+card.getPolicyName());
         getClient().draftedCards.get(numTurns).add(card);
-        card = AbstractPolicy.create(getClient().getUser().getRegion(),
-            noVotesRequired.get(randNum2));
+        card = null;
         cardDrafted2=card;
         EnumFood[] foods2=card.getValidTargetFoods();
         EnumRegion[] regions2=card.getValidTargetRegions();
@@ -419,8 +417,7 @@ public class Draft extends AbstractCommand
       }
       else if(noVotesRequired.size()==0)
       {
-        card = AbstractPolicy.create(getClient().getUser().getRegion(),
-            votesRequired.get(rand.nextInt(votesRequired.size())));
+        card = null;
         cardDrafted1=card;
         EnumFood[] foods=card.getValidTargetFoods();
         EnumRegion[] regions=card.getValidTargetRegions();
@@ -447,8 +444,8 @@ public class Draft extends AbstractCommand
     else
     {
       pickThisRegion = false;
-      AbstractPolicy lastCard1=getClient().draftedCards.get(numTurns - 1).get(0);
-      AbstractPolicy lastCard2=null;
+      PolicyCard lastCard1=getClient().draftedCards.get(numTurns - 1).get(0);
+      PolicyCard lastCard2=null;
       if(getClient().draftedCards.get(numTurns-1).size()>1)
       {
         lastCard2 = getClient().draftedCards.get(numTurns - 1).get(1);
@@ -500,16 +497,13 @@ public class Draft extends AbstractCommand
         }while(!drafted);
       }
       //Check if the first card drafted has an action point cost greater than 1.
-      if(cardDrafted1!=null && cardDrafted1.getActionPointCost(cardDrafted1.getCardType())>1)
+      if(cardDrafted1!=null)
       {
         //Make cards left in hand that have an action point cost greater than 1 be less
         //likely to get picked.
         policiesInHand.forEach(policy->
         {
-          if(cardDrafted1.getActionPointCost(policy)>1)
-          {
-            adjustProbability(rand.nextInt(3)+1,policy.name());
-          }
+
         });
         //Re-create probability distribution.
         totalPolicyVal=0;
@@ -517,28 +511,7 @@ public class Draft extends AbstractCommand
         totalFoodVal=0;
         createProbabilityDistribution();
       }
-      if(revenueDiff>30)
-      {
-        if(getClient().getUser().getHand().contains(EnumPolicy.Policy_SpecialInterests)
-            && cardDrafted1!=null && getClient().cardVariables.containsKey(cardDrafted1.getCardType())
-            && getClient().cardVariables.get(cardDrafted1.getCardType()).equals(CardVariableTypes.MONEY)
-            && !cardDrafted1.getCardType().equals(EnumPolicy.Policy_SpecialInterests))
-        {
-          //System.out.println("Possibly draw special interests card.");
-          adjustProbability(probabilityMap.get("Policy_SpecialInterests")*(revenueDiff/10),"Policy_SpecialInterests");
-          getClient().getUser().getHand().forEach(policy->
-          {
-            if(!policy.equals(EnumPolicy.Policy_SpecialInterests))
-            {
-              adjustProbability(rand.nextInt(5)+1,policy.name());
-            }
-          });
-          totalPolicyVal=0;
-          totalRegionVal=0;
-          totalFoodVal=0;
-          createProbabilityDistribution();
-        }
-      }
+
       drafted=false;
       //System.out.println("Drafted a card");
       draftAgain=true;
@@ -651,7 +624,7 @@ public class Draft extends AbstractCommand
     {
       getClient().getUser().getHand().forEach(policy->
       {
-        card = AbstractPolicy.create(getClient().getUser().getRegion(),policy);
+        card = null;
         if(card.getValidTargetRegions()!=null)
         {
           if(Arrays.asList(card.getValidTargetRegions()).contains(getClient().getUser().getRegion()))
@@ -793,7 +766,7 @@ public class Draft extends AbstractCommand
    */
   public boolean draftCards()
   {
-    AbstractPolicy card=null;
+    PolicyCard card=null;
     EnumRegion currentRegion = null;
     String regionString = "";
     boolean regionFound = false;
@@ -817,7 +790,7 @@ public class Draft extends AbstractCommand
             break;
           }
         }
-        card = AbstractPolicy.create(getClient().getUser().getRegion(), currentPolicy);
+        card = null;
         if(card==null || currentPolicy==null)
         {
           return false;
@@ -883,20 +856,7 @@ public class Draft extends AbstractCommand
     getClient().getCommModule().send(Endpoint.DRAFT_CARD, card, null);
     //If the policy DivertFunds is drafted, then the rest of hand must be discarded and
     //that will end the drafting phase for this turn. 
-    if(card.getCardType().equals(EnumPolicy.Policy_DivertFunds))
-    {
-      System.out.println("Divert funds drafted.");
-      for(int i=0;i<getClient().getUser().getHand().size();i++)
-      {
-        if(i!=indexOfLastCard || !(draftedSecondCard && i==secondCardChosen))
-        {
-          getClient().getCommModule().send(Endpoint.DELETE_CARD, getClient().getUser().getHand().get(i), null);
-        }
-      }
-      actionsRemaining=0;
-      getClient().draftedCards.get(numTurns).add(card);
-      return true;
-    }
+
     actionsRemaining--;
     System.out.println("Card drafted:"+card.getPolicyName());
     //System.out.println("Votes required:"+card.votesRequired());
@@ -946,7 +906,7 @@ public class Draft extends AbstractCommand
   /*
    * Ensure that more than 1 card requiring votes doesn't get drafted.
    */
-  private boolean checkCardsWithVotes(AbstractPolicy card)
+  private boolean checkCardsWithVotes(PolicyCard card)
   {
     if(cardsNeedingSupport>0 && card.votesRequired()>0)
     {
@@ -972,7 +932,7 @@ public class Draft extends AbstractCommand
    * @param card
    *          The policy card that was drafted last turn that we are checking.
    */
-  public void distributeProbabilities(int playAgain, AbstractPolicy card)
+  public void distributeProbabilities(int playAgain, PolicyCard card)
   {
     if (playAgain == -1)
     {
@@ -1253,7 +1213,7 @@ public class Draft extends AbstractCommand
    * assigned is a percentage tax break, then if the revenue is doing poorly, the lowest
    * tax break is assigned. If it's not doing poorly, then a higher tax break is assigned.
    */
-  private void setupCard(AbstractPolicy card, EnumFood food, EnumRegion region)
+  private void setupCard(PolicyCard card, EnumFood food, EnumRegion region)
   {
     if (card == null)
     {

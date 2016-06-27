@@ -7,7 +7,7 @@ import javafx.scene.layout.StackPane;
 import starvationevasion.client.GUI.DraftLayout.ClientPolicyCard;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.common.EnumPolicy;
 
 /**
  * Defines the StackPane where a card may be placed for voting purposes in the VotingLayout

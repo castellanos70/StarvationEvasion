@@ -1,46 +1,12 @@
 package starvationevasion.ai.commands;
 
-import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.PolicyCard;
 
 public class AIVotingPhase 
 {
 	private String cost;
 	private String benefit;
-	public void readCardDetails(AbstractPolicy card)
-	{
-		// TODO Auto-generated method stub
-		/*if(card.getCardType() == EnumPolicy.Policy_Loan)
-		{
-			System.out.println("I AM NEW BY YOU: FOREIGN");
-		}*/
-		
-		switch(card.getCardType())
-		{
-		case Policy_Loan:
-			cost = "Pay loan amount with 10% interest each year";
-			benefit = "$25 million each year for 10 years";
-			System.out.println("I AM NEW BY YOU: LOAN");
-			break;
-			
-		case Policy_DivertFunds:
-			cost = "Discard current hand";
-			benefit = "$14 million";
-			System.out.println("I AM NEW BY YOU: DIVERT");
-			break;
-			
-		case Policy_CleanRiverIncentive:
-			cost = "";
-			benefit = "X% tax break for farmers in my region";
-			break;
-			
-		
-			
-		default:
-			break;
-		
-		}
-		
-	}
+
 
 	public boolean checkResources() 
 	{

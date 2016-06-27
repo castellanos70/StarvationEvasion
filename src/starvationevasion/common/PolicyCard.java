@@ -1,36 +1,11 @@
-package starvationevasion.common.card;
+package starvationevasion.common;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
 
-import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.GameState;
-import starvationevasion.common.card.cardlist.Policy_CleanRiverIncentive;
-import starvationevasion.common.card.cardlist.Policy_DivertFunds;
-import starvationevasion.common.card.cardlist.Policy_EducateTheWomenCampaign;
-import starvationevasion.common.card.cardlist.Policy_EfficientIrrigationIncentive;
-import starvationevasion.common.card.cardlist.Policy_EthanolTaxCreditChange;
-import starvationevasion.common.card.cardlist.Policy_FarmInfrastructureSubSaharan;
-import starvationevasion.common.card.cardlist.Policy_FertilizerAidCentralAsia;
-import starvationevasion.common.card.cardlist.Policy_FertilizerAidMiddleAmerica;
-import starvationevasion.common.card.cardlist.Policy_FertilizerAidOceania;
-import starvationevasion.common.card.cardlist.Policy_FertilizerAidSouthAsia;
-import starvationevasion.common.card.cardlist.Policy_FertilizerAidSubSaharan;
-import starvationevasion.common.card.cardlist.Policy_FertilizerSubsidy;
-import starvationevasion.common.card.cardlist.Policy_FoodReliefCentralAsia;
-import starvationevasion.common.card.cardlist.Policy_FoodReliefMiddleAmerica;
-import starvationevasion.common.card.cardlist.Policy_FoodReliefOceania;
-import starvationevasion.common.card.cardlist.Policy_FoodReliefSouthAsia;
-import starvationevasion.common.card.cardlist.Policy_FoodReliefSubSaharan;
-import starvationevasion.common.card.cardlist.Policy_InternationalFoodRelief;
-import starvationevasion.common.card.cardlist.Policy_Loan;
-import starvationevasion.common.card.cardlist.Policy_MyPlatePromotionCampaign;
-import starvationevasion.common.card.cardlist.Policy_ResearchInsectResistanceGrain;
-import starvationevasion.common.card.cardlist.Policy_SpecialInterests;
-import starvationevasion.common.card.cardlist.Policy_Fundraiser;
+
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
 
@@ -52,9 +27,9 @@ import starvationevasion.server.model.Type;
  * Use the validate() method to verify all needed parameters of the policy
  * are defined in range.
  */
-public abstract class AbstractPolicy implements Sendable
+public class PolicyCard implements Sendable
 {
-  private EnumPolicy type;
+  private final EnumPolicy type;
 
   //=========================================================================================
   /**
@@ -62,7 +37,7 @@ public abstract class AbstractPolicy implements Sendable
    * card was drawn. Note all automatic policy cards are enacted by the owner and only
    * the owner (enactingRegionBits is ignored).
    */
-  private EnumRegion owner;
+  private final EnumRegion owner;
 
 
 
@@ -94,14 +69,7 @@ public abstract class AbstractPolicy implements Sendable
    * This field is ignored if this policy does not require a target region.
    */
   private EnumRegion targetRegion;
-  
 
-  //=========================================================================================
-  /**
-   * Some cards require a target card.
-   * This field is ignored if this policy does not require a target card.
-   */
-  private EnumPolicy targetCard;
 
 
 
@@ -114,134 +82,12 @@ public abstract class AbstractPolicy implements Sendable
    * This field is ignored if not require by this policy.
    */
   private int varX;
-  
-  //=========================================================================================
-  /**
-   * Cards can sometimes be used/played at different times. For example, the "Filibuster" 
-   * card is one that is only played during the voting phase, while any of the policy cards
-   * must be played during the planning phase. This is a list of what game states that the
-   * card can be played in.
-   */
-  private EnumSet<GameState> usableStates;
 
-  //=========================================================================================
-  /**
-   *  This is a convenience method used to construct any of the many policy cards
-   *  available in the game.
-   *
-   * @param owner US player region controlled by the player who drafts this policy.
-   * @param type The policy card type to be constructed.
-   * @return new instance of a policy card.
-   */
-  public static AbstractPolicy create(EnumRegion owner, EnumPolicy type)
+  public PolicyCard(EnumPolicy type, EnumRegion owner)
   {
-    if (!owner.isUS())
-    {
-      throw new IllegalArgumentException("addEnactingRegion(EnumRegion="+owner+
-        ") Policy owner must be a US region.");
-    }
-
-
-
-    AbstractPolicy myCard = null;
-    switch (type) {
-      case Policy_CleanRiverIncentive:
-        myCard = new Policy_CleanRiverIncentive();
-        break;
-      //case Policy_CovertIntelligence:
-      //  myCard = new Policy_CovertIntelligence();
-      //  break;
-      case Policy_EducateTheWomenCampaign:
-        myCard = new Policy_EducateTheWomenCampaign();
-        break;
-      case Policy_EfficientIrrigationIncentive:
-        myCard = new Policy_EfficientIrrigationIncentive();
-        break;
-      case Policy_EthanolTaxCreditChange:
-        myCard = new Policy_EthanolTaxCreditChange();
-        break;
-      case Policy_FertilizerSubsidy:
-        myCard = new Policy_FertilizerSubsidy();
-        break;
-      case Policy_FarmInfrastructureSubSaharan:
-        myCard = new Policy_FarmInfrastructureSubSaharan();
-        break;
-      case Policy_FertilizerAidCentralAsia:
-        myCard = new Policy_FertilizerAidMiddleAmerica();
-        break;
-      case Policy_FertilizerAidMiddleAmerica:
-        myCard = new Policy_FertilizerAidCentralAsia();
-        break;
-      case Policy_FertilizerAidOceania:
-        myCard = new Policy_FertilizerAidOceania();
-        break;
-      case Policy_FertilizerAidSouthAsia:
-        myCard = new Policy_FertilizerAidSouthAsia();
-        break;
-      case Policy_FertilizerAidSubSaharan:
-        myCard = new Policy_FertilizerAidSubSaharan();
-        break;
-      case Policy_ResearchInsectResistanceGrain:
-        myCard = new Policy_ResearchInsectResistanceGrain();
-        break;
-      case Policy_InternationalFoodRelief:
-        myCard = new Policy_InternationalFoodRelief();
-        break;
-      case Policy_Loan:
-        myCard = new Policy_Loan();
-        break;
-      case Policy_MyPlatePromotionCampaign:
-        myCard = new Policy_MyPlatePromotionCampaign();
-        break;
-      case Policy_DivertFunds:
-        myCard = new Policy_DivertFunds();
-        break;
-      //case Policy_Filibuster:
-      //  myCard = new Policy_Filibuster();
-      //  break;
-      case Policy_Fundraiser:
-        myCard = new Policy_Fundraiser();
-        break;
-      //case Policy_SharedKnowledge:
-      //  myCard = new Policy_SharedKnowledge();
-      //  break;
-      //case Policy_Redraft:
-      //	myCard = new Policy_Redraft();
-      //	break;
-      //case Policy_SearchforAnswers:
-      //	myCard = new Policy_SearchforAnswers();
-      //	break;
-      case Policy_SpecialInterests:
-      	myCard = new Policy_SpecialInterests();
-      	break;
-      case Policy_FoodReliefCentralAsia:
-        myCard = new Policy_FoodReliefCentralAsia();
-        break;
-      case Policy_FoodReliefMiddleAmerica:
-        myCard = new Policy_FoodReliefMiddleAmerica();
-        break;
-      case Policy_FoodReliefOceania:
-        myCard = new Policy_FoodReliefOceania();
-        break;
-      case Policy_FoodReliefSouthAsia:
-        myCard = new Policy_FoodReliefSouthAsia();
-        break;
-      case Policy_FoodReliefSubSaharan:
-        myCard = new Policy_FoodReliefSubSaharan();
-        break;
-    }
-
-    if (myCard != null)
-    {
-      myCard.owner = owner;
-      myCard.approvedRegionBits = owner.getBit(); //The owner auto votes yes.
-      myCard.type = type;
-    }
-
-    return myCard;
+    this.type = type;
+    this.owner = owner;
   }
-
-
 
   //=========================================================================================
 
@@ -258,7 +104,7 @@ public abstract class AbstractPolicy implements Sendable
   /**
    * @return The title text for this policy.
    */
-  public abstract  String getTitle();
+  public String getTitle() {return type.getTitle();}
 
 
 
@@ -266,7 +112,7 @@ public abstract class AbstractPolicy implements Sendable
   /**
    * @return The game text for this policy.
    */
-  public abstract String getGameText();
+  public String getGameText() {return type.getGameText();}
 
 
 
@@ -288,43 +134,40 @@ public abstract class AbstractPolicy implements Sendable
    * cost of a given policy type.
    */
 
-  public abstract int getActionPointCost(EnumPolicy policy);
+  public int getActionPointCost() {return type.getActionPointCost();}
   
   // =========================================================================================
   /**
-   * In the abstract GameCard class, this method returns the default
-   * flavor text of a card.  Initially, this String is null, but any card that will have 
-   * flavor text will override this method to return the selected String of text. <p>
-   * Note: Not every card is guaranteed to have flavor text, so this may return null.
+   * Note: Not every card has flavor text, so this may return null.
    */
   public String getFlavorText() 
   {
-    return null;
+    return type.getFlavorText();
   }
   
   // =========================================================================================
   /**
-   * In the abstract GameCard class, this method returns the default
-   * source of where the flavor text is. Often, the flavor text is a quote, so the source 
-   * will look something like "-Ronald Reagan". <p>
    * Note: Not every card's flavor text will have a source, so this may return null.
    */
   public String getFlavorTextAuthor()
   {
-    return null;
+    return type.getFlavorTextAuthor();
   }
 
   //=========================================================================================
   /**
-   * In the abstract GameCard class, this method returns the default
-   * behavior of a policy card (voteWaitForAll() = false).
-   * If a class extending GameCard is not automatic and requires waiting,
-   * then it must override this method.
+   * At least in the current set of cards (and this may always be true),
+   * waitForAll is true if and only if the number of votes required is 1.
+   *
    * @return true if voting should continue until all eligible players
    * have voted on this policy. Return false if voting should stop as soon as
    * the required number of votes have been reached.
    */
-  public boolean voteWaitForAll() {return false;}
+  public boolean voteWaitForAll()
+  {
+    if (type.getVotesRequired() == 1) return true;
+    return false;
+  }
 
 
 
@@ -428,25 +271,7 @@ public abstract class AbstractPolicy implements Sendable
   {
     return targetFood;
   }
-  
-  
-  // =========================================================================================
-  /**
-   * Some policy cards require a target card from deck, discard, or hand.
-   * @param targetCard sets the targetCard.  Ignored if this policy does not use a target card.
-   */
-  public void setTargetCard(EnumPolicy targetCard) {this.targetCard = targetCard;}
 
-  //=========================================================================================
-  /**
-   * Some policy cards require a target card from deck, discard, or hand.
-   * @return targetCard.
-   */
-  public EnumPolicy getTargetCard() 
-  {
-    return targetCard;
-  }
-  // =========================================================================================
   /**
    * Clears all enacting regions.
    */
@@ -592,6 +417,7 @@ public abstract class AbstractPolicy implements Sendable
   }
 
 
+
   //=========================================================================================
   private String validateTargetFood()
   { EnumFood[] foodList = getValidTargetFoods();
@@ -700,9 +526,9 @@ public abstract class AbstractPolicy implements Sendable
   public boolean equals(Object o)
   {
     if (this == o) return true;
-    if (!(o instanceof AbstractPolicy)) return false;
+    if (!(o instanceof PolicyCard)) return false;
 
-    AbstractPolicy that = (AbstractPolicy) o;
+    PolicyCard that = (PolicyCard) o;
 
     if (approvedRegionBits != that.approvedRegionBits) return false;
     if (varX != that.varX) return false;

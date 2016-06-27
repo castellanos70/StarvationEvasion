@@ -14,8 +14,8 @@ import starvationevasion.common.GameState;
 import starvationevasion.common.Util;
 import starvationevasion.common.VoteData;
 import starvationevasion.common.WorldData;
-import starvationevasion.common.card.EnumPolicy;
-import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.PolicyCard;
 import starvationevasion.communication.Communication;
 import starvationevasion.communication.ConcurrentCommModule;
 import starvationevasion.server.model.*;
@@ -41,8 +41,8 @@ public class AI
   private int numUsers;
   private GameState state = null;
   private ArrayList<WorldData> worldData;
-  private List<AbstractPolicy> ballot;
-  private List<AbstractPolicy> supportCards = new ArrayList<>();
+  private List<PolicyCard> ballot;
+  private List<PolicyCard> supportCards = new ArrayList<>();
   private Stack<Command> commands = new Stack<>();
   private volatile boolean isRunning = true;
   private volatile boolean aggregate=false;
@@ -109,7 +109,7 @@ public class AI
   public ArrayList<SpecialEventData> eventList = new ArrayList<>();
 
   // List of pairs of cards played in previous hands.
-  public ArrayList<ArrayList<AbstractPolicy>> draftedCards = new ArrayList<>();
+  public ArrayList<ArrayList<PolicyCard>> draftedCards = new ArrayList<>();
 
   // The region that this AI represents.
   String region = "";
@@ -154,6 +154,7 @@ public class AI
    */
   private void createMapsAndLists()
   {
+    /*
     policyAndRegionMap.put(EnumPolicy.Policy_CleanRiverIncentive, getUser().getRegion());
     policyAndRegionMap.put(EnumPolicy.Policy_EfficientIrrigationIncentive, getUser().getRegion());
     policyAndRegionMap.put(EnumPolicy.Policy_EthanolTaxCreditChange, getUser().getRegion());
@@ -190,6 +191,7 @@ public class AI
     cardVariables.put(EnumPolicy.Policy_InternationalFoodRelief,CardVariableTypes.MONEY);
     cardVariables.put(EnumPolicy.Policy_MyPlatePromotionCampaign, CardVariableTypes.MONEY);
     cardVariables.put(EnumPolicy.Policy_ResearchInsectResistanceGrain,CardVariableTypes.MONEY);
+  */
   }
 
   /*
@@ -351,11 +353,11 @@ public class AI
           }
         }
       }  
-      else if (type == Type.VOTE_BALLOT) ballot = (List<AbstractPolicy>)data;
+      else if (type == Type.VOTE_BALLOT) ballot = (List<PolicyCard>)data;
       else if (type == Type.VOTE_RESULTS)
       {
         ballotResults = (VoteData) data;
-        for(AbstractPolicy card: ballotResults.getEnacted())
+        for(PolicyCard card: ballotResults.getEnacted())
         {
           if(!playerPolicyDrafts.containsKey(card.getOwner()))
           {
@@ -374,7 +376,7 @@ public class AI
         System.out.println(msg);
         if(msg.contains("I'm going to draft"))
         {
-          AbstractPolicy card = (AbstractPolicy) response.getPayload().get("card");
+          PolicyCard card = (PolicyCard) response.getPayload().get("card");
           Integer sum = 0;
           for(Integer playerTally:playerPolicyDrafts.values())
           {
@@ -421,7 +423,7 @@ public class AI
         else if (state == GameState.DRAFTING)
         {
           aggregateData();
-          draftedCards.add(new ArrayList<AbstractPolicy>());
+          draftedCards.add(new ArrayList<PolicyCard>());
           Draft newDraft = new Draft(AI.this);
           AI.this.commands.add(newDraft);
           numTurns++;
@@ -475,7 +477,7 @@ public class AI
   {
     return COMM;
   }
-  public List<AbstractPolicy> getSupportCards()
+  public List<PolicyCard> getSupportCards()
   {
     return supportCards;
   }
@@ -505,7 +507,7 @@ public class AI
     return commands;
   }
 
-  public List<AbstractPolicy> getBallot()
+  public List<PolicyCard> getBallot()
   {
     return ballot;
   }

@@ -2,7 +2,7 @@ package starvationevasion.server.model;
 
 
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.PolicyCard;
 
 /**
  * Class that creates requests.
@@ -82,7 +82,7 @@ public class RequestFactory
    *
    * @return chat request
    */
-  public <T> Request chat(double time, T destination, String text, AbstractPolicy card)
+  public <T> Request chat(double time, T destination, String text, PolicyCard card)
   {
     Payload data = new Payload();
 

@@ -17,7 +17,7 @@ import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.client.Networking.Client;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.common.EnumPolicy;
 
 import java.util.ArrayList;
 import java.util.Arrays;

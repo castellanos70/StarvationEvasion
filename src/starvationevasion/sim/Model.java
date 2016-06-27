@@ -11,7 +11,7 @@ import starvationevasion.common.RegionData;
 import starvationevasion.common.SpecialEventData;
 import starvationevasion.common.Util;
 import starvationevasion.common.WorldData;
-import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.PolicyCard;
 import starvationevasion.sim.events.AbstractEvent;
 import starvationevasion.sim.events.EventDriver;
 import starvationevasion.sim.io.GeographyXMLparser;
@@ -490,7 +490,7 @@ public class Model
    *
    * @return the simulation currentYear that has just finished.
    */
-  protected int nextYear(ArrayList<AbstractPolicy> cards)
+  protected int nextYear(ArrayList<PolicyCard> cards)
   {
     LOGGER.info("******* SIMULATION YEAR ******** " + currentYear);
 
@@ -656,90 +656,54 @@ public class Model
    * @param cards
    *          the list of all cards to be applied to the model
    */
-  private void applyPolicies(ArrayList<AbstractPolicy> cards)
+  private void applyPolicies(ArrayList<PolicyCard> cards)
   {
     if (debugLevel.intValue() < Level.INFO.intValue())
     {
       Simulator.dbg.println("******************************************* Applying card");
     }
     
-    for (AbstractPolicy c : cards)
+    for (PolicyCard c : cards)
     {
       switch(c.getCardType())
       {
-        case Policy_CleanRiverIncentive:
+        case CleanRiverIncentive:
           //TODO:
           break;
-        case Policy_DivertFunds:
+        case DivertFunds:
           //remove all cards from owners hand -- done in Simulator.java
           //give 14 million dollars to owner
           getRegion(c.getOwner()).addToRevenue(14);
           break;
-        case Policy_EducateTheWomenCampaign:
+        case EducateTheWomenCampaign:
           //TODO:
           break;
-        case Policy_EfficientIrrigationIncentive:
+        case EfficientIrrigationIncentive:
           //TODO:
           break;
-        case Policy_EthanolTaxCreditChange:
-          // if c.getX() == 25, user selected a 25% tax credit
-           getRegion(c.getOwner()).setEthanolProducerTaxCredit(c.getX());
+        case FarmInfrastructureAid:
+          sendFertilizerAid(c.getTargetRegion(), c.getX());
           break;
-        case Policy_FarmInfrastructureSubSaharan:
+
+        case FertilizerSubsidy:
           //TODO:
           break;
-        case Policy_FertilizerAidCentralAsia:
-          // if c.getX()==6 send 6 million dollars in fertilizer to Central Asia
-          sendFertilizerAid(EnumRegion.CENTRAL_ASIA, c.getX());
-          break;
-        case Policy_FertilizerAidMiddleAmerica:
-          sendFertilizerAid(EnumRegion.MIDDLE_AMERICA, c.getX());
-          break;
-        case Policy_FertilizerAidOceania:
-          sendFertilizerAid(EnumRegion.OCEANIA, c.getX());
-          break;
-        case Policy_FertilizerAidSouthAsia:
-          sendFertilizerAid(EnumRegion.SOUTH_ASIA, c.getX());
-          break;
-        case Policy_FertilizerAidSubSaharan:
-          sendFertilizerAid(EnumRegion.SUB_SAHARAN, c.getX());
-          break;
-        case Policy_FertilizerSubsidy:
-          //TODO:
-          break;
-        case Policy_FoodReliefCentralAsia:
+        case FoodAid:
           // Sends 5 thousand tons of selected food
           sendFoodRelief(EnumRegion.CENTRAL_ASIA, c.getOwner(), c.getTargetFood(), 5000);
           break;
-        case Policy_FoodReliefMiddleAmerica:
-          sendFoodRelief(EnumRegion.MIDDLE_AMERICA, c.getOwner(), c.getTargetFood(), 5000);
-          break;
-        case Policy_FoodReliefOceania:
-          sendFoodRelief(EnumRegion.OCEANIA, c.getOwner(), c.getTargetFood(), 5000);
-          break;
-        case Policy_FoodReliefSouthAsia:
-          sendFoodRelief(EnumRegion.SOUTH_ASIA, c.getOwner(), c.getTargetFood(), 5000);
-          break;
-        case Policy_FoodReliefSubSaharan:
-          sendFoodRelief(EnumRegion.SUB_SAHARAN, c.getOwner(), c.getTargetFood(), 5000);
-          break;
-        case Policy_Fundraiser:
-          getRegion(c.getOwner()).addToRevenue(1);
-          break;
-        case Policy_InternationalFoodRelief:
+
+        case Loan:
           //TODO:
           break;
-        case Policy_Loan:
-          //TODO:
-          break;
-        case Policy_MyPlatePromotionCampaign:
+        case MyPlatePromotionCampaign:
           getRegion(c.getOwner()).subtractFromRevenue(c.getX());
           //TODO: Apply effect of the advertising effects.
           break;
-        case Policy_ResearchInsectResistanceGrain:
+        case ResearchInsectResistance:
           //TODO:
           break;
-        case Policy_SpecialInterests:
+        case SpecialInterests:
           //TODO:
           break;
         default:

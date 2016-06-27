@@ -1,4 +1,4 @@
-package starvationevasion.common.card;
+package starvationevasion.common;
 
 import java.util.Random;
 
@@ -8,7 +8,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import starvationevasion.client.GUI.DraftLayout.CardView;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.common.EnumPolicy;
 
 public class TestCardViewer extends Application
 {

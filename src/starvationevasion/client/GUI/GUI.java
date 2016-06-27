@@ -28,7 +28,7 @@ import starvationevasion.client.Networking.Client;
 import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.GameState;
-import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.common.EnumPolicy;
 
 /**
  * GUI.java is the class which holds the thread for running the main GUI of

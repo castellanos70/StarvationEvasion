@@ -18,20 +18,49 @@ import java.util.ResourceBundle;
  *   <li>Catagory boundaries that corrospond to boundaries for which we can find data and </li>
  *   <li>Nuturional role in the human diat.</li>
  * </ol>
+ *
+ *
+ *
+ *
+ * 1) Tropical fruits [including Sub-tropical (Grapefruit, Lemons, Oranges, Pineapples, Grapes, ...) and Tropical (Mango, Banana, Papaya, ...)
+
+ 2) Temperate fruits [including Apple, Peach, Pear, Plum, Strawberry, Apricot, Persimmon, Cherry, Kiwi ...]
+
+ 3) Nuts [including Almonds, Pecans, Pistachios, Walnuts, ...]
+
+ 4) Grains [including Rice, Wheat, Corn, Oats, Quinoa, ...]
+
+ 5) Seed Oil [including Safflower, Sunflower, Canola...]
+
+ 6) Legumes [including Pinto Beans, Kidney Beans, Chickpeas, Lentils, Mung beans, Mesquite, Carob, Soybeans, Peanuts, Tamarind, ...]
+
+ 7) Vegetables [Bulb, Root, Flower, Leaf and Stem Vegetables, including Onions, Carrots, Broccoli, Eggplant, Kale, Lettuce, Tomato...]
+
+ 8) Sea Vegetables [including Nori, Kombu, Kelp, ...]
+
+ 9) Sugar and Spice [including Sugar, Spices, Coffee, Tea, ...]
+
+ 10) Fish [including Fresh and salt water, wild caught and farm raised"]
+
+ 11) Red Meat [including Beef, Pork, Mutten, ...]
+
+ 12) Poultry [including Chicken, Turkey, Duck, Quail, Eggs..."]
+
+ 13) Dairy [including Milk, Cheese, Butter, and Yogurt]
  */
 public enum EnumFood implements Sendable
 {
   CITRUS
   {
-    public String toString() {return "Citrus Fruits";};
-    public String toLongString() {return "Grapefruit, Lemons, Oranges, Pineapples, ...";};
+    public String toString() {return "Tropical fruits";};
+    public String toLongString() {return "Sub-tropical (Grapefruit, Lemons, Oranges, Pineapples, Grapes, ...) and Tropical (Mango, Banana, Papaya, ...), ...";};
     public boolean isCrop() {return true;}
   },
 
   FRUIT
   {
-    public String toString() {return "Non-Citrus Fruits";};
-    public String toLongString() {return "Apples, Apricots, Avocados, Cherries, Grapes, Olives, Strawberries, ...";};
+    public String toString() {return "Temperate fruits";};
+    public String toLongString() {return "Apple, Peach, Pear, Plum, Strawberry, Apricot, Persimmon, Cherry, Kiwi ...";};
     public boolean isCrop() {return true;}
   },
 
@@ -45,7 +74,7 @@ public enum EnumFood implements Sendable
   GRAIN
   {
     public String toString() {return "Grains";};
-    public String toLongString() {return "Rice, Wheat, Corn, Soybean, ...";};
+    public String toLongString() {return "Rice, Wheat, Corn, Oats, Quinoa, ...";};
     public boolean isCrop() {return true;}
   },
 
@@ -56,24 +85,24 @@ public enum EnumFood implements Sendable
     public boolean isCrop() {return true;}
   },
 
-  VEGGIES
+  VEGGIES //Split into vegetables and Legumes
   {
-    public String toString() {return "";};
-    public String toLongString() {return "";};
+    public String toString() {return "Vegetables";};
+    public String toLongString() {return "Bulb, Flower, Leaf and Stem Vegetables, ...";};
     public boolean isCrop() {return true;}
   },
 
   SPECIAL
   {
-    public String toString() {return "Vegetables";};
-    public String toLongString() {return "Beans, Potatoes, Carrots, Celery, Cucumbers, Pumpkins, Onions, Peppers, Tomatoes, Cantaloupe, Watermelon, ...";};
+    public String toString() {return "Sugar and Spice";};
+    public String toLongString() {return "Sugar, Spices, Coffee, Tea, ...";};
     public boolean isCrop() {return true;}
   },
 
-  FEED
+  FEED //Cut
   {
-    public String toString() {return "Feed";};
-    public String toLongString() {return "Barley, Corn, Hay, Oats, Alfalfa, ...";};
+    public String toString() {return "Animal Feed";};
+    public String toLongString() {return "Hay, Oats, Alfalfa, Feed Corn, ...";};
     public boolean isCrop() {return true;}
   },
 
@@ -84,14 +113,16 @@ public enum EnumFood implements Sendable
     public boolean isCrop() {return false;}
   },
 
-  MEAT
+  MEAT //Internally, the model requires land and water not only for the animals
+      // themselves but also for animal feed.
   {
     public String toString() {return "Red Meat";};
     public String toLongString() {return "Beef, Pork, Mutten, ...";};
     public boolean isCrop() {return false;}
   },
 
-  POULTRY
+  POULTRY //Internally, the model requires land and water not only for the animals
+    // themselves but also for animal feed.
   {
     public String toString() {return "Poultry";};
     public String toLongString() {return "Chicken, Turkey, ...";};
@@ -121,7 +152,7 @@ public enum EnumFood implements Sendable
   
   public static final EnumFood[] ALL_FOODS =
   { CITRUS, FRUIT, NUT, GRAIN, OIL, VEGGIES, SPECIAL, FEED,
-	FISH, MEAT, POULTRY, DAIRY,
+	  FISH, MEAT, POULTRY, DAIRY,
   };
 
   public static final int SIZE = values().length;

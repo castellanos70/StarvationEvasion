@@ -1,7 +1,7 @@
 package starvationevasion.server.handlers;
 
 import starvationevasion.common.GameState;
-import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.PolicyCard;
 import starvationevasion.server.Connector;
 import starvationevasion.server.Server;
 import starvationevasion.server.model.*;
@@ -22,7 +22,7 @@ public class VoteHandler extends AbstractHandler
     }
     boolean isPresent = false;
     int i;
-    AbstractPolicy card = (AbstractPolicy) request.getPayload().getData();
+    PolicyCard card = (PolicyCard) request.getPayload().getData();
 //    PolicyCard[] cards = server.getDraftedPolicyCards()[card.getOwner().ordinal()];
 //    for (i = 0; i < cards.length; i++)
 //    {

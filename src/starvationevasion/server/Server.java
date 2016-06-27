@@ -47,8 +47,8 @@ import starvationevasion.common.GameState;
 import starvationevasion.common.Util;
 import starvationevasion.common.VoteData;
 import starvationevasion.common.WorldData;
-import starvationevasion.common.card.EnumPolicy;
-import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.PolicyCard;
 import starvationevasion.server.io.HttpParse;
 import starvationevasion.server.io.NetworkException;
 import starvationevasion.server.io.ReadStrategy;
@@ -95,7 +95,7 @@ public class Server
   // list of available regions
   private final List<EnumRegion> availableRegions = new ArrayList<>(EnumRegion.US_REGIONS.length);
 
-  private final AbstractPolicy[][] _drafted = new AbstractPolicy[EnumRegion.US_REGIONS.length][2];
+  private final PolicyCard[][] _drafted = new PolicyCard[EnumRegion.US_REGIONS.length][2];
 
   // bool that listen for connections is looping over
   private boolean isWaiting = true;
@@ -516,7 +516,7 @@ public class Server
 
     for (int i = 0; i < _drafted.length; i++)
     {
-      _drafted[i] = new AbstractPolicy[2];
+      _drafted[i] = new PolicyCard[2];
     }
     isPlaying = true;
     currentState = GameState.LOGIN;
@@ -617,7 +617,7 @@ public class Server
    * @param card Card to add into ballot
    * @param u User that is drafting
    */
-  public void draftCard (AbstractPolicy card, User u)
+  public void draftCard (PolicyCard card, User u)
   {
     synchronized (_drafted)
     {
@@ -632,7 +632,7 @@ public class Server
    *
    * @return true if vote was accounted for
    */
-  public boolean addVote (AbstractPolicy card, EnumRegion user)
+  public boolean addVote (PolicyCard card, EnumRegion user)
   {
     synchronized(_drafted)
     {
@@ -819,12 +819,12 @@ public class Server
   {
     currentState = GameState.VOTING;
 
-    ArrayList<AbstractPolicy> _list = new ArrayList<>();
+    ArrayList<PolicyCard> _list = new ArrayList<>();
     synchronized(_drafted)
     {
-      for (AbstractPolicy[] policyCards : _drafted)
+      for (PolicyCard[] policyCards : _drafted)
       {
-        for (AbstractPolicy policyCard : policyCards)
+        for (PolicyCard policyCard : policyCards)
         {
           if (policyCard != null)
           {
@@ -849,13 +849,13 @@ public class Server
   private Void draw ()
   {
 
-    ArrayList<AbstractPolicy> enactedPolicyCards = new ArrayList<>();
-    ArrayList<AbstractPolicy> _list = new ArrayList<>();
+    ArrayList<PolicyCard> enactedPolicyCards = new ArrayList<>();
+    ArrayList<PolicyCard> _list = new ArrayList<>();
 
 
-    for (AbstractPolicy[] policyCards : _drafted)
+    for (PolicyCard[] policyCards : _drafted)
     {
-      for (AbstractPolicy p : policyCards)
+      for (PolicyCard p : policyCards)
       {
         if (p == null) continue;
         if (p.votesRequired() == 0 || p.getEnactingRegionCount() > p.votesRequired())
@@ -903,7 +903,7 @@ public class Server
         if (_drafted[i][j] == null) continue;
         _drafted[i][j].clearVotes();
       }
-      _drafted[i] = new AbstractPolicy[2];
+      _drafted[i] = new PolicyCard[2];
     }
 
     if (simulator.getCurrentYear() >= Constant.LAST_YEAR)

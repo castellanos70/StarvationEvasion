@@ -6,8 +6,8 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.common.MapPoint;
 import starvationevasion.common.RegionData;
 import starvationevasion.common.WorldData;
-import starvationevasion.common.card.EnumPolicy;
-import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.PolicyCard;
 import starvationevasion.sim.events.AbstractEvent;
 
 import java.awt.geom.Area;
@@ -57,6 +57,15 @@ public class Simulator
     assert ((Constant.LAST_YEAR - (Constant.FIRST_GAME_YEAR+1)) % Constant.YEARS_PER_TURN == 0);
 
     LOGGER.info("Loading and initializing model");
+    EnumPolicy.load();
+
+    assert (EnumPolicy.DivertFunds.getGameText().equals("Divert Funds2"));
+    assert (EnumPolicy.Loan.getVotesRequired() == 77);
+
+    assert (EnumPolicy.EfficientIrrigationIncentive.getOptionsX()[0] == 11);
+    assert (EnumPolicy.EfficientIrrigationIncentive.getOptionsX()[1] == 25);
+    assert (EnumPolicy.EfficientIrrigationIncentive.getOptionsX()[2] == 50);
+
     model = new Model();
 
     assert (assertSimulatorPreGameData());
@@ -220,7 +229,7 @@ public class Simulator
    * @return data structure populated with all game state data needed by the client
    * except high resolution data that might be needed by the visualizer.
    */
-  public ArrayList<WorldData> nextTurn(ArrayList<AbstractPolicy> cards)
+  public ArrayList<WorldData> nextTurn(ArrayList<PolicyCard> cards)
   {
     LOGGER.info("Advancing Turn ...");
     // ArrayList<WorldData> worldData = getWorldData();
@@ -407,9 +416,9 @@ public class Simulator
    * @param cards
    *          The list of all cards intended to be applied to the simulation.
    */
-  private void applyCardEffectsToHand(ArrayList<AbstractPolicy> cards)
+  private void applyCardEffectsToHand(ArrayList<PolicyCard> cards)
   {
-    for (AbstractPolicy c : cards)
+    for (PolicyCard c : cards)
     {
       switch(c.getCardType())
       {
@@ -417,7 +426,7 @@ public class Simulator
 //          // TODO: talk to ClientUI to allow player to determine who's hand to
 //          // look at. Provide ClientUI the appropriate hand from playerDeck.
 //          break;
-        case Policy_DivertFunds:
+        case DivertFunds:
           // remove all cards from owners hand
           discardPlayerHand(c.getOwner());
           // give 14 million dollars to owner - applied in Model.java
@@ -506,14 +515,13 @@ public class Simulator
       startingHandMsg += '\n';
     }
 
-    ArrayList<AbstractPolicy> policiesEnactedThisTurnByAllPlayers = new ArrayList<>();
+    ArrayList<PolicyCard> policiesEnactedThisTurnByAllPlayers = new ArrayList<>();
     
     // This means that the player controlling USA_CALIFORNIA played the DivertFunds card.
     // As of now, DivertFunds doesn't apply the discard all cards from hand
     // effect, so, as of now, all it does is add 14 million dollars this
     // player's total amount of money
-    policiesEnactedThisTurnByAllPlayers.add(AbstractPolicy.create(EnumRegion.USA_CALIFORNIA,
-        EnumPolicy.Policy_DivertFunds));
+    policiesEnactedThisTurnByAllPlayers.add(new PolicyCard(EnumPolicy.DivertFunds, EnumRegion.USA_CALIFORNIA));
 
     ArrayList<WorldData> worldDataListForFirstTurn = sim.nextTurn(
         policiesEnactedThisTurnByAllPlayers);

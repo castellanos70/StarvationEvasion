@@ -7,7 +7,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.card.EnumPolicy;
+import starvationevasion.common.EnumPolicy;
 
 
 /**
@@ -32,7 +32,8 @@ public class  DeckNode extends VBox
 //    deck=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA, EnumPolicy.Policy_CleanRiverIncentive, gui);
 //    deck.backOfCard();
     discardPile=new StackPane();
-    ClientPolicyCard firstCard=new ClientPolicyCard(EnumRegion.USA_CALIFORNIA,EnumPolicy.Policy_EducateTheWomenCampaign,gui);
+    ClientPolicyCard firstCard
+      = new ClientPolicyCard(EnumRegion.USA_CALIFORNIA,EnumPolicy.EducateTheWomenCampaign,gui);
     firstCard.discardPile();
     discardPile.getChildren().add(firstCard);
 

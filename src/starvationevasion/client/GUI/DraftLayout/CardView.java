@@ -20,8 +20,8 @@ import javafx.scene.text.Text;
 import starvationevasion.client.GUI.ResizablePane;
 import starvationevasion.client.GUI.images.ImageGetter;
 import starvationevasion.common.EnumRegion;
-import starvationevasion.common.card.EnumPolicy;
-import starvationevasion.common.card.AbstractPolicy;
+import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.PolicyCard;
 
 
 public class CardView extends ResizablePane
@@ -48,7 +48,7 @@ public class CardView extends ResizablePane
       (cardWidth/9),   (cardHeight/13)
       };
   private String color = "0xaba9db"; 
-  private AbstractPolicy gameCard;
+  private PolicyCard gameCard;
 
   private Polygon topTrapezoid        = new Polygon();
   private Polygon bottomTrapezoid     = new Polygon();
@@ -62,8 +62,8 @@ public class CardView extends ResizablePane
   
   public CardView(EnumRegion owner, EnumPolicy policy)
   {
-    gameCard = AbstractPolicy.create(owner, policy);
-    actionPointCost = gameCard.getActionPointCost(policy);
+    gameCard = new PolicyCard(policy, owner);
+    actionPointCost = gameCard.getActionPointCost();
     cardImage.setFitWidth(cardWidth);
     cardImage.setFitHeight(cardHeight);
     cardPane = new StackPane();

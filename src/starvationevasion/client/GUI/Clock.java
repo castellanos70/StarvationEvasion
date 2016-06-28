@@ -1,14 +1,15 @@
 package starvationevasion.client.GUI;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Bounds;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Timer is the class responsible for representing the countdown timer for the
@@ -170,5 +171,10 @@ public class Clock extends ResizablePane
   public void reset()
   {
     elapsedTime = 0;
+  }
+
+  @Override
+  public Node getCardView() {
+    return null;
   }
 }

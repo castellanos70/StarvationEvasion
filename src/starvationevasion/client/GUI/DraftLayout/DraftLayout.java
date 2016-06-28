@@ -27,6 +27,7 @@ import java.util.ArrayList;
  */
 public class DraftLayout extends GridPane
 {
+  public final boolean CARD_VIEW_TEST = true;
   public static final int COLS = 33;
   public static final int ROWS = 18;
   private ArrayList<ColumnConstraints> colConstraintsList;
@@ -52,6 +53,7 @@ public class DraftLayout extends GridPane
   HDIVisNode HDINode;
   TickerReel reel;
 
+  HandNode2 hand2;
   HandNode hand;
   DraftTimer draftTimer;
   Map map;
@@ -135,11 +137,12 @@ public class DraftLayout extends GridPane
 
     // node which holds the ProductBar
     productBar = new ProductBar(gui);
-    int productBarSize = productBar.getElements().size();
-    for (int i = 0; i < productBarSize; ++i)
-    {
-      this.add(productBar.getElements().get(i), i + COLS / 2 - productBarSize / 2, 1, 1, 1);
-    }
+    this.add(productBar,8,1,17,1);
+//    int productBarSize = productBar.getElements().size();
+//    for (int i = 0; i < productBarSize; ++i)
+//    {
+//      this.add(productBar.getElements().get(i), i + COLS / 2 - productBarSize / 2, 1, 1, 1);
+//    }
 
     // node which holds the user's deck/discard pile information
     deckNode = new DeckNode(gui);

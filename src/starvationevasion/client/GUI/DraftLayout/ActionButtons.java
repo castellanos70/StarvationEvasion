@@ -1,7 +1,5 @@
 package starvationevasion.client.GUI.DraftLayout;
 
-import java.util.ArrayList;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -11,6 +9,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import starvationevasion.client.GUI.GUI;
+import starvationevasion.client.GUI.ResizablePane;
+
+import java.util.ArrayList;
 
 /**
  * ActionButtons are the GUI element which are responsible for allowing the user to tell the server that they're done with drafting,
@@ -90,18 +91,22 @@ public class ActionButtons extends HBox
    */
   public void endTurn()
   {
-    ArrayList<CardNode> clientPolicyCards = gui.getDraftLayout().getHand().getDraftedCards();
+    ArrayList<ResizablePane> clientPolicyCards = gui.getDraftLayout().getHand().getDraftedCards();
+   // ArrayList<CardView> clientPolicyCards = gui.getDraftLayout().getHand().getDraftedCards();
     if (clientPolicyCards != null)
     {
-      for (CardNode card : clientPolicyCards)
+      for (ResizablePane card : clientPolicyCards)
+      //for (CardView card : clientPolicyCards)
       {
-        gui.getClient().draftCard(card.getGameCard());
+        //gui.getClient().draftCard(card.getGameCard());
 
       }
-      ArrayList<CardNode> discardedCards = gui.getDraftLayout().getHand().getDiscardedCards();
-      for (CardNode card : discardedCards)
+      ArrayList<ResizablePane> discardedCards = gui.getDraftLayout().getHand().getDiscardedCards();
+      //ArrayList<CardView> discardedCards = gui.getDraftLayout().getHand().getDiscardedCards();
+      //for (CardView card : discardedCards)
+      for (ResizablePane card : discardedCards)
       {
-        gui.getClient().discardCard(card.getGameCard());
+        //gui.getClient().discardCard(card.getGameCard());
       }
     }
     endTurn.setDisable(true);

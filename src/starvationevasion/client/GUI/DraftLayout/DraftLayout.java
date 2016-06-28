@@ -53,7 +53,6 @@ public class DraftLayout extends GridPane
   HDIVisNode HDINode;
   TickerReel reel;
 
-  HandNode2 hand2;
   HandNode hand;
   DraftTimer draftTimer;
   Map map;

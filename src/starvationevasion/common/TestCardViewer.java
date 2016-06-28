@@ -4,7 +4,6 @@ import java.util.Random;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import starvationevasion.client.GUI.DraftLayout.CardView;
 
@@ -23,7 +22,6 @@ public class TestCardViewer extends Application
     scene = new Scene(card.getCardView(), 370, 520);
     stage.setScene(scene);
     stage.show();
-
   }
   
   public static void main(String args[]){

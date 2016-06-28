@@ -2,6 +2,7 @@ package starvationevasion.client.GUI;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 
 /**
@@ -15,8 +16,10 @@ public abstract class ResizablePane extends Pane
   /**default constructor
    * adds listeners to the widhtProperty and the heightProperty
    */
+  public boolean isDrafted;
+  public boolean isDiscarded;
   public ResizablePane(){
-    
+
     this.widthProperty().addListener(new ChangeListener<Number>(){
       @Override
       public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue)
@@ -38,8 +41,10 @@ public abstract class ResizablePane extends Pane
    * Logic needed to be executed during resize should be place in this method
    */
   public abstract void onResize();
-  
-  
+
+  public abstract void reset();
+
+  public abstract Node getCardView();
   /**
    * sets the size of this pane to the given width and height
    * 
@@ -51,4 +56,6 @@ public abstract class ResizablePane extends Pane
 	  this.setWidth(width);
 	  this.setHeight(height);
   }
+
+
 }

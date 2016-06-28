@@ -1,16 +1,17 @@
 package starvationevasion.client.GUI.DraftLayout;
 
-import java.util.LinkedList;
-
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Bounds;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import starvationevasion.client.GUI.ResizablePane;
+
+import java.util.LinkedList;
 
 /**
  * @author Ben
@@ -192,6 +193,16 @@ public class TickerReel extends ResizablePane
       t.setY((displayHeight*scale - displayHeight)/2);
       
     }
+  }
+
+  @Override
+  public void reset() {
+
+  }
+
+  @Override
+  public Node getCardView() {
+    return null;
   }
 
 }

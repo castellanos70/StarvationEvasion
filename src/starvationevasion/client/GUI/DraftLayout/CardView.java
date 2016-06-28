@@ -1,8 +1,5 @@
 package starvationevasion.client.GUI.DraftLayout;
   
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.image.ImageView;
@@ -19,9 +16,12 @@ import javafx.scene.text.FontSmoothingType;
 import javafx.scene.text.Text;
 import starvationevasion.client.GUI.ResizablePane;
 import starvationevasion.client.GUI.images.ImageGetter;
-import starvationevasion.common.EnumRegion;
 import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class CardView extends ResizablePane
@@ -365,5 +365,10 @@ public class CardView extends ResizablePane
   {
 //    initializeGameCardPolygons();
   }
+
+    @Override
+    public void reset() {
+
+    }
 
 }

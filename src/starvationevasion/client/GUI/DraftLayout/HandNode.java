@@ -1,5 +1,6 @@
 package starvationevasion.client.GUI.DraftLayout;
 
+import javafx.scene.Node;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
@@ -22,6 +23,8 @@ import java.util.ArrayList;
  */
 public class HandNode extends ResizablePane
 {
+  private final boolean TEST_LAYOUT =false;
+
   private static final double MAX_SMALL_SIZE = 1;
   private static final double MIN_MOUSE_PICKUP = 0;
   private static final double MAX_HOVER_HEIGHT = 2;
@@ -29,16 +32,20 @@ public class HandNode extends ResizablePane
   private static final double MIN_GAP_SIZE = 0;
   private static final double CARD_RATIO = .77;
   
-  private CardNode[] cards = new CardNode[7];
+  private ResizablePane[] cards;// = new ResizablePane[7];
+  //private ResizablePane[] cards = new ResizablePane[7];
   private EnumPolicy[] policies;
   private double[] xLayouts = new double[7];
   private double lastWidth = 0;
   private double lastHeight = 0;
   
   private GUI gui;
-  
+
+
   public HandNode(GUI gui){
     super();
+    if(TEST_LAYOUT) cards=new CardView[7];
+    else cards=new CardNode[7];
     this.gui = gui;
     this.setPickOnBounds(false);
     
@@ -67,23 +74,28 @@ public class HandNode extends ResizablePane
    * Resets drafts or discards performed on this hand
    */
   public void reset(){
-    for (CardNode c: cards){
+    for (ResizablePane c: cards){
       if (c != null){
         c.reset();
       }
     }
   }
-  
+
+  @Override
+  public Node getCardView() {
+    return null;
+  }
+
   /**
    * Returns an arraylist of all the Drafted Cards in this
    * hand
    * 
    * @return
    */
-  public ArrayList<CardNode> getDraftedCards(){
-    ArrayList<CardNode> draftedCards = new ArrayList<>();
+  public ArrayList<ResizablePane> getDraftedCards(){
+    ArrayList<ResizablePane> draftedCards = new ArrayList<>();
     
-    for (CardNode c: cards){
+    for (ResizablePane c: cards){
       if (c.isDrafted){
         draftedCards.add(c);
       }
@@ -98,10 +110,10 @@ public class HandNode extends ResizablePane
    * 
    * @return
    */
-  public ArrayList<CardNode> getDiscardedCards(){
-    ArrayList<CardNode> discardedCards = new ArrayList<>();
+  public ArrayList<ResizablePane> getDiscardedCards(){
+    ArrayList<ResizablePane> discardedCards = new ArrayList<>();
     
-    for (CardNode c: cards){
+    for (ResizablePane c: cards){
       if (c.isDiscarded){
         discardedCards.add(c);
       }
@@ -133,10 +145,12 @@ public class HandNode extends ResizablePane
   public void createCards(){
     removeOldCards();
     for (int i = 0; i < policies.length; i++){
-      cards[i] = new CardNode(gui.getAssignedRegion(), policies[i]);
+      if(TEST_LAYOUT)cards[i] = new CardView(gui.getAssignedRegion(), policies[i]);
+      else cards[i] = new CardNode(gui.getAssignedRegion(), policies[i]);
       cards[i].setManaged(false);
       Rectangle rectangle=new Rectangle();
       VBox vBox=new VBox();
+      if(TEST_LAYOUT) vBox.getChildren().add(cards[i].getCardView());
       vBox.getChildren().add(cards[i]);
       this.getChildren().add(vBox);
     }
@@ -161,7 +175,7 @@ public class HandNode extends ResizablePane
     
     for (int i = 0; i < cards.length; i++){
       
-      CardNode card = cards[i];
+      ResizablePane card = cards[i];
       if (card == null) return;
       double cardWidth = width*(7d/8d);
       double cardHeight = cardWidth/CARD_RATIO;
@@ -230,7 +244,7 @@ public class HandNode extends ResizablePane
       double totalWidth = 0;
       
       for (int i = 0; i < 7; i++){
-        CardNode card = cards[i];
+        ResizablePane card = cards[i];
         
         double sizeFactor = CARD_RATIO;
         double cardWidth = (constraints[i]/total)*width;
@@ -255,7 +269,7 @@ public class HandNode extends ResizablePane
     } else {
       
       for (int i = 0; i < cards.length; i++){
-        CardNode card = cards[i];
+        ResizablePane card = cards[i];
         card.setSize(lastWidth, lastHeight);
         card.setLayoutX(xLayouts[i]);
         card.setLayoutY(this.getHeight() - lastHeight);

@@ -1,5 +1,6 @@
 package starvationevasion.client.GUI.DraftLayout;
 
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumFood;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
  * When a user selects a product icon, it should be highlighted.
  * A user should only be able to select one product at a time, or none at all.
  */
-public class ProductBar
+public class ProductBar extends HBox
 {
   Stage primaryStage;
   GUI gui;
@@ -40,6 +41,7 @@ public class ProductBar
       EnumFood food = EnumFood.values()[i];
       elements.add(new ProductBarElement(gui, food, i, elementWidth, elementHeight, this));
     }
+    this.getChildren().addAll(elements);
   }
 
   /**

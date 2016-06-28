@@ -78,7 +78,6 @@ public class CardNode extends ResizablePane
   public CardNode(EnumRegion owner, EnumPolicy policy)
   {
     super();
-    System.out.println("MAKING CARD " + policy.toString());
     gameCard = new PolicyCard(policy, owner);
     ePolicy = policy;
     region = owner;
@@ -94,7 +93,7 @@ public class CardNode extends ResizablePane
     gameText.setFont(TITLE_FONT);
     gameText.setTextFill(Color.WHITE);
     gameText.setBackground(new Background(new BackgroundFill(new Color(.2, .2, .2, .6), null, null)));
-    gameText.setMaxWidth(gameText.getText().length() * 5);
+    if(gameText.getText()!=null)gameText.setMaxWidth(gameText.getText().length() * 5);
     gameText.setTextAlignment(TextAlignment.CENTER);
     flavorText = new Label(gameCard.getFlavorText());
     flavorText.setFont(TEXT_FONT);
@@ -329,6 +328,11 @@ public class CardNode extends ResizablePane
     setStyle();
     draftButton.setStyle(NORM);
     discardButton.setStyle(NORM);
+  }
+
+  @Override
+  public Node getCardView() {
+    return null;
   }
 
   /**

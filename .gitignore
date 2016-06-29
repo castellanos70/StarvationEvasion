@@ -4,6 +4,7 @@ _windows
 bin
 *.iml
 .classpath
+JavaDoc
 
 *~
 .DS_Store

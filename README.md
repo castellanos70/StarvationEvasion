@@ -41,29 +41,3 @@ Selecting single player requires that you first start a local server. the server
 * Javier Chavez - javierc@cs.unm.edu
 
 Take a look at it [here](https://github.com/castellanos70/StarvationEvasion/tree/master/src/starvationevasion/server).
-
-## Compiling A Lightweight Server.jar/Ai.jar
-
-If you build a .jar file to run the server, as of writing it results in a .jar that is about 800 mb in size. To reduce the overhead in pushing updated Server.jar files to the repository, it is necessary to modify the result to include only what is needed.
-
-1. Build an executable .jar file that points to starvationevasion.server.Server
-2. Rename it "Server.jar" and move it to the top-level folder for the project (StarvationEvasion - not the package)
-3. Open Server.jar inside of something like 7zip so that you can modify its contents.
-4. Remove the following folders: ActionButtons, cardImages, farmProductIcons, sim/climate, visResources, starvationevasion/client
-5. Remove the following files: background.png, Mollweide_projection.jpg, WorldMap_MollweideProjection.png, WorldMap_MollweideProjection2.png, WorldMap_MollweideProjection_With_Region_Boarders_Added.png
-6. Remove any additional jars that are irrelevant, such as previous server or ai jars that you may have made in the past. These folders are usually found in your output file folder.
-
-At the time of writing, this could reduce the .jar file from about 800 mb to ~15 mb. This makes it much more reasonable to rebuild and push to github.
-
-## Compiling Server.jar/Ai.jar Using ZipSurgeon
-
-If you want to instead build the Server/AI jar files using the ZipSurgeon, first build an executable jar that points to starvationevasion.server.Server.
-
-Go to starvationevasion.util.ZipSurgeon - open its command line arguments and add the following:
-
-"<exact path to executable jar>" "<exact path to destination with jar name>" "<exact path to a blacklist.txt file>"
-
-The quotes enable you to insert file paths with spaces. When you run the ZipSurgeon, it will crawl through the existing executable jar and make a copy of it as it does this. It uses the blacklist file as a list ot keywords to help it figure out which zip entries to keep and which to ignore.
-
-The blacklist file for building the Server/AI jars is called "ServerBlacklist.txt" and it is inside the root directory (StarvationEvasion).
-

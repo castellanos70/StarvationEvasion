@@ -17,9 +17,9 @@ JavaDoc
 ## paths, libs and resorce directories. However, my first attempt of including
 ## .idea broke the project for Javier who is running
 ## IntelliJ in Linux.
-.idea     ##IntelliJ IDE project config
-.settings ##Eclipse IDE project config
-.project  ##Eclipse IDE project config
+.idea/     ##IntelliJ IDE project config
+.settings/ ##Eclipse IDE project config
+.project/  ##Eclipse IDE project config
 
 # the dataSources folder is raw data not directly used by the project.
 dataSources

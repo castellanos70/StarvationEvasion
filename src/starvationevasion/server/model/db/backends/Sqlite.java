@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import starvationevasion.common.EnumRegion;
+import starvationevasion.server.model.db.Users;
 
 public class Sqlite implements Backend
 {
@@ -14,6 +15,7 @@ public class Sqlite implements Backend
   private Connection connection = null;
   private Properties properties = null;
   private final static Logger LOG = Logger.getGlobal(); // getLogger(Server.class.getName());
+  private static boolean didCreate = false;
 
   public Sqlite(String url)
   {
@@ -27,6 +29,14 @@ public class Sqlite implements Backend
     {
       connection = DriverManager.getConnection(url);
       LOG.info("Connected to SQLite");
+
+      if (!didCreate)
+      {
+        Statement statement = connection.createStatement();
+        statement.executeUpdate(Users.TABLE);
+        didCreate = true;
+        statement.close();
+      }
     }
     catch(SQLException e)
     {

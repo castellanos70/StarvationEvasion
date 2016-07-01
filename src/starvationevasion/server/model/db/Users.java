@@ -15,6 +15,12 @@ public class Users extends Transaction<User>
 {
   private static ArrayList<User> cache = new ArrayList<>();
   private boolean dirty = true;
+  public static final String TABLE = "CREATE TABLE IF NOT EXISTS user (\n" +
+                                      "  id integer PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                                      "  username text NOT NULL,\n" +
+                                      "  password text,\n" +
+                                      "  salt text,\n" +
+                                      "  region text );";
 
   public Users (Backend db)
   {

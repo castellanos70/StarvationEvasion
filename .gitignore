@@ -12,14 +12,18 @@ JavaDoc
 *.ipr
 *.iws
 
-##I (Joel) would like a way to have as part of the repo, IntelliJ project 
-## configuration files that define a project wide code style, project build 
-## paths, libs and resorce directories. However, my first attempt of including
-## .idea broke the project for Javier who is running
-## IntelliJ in Linux.
-.idea     ##IntelliJ IDE project config
-.settings ##Eclipse IDE project config
-.project  ##Eclipse IDE project config
+# I (Joel) would like a way to have as part of the repo, IntelliJ project
+# configuration files that define a project wide code style, project build
+# paths, libs and resorce directories. However, my first attempt of including
+# .idea broke the project for Javier who is running
+# IntelliJ in Linux.
+
+#IntelliJ IDE project config
+.idea/
+ #Eclipse IDE project config
+.settings/
+#Eclipse IDE project config
+.project/
 
 # the dataSources folder is raw data not directly used by the project.
 dataSources

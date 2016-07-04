@@ -5,12 +5,12 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.ResizablePane;
 import starvationevasion.common.EnumPolicy;
 
 import java.util.ArrayList;
+
 
 /**
  * @author Ben Matthews
@@ -32,7 +32,7 @@ public class HandNode extends ResizablePane
   private static final double MIN_GAP_SIZE = 0;
   private static final double CARD_RATIO = .77;
   
-  private ResizablePane[] cards;// = new ResizablePane[7];
+  private AbstractCard[] cards;// = new ResizablePane[7];
   //private ResizablePane[] cards = new ResizablePane[7];
   private EnumPolicy[] policies;
   private double[] xLayouts = new double[7];
@@ -44,7 +44,7 @@ public class HandNode extends ResizablePane
 
   public HandNode(GUI gui){
     super();
-    if(TEST_LAYOUT) cards=new CardView[7];
+    if(TEST_LAYOUT) cards=new AbstractCard[7];
     else cards=new CardNode[7];
     this.gui = gui;
     this.setPickOnBounds(false);
@@ -74,7 +74,7 @@ public class HandNode extends ResizablePane
    * Resets drafts or discards performed on this hand
    */
   public void reset(){
-    for (ResizablePane c: cards){
+    for (AbstractCard c: cards){
       if (c != null){
         c.reset();
       }
@@ -92,10 +92,10 @@ public class HandNode extends ResizablePane
    * 
    * @return
    */
-  public ArrayList<ResizablePane> getDraftedCards(){
-    ArrayList<ResizablePane> draftedCards = new ArrayList<>();
+  public ArrayList<AbstractCard> getDraftedCards(){
+    ArrayList<AbstractCard> draftedCards = new ArrayList<>();
     
-    for (ResizablePane c: cards){
+    for (AbstractCard c: cards){
       if (c.isDrafted){
         draftedCards.add(c);
       }
@@ -110,10 +110,10 @@ public class HandNode extends ResizablePane
    * 
    * @return
    */
-  public ArrayList<ResizablePane> getDiscardedCards(){
-    ArrayList<ResizablePane> discardedCards = new ArrayList<>();
+  public ArrayList<AbstractCard> getDiscardedCards(){
+    ArrayList<AbstractCard> discardedCards = new ArrayList<>();
     
-    for (ResizablePane c: cards){
+    for (AbstractCard c: cards){
       if (c.isDiscarded){
         discardedCards.add(c);
       }
@@ -144,16 +144,25 @@ public class HandNode extends ResizablePane
    */
   public void createCards(){
     removeOldCards();
+
     for (int i = 0; i < policies.length; i++){
       if(TEST_LAYOUT)cards[i] = new CardView(gui.getAssignedRegion(), policies[i]);
       else cards[i] = new CardNode(gui.getAssignedRegion(), policies[i]);
       cards[i].setManaged(false);
-      Rectangle rectangle=new Rectangle();
       VBox vBox=new VBox();
-      if(TEST_LAYOUT) vBox.getChildren().add(cards[i].getCardView());
+//      if(TEST_LAYOUT){
+//       // vBox.setPrefSize(185,260);
+//        StackPane pane=(StackPane)cards[i].getCardView();
+//
+//        pane.setPrefSize(92.5,130);
+//        System.out.println(pane.getWidth()+ " " + pane.getHeight());
+//        System.out.println(pane.getChildren());
+//        vBox.getChildren().add(pane);
+//      }
       vBox.getChildren().add(cards[i]);
       this.getChildren().add(vBox);
     }
+    //this.getChildren().add(vBox);
     onResize();
   }
   
@@ -174,8 +183,8 @@ public class HandNode extends ResizablePane
     double height = this.getHeight();
     
     for (int i = 0; i < cards.length; i++){
-      
-      ResizablePane card = cards[i];
+
+      AbstractCard card = cards[i];
       if (card == null) return;
       double cardWidth = width*(7d/8d);
       double cardHeight = cardWidth/CARD_RATIO;
@@ -204,9 +213,10 @@ public class HandNode extends ResizablePane
    */
   public void calculateMouseOver(double x, double y){
     if (cards[0] == null) return;
-    
+
     double minMousePickup = this.getHeight()*MIN_MOUSE_PICKUP;
-    
+
+
     if (y > minMousePickup){
       
       double height = this.getHeight();
@@ -223,7 +233,8 @@ public class HandNode extends ResizablePane
       
       double[] constraints = new double[7];
       double total = 0;
-      
+      int maxIndex=0;
+
       for (int i = 0; i < 7; i++){
         double constraint = (i/7d + 1/14d);
         
@@ -234,7 +245,7 @@ public class HandNode extends ResizablePane
           constraint *= -1;
           constraint = 1/7d + peak*Math.pow(Math.E, constraint);
         }
-        
+        if(constraints[i]>constraints[maxIndex]) maxIndex=i;
         constraints[i] = constraint;
         total += constraint;
 //        System.out.println(constraint + ", " + i);
@@ -242,14 +253,17 @@ public class HandNode extends ResizablePane
       }
 //      System.out.println("---------------");
       double totalWidth = 0;
-      
+
+
       for (int i = 0; i < 7; i++){
-        ResizablePane card = cards[i];
+        AbstractCard card = cards[i];
         
         double sizeFactor = CARD_RATIO;
         double cardWidth = (constraints[i]/total)*width;
         double tempWidth = cardWidth;
-        
+
+
+
         if (cardWidth/sizeFactor > height*MAX_HOVER_HEIGHT){
           cardWidth = height*MAX_HOVER_HEIGHT*sizeFactor;
         }
@@ -260,7 +274,7 @@ public class HandNode extends ResizablePane
         cardWidth -= cardWidth*MIN_GAP_SIZE;
         double cardHeight = cardWidth/CARD_RATIO;
         double yPos = height - cardHeight;
-        
+
         card.setSize(cardWidth, cardHeight);
         card.setLayoutX(xPos);
         card.setLayoutY(yPos);
@@ -269,7 +283,7 @@ public class HandNode extends ResizablePane
     } else {
       
       for (int i = 0; i < cards.length; i++){
-        ResizablePane card = cards[i];
+        AbstractCard card = cards[i];
         card.setSize(lastWidth, lastHeight);
         card.setLayoutX(xLayouts[i]);
         card.setLayoutY(this.getHeight() - lastHeight);

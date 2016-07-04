@@ -91,20 +91,20 @@ public class ActionButtons extends HBox
    */
   public void endTurn()
   {
-    ArrayList<ResizablePane> clientPolicyCards = gui.getDraftLayout().getHand().getDraftedCards();
+    ArrayList<AbstractCard> clientPolicyCards = gui.getDraftLayout().getHand().getDraftedCards();
    // ArrayList<CardView> clientPolicyCards = gui.getDraftLayout().getHand().getDraftedCards();
     if (clientPolicyCards != null)
     {
-      for (ResizablePane card : clientPolicyCards)
+      for (AbstractCard card : clientPolicyCards)
       //for (CardView card : clientPolicyCards)
       {
         //gui.getClient().draftCard(card.getGameCard());
 
       }
-      ArrayList<ResizablePane> discardedCards = gui.getDraftLayout().getHand().getDiscardedCards();
+      ArrayList<AbstractCard> discardedCards = gui.getDraftLayout().getHand().getDiscardedCards();
       //ArrayList<CardView> discardedCards = gui.getDraftLayout().getHand().getDiscardedCards();
       //for (CardView card : discardedCards)
-      for (ResizablePane card : discardedCards)
+      for (AbstractCard card : discardedCards)
       {
         //gui.getClient().discardCard(card.getGameCard());
       }

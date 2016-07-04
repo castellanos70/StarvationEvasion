@@ -1,9 +1,7 @@
 package starvationevasion.client.GUI.DraftLayout;
   
 import javafx.animation.AnimationTimer;
-import javafx.event.EventHandler;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -24,10 +22,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 
-public class CardView extends ResizablePane
+public class CardView extends AbstractCard
 {
-  private double cardWidth = 370;
-  private double cardHeight = 520;
+  private double largeCardWidth=370;
+  private double largeCardHeight=520;
+  private double smallCardWidth=92.5;
+  private double smallCardHeight=130;
+
+  private double cardWidth = smallCardWidth;
+  private double cardHeight =smallCardHeight;
   private AnchorPane polygonPane;
   private StackPane cardPane;
   private ImageView cardImage = new ImageView();
@@ -59,9 +62,13 @@ public class CardView extends ResizablePane
   private Polygon middleTextOctagon   = new Polygon();
   Circle pipOne, pipTwo, pipThree;
   private Text title, voteNumberText, voteCostText, rulesText, flavorText, informationText;
-  
+  private EnumRegion owner;
+  private EnumPolicy policy;
+
   public CardView(EnumRegion owner, EnumPolicy policy)
   {
+    this.owner = owner;
+    this.policy=policy;
     gameCard = new PolicyCard(policy, owner);
     actionPointCost = gameCard.getActionPointCost();
     cardImage.setFitWidth(cardWidth);
@@ -71,15 +78,13 @@ public class CardView extends ResizablePane
     cardImage.setFitWidth(cardWidth);
     cardImage.setFitHeight(cardHeight);
     cardPane.getChildren().add(cardImage);
-   
     //Initialize Card Objects
     initializeGameCardPolygons();
     initializeGameCardText();
     updateTextOctagon();
-    
-    
-    
+
     polygonPane = new AnchorPane();
+
     polygonPane.getChildren().addAll(
         topLeftPentagon, topTrapezoid, topRightPentagon,
         middleTextOctagon,
@@ -88,7 +93,7 @@ public class CardView extends ResizablePane
         rulesText, flavorText, 
         voteNumberText, voteCostText, informationText
         );
-    
+
     switch(actionPointCost)
     {
       case 3: 
@@ -120,71 +125,97 @@ public class CardView extends ResizablePane
         AnchorPane.setLeftAnchor(pipTwo, cardWidth*2/3-cardHeight/52);
         break;
     }
-    
     cardPane.getChildren().add(polygonPane);
 
+    //this.getChildren().add(cardPane);
+    this.getChildren().add(cardImage);
     timer.start();
+    this.setOnMouseEntered(event -> {
+      System.out.println("Mouse over");
+      initMainCard();
+    });
+    this.setOnMouseExited(event -> {
+      this.getChildren().clear();
+      this.getChildren().add(cardImage);
+    });
   }
-  private void initializeGameCardPolygons() 
+
+  public void initMainCard(){
+    cardWidth=largeCardWidth;
+    cardHeight=largeCardHeight;
+    initializeGameCardText();
+    initializeGameCardPolygons();
+    updateTextOctagon();
+
+    this.getChildren().clear();
+    cardPane.getChildren().clear();
+    cardImage = ImageGetter.getImageForCard(policy);
+    cardImage.setFitWidth(cardWidth);
+    cardImage.setFitHeight(cardHeight);
+    cardPane.getChildren().add(cardImage);
+    cardPane.getChildren().add(polygonPane);
+   this.getChildren().add(cardPane);
+  }
+
+  @Override
+  public EnumRegion getOwner() {
+    return owner;
+  }
+
+  @Override
+  public EnumPolicy getPolicy() {
+    return policy;
+  }
+
+  private void initializeGameCardPolygons()
   {
-    topTrapezoid.getPoints().setAll(new Double[] {
-        (cardWidth/9),   0.0,
-        (cardWidth*8/9), 0.0,
-        (cardWidth*7/9), cardHeight*1/13, 
-        (cardWidth*2/9), cardHeight*1/13 
-        });
+    topTrapezoid.getPoints().setAll((cardWidth/9), 0.0,
+            (cardWidth*8/9), 0.0,
+            (cardWidth*7/9), cardHeight*1/13,
+            (cardWidth*2/9), cardHeight*1/13);
     AnchorPane.setTopAnchor(topTrapezoid, 0.0);
     
-    bottomTrapezoid.getPoints().setAll(new Double[] { 
-        (cardWidth/9),   cardHeight*1/13,
-        (cardWidth*8/9), cardHeight*1/13,
-        (cardWidth*7/9), 0.0,
-        (cardWidth*7/9), 0.0,
-        (cardWidth*2/9), 0.0,
-        (cardWidth*2/9), 0.0 
-        });
+    bottomTrapezoid.getPoints().setAll((cardWidth/9), cardHeight*1/13,
+            (cardWidth*8/9), cardHeight*1/13,
+            (cardWidth*7/9), 0.0,
+            (cardWidth*7/9), 0.0,
+            (cardWidth*2/9), 0.0,
+            (cardWidth*2/9), 0.0);
     AnchorPane.setBottomAnchor(bottomTrapezoid, 0.0);
 
-    bottomLeftPentagon.getPoints().setAll(new Double[] {
-        0.0,           0.0,
-        cardWidth/9,   0.0, 
-        cardWidth*2/9, cardHeight/13,
-        cardWidth/9,   cardHeight*2/13,
-        0.0,           cardHeight*2/13
-        });
+    bottomLeftPentagon.getPoints().setAll(0.0, 0.0,
+            cardWidth/9, 0.0,
+            cardWidth*2/9, cardHeight/13,
+            cardWidth/9, cardHeight*2/13,
+            0.0, cardHeight*2/13);
     AnchorPane.setBottomAnchor(bottomLeftPentagon, 0.0);
     AnchorPane.setLeftAnchor(bottomLeftPentagon, 0.0);
     
-    topLeftPentagon.getPoints().setAll(new Double[] {
-        0.0,           0.0, 
-        cardWidth/9,   0.0, 
-        cardWidth*2/9, cardHeight/13, 
-        cardWidth/9,   cardHeight*2/13,
-        0.0,           cardHeight*2/13 
-        });
+    topLeftPentagon.getPoints().setAll(0.0, 0.0,
+            cardWidth/9, 0.0,
+            cardWidth*2/9, cardHeight/13,
+            cardWidth/9, cardHeight*2/13,
+            0.0, cardHeight*2/13);
     AnchorPane.setTopAnchor(topLeftPentagon, 0.0);
     AnchorPane.setLeftAnchor(topLeftPentagon, 0.0);
     
-    bottomRightPentagon.getPoints().setAll(new Double[] { 
-        0.0,            0.0,
-        -cardWidth/9,   0.0,
-        -cardWidth*2/9, cardHeight/13,
-        -cardWidth/9,   cardHeight*2/13, 
-        0.0,            cardHeight*2/13 
-        });
+    bottomRightPentagon.getPoints().setAll(0.0, 0.0,
+            -cardWidth/9, 0.0,
+            -cardWidth*2/9, cardHeight/13,
+            -cardWidth/9, cardHeight*2/13,
+            0.0, cardHeight*2/13);
     AnchorPane.setBottomAnchor(bottomRightPentagon, 0.0);
     AnchorPane.setRightAnchor(bottomRightPentagon, 0.0);
 
     topRightPentagon.getPoints().setAll(
-        new Double[] { 
-        0.0,            0.0, 
-        -cardWidth/9,   0.0, 
-        -cardWidth*2/9, cardHeight/13, -
-        cardWidth/9,    cardHeight*2/13, 
-        0.0,            cardHeight*2/13
-        });
+            0.0, 0.0,
+            -cardWidth/9, 0.0,
+            -cardWidth*2/9, cardHeight/13, -
+            cardWidth/9, cardHeight*2/13,
+            0.0, cardHeight*2/13);
     AnchorPane.setTopAnchor(topRightPentagon, 0.0);
     AnchorPane.setRightAnchor(topRightPentagon, 0.0);
+
     
     middleTextOctagon.getPoints().setAll(octagonPoints);
     AnchorPane.setBottomAnchor(middleTextOctagon, (cardHeight / 13));
@@ -198,39 +229,26 @@ public class CardView extends ResizablePane
       p.setStrokeWidth(2.0);
       p.setFill(Color.web(color, transparency));
       p.setStroke(Color.BLACK);
-      p.setOnMouseEntered(new EventHandler<MouseEvent>()
-      {
-        public void handle(MouseEvent me) 
-        {
-          p.setStroke(Color.YELLOW);
-        }
-      });
-      p.setOnMouseExited(new EventHandler<MouseEvent>()
-      {  
-        public void handle(MouseEvent me) 
-        {
-          p.setStroke(Color.BLACK);
-        }
-      });
+//      p.setOnMouseEntered(new EventHandler<MouseEvent>()
+//      {
+//        public void handle(MouseEvent me)
+//        {
+//          p.setStroke(Color.YELLOW);
+//        }
+//      });
+//      p.setOnMouseExited(me -> p.setStroke(Color.BLACK));
     }
-    middleTextOctagon.setOnMouseEntered(new EventHandler<MouseEvent>() 
-    {
-      public void handle(MouseEvent me) 
-      {
-        mouseOverOctagon = true;
-        middleTextOctagon.setStroke(Color.YELLOW);
-        middleTextOctagon.setFill(Color.BLACK);
-      }
-    });
-    middleTextOctagon.setOnMouseExited(new EventHandler<MouseEvent>()
-    {  
-      public void handle(MouseEvent me) 
-      {
-        mouseOverOctagon = false;
-        middleTextOctagon.setStroke(Color.BLACK);
-        middleTextOctagon.setFill(Color.web(color, transparency));
-      }
-    });
+//    middleTextOctagon.setOnMouseEntered(me -> {
+//      mouseOverOctagon = true;
+//      middleTextOctagon.setStroke(Color.YELLOW);
+//      middleTextOctagon.setStroke(Color.YELLOW);
+//      middleTextOctagon.setFill(Color.BLACK);
+//    });
+//    middleTextOctagon.setOnMouseExited(me -> {
+//      mouseOverOctagon = false;
+//      middleTextOctagon.setStroke(Color.BLACK);
+//      middleTextOctagon.setFill(Color.web(color, transparency));
+//    });
     
    
   }
@@ -255,34 +273,26 @@ public class CardView extends ResizablePane
       t.setFill(Color.WHITE);
       t.setFontSmoothingType(FontSmoothingType.LCD);
     }
-    
-    
-    
+
     rulesText = new Text(gameCard.getGameText());
+
     rulesText.setFill(Color.WHITE);
     rulesText.setFont(Font.font(12));
-    rulesText.setOnMouseEntered(new EventHandler<MouseEvent>() 
-    {
-      public void handle(MouseEvent me) 
-      {
-        mouseOverOctagon = true;
-        middleTextOctagon.setStroke(Color.YELLOW);
-        middleTextOctagon.setFill(Color.BLACK);
-      }
+    System.out.println("set on mouse listener");
+    rulesText.setOnMouseEntered(me -> {
+      mouseOverOctagon = true;
+      middleTextOctagon.setStroke(Color.YELLOW);
+      middleTextOctagon.setFill(Color.BLACK);
     });
     rulesText.setWrappingWidth(200);
     
     flavorText = new Text(gameCard.getFlavorText());
     flavorText.setFill(Color.WHITE);
     flavorText.setFont(Font.font("Verdana", FontPosture.ITALIC, 12));
-    flavorText.setOnMouseEntered(new EventHandler<MouseEvent>() 
-    {
-      public void handle(MouseEvent me) 
-      {
-        mouseOverOctagon = true;
-        middleTextOctagon.setStroke(Color.YELLOW);
-        middleTextOctagon.setFill(Color.BLACK);
-      }
+    flavorText.setOnMouseEntered(me -> {
+      mouseOverOctagon = true;
+      middleTextOctagon.setStroke(Color.YELLOW);
+      middleTextOctagon.setFill(Color.BLACK);
     });
     flavorText.setWrappingWidth(200);
     
@@ -363,6 +373,7 @@ public class CardView extends ResizablePane
   @Override
   public void onResize() 
   {
+
 //    initializeGameCardPolygons();
   }
 

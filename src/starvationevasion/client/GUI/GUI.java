@@ -19,10 +19,9 @@ import starvationevasion.client.GUI.votingHud.VotingLayout;
 import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.client.Networking.Client;
-import starvationevasion.common.EnumFood;
+import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.GameState;
-import starvationevasion.common.EnumPolicy;
 import starvationevasion.sim.CardDeck;
 
 import java.util.ArrayList;
@@ -113,16 +112,16 @@ public class GUI extends Application
   // *
   // * @param args
   // */
-  // public static void main(String[] args)
-  // {
-  // launch(args);
-  // }
+   public static void main(String[] args)
+   {
+   launch(args);
+   }
 
   @Override
   public void start(Stage primaryStage)
   {
     System.out.println("GUI.start()");
-
+    EnumPolicy.load();
     // TODO: THIS WILL BE REMOVED WHEN PHASE HANDLING IS FULLY IMPLEMENTED
     MapController.setCurrentController(GamePhaseMapController.class);
     this.primaryStage = primaryStage;

@@ -4,16 +4,18 @@ package starvationevasion.client.GUI.DraftLayout;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import starvationevasion.client.GUI.DraftLayout.map.Map;
 import starvationevasion.client.GUI.GUI;
-import starvationevasion.client.GUI.SummaryBar;
 import starvationevasion.client.GUI.Popups.DiscardDisplay;
 import starvationevasion.client.GUI.Popups.GraphDisplay;
 import starvationevasion.client.GUI.Popups.ProductBarDataDisplay;
+import starvationevasion.client.GUI.SummaryBar;
 
 import java.util.ArrayList;
 
@@ -129,10 +131,7 @@ public class DraftLayout extends GridPane
     draftStatus = new DraftStatus();
     // this.add(draftStatus, 11, 1, 2, 4);
 
-    // node which lets the user select and view the map of the US
-    map = new Map();
-    Node mapNode = map.getGameMapNode();
-    
+
 
     // node which holds the ProductBar
     productBar = new ProductBar(gui);

@@ -30,7 +30,7 @@ import java.util.ArrayList;
  *         object
  *
  */
-public class CardNode extends ResizablePane
+public class CardNode extends AbstractCard
 {
   public static final double STROKE_PERC = .03;
   public static final Color[] COLORS =
@@ -521,6 +521,11 @@ public class CardNode extends ResizablePane
       discardButton.setTranslateY(borderOffset + height * .9 + diffY + (height * .1 - newHeight) / 2);
       discardButton.autosize();
     }
+  }
+
+  @Override
+  public EnumRegion getOwner() {
+    return region;
   }
 
   public EnumPolicy getPolicy()

@@ -135,7 +135,7 @@ public class ConcurrentCommModule implements Communication
       }
       catch (Exception e)
       {
-        e.printStackTrace();
+        //e.printStackTrace();
         // Ignore
       }
       return response;
@@ -280,7 +280,7 @@ public class ConcurrentCommModule implements Communication
         if (IS_CONNECTED.get())
         {
           // This solves an issue I don't understand and probably never will
-          openConnection(HOST, PORT);
+         // openConnection(HOST, PORT);
           break;
         } else if (localServer != null && !localServer.isAlive())
         {
@@ -338,7 +338,7 @@ public class ConcurrentCommModule implements Communication
     try
     {
       LOCK.lock();
-      //if (!isConnected()) return; // Already disposed/the connection never succeeded
+      if (!isConnected()) return; // Already disposed/the connection never succeeded
       IS_CONNECTED.set(false);
       commError("Shutting down communication module");
       clearResponses();

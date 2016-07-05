@@ -261,19 +261,16 @@ public class ClientMain extends Application
 
     buttonConnect.setOnMouseClicked((event) ->
       {
-    //client = new ClientTest(this, "foodgame.cs.unm.edu", 5555);
-    //client = new ClientTest(this, "localhost", 5555);
         String host = editServer.getText();
-
-        client = new ClientTest(this, host, Constant.SERVER_PORT);
-        consoleTextField.setText("Successfully logged into "+host);
-        showLoginScreen(primaryStage);
         connectToServer(host);
         });
 
 
     exit.setOnMouseClicked(event -> {
-      if(client!=null) client.shutdown();
+      if(client!=null){
+        client.shutdown();
+        stage.close();
+      }
       else stage.close();
     });
 
@@ -463,8 +460,10 @@ public class ClientMain extends Application
 
   public void setUsers(ArrayList<User> users){
     usersAvaliableTextArea.setText("The known users are:");
+    usersOnlineTextArea.setText("The users online now are:");
     for (User user : users) {
-      usersAvaliableTextArea.setText(usersAvaliableTextArea.getText() + "\n" + user.toString());
+      usersAvaliableTextArea.setText(usersAvaliableTextArea.getText() + "\n" + user.getUsername());
+      if(user.isLoggedIn()) usersOnlineTextArea.setText(usersOnlineTextArea.getText()+"\n"+user.getUsername());
     }
   }
 

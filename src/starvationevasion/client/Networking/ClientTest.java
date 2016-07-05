@@ -363,6 +363,13 @@ public class ClientTest implements Client
         users=(ArrayList) data;
         GAME_LOOP.setUsers(users);
       }
+      else if (type == Type.CREATE_SUCCESS){
+        GAME_LOOP.sendInfoMessage("Users successfully created");
+      }
+      else if(type== Type.CREATE_ERROR)
+      {
+        GAME_LOOP.sendInfoMessage("There was an error creating your user ");
+      }
     }
   }
 }

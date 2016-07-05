@@ -78,7 +78,7 @@ public class ClientMain extends Application
   private TextArea consoleTextField=new TextArea();
   private TextArea usersAvaliableTextArea = new TextArea();
   private TextArea usersOnlineTextArea = new TextArea();
-
+  private TabPane tabLayout;
 
   private Screen screen;
   private static Rectangle2D bounds;
@@ -435,8 +435,12 @@ public class ClientMain extends Application
     stage.setScene(new Scene(root, width, height));
     stage.setMaximized(true);
 
+
+
     //Console preferences
     consoleTextField.setEditable(false);
+
+    tabLayout=createTabLayout();
 
     editUsername.setFocusTraversable(false);
     editPassword.setFocusTraversable(false);
@@ -446,7 +450,7 @@ public class ClientMain extends Application
     gridRoot.add(buttonCreateUser, 0, 3);
     gridRoot.add(switchToGUI,0,5);
     gridRoot.add(backToConnection,0,6);
-    gridRoot.add(createTabLayout(),2,0,1,7);
+    gridRoot.add(tabLayout,2,0,1,7);
     root.getChildren().add(gridRoot);
     gridRoot.setTranslateY(bounds.getHeight()/5*3);
     gridRoot.setTranslateX(50);
@@ -465,6 +469,11 @@ public class ClientMain extends Application
       usersAvaliableTextArea.setText(usersAvaliableTextArea.getText() + "\n" + user.getUsername());
       if(user.isLoggedIn()) usersOnlineTextArea.setText(usersOnlineTextArea.getText()+"\n"+user.getUsername());
     }
+  }
+
+  public void sendInfoMessage(String message){
+    consoleTextField.setText(consoleTextField.getText()+"\n"+message);
+    tabLayout.getSelectionModel().select(0);
   }
 
   private TabPane createTabLayout(){

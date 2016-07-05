@@ -12,6 +12,7 @@ import starvationevasion.common.PolicyCard;
 import starvationevasion.communication.Communication;
 import starvationevasion.communication.ConcurrentCommModule;
 import starvationevasion.server.model.*;
+import starvationevasion.server.model.db.Users;
 
 import java.util.ArrayList;
 
@@ -30,7 +31,7 @@ public class ClientTest implements Client
   private ArrayList<PolicyCard> votingCards;
   private ArrayList<EnumPolicy> hand;
   private GameState serverState;
-
+  private ArrayList<User> users;
   public ClientTest(ClientMain gameLoop, String host, int port)
   {
     System.out.println("ClientTest: "+host+":"+port);
@@ -232,6 +233,13 @@ public class ClientTest implements Client
     return COMM.send(Endpoint.DELETE_CARD, data, null);
   }
 
+  public boolean requestUsers(){
+    return (COMM.send(Endpoint.USERS,null,null));
+  }
+
+  public ArrayList getUsers(){
+    return users;
+  }
   /**
    * Tries to discard the given card (interfaces with server).
    *
@@ -349,6 +357,11 @@ public class ClientTest implements Client
         System.out.println("Received game serverState update " + serverState);
         if(serverState.equals(GameState.DRAWING)) readHand();
         respondToStateChange();
+      }
+      else if (type == Type.USERS){
+        System.out.println("Received Users");
+        users=(ArrayList) data;
+        GAME_LOOP.setUsers(users);
       }
     }
   }

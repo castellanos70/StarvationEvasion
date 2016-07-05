@@ -99,6 +99,17 @@ public interface Client
    */
   boolean createUser(String username, String password, EnumRegion region);
 
+ boolean requestUsers();
+
+  /**
+   * Sends request to server to receive users and then sends list of users
+   *
+   * will return null if it failed
+   * @return
+     */
+  ArrayList getUsers();
+
+
   /**
    * Asks the client to vote the given card up.
    *

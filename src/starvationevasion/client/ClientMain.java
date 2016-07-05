@@ -28,9 +28,12 @@ import starvationevasion.client.Networking.Client;
 import starvationevasion.client.Networking.ClientTest;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.server.model.User;
+import starvationevasion.server.model.db.Users;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Optional;
 
 /**
@@ -58,7 +61,8 @@ public class ClientMain extends Application
   private Client client;
   private Pane root = new Pane();
   private GridPane gridRoot = new GridPane();
-  private TextField editServer = new TextField("foodgame.cs.unm.edu");
+  //private TextField editServer = new TextField("foodgame.cs.unm.edu");
+  private TextField editServer = new TextField("localhost");
   private MenuButton buttonConnect = new MenuButton("  CONNECT");
   private MenuButton buttonLogin = new MenuButton("  LOGIN");
   private Label labelUsername = new Label("Username");
@@ -74,6 +78,7 @@ public class ClientMain extends Application
   private TextArea consoleTextField=new TextArea();
   private TextArea usersAvaliableTextArea = new TextArea();
   private TextArea usersOnlineTextArea = new TextArea();
+
 
   private Screen screen;
   private static Rectangle2D bounds;
@@ -456,16 +461,25 @@ public class ClientMain extends Application
     showLoginScreen(stage);
   }
 
+  public void setUsers(ArrayList<User> users){
+    usersAvaliableTextArea.setText("The known users are:");
+    for (User user : users) {
+      usersAvaliableTextArea.setText(usersAvaliableTextArea.getText() + "\n" + user.toString());
+    }
+  }
+
   private TabPane createTabLayout(){
     Tab usersTab = new Tab("users",usersAvaliableTextArea);
     Tab onlineNow = new Tab("online now",usersOnlineTextArea);
     Tab generalMessages = new Tab("information messages",consoleTextField);
+    usersAvaliableTextArea.setText("The known users are:");
     onlineNow.setClosable(false);
     usersTab.setClosable(false);
     generalMessages.setClosable(false);
     usersTab.setOnSelectionChanged(event -> {
-      usersAvaliableTextArea.setText("The known users are:");
+      client.requestUsers();
     });
+
     TabPane tabPane = new TabPane(generalMessages,usersTab,onlineNow);
     return tabPane;
   }

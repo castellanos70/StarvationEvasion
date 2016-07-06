@@ -1,7 +1,9 @@
 package starvationevasion.client.GUI.DraftLayout;
   
 import javafx.animation.AnimationTimer;
+import javafx.event.EventHandler;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -29,12 +31,12 @@ public class CardView extends AbstractCard
   private double smallCardWidth=92.5;
   private double smallCardHeight=130;
 
-  private double cardWidth = smallCardWidth;
-  private double cardHeight =smallCardHeight;
+  private double cardWidth = largeCardWidth;
+  private double cardHeight =largeCardHeight;
   private AnchorPane polygonPane;
   private StackPane cardPane;
   private ImageView cardImage = new ImageView();
-  
+
   int actionPointCost;
   private boolean mouseOverOctagon = false;
   private double textOctagonHeightModifier = 0;
@@ -52,6 +54,8 @@ public class CardView extends AbstractCard
       };
   private String color = "0xaba9db"; 
   private PolicyCard gameCard;
+
+  private boolean selected=false;
 
   private Polygon topTrapezoid        = new Polygon();
   private Polygon bottomTrapezoid     = new Polygon();
@@ -71,6 +75,32 @@ public class CardView extends AbstractCard
     this.policy=policy;
     gameCard = new PolicyCard(policy, owner);
     actionPointCost = gameCard.getActionPointCost();
+
+    initSimpleCard();
+    //this.getChildren().add(cardPane);
+   // this.getChildren().add(cardPane);
+    //initSimpleCard();
+
+
+
+
+
+    this.setOnMouseEntered(event -> {
+      initMainCard();
+      setTranslateY(-400);
+      setTranslateX(-cardWidth/2);
+      toFront();
+    });
+    this.setOnMouseExited(event -> {
+      initSimpleCard();
+      setTranslateY(0);
+      setTranslateX(0);
+    });
+  }
+
+  public void initMainCard(){
+    cardWidth=largeCardWidth;
+    cardHeight=largeCardHeight;
     cardImage.setFitWidth(cardWidth);
     cardImage.setFitHeight(cardHeight);
     cardPane = new StackPane();
@@ -86,17 +116,17 @@ public class CardView extends AbstractCard
     polygonPane = new AnchorPane();
 
     polygonPane.getChildren().addAll(
-        topLeftPentagon, topTrapezoid, topRightPentagon,
-        middleTextOctagon,
-        bottomLeftPentagon, bottomTrapezoid, bottomRightPentagon,
-        title, 
-        rulesText, flavorText, 
-        voteNumberText, voteCostText, informationText
-        );
+            topLeftPentagon, topTrapezoid, topRightPentagon,
+            middleTextOctagon,
+            bottomLeftPentagon, bottomTrapezoid, bottomRightPentagon,
+            title,
+            rulesText, flavorText,
+            voteNumberText, voteCostText, informationText
+    );
 
     switch(actionPointCost)
     {
-      case 3: 
+      case 3:
         pipThree = new Circle();
         pipThree.setRadius(cardHeight/52);
         AnchorPane.setBottomAnchor(pipThree, cardHeight/52);
@@ -106,7 +136,7 @@ public class CardView extends AbstractCard
         polygonPane.getChildren().addAll(pipTwo, pipThree);
         AnchorPane.setBottomAnchor(pipTwo, cardHeight/52);
         AnchorPane.setLeftAnchor(pipTwo, cardWidth*3/4-cardHeight/52);
-      case 1: 
+      case 1:
         pipOne = new Circle();
         pipOne.setRadius(cardHeight/52);
         polygonPane.getChildren().addAll(pipOne);
@@ -126,35 +156,26 @@ public class CardView extends AbstractCard
         break;
     }
     cardPane.getChildren().add(polygonPane);
-
-    //this.getChildren().add(cardPane);
-    this.getChildren().add(cardImage);
+    this.getChildren().add(cardPane);
     timer.start();
-    this.setOnMouseEntered(event -> {
-      System.out.println("Mouse over");
-      initMainCard();
-    });
-    this.setOnMouseExited(event -> {
-      this.getChildren().clear();
-      this.getChildren().add(cardImage);
-    });
   }
 
-  public void initMainCard(){
-    cardWidth=largeCardWidth;
-    cardHeight=largeCardHeight;
-    initializeGameCardText();
-    initializeGameCardPolygons();
-    updateTextOctagon();
-
+  public void initSimpleCard(){
+    cardWidth=smallCardWidth;
+    cardHeight=smallCardHeight;
     this.getChildren().clear();
-    cardPane.getChildren().clear();
     cardImage = ImageGetter.getImageForCard(policy);
-    cardImage.setFitWidth(cardWidth);
     cardImage.setFitHeight(cardHeight);
-    cardPane.getChildren().add(cardImage);
-    cardPane.getChildren().add(polygonPane);
-   this.getChildren().add(cardPane);
+    cardImage.setFitWidth(cardWidth);
+    this.getChildren().add(cardImage);
+    timer.stop();
+  }
+
+  public boolean isSelect(){
+    return selected;
+  }
+  public void setSelected(boolean selected){
+    this.selected=selected;
   }
 
   @Override
@@ -229,26 +250,26 @@ public class CardView extends AbstractCard
       p.setStrokeWidth(2.0);
       p.setFill(Color.web(color, transparency));
       p.setStroke(Color.BLACK);
-//      p.setOnMouseEntered(new EventHandler<MouseEvent>()
-//      {
-//        public void handle(MouseEvent me)
-//        {
-//          p.setStroke(Color.YELLOW);
-//        }
-//      });
-//      p.setOnMouseExited(me -> p.setStroke(Color.BLACK));
+      p.setOnMouseEntered(new EventHandler<MouseEvent>()
+      {
+        public void handle(MouseEvent me)
+        {
+          p.setStroke(Color.YELLOW);
+        }
+      });
+      p.setOnMouseExited(me -> p.setStroke(Color.BLACK));
     }
-//    middleTextOctagon.setOnMouseEntered(me -> {
-//      mouseOverOctagon = true;
-//      middleTextOctagon.setStroke(Color.YELLOW);
-//      middleTextOctagon.setStroke(Color.YELLOW);
-//      middleTextOctagon.setFill(Color.BLACK);
-//    });
-//    middleTextOctagon.setOnMouseExited(me -> {
-//      mouseOverOctagon = false;
-//      middleTextOctagon.setStroke(Color.BLACK);
-//      middleTextOctagon.setFill(Color.web(color, transparency));
-//    });
+    middleTextOctagon.setOnMouseEntered(me -> {
+      mouseOverOctagon = true;
+      middleTextOctagon.setStroke(Color.YELLOW);
+      middleTextOctagon.setStroke(Color.YELLOW);
+      middleTextOctagon.setFill(Color.BLACK);
+    });
+    middleTextOctagon.setOnMouseExited(me -> {
+      mouseOverOctagon = false;
+      middleTextOctagon.setStroke(Color.BLACK);
+      middleTextOctagon.setFill(Color.web(color, transparency));
+    });
     
    
   }
@@ -278,7 +299,6 @@ public class CardView extends AbstractCard
 
     rulesText.setFill(Color.WHITE);
     rulesText.setFont(Font.font(12));
-    System.out.println("set on mouse listener");
     rulesText.setOnMouseEntered(me -> {
       mouseOverOctagon = true;
       middleTextOctagon.setStroke(Color.YELLOW);
@@ -363,7 +383,7 @@ public class CardView extends AbstractCard
           textOctagonHeightModifier-=speed;
           updateTextOctagon();
         }
-        flavorText.setVisible(false);
+        if(flavorText!=null)flavorText.setVisible(false);
       }
     }
   };

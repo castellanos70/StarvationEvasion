@@ -170,7 +170,7 @@ public class GUI extends Application
   @Override
   public void stop()
   {
-    client.shutdown();
+   if(client!=null) client.shutdown();
   }
 
   /**

@@ -1,14 +1,13 @@
 package starvationevasion.common;
 
-import java.util.Random;
-
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.scene.control.MenuBar;
 import javafx.scene.control.Menu;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.MenuBar;
+import javafx.stage.Stage;
 import starvationevasion.client.GUI.DraftLayout.CardView;
+
+import java.util.Random;
 
 public class TestCardViewer extends Application
 {
@@ -20,6 +19,7 @@ public class TestCardViewer extends Application
   @Override
   public void start(Stage stage) throws Exception
   {
+    EnumPolicy.load();
     MenuBar menuBar = new MenuBar();
 
     Menu menuPolicyCards = new Menu("Policy Cards");
@@ -28,8 +28,7 @@ public class TestCardViewer extends Application
     int index = random.nextInt(EnumPolicy.values().length);
 
     CardView card = new CardView(EnumRegion.USA_CALIFORNIA, EnumPolicy.values()[index]);
-    
-    scene = new Scene(card.getCardView(), 370, 520);
+    scene = new Scene(card, 370, 520);
     //scene.getRoot().getChildren().addAll(menuBar);
     stage.setScene(scene);
     stage.show();

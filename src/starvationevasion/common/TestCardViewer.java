@@ -19,6 +19,7 @@ public class TestCardViewer extends Application
   @Override
   public void start(Stage stage) throws Exception
   {
+    EnumFood.loadIcons();
     EnumPolicy.load();
     MenuBar menuBar = new MenuBar();
 
@@ -28,7 +29,7 @@ public class TestCardViewer extends Application
     int index = random.nextInt(EnumPolicy.values().length);
 
    // CardView card = new CardView( EnumPolicy.values()[index]);
-    CardView card = new CardView( EnumPolicy.CleanRiverIncentive);
+    CardView card = new CardView( EnumPolicy.FertilizerSubsidy);
     scene = new Scene(card, 370, 520);
     //scene.getRoot().getChildren().addAll(menuBar);
     stage.setScene(scene);

@@ -6,7 +6,9 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.IndexedCell;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -19,14 +21,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontSmoothingType;
 import javafx.scene.text.Text;
-import starvationevasion.client.GUI.ResizablePane;
+import javafx.util.Callback;
 import starvationevasion.client.GUI.images.ImageGetter;
+import starvationevasion.common.EnumFood;
 import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 
 public class CardView extends AbstractCard
@@ -70,8 +74,8 @@ public class CardView extends AbstractCard
   private Polygon topRightPentagon    = new Polygon();
   private Polygon middleTextOctagon   = new Polygon();
   Circle pipOne, pipTwo, pipThree;
-  private Text title, voteNumberText, rulesText, flavorText, informationText;
-  private Node voteCostText;
+  private Text title, rulesText, flavorText, informationText;
+  private Node voteCostText, voteNumberText;
   private EnumRegion owner;
   private EnumPolicy policy;
 
@@ -288,29 +292,11 @@ public class CardView extends AbstractCard
     title = new Text(gameCard.getTitle());
     title.setWrappingWidth(200);
     ArrayList<Text> textList = new ArrayList<Text>();
-    voteNumberText = new Text(""+gameCard.votesRequired());
-    //voteCostText = new Text("$200");
-    int[] xOptions=policy.getOptionsX();
-    if(xOptions!=null){
-      if(xOptions.length==1){
-        textList.add((Text)voteCostText);
-        voteCostText=new Text(""+xOptions[0]);
-      }
-      else{
-        System.out.println(Arrays.toString(xOptions));
-        ArrayList<Integer> arrayList=new ArrayList<>();
+//    voteNumberText = new Text(""+policy.getVotesRequired());
 
-        for(int value:xOptions){
-          arrayList.add(value);
-        }
-        ObservableList list= FXCollections.observableList(arrayList);
-         voteCostText=new ComboBox(list);
-//        voteCostText=new Text(Arrays.toString(xOptions));
-      }
-    }
-
+    initComboBoxes();
     informationText = new Text("Info");
-    textList.addAll(Arrays.asList(title, voteNumberText, informationText));
+    textList.addAll(Arrays.asList(title, informationText));
     for(Text t : textList)
     {
       t.setStroke(Color.BLACK);
@@ -359,6 +345,74 @@ public class CardView extends AbstractCard
 
     AnchorPane.setBottomAnchor(informationText, cardHeight/18);
     AnchorPane.setLeftAnchor(informationText, cardWidth/18);
+  }
+
+  private void initComboBoxes(){
+    //Configurations for X options
+    int[] xOptions=policy.getOptionsX();
+    if(xOptions!=null){
+      if(xOptions.length==1){
+       // textList.add((Text)voteCostText);
+        voteCostText=new Text(""+xOptions[0]);
+      }
+      else{
+        ArrayList<Integer> arrayList=new ArrayList<>();
+        for(int value:xOptions) arrayList.add(value);
+        ObservableList list= FXCollections.observableList(arrayList);
+        ComboBox<Integer> comboBox= new ComboBox(list);
+        comboBox.getSelectionModel().select(0);
+        voteCostText=comboBox;
+      }
+    }else voteCostText=new Text("");
+
+    //Configuration for Target Food
+    EnumFood[] foodOptions=policy.getOptionsFood();
+    if(foodOptions!=null){
+      ComboBox<EnumFood> comboBox=new ComboBox<EnumFood>(FXCollections.observableList(Arrays.asList(foodOptions)));
+      comboBox.setCellFactory(new Callback<ListView<EnumFood>, ListCell<EnumFood>>() {
+        @Override public ListCell<EnumFood> call(ListView<EnumFood> p) {
+          return new ListCell<EnumFood>() {
+            @Override protected void updateItem(EnumFood item, boolean empty) {
+              super.updateItem(item, empty);
+              if (item == null || empty) {
+                setItem(null);
+                setGraphic(null);
+              } else {
+                setGraphic(new ImageView(item.getIconSmall()));
+              }
+            }
+          };
+        }
+      });
+
+      comboBox.setOnAction(event -> comboBox.setButtonCell(new ListCell<EnumFood>(){
+        @Override
+        protected void updateItem(EnumFood item,boolean empty){
+          super.updateItem(item,empty);
+          if (item == null || empty) {
+            setItem(null);
+            setGraphic(null);
+          } else {
+            setGraphic(new ImageView(item.getIconSmall()));
+          }
+        }
+      }));
+      comboBox.setButtonCell(new ListCell<EnumFood>(){
+        @Override
+        protected void updateItem(EnumFood item,boolean empty){
+          super.updateItem(item,empty);
+          if (item == null || empty) {
+            setItem(null);
+            setGraphic(null);
+          } else {
+            setGraphic(new ImageView(item.getIconSmall()));
+          }
+        }
+      });
+      comboBox.getSelectionModel().select(0);
+
+      voteNumberText=comboBox;
+    }else voteNumberText = new Text("");
   }
   private void updateTextOctagon()
   {

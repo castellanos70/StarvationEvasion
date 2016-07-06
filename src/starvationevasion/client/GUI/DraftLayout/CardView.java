@@ -17,10 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.StrokeType;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontSmoothingType;
-import javafx.scene.text.Text;
+import javafx.scene.text.*;
 import javafx.util.Callback;
 import starvationevasion.client.GUI.images.ImageGetter;
 import starvationevasion.common.EnumFood;
@@ -30,7 +27,6 @@ import starvationevasion.common.PolicyCard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 
 public class CardView extends AbstractCard
@@ -42,6 +38,8 @@ public class CardView extends AbstractCard
 
   private double cardWidth = largeCardWidth;
   private double cardHeight =largeCardHeight;
+  private double foodIconWidth=32;
+  private double foodIconHeight=32;
   private AnchorPane polygonPane;
   private StackPane cardPane;
   private ImageView cardImage = new ImageView();
@@ -75,7 +73,7 @@ public class CardView extends AbstractCard
   private Polygon middleTextOctagon   = new Polygon();
   Circle pipOne, pipTwo, pipThree;
   private Text title, rulesText, flavorText, informationText;
-  private Node voteCostText, voteNumberText,regionSelection;
+  private Node voteCostText, foodSelection,regionSelection;
   private EnumRegion owner;
   private EnumPolicy policy;
 
@@ -135,7 +133,7 @@ public class CardView extends AbstractCard
             bottomLeftPentagon, bottomTrapezoid, bottomRightPentagon,
             title,
             rulesText, flavorText,
-            voteNumberText, voteCostText, informationText,regionSelection
+            foodSelection, voteCostText, informationText,regionSelection
     );
 
     switch(actionPointCost)
@@ -300,22 +298,23 @@ public class CardView extends AbstractCard
     textList.addAll(Arrays.asList(title, informationText));
     for(Text t : textList)
     {
-      t.setStroke(Color.BLACK);
-      t.setStrokeType(StrokeType.OUTSIDE);
-      t.setStrokeWidth(1);
-      t.setFont(Font.font("Helvetica", 18));
-      t.setFill(Color.WHITE);
+     // t.setStroke(Color.WHITE);
+      //t.setStrokeType(StrokeType.OUTSIDE);
+      //t.setStrokeWidth(1);
+      t.setFont(Font.font("Helvetica", FontWeight.EXTRA_BOLD, 16));
+      t.setFill(Color.BLACK);
       t.setFontSmoothingType(FontSmoothingType.LCD);
     }
 
     rulesText = new Text(gameCard.getGameText());
 
-    rulesText.setFill(Color.WHITE);
+    rulesText.setFill(Color.BLACK);
     rulesText.setFont(Font.font(12));
     rulesText.setOnMouseEntered(me -> {
       mouseOverOctagon = true;
       middleTextOctagon.setStroke(Color.YELLOW);
       middleTextOctagon.setFill(Color.BLACK);
+      rulesText.setFill(Color.WHITE);
     });
     rulesText.setWrappingWidth(200);
     
@@ -333,10 +332,12 @@ public class CardView extends AbstractCard
     AnchorPane.setLeftAnchor(title, cardWidth/4);
 
     AnchorPane.setTopAnchor(regionSelection, cardHeight/18);
-    AnchorPane.setLeftAnchor(regionSelection, cardWidth/18);
+    AnchorPane.setLeftAnchor(regionSelection, 0.0);
 
-    AnchorPane.setTopAnchor(voteNumberText, cardHeight/18);
-    AnchorPane.setRightAnchor(voteNumberText, cardWidth/18);
+    AnchorPane.setTopAnchor(foodSelection, cardHeight/18);
+   // AnchorPane.setRightAnchor(foodSelection, cardWidth/18);
+//    AnchorPane.setTopAnchor(foodSelection,0.0);
+    AnchorPane.setRightAnchor(foodSelection, 0.0);
 
     AnchorPane.setBottomAnchor(voteCostText, cardHeight/18);
     AnchorPane.setRightAnchor(voteCostText, cardWidth/18);
@@ -373,8 +374,24 @@ public class CardView extends AbstractCard
 
     //Configuration for Target Food
     EnumFood[] foodOptions=policy.getOptionsFood();
+    ListCell<EnumFood> listCell= new ListCell<EnumFood>(){
+      @Override
+      protected void updateItem(EnumFood item,boolean empty){
+        super.updateItem(item,empty);
+        if (item == null || empty) {
+          setItem(null);
+          setGraphic(null);
+        } else {
+          ImageView image = new ImageView(item.getIconSmall());
+          image.setFitWidth(foodIconWidth);
+          image.setFitHeight(foodIconHeight);
+          setGraphic(image);
+        }
+      }
+    };
     if(foodOptions!=null){
       ComboBox<EnumFood> comboBox=new ComboBox<EnumFood>(FXCollections.observableList(Arrays.asList(foodOptions)));
+
       comboBox.setCellFactory(new Callback<ListView<EnumFood>, ListCell<EnumFood>>() {
         @Override public ListCell<EnumFood> call(ListView<EnumFood> p) {
           return new ListCell<EnumFood>() {
@@ -384,41 +401,23 @@ public class CardView extends AbstractCard
                 setItem(null);
                 setGraphic(null);
               } else {
-                setGraphic(new ImageView(item.getIconSmall()));
+                ImageView image = new ImageView(item.getIconSmall());
+                image.setFitWidth(foodIconWidth);
+                image.setFitHeight(foodIconHeight);
+                setGraphic(image);
               }
             }
           };
         }
       });
 
-      comboBox.setOnAction(event -> comboBox.setButtonCell(new ListCell<EnumFood>(){
-        @Override
-        protected void updateItem(EnumFood item,boolean empty){
-          super.updateItem(item,empty);
-          if (item == null || empty) {
-            setItem(null);
-            setGraphic(null);
-          } else {
-            setGraphic(new ImageView(item.getIconSmall()));
-          }
-        }
-      }));
-      comboBox.setButtonCell(new ListCell<EnumFood>(){
-        @Override
-        protected void updateItem(EnumFood item,boolean empty){
-          super.updateItem(item,empty);
-          if (item == null || empty) {
-            setItem(null);
-            setGraphic(null);
-          } else {
-            setGraphic(new ImageView(item.getIconSmall()));
-          }
-        }
-      });
+
+      comboBox.setOnAction(event -> comboBox.setButtonCell(listCell));
+      comboBox.setButtonCell(listCell);
       comboBox.getSelectionModel().select(0);
 
-      voteNumberText=comboBox;
-    }else voteNumberText = new Text("");
+      foodSelection =comboBox;
+    }else foodSelection = new Text("");
 
     //Configurations for Region selection
     EnumRegion[] regions=policy.getOptionsRegions(owner);

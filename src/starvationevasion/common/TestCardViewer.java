@@ -29,7 +29,7 @@ public class TestCardViewer extends Application
     int index = random.nextInt(EnumPolicy.values().length);
 
    // CardView card = new CardView( EnumPolicy.values()[index]);
-    CardView card = new CardView( EnumPolicy.FertilizerSubsidy);
+    CardView card = new CardView( EnumPolicy.CleanRiverIncentive);
     scene = new Scene(card, 370, 520);
     //scene.getRoot().getChildren().addAll(menuBar);
     stage.setScene(scene);

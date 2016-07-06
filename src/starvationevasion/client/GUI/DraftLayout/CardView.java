@@ -75,7 +75,7 @@ public class CardView extends AbstractCard
   private Polygon middleTextOctagon   = new Polygon();
   Circle pipOne, pipTwo, pipThree;
   private Text title, rulesText, flavorText, informationText;
-  private Node voteCostText, voteNumberText;
+  private Node voteCostText, voteNumberText,regionSelection;
   private EnumRegion owner;
   private EnumPolicy policy;
 
@@ -106,7 +106,8 @@ public class CardView extends AbstractCard
   public CardView(EnumPolicy policy) {
 
     this.policy = policy;
-    gameCard = new PolicyCard(policy, EnumRegion.USA_CALIFORNIA);
+    owner=EnumRegion.USA_HEARTLAND;
+    gameCard = new PolicyCard(policy, owner);
     actionPointCost = gameCard.getActionPointCost();
 
     initMainCard();
@@ -134,7 +135,7 @@ public class CardView extends AbstractCard
             bottomLeftPentagon, bottomTrapezoid, bottomRightPentagon,
             title,
             rulesText, flavorText,
-            voteNumberText, voteCostText, informationText
+            voteNumberText, voteCostText, informationText,regionSelection
     );
 
     switch(actionPointCost)
@@ -292,9 +293,9 @@ public class CardView extends AbstractCard
     title = new Text(gameCard.getTitle());
     title.setWrappingWidth(200);
     ArrayList<Text> textList = new ArrayList<Text>();
-//    voteNumberText = new Text(""+policy.getVotesRequired());
 
     initComboBoxes();
+
     informationText = new Text("Info");
     textList.addAll(Arrays.asList(title, informationText));
     for(Text t : textList)
@@ -330,10 +331,13 @@ public class CardView extends AbstractCard
     
     AnchorPane.setTopAnchor(title, cardHeight/36);
     AnchorPane.setLeftAnchor(title, cardWidth/4);
-    
+
+    AnchorPane.setTopAnchor(regionSelection, cardHeight/18);
+    AnchorPane.setLeftAnchor(regionSelection, cardWidth/18);
+
     AnchorPane.setTopAnchor(voteNumberText, cardHeight/18);
     AnchorPane.setRightAnchor(voteNumberText, cardWidth/18);
-    
+
     AnchorPane.setBottomAnchor(voteCostText, cardHeight/18);
     AnchorPane.setRightAnchor(voteCostText, cardWidth/18);
     
@@ -345,6 +349,8 @@ public class CardView extends AbstractCard
 
     AnchorPane.setBottomAnchor(informationText, cardHeight/18);
     AnchorPane.setLeftAnchor(informationText, cardWidth/18);
+
+
   }
 
   private void initComboBoxes(){
@@ -413,6 +419,22 @@ public class CardView extends AbstractCard
 
       voteNumberText=comboBox;
     }else voteNumberText = new Text("");
+
+    //Configurations for Region selection
+    EnumRegion[] regions=policy.getOptionsRegions(owner);
+    System.out.println(Arrays.toString(regions));
+    if(regions!=null){
+      if(regions.length==1){
+        // textList.add((Text)voteCostText);
+        regionSelection=new Text(regions[0].toString());
+      }
+      else{
+        ObservableList list= FXCollections.observableList(Arrays.asList(regions));
+        ComboBox<Integer> comboBox= new ComboBox(list);
+        comboBox.getSelectionModel().select(0);
+        regionSelection=comboBox;
+      }
+    }else regionSelection=new Text("");
   }
   private void updateTextOctagon()
   {

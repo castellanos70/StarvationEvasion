@@ -1,7 +1,12 @@
 package starvationevasion.client.GUI.DraftLayout;
   
 import javafx.animation.AnimationTimer;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.IndexedCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -65,7 +70,8 @@ public class CardView extends AbstractCard
   private Polygon topRightPentagon    = new Polygon();
   private Polygon middleTextOctagon   = new Polygon();
   Circle pipOne, pipTwo, pipThree;
-  private Text title, voteNumberText, voteCostText, rulesText, flavorText, informationText;
+  private Text title, voteNumberText, rulesText, flavorText, informationText;
+  private Node voteCostText;
   private EnumRegion owner;
   private EnumPolicy policy;
 
@@ -80,11 +86,6 @@ public class CardView extends AbstractCard
     //this.getChildren().add(cardPane);
    // this.getChildren().add(cardPane);
     //initSimpleCard();
-
-
-
-
-
     this.setOnMouseEntered(event -> {
       initMainCard();
       setTranslateY(-400);
@@ -98,6 +99,14 @@ public class CardView extends AbstractCard
     });
   }
 
+  public CardView(EnumPolicy policy) {
+
+    this.policy = policy;
+    gameCard = new PolicyCard(policy, EnumRegion.USA_CALIFORNIA);
+    actionPointCost = gameCard.getActionPointCost();
+
+    initMainCard();
+  }
   public void initMainCard(){
     cardWidth=largeCardWidth;
     cardHeight=largeCardHeight;
@@ -278,13 +287,30 @@ public class CardView extends AbstractCard
   //Initialize Text fields
     title = new Text(gameCard.getTitle());
     title.setWrappingWidth(200);
-    
-    voteNumberText = new Text(""+gameCard.votesRequired());
-    voteCostText = new Text("$200");
-    informationText = new Text("Info");
-    
     ArrayList<Text> textList = new ArrayList<Text>();
-    textList.addAll(Arrays.asList(title, voteNumberText, voteCostText, informationText));
+    voteNumberText = new Text(""+gameCard.votesRequired());
+    //voteCostText = new Text("$200");
+    int[] xOptions=policy.getOptionsX();
+    if(xOptions!=null){
+      if(xOptions.length==1){
+        textList.add((Text)voteCostText);
+        voteCostText=new Text(""+xOptions[0]);
+      }
+      else{
+        System.out.println(Arrays.toString(xOptions));
+        ArrayList<Integer> arrayList=new ArrayList<>();
+
+        for(int value:xOptions){
+          arrayList.add(value);
+        }
+        ObservableList list= FXCollections.observableList(arrayList);
+         voteCostText=new ComboBox(list);
+//        voteCostText=new Text(Arrays.toString(xOptions));
+      }
+    }
+
+    informationText = new Text("Info");
+    textList.addAll(Arrays.asList(title, voteNumberText, informationText));
     for(Text t : textList)
     {
       t.setStroke(Color.BLACK);

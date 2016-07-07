@@ -74,7 +74,7 @@ public class CardView extends AbstractCard
   private Node xSelection, foodSelection,regionSelection;
   private EnumRegion owner;
   private EnumPolicy policy;
-
+  private ContextMenu contextMenu;
   public CardView(EnumRegion owner, EnumPolicy policy)
   {
     this.owner = owner;
@@ -101,8 +101,11 @@ public class CardView extends AbstractCard
     });
     setOnMouseClicked(event -> {
       if(event.getButton().equals(MouseButton.SECONDARY)){
-        selected=true;
         openRightClickMenu(event);
+      }
+      if(event.getButton().equals(MouseButton.PRIMARY)){
+        if(contextMenu!=null)contextMenu.hide();
+        selected=false;
       }
     });
   }
@@ -116,8 +119,11 @@ public class CardView extends AbstractCard
 
     setOnMouseClicked(event -> {
       if(event.getButton().equals(MouseButton.SECONDARY)){
-        selected=true;
         openRightClickMenu(event);
+      }
+      if(event.getButton().equals(MouseButton.PRIMARY)){
+        if(contextMenu!=null)contextMenu.hide();
+        selected=false;
       }
     });
 
@@ -215,15 +221,31 @@ public class CardView extends AbstractCard
 
   public PolicyCard getGameCard() {return gameCard;}
   private void openRightClickMenu(MouseEvent event){
-    ContextMenu contextMenu=new ContextMenu();
+    selected=true;
+    if(contextMenu!=null){
+      contextMenu.hide();
+    }
+    contextMenu=new ContextMenu();
     MenuItem draft=new MenuItem("Draft Card");
+
     draft.setOnAction(event1 -> {
+      selected=false;
       isDrafted=true;
     });
     MenuItem discard=new MenuItem("Discard card");
-    discard.setOnAction(event1 -> isDiscarded=true);
+    discard.setOnAction(event1 ->{
+      selected=false;
+      isDiscarded=true;
+    });
+
+    if(isDrafted||isDiscarded){
+      draft.setDisable(true);
+      discard.setDisable(true);
+    }
     contextMenu.getItems().addAll(draft,discard);
     contextMenu.show(this,event.getScreenX(),event.getScreenY());
+    contextMenu.setAutoHide(true);
+
   }
 
   private void initializeGameCardPolygons()

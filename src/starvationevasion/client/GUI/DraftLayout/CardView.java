@@ -8,7 +8,6 @@ import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -73,7 +72,7 @@ public class CardView extends AbstractCard
   private Polygon middleTextOctagon   = new Polygon();
   Circle pipOne, pipTwo, pipThree;
   private Text title, rulesText, flavorText, informationText;
-  private Node voteCostText, foodSelection,regionSelection;
+  private Node xSelection, foodSelection,regionSelection;
   private EnumRegion owner;
   private EnumPolicy policy;
 
@@ -95,9 +94,11 @@ public class CardView extends AbstractCard
       toFront();
     });
     this.setOnMouseExited(event -> {
-      initSimpleCard();
-      setTranslateY(0);
-      setTranslateX(0);
+      if(!selected) {
+        initSimpleCard();
+        setTranslateY(0);
+        setTranslateX(0);
+      }
     });
   }
 
@@ -133,7 +134,7 @@ public class CardView extends AbstractCard
             bottomLeftPentagon, bottomTrapezoid, bottomRightPentagon,
             title,
             rulesText, flavorText,
-            foodSelection, voteCostText, informationText,regionSelection
+            foodSelection, xSelection, informationText,regionSelection
     );
 
     switch(actionPointCost)
@@ -339,8 +340,8 @@ public class CardView extends AbstractCard
 //    AnchorPane.setTopAnchor(foodSelection,0.0);
     AnchorPane.setRightAnchor(foodSelection, 0.0);
 
-    AnchorPane.setBottomAnchor(voteCostText, cardHeight/18);
-    AnchorPane.setRightAnchor(voteCostText, cardWidth/18);
+    AnchorPane.setBottomAnchor(xSelection, cardHeight/18);
+    AnchorPane.setRightAnchor(xSelection, 0.0);
     
     AnchorPane.setTopAnchor(rulesText, cardHeight*10/13-textOctagonHeightModifier);
     AnchorPane.setLeftAnchor(rulesText, cardWidth/4);
@@ -359,18 +360,29 @@ public class CardView extends AbstractCard
     int[] xOptions=policy.getOptionsX();
     if(xOptions!=null){
       if(xOptions.length==1){
-       // textList.add((Text)voteCostText);
-        voteCostText=new Text(""+xOptions[0]);
+       // textList.add((Text)xSelection);
+        xSelection =new Text(""+xOptions[0]);
       }
       else{
         ArrayList<Integer> arrayList=new ArrayList<>();
         for(int value:xOptions) arrayList.add(value);
         ObservableList list= FXCollections.observableList(arrayList);
         ComboBox<Integer> comboBox= new ComboBox(list);
-        comboBox.getSelectionModel().select(0);
-        voteCostText=comboBox;
+
+        if(gameCard.getX()==0){
+          comboBox.getSelectionModel().select(0);
+          gameCard.setX(comboBox.getSelectionModel().getSelectedItem());
+        }else{
+          comboBox.getSelectionModel().select(new Integer(gameCard.getX()));
+        }
+        comboBox.setOnMouseEntered(event -> selected=true);
+        comboBox.setOnMouseExited(event -> selected=false );
+        comboBox.setOnAction(event -> {
+          gameCard.setX(comboBox.getSelectionModel().getSelectedItem());
+        });
+        xSelection =comboBox;
       }
-    }else voteCostText=new Text("");
+    }else xSelection =new Text("");
 
     //Configuration for Target Food
     EnumFood[] foodOptions=policy.getOptionsFood();
@@ -412,25 +424,41 @@ public class CardView extends AbstractCard
       });
 
 
-      comboBox.setOnAction(event -> comboBox.setButtonCell(listCell));
+      if(gameCard.getTargetFood()==null){
+        comboBox.getSelectionModel().select(0);
+        gameCard.setTargetFood(comboBox.getSelectionModel().getSelectedItem());
+      }else{
+        comboBox.getSelectionModel().select(gameCard.getTargetFood());
+      }
+      comboBox.setOnMouseEntered(event -> selected=true);
+      comboBox.setOnMouseExited(event -> selected=false );
+      comboBox.setOnAction(event ->{
+        gameCard.setTargetFood(comboBox.getSelectionModel().getSelectedItem());
+        comboBox.setButtonCell(listCell);
+      });
       comboBox.setButtonCell(listCell);
-      comboBox.getSelectionModel().select(0);
-
       foodSelection =comboBox;
     }else foodSelection = new Text("");
 
     //Configurations for Region selection
     EnumRegion[] regions=policy.getOptionsRegions(owner);
-    System.out.println(Arrays.toString(regions));
     if(regions!=null){
       if(regions.length==1){
-        // textList.add((Text)voteCostText);
+        // textList.add((Text)xSelection);
         regionSelection=new Text(regions[0].toString());
       }
       else{
         ObservableList list= FXCollections.observableList(Arrays.asList(regions));
-        ComboBox<Integer> comboBox= new ComboBox(list);
-        comboBox.getSelectionModel().select(0);
+        ComboBox<EnumRegion> comboBox= new ComboBox(list);
+        if(gameCard.getTargetRegion()==null){
+          comboBox.getSelectionModel().select(0);
+          gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem());
+        }else{
+          comboBox.getSelectionModel().select(gameCard.getTargetRegion());
+        }
+        comboBox.setOnMouseEntered(event -> selected=true);
+        comboBox.setOnMouseExited(event -> selected=false );
+        comboBox.setOnAction(event -> gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem()));
         regionSelection=comboBox;
       }
     }else regionSelection=new Text("");

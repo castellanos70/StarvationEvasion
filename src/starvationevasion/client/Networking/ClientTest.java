@@ -298,6 +298,9 @@ public class ClientTest implements Client
       gui.resetVotingPhase();
       gui.switchScenes();
     }
+    else if(serverState ==GameState.DRAFTING){
+      readHand();
+    }
     else if (serverState == GameState.VOTING && gui.isDraftingPhase())
     {
       gui.resetDraftingPhase();

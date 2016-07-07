@@ -5,10 +5,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
@@ -100,6 +99,12 @@ public class CardView extends AbstractCard
         setTranslateX(0);
       }
     });
+    setOnMouseClicked(event -> {
+      if(event.getButton().equals(MouseButton.SECONDARY)){
+        selected=true;
+        openRightClickMenu(event);
+      }
+    });
   }
 
   public CardView(EnumPolicy policy) {
@@ -108,6 +113,13 @@ public class CardView extends AbstractCard
     owner=EnumRegion.USA_HEARTLAND;
     gameCard = new PolicyCard(policy, owner);
     actionPointCost = gameCard.getActionPointCost();
+
+    setOnMouseClicked(event -> {
+      if(event.getButton().equals(MouseButton.SECONDARY)){
+        selected=true;
+        openRightClickMenu(event);
+      }
+    });
 
     initMainCard();
   }
@@ -199,6 +211,19 @@ public class CardView extends AbstractCard
   @Override
   public EnumPolicy getPolicy() {
     return policy;
+  }
+
+  public PolicyCard getGameCard() {return gameCard;}
+  private void openRightClickMenu(MouseEvent event){
+    ContextMenu contextMenu=new ContextMenu();
+    MenuItem draft=new MenuItem("Draft Card");
+    draft.setOnAction(event1 -> {
+      isDrafted=true;
+    });
+    MenuItem discard=new MenuItem("Discard card");
+    discard.setOnAction(event1 -> isDiscarded=true);
+    contextMenu.getItems().addAll(draft,discard);
+    contextMenu.show(this,event.getScreenX(),event.getScreenY());
   }
 
   private void initializeGameCardPolygons()
@@ -377,9 +402,7 @@ public class CardView extends AbstractCard
         }
         comboBox.setOnMouseEntered(event -> selected=true);
         comboBox.setOnMouseExited(event -> selected=false );
-        comboBox.setOnAction(event -> {
-          gameCard.setX(comboBox.getSelectionModel().getSelectedItem());
-        });
+        comboBox.setOnAction(event -> gameCard.setX(comboBox.getSelectionModel().getSelectedItem()));
         xSelection =comboBox;
       }
     }else xSelection =new Text("");

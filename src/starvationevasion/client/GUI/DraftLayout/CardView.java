@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -71,6 +72,7 @@ public class CardView extends AbstractCard
   private Polygon middleTextOctagon   = new Polygon();
   Circle pipOne, pipTwo, pipThree;
   private Text title, rulesText, flavorText, informationText;
+  private ScrollPane textScrollPane;
   private Node xSelection, foodSelection,regionSelection;
   private EnumRegion owner;
   private EnumPolicy policy;
@@ -151,8 +153,8 @@ public class CardView extends AbstractCard
             middleTextOctagon,
             bottomLeftPentagon, bottomTrapezoid, bottomRightPentagon,
             title,
-            rulesText, flavorText,
-            foodSelection, xSelection, informationText,regionSelection
+             flavorText,
+            foodSelection, xSelection, informationText,regionSelection, textScrollPane
     );
 
     switch(actionPointCost)
@@ -324,11 +326,13 @@ public class CardView extends AbstractCard
       middleTextOctagon.setStroke(Color.YELLOW);
       middleTextOctagon.setStroke(Color.YELLOW);
       middleTextOctagon.setFill(Color.BLACK);
+      rulesText.setFill(Color.WHITE);
     });
     middleTextOctagon.setOnMouseExited(me -> {
       mouseOverOctagon = false;
       middleTextOctagon.setStroke(Color.BLACK);
       middleTextOctagon.setFill(Color.web(color, transparency));
+      rulesText.setFill(Color.BLACK);
     });
     
    
@@ -354,6 +358,7 @@ public class CardView extends AbstractCard
       t.setFontSmoothingType(FontSmoothingType.LCD);
     }
 
+
     rulesText = new Text(gameCard.getGameText());
 
     rulesText.setFill(Color.BLACK);
@@ -375,7 +380,17 @@ public class CardView extends AbstractCard
       middleTextOctagon.setFill(Color.BLACK);
     });
     flavorText.setWrappingWidth(200);
-    
+
+    TextFlow textFlow=new TextFlow(rulesText);
+    textScrollPane =new ScrollPane(textFlow);
+    textScrollPane.setBackground(Background.EMPTY);
+    textScrollPane.getStylesheets().add("cardStyle.css");
+    textScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+    textScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+    textScrollPane.setPrefSize(cardWidth*4/9,cardHeight*3/26);
+    textFlow.setPrefSize(cardWidth*4/9,cardHeight*2/13);
+
+
     AnchorPane.setTopAnchor(title, cardHeight/36);
     AnchorPane.setLeftAnchor(title, cardWidth/4);
 
@@ -390,8 +405,11 @@ public class CardView extends AbstractCard
     AnchorPane.setBottomAnchor(xSelection, cardHeight/18);
     AnchorPane.setRightAnchor(xSelection, 0.0);
     
-    AnchorPane.setTopAnchor(rulesText, cardHeight*10/13-textOctagonHeightModifier);
-    AnchorPane.setLeftAnchor(rulesText, cardWidth/4);
+//    AnchorPane.setTopAnchor(rulesText, cardHeight*10/13-textOctagonHeightModifier);
+//    AnchorPane.setLeftAnchor(rulesText, cardWidth/4);
+
+    AnchorPane.setTopAnchor(textScrollPane, cardHeight*10/13-textOctagonHeightModifier);
+    AnchorPane.setLeftAnchor(textScrollPane, cardWidth/4);
 
     AnchorPane.setBottomAnchor(flavorText, cardHeight*2/13);
     AnchorPane.setLeftAnchor(flavorText, cardWidth/4);
@@ -523,7 +541,8 @@ public class CardView extends AbstractCard
         };
     middleTextOctagon.getPoints().setAll(octagonPoints);
     AnchorPane.setBottomAnchor(middleTextOctagon, (cardHeight / 13));
-    AnchorPane.setTopAnchor(rulesText, cardHeight*10/13-textOctagonHeightModifier+5);
+    AnchorPane.setTopAnchor(textScrollPane, cardHeight*10/13-textOctagonHeightModifier+5);
+    textScrollPane.setPrefHeight(cardHeight*3/26+textOctagonHeightModifier);
   }
   public StackPane getCardView()
   {

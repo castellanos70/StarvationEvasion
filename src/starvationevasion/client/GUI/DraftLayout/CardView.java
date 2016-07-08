@@ -312,13 +312,7 @@ public class CardView extends AbstractCard
       p.setStrokeWidth(2.0);
       p.setFill(Color.web(color, transparency));
       p.setStroke(Color.BLACK);
-      p.setOnMouseEntered(new EventHandler<MouseEvent>()
-      {
-        public void handle(MouseEvent me)
-        {
-          p.setStroke(Color.YELLOW);
-        }
-      });
+      p.setOnMouseEntered(me -> p.setStroke(Color.YELLOW));
       p.setOnMouseExited(me -> p.setStroke(Color.BLACK));
     }
     middleTextOctagon.setOnMouseEntered(me -> {
@@ -334,7 +328,6 @@ public class CardView extends AbstractCard
       middleTextOctagon.setFill(Color.web(color, transparency));
       rulesText.setFill(Color.BLACK);
     });
-    
    
   }
   private void initializeGameCardText()

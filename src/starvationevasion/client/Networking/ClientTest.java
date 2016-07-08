@@ -229,8 +229,8 @@ public class ClientTest implements Client
   public boolean draftCard(PolicyCard card)
   {
     Payload data = new Payload();
-    data.putData(card.getCardType());
-    return COMM.send(Endpoint.DELETE_CARD, data, null);
+    data.putData(card);
+    return COMM.send(Endpoint.DRAFT_CARD, data, null);
   }
 
   public boolean requestUsers(){
@@ -289,6 +289,11 @@ public class ClientTest implements Client
     // Check to see if any new server responses have come in since the last iteration of this loop
     ArrayList<Response> responses = COMM.pollMessages();
     processServerInput(responses);
+  }
+
+  @Override
+  public void sendRequest(Endpoint endpoint, Payload data, String message) {
+    COMM.send(endpoint,data,message);
   }
 
   private void respondToStateChange()

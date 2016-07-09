@@ -1,3 +1,24 @@
 .scroll-pane > .viewport {
    -fx-background-color: transparent;
 }
+
+.button {
+        -fx-background-radius: 5em;
+                -fx-min-width: 64px;
+                -fx-min-height: 64px;
+                -fx-max-width: 64px;
+                -fx-max-height: 64px;
+}
+
+.combo-box .arrow, .combo-box .arrow-button{
+    -fx-background-color: transparent;
+
+
+}
+.combo-box{
+        -fx-background-radius: 5em;
+                -fx-min-width: 64px;
+                -fx-min-height: 64px;
+                -fx-max-width: 64px;
+                -fx-max-height: 64px;
+}

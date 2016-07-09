@@ -131,6 +131,7 @@ public class CardView extends AbstractCard
 
     initMainCard();
   }
+
   public void initMainCard(){
     cardWidth=largeCardWidth;
     cardHeight=largeCardHeight;
@@ -330,6 +331,7 @@ public class CardView extends AbstractCard
     });
    
   }
+
   private void initializeGameCardText()
   {
   //Initialize Text fields
@@ -390,10 +392,10 @@ public class CardView extends AbstractCard
     AnchorPane.setTopAnchor(regionSelection, cardHeight/18);
     AnchorPane.setLeftAnchor(regionSelection, 0.0);
 
-    AnchorPane.setTopAnchor(foodSelection, cardHeight/18);
-   // AnchorPane.setRightAnchor(foodSelection, cardWidth/18);
-//    AnchorPane.setTopAnchor(foodSelection,0.0);
-    AnchorPane.setRightAnchor(foodSelection, 0.0);
+    AnchorPane.setTopAnchor(foodSelection, cardHeight/72);
+    AnchorPane.setRightAnchor(foodSelection, cardWidth/144);
+   /// AnchorPane.setTopAnchor(foodSelection,0.0);
+   // AnchorPane.setRightAnchor(foodSelection, 0.0);
 
     AnchorPane.setBottomAnchor(xSelection, cardHeight/18);
     AnchorPane.setRightAnchor(xSelection, 0.0);
@@ -451,15 +453,13 @@ public class CardView extends AbstractCard
           setGraphic(null);
         } else {
           ImageView image = new ImageView(item.getIconSmall());
-          image.setFitWidth(foodIconWidth);
-          image.setFitHeight(foodIconHeight);
+          image.setTranslateX(-8);
           setGraphic(image);
         }
       }
     };
     if(foodOptions!=null){
-      ComboBox<EnumFood> comboBox=new ComboBox<EnumFood>(FXCollections.observableList(Arrays.asList(foodOptions)));
-
+      ComboBox<EnumFood> comboBox=new ComboBox<>(FXCollections.observableList(Arrays.asList(foodOptions)));
       comboBox.setCellFactory(new Callback<ListView<EnumFood>, ListCell<EnumFood>>() {
         @Override public ListCell<EnumFood> call(ListView<EnumFood> p) {
           return new ListCell<EnumFood>() {
@@ -473,6 +473,7 @@ public class CardView extends AbstractCard
                 image.setFitWidth(foodIconWidth);
                 image.setFitHeight(foodIconHeight);
                 setGraphic(image);
+                setTooltip(new Tooltip(item.toString()));
               }
             }
           };
@@ -493,6 +494,7 @@ public class CardView extends AbstractCard
         comboBox.setButtonCell(listCell);
       });
       comboBox.setButtonCell(listCell);
+      comboBox.getStylesheets().add("cardStyle.css");
       foodSelection =comboBox;
     }else foodSelection = new Text("");
 

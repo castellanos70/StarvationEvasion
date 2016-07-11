@@ -12,8 +12,6 @@
 
 .combo-box .arrow, .combo-box .arrow-button{
     -fx-background-color: transparent;
-
-
 }
 .combo-box{
         -fx-background-radius: 5em;

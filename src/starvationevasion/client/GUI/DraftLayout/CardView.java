@@ -389,16 +389,16 @@ public class CardView extends AbstractCard
     AnchorPane.setTopAnchor(title, cardHeight/36);
     AnchorPane.setLeftAnchor(title, cardWidth/4);
 
-    AnchorPane.setTopAnchor(regionSelection, cardHeight/18);
-    AnchorPane.setLeftAnchor(regionSelection, 0.0);
+    AnchorPane.setTopAnchor(regionSelection, cardHeight/72);
+    AnchorPane.setLeftAnchor(regionSelection, cardWidth/144);
 
     AnchorPane.setTopAnchor(foodSelection, cardHeight/72);
     AnchorPane.setRightAnchor(foodSelection, cardWidth/144);
    /// AnchorPane.setTopAnchor(foodSelection,0.0);
    // AnchorPane.setRightAnchor(foodSelection, 0.0);
 
-    AnchorPane.setBottomAnchor(xSelection, cardHeight/18);
-    AnchorPane.setRightAnchor(xSelection, 0.0);
+    AnchorPane.setBottomAnchor(xSelection, cardHeight/72);
+    AnchorPane.setRightAnchor(xSelection, cardWidth/144);
     
 //    AnchorPane.setTopAnchor(rulesText, cardHeight*10/13-textOctagonHeightModifier);
 //    AnchorPane.setLeftAnchor(rulesText, cardWidth/4);
@@ -420,7 +420,6 @@ public class CardView extends AbstractCard
     int[] xOptions=policy.getOptionsX();
     if(xOptions!=null){
       if(xOptions.length==1){
-       // textList.add((Text)xSelection);
         xSelection =new Text(""+xOptions[0]);
       }
       else{
@@ -438,6 +437,9 @@ public class CardView extends AbstractCard
         comboBox.setOnMouseEntered(event -> selected=true);
         comboBox.setOnMouseExited(event -> selected=false );
         comboBox.setOnAction(event -> gameCard.setX(comboBox.getSelectionModel().getSelectedItem()));
+        comboBox.getStylesheets().add("cardStyle.css");
+        comboBox.setStyle("-fx-font: 15px \"Serif\";");
+
         xSelection =comboBox;
       }
     }else xSelection =new Text("");
@@ -517,6 +519,7 @@ public class CardView extends AbstractCard
         comboBox.setOnMouseEntered(event -> selected=true);
         comboBox.setOnMouseExited(event -> selected=false );
         comboBox.setOnAction(event -> gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem()));
+        comboBox.getStylesheets().add("cardStyle.css");
         regionSelection=comboBox;
       }
     }else regionSelection=new Text("");

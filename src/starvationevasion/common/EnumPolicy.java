@@ -24,7 +24,8 @@ public enum EnumPolicy implements Sendable
   Loan,
   MyPlatePromotionCampaign,
   ResearchInsectResistance,
-  SpecialInterests;
+  SpecialInterests,
+  Test;
 
   private static final String PATH_POLICY_CARD_DATA = "/PolicyCardData.csv";
 

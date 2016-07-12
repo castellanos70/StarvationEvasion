@@ -195,7 +195,7 @@ public class GUI extends Application
     {
       getDraftLayout().getHand().setPolicies(cardsInHand.toArray(new EnumPolicy[cardsInHand.size()]));
     }
-
+    System.out.println(assignedRegion);
     getDraftLayout().getSummaryBar().setRegion(assignedRegion);
   }
 

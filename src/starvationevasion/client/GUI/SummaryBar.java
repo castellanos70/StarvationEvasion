@@ -59,18 +59,20 @@ public class SummaryBar extends GridPane
     this.getRowConstraints().addAll(rowConstraintsList);
 
     //set assignedRegion to whatever the GUI was passed
+    regionTitle = new Text();
+    regionTitle.setFont(Font.font(null, FontWeight.BOLD, 14));
     if (gui.assignedRegion == null)
     {
-      region = EnumRegion.USA_CALIFORNIA;
+    //  region = EnumRegion.USA_CALIFORNIA;
+      regionTitle.setText("");
     }
     else
     {
       region = gui.assignedRegion;
+      regionTitle.setText(region.toString());
     }
 
-    regionTitle = new Text();
-    regionTitle.setFont(Font.font(null, FontWeight.BOLD, 14));
-    regionTitle.setText(region.toString());
+
 
     yearLabel = new Text("" + year);
     yearLabel.setFont(Font.font(null, FontWeight.BOLD, 40));
@@ -88,7 +90,6 @@ public class SummaryBar extends GridPane
     balanceLabel = new Text("Balance: $" + farmingBalance + " million");
     balanceLabel.setFont(Font.font(null, FontWeight.BOLD, 14));
 
-    this.add(regionTitle, 2, 0, 1, 1);
 
    // this.setAlignment(Pos.CENTER);
    // this.add(yearLabel, 0, 0, 1, 4);
@@ -132,6 +133,9 @@ public class SummaryBar extends GridPane
 
     this.getChildren().removeAll();
     getChildren().clear();
+
+    this.add(regionTitle, 2, 0, 1, 1);
+
     this.add(yearLabel, 0, 0, 1, 4);
 
     this.add(regionPopulation, 1, 1, 1, 1);
@@ -143,7 +147,10 @@ public class SummaryBar extends GridPane
     this.add(balanceLabel, 2,3,1,1);
 
   }
-  public void setRegion(EnumRegion region){this.region=region;}
+  public void setRegion(EnumRegion region){
+    if(region!=null)regionTitle.setText(region.toString());
+    this.region=region;
+  }
   /**
    * Updates the balance on the summarybar to the new balance
    * @param newBalance something

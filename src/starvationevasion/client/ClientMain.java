@@ -76,7 +76,9 @@ public class ClientMain extends Application
   private TextArea consoleTextField=new TextArea();
   private TextArea usersAvaliableTextArea = new TextArea();
   private TextArea usersOnlineTextArea = new TextArea();
-  private VBox adminTextField = new VBox();
+
+  private Button restart=new Button("RESTART GAME");
+  private VBox adminTextField = new VBox(restart);
   private TabPane tabLayout;
 
   private Screen screen;
@@ -92,14 +94,18 @@ public class ClientMain extends Application
 
   private GUI gui;
 
+  private boolean connectingToAdmin=false;
+
   public void notifyOfSuccessfulLogin()
   {
-    System.out.println("Starting game . . .");
-    gui = new GUI(client, null);
-    gui.start(new Stage());
-    client.setGUI(gui);
-    client.ready(); // Send a ready response to the server
-    stage.close();
+    if(!connectingToAdmin) {
+      System.out.println("Starting game . . .");
+      gui = new GUI(client, null);
+      gui.start(new Stage());
+      client.setGUI(gui);
+      client.ready(); // Send a ready response to the server
+      stage.close();
+    }
   }
   private void startBasicGUINoServer()
   {
@@ -396,6 +402,7 @@ public class ClientMain extends Application
         askToReconnect();
         return;
       }
+      connectingToAdmin=false;
       client.loginToServer(editUsername.getText(),editPassword.getText(), EnumRegion.USA_CALIFORNIA);
     });
 
@@ -476,17 +483,16 @@ public class ClientMain extends Application
     consoleTextField.setText(consoleTextField.getText()+"\n"+message);
     tabLayout.getSelectionModel().select(0);
   }
-  private Button restart=new Button("RESTART GAME");
   private TabPane createTabLayout(){
     Tab usersTab = new Tab("users",usersAvaliableTextArea);
     Tab onlineNow = new Tab("online now",usersOnlineTextArea);
     Tab generalMessages = new Tab("information messages",consoleTextField);
     Tab adminTab = new Tab("Admin",adminTextField);
-    adminTextField.getChildren().add(restart);
     usersAvaliableTextArea.setText("The known users are:");
     restart.setOnAction(event -> {
+      connectingToAdmin=true;
       client.loginToServer("admin","admin",null);
-      client.sendRequest(Endpoint.KILL,null,null);
+      client.sendRequest(Endpoint.STOP_GAME,null,null);
       client.sendRequest(Endpoint.RESTART_GAME,null,null);
     });
     onlineNow.setClosable(false);

@@ -333,6 +333,8 @@ public class ClientTest implements Client
         region = ((User)data).getRegion();
         hand = ((User)data).getHand();
         gui.setAssignedRegion(region);
+        System.out.println("region IS = "+region);
+        gui.getDraftLayout().getSummaryBar().setRegion(region);
         gui.setCardsInHand(getHand());
         gui.getDraftLayout().getHand().setPolicies(getHand().toArray(new EnumPolicy[hand.size()]));
       }
@@ -383,6 +385,9 @@ public class ClientTest implements Client
       }
       else if(type==Type.CHAT){
         CHAT.sendChatToClient((String)response.getPayload().get("text"));
+      }
+      else if (type==Type.BROADCAST){
+        System.out.println(response.getPayload().getMessage());
       }
     }
   }

@@ -97,7 +97,7 @@ public class HandNode extends ResizablePane
     ArrayList<AbstractCard> draftedCards = new ArrayList<>();
     
     for (AbstractCard c: cards){
-      if (c.isDrafted){
+      if (c!=null&&c.isDrafted){
         draftedCards.add(c);
       }
     }

@@ -376,7 +376,7 @@ public class Draft extends AbstractCommand
         {
           randNum2=rand.nextInt(noVotesRequired.size());
         }while(randNum1==randNum2);
-        card = null;
+       // card = null;
         cardDrafted1=card;
         EnumFood[] foods=card.getValidTargetFoods();
         EnumRegion[] regions=card.getValidTargetRegions();
@@ -395,7 +395,7 @@ public class Draft extends AbstractCommand
         actionsRemaining--;
         System.out.println("Card drafted:"+card.getPolicyName());
         getClient().draftedCards.get(numTurns).add(card);
-        card = null;
+        //card = null;
         cardDrafted2=card;
         EnumFood[] foods2=card.getValidTargetFoods();
         EnumRegion[] regions2=card.getValidTargetRegions();
@@ -624,7 +624,7 @@ public class Draft extends AbstractCommand
     {
       getClient().getUser().getHand().forEach(policy->
       {
-        card = null;
+        //card = null;
         if(card.getValidTargetRegions()!=null)
         {
           if(Arrays.asList(card.getValidTargetRegions()).contains(getClient().getUser().getRegion()))

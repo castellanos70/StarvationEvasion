@@ -378,6 +378,12 @@ public class ClientTest implements Client
       {
         GAME_LOOP.sendInfoMessage("There was an error creating your user ");
       }
+      else if(type==Type.ERROR){
+        System.out.println(response.getPayload().getMessage());
+      }
+      else if(type==Type.CHAT){
+        CHAT.sendChatToClient((String)response.getPayload().get("text"));
+      }
     }
   }
 }

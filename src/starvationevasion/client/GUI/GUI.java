@@ -178,6 +178,7 @@ public class GUI extends Application
    */
   public void initGame()
   {
+    chatNode=draftLayout.getChatNode();
     if(client!=null) {
       cardsInHand = client.getHand();
       assignedRegion = client.getRegion();
@@ -305,6 +306,7 @@ public class GUI extends Application
       currentRoot = votingLayout;
       draftingPhase = false;
       votingLayout.onResize();
+      chatNode=votingLayout.getChatNode();
     }
     else
     {
@@ -312,6 +314,7 @@ public class GUI extends Application
       currentRoot = draftLayout;
       draftingPhase = true;
       draftLayout.getHand().onResize();
+      chatNode=draftLayout.getChatNode();
     }
   }
 

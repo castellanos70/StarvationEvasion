@@ -143,8 +143,8 @@ public class ChatNode extends BorderPane
       {
         for (EnumRegion region : EnumRegion.US_REGIONS)
         {
-          chatManager.sendChatToServer(inputMessage.getText(), region,
-              EnumPolicy.valueOf(cardSelection.getValue().toString()));
+          chatManager.sendChatToServer(inputMessage.getText(), region,null);
+             // EnumPolicy.valueOf(cardSelection.getValue().toString()));
           chatMessages.setText(chatMessages.getText() + "\n" + inputMessage.getText());
         }
       }

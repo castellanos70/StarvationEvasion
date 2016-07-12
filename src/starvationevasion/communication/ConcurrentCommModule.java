@@ -456,8 +456,7 @@ public class ConcurrentCommModule implements Communication
   {
     updateCurrentTime();
     // TODO find a way to let any type of data be passed into chat
-    Request request = new RequestFactory().chat(elapsedTime, destination, text, (PolicyCard)data);
-
+    Request request = new RequestFactory().chat(elapsedTime, destination.toString(), text, (PolicyCard)data);
     // Check to see if anything went wrong
     if (request == null) return false;
 

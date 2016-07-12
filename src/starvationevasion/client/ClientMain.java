@@ -12,10 +12,7 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -28,6 +25,7 @@ import starvationevasion.client.Networking.Client;
 import starvationevasion.client.Networking.ClientTest;
 import starvationevasion.common.Constant;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.server.model.Endpoint;
 import starvationevasion.server.model.User;
 import starvationevasion.server.model.db.Users;
 
@@ -78,6 +76,7 @@ public class ClientMain extends Application
   private TextArea consoleTextField=new TextArea();
   private TextArea usersAvaliableTextArea = new TextArea();
   private TextArea usersOnlineTextArea = new TextArea();
+  private VBox adminTextField = new VBox();
   private TabPane tabLayout;
 
   private Screen screen;
@@ -91,10 +90,12 @@ public class ClientMain extends Application
   private Label labelForScene2;
   private AudioClip clip;
 
+  private GUI gui;
+
   public void notifyOfSuccessfulLogin()
   {
     System.out.println("Starting game . . .");
-    GUI gui = new GUI(client, null);
+    gui = new GUI(client, null);
     gui.start(new Stage());
     client.setGUI(gui);
     client.ready(); // Send a ready response to the server
@@ -102,7 +103,7 @@ public class ClientMain extends Application
   }
   private void startBasicGUINoServer()
   {
-    GUI gui = new GUI();
+     gui = new GUI();
     gui.start(new Stage());
     stage.close();
   }
@@ -475,20 +476,28 @@ public class ClientMain extends Application
     consoleTextField.setText(consoleTextField.getText()+"\n"+message);
     tabLayout.getSelectionModel().select(0);
   }
-
+  private Button restart=new Button("RESTART GAME");
   private TabPane createTabLayout(){
     Tab usersTab = new Tab("users",usersAvaliableTextArea);
     Tab onlineNow = new Tab("online now",usersOnlineTextArea);
     Tab generalMessages = new Tab("information messages",consoleTextField);
+    Tab adminTab = new Tab("Admin",adminTextField);
+    adminTextField.getChildren().add(restart);
     usersAvaliableTextArea.setText("The known users are:");
+    restart.setOnAction(event -> {
+      client.loginToServer("admin","admin",null);
+      client.sendRequest(Endpoint.KILL,null,null);
+      client.sendRequest(Endpoint.RESTART_GAME,null,null);
+    });
     onlineNow.setClosable(false);
     usersTab.setClosable(false);
     generalMessages.setClosable(false);
+    adminTab.setClosable(false);
     usersTab.setOnSelectionChanged(event -> {
       client.requestUsers();
     });
 
-    TabPane tabPane = new TabPane(generalMessages,usersTab,onlineNow);
+    TabPane tabPane = new TabPane(generalMessages,usersTab,onlineNow,adminTab);
     return tabPane;
   }
 
@@ -595,6 +604,12 @@ public class ClientMain extends Application
           {
            // gameLoop.stop();
             lostConnection();
+          }
+          if(gui!=null)
+          {
+            if(gui.getChatNode()!=null){
+              gui.getChatNode().setChatMessages(client.getChatManager().getChat());
+            }
           }
         }
       }

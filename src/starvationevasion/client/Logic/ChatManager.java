@@ -1,5 +1,6 @@
 package starvationevasion.client.Logic;
 
+import starvationevasion.client.GUI.DraftLayout.ChatNode;
 import starvationevasion.client.Networking.Client;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.EnumPolicy;
@@ -15,7 +16,6 @@ public class ChatManager
   {
   this.client=client;
   }
-
   /**
    * Sends a chat to the client who will send a request
     * @param message A String representing message
@@ -36,7 +36,6 @@ public class ChatManager
   public void sendChatToClient(String message)
   {
     chat+=message+"\n";
-
   }
 
   /**

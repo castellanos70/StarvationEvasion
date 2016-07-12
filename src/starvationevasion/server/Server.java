@@ -99,7 +99,7 @@ public class Server
   private boolean isWaiting = true;
 
   public static int TOTAL_HUMAN_PLAYERS = 1;
-  public static int TOTAL_AI_PLAYERS = 2;
+  public static int TOTAL_AI_PLAYERS = 0;
   public static int TOTAL_PLAYERS = TOTAL_HUMAN_PLAYERS + TOTAL_AI_PLAYERS;
   public static int SINGLEPLAYER_MAX_HUMAN_PLAYERS = 1; // defines what is the max number of humans in singleplayer
   public static int SINGLEPLAYER_MAX_AI_PLAYERS = 2;    // defines max number of AI

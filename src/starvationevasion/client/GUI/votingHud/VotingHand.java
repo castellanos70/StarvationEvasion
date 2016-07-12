@@ -4,8 +4,10 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import starvationevasion.client.GUI.DraftLayout.CardNode;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumRegion;
@@ -38,7 +40,7 @@ public class VotingHand extends NodeTemplate
   private Image votingFin = new Image(f.toURI().toString());
   private ImageView viv = new ImageView(votingFin);
   private Button finishedButton;
-  private boolean testCards = true;
+  private boolean testCards = false;
 
   public VotingHand(GUI gui, double width, double height)
   {
@@ -65,15 +67,13 @@ public class VotingHand extends NodeTemplate
       public void handle(ActionEvent event)
       {
         System.out.println("Finished Button Pressed");
-        for (int i = 0; i < cardNode.length; i++)
-        {
-          if (cardNode[i].isDrafted)
-          {
-            gui.getClient().voteUp(cardNode[i].getGameCard());
-          }
-          else if (cardNode[i].isDiscarded)
-          {
-            gui.getClient().voteDown(cardNode[i].getGameCard());
+        for (int i = 0; i < cardNode.length; i++) {
+          if (cardNode[i] != null) {
+            if (cardNode[i].isDrafted) {
+              gui.getClient().voteUp(cardNode[i].getGameCard());
+            } else if (cardNode[i].isDiscarded) {
+              gui.getClient().voteDown(cardNode[i].getGameCard());
+            }
           }
         }
         gui.getClient().done();
@@ -202,31 +202,26 @@ public class VotingHand extends NodeTemplate
       boolean noFocus = true;
       for (int i = 0; i < cardNode.length; i++)
       {
-        if (event.getSource().equals(cardNode[i]))
-        {
-          setFocusedCard(cardNode[i]);
-          focusedCard.onResize();
-          cardNode[i].setTranslateY(-10);
-          noFocus = false;
-          cardHasFocus = true;
-        }
-        else if (cardNode[i].isClicked() == false)
-        {
-          cardNode[i].setTranslateY(0);
-        }
-        if (noFocus)
-        {
-          cardNode[i].setTranslateY(0);
-          cardHasFocus = false;
-          for (int j = 0; j < cardNode.length; j++)
-          {
-            if (cardNode[i].isClicked())
-            {
-              setFocusedCard(cardNode[i]);
+        if(cardNode[i]!=null) {
+          if (event.getSource().equals(cardNode[i])) {
+            setFocusedCard(cardNode[i]);
+            focusedCard.onResize();
+            cardNode[i].setTranslateY(-10);
+            noFocus = false;
+            cardHasFocus = true;
+          } else if (cardNode[i].isClicked() == false) {
+            cardNode[i].setTranslateY(0);
+          }
+          if (noFocus) {
+            cardNode[i].setTranslateY(0);
+            cardHasFocus = false;
+            for (int j = 0; j < cardNode.length; j++) {
+              if (cardNode[i].isClicked()) {
+                setFocusedCard(cardNode[i]);
+              }
             }
           }
         }
-
       }
 
       if (cardHasFocus || cardIsClicked)
@@ -258,11 +253,8 @@ public class VotingHand extends NodeTemplate
     {
       for (int i = 0; i < cardInfo.size(); i++)
       {
-        for (int j = 0; j < policies.length; j++)
-        {
-          if (cardInfo.get(i).getPolicyName().equals(policies[j].name()))
-          {
-            cardNode[i] = new CardNode(cardInfo.get(i).getOwner(), policies[j]);
+            cardNode[i] = new CardNode(cardInfo.get(i).getOwner(), cardInfo.get(i).getCardType());
+            VBox vBox =new VBox(new Label(cardInfo.toString()));
             this.getChildren().add(cardNode[i]);
             cardNode[i].setManaged(false);
             cardNode[i].setPickOnBounds(false);
@@ -284,10 +276,6 @@ public class VotingHand extends NodeTemplate
                 mouseClickedEvent(event);
               }
             });
-
-          }
-        }
-
       }
     }
     onResize();

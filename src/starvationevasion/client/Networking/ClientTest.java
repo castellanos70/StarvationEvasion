@@ -229,8 +229,8 @@ public class ClientTest implements Client
   public boolean draftCard(PolicyCard card)
   {
     Payload data = new Payload();
-    data.putData(card.getCardType());
-    return COMM.send(Endpoint.DELETE_CARD, data, null);
+    data.putData(card);
+    return COMM.send(Endpoint.DRAFT_CARD, data, null);
   }
 
   public boolean requestUsers(){
@@ -291,12 +291,20 @@ public class ClientTest implements Client
     processServerInput(responses);
   }
 
+  @Override
+  public void sendRequest(Endpoint endpoint, Payload data, String message) {
+    COMM.send(endpoint,data,message);
+  }
+
   private void respondToStateChange()
   {
     if (serverState == GameState.DRAWING && !gui.isDraftingPhase())
     {
       gui.resetVotingPhase();
       gui.switchScenes();
+    }
+    else if(serverState ==GameState.DRAFTING){
+      readHand();
     }
     else if (serverState == GameState.VOTING && gui.isDraftingPhase())
     {

@@ -16,8 +16,7 @@ public abstract class ResizablePane extends Pane
   /**default constructor
    * adds listeners to the widhtProperty and the heightProperty
    */
-  public boolean isDrafted;
-  public boolean isDiscarded;
+
   public ResizablePane(){
 
     this.widthProperty().addListener(new ChangeListener<Number>(){

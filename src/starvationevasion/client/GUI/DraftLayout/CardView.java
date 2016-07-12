@@ -5,13 +5,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.image.Image;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -73,10 +72,11 @@ public class CardView extends AbstractCard
   private Polygon middleTextOctagon   = new Polygon();
   Circle pipOne, pipTwo, pipThree;
   private Text title, rulesText, flavorText, informationText;
-  private Node voteCostText, foodSelection,regionSelection;
+  private ScrollPane textScrollPane;
+  private Node xSelection, foodSelection,regionSelection;
   private EnumRegion owner;
   private EnumPolicy policy;
-
+  private ContextMenu contextMenu;
   public CardView(EnumRegion owner, EnumPolicy policy)
   {
     this.owner = owner;
@@ -95,9 +95,20 @@ public class CardView extends AbstractCard
       toFront();
     });
     this.setOnMouseExited(event -> {
-      initSimpleCard();
-      setTranslateY(0);
-      setTranslateX(0);
+      if(!selected) {
+        initSimpleCard();
+        setTranslateY(0);
+        setTranslateX(0);
+      }
+    });
+    setOnMouseClicked(event -> {
+      if(event.getButton().equals(MouseButton.SECONDARY)){
+        openRightClickMenu(event);
+      }
+      if(event.getButton().equals(MouseButton.PRIMARY)){
+        if(contextMenu!=null)contextMenu.hide();
+        selected=false;
+      }
     });
   }
 
@@ -108,8 +119,19 @@ public class CardView extends AbstractCard
     gameCard = new PolicyCard(policy, owner);
     actionPointCost = gameCard.getActionPointCost();
 
+    setOnMouseClicked(event -> {
+      if(event.getButton().equals(MouseButton.SECONDARY)){
+        openRightClickMenu(event);
+      }
+      if(event.getButton().equals(MouseButton.PRIMARY)){
+        if(contextMenu!=null)contextMenu.hide();
+        selected=false;
+      }
+    });
+
     initMainCard();
   }
+
   public void initMainCard(){
     cardWidth=largeCardWidth;
     cardHeight=largeCardHeight;
@@ -132,8 +154,8 @@ public class CardView extends AbstractCard
             middleTextOctagon,
             bottomLeftPentagon, bottomTrapezoid, bottomRightPentagon,
             title,
-            rulesText, flavorText,
-            foodSelection, voteCostText, informationText,regionSelection
+             flavorText,
+            foodSelection, xSelection, informationText,regionSelection, textScrollPane
     );
 
     switch(actionPointCost)
@@ -200,6 +222,35 @@ public class CardView extends AbstractCard
     return policy;
   }
 
+  public PolicyCard getGameCard() {return gameCard;}
+  private void openRightClickMenu(MouseEvent event){
+    selected=true;
+    if(contextMenu!=null){
+      contextMenu.hide();
+    }
+    contextMenu=new ContextMenu();
+    MenuItem draft=new MenuItem("Draft Card");
+
+    draft.setOnAction(event1 -> {
+      selected=false;
+      isDrafted=true;
+    });
+    MenuItem discard=new MenuItem("Discard card");
+    discard.setOnAction(event1 ->{
+      selected=false;
+      isDiscarded=true;
+    });
+
+    if(isDrafted||isDiscarded){
+      draft.setDisable(true);
+      discard.setDisable(true);
+    }
+    contextMenu.getItems().addAll(draft,discard);
+    contextMenu.show(this,event.getScreenX(),event.getScreenY());
+    contextMenu.setAutoHide(true);
+
+  }
+
   private void initializeGameCardPolygons()
   {
     topTrapezoid.getPoints().setAll((cardWidth/9), 0.0,
@@ -262,13 +313,7 @@ public class CardView extends AbstractCard
       p.setStrokeWidth(2.0);
       p.setFill(Color.web(color, transparency));
       p.setStroke(Color.BLACK);
-      p.setOnMouseEntered(new EventHandler<MouseEvent>()
-      {
-        public void handle(MouseEvent me)
-        {
-          p.setStroke(Color.YELLOW);
-        }
-      });
+      p.setOnMouseEntered(me -> p.setStroke(Color.YELLOW));
       p.setOnMouseExited(me -> p.setStroke(Color.BLACK));
     }
     middleTextOctagon.setOnMouseEntered(me -> {
@@ -276,15 +321,17 @@ public class CardView extends AbstractCard
       middleTextOctagon.setStroke(Color.YELLOW);
       middleTextOctagon.setStroke(Color.YELLOW);
       middleTextOctagon.setFill(Color.BLACK);
+      rulesText.setFill(Color.WHITE);
     });
     middleTextOctagon.setOnMouseExited(me -> {
       mouseOverOctagon = false;
       middleTextOctagon.setStroke(Color.BLACK);
       middleTextOctagon.setFill(Color.web(color, transparency));
+      rulesText.setFill(Color.BLACK);
     });
-    
    
   }
+
   private void initializeGameCardText()
   {
   //Initialize Text fields
@@ -305,6 +352,7 @@ public class CardView extends AbstractCard
       t.setFill(Color.BLACK);
       t.setFontSmoothingType(FontSmoothingType.LCD);
     }
+
 
     rulesText = new Text(gameCard.getGameText());
 
@@ -327,23 +375,36 @@ public class CardView extends AbstractCard
       middleTextOctagon.setFill(Color.BLACK);
     });
     flavorText.setWrappingWidth(200);
-    
+
+    TextFlow textFlow=new TextFlow(rulesText);
+    textScrollPane =new ScrollPane(textFlow);
+    textScrollPane.setBackground(Background.EMPTY);
+    textScrollPane.getStylesheets().add("cardStyle.css");
+    textScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+    textScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+    textScrollPane.setPrefSize(cardWidth*4/9,cardHeight*3/26);
+    textFlow.setPrefSize(cardWidth*4/9,cardHeight*2/13);
+
+
     AnchorPane.setTopAnchor(title, cardHeight/36);
     AnchorPane.setLeftAnchor(title, cardWidth/4);
 
     AnchorPane.setTopAnchor(regionSelection, cardHeight/18);
     AnchorPane.setLeftAnchor(regionSelection, 0.0);
 
-    AnchorPane.setTopAnchor(foodSelection, cardHeight/18);
-   // AnchorPane.setRightAnchor(foodSelection, cardWidth/18);
-//    AnchorPane.setTopAnchor(foodSelection,0.0);
-    AnchorPane.setRightAnchor(foodSelection, 0.0);
+    AnchorPane.setTopAnchor(foodSelection, cardHeight/72);
+    AnchorPane.setRightAnchor(foodSelection, cardWidth/144);
+   /// AnchorPane.setTopAnchor(foodSelection,0.0);
+   // AnchorPane.setRightAnchor(foodSelection, 0.0);
 
-    AnchorPane.setBottomAnchor(voteCostText, cardHeight/18);
-    AnchorPane.setRightAnchor(voteCostText, cardWidth/18);
+    AnchorPane.setBottomAnchor(xSelection, cardHeight/18);
+    AnchorPane.setRightAnchor(xSelection, 0.0);
     
-    AnchorPane.setTopAnchor(rulesText, cardHeight*10/13-textOctagonHeightModifier);
-    AnchorPane.setLeftAnchor(rulesText, cardWidth/4);
+//    AnchorPane.setTopAnchor(rulesText, cardHeight*10/13-textOctagonHeightModifier);
+//    AnchorPane.setLeftAnchor(rulesText, cardWidth/4);
+
+    AnchorPane.setTopAnchor(textScrollPane, cardHeight*10/13-textOctagonHeightModifier);
+    AnchorPane.setLeftAnchor(textScrollPane, cardWidth/4);
 
     AnchorPane.setBottomAnchor(flavorText, cardHeight*2/13);
     AnchorPane.setLeftAnchor(flavorText, cardWidth/4);
@@ -359,18 +420,27 @@ public class CardView extends AbstractCard
     int[] xOptions=policy.getOptionsX();
     if(xOptions!=null){
       if(xOptions.length==1){
-       // textList.add((Text)voteCostText);
-        voteCostText=new Text(""+xOptions[0]);
+       // textList.add((Text)xSelection);
+        xSelection =new Text(""+xOptions[0]);
       }
       else{
         ArrayList<Integer> arrayList=new ArrayList<>();
         for(int value:xOptions) arrayList.add(value);
         ObservableList list= FXCollections.observableList(arrayList);
         ComboBox<Integer> comboBox= new ComboBox(list);
-        comboBox.getSelectionModel().select(0);
-        voteCostText=comboBox;
+
+        if(gameCard.getX()==0){
+          comboBox.getSelectionModel().select(0);
+          gameCard.setX(comboBox.getSelectionModel().getSelectedItem());
+        }else{
+          comboBox.getSelectionModel().select(new Integer(gameCard.getX()));
+        }
+        comboBox.setOnMouseEntered(event -> selected=true);
+        comboBox.setOnMouseExited(event -> selected=false );
+        comboBox.setOnAction(event -> gameCard.setX(comboBox.getSelectionModel().getSelectedItem()));
+        xSelection =comboBox;
       }
-    }else voteCostText=new Text("");
+    }else xSelection =new Text("");
 
     //Configuration for Target Food
     EnumFood[] foodOptions=policy.getOptionsFood();
@@ -383,15 +453,13 @@ public class CardView extends AbstractCard
           setGraphic(null);
         } else {
           ImageView image = new ImageView(item.getIconSmall());
-          image.setFitWidth(foodIconWidth);
-          image.setFitHeight(foodIconHeight);
+          image.setTranslateX(-8);
           setGraphic(image);
         }
       }
     };
     if(foodOptions!=null){
-      ComboBox<EnumFood> comboBox=new ComboBox<EnumFood>(FXCollections.observableList(Arrays.asList(foodOptions)));
-
+      ComboBox<EnumFood> comboBox=new ComboBox<>(FXCollections.observableList(Arrays.asList(foodOptions)));
       comboBox.setCellFactory(new Callback<ListView<EnumFood>, ListCell<EnumFood>>() {
         @Override public ListCell<EnumFood> call(ListView<EnumFood> p) {
           return new ListCell<EnumFood>() {
@@ -405,6 +473,7 @@ public class CardView extends AbstractCard
                 image.setFitWidth(foodIconWidth);
                 image.setFitHeight(foodIconHeight);
                 setGraphic(image);
+                setTooltip(new Tooltip(item.toString()));
               }
             }
           };
@@ -412,25 +481,42 @@ public class CardView extends AbstractCard
       });
 
 
-      comboBox.setOnAction(event -> comboBox.setButtonCell(listCell));
+      if(gameCard.getTargetFood()==null){
+        comboBox.getSelectionModel().select(0);
+        gameCard.setTargetFood(comboBox.getSelectionModel().getSelectedItem());
+      }else{
+        comboBox.getSelectionModel().select(gameCard.getTargetFood());
+      }
+      comboBox.setOnMouseEntered(event -> selected=true);
+      comboBox.setOnMouseExited(event -> selected=false );
+      comboBox.setOnAction(event ->{
+        gameCard.setTargetFood(comboBox.getSelectionModel().getSelectedItem());
+        comboBox.setButtonCell(listCell);
+      });
       comboBox.setButtonCell(listCell);
-      comboBox.getSelectionModel().select(0);
-
+      comboBox.getStylesheets().add("cardStyle.css");
       foodSelection =comboBox;
     }else foodSelection = new Text("");
 
     //Configurations for Region selection
     EnumRegion[] regions=policy.getOptionsRegions(owner);
-    System.out.println(Arrays.toString(regions));
     if(regions!=null){
       if(regions.length==1){
-        // textList.add((Text)voteCostText);
+        // textList.add((Text)xSelection);
         regionSelection=new Text(regions[0].toString());
       }
       else{
         ObservableList list= FXCollections.observableList(Arrays.asList(regions));
-        ComboBox<Integer> comboBox= new ComboBox(list);
-        comboBox.getSelectionModel().select(0);
+        ComboBox<EnumRegion> comboBox= new ComboBox(list);
+        if(gameCard.getTargetRegion()==null){
+          comboBox.getSelectionModel().select(0);
+          gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem());
+        }else{
+          comboBox.getSelectionModel().select(gameCard.getTargetRegion());
+        }
+        comboBox.setOnMouseEntered(event -> selected=true);
+        comboBox.setOnMouseExited(event -> selected=false );
+        comboBox.setOnAction(event -> gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem()));
         regionSelection=comboBox;
       }
     }else regionSelection=new Text("");
@@ -450,7 +536,8 @@ public class CardView extends AbstractCard
         };
     middleTextOctagon.getPoints().setAll(octagonPoints);
     AnchorPane.setBottomAnchor(middleTextOctagon, (cardHeight / 13));
-    AnchorPane.setTopAnchor(rulesText, cardHeight*10/13-textOctagonHeightModifier+5);
+    AnchorPane.setTopAnchor(textScrollPane, cardHeight*10/13-textOctagonHeightModifier+5);
+    textScrollPane.setPrefHeight(cardHeight*3/26+textOctagonHeightModifier);
   }
   public StackPane getCardView()
   {

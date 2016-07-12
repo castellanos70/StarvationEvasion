@@ -7,6 +7,8 @@ import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.PolicyCard;
 import starvationevasion.communication.Communication;
 import starvationevasion.common.GameState;
+import starvationevasion.server.model.Endpoint;
+import starvationevasion.server.model.Payload;
 
 import java.util.ArrayList;
 
@@ -176,5 +178,8 @@ public interface Client
    * @param deltaSeconds change in seconds since the last time this function was called
    */
   void update(double deltaSeconds);
+
+
+    void sendRequest(Endpoint endpoint,Payload data,String message);
 }
 

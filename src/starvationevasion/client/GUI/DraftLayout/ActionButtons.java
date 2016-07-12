@@ -92,21 +92,16 @@ public class ActionButtons extends HBox
   public void endTurn()
   {
     ArrayList<AbstractCard> clientPolicyCards = gui.getDraftLayout().getHand().getDraftedCards();
-   // ArrayList<CardView> clientPolicyCards = gui.getDraftLayout().getHand().getDraftedCards();
     if (clientPolicyCards != null)
     {
       for (AbstractCard card : clientPolicyCards)
-      //for (CardView card : clientPolicyCards)
       {
-        //gui.getClient().draftCard(card.getGameCard());
-
+        gui.getClient().draftCard(card.getGameCard());
       }
       ArrayList<AbstractCard> discardedCards = gui.getDraftLayout().getHand().getDiscardedCards();
-      //ArrayList<CardView> discardedCards = gui.getDraftLayout().getHand().getDiscardedCards();
-      //for (CardView card : discardedCards)
       for (AbstractCard card : discardedCards)
       {
-        //gui.getClient().discardCard(card.getGameCard());
+        gui.getClient().discardCard(card.getGameCard());
       }
     }
     endTurn.setDisable(true);

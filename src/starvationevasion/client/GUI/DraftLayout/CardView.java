@@ -5,6 +5,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -427,7 +429,29 @@ public class CardView extends AbstractCard
         for(int value:xOptions) arrayList.add(value);
         ObservableList list= FXCollections.observableList(arrayList);
         ComboBox<Integer> comboBox= new ComboBox(list);
+        ListCell<Integer> integerListCell=new ListCell<Integer>(){
+          @Override
+          protected void updateItem(Integer item, boolean empty) {
+            super.updateItem(item,empty);
+            if(item==null||empty)
+            {
+              setItem(null);
+              setGraphic(null);
+            }else{
 
+              Label label=new Label(item.toString());
+
+              label.setFont(Font.font("helvetica",FontWeight.BOLD,(50)));
+              if(item>9)label.setTranslateX(-10);
+              else label.setTranslateX(10);
+              label.setMinWidth(1000);
+              label.setTextFill(Color.BLACK);
+              setGraphic(label);
+            }
+
+          }
+        };
+        comboBox.setButtonCell(integerListCell);
         if(gameCard.getX()==0){
           comboBox.getSelectionModel().select(0);
           gameCard.setX(comboBox.getSelectionModel().getSelectedItem());

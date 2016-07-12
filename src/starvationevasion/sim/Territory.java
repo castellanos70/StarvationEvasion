@@ -598,7 +598,7 @@ public class Territory
     {
       Territory territory = new Territory(fieldList[EnumHeader.territory.ordinal()]);
       territoryList.add(territory);
-
+//System.out.println(territory);
       for (EnumHeader header : EnumHeader.values())
       {
         int i = header.ordinal();

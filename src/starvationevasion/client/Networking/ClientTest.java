@@ -289,6 +289,7 @@ public class ClientTest implements Client
     // Check to see if any new server responses have come in since the last iteration of this loop
     ArrayList<Response> responses = COMM.pollMessages();
     processServerInput(responses);
+
   }
 
   @Override
@@ -305,8 +306,11 @@ public class ClientTest implements Client
     {
       gui.resetVotingPhase();
       gui.switchScenes();
+      gui.getDraftLayout().getActionButtons().setDisable(true);
     }
+
     else if(serverState ==GameState.DRAFTING){
+      gui.getDraftLayout().getActionButtons().setDisable(false);
       readHand();
     }
     else if (serverState == GameState.VOTING && gui.isDraftingPhase())

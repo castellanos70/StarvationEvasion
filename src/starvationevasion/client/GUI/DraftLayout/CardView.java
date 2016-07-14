@@ -21,10 +21,7 @@ import javafx.scene.shape.StrokeType;
 import javafx.scene.text.*;
 import javafx.util.Callback;
 import starvationevasion.client.GUI.images.ImageGetter;
-import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumPolicy;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.PolicyCard;
+import starvationevasion.common.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,7 +57,12 @@ public class CardView extends AbstractCard
       (cardWidth/9),   (cardHeight/13)  +textOctagonHeightModifier, 
       (cardWidth/9),   (cardHeight/13)
       };
-  private String color = "0xaba9db"; 
+  private String color = "0xaba9db";
+  private final String GREEN = "009933";
+  private final String BLUE = "0033cc";
+  private final String PURPLE = "9933ff";
+  private final String GREY = "666699";
+  private final String ORANGE = "ff6600";
   private PolicyCard gameCard;
 
   private boolean selected=false;
@@ -87,9 +89,11 @@ public class CardView extends AbstractCard
     actionPointCost = gameCard.getActionPointCost();
 
     initSimpleCard();
+
     //this.getChildren().add(cardPane);
    // this.getChildren().add(cardPane);
     //initSimpleCard();
+
     this.setOnMouseEntered(event -> {
       initMainCard();
       setTranslateY(-400);
@@ -112,6 +116,7 @@ public class CardView extends AbstractCard
         selected=false;
       }
     });
+
   }
 
   public CardView(EnumPolicy policy) {
@@ -120,6 +125,8 @@ public class CardView extends AbstractCard
     owner=EnumRegion.USA_HEARTLAND;
     gameCard = new PolicyCard(policy, owner);
     actionPointCost = gameCard.getActionPointCost();
+
+
 
     setOnMouseClicked(event -> {
       if(event.getButton().equals(MouseButton.SECONDARY)){
@@ -135,6 +142,7 @@ public class CardView extends AbstractCard
   }
 
   public void initMainCard(){
+    this.getChildren().clear();
     cardWidth=largeCardWidth;
     cardHeight=largeCardHeight;
     cardImage.setFitWidth(cardWidth);
@@ -156,7 +164,6 @@ public class CardView extends AbstractCard
             middleTextOctagon,
             bottomLeftPentagon, bottomTrapezoid, bottomRightPentagon,
             title,
-             flavorText,
             foodSelection, xSelection, informationText,regionSelection, textScrollPane
     );
 
@@ -197,13 +204,32 @@ public class CardView extends AbstractCard
   }
 
   public void initSimpleCard(){
+    this.getChildren().clear();
     cardWidth=smallCardWidth;
     cardHeight=smallCardHeight;
     this.getChildren().clear();
     cardImage = ImageGetter.getImageForCard(policy);
     cardImage.setFitHeight(cardHeight);
     cardImage.setFitWidth(cardWidth);
-    this.getChildren().add(cardImage);
+    StackPane stackPane= new StackPane();
+    if(isDrafted) {
+      stackPane.setStyle("-fx-padding: 5; \n" //#090a0c
+              + "-fx-background-color: green;\n"
+              + "-fx-background-radius: 5;\n"
+              + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
+    }else if(isDiscarded){
+      stackPane.setStyle("-fx-padding: 5; \n" //#090a0c
+              + "-fx-background-color: firebrick;\n"
+              + "-fx-background-radius: 5;\n"
+              + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
+    }else{
+      stackPane.setStyle("-fx-padding: 5; \n" //#090a0c
+              + "-fx-background-color: black;\n"
+              + "-fx-background-radius: 5;\n"
+              + "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
+    }
+stackPane.getChildren().add(cardImage);
+    this.getChildren().add(stackPane);
     timer.stop();
   }
 
@@ -243,11 +269,19 @@ public class CardView extends AbstractCard
       isDiscarded=true;
     });
 
+    MenuItem undo=new MenuItem("Undo");
+    undo.setOnAction(event1 -> {
+      selected=false;
+      isDiscarded=false;
+      isDrafted=false;
+    });
+
     if(isDrafted||isDiscarded){
       draft.setDisable(true);
       discard.setDisable(true);
-    }
-    contextMenu.getItems().addAll(draft,discard);
+      undo.setDisable(false);
+    }else undo.setDisable(true);
+    contextMenu.getItems().addAll(draft,discard,undo);
     contextMenu.show(this,event.getScreenX(),event.getScreenY());
     contextMenu.setAutoHide(true);
 
@@ -255,6 +289,10 @@ public class CardView extends AbstractCard
 
   private void initializeGameCardPolygons()
   {
+    if(policy.getDuration().equals(EnumPolicy.EnumPolicyDuration.INSTANT)) color=ORANGE;
+    else if(policy.getPlayableState()!= GameState.DRAFTING) color=BLUE;
+    else if(policy.getPlayableState()==GameState.DRAFTING) color=PURPLE;
+
     topTrapezoid.getPoints().setAll((cardWidth/9), 0.0,
             (cardWidth*8/9), 0.0,
             (cardWidth*7/9), cardHeight*1/13,
@@ -339,6 +377,8 @@ public class CardView extends AbstractCard
   //Initialize Text fields
     title = new Text(gameCard.getTitle());
     title.setWrappingWidth(200);
+    title.setLineSpacing(-5);
+    title.setTextAlignment(TextAlignment.CENTER);
     ArrayList<Text> textList = new ArrayList<Text>();
 
     initComboBoxes();
@@ -365,6 +405,7 @@ public class CardView extends AbstractCard
       middleTextOctagon.setStroke(Color.YELLOW);
       middleTextOctagon.setFill(Color.BLACK);
       rulesText.setFill(Color.WHITE);
+      rulesText.autosize();
     });
     rulesText.setWrappingWidth(200);
     
@@ -375,20 +416,23 @@ public class CardView extends AbstractCard
       mouseOverOctagon = true;
       middleTextOctagon.setStroke(Color.YELLOW);
       middleTextOctagon.setFill(Color.BLACK);
+      rulesText.setFill(Color.WHITE);
+      //rulesText.setFont(Font.font(16));
+      rulesText.autosize();
     });
     flavorText.setWrappingWidth(200);
 
-    TextFlow textFlow=new TextFlow(rulesText);
+    TextFlow textFlow=new TextFlow(rulesText,new Text("\n\n"),flavorText);
     textScrollPane =new ScrollPane(textFlow);
     textScrollPane.setBackground(Background.EMPTY);
     textScrollPane.getStylesheets().add("cardStyle.css");
     textScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
     textScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-    textScrollPane.setPrefSize(cardWidth*4/9,cardHeight*3/26);
-    textFlow.setPrefSize(cardWidth*4/9,cardHeight*2/13);
+    textScrollPane.setPrefSize(cardWidth*9/18,cardHeight*3/26);
+    textFlow.setPrefSize(cardWidth*9/18,cardHeight*2/13);
 
 
-    AnchorPane.setTopAnchor(title, cardHeight/36);
+    AnchorPane.setTopAnchor(title, cardHeight/288);
     AnchorPane.setLeftAnchor(title, cardWidth/4);
 
     AnchorPane.setTopAnchor(regionSelection, cardHeight/72);
@@ -444,7 +488,7 @@ public class CardView extends AbstractCard
               label.setFont(Font.font("helvetica",FontWeight.BOLD,(50)));
               if(item>9)label.setTranslateX(-10);
               else label.setTranslateX(10);
-              label.setMinWidth(1000);
+              label.setMinWidth(75);
               label.setTextFill(Color.BLACK);
               setGraphic(label);
             }

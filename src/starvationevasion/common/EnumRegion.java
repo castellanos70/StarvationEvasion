@@ -50,8 +50,8 @@ public enum EnumRegion implements Sendable
    * The US states in this region are: WA, OR, ID, NV, MT, WY, UT, CO, AZ, NM
    */
   USA_MOUNTAIN,
-  ARCTIC_AMERICA, MIDDLE_AMERICA, SOUTH_AMERICA, EUROPE, MIDDLE_EAST, SUB_SAHARAN,
-  RUSSIA, CENTRAL_ASIA, SOUTH_ASIA, EAST_ASIA, OCEANIA;
+  ARCTIC_AMERICA, LATIN_AMERICA, EUROPE, MIDDLE_EAST, SUB_SAHARAN,
+  NORTH_ASIA, SOUTH_ASIA, EAST_ASIA, OCEANIA;
 
   public static final int SIZE = values().length;
 
@@ -66,8 +66,8 @@ public enum EnumRegion implements Sendable
    * Array of all non-player regions used in game.
    */
   public static final EnumRegion[] WORLD_REGIONS =
-  { ARCTIC_AMERICA, MIDDLE_AMERICA, SOUTH_AMERICA, EUROPE, MIDDLE_EAST, SUB_SAHARAN,
-    RUSSIA, CENTRAL_ASIA, SOUTH_ASIA, EAST_ASIA, OCEANIA
+  { ARCTIC_AMERICA, LATIN_AMERICA, EUROPE, MIDDLE_EAST, SUB_SAHARAN,
+    NORTH_ASIA, SOUTH_ASIA, EAST_ASIA, OCEANIA
   };
 
   @Override
@@ -148,8 +148,8 @@ public enum EnumRegion implements Sendable
     Color.rgb(243, 153, 152),//USA_SOUTHERN_PLAINS,
     Color.rgb(182, 146, 114),//USA_MOUNTAIN,
     Color.rgb(179, 205, 227),//ARCTIC_AMERICA,
-    Color.rgb(200, 212, 164),// MIDDLE_AMERICA,
-    Color.rgb(118, 162, 135),// SOUTH_AMERICA,
+    //Color.rgb(200, 212, 164),// MIDDLE_AMERICA,
+    Color.rgb(118, 162, 135),// LATIN_AMERICA,
     Color.rgb(77, 169, 196),// EUROPE,
     Color.rgb(182, 146, 114),// MIDDLE_EAST,
     Color.rgb(223, 143, 135),// SUB_SAHARAN,

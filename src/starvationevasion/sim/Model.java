@@ -699,7 +699,7 @@ public class Model
           break;
         case FoodAid:
           // Sends 5 thousand tons of selected food
-          sendFoodRelief(EnumRegion.CENTRAL_ASIA, c.getOwner(), c.getTargetFood(), 5000);
+          sendFoodRelief(EnumRegion.NORTH_ASIA, c.getOwner(), c.getTargetFood(), 5000);
           break;
 
         case Loan:

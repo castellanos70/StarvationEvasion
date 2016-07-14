@@ -443,6 +443,11 @@ public class GUI extends Application
     this.assignedRegion = region;
   }
 
+  public GameState getServerGameState(){
+    if(client!=null)return client.getServerState();
+    else return null;
+  }
+
   /**
    * Returns the assigned region that the user was assigned
    * 

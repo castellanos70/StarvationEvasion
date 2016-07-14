@@ -6,6 +6,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import starvationevasion.common.EnumRegion;
+import starvationevasion.common.GameState;
 
 import java.util.ArrayList;
 
@@ -45,6 +46,7 @@ public class SummaryBar extends GridPane
   static Text regionPopulation;
   static Text worldPopulation;
 
+  static Text gameState;
 
   /**
    * Constructor for the SummaryBar
@@ -57,7 +59,7 @@ public class SummaryBar extends GridPane
     initializeGridSizes();
     this.getColumnConstraints().addAll(colConstraintsList);
     this.getRowConstraints().addAll(rowConstraintsList);
-
+    gameState=new Text("Game State: "+gui.getServerGameState());
     //set assignedRegion to whatever the GUI was passed
     regionTitle = new Text();
     regionTitle.setFont(Font.font(null, FontWeight.BOLD, 14));
@@ -101,7 +103,7 @@ public class SummaryBar extends GridPane
     //this.add(worldHDI, 3, 2, 1, 1);
 
     //this.add(balanceLabel, 2,3,1,1);
-
+    this.add(gameState,2,2,1,1);
     this.getStylesheets().add("/starvationevasion/client/GUI/DraftLayout/style.css");
     this.getStyleClass().add("summarybar");
   }
@@ -146,6 +148,10 @@ public class SummaryBar extends GridPane
 
     this.add(balanceLabel, 2,3,1,1);
 
+    this.add(gameState,2,2,1,1);
+  }
+  public void updateGameState(GameState gameState){
+    this.gameState.setText("Game state: "+gameState.toString());
   }
   public void setRegion(EnumRegion region){
     if(region!=null)regionTitle.setText(region.toString());

@@ -298,6 +298,9 @@ public class ClientTest implements Client
 
   private void respondToStateChange()
   {
+    if(gui!=null&&gui.getDraftLayout()!=null&&gui.getDraftLayout().getSummaryBar()!=null){
+      gui.getDraftLayout().getSummaryBar().updateGameState(serverState);
+    }
     if (serverState == GameState.DRAWING && !gui.isDraftingPhase())
     {
       gui.resetVotingPhase();

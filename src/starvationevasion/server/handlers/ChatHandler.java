@@ -26,8 +26,8 @@ public class ChatHandler extends AbstractHandler
       String to;
       if (request.getPayload().containsKey("to-region"))
       {
-        to = ((String) request.getPayload().get("to-region")).toUpperCase();
-        request.getPayload().remove("to-region");
+        to =  request.getPayload().get("to-region").toString();
+        //request.getPayload().remove("to-region");
         isRegion = true;
       }
       else {

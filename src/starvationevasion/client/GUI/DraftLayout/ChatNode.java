@@ -141,12 +141,9 @@ public class ChatNode extends BorderPane
       // Sends too all regions if null
       if (regionSelection.getValue() == null)
       {
-        for (EnumRegion region : EnumRegion.US_REGIONS)
-        {
-          chatManager.sendChatToServer(inputMessage.getText(), region,null);
+          chatManager.sendChatToServer(inputMessage.getText(), null,null);
              // EnumPolicy.valueOf(cardSelection.getValue().toString()));
           chatMessages.setText(chatMessages.getText() + "\n" + inputMessage.getText());
-        }
       }
       else
       {

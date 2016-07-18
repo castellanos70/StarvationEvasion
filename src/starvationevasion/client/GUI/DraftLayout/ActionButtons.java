@@ -74,7 +74,7 @@ public class ActionButtons extends HBox
 //      hand.setSelectingCard(false);
 //      hand.discardSelected();
 //    });
-    notUndoButtons.getChildren().addAll(endTurn,bigDiscard,doneDiscarding);
+    notUndoButtons.getChildren().addAll(endTurn);//,bigDiscard,doneDiscarding);
     layout.getChildren().addAll(undo, notUndoButtons);
 
     this.getChildren().add(layout);

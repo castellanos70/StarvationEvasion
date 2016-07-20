@@ -135,8 +135,6 @@ public class HandNode extends ResizablePane
     {
       this.policies = policies;
       createCards();
-      System.out.println(Arrays.toString(policies));
-
     }
   }
   

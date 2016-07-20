@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import starvationevasion.client.GUI.DraftLayout.AbstractCard;
 import starvationevasion.client.GUI.DraftLayout.CardNode;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumRegion;
@@ -35,7 +36,7 @@ public class VotingHand extends NodeTemplate
   private CardNode[] cardNode;
 
   private CardNode focusedCard = new CardNode(EnumRegion.USA_CALIFORNIA, EnumPolicy.values()[0]);
-  private VotnigButtonNode votingButtons;
+  private VotingButtonNode votingButtons;
   private File f = new File("src/starvationevasion/client/GUI/votingHud/testImages/FinishedVotingButton.png");
   private Image votingFin = new Image(f.toURI().toString());
   private ImageView viv = new ImageView(votingFin);
@@ -81,7 +82,7 @@ public class VotingHand extends NodeTemplate
 
     });
 
-    votingButtons = new VotnigButtonNode();
+    votingButtons = new VotingButtonNode();
     votingButtons.setManaged(false);
     votingButtons.setVisible(false);
 
@@ -284,7 +285,6 @@ public class VotingHand extends NodeTemplate
 
   public void clearCards()
   {
-
     if (cardNode == null) return;
     for (int i = 0; i < cardNode.length; i++)
     {

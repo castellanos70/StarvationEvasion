@@ -2,11 +2,10 @@ package starvationevasion.client.GUI.VotingLayout;
 
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
+import starvationevasion.client.GUI.DraftLayout.TickerReel;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.SummaryBar;
 import starvationevasion.common.EnumRegion;
@@ -26,10 +25,12 @@ public class VotingLayout extends GridPane
   FinishButton finishButton;
   SummaryBar summaryBar;
   VotingTimer timer;
+  TickerReel tickerReel;
 
   // places on the GUI where the cards will go
   ArrayList<CardSpace> cardSpacesFirstRow = new ArrayList<>();
   ArrayList<CardSpace> cardSpacesSecondRow = new ArrayList<>();
+  ArrayList<CardSpace> cardSpacesThrirdRow = new ArrayList<>();
 
   // places on the GUI where the voting buttons will go
   ArrayList<VotingNode> votingNodes = new ArrayList<>();
@@ -45,8 +46,8 @@ public class VotingLayout extends GridPane
   public VotingLayout(GUI gui)
   {
     this.gui = gui;
+   // this.setGridLinesVisible(true);
     // gui.getChatNode();
-    
     primaryStage = this.gui.getPrimaryStage();
 
     this.setMaxSize(gui.getMaxWidth(), gui.getMaxHeight());
@@ -57,7 +58,6 @@ public class VotingLayout extends GridPane
     this.getColumnConstraints().addAll(colConstraintsList);
     this.getRowConstraints().addAll(rowConstraintsList);
     this.setGridLinesVisible(true);
-    this.setGridLinesVisible(false);
     ImageView backGround= new ImageView(gui.getImageGetter().getWorldMap());
     this.add(backGround, 0, 14);
     finishButton = new FinishButton(this.gui);
@@ -68,7 +68,7 @@ public class VotingLayout extends GridPane
     this.add(summaryBar, 0, 1, 1, 1);
     timer = new VotingTimer(this.gui);
     // this.setRight(timer);
-    this.add(timer, 6, 0, 1, 1);
+    this.add(timer, 6, 1, 1, 1);
     initializeCardSpaces();
     initializeVotingNodes();
     initializeRegionMaps();
@@ -76,6 +76,11 @@ public class VotingLayout extends GridPane
     // setBottom(chatNode);
     chatNode = new ChatNode(gui);
     this.add(chatNode, 0, 14, 1, 10);
+
+    VBox real = new VBox();
+    tickerReel = new TickerReel(real);
+    real.getChildren().add(tickerReel);
+    this.add(real, 0, 0, 13, 1);
 //    GraphNode graphNode = new GraphNode(gui);
 //    this.add(graphNode, 0, 10, 1, 5);
     // this.setBackground(new Background(new BackgroundImage(
@@ -100,6 +105,7 @@ public class VotingLayout extends GridPane
 
   public void updateCardSpaces(ArrayList<PolicyCard> cards)
   {
+    resetVotingLayout();
     if (cards != null)
     {
       receivedCards = true;
@@ -119,13 +125,13 @@ public class VotingLayout extends GridPane
           Button[] buttons = votingNodes.get(index).addVotingButtons();
           buttons[0].setOnAction(event ->
           {
-            gui.getClient().voteUp(cardSpacesFirstRow.get(index).getCard().getPolicyCard());
+            gui.getClient().voteUp(cardSpacesFirstRow.get(index).getCard().getGameCard());
             buttons[0].setDisable(true);
             buttons[1].setDisable(true);
           });
           buttons[1].setOnAction(event ->
           {
-            gui.getClient().voteDown(cardSpacesFirstRow.get(index).getCard().getPolicyCard());
+            gui.getClient().voteDown(cardSpacesFirstRow.get(index).getCard().getGameCard());
             buttons[0].setDisable(true);
             buttons[1].setDisable(true);
           });
@@ -148,6 +154,8 @@ public class VotingLayout extends GridPane
     }
   }
 
+  public TickerReel getTickerReel(){return tickerReel;}
+
   private int getIndexOfRegion(EnumRegion region)
   {
     for (int i = 0; i < EnumRegion.US_REGIONS.length; i++)
@@ -163,12 +171,15 @@ public class VotingLayout extends GridPane
     {
       CardSpace firstNewCardSpace = new CardSpace(gui, EnumRegion.US_REGIONS[i], 1);
       CardSpace secondNewCardSpace = new CardSpace(gui, EnumRegion.US_REGIONS[i], 2);
+      CardSpace thirdNewCardSpace = new CardSpace(gui, EnumRegion.US_REGIONS[i], 3);
       // firstNewCardSpace.setCard(EnumRegion.US_REGIONS[i],
       // EnumPolicy.Clean_River_Incentive,gui);
       cardSpacesFirstRow.add(firstNewCardSpace);
       cardSpacesSecondRow.add(secondNewCardSpace);
-      this.add(firstNewCardSpace, i + 1, 10, 1, 6);
-      this.add(secondNewCardSpace, i + 1, 17, 1, 6);
+      cardSpacesThrirdRow.add(thirdNewCardSpace);
+      this.add(firstNewCardSpace, i + 1, 8, 1, 5);
+      this.add(secondNewCardSpace, i + 1, 14, 1, 5);
+      this.add(thirdNewCardSpace, i + 1, 20, 1, 5);
     }
   }
 
@@ -181,8 +192,8 @@ public class VotingLayout extends GridPane
       votingNodes.add(firstNewVotingNode);
       votingNodes.add(secondNewVotingNode);
 
-      this.add(firstNewVotingNode, i + 1, 16, 1, 1);
-      //this.add(secondNewVotingNode, i + 1, 23, 1, 1);
+      this.add(firstNewVotingNode, i + 1, 13, 1, 1);
+      this.add(secondNewVotingNode, i + 1, 19, 1, 1);
     }
   }
 

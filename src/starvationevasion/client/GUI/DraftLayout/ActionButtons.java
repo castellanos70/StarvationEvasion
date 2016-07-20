@@ -10,6 +10,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.ResizablePane;
+import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.EnumRegion;
+import starvationevasion.common.PolicyCard;
 
 import java.util.ArrayList;
 
@@ -74,7 +77,7 @@ public class ActionButtons extends HBox
 //      hand.setSelectingCard(false);
 //      hand.discardSelected();
 //    });
-    notUndoButtons.getChildren().addAll(endTurn);//,bigDiscard,doneDiscarding);
+    notUndoButtons.getChildren().addAll(endTurn,bigDiscard,doneDiscarding);
     layout.getChildren().addAll(undo, notUndoButtons);
 
     this.getChildren().add(layout);
@@ -105,8 +108,28 @@ public class ActionButtons extends HBox
       }
     }
     endTurn.setDisable(true);
-    gui.getClient().done();
-   // gui.switchScenes();
+    if(!gui.getTesting()) gui.getClient().done();
+    else{
+      gui.switchScenes();
+      ArrayList<PolicyCard> cardList=new ArrayList<>();
+      cardList.add(new PolicyCard(EnumPolicy.values()[0], EnumRegion.USA_CALIFORNIA));
+      cardList.add(new PolicyCard(EnumPolicy.values()[1], EnumRegion.USA_HEARTLAND));
+      cardList.add(new PolicyCard(EnumPolicy.values()[2], EnumRegion.USA_MOUNTAIN));
+      cardList.add(new PolicyCard(EnumPolicy.values()[3], EnumRegion.USA_NORTHERN_CRESCENT));
+      cardList.add(new PolicyCard(EnumPolicy.values()[4], EnumRegion.USA_NORTHERN_PLAINS));
+      cardList.add(new PolicyCard(EnumPolicy.values()[5], EnumRegion.USA_SOUTHEAST));
+      cardList.add(new PolicyCard(EnumPolicy.values()[6], EnumRegion.USA_SOUTHERN_PLAINS));
+      cardList.add(new PolicyCard(EnumPolicy.values()[7], EnumRegion.USA_CALIFORNIA));
+      cardList.add(new PolicyCard(EnumPolicy.values()[8], EnumRegion.USA_HEARTLAND));
+      cardList.add(new PolicyCard(EnumPolicy.values()[9], EnumRegion.USA_MOUNTAIN));
+      cardList.add(new PolicyCard(EnumPolicy.values()[10], EnumRegion.USA_NORTHERN_CRESCENT));
+      cardList.add(new PolicyCard(EnumPolicy.values()[11], EnumRegion.USA_NORTHERN_PLAINS));
+      cardList.add(new PolicyCard(EnumPolicy.values()[12], EnumRegion.USA_SOUTHEAST));
+      cardList.add(new PolicyCard(EnumPolicy.values()[13], EnumRegion.USA_SOUTHERN_PLAINS));
+      gui.getVotingLayout().updateCardSpaces(cardList);
+    }
+    // gui.switchScenes();
+
   }
   public void resetActionButtons()
   {

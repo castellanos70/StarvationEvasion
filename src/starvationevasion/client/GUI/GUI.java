@@ -10,12 +10,13 @@ import javafx.stage.Stage;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
 import starvationevasion.client.GUI.DraftLayout.DraftLayout;
 import starvationevasion.client.GUI.DraftLayout.HandNode;
+import starvationevasion.client.GUI.DraftLayout.TickerReel;
 import starvationevasion.client.GUI.DraftLayout.map.GamePhaseMapController;
 import starvationevasion.client.GUI.DraftLayout.map.MapController;
 import starvationevasion.client.GUI.Graphs.GraphManager;
 import starvationevasion.client.GUI.Popups.PopupManager;
 import starvationevasion.client.GUI.images.ImageGetter;
-import starvationevasion.client.GUI.votingHud.VotingLayout;
+import starvationevasion.client.GUI.VotingLayout.VotingLayout;
 import starvationevasion.client.Logic.ChatManager;
 import starvationevasion.client.Logic.LocalDataContainer;
 import starvationevasion.client.Networking.Client;
@@ -69,6 +70,8 @@ public class GUI extends Application
   EnumRegion assignedRegion;
   private ChatNode chatNode;
 
+  private TickerReel tickerReel;
+
   private ArrayList<EnumPolicy> cardsInHand = new ArrayList<>();
   // context variables
   boolean selectingRegion = false;
@@ -116,6 +119,8 @@ public class GUI extends Application
    {
    launch(args);
    }
+
+  public boolean getTesting(){return testing;}
 
   @Override
   public void start(Stage primaryStage)
@@ -179,6 +184,7 @@ public class GUI extends Application
   public void initGame()
   {
     chatNode=draftLayout.getChatNode();
+    tickerReel= draftLayout.getTickerReel();
     if(client!=null) {
       cardsInHand = client.getHand();
       assignedRegion = client.getRegion();
@@ -305,8 +311,10 @@ public class GUI extends Application
       primaryStage.getScene().setRoot(votingLayout);
       currentRoot = votingLayout;
       draftingPhase = false;
-      votingLayout.onResize();
+     // votingLayout.onResize();
       chatNode=votingLayout.getChatNode();
+      tickerReel=votingLayout.getTickerReel();
+
     }
     else
     {
@@ -315,6 +323,7 @@ public class GUI extends Application
       draftingPhase = true;
       draftLayout.getHand().onResize();
       chatNode=draftLayout.getChatNode();
+      tickerReel=draftLayout.getTickerReel();
     }
   }
 

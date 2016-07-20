@@ -4,6 +4,7 @@ import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -75,12 +76,52 @@ public class CardView extends AbstractCard
   private Polygon topRightPentagon    = new Polygon();
   private Polygon middleTextOctagon   = new Polygon();
   Circle pipOne, pipTwo, pipThree;
-  private Text title, rulesText, flavorText, informationText;
+  private Text title,rulesText,flavorText,informationText;
   private ScrollPane textScrollPane;
   private Node xSelection, foodSelection,regionSelection;
   private EnumRegion owner;
   private EnumPolicy policy;
   private ContextMenu contextMenu;
+
+  /**
+   * This constructor is used by the voting phase.
+   * @param owner owner of card
+   * @param policy the policy of the card
+   * @param voting if it is voting
+     */
+  public CardView(EnumRegion owner, EnumPolicy policy,boolean voting)
+  {
+    this.owner = owner;
+    this.policy=policy;
+    gameCard = new PolicyCard(policy, owner);
+    actionPointCost = gameCard.getActionPointCost();
+
+    initSimpleCard();
+
+    this.setOnMouseEntered(event -> {
+      initMainCard();
+      setTranslateY((smallCardHeight-cardHeight)/2);
+      setTranslateX(-cardWidth/2);
+      toFront();
+    });
+    this.setOnMouseExited(event -> {
+      if(!selected) {
+        initSimpleCard();
+        setTranslateY(0);
+        setTranslateX(0);
+      }
+    });
+    setOnMouseClicked(event -> {
+      if(event.getButton().equals(MouseButton.SECONDARY)){
+        openRightClickMenu(event);
+      }
+      if(event.getButton().equals(MouseButton.PRIMARY)){
+        if(contextMenu!=null)contextMenu.hide();
+        selected=false;
+      }
+    });
+
+  }
   public CardView(EnumRegion owner, EnumPolicy policy)
   {
     this.owner = owner;
@@ -357,21 +398,30 @@ stackPane.getChildren().add(cardImage);
       p.setOnMouseExited(me -> p.setStroke(Color.BLACK));
     }
     middleTextOctagon.setOnMouseEntered(me -> {
-      mouseOverOctagon = true;
-      middleTextOctagon.setStroke(Color.YELLOW);
-      middleTextOctagon.setStroke(Color.YELLOW);
-      middleTextOctagon.setFill(Color.BLACK);
-      rulesText.setFill(Color.WHITE);
+      mouseOverText();
     });
     middleTextOctagon.setOnMouseExited(me -> {
       mouseOverOctagon = false;
       middleTextOctagon.setStroke(Color.BLACK);
       middleTextOctagon.setFill(Color.web(color, transparency));
       rulesText.setFill(Color.BLACK);
+      rulesText.setFont(Font.font(12));
     });
    
   }
-
+  private boolean tooBig=false;
+  private void mouseOverText(){
+    mouseOverOctagon = true;
+    middleTextOctagon.setStroke(Color.YELLOW);
+    middleTextOctagon.setStroke(Color.YELLOW);
+    middleTextOctagon.setFill(Color.web(color));
+    if(!tooBig) rulesText.setFont(Font.font(16));
+    if(rulesText.getLayoutBounds().getHeight()>cardHeight*9/26){
+      tooBig=true;
+      rulesText.setFont(Font.font(12));
+    }
+    //rulesText.setFill(Color.WHITE);
+  }
   private void initializeGameCardText()
   {
   //Initialize Text fields
@@ -401,24 +451,14 @@ stackPane.getChildren().add(cardImage);
     rulesText.setFill(Color.BLACK);
     rulesText.setFont(Font.font(12));
     rulesText.setOnMouseEntered(me -> {
-      mouseOverOctagon = true;
-      middleTextOctagon.setStroke(Color.YELLOW);
-      middleTextOctagon.setFill(Color.BLACK);
-      rulesText.setFill(Color.WHITE);
-      rulesText.autosize();
+      mouseOverText();
     });
     rulesText.setWrappingWidth(200);
-    
     flavorText = new Text(gameCard.getFlavorText());
     flavorText.setFill(Color.WHITE);
     flavorText.setFont(Font.font("Verdana", FontPosture.ITALIC, 12));
     flavorText.setOnMouseEntered(me -> {
-      mouseOverOctagon = true;
-      middleTextOctagon.setStroke(Color.YELLOW);
-      middleTextOctagon.setFill(Color.BLACK);
-      rulesText.setFill(Color.WHITE);
-      //rulesText.setFont(Font.font(16));
-      rulesText.autosize();
+      mouseOverText();
     });
     flavorText.setWrappingWidth(200);
 
@@ -609,6 +649,7 @@ stackPane.getChildren().add(cardImage);
     AnchorPane.setBottomAnchor(middleTextOctagon, (cardHeight / 13));
     AnchorPane.setTopAnchor(textScrollPane, cardHeight*10/13-textOctagonHeightModifier+5);
     textScrollPane.setPrefHeight(cardHeight*3/26+textOctagonHeightModifier);
+
   }
   public StackPane getCardView()
   {

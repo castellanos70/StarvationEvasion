@@ -36,7 +36,7 @@ public class VotingHand extends NodeTemplate
   private CardNode[] cardNode;
 
   private CardNode focusedCard = new CardNode(EnumRegion.USA_CALIFORNIA, EnumPolicy.values()[0]);
-  private VotingButtonNode votingButtons;
+  private VotnigButtonNode votingButtons;
   private File f = new File("src/starvationevasion/client/GUI/votingHud/testImages/FinishedVotingButton.png");
   private Image votingFin = new Image(f.toURI().toString());
   private ImageView viv = new ImageView(votingFin);
@@ -82,7 +82,7 @@ public class VotingHand extends NodeTemplate
 
     });
 
-    votingButtons = new VotingButtonNode();
+    votingButtons = new VotnigButtonNode();
     votingButtons.setManaged(false);
     votingButtons.setVisible(false);
 

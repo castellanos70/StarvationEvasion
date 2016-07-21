@@ -1,6 +1,8 @@
 package starvationevasion.client.GUI.VotingLayout;
 
+import javafx.geometry.HPos;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -69,8 +71,8 @@ public class VotingLayout extends GridPane
     timer = new VotingTimer(this.gui);
     // this.setRight(timer);
     this.add(timer, 6, 1, 1, 1);
-    initializeCardSpaces();
     initializeVotingNodes();
+    initializeCardSpaces();
     initializeRegionMaps();
     // setCenter(centerPane);
     // setBottom(chatNode);
@@ -204,9 +206,16 @@ public class VotingLayout extends GridPane
   {
     for (int i = 0; i < EnumRegion.US_REGIONS.length; i++)
     {
-      RegionMap newRegionMap = new RegionMap(this.gui, EnumRegion.US_REGIONS[i]);
-      regionMaps.add(newRegionMap);
+      ImageView newRegionMap=new ImageView(EnumRegion.US_REGIONS[i].getIconLarge());
+     // newRegionMap.setFitWidth((getColumnConstraints().get(i).getPercentWidth()*primaryStage.getWidth())/100);
+     // newRegionMap.setFitHeight((getRowConstraints().get(i).getPercentHeight()*primaryStage.getHeight())/100);
+      newRegionMap.setFitWidth(128);
+      newRegionMap.setFitHeight(128);
+      System.out.println(cardSpacesFirstRow.get(i).getWidth()+" "+getRowConstraints().get(i).getPercentHeight()*primaryStage.getHeight());
+      //RegionMap newRegionMap = new RegionMap(this.gui, EnumRegion.US_REGIONS[i]);
+      //regionMaps.add(newRegionMap);
       this.add(newRegionMap, i + 1, 1, 1, 8);
+      GridPane.setHalignment(newRegionMap, HPos.CENTER);
     }
   }
 

@@ -127,6 +127,7 @@ public class GUI extends Application
   {
     System.out.println("GUI.start()");
     EnumPolicy.load();
+    EnumRegion.loadIcons();
     // TODO: THIS WILL BE REMOVED WHEN PHASE HANDLING IS FULLY IMPLEMENTED
     MapController.setCurrentController(GamePhaseMapController.class);
     this.primaryStage = primaryStage;

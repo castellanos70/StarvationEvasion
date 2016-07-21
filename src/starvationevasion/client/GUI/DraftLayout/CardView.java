@@ -552,7 +552,9 @@ stackPane.getChildren().add(cardImage);
       }
     }else xSelection =new Text("");
 
-    //Configuration for Target Food
+    /****************************************************
+     * Configuration for Target Food
+     *****************************************************/
     EnumFood[] foodOptions=policy.getOptionsFood();
     ListCell<EnumFood> listCell= new ListCell<EnumFood>(){
       @Override
@@ -608,29 +610,94 @@ stackPane.getChildren().add(cardImage);
       foodSelection =comboBox;
     }else foodSelection = new Text("");
 
-    //Configurations for Region selection
-    EnumRegion[] regions=policy.getOptionsRegions(owner);
-    if(regions!=null){
-      if(regions.length==1){
-        // textList.add((Text)xSelection);
-        regionSelection=new Text(regions[0].toString());
-      }
-      else{
-        ObservableList list= FXCollections.observableList(Arrays.asList(regions));
-        ComboBox<EnumRegion> comboBox= new ComboBox(list);
-        if(gameCard.getTargetRegion()==null){
-          comboBox.getSelectionModel().select(0);
-          gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem());
-        }else{
-          comboBox.getSelectionModel().select(gameCard.getTargetRegion());
+    /***********************************************************************
+     * Configurations for Region selection
+     ***********************************************************************/
+    EnumRegion[] regionOptions=policy.getOptionsRegions(getOwner());
+    ListCell<EnumRegion> listCellRegion= new ListCell<EnumRegion>(){
+      @Override
+      protected void updateItem(EnumRegion item,boolean empty){
+        super.updateItem(item,empty);
+        if (item == null || empty) {
+          setItem(null);
+          setGraphic(null);
+        } else {
+          ImageView image = new ImageView(item.getIconSmall());
+          image.setTranslateX(-8);
+          setGraphic(image);
         }
-        comboBox.setOnMouseEntered(event -> selected=true);
-        comboBox.setOnMouseExited(event -> selected=false );
-        comboBox.setOnAction(event -> gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem()));
-        comboBox.getStylesheets().add("cardStyle.css");
-        regionSelection=comboBox;
       }
-    }else regionSelection=new Text("");
+    };
+    if(regionOptions!=null){
+      ComboBox<EnumRegion> comboBox=new ComboBox<>(FXCollections.observableList(Arrays.asList(regionOptions)));
+      comboBox.setCellFactory(new Callback<ListView<EnumRegion>, ListCell<EnumRegion>>() {
+        @Override public ListCell<EnumRegion> call(ListView<EnumRegion> p) {
+          return new ListCell<EnumRegion>() {
+            @Override protected void updateItem(EnumRegion item, boolean empty) {
+              super.updateItem(item, empty);
+              if (item == null || empty) {
+                setItem(null);
+                setGraphic(null);
+              } else {
+                ImageView image;
+                try {
+                   image = new ImageView(item.getIconSmall());
+                  image.setFitWidth(foodIconWidth);
+                  image.setFitHeight(foodIconHeight);
+                  setGraphic(image);
+                  setTooltip(new Tooltip(item.toString()));
+                }catch (Exception e){
+                  System.out.println(item.toString());
+                  //e.printStackTrace();
+                }
+
+              }
+            }
+          };
+        }
+      });
+
+
+      if(gameCard.getTargetRegion()==null){
+        comboBox.getSelectionModel().select(0);
+        gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem());
+      }else{
+        comboBox.getSelectionModel().select(gameCard.getTargetRegion());
+      }
+      comboBox.setOnMouseEntered(event -> selected=true);
+      comboBox.setOnMouseExited(event -> selected=false );
+      comboBox.setOnAction(event ->{
+        gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem());
+        comboBox.setButtonCell(listCellRegion);
+      });
+      comboBox.setButtonCell(listCellRegion);
+      comboBox.getStylesheets().add("cardStyle.css");
+      regionSelection =comboBox;
+    }else regionSelection = new Text("");
+
+//    EnumRegion[] regions=policy.getOptionsRegions(owner);
+//    if(regions!=null){
+//      if(regions.length==1){
+//        // textList.add((Text)xSelection);
+//        regionSelection=new Text(regions[0].toString());
+//      }
+//      else{
+//        ObservableList list= FXCollections.observableList(Arrays.asList(regions));
+//        ComboBox<EnumRegion> comboBox= new ComboBox(list);
+//        if(gameCard.getTargetRegion()==null){
+//          comboBox.getSelectionModel().select(0);
+//          gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem());
+//        }else{
+//          comboBox.getSelectionModel().select(gameCard.getTargetRegion());
+//        }
+//        comboBox.setOnMouseEntered(event -> selected=true);
+//        comboBox.setOnMouseExited(event -> selected=false );
+//        comboBox.setOnAction(event -> gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem()));
+//        comboBox.getStylesheets().add("cardStyle.css");
+//        regionSelection=comboBox;
+//      }
+//    }else regionSelection=new Text("");
+
   }
   private void updateTextOctagon()
   {
@@ -640,7 +707,7 @@ stackPane.getChildren().add(cardImage);
         (cardWidth*7/9), 0.0, 
         (cardWidth*8/9), (cardHeight/13),
         (cardWidth*8/9), (cardHeight/13)  +textOctagonHeightModifier,
-        (cardWidth*7/9), (cardHeight*2/13)+textOctagonHeightModifier,
+        ( cardWidth*7/9), (cardHeight*2/13)+textOctagonHeightModifier,
         (cardWidth*2/9), (cardHeight*2/13)+textOctagonHeightModifier,
         (cardWidth/9),   (cardHeight/13)  +textOctagonHeightModifier, 
         (cardWidth/9),   (cardHeight/13)

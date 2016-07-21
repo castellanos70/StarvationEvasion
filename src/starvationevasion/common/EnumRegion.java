@@ -1,6 +1,7 @@
 package starvationevasion.common;
 
 import com.oracle.javafx.jmx.json.JSONDocument;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import starvationevasion.server.model.Sendable;
 import starvationevasion.server.model.Type;
@@ -137,6 +138,51 @@ public enum EnumRegion implements Sendable
   {
     return (getBit() & allUSRegionBits()) != 0;
   }
+
+
+  /**
+   * @return file path of small icon.
+   */
+  public String getIconPathSmall() { return "regionIcons/"+name()+"64x64.png"; }
+
+
+  /**
+   * @return file path of large icon.
+   */
+  public String getIconPathLarge()  { return "regionIcons/"+name()+"256x256.png";}
+
+
+  /**
+   * Before this can be called, the images must be loaded.
+   * @return small icon.
+   */
+  public Image getIconLarge() { return imageLarge[ordinal()];}
+
+  /**
+   * Before this can be called, the images must be loaded.
+   * @return large icon.
+   */
+  public Image getIconSmall() { return imageSmall[ordinal()]; }
+
+
+  private static Image[] imageSmall = new Image[EnumRegion.SIZE];
+  private static Image[] imageLarge= new Image[EnumRegion.SIZE];
+
+  public static void loadIcons() {
+    assert (imageSmall[0] == null); //As this method is called only once.
+
+    for (EnumRegion type : values()) {
+      int i = type.ordinal();
+      try {
+        imageSmall[i] = new Image(type.getIconPathSmall());
+        imageLarge[i] = new Image(type.getIconPathLarge());
+      } catch (Exception e) {
+        System.err.println("MISSING: " + type.name() + " Trying this path: " + type.getIconPathSmall());
+      }
+    }
+  }
+
+
 
   private Color[] REGION_COLOR =
   {

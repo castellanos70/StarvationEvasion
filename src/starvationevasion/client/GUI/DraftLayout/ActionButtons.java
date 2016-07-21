@@ -126,6 +126,14 @@ public class ActionButtons extends HBox
       cardList.add(new PolicyCard(EnumPolicy.values()[11], EnumRegion.USA_NORTHERN_PLAINS));
       cardList.add(new PolicyCard(EnumPolicy.values()[12], EnumRegion.USA_SOUTHEAST));
       cardList.add(new PolicyCard(EnumPolicy.values()[13], EnumRegion.USA_SOUTHERN_PLAINS));
+      cardList.add(new PolicyCard(EnumPolicy.values()[0], EnumRegion.USA_CALIFORNIA));
+      cardList.add(new PolicyCard(EnumPolicy.values()[1], EnumRegion.USA_HEARTLAND));
+      cardList.add(new PolicyCard(EnumPolicy.values()[2], EnumRegion.USA_MOUNTAIN));
+      cardList.add(new PolicyCard(EnumPolicy.values()[3], EnumRegion.USA_NORTHERN_CRESCENT));
+      cardList.add(new PolicyCard(EnumPolicy.values()[4], EnumRegion.USA_NORTHERN_PLAINS));
+      cardList.add(new PolicyCard(EnumPolicy.values()[5], EnumRegion.USA_SOUTHEAST));
+      cardList.add(new PolicyCard(EnumPolicy.values()[6], EnumRegion.USA_SOUTHERN_PLAINS));
+
       gui.getVotingLayout().updateCardSpaces(cardList);
     }
     // gui.switchScenes();

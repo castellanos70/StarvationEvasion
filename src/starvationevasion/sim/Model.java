@@ -1429,7 +1429,7 @@ public class Model
     System.out.println("      Running Test entry point: starvationevasion.sim.Model()");
     System.out.println("==========================================================================");
 
-
+    Model model = new Model();
 
     String[] imagePath = {"BlankBlue_MollweideProjection-1280x641.png"};
 
@@ -1447,7 +1447,7 @@ public class Model
     GUIThread gui = new GUIThread();
     gui.start();
 
-    Model model = new Model();
+
 
     JavaFX_DebugViewer pic = JavaFX_DebugViewer.me;
     MapProjectionMollweide map = new MapProjectionMollweide(pic.getImageWidth(), pic.getImageHeight());

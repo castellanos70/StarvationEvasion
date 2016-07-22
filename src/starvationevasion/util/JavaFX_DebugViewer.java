@@ -12,6 +12,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
+import starvationevasion.sim.Territory;
+import starvationevasion.sim.io.GeographyXMLparser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,6 +133,11 @@ public class JavaFX_DebugViewer extends Application
 
   public static void main(String[] args)
   {
+    ArrayList<Territory> territoryList = Territory.territoryLoader();
+    new GeographyXMLparser(null);
+
+
+
     JavaFX_DebugViewer.launch(args);
   }
 }

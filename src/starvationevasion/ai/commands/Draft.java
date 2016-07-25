@@ -625,14 +625,14 @@ public class Draft extends AbstractCommand
       getClient().getUser().getHand().forEach(policy->
       {
         //card = null;
-        if(card.getValidTargetRegions()!=null)
+        if(card!=null&&card.getValidTargetRegions()!=null)
         {
           if(Arrays.asList(card.getValidTargetRegions()).contains(getClient().getUser().getRegion()))
           {
             cardsForThisRegion=true;
           }
         }
-        else if(card.getValidTargetRegions()==null && getClient().policyAndRegionMap.containsKey(policy)
+        else if(card!=null&&card.getValidTargetRegions()==null && getClient().policyAndRegionMap.containsKey(policy)
             && getClient().policyAndRegionMap.get(policy).equals(getClient().getUser().getRegion()))
         {
           cardsForThisRegion=true;

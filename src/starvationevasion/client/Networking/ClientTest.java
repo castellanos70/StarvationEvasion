@@ -311,7 +311,7 @@ public class ClientTest implements Client
 
     else if(serverState ==GameState.DRAFTING){
       gui.getDraftLayout().getActionButtons().setDisable(false);
-      readHand();
+      //readHand();
     }
     else if (serverState == GameState.VOTING && gui.isDraftingPhase())
     {
@@ -371,7 +371,6 @@ public class ClientTest implements Client
       {
         serverState = (GameState)data;
         System.out.println("Received game serverState update " + serverState);
-        if(serverState.equals(GameState.DRAWING)) readHand();
         respondToStateChange();
       }
       else if (type == Type.USERS){

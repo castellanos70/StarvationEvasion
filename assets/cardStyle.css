@@ -15,8 +15,8 @@
 }
 .combo-box{
         -fx-background-radius: 5em;
-                -fx-min-width: 64px;
-                -fx-min-height: 64px;
-                -fx-max-width: 64px;
-                -fx-max-height: 64px;
+                -fx-min-width: 32px;
+                -fx-min-height: 32px;
+                -fx-max-width: 32px;
+                -fx-max-height: 32px;
 }

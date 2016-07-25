@@ -12,9 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
@@ -475,16 +473,20 @@ stackPane.getChildren().add(cardImage);
     AnchorPane.setTopAnchor(title, cardHeight/288);
     AnchorPane.setLeftAnchor(title, cardWidth/4);
 
-    AnchorPane.setTopAnchor(regionSelection, cardHeight/72);
-    AnchorPane.setLeftAnchor(regionSelection, cardWidth/144);
+    //AnchorPane.setTopAnchor(regionSelection, cardHeight/72);
+    AnchorPane.setTopAnchor(regionSelection, 0.0);
+    //AnchorPane.setLeftAnchor(regionSelection, cardWidth/144);
+    AnchorPane.setLeftAnchor(regionSelection, 0.0);
 
-    AnchorPane.setTopAnchor(foodSelection, cardHeight/72);
-    AnchorPane.setRightAnchor(foodSelection, cardWidth/144);
-   /// AnchorPane.setTopAnchor(foodSelection,0.0);
-   // AnchorPane.setRightAnchor(foodSelection, 0.0);
+    //AnchorPane.setTopAnchor(foodSelection, cardHeight/72);
+    //AnchorPane.setRightAnchor(foodSelection, cardWidth/144);
+   AnchorPane.setTopAnchor(foodSelection,0.0);
+    AnchorPane.setRightAnchor(foodSelection, 0.0);
 
-    AnchorPane.setBottomAnchor(xSelection, cardHeight/72);
-    AnchorPane.setRightAnchor(xSelection, cardWidth/144);
+//    AnchorPane.setBottomAnchor(xSelection, cardHeight/72);
+//    AnchorPane.setRightAnchor(xSelection, cardWidth/144);
+    AnchorPane.setBottomAnchor(xSelection, 0.0);
+    AnchorPane.setRightAnchor(xSelection, 0.0);
     
 //    AnchorPane.setTopAnchor(rulesText, cardHeight*10/13-textOctagonHeightModifier);
 //    AnchorPane.setLeftAnchor(rulesText, cardWidth/4);
@@ -522,17 +524,26 @@ stackPane.getChildren().add(cardImage);
               setItem(null);
               setGraphic(null);
             }else{
-
               Label label=new Label(item.toString());
-
               label.setFont(Font.font("helvetica",FontWeight.BOLD,(50)));
-              if(item>9)label.setTranslateX(-10);
-              else label.setTranslateX(10);
+              Polygon back= new Polygon();
+              back.getPoints().setAll(0.0, 0.0,
+                      -cardWidth/9, 0.0,
+                      -cardWidth*2/9, cardHeight/13,
+                      -cardWidth/9, cardHeight*2/13,
+                      0.0, cardHeight*2/13);
+              back.setTranslateX(-cardWidth*2/9+23);
+              back.setTranslateY(-cardHeight*2/13+27);
+              back.setFill(Color.web(color));
               label.setMinWidth(75);
-              label.setTextFill(Color.BLACK);
-              setGraphic(label);
+              label.setTextFill(Color.BLUE);
+              if(item>9)label.setTranslateX(-45);
+              else label.setTranslateX(-30);
+              label.setTranslateY(-50);
+              StackPane stackPane = new StackPane(back,label);
+              Pane vBox=new Pane(stackPane);
+              setGraphic(vBox);
             }
-
           }
         };
         comboBox.setButtonCell(integerListCell);
@@ -564,9 +575,35 @@ stackPane.getChildren().add(cardImage);
           setItem(null);
           setGraphic(null);
         } else {
-          ImageView image = new ImageView(item.getIconSmall());
-          image.setTranslateX(-8);
-          setGraphic(image);
+          ImageView image = new ImageView(item.getIconLarge());
+          image.setFitHeight(96);
+          image.setFitWidth(96);
+          image.setTranslateX(-96/2);
+          image.setTranslateY(-10);
+         // image.setTranslateX(-600);
+          //Circle clip = new Circle(10,10,64);
+          Polygon clip = new Polygon();
+          clip.getPoints().setAll(0.0, 0.0,
+                  -cardWidth/9, 0.0,
+                  -cardWidth*2/9, cardHeight/13, -
+                          cardWidth/9, cardHeight*2/13,
+                  0.0, cardHeight*2/13);
+          Polygon test = new Polygon();
+          test.getPoints().setAll(0.0, 0.0,
+                  -cardWidth/9, 0.0,
+                  -cardWidth*2/9, cardHeight/13, -
+                          cardWidth/9, cardHeight*2/13,
+                  0.0, cardHeight*2/13);
+          //clip.setTranslateX(cardWidth*1.75-17);
+          clip.setTranslateX(96/2-15);
+          test.setTranslateX(-96/2);
+          //clip.setTranslateX(cardWidth);
+          //image.setClip(clip);
+          setContentDisplay(ContentDisplay.TOP);
+          //StackPane test1 = new StackPane(image,test);
+          VBox vBox=new VBox(image);
+          vBox.setClip(clip);
+          this.getChildren().add(vBox);
         }
       }
     };
@@ -622,9 +659,20 @@ stackPane.getChildren().add(cardImage);
           setItem(null);
           setGraphic(null);
         } else {
-          ImageView image = new ImageView(item.getIconSmall());
-          image.setTranslateX(-8);
-          setGraphic(image);
+          ImageView image = new ImageView(item.getIconLarge());
+          image.setFitHeight(96);
+          image.setFitWidth(96);
+          //Circle clip = new Circle(10,10,64);
+          Polygon clip = new Polygon();
+          clip.getPoints().setAll(0.0, 0.0,
+                  cardWidth/9-1, 0.0,
+                  cardWidth*2/9-1, cardHeight/13-1,
+                  cardWidth/9-1, cardHeight*2/13-1,
+                  0.0, cardHeight*2/13-1);
+         image.setClip(clip);
+          setContentDisplay(ContentDisplay.TOP);
+          VBox vBox=new VBox(image);
+          this.getChildren().add(vBox);
         }
       }
     };
@@ -644,6 +692,7 @@ stackPane.getChildren().add(cardImage);
                    image = new ImageView(item.getIconSmall());
                   image.setFitWidth(foodIconWidth);
                   image.setFitHeight(foodIconHeight);
+
                   setGraphic(image);
                   setTooltip(new Tooltip(item.toString()));
                 }catch (Exception e){

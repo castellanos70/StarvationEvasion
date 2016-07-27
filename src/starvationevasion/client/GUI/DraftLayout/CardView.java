@@ -3,11 +3,7 @@ package starvationevasion.client.GUI.DraftLayout;
 import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -64,7 +60,8 @@ public class CardView extends AbstractCard
   private final String ORANGE = "ff6600";
   private PolicyCard gameCard;
 
-  private boolean selected=false;
+  private boolean stillSelected =false;
+  private boolean selected =false;
 
   private Polygon topTrapezoid        = new Polygon();
   private Polygon bottomTrapezoid     = new Polygon();
@@ -97,13 +94,15 @@ public class CardView extends AbstractCard
     initSimpleCard();
 
     this.setOnMouseEntered(event -> {
+      selected=true;
       initMainCard();
       setTranslateY((smallCardHeight-cardHeight)/2);
       setTranslateX(-cardWidth/2);
       toFront();
     });
     this.setOnMouseExited(event -> {
-      if(!selected) {
+      if(!stillSelected) {
+        selected=false;
         initSimpleCard();
         setTranslateY(0);
         setTranslateX(0);
@@ -115,7 +114,7 @@ public class CardView extends AbstractCard
       }
       if(event.getButton().equals(MouseButton.PRIMARY)){
         if(contextMenu!=null)contextMenu.hide();
-        selected=false;
+        stillSelected =false;
       }
     });
 
@@ -129,21 +128,25 @@ public class CardView extends AbstractCard
 
     initSimpleCard();
 
-    //this.getChildren().add(cardPane);
-   // this.getChildren().add(cardPane);
-    //initSimpleCard();
-
     this.setOnMouseEntered(event -> {
       initMainCard();
-      setTranslateY(-400);
-      setTranslateX(-cardWidth/2);
+      selected=true;
+    //  setLayoutY(0);
+      //setTranslateY(-cardHeight/2-smallCardHeight);
+      setTranslateY(-cardHeight/2);
+     //setTranslateX(-cardWidth/2);
+//      setLayoutX(0);
+
       toFront();
     });
     this.setOnMouseExited(event -> {
-      if(!selected) {
+      if(!stillSelected) {
+        selected=false;
         initSimpleCard();
         setTranslateY(0);
         setTranslateX(0);
+//        setLayoutX(0);
+//        setLayoutY(0);
       }
     });
     setOnMouseClicked(event -> {
@@ -152,7 +155,7 @@ public class CardView extends AbstractCard
       }
       if(event.getButton().equals(MouseButton.PRIMARY)){
         if(contextMenu!=null)contextMenu.hide();
-        selected=false;
+        stillSelected =false;
       }
     });
 
@@ -173,7 +176,7 @@ public class CardView extends AbstractCard
       }
       if(event.getButton().equals(MouseButton.PRIMARY)){
         if(contextMenu!=null)contextMenu.hide();
-        selected=false;
+        stillSelected =false;
       }
     });
 
@@ -272,11 +275,11 @@ stackPane.getChildren().add(cardImage);
     timer.stop();
   }
 
-  public boolean isSelect(){
+  public boolean isSelected(){
     return selected;
   }
-  public void setSelected(boolean selected){
-    this.selected=selected;
+  public void setStillSelected(boolean stillSelected){
+    this.stillSelected = stillSelected;
   }
 
   @Override
@@ -291,7 +294,7 @@ stackPane.getChildren().add(cardImage);
 
   public PolicyCard getGameCard() {return gameCard;}
   private void openRightClickMenu(MouseEvent event){
-    selected=true;
+    stillSelected =true;
     if(contextMenu!=null){
       contextMenu.hide();
     }
@@ -299,18 +302,18 @@ stackPane.getChildren().add(cardImage);
     MenuItem draft=new MenuItem("Draft Card");
 
     draft.setOnAction(event1 -> {
-      selected=false;
+      stillSelected =false;
       isDrafted=true;
     });
     MenuItem discard=new MenuItem("Discard card");
     discard.setOnAction(event1 ->{
-      selected=false;
+      stillSelected =false;
       isDiscarded=true;
     });
 
     MenuItem undo=new MenuItem("Undo");
     undo.setOnAction(event1 -> {
-      selected=false;
+      stillSelected =false;
       isDiscarded=false;
       isDrafted=false;
     });
@@ -553,8 +556,8 @@ stackPane.getChildren().add(cardImage);
         }else{
           comboBox.getSelectionModel().select(new Integer(gameCard.getX()));
         }
-        comboBox.setOnMouseEntered(event -> selected=true);
-        comboBox.setOnMouseExited(event -> selected=false );
+        comboBox.setOnMouseEntered(event -> stillSelected =true);
+        comboBox.setOnMouseExited(event -> stillSelected =false );
         comboBox.setOnAction(event -> gameCard.setX(comboBox.getSelectionModel().getSelectedItem()));
         comboBox.getStylesheets().add("cardStyle.css");
         comboBox.setStyle("-fx-font: 15px \"Serif\";");
@@ -636,8 +639,8 @@ stackPane.getChildren().add(cardImage);
       }else{
         comboBox.getSelectionModel().select(gameCard.getTargetFood());
       }
-      comboBox.setOnMouseEntered(event -> selected=true);
-      comboBox.setOnMouseExited(event -> selected=false );
+      comboBox.setOnMouseEntered(event -> stillSelected =true);
+      comboBox.setOnMouseExited(event -> stillSelected =false );
       comboBox.setOnAction(event ->{
         gameCard.setTargetFood(comboBox.getSelectionModel().getSelectedItem());
         comboBox.setButtonCell(listCell);
@@ -713,8 +716,8 @@ stackPane.getChildren().add(cardImage);
       }else{
         comboBox.getSelectionModel().select(gameCard.getTargetRegion());
       }
-      comboBox.setOnMouseEntered(event -> selected=true);
-      comboBox.setOnMouseExited(event -> selected=false );
+      comboBox.setOnMouseEntered(event -> stillSelected =true);
+      comboBox.setOnMouseExited(event -> stillSelected =false );
       comboBox.setOnAction(event ->{
         gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem());
         comboBox.setButtonCell(listCellRegion);
@@ -739,8 +742,8 @@ stackPane.getChildren().add(cardImage);
 //        }else{
 //          comboBox.getSelectionModel().select(gameCard.getTargetRegion());
 //        }
-//        comboBox.setOnMouseEntered(event -> selected=true);
-//        comboBox.setOnMouseExited(event -> selected=false );
+//        comboBox.setOnMouseEntered(event -> stillSelected=true);
+//        comboBox.setOnMouseExited(event -> stillSelected=false );
 //        comboBox.setOnAction(event -> gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem()));
 //        comboBox.getStylesheets().add("cardStyle.css");
 //        regionSelection=comboBox;
@@ -771,7 +774,7 @@ stackPane.getChildren().add(cardImage);
   {
     return cardPane;
   }
-  
+  public double getCardHeight(){return cardHeight;}
   //Handles Animation of the Text area
   AnimationTimer timer = new AnimationTimer()
   {
@@ -812,7 +815,12 @@ stackPane.getChildren().add(cardImage);
 
 //    initializeGameCardPolygons();
   }
+  @Override
+  public void setSize(double width, double height){
+    cardImage.setFitWidth(width);
+    cardImage.setFitHeight(height);
 
+  }
     @Override
     public void reset() {
 

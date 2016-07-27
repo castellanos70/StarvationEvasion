@@ -115,23 +115,23 @@ public class VotingLayout extends GridPane
         int index = getIndexOfRegion(card.getOwner());
         if (card.getCardType().getVotesRequired() == 0)
         {
-          if (cardSpaces[index][0].getCard()== null) cardSpaces[index][0].setCard(card.getOwner(), card.getCardType(), gui);
-          else if (cardSpaces[index][1].getCard() == null) cardSpaces[index][1].setCard(card.getOwner(), card.getCardType(), gui);
-          else if (cardSpaces[index][2].getCard() == null) cardSpaces[index][2].setCard(card.getOwner(), card.getCardType(), gui);
+          if (cardSpaces[index][0].getCard()== null) cardSpaces[index][0].setCard(card, gui);
+          else if (cardSpaces[index][1].getCard() == null) cardSpaces[index][1].setCard(card, gui);
+          else if (cardSpaces[index][2].getCard() == null) cardSpaces[index][2].setCard(card, gui);
 
         }
         else
         {
           final int availableRow;
           if(cardSpaces[index][0].getCard()==null) {
-            cardSpaces[index][0].setCard(card.getOwner(), card.getCardType(), gui);
+            cardSpaces[index][0].setCard(card, gui);
             availableRow=0;
           }else if(cardSpaces[index][1].getCard()==null) {
-            cardSpaces[index][1].setCard(card.getOwner(), card.getCardType(), gui);
+            cardSpaces[index][1].setCard(card, gui);
             availableRow=1;
           }else if(cardSpaces[index][2].getCard()==null) {
             availableRow=2;
-            cardSpaces[index][2].setCard(card.getOwner(), card.getCardType(), gui);
+            cardSpaces[index][2].setCard(card, gui);
           }else availableRow=0;
           Button[] buttons = votingNodes[index][availableRow].addVotingButtons();
           buttons[0].setOnAction(event ->

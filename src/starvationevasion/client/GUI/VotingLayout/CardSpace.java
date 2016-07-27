@@ -9,6 +9,7 @@ import starvationevasion.client.GUI.DraftLayout.ClientPolicyCard;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.EnumPolicy;
+import starvationevasion.common.PolicyCard;
 
 /**
  * Defines the StackPane where a card may be placed for voting purposes in the VotingLayout
@@ -68,10 +69,10 @@ public class CardSpace extends StackPane
         break;
     }
   }
-  public void setCard(EnumRegion region,EnumPolicy card,GUI gui)
+  public void setCard(PolicyCard policyCard, GUI gui)
   {
     this.setAlignment(Pos.BOTTOM_CENTER);
-    clientPolicyCard=new CardView(region,card,true);
+    clientPolicyCard=new CardView(policyCard);
   //  clientPolicyCard.setBasicCard();
 //    clientPolicyCard.setOnMouseEntered(event->
 //    {

@@ -11,6 +11,7 @@ import starvationevasion.client.GUI.ResizablePane;
 import starvationevasion.common.EnumPolicy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 /**
@@ -129,8 +130,12 @@ public class HandNode extends ResizablePane
    * @param policies
    */
   public void setPolicies(EnumPolicy[] policies){
-    this.policies = policies;
-    createCards();
+
+    if(policies!=null&&policies.length!=0&&!policies.equals(this.policies))
+    {
+      this.policies = policies;
+      createCards();
+    }
   }
   
   /**
@@ -170,6 +175,7 @@ public class HandNode extends ResizablePane
   
   public void removeOldCards()
   {
+    this.getChildren().clear();
     for (int i = 0; i < cards.length; i++){
       this.getChildren().remove(cards[i]);
     }

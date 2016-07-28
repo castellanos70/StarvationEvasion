@@ -492,8 +492,10 @@ public class ClientMain extends Application
     restart.setOnAction(event -> {
       connectingToAdmin=true;
       client.loginToServer("admin","admin",null);
-      client.sendRequest(Endpoint.STOP_GAME,null,null);
       client.sendRequest(Endpoint.RESTART_GAME,null,null);
+      client.sendRequest(Endpoint.KILL_AI,null,null);
+      client.shutdown();
+      connectToServer(editServer.getText());
     });
     onlineNow.setClosable(false);
     usersTab.setClosable(false);

@@ -4,6 +4,7 @@ import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -11,9 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
@@ -75,12 +74,52 @@ public class CardView extends AbstractCard
   private Polygon topRightPentagon    = new Polygon();
   private Polygon middleTextOctagon   = new Polygon();
   Circle pipOne, pipTwo, pipThree;
-  private Text title, rulesText, flavorText, informationText;
+  private Text title,rulesText,flavorText,informationText;
   private ScrollPane textScrollPane;
   private Node xSelection, foodSelection,regionSelection;
   private EnumRegion owner;
   private EnumPolicy policy;
   private ContextMenu contextMenu;
+
+  /**
+   * This constructor is used by the voting phase.
+   * @param owner owner of card
+   * @param policy the policy of the card
+   * @param voting if it is voting
+     */
+  public CardView(EnumRegion owner, EnumPolicy policy,boolean voting)
+  {
+    this.owner = owner;
+    this.policy=policy;
+    gameCard = new PolicyCard(policy, owner);
+    actionPointCost = gameCard.getActionPointCost();
+
+    initSimpleCard();
+
+    this.setOnMouseEntered(event -> {
+      initMainCard();
+      setTranslateY((smallCardHeight-cardHeight)/2);
+      setTranslateX(-cardWidth/2);
+      toFront();
+    });
+    this.setOnMouseExited(event -> {
+      if(!selected) {
+        initSimpleCard();
+        setTranslateY(0);
+        setTranslateX(0);
+      }
+    });
+    setOnMouseClicked(event -> {
+      if(event.getButton().equals(MouseButton.SECONDARY)){
+        openRightClickMenu(event);
+      }
+      if(event.getButton().equals(MouseButton.PRIMARY)){
+        if(contextMenu!=null)contextMenu.hide();
+        selected=false;
+      }
+    });
+
+  }
   public CardView(EnumRegion owner, EnumPolicy policy)
   {
     this.owner = owner;
@@ -357,21 +396,30 @@ stackPane.getChildren().add(cardImage);
       p.setOnMouseExited(me -> p.setStroke(Color.BLACK));
     }
     middleTextOctagon.setOnMouseEntered(me -> {
-      mouseOverOctagon = true;
-      middleTextOctagon.setStroke(Color.YELLOW);
-      middleTextOctagon.setStroke(Color.YELLOW);
-      middleTextOctagon.setFill(Color.BLACK);
-      rulesText.setFill(Color.WHITE);
+      mouseOverText();
     });
     middleTextOctagon.setOnMouseExited(me -> {
       mouseOverOctagon = false;
       middleTextOctagon.setStroke(Color.BLACK);
       middleTextOctagon.setFill(Color.web(color, transparency));
       rulesText.setFill(Color.BLACK);
+      rulesText.setFont(Font.font(12));
     });
    
   }
-
+  private boolean tooBig=false;
+  private void mouseOverText(){
+    mouseOverOctagon = true;
+    middleTextOctagon.setStroke(Color.YELLOW);
+    middleTextOctagon.setStroke(Color.YELLOW);
+    middleTextOctagon.setFill(Color.web(color));
+    if(!tooBig) rulesText.setFont(Font.font(16));
+    if(rulesText.getLayoutBounds().getHeight()>cardHeight*9/26){
+      tooBig=true;
+      rulesText.setFont(Font.font(12));
+    }
+    //rulesText.setFill(Color.WHITE);
+  }
   private void initializeGameCardText()
   {
   //Initialize Text fields
@@ -401,24 +449,14 @@ stackPane.getChildren().add(cardImage);
     rulesText.setFill(Color.BLACK);
     rulesText.setFont(Font.font(12));
     rulesText.setOnMouseEntered(me -> {
-      mouseOverOctagon = true;
-      middleTextOctagon.setStroke(Color.YELLOW);
-      middleTextOctagon.setFill(Color.BLACK);
-      rulesText.setFill(Color.WHITE);
-      rulesText.autosize();
+      mouseOverText();
     });
     rulesText.setWrappingWidth(200);
-    
     flavorText = new Text(gameCard.getFlavorText());
     flavorText.setFill(Color.WHITE);
     flavorText.setFont(Font.font("Verdana", FontPosture.ITALIC, 12));
     flavorText.setOnMouseEntered(me -> {
-      mouseOverOctagon = true;
-      middleTextOctagon.setStroke(Color.YELLOW);
-      middleTextOctagon.setFill(Color.BLACK);
-      rulesText.setFill(Color.WHITE);
-      //rulesText.setFont(Font.font(16));
-      rulesText.autosize();
+      mouseOverText();
     });
     flavorText.setWrappingWidth(200);
 
@@ -435,16 +473,20 @@ stackPane.getChildren().add(cardImage);
     AnchorPane.setTopAnchor(title, cardHeight/288);
     AnchorPane.setLeftAnchor(title, cardWidth/4);
 
-    AnchorPane.setTopAnchor(regionSelection, cardHeight/72);
-    AnchorPane.setLeftAnchor(regionSelection, cardWidth/144);
+    //AnchorPane.setTopAnchor(regionSelection, cardHeight/72);
+    AnchorPane.setTopAnchor(regionSelection, 0.0);
+    //AnchorPane.setLeftAnchor(regionSelection, cardWidth/144);
+    AnchorPane.setLeftAnchor(regionSelection, 0.0);
 
-    AnchorPane.setTopAnchor(foodSelection, cardHeight/72);
-    AnchorPane.setRightAnchor(foodSelection, cardWidth/144);
-   /// AnchorPane.setTopAnchor(foodSelection,0.0);
-   // AnchorPane.setRightAnchor(foodSelection, 0.0);
+    //AnchorPane.setTopAnchor(foodSelection, cardHeight/72);
+    //AnchorPane.setRightAnchor(foodSelection, cardWidth/144);
+   AnchorPane.setTopAnchor(foodSelection,0.0);
+    AnchorPane.setRightAnchor(foodSelection, 0.0);
 
-    AnchorPane.setBottomAnchor(xSelection, cardHeight/72);
-    AnchorPane.setRightAnchor(xSelection, cardWidth/144);
+//    AnchorPane.setBottomAnchor(xSelection, cardHeight/72);
+//    AnchorPane.setRightAnchor(xSelection, cardWidth/144);
+    AnchorPane.setBottomAnchor(xSelection, 0.0);
+    AnchorPane.setRightAnchor(xSelection, 0.0);
     
 //    AnchorPane.setTopAnchor(rulesText, cardHeight*10/13-textOctagonHeightModifier);
 //    AnchorPane.setLeftAnchor(rulesText, cardWidth/4);
@@ -482,17 +524,26 @@ stackPane.getChildren().add(cardImage);
               setItem(null);
               setGraphic(null);
             }else{
-
               Label label=new Label(item.toString());
-
               label.setFont(Font.font("helvetica",FontWeight.BOLD,(50)));
-              if(item>9)label.setTranslateX(-10);
-              else label.setTranslateX(10);
+              Polygon back= new Polygon();
+              back.getPoints().setAll(0.0, 0.0,
+                      -cardWidth/9, 0.0,
+                      -cardWidth*2/9, cardHeight/13,
+                      -cardWidth/9, cardHeight*2/13,
+                      0.0, cardHeight*2/13);
+              back.setTranslateX(-cardWidth*2/9+23);
+              back.setTranslateY(-cardHeight*2/13+27);
+              back.setFill(Color.web(color));
               label.setMinWidth(75);
-              label.setTextFill(Color.BLACK);
-              setGraphic(label);
+              label.setTextFill(Color.BLUE);
+              if(item>9)label.setTranslateX(-45);
+              else label.setTranslateX(-30);
+              label.setTranslateY(-50);
+              StackPane stackPane = new StackPane(back,label);
+              Pane vBox=new Pane(stackPane);
+              setGraphic(vBox);
             }
-
           }
         };
         comboBox.setButtonCell(integerListCell);
@@ -512,7 +563,9 @@ stackPane.getChildren().add(cardImage);
       }
     }else xSelection =new Text("");
 
-    //Configuration for Target Food
+    /****************************************************
+     * Configuration for Target Food
+     *****************************************************/
     EnumFood[] foodOptions=policy.getOptionsFood();
     ListCell<EnumFood> listCell= new ListCell<EnumFood>(){
       @Override
@@ -522,9 +575,35 @@ stackPane.getChildren().add(cardImage);
           setItem(null);
           setGraphic(null);
         } else {
-          ImageView image = new ImageView(item.getIconSmall());
-          image.setTranslateX(-8);
-          setGraphic(image);
+          ImageView image = new ImageView(item.getIconLarge());
+          image.setFitHeight(96);
+          image.setFitWidth(96);
+          image.setTranslateX(-96/2);
+          image.setTranslateY(-10);
+         // image.setTranslateX(-600);
+          //Circle clip = new Circle(10,10,64);
+          Polygon clip = new Polygon();
+          clip.getPoints().setAll(0.0, 0.0,
+                  -cardWidth/9, 0.0,
+                  -cardWidth*2/9, cardHeight/13, -
+                          cardWidth/9, cardHeight*2/13,
+                  0.0, cardHeight*2/13);
+          Polygon test = new Polygon();
+          test.getPoints().setAll(0.0, 0.0,
+                  -cardWidth/9, 0.0,
+                  -cardWidth*2/9, cardHeight/13, -
+                          cardWidth/9, cardHeight*2/13,
+                  0.0, cardHeight*2/13);
+          //clip.setTranslateX(cardWidth*1.75-17);
+          clip.setTranslateX(96/2-15);
+          test.setTranslateX(-96/2);
+          //clip.setTranslateX(cardWidth);
+          //image.setClip(clip);
+          setContentDisplay(ContentDisplay.TOP);
+          //StackPane test1 = new StackPane(image,test);
+          VBox vBox=new VBox(image);
+          vBox.setClip(clip);
+          this.getChildren().add(vBox);
         }
       }
     };
@@ -568,29 +647,106 @@ stackPane.getChildren().add(cardImage);
       foodSelection =comboBox;
     }else foodSelection = new Text("");
 
-    //Configurations for Region selection
-    EnumRegion[] regions=policy.getOptionsRegions(owner);
-    if(regions!=null){
-      if(regions.length==1){
-        // textList.add((Text)xSelection);
-        regionSelection=new Text(regions[0].toString());
-      }
-      else{
-        ObservableList list= FXCollections.observableList(Arrays.asList(regions));
-        ComboBox<EnumRegion> comboBox= new ComboBox(list);
-        if(gameCard.getTargetRegion()==null){
-          comboBox.getSelectionModel().select(0);
-          gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem());
-        }else{
-          comboBox.getSelectionModel().select(gameCard.getTargetRegion());
+    /***********************************************************************
+     * Configurations for Region selection
+     ***********************************************************************/
+    EnumRegion[] regionOptions=policy.getOptionsRegions(getOwner());
+    ListCell<EnumRegion> listCellRegion= new ListCell<EnumRegion>(){
+      @Override
+      protected void updateItem(EnumRegion item,boolean empty){
+        super.updateItem(item,empty);
+        if (item == null || empty) {
+          setItem(null);
+          setGraphic(null);
+        } else {
+          ImageView image = new ImageView(item.getIconLarge());
+          image.setFitHeight(96);
+          image.setFitWidth(96);
+          //Circle clip = new Circle(10,10,64);
+          Polygon clip = new Polygon();
+          clip.getPoints().setAll(0.0, 0.0,
+                  cardWidth/9-1, 0.0,
+                  cardWidth*2/9-1, cardHeight/13-1,
+                  cardWidth/9-1, cardHeight*2/13-1,
+                  0.0, cardHeight*2/13-1);
+         image.setClip(clip);
+          setContentDisplay(ContentDisplay.TOP);
+          VBox vBox=new VBox(image);
+          this.getChildren().add(vBox);
         }
-        comboBox.setOnMouseEntered(event -> selected=true);
-        comboBox.setOnMouseExited(event -> selected=false );
-        comboBox.setOnAction(event -> gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem()));
-        comboBox.getStylesheets().add("cardStyle.css");
-        regionSelection=comboBox;
       }
-    }else regionSelection=new Text("");
+    };
+    if(regionOptions!=null){
+      ComboBox<EnumRegion> comboBox=new ComboBox<>(FXCollections.observableList(Arrays.asList(regionOptions)));
+      comboBox.setCellFactory(new Callback<ListView<EnumRegion>, ListCell<EnumRegion>>() {
+        @Override public ListCell<EnumRegion> call(ListView<EnumRegion> p) {
+          return new ListCell<EnumRegion>() {
+            @Override protected void updateItem(EnumRegion item, boolean empty) {
+              super.updateItem(item, empty);
+              if (item == null || empty) {
+                setItem(null);
+                setGraphic(null);
+              } else {
+                ImageView image;
+                try {
+                   image = new ImageView(item.getIconSmall());
+                  image.setFitWidth(foodIconWidth);
+                  image.setFitHeight(foodIconHeight);
+
+                  setGraphic(image);
+                  setTooltip(new Tooltip(item.toString()));
+                }catch (Exception e){
+                  System.out.println(item.toString());
+                  //e.printStackTrace();
+                }
+
+              }
+            }
+          };
+        }
+      });
+
+
+      if(gameCard.getTargetRegion()==null){
+        comboBox.getSelectionModel().select(0);
+        gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem());
+      }else{
+        comboBox.getSelectionModel().select(gameCard.getTargetRegion());
+      }
+      comboBox.setOnMouseEntered(event -> selected=true);
+      comboBox.setOnMouseExited(event -> selected=false );
+      comboBox.setOnAction(event ->{
+        gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem());
+        comboBox.setButtonCell(listCellRegion);
+      });
+      comboBox.setButtonCell(listCellRegion);
+      comboBox.getStylesheets().add("cardStyle.css");
+      regionSelection =comboBox;
+    }else regionSelection = new Text("");
+
+//    EnumRegion[] regions=policy.getOptionsRegions(owner);
+//    if(regions!=null){
+//      if(regions.length==1){
+//        // textList.add((Text)xSelection);
+//        regionSelection=new Text(regions[0].toString());
+//      }
+//      else{
+//        ObservableList list= FXCollections.observableList(Arrays.asList(regions));
+//        ComboBox<EnumRegion> comboBox= new ComboBox(list);
+//        if(gameCard.getTargetRegion()==null){
+//          comboBox.getSelectionModel().select(0);
+//          gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem());
+//        }else{
+//          comboBox.getSelectionModel().select(gameCard.getTargetRegion());
+//        }
+//        comboBox.setOnMouseEntered(event -> selected=true);
+//        comboBox.setOnMouseExited(event -> selected=false );
+//        comboBox.setOnAction(event -> gameCard.setTargetRegion(comboBox.getSelectionModel().getSelectedItem()));
+//        comboBox.getStylesheets().add("cardStyle.css");
+//        regionSelection=comboBox;
+//      }
+//    }else regionSelection=new Text("");
+
   }
   private void updateTextOctagon()
   {
@@ -600,7 +756,7 @@ stackPane.getChildren().add(cardImage);
         (cardWidth*7/9), 0.0, 
         (cardWidth*8/9), (cardHeight/13),
         (cardWidth*8/9), (cardHeight/13)  +textOctagonHeightModifier,
-        (cardWidth*7/9), (cardHeight*2/13)+textOctagonHeightModifier,
+        ( cardWidth*7/9), (cardHeight*2/13)+textOctagonHeightModifier,
         (cardWidth*2/9), (cardHeight*2/13)+textOctagonHeightModifier,
         (cardWidth/9),   (cardHeight/13)  +textOctagonHeightModifier, 
         (cardWidth/9),   (cardHeight/13)
@@ -609,6 +765,7 @@ stackPane.getChildren().add(cardImage);
     AnchorPane.setBottomAnchor(middleTextOctagon, (cardHeight / 13));
     AnchorPane.setTopAnchor(textScrollPane, cardHeight*10/13-textOctagonHeightModifier+5);
     textScrollPane.setPrefHeight(cardHeight*3/26+textOctagonHeightModifier);
+
   }
   public StackPane getCardView()
   {

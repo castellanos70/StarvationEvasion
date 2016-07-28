@@ -71,7 +71,6 @@ public class VotingLayout extends NodeTemplate
       public void handle(Event event)
       {
         hand.mouseMovedEvent(event);
-
       }
     });
     view.setOnMouseClicked(new EventHandler<Event>()

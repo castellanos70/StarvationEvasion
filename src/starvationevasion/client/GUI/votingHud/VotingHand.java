@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import starvationevasion.client.GUI.DraftLayout.AbstractCard;
 import starvationevasion.client.GUI.DraftLayout.CardNode;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumRegion;
@@ -284,7 +285,6 @@ public class VotingHand extends NodeTemplate
 
   public void clearCards()
   {
-
     if (cardNode == null) return;
     for (int i = 0; i < cardNode.length; i++)
     {

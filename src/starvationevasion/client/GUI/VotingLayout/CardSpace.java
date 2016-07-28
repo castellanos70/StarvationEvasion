@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
+import starvationevasion.client.GUI.DraftLayout.CardView;
 import starvationevasion.client.GUI.DraftLayout.ClientPolicyCard;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.common.EnumRegion;
@@ -17,7 +18,7 @@ public class CardSpace extends StackPane
   private final FXMLLoader loader;
   GUI gui;
   Label label;
-  private ClientPolicyCard clientPolicyCard;
+  private CardView clientPolicyCard;
   /**
    * Constructor for the CardSpace class
    * @param gui instance reference of the GUI
@@ -33,6 +34,9 @@ public class CardSpace extends StackPane
     this.setAlignment(Pos.TOP_LEFT);
     //this.getChildren().add(label);
     this.loader = new FXMLLoader(getClass().getResource("/starvationevasion/client/GUI/VotingLayout/VotePopup.fxml"));
+    this.setOnMouseEntered(event -> {
+      toFront();
+    });
   }
   private void initializeLabel(EnumRegion region, int cardNumber)
   {
@@ -66,25 +70,29 @@ public class CardSpace extends StackPane
   }
   public void setCard(EnumRegion region,EnumPolicy card,GUI gui)
   {
-    clientPolicyCard=new ClientPolicyCard(region,card,gui);
-    clientPolicyCard.setBasicCard();
-    clientPolicyCard.setOnMouseEntered(event->
-    {
-      clientPolicyCard.setDetailedCard2();
-      toFront();
-    });
-    clientPolicyCard.setOnMouseExited(event ->
-    {
-      clientPolicyCard.setBasicCard();
-     // toBack();
-    });
+    this.setAlignment(Pos.BOTTOM_CENTER);
+    clientPolicyCard=new CardView(region,card,true);
+  //  clientPolicyCard.setBasicCard();
+//    clientPolicyCard.setOnMouseEntered(event->
+//    {
+//      initMainCard();
+//      setTranslateY((smallCardHeight-cardHeight)/2);
+//      setTranslateX(-cardWidth/2);
+//      toFront();
+//    });
+//    clientPolicyCard.setOnMouseExited(event ->
+//    {
+//      //clientPolicyCard.setBasicCard();
+//     // toBack();
+//    });
     this.getChildren().add(clientPolicyCard);
+    //toFront();
   }
   public void removeCard()
   {
     this.getChildren().clear();
     clientPolicyCard=null;
   }
-public ClientPolicyCard getCard(){return clientPolicyCard;}
+public CardView getCard(){return clientPolicyCard;}
 
 }

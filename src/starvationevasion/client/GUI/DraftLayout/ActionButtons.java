@@ -78,7 +78,7 @@ public class ActionButtons extends HBox
 //      hand.discardSelected();
 //    });
     notUndoButtons.getChildren().addAll(endTurn,bigDiscard,doneDiscarding);
-    layout.getChildren().addAll(undo, notUndoButtons);
+    layout.getChildren().addAll(endTurn);
 
     this.getChildren().add(layout);
   }

@@ -19,5 +19,6 @@ public abstract class AbstractCard extends ResizablePane{
     public abstract EnumRegion getOwner();
 
     public abstract EnumPolicy getPolicy();
+    
 
 }

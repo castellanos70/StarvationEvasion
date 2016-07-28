@@ -154,9 +154,7 @@ public class DraftLayout extends GridPane
     draftedCards = new DraftedCards();
    // this.add(draftedCards, 0, 8, 6, 6);
 
-    //node which allows the user to view the current cards in their hand
-    hand = new HandNode(gui);
-    this.add(hand, 7, 13, 19, 5);
+
 
     draftTimer = new DraftTimer();
     this.add(draftTimer, 27, 1, 5, 2);
@@ -174,6 +172,10 @@ public class DraftLayout extends GridPane
     chatNode.setStyle("-fx-background-color:rgb(84, 84, 84, 0.5)");
     this.add(chatNode, 27, 7, 6, 11);
 
+
+    //node which allows the user to view the current cards in their hand
+    hand = new HandNode(gui);
+    this.add(hand, 3, 12, 23, 5);
     // Places a background, not in use for testing
     // this.setBackground(new Background(new BackgroundImage(
     // gui.getImageGetter().getBackground(),

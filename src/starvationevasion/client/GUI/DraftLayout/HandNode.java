@@ -3,7 +3,6 @@ package starvationevasion.client.GUI.DraftLayout;
 import javafx.scene.Node;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import starvationevasion.client.GUI.GUI;
@@ -11,7 +10,6 @@ import starvationevasion.client.GUI.ResizablePane;
 import starvationevasion.common.EnumPolicy;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 /**
@@ -34,7 +32,7 @@ public class HandNode extends ResizablePane
   private static final double MIN_GAP_SIZE = 0;
   private static final double CARD_RATIO = .77;
   
-  private AbstractCard[] cards;// = new ResizablePane[7];
+  private CardView[] cards;// = new ResizablePane[7];
   //private ResizablePane[] cards = new ResizablePane[7];
   private EnumPolicy[] policies;
   private double[] xLayouts = new double[7];
@@ -46,8 +44,8 @@ public class HandNode extends ResizablePane
 
   public HandNode(GUI gui){
     super();
-    if(TEST_LAYOUT) cards=new AbstractCard[7];
-    else cards=new CardNode[7];
+    if(TEST_LAYOUT) cards=new CardView[7];
+    //else cards=new CardNode[7];
     this.gui = gui;
     this.setPickOnBounds(false);
     
@@ -60,7 +58,7 @@ public class HandNode extends ResizablePane
 //        calculateMouseOver(event.getX(), event.getY());
 //      }
 //    });
-//    
+//
 //    this.setOnMouseExited(new EventHandler<MouseEvent>(){
 //      @Override
 //      public void handle(MouseEvent event)
@@ -153,7 +151,7 @@ public class HandNode extends ResizablePane
     VBox vBox=new VBox();
     for (int i = 0; i < policies.length; i++){
       if(TEST_LAYOUT)cards[i] = new CardView(gui.getAssignedRegion(), policies[i]);
-      else cards[i] = new CardNode(gui.getAssignedRegion(), policies[i]);
+     // else cards[i] = new CardNode(gui.getAssignedRegion(), policies[i]);
       cards[i].setManaged(false);
 //      if(TEST_LAYOUT){
 //       // vBox.setPrefSize(185,260);
@@ -189,26 +187,29 @@ public class HandNode extends ResizablePane
     
     double width = this.getWidth()/7;
     double height = this.getHeight();
-    
+
     for (int i = 0; i < cards.length; i++){
 
-      AbstractCard card = cards[i];
-      if (card == null) return;
-      double cardWidth = width*(7d/8d);
-      double cardHeight = cardWidth/CARD_RATIO;
-      
-      if (cardHeight > height*MAX_SMALL_SIZE){
-        cardHeight = height*MAX_SMALL_SIZE;
-        cardWidth = cardHeight*CARD_RATIO;
+      CardView card = cards[i];
+      //if(!card.isSelected())
+      {
+        if (card == null) return;
+        double cardWidth = width * (7d / 8d);
+        double cardHeight = cardWidth / CARD_RATIO;
+
+        if (cardHeight > height * MAX_SMALL_SIZE) {
+          cardHeight = height * MAX_SMALL_SIZE;
+          cardWidth = cardHeight * CARD_RATIO;
+        }
+        if(!card.isSelected()) {
+          card.setSize(cardWidth, cardHeight);
+          card.setLayoutX(width * i);
+          card.setLayoutY(height - cardHeight);
+        }
+        xLayouts[i] = width * i;
+        lastWidth = cardWidth;
+        lastHeight = cardHeight;
       }
-      
-      card.setSize(cardWidth, cardHeight);
-      card.setLayoutX(width*i);
-      card.setLayoutY(height - cardHeight);
-      
-      xLayouts[i] = width*i;
-      lastWidth = cardWidth;
-      lastHeight = cardHeight;
     }
   }
   /**
@@ -223,7 +224,8 @@ public class HandNode extends ResizablePane
 
     double minMousePickup = this.getHeight() * MIN_MOUSE_PICKUP;
 
-    if (!TEST_LAYOUT) {
+    if (TEST_LAYOUT) {
+
       if (y > minMousePickup) {
 
         double height = this.getHeight();
@@ -244,7 +246,6 @@ public class HandNode extends ResizablePane
 
         for (int i = 0; i < 7; i++) {
           double constraint = (i / 7d + 1 / 14d);
-
           {//gaussian equation
             constraint -= shift;
             constraint *= constraint;
@@ -255,60 +256,69 @@ public class HandNode extends ResizablePane
           if (constraints[i] > constraints[maxIndex]) maxIndex = i;
           constraints[i] = constraint;
           total += constraint;
-//        System.out.println(constraint + ", " + i);
+        //System.out.println(constraint + ", " + i);
 
         }
-//      System.out.println("---------------");
+     // System.out.println("---------------");
         double totalWidth = 0;
 
 
         for (int i = 0; i < 7; i++) {
-          AbstractCard card = cards[i];
+          CardView card = cards[i];
+          //if(!card.isSelected())
+          {
+            double sizeFactor = CARD_RATIO;
+            double cardWidth = (constraints[i] / total) * width;
+            double tempWidth = cardWidth;
 
-          double sizeFactor = CARD_RATIO;
-          double cardWidth = (constraints[i] / total) * width;
-          double tempWidth = cardWidth;
+//            if(card.isSelected())
+//            {
+//              cardWidth=card.getWidth();
+//              tempWidth=cardWidth;
+//            }
+            if (cardWidth / sizeFactor > height * MAX_HOVER_HEIGHT) {
+              cardWidth = height * MAX_HOVER_HEIGHT * sizeFactor;
+            }
 
-//        System.out.println(x+" "+y);
-//        System.out.println(card.localToScene(card.getLayoutBounds()));
+            double xPos = totalWidth + (tempWidth - cardWidth) / 2;
+            totalWidth += tempWidth;
 
-
-          if (cardWidth / sizeFactor > height * MAX_HOVER_HEIGHT) {
-            cardWidth = height * MAX_HOVER_HEIGHT * sizeFactor;
+            cardWidth -= cardWidth * MIN_GAP_SIZE;
+            double cardHeight;
+            cardHeight = cardWidth / CARD_RATIO;
+            double yPos = height - cardHeight;
+            //if(!card.isSelected())
+            {
+              card.setSize(cardWidth, cardHeight);
+              card.setLayoutX(xPos);
+              card.setLayoutY(yPos);
+            }
           }
-
-          double xPos = totalWidth + (tempWidth - cardWidth) / 2;
-          totalWidth += tempWidth;
-
-          cardWidth -= cardWidth * MIN_GAP_SIZE;
-          double cardHeight = cardWidth / CARD_RATIO;
-          double yPos = height - cardHeight;
-
-          card.setSize(cardWidth, cardHeight);
-          card.setLayoutX(xPos);
-          card.setLayoutY(yPos);
         }
 
       } else {
 
         for (int i = 0; i < cards.length; i++) {
-          AbstractCard card = cards[i];
-          card.setSize(lastWidth, lastHeight);
-          card.setLayoutX(xLayouts[i]);
-          card.setLayoutY(this.getHeight() - lastHeight);
+          CardView card = cards[i];
+          if(!card.isSelected())
+          {
+            card.setSize(lastWidth, lastHeight);
+            card.setLayoutX(xLayouts[i]);
+            card.setLayoutY(this.getHeight() - lastHeight);
+          }
         }
       }
     }else if(false){
       for(AbstractCard abstractCard:cards) {
         CardView card = (CardView) abstractCard;
-        if (card.localToParent(card.getLayoutBounds()).contains(x, y) && !card.isSelect()) {
+        if (card.localToParent(card.getLayoutBounds()).contains(x, y) && !card.isSelected()) {
           card.initMainCard();
-          card.setSelected(true);
+          card.setStillSelected(true);
           card.translateYProperty().set(-400);
-        }else if(card.isSelect())
+        }else if(card.isSelected())
         {
           card.translateYProperty().set(0);
-          card.setSelected(false);
+          card.setStillSelected(false);
           card.initSimpleCard();
         }
       }

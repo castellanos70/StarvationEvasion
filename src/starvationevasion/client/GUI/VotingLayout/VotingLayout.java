@@ -1,10 +1,15 @@
 package starvationevasion.client.GUI.VotingLayout;
 
 import javafx.geometry.HPos;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
 import starvationevasion.client.GUI.DraftLayout.TickerReel;
@@ -14,6 +19,7 @@ import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class VotingLayout extends GridPane
 {
@@ -115,23 +121,22 @@ public class VotingLayout extends GridPane
         int index = getIndexOfRegion(card.getOwner());
         if (card.getCardType().getVotesRequired() == 0)
         {
-          if (cardSpaces[index][0].getCard()== null) cardSpaces[index][0].setCard(card.getOwner(), card.getCardType(), gui);
-          else if (cardSpaces[index][1].getCard() == null) cardSpaces[index][1].setCard(card.getOwner(), card.getCardType(), gui);
-          else if (cardSpaces[index][2].getCard() == null) cardSpaces[index][2].setCard(card.getOwner(), card.getCardType(), gui);
-
+          if (cardSpaces[index][0].getCard()== null) cardSpaces[index][0].setCard(card, gui);
+          else if (cardSpaces[index][1].getCard() == null) cardSpaces[index][1].setCard(card, gui);
+          else if (cardSpaces[index][2].getCard() == null) cardSpaces[index][2].setCard(card, gui);
         }
         else
         {
           final int availableRow;
           if(cardSpaces[index][0].getCard()==null) {
-            cardSpaces[index][0].setCard(card.getOwner(), card.getCardType(), gui);
+            cardSpaces[index][0].setCard(card, gui);
             availableRow=0;
           }else if(cardSpaces[index][1].getCard()==null) {
-            cardSpaces[index][1].setCard(card.getOwner(), card.getCardType(), gui);
+            cardSpaces[index][1].setCard(card, gui);
             availableRow=1;
           }else if(cardSpaces[index][2].getCard()==null) {
             availableRow=2;
-            cardSpaces[index][2].setCard(card.getOwner(), card.getCardType(), gui);
+            cardSpaces[index][2].setCard(card, gui);
           }else availableRow=0;
           Button[] buttons = votingNodes[index][availableRow].addVotingButtons();
           buttons[0].setOnAction(event ->
@@ -220,9 +225,23 @@ public class VotingLayout extends GridPane
      // newRegionMap.setFitHeight((getRowConstraints().get(i).getPercentHeight()*primaryStage.getHeight())/100);
       newRegionMap.setFitWidth(128);
       newRegionMap.setFitHeight(128);
-      //RegionMap newRegionMap = new RegionMap(this.gui, EnumRegion.US_REGIONS[i]);
-      //regionMaps.add(newRegionMap);
-      this.add(newRegionMap, i + 1, 1, 1, 8);
+      String s = EnumRegion.US_REGIONS[i].name();
+      Label label;
+      label = new Label(s);
+      label.setWrapText(true);
+      label.setTextFill(Color.BLACK);
+      label.setVisible(false);
+      label.getStylesheets().add("/starvationevasion/client/GUI/DraftLayout/style.css");
+      label.getStyleClass().add("pbarelement");
+      newRegionMap.setOnMouseEntered(event -> {
+        label.setVisible(true);
+      });
+      newRegionMap.setOnMouseExited(event -> {
+        label.setVisible(false);
+      });
+      label.setMouseTransparent(true);
+      StackPane stackPane=new StackPane(newRegionMap,label);
+      this.add(stackPane, i + 1, 1, 1, 8);
       GridPane.setHalignment(newRegionMap, HPos.CENTER);
     }
   }

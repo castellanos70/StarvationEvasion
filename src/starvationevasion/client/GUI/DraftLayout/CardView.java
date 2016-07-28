@@ -135,7 +135,7 @@ public class CardView extends AbstractCard
       selected=true;
     //  setLayoutY(0);
       //setTranslateY(-cardHeight/2-smallCardHeight);
-      setTranslateY(-cardHeight/2);
+      setTranslateY(-cardHeight/4);
      //setTranslateX(-cardWidth/2);
 //      setLayoutX(0);
 

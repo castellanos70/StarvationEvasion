@@ -42,8 +42,8 @@ public class Territory
    * that year. For future years, the simulation population is a function of the projected population and
    * the state of the model.
    */
-  private int[] populationProjection = new int[Model.YEARS_OF_DATA];       // in 1,000 people
-  private int[] population = new int[Model.YEARS_OF_DATA];       // in 1,000 people
+  protected int[] populationProjection = new int[Model.YEARS_OF_DATA];       // in 1,000 people
+  protected int[] population = new int[Model.YEARS_OF_DATA];       // in 1,000 people
   private int[] undernourished = new int[Model.YEARS_OF_DATA];  // number of undernourished x 1,000 per year.
 
   // The Fall 2015 spec on pg19 defines Human Development Index (HDI) as a function
@@ -362,6 +362,15 @@ public class Territory
     }
   }
 
+
+  /**
+   * sets year according to projection
+   * @param year year in question
+   */
+  public void setPopulation(int year)
+  {
+    population[year - Constant.FIRST_DATA_YEAR] = populationProjection[year- Constant.FIRST_DATA_YEAR];
+  }
   /**
    * @param year year in question
    * @param n    population in that year

@@ -517,6 +517,16 @@ public class Region extends Territory
     }
     sumTotals(isInit);
   }
+  @Override
+  public void setPopulation(int year){
+    int regionPopulation=0;
+    for(Territory territory: territoryList)
+    {
+      territory.setPopulation(year);
+      regionPopulation+=territory.getPopulation(year);
+    }
+    population[year-Constant.FIRST_DATA_YEAR]=regionPopulation;
+  }
 
   /**
    * resets production back to 0

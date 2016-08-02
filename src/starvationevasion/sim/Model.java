@@ -509,15 +509,15 @@ public class Model
 
     updateLandUse(); // In progress.
 
-    // updatePopulation();
+     updatePopulation(); //In progress (Nathan)
 
-    // updateClimate();
+     updateClimate(); //In progress (Nathan)
 
     // generateSpecialEvents(); // In progress (Alfred).
 
     // applySpecialEvents();
 
-    // updateFarmProductYield();
+     //updateFarmProductYield();
 
     // updateFarmProductNeed();
 
@@ -812,8 +812,22 @@ public class Model
     }
   }
 
+  private void updatePopulation()
+  {
+    for(Region region:regionList)
+    {
+      region.setPopulation(currentYear);
+
+    }
+  }
   private void updateClimate()
   {
+    for(Region region: regionList)
+    {
+      for(LandTile landTile:region.getLandTiles())
+      {
+      }
+    }
     // Done.
     //
     //if (debugLevel.intValue() < Level.INFO.intValue())

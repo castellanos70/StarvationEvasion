@@ -1,10 +1,6 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.Constant;
-import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.MapPoint;
-import starvationevasion.common.Util;
+import starvationevasion.common.*;
 
 import java.awt.geom.Area;
 import java.util.ArrayList;
@@ -317,36 +313,43 @@ public class Region extends Territory
     */
   }
 
+  public void updateYield(WorldData data)
+  {
+    for(Territory territory: territoryList)
+    {
+      territory.updateYield(data);
+    }
+  }
   /**
    * Updates the yield of all territoryList in the region and aggregates the values for
    * the entire region.
    */
   public void updateYield(int year)
   {
-    /*
+
     for (Territory t : territoryList)
     {
       // replant crops based on the new land used for farming
-      CropOptimizer cropOptimizer = new CropOptimizer(year, t);
-      cropOptimizer.optimizeCrops();
+//      CropOptimizer cropOptimizer = new CropOptimizer(year, t);
+//      cropOptimizer.optimizeCrops();
 
       t.updateYield();
       for (EnumFood crop : EnumFood.values())
       {
-        landCrop[crop.ordinal()] += t.landCrop[crop.ordinal()];
-        cropProduction[crop.ordinal()] += t.cropProduction[crop.ordinal()];
-        cropIncome[crop.ordinal()] += t.cropIncome[crop.ordinal()];
+//        landCrop[crop.ordinal()] += t.landCrop[crop.ordinal()];
+//        cropProduction[crop.ordinal()] += t.cropProduction[crop.ordinal()];
+//        cropIncome[crop.ordinal()] += t.cropIncome[crop.ordinal()];
       }
     }
 
     for (EnumFood crop : EnumFood.values())
     {
-      if (landCrop[crop.ordinal()] != 0)
-      { cropYield[crop.ordinal()] = cropProduction[crop.ordinal()] / landCrop[crop.ordinal()];
-      }
-      else cropYield[crop.ordinal()] = 0;
+//      if (landCrop[crop.ordinal()] != 0)
+//      { cropYield[crop.ordinal()] = cropProduction[crop.ordinal()] / landCrop[crop.ordinal()];
+//      }
+//      else cropYield[crop.ordinal()] = 0;
     }
-    */
+
   }
 
   public void updateCropNeed(int year)

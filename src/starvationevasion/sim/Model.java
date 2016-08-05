@@ -517,7 +517,7 @@ public class Model
 
     // applySpecialEvents();
 
-     //updateFarmProductYield();
+     updateFarmProductYield();
 
     // updateFarmProductNeed();
 
@@ -826,6 +826,7 @@ public class Model
     {
       for(LandTile landTile:region.getLandTiles())
       {
+
       }
     }
     // Done.
@@ -939,7 +940,7 @@ public class Model
     //
     for (Region region : regionList)
     {
-      region.updateYield(currentYear);
+      region.updateYield(worldData[currentYear-Constant.FIRST_DATA_YEAR]);
     }
 
     if (debugLevel.intValue() < Level.INFO.intValue())

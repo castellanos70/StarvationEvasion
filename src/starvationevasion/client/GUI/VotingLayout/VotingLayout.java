@@ -11,10 +11,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import starvationevasion.client.GUI.DraftLayout.CardView;
 import starvationevasion.client.GUI.DraftLayout.ChatNode;
 import starvationevasion.client.GUI.DraftLayout.TickerReel;
 import starvationevasion.client.GUI.GUI;
 import starvationevasion.client.GUI.SummaryBar;
+import starvationevasion.common.EnumPolicy;
 import starvationevasion.common.EnumRegion;
 import starvationevasion.common.PolicyCard;
 
@@ -48,6 +50,8 @@ public class VotingLayout extends GridPane
   private GridPane centerPane;
   private ChatNode chatNode;
 
+  private CardViewNode cardViewNode;
+
   private boolean receivedCards = false;
 
   public VotingLayout(GUI gui)
@@ -66,10 +70,10 @@ public class VotingLayout extends GridPane
     this.getRowConstraints().addAll(rowConstraintsList);
     this.setGridLinesVisible(true);
     ImageView backGround= new ImageView(gui.getImageGetter().getWorldMap());
-    this.add(backGround, 0, 14);
+    this.add(backGround, 0, 15);
     finishButton = new FinishButton(this.gui);
     // this.setLeft(finishButton);
-    this.add(finishButton, 8, 20, 1, 1);
+    this.add(finishButton, 0,24, 1, 1);
     summaryBar = new SummaryBar(this.gui);
     // this.setTop(summaryBar);
     this.add(summaryBar, 0, 1, 1, 1);
@@ -88,6 +92,8 @@ public class VotingLayout extends GridPane
     tickerReel = new TickerReel(real);
     real.getChildren().add(tickerReel);
     this.add(real, 0, 0, 13, 1);
+    cardViewNode=new CardViewNode();
+    this.add(cardViewNode,0,1);
 //    GraphNode graphNode = new GraphNode(gui);
 //    this.add(graphNode, 0, 10, 1, 5);
     // this.setBackground(new Background(new BackgroundImage(
@@ -185,14 +191,31 @@ public class VotingLayout extends GridPane
       CardSpace firstNewCardSpace = new CardSpace(gui, EnumRegion.US_REGIONS[i], 1);
       CardSpace secondNewCardSpace = new CardSpace(gui, EnumRegion.US_REGIONS[i], 2);
       CardSpace thirdNewCardSpace = new CardSpace(gui, EnumRegion.US_REGIONS[i], 3);
+
+      firstNewCardSpace.setOnMouseEntered(event ->
+      {
+        if(firstNewCardSpace.getCard()!=null){
+          cardViewNode.addCard(firstNewCardSpace.getCard().getGameCard());
+        }
+      });secondNewCardSpace.setOnMouseEntered(event ->
+      {
+        if(secondNewCardSpace.getCard()!=null){
+          cardViewNode.addCard(secondNewCardSpace.getCard().getGameCard());
+        }
+      });thirdNewCardSpace.setOnMouseEntered(event ->
+      {
+        if(thirdNewCardSpace.getCard()!=null){
+          cardViewNode.addCard(thirdNewCardSpace.getCard().getGameCard());
+        }
+      });
       // firstNewCardSpace.setCard(EnumRegion.US_REGIONS[i],
       // EnumPolicy.Clean_River_Incentive,gui);
       cardSpaces[i][0]=(firstNewCardSpace);
       cardSpaces[i][1]=(secondNewCardSpace);
       cardSpaces[i][2]=(thirdNewCardSpace);
-      this.add(firstNewCardSpace, i + 1, 7, 1, 5);
-      this.add(secondNewCardSpace, i + 1, 13, 1, 5);
-      this.add(thirdNewCardSpace, i + 1, 19, 1, 5);
+      this.add(firstNewCardSpace, i + 2, 7, 1, 5);
+      this.add(secondNewCardSpace, i + 2, 13, 1, 5);
+      this.add(thirdNewCardSpace, i + 2, 19, 1, 5);
     }
   }
 
@@ -207,9 +230,9 @@ public class VotingLayout extends GridPane
       votingNodes[i][1]=(secondNewVotingNode);
       votingNodes[i][2]=(thirdNewVotingNode);
 
-      this.add(firstNewVotingNode, i + 1, 12, 1, 1);
-      this.add(secondNewVotingNode, i + 1, 18, 1, 1);
-      this.add(thirdNewVotingNode, i + 1, 24, 1, 1);
+      this.add(firstNewVotingNode, i + 2, 12, 1, 1);
+      this.add(secondNewVotingNode, i + 2, 18, 1, 1);
+      this.add(thirdNewVotingNode, i + 2, 24, 1, 1);
     }
   }
 
@@ -241,7 +264,7 @@ public class VotingLayout extends GridPane
       });
       label.setMouseTransparent(true);
       StackPane stackPane=new StackPane(newRegionMap,label);
-      this.add(stackPane, i + 1, 1, 1, 8);
+      this.add(stackPane, i + 2, 1, 1, 8);
       GridPane.setHalignment(newRegionMap, HPos.CENTER);
     }
   }

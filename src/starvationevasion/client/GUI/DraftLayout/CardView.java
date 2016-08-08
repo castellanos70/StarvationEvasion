@@ -95,30 +95,30 @@ public class CardView extends AbstractCard
 
     initSimpleCard();
 
-    this.setOnMouseEntered(event -> {
-      selected=true;
-      initMainCard();
-      setTranslateY((smallCardHeight-cardHeight)/2);
-      setTranslateX(-cardWidth/2);
-      toFront();
-    });
-    this.setOnMouseExited(event -> {
-      if(!stillSelected) {
-        selected=false;
-        initSimpleCard();
-        setTranslateY(0);
-        setTranslateX(0);
-      }
-    });
-    setOnMouseClicked(event -> {
-      if(event.getButton().equals(MouseButton.SECONDARY)){
-        openRightClickMenu(event);
-      }
-      if(event.getButton().equals(MouseButton.PRIMARY)){
-        if(contextMenu!=null)contextMenu.hide();
-        stillSelected =false;
-      }
-    });
+//    this.setOnMouseEntered(event -> {
+//      selected=true;
+//      initMainCard();
+//      setTranslateY((smallCardHeight-cardHeight)/2);
+//      setTranslateX(-cardWidth/2);
+//      toFront();
+//    });
+//    this.setOnMouseExited(event -> {
+//      if(!stillSelected) {
+//        selected=false;
+//        initSimpleCard();
+//        setTranslateY(0);
+//        setTranslateX(0);
+//      }
+//    });
+//    setOnMouseClicked(event -> {
+//      if(event.getButton().equals(MouseButton.SECONDARY)){
+//        openRightClickMenu(event);
+//      }
+//      if(event.getButton().equals(MouseButton.PRIMARY)){
+//        if(contextMenu!=null)contextMenu.hide();
+//        stillSelected =false;
+//      }
+//    });
 
   }
   public CardView(EnumRegion owner, EnumPolicy policy)

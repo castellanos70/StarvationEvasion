@@ -26,8 +26,8 @@ public class CardView extends AbstractCard
 {
   private double largeCardWidth=370;
   private double largeCardHeight=520;
-  private double smallCardWidth=92.5;
-  private double smallCardHeight=130;
+  private double smallCardWidth=185/2;
+  private double smallCardHeight=260/2;
 
   private double cardWidth = largeCardWidth;
   private double cardHeight =largeCardHeight;
@@ -121,6 +121,12 @@ public class CardView extends AbstractCard
 //    });
 
   }
+
+  /**
+   * Card used by drafting phase
+   * @param owner the owner of the card
+   * @param policy the specific policy that is being displayed
+     */
   public CardView(EnumRegion owner, EnumPolicy policy)
   {
     this.owner = owner;
@@ -133,11 +139,8 @@ public class CardView extends AbstractCard
     this.setOnMouseEntered(event -> {
       initMainCard();
       selected=true;
-    //  setLayoutY(0);
-      //setTranslateY(-cardHeight/2-smallCardHeight);
-      setTranslateY(-cardHeight/4);
-     //setTranslateX(-cardWidth/2);
-//      setLayoutX(0);
+      setTranslateY(-cardHeight+smallCardHeight);
+      setTranslateX(-cardWidth/4);
 
       toFront();
     });
@@ -787,6 +790,8 @@ stackPane.getChildren().add(cardImage);
   public void setSize(double width, double height){
     cardImage.setFitWidth(width);
     cardImage.setFitHeight(height);
+    smallCardHeight=height;
+    smallCardWidth=width;
 
   }
     @Override

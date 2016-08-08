@@ -517,7 +517,7 @@ public class Model
 
     // applySpecialEvents();
 
-     updateFarmProductYield();
+     //updateFarmProductYield();
 
     // updateFarmProductNeed();
 

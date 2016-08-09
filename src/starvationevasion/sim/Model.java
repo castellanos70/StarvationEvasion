@@ -113,6 +113,7 @@ public class Model
 
   private int currentYear;
 
+
   /**
    * List of all territories. A copy of each pointer stored in this list is
    * placed in territoryList of the region to which that territory belongs.<br><br>
@@ -144,8 +145,13 @@ public class Model
   
   private EventDriver eventDriver;
 
+  private String representativeConcentrationPathway;
+  private static final String PREFIX_RCP45 = "RCP45";
+  private static final String PREFIX_RCP85 = "RCP85";
+
   public Model()
   {
+    currentYear=Constant.FIRST_GAME_YEAR-1;
     EnumPolicy.load();
     assert (EnumPolicy.DivertFunds.getGameText().equals("Divert Funds2"));
     assert (EnumPolicy.Loan.getVotesRequired() == 77);
@@ -172,7 +178,16 @@ public class Model
     ArrayList<LandTile> tileList = new ArrayList<>(TOTAL_LAND_TILES);
     LandTile.loadLocations(this, tileList);
     assert (tileList.size() == TOTAL_LAND_TILES);
-    LandTile.loadClimate(tileList);
+
+    int pastYear = LandTile.RawDataYears.getPastYear(currentYear);
+    int futureYear = LandTile.RawDataYears.getFutureYear(currentYear);
+    representativeConcentrationPathway = PREFIX_RCP45;
+    if (Util.rand.nextBoolean()) representativeConcentrationPathway = PREFIX_RCP85;
+    System.out.println("LandTile.loadClimate() ["+representativeConcentrationPathway +"]");
+    LandTile.loadClimateYear(pastYear,representativeConcentrationPathway,tileList);
+    LandTile.loadClimateYear(futureYear,representativeConcentrationPathway,tileList);
+
+
     //System.out.println("tileList.size()="+tileList.size());
 
 

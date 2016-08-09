@@ -1,10 +1,6 @@
 package starvationevasion.sim;
 
-import starvationevasion.common.Constant;
-import starvationevasion.common.EnumFood;
-import starvationevasion.common.EnumRegion;
-import starvationevasion.common.MapPoint;
-import starvationevasion.common.Util;
+import starvationevasion.common.*;
 import starvationevasion.sim.io.CSVReader;
 
 import java.util.ArrayList;
@@ -42,8 +38,8 @@ public class Territory
    * that year. For future years, the simulation population is a function of the projected population and
    * the state of the model.
    */
-  private int[] populationProjection = new int[Model.YEARS_OF_DATA];       // in 1,000 people
-  private int[] population = new int[Model.YEARS_OF_DATA];       // in 1,000 people
+  protected int[] populationProjection = new int[Model.YEARS_OF_DATA];       // in 1,000 people
+  protected int[] population = new int[Model.YEARS_OF_DATA];       // in 1,000 people
   private int[] undernourished = new int[Model.YEARS_OF_DATA];  // number of undernourished x 1,000 per year.
 
   // The Fall 2015 spec on pg19 defines Human Development Index (HDI) as a function
@@ -362,6 +358,15 @@ public class Territory
     }
   }
 
+
+  /**
+   * sets year according to projection
+   * @param year year in question
+   */
+  public void setPopulation(int year)
+  {
+    population[year - Constant.FIRST_DATA_YEAR] = populationProjection[year- Constant.FIRST_DATA_YEAR];
+  }
   /**
    * @param year year in question
    * @param n    population in that year
@@ -389,11 +394,34 @@ public class Territory
     return region;
   }
 
+
+  public void updateYield(WorldData worldData)
+  {
+    for(LandTile landTile: landTiles)
+    {
+      EnumFood currentCrop=landTile.getCrop();
+      int currentProfit=landTile.getCurrentProduction()*worldData.foodPrice[currentCrop.ordinal()];
+      for(EnumFood food: EnumFood.values())
+      {
+       EnumCropZone landRating=landTile.getCropRatings()[food.ordinal()];
+        double newProfit=landRating.productionRate()*worldData.foodPrice[food.ordinal()];
+        if(newProfit>currentProfit)
+        {
+
+        }
+      }
+    }
+  }
   /**
    * Estimates the initial land used per food type, and the yield.
    */
   public void updateYield()
   {
+    for(LandTile landTile: landTiles)
+    {
+      EnumFood currentCrop=landTile.getCrop();
+      //int currentProfit=landTile.getCurrentProduction()*
+    }
     /*
     int income = 0;
     int production = 0;

@@ -224,7 +224,7 @@ public class HandNode extends ResizablePane
 
     double minMousePickup = this.getHeight() * MIN_MOUSE_PICKUP;
 
-    if (TEST_LAYOUT) {
+    if (!TEST_LAYOUT) {
 
       if (y > minMousePickup) {
 

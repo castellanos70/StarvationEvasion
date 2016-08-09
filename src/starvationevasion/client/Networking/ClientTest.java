@@ -334,6 +334,7 @@ public class ClientTest implements Client
       System.out.println("ClientTest:processServerInput(): " + type);
 
       if (type == Type.AUTH_SUCCESS) GAME_LOOP.notifyOfSuccessfulLogin();
+      else if(type==Type.AUTH_ERROR)GAME_LOOP.sendInfoMessage("ERROR: Could not login, wrong username or password ");
       else if (type == Type.USER)
       {
         region = ((User)data).getRegion();
